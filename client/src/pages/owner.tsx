@@ -5,9 +5,10 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { SeoTag } from "@shared/schema";
+import type { SeoTag, Lead } from "@shared/schema";
+import { format } from "date-fns";
 
 const OWNER_PIN = "1111";
 
@@ -26,8 +27,22 @@ export default function Owner() {
   const [newTagType, setNewTagType] = useState("keyword");
   const [newTagValue, setNewTagValue] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   
   const queryClient = useQueryClient();
+
+  const { data: leads = [], isLoading: leadsLoading } = useQuery<Lead[]>({
+    queryKey: ["/api/leads", searchQuery],
+    queryFn: async () => {
+      const url = searchQuery 
+        ? `/api/leads?search=${encodeURIComponent(searchQuery)}`
+        : "/api/leads";
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch leads");
+      return res.json();
+    },
+    enabled: isAuthenticated,
+  });
 
   const { data: seoTags = [], isLoading: tagsLoading } = useQuery<SeoTag[]>({
     queryKey: ["/api/seo-tags"],
@@ -367,25 +382,81 @@ export default function Owner() {
             </motion.div>
           </BentoItem>
 
+          {/* Email Database Card */}
           <BentoItem colSpan={4} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-8 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-gold-400/20 flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-gold-400" />
-                  </div>
-                  <h2 className="text-2xl font-display font-bold">Revenue</h2>
-                </div>
-                <div className="space-y-4">
-                  <div className="text-5xl font-bold text-gold-400">$--</div>
-                  <p className="text-muted-foreground">This month</p>
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="flex items-center gap-2 text-green-400">
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="text-sm">Revenue tracking coming soon</span>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
+                      <Database className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-display font-bold">Email Database</h2>
+                      <p className="text-xs text-muted-foreground">{leads.length} leads</p>
                     </div>
                   </div>
                 </div>
+
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search emails..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-white/5 border-white/20 rounded-xl h-10 text-sm"
+                    data-testid="input-search-leads-owner"
+                  />
+                </div>
+
+                <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                  {leadsLoading ? (
+                    <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
+                  ) : leads.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Mail className="w-10 h-10 mx-auto mb-3 text-muted-foreground/50" />
+                      <p className="text-sm text-muted-foreground">
+                        {searchQuery ? "No matches" : "No leads yet"}
+                      </p>
+                    </div>
+                  ) : (
+                    leads.slice(0, 10).map((lead, index) => (
+                      <motion.div
+                        key={lead.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.02 }}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-4 h-4 text-accent" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{lead.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {format(new Date(lead.createdAt), "MMM d, yyyy")}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gold-400/20 flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-gold-400" />
+                  </div>
+                  <h2 className="text-xl font-display font-bold">Revenue</h2>
+                </div>
+                <div className="text-4xl font-bold text-gold-400 mb-2">$--</div>
+                <p className="text-sm text-muted-foreground">Revenue tracking coming soon</p>
               </GlassCard>
             </motion.div>
           </BentoItem>
@@ -399,19 +470,6 @@ export default function Owner() {
                 </div>
                 <div className="text-3xl font-bold text-accent mb-2">--</div>
                 <p className="text-sm text-muted-foreground">Active team members</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Jobs</h3>
-                </div>
-                <div className="text-3xl font-bold text-accent mb-2">--</div>
-                <p className="text-sm text-muted-foreground">Scheduled this week</p>
               </GlassCard>
             </motion.div>
           </BentoItem>

@@ -34,6 +34,23 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/leads - Get all leads (admin/owner)
+  app.get("/api/leads", async (req, res) => {
+    try {
+      const { search } = req.query;
+      let leadsList;
+      if (search && typeof search === "string") {
+        leadsList = await storage.searchLeads(search);
+      } else {
+        leadsList = await storage.getLeads();
+      }
+      res.json(leadsList);
+    } catch (error) {
+      console.error("Error fetching leads:", error);
+      res.status(500).json({ error: "Failed to fetch leads" });
+    }
+  });
+
   // ============ ESTIMATES (New Tool) ============
   
   // POST /api/estimates - Create a new estimate

@@ -5,12 +5,14 @@ import {
   type Estimate, type InsertEstimate, estimates,
   type SeoTag, type InsertSeoTag, seoTags
 } from "@shared/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, ilike, or } from "drizzle-orm";
 
 export interface IStorage {
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
   getLeadByEmail(email: string): Promise<Lead | undefined>;
+  getLeads(): Promise<Lead[]>;
+  searchLeads(query: string): Promise<Lead[]>;
   
   // Estimates (new tool)
   createEstimate(estimate: InsertEstimate): Promise<Estimate>;
@@ -41,6 +43,16 @@ export class DatabaseStorage implements IStorage {
   async getLeadByEmail(email: string): Promise<Lead | undefined> {
     const [result] = await db.select().from(leads).where(eq(leads.email, email));
     return result;
+  }
+
+  async getLeads(): Promise<Lead[]> {
+    return await db.select().from(leads).orderBy(desc(leads.createdAt));
+  }
+
+  async searchLeads(query: string): Promise<Lead[]> {
+    return await db.select().from(leads)
+      .where(ilike(leads.email, `%${query}%`))
+      .orderBy(desc(leads.createdAt));
   }
 
   // Estimates
