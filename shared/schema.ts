@@ -93,3 +93,88 @@ export const insertSeoTagSchema = createInsertSchema(seoTags).omit({
 
 export type InsertSeoTag = z.infer<typeof insertSeoTagSchema>;
 export type SeoTag = typeof seoTags.$inferSelect;
+
+// ============ CRM TABLES ============
+
+// CRM Deals - Sales pipeline
+export const crmDeals = pgTable("crm_deals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  value: decimal("value", { precision: 10, scale: 2 }).default("0"),
+  stage: text("stage").notNull().default("new_lead"), // new_lead, quoted, negotiating, won, lost
+  leadId: varchar("lead_id").references(() => leads.id),
+  probability: integer("probability").default(50),
+  expectedCloseDate: timestamp("expected_close_date"),
+  ownerId: text("owner_id"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmDealSchema = createInsertSchema(crmDeals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCrmDeal = z.infer<typeof insertCrmDealSchema>;
+export type CrmDeal = typeof crmDeals.$inferSelect;
+
+// CRM Activities - Timeline/interactions
+export const crmActivities = pgTable("crm_activities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  entityType: text("entity_type").notNull(), // lead, deal
+  entityId: varchar("entity_id").notNull(),
+  activityType: text("activity_type").notNull(), // call, email, visit, note
+  title: text("title").notNull(),
+  description: text("description"),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrmActivitySchema = createInsertSchema(crmActivities).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCrmActivity = z.infer<typeof insertCrmActivitySchema>;
+export type CrmActivity = typeof crmActivities.$inferSelect;
+
+// CRM Notes - Notes on entities
+export const crmNotes = pgTable("crm_notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  entityType: text("entity_type").notNull(), // lead, deal
+  entityId: varchar("entity_id").notNull(),
+  content: text("content").notNull(),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmNoteSchema = createInsertSchema(crmNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCrmNote = z.infer<typeof insertCrmNoteSchema>;
+export type CrmNote = typeof crmNotes.$inferSelect;
+
+// User PIN settings (for forced PIN change on first login)
+export const userPins = pgTable("user_pins", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  role: text("role").notNull().unique(), // ops_manager, owner
+  pin: text("pin").notNull(),
+  mustChangePin: boolean("must_change_pin").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertUserPinSchema = createInsertSchema(userPins).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertUserPin = z.infer<typeof insertUserPinSchema>;
+export type UserPin = typeof userPins.$inferSelect;

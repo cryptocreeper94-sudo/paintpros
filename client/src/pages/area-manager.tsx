@@ -1,28 +1,99 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Palette, Sparkles, Database, LayoutDashboard } from "lucide-react";
+import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Palette, Sparkles } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { DealsPipeline } from "@/components/crm/deals-pipeline";
+import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { PinChangeModal } from "@/components/ui/pin-change-modal";
+import type { Lead } from "@shared/schema";
 
-const AREA_MANAGER_PIN = "2222";
+const DEFAULT_AREA_MANAGER_PIN = "2222";
 
 export default function AreaManager() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  const [currentPin, setCurrentPin] = useState(DEFAULT_AREA_MANAGER_PIN);
+  const [showPinChangeModal, setShowPinChangeModal] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    const initPin = async () => {
+      try {
+        await fetch("/api/auth/pin/init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "area_manager", defaultPin: DEFAULT_AREA_MANAGER_PIN }),
+        });
+      } catch (err) {
+        console.error("Failed to init PIN:", err);
+      }
+    };
+    initPin();
+  }, []);
+
+  const { data: leads = [] } = useQuery<Lead[]>({
+    queryKey: ["/api/leads"],
+    queryFn: async () => {
+      const res = await fetch("/api/leads");
+      if (!res.ok) throw new Error("Failed to fetch leads");
+      return res.json();
+    },
+    enabled: isAuthenticated,
+  });
+
+  const { data: pipelineSummary = [] } = useQuery<{ stage: string; count: number; totalValue: string }[]>({
+    queryKey: ["/api/crm/deals/pipeline/summary"],
+    queryFn: async () => {
+      const res = await fetch("/api/crm/deals/pipeline/summary");
+      if (!res.ok) throw new Error("Failed to fetch pipeline");
+      return res.json();
+    },
+    enabled: isAuthenticated,
+  });
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === AREA_MANAGER_PIN) {
+    setError("");
+    
+    try {
+      const res = await fetch("/api/auth/pin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: "area_manager", pin }),
+      });
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Invalid PIN");
+        setPin("");
+        return;
+      }
+      
+      const data = await res.json();
+      
+      setCurrentPin(pin);
       setIsAuthenticated(true);
-      setError("");
-    } else {
-      setError("Invalid PIN");
+      
+      if (data.mustChangePin) {
+        setShowPinChangeModal(true);
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
       setPin("");
     }
+  };
+
+  const handlePinChangeSuccess = () => {
+    setShowPinChangeModal(false);
+  };
+
+  const getTotalDeals = () => {
+    return pipelineSummary.reduce((sum, s) => sum + s.count, 0);
   };
 
   if (!isAuthenticated) {
@@ -114,133 +185,113 @@ export default function AreaManager() {
           </GlassCard>
         </motion.div>
 
-        <BentoGrid>
-          {/* CRM Placeholder - Large Card */}
-          <BentoItem colSpan={8} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-8 bg-gradient-to-br from-teal-500/10 via-transparent to-accent/5" glow>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-accent/20 flex items-center justify-center">
-                    <Database className="w-6 h-6 text-teal-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-display font-bold">CRM Integration</h2>
-                    <span className="px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-400 text-xs font-medium">Available Add-On</span>
-                  </div>
-                </div>
-                <div className="h-48 bg-gradient-to-br from-white/5 to-white/0 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-white/10 mb-4">
-                  <LayoutDashboard className="w-16 h-16 text-muted-foreground mb-4" />
-                  <p className="text-lg font-medium text-muted-foreground">Customer Relationship Management</p>
-                  <p className="text-sm text-muted-foreground mt-2">Full CRM system available as an optional feature</p>
-                </div>
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-sm text-muted-foreground">
-                    <span className="text-teal-400 font-semibold">CRM Features:</span> Lead tracking, customer history, follow-up reminders, pipeline management, and more. Ask about adding this to your dashboard.
-                  </p>
-                </div>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <GlassCard className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Target className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">My Leads</h3>
+                  <h3 className="text-lg font-bold">My Leads</h3>
                 </div>
-                <div className="text-4xl font-bold text-accent mb-2">--</div>
-                <p className="text-sm text-muted-foreground">Assigned to your territory</p>
+                <div className="text-3xl font-bold text-accent mb-1">{leads.length}</div>
+                <p className="text-xs text-muted-foreground">In your territory</p>
               </GlassCard>
             </motion.div>
-          </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <GlassCard className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <ClipboardList className="w-5 h-5 text-teal-400" />
+                  <h3 className="text-lg font-bold">Active Deals</h3>
+                </div>
+                <div className="text-3xl font-bold text-teal-400 mb-1">{getTotalDeals()}</div>
+                <p className="text-xs text-muted-foreground">In pipeline</p>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <GlassCard className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Calendar className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Appointments</h3>
+                  <h3 className="text-lg font-bold">Appointments</h3>
                 </div>
-                <div className="text-4xl font-bold text-accent mb-2">--</div>
-                <p className="text-sm text-muted-foreground">Scheduled this week</p>
+                <div className="text-3xl font-bold text-accent mb-1">--</div>
+                <p className="text-xs text-muted-foreground">This week</p>
               </GlassCard>
             </motion.div>
-          </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <GlassCard className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <ClipboardList className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Estimates Sent</h3>
+                  <Users className="w-5 h-5 text-green-400" />
+                  <h3 className="text-lg font-bold">Conversions</h3>
                 </div>
-                <div className="text-4xl font-bold text-accent mb-2">--</div>
-                <p className="text-sm text-muted-foreground">This month</p>
+                <div className="text-3xl font-bold text-green-400 mb-1">--%</div>
+                <p className="text-xs text-muted-foreground">Lead to sale</p>
               </GlassCard>
             </motion.div>
-          </BentoItem>
+          </div>
 
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+          {/* CRM Deals Pipeline */}
+          <GlassCard className="p-6" glow>
+            <DealsPipeline />
+          </GlassCard>
+
+          {/* Activity Timeline and Quick Actions */}
+          <BentoGrid>
+            <BentoItem colSpan={8} rowSpan={1}>
               <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Users className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Conversions</h3>
-                </div>
-                <div className="text-4xl font-bold text-green-400 mb-2">--%</div>
-                <p className="text-sm text-muted-foreground">Lead to sale ratio</p>
+                <ActivityTimeline />
               </GlassCard>
-            </motion.div>
-          </BentoItem>
+            </BentoItem>
 
-          <BentoItem colSpan={6} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
+            <BentoItem colSpan={4} rowSpan={1}>
               <GlassCard className="h-full p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Phone className="w-5 h-5 text-accent" />
                   <h3 className="text-xl font-bold">Quick Actions</h3>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 gap-3">
                   <motion.div 
-                    className="bg-white/5 rounded-xl p-3 text-center border border-white/10 cursor-pointer"
-                    whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    className="bg-white/5 rounded-xl p-4 text-center border border-white/10 cursor-pointer"
+                    whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    data-testid="button-quick-call"
                   >
-                    <Phone className="w-5 h-5 mx-auto mb-1 text-accent" />
-                    <p className="text-xs text-muted-foreground">Call Lead</p>
+                    <Phone className="w-5 h-5 mx-auto mb-2 text-accent" />
+                    <p className="text-sm text-muted-foreground">Call Lead</p>
                   </motion.div>
                   <motion.div 
-                    className="bg-white/5 rounded-xl p-3 text-center border border-white/10 cursor-pointer"
-                    whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    className="bg-white/5 rounded-xl p-4 text-center border border-white/10 cursor-pointer"
+                    whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    data-testid="button-quick-email"
                   >
-                    <Mail className="w-5 h-5 mx-auto mb-1 text-accent" />
-                    <p className="text-xs text-muted-foreground">Send Email</p>
+                    <Mail className="w-5 h-5 mx-auto mb-2 text-accent" />
+                    <p className="text-sm text-muted-foreground">Send Email</p>
                   </motion.div>
                   <motion.div 
-                    className="bg-white/5 rounded-xl p-3 text-center border border-white/10 cursor-pointer"
-                    whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    className="bg-white/5 rounded-xl p-4 text-center border border-white/10 cursor-pointer"
+                    whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.1)" }}
+                    data-testid="button-quick-schedule"
                   >
-                    <Calendar className="w-5 h-5 mx-auto mb-1 text-accent" />
-                    <p className="text-xs text-muted-foreground">Schedule</p>
+                    <Calendar className="w-5 h-5 mx-auto mb-2 text-accent" />
+                    <p className="text-sm text-muted-foreground">Schedule Visit</p>
                   </motion.div>
                 </div>
               </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={6} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <MapPin className="w-5 h-5 text-teal-400" />
-                  <h3 className="text-xl font-bold">My Territory</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Territory map and boundaries coming soon</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-        </BentoGrid>
+            </BentoItem>
+          </BentoGrid>
+        </div>
       </main>
+
+      <PinChangeModal
+        isOpen={showPinChangeModal}
+        role="area_manager"
+        roleLabel="Area Manager"
+        currentPin={currentPin}
+        onSuccess={handlePinChangeSuccess}
+        accentColor="teal-400"
+      />
     </PageLayout>
   );
 }

@@ -1,22 +1,43 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState } from "react";
+import { PinChangeModal } from "@/components/ui/pin-change-modal";
+import { DealsPipeline } from "@/components/crm/deals-pipeline";
+import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Settings, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Lead, Estimate } from "@shared/schema";
 import { format } from "date-fns";
 
-const ADMIN_PIN = "4444";
+const DEFAULT_PIN = "4444";
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showPinChange, setShowPinChange] = useState(false);
+  const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
+  const [activeTab, setActiveTab] = useState<"deals" | "leads" | "activities">("deals");
+
+  useEffect(() => {
+    const initPin = async () => {
+      try {
+        await fetch("/api/auth/pin/init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "ops_manager", defaultPin: DEFAULT_PIN }),
+        });
+      } catch (err) {
+        console.error("Failed to init PIN:", err);
+      }
+    };
+    initPin();
+  }, []);
 
   const { data: leads = [], isLoading: leadsLoading } = useQuery<Lead[]>({
     queryKey: ["/api/leads", searchQuery],
@@ -28,7 +49,7 @@ export default function Admin() {
       if (!res.ok) throw new Error("Failed to fetch leads");
       return res.json();
     },
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !showPinChange,
   });
 
   const { data: estimates = [], isLoading: estimatesLoading } = useQuery<Estimate[]>({
@@ -38,18 +59,43 @@ export default function Admin() {
       if (!res.ok) throw new Error("Failed to fetch estimates");
       return res.json();
     },
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !showPinChange,
   });
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === ADMIN_PIN) {
+    setError("");
+    
+    try {
+      const res = await fetch("/api/auth/pin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: "ops_manager", pin }),
+      });
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Invalid PIN");
+        setPin("");
+        return;
+      }
+      
+      const data = await res.json();
+      
+      setCurrentPin(pin);
       setIsAuthenticated(true);
-      setError("");
-    } else {
-      setError("Invalid PIN");
+      
+      if (data.mustChangePin) {
+        setShowPinChange(true);
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
       setPin("");
     }
+  };
+
+  const handlePinChangeSuccess = () => {
+    setShowPinChange(false);
   };
 
   if (!isAuthenticated) {
@@ -72,7 +118,7 @@ export default function Admin() {
                   >
                     <Shield className="w-10 h-10 text-accent" />
                   </motion.div>
-                  <h1 className="text-3xl font-display font-bold mb-2">Admin Access</h1>
+                  <h1 className="text-3xl font-display font-bold mb-2">Operations Manager</h1>
                   <p className="text-muted-foreground">Enter your PIN to continue</p>
                 </div>
 
@@ -101,51 +147,84 @@ export default function Admin() {
 
   return (
     <PageLayout>
+      <PinChangeModal
+        isOpen={showPinChange}
+        role="ops_manager"
+        roleLabel="Operations Manager"
+        currentPin={currentPin}
+        onSuccess={handlePinChangeSuccess}
+      />
+
       <main className="pt-24 px-4 md:px-8 pb-24">
-        <div className="max-w-7xl mx-auto mb-12">
-          <div className="flex items-center gap-4 mb-4">
-            <motion.div 
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/30 to-blue-500/20 flex items-center justify-center shadow-lg shadow-accent/20 border border-accent/20"
-              whileHover={{ scale: 1.1, rotateZ: 5 }}
-            >
-              <Shield className="w-7 h-7 text-accent" />
-            </motion.div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Manage your painting business</p>
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <motion.div 
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/30 to-blue-500/20 flex items-center justify-center shadow-lg shadow-accent/20 border border-accent/20"
+                whileHover={{ scale: 1.1, rotateZ: 5 }}
+              >
+                <Shield className="w-7 h-7 text-accent" />
+              </motion.div>
+              <div>
+                <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Operations Manager</h1>
+                <p className="text-muted-foreground">CRM & Business Operations</p>
+              </div>
             </div>
+            <motion.button
+              onClick={() => setShowPinChange(true)}
+              className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              data-testid="button-settings"
+            >
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </motion.button>
           </div>
         </div>
 
-        {/* Configurable Notice */}
-        <motion.div 
-          className="max-w-7xl mx-auto mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <GlassCard className="p-6 border-dashed border-accent/30 bg-gradient-to-r from-accent/5 via-purple-500/5 to-accent/5">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-purple-500/20 flex items-center justify-center flex-shrink-0">
-                <Palette className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-bold text-lg">Fully Customizable Dashboard</h3>
-                  <Sparkles className="w-4 h-4 text-accent" />
-                </div>
-                <p className="text-muted-foreground">
-                  This dashboard can be configured any way you want. Name your design, describe your needs, and it will be made to your specifications.
-                </p>
-              </div>
-            </div>
-          </GlassCard>
-        </motion.div>
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="flex gap-2">
+            {[
+              { id: "deals", label: "Deals Pipeline", icon: BarChart3 },
+              { id: "leads", label: "Email Database", icon: Database },
+              { id: "activities", label: "Activities", icon: Bell },
+            ].map((tab) => (
+              <motion.button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors ${
+                  activeTab === tab.id
+                    ? "bg-accent/20 border-accent/30 text-accent"
+                    : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10"
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                data-testid={`tab-${tab.id}`}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </motion.button>
+            ))}
+          </div>
+        </div>
 
-        <BentoGrid>
-          {/* Email Database - Large Card */}
-          <BentoItem colSpan={8} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6 md:p-8 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
+        <div className="max-w-7xl mx-auto">
+          {activeTab === "deals" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <GlassCard className="p-6 md:p-8" glow>
+                <DealsPipeline />
+              </GlassCard>
+            </motion.div>
+          )}
+
+          {activeTab === "leads" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <GlassCard className="p-6 md:p-8 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
@@ -162,7 +241,6 @@ export default function Admin() {
                   </div>
                 </div>
 
-                {/* Search Bar */}
                 <div className="relative mb-6">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -175,8 +253,7 @@ export default function Admin() {
                   />
                 </div>
 
-                {/* Leads List */}
-                <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                   {leadsLoading ? (
                     <div className="text-center py-8 text-muted-foreground">Loading leads...</div>
                   ) : leads.length === 0 ? (
@@ -214,28 +291,36 @@ export default function Admin() {
                 </div>
               </GlassCard>
             </motion.div>
-          </BentoItem>
+          )}
 
-          <BentoItem colSpan={4} rowSpan={2}>
+          {activeTab === "activities" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <GlassCard className="p-6 md:p-8" glow>
+                <ActivityTimeline showAll maxHeight="500px" />
+              </GlassCard>
+            </motion.div>
+          )}
+        </div>
+
+        <BentoGrid className="mt-8">
+          <BentoItem colSpan={4} rowSpan={1}>
             <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-8" glow>
-                <div className="flex items-center gap-3 mb-6">
+              <GlassCard className="h-full p-6" glow>
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                     <FileText className="w-5 h-5 text-accent" />
                   </div>
-                  <h2 className="text-2xl font-display font-bold">Estimates</h2>
+                  <h2 className="text-xl font-display font-bold">Estimates</h2>
                 </div>
-                <div className="space-y-4">
-                  <div className="text-5xl font-bold text-accent">{estimatesLoading ? "--" : estimates.length}</div>
-                  <p className="text-muted-foreground">Total estimates created</p>
-                  <div className="pt-4 border-t border-white/10">
-                    <p className="text-sm text-muted-foreground">
-                      {estimates.length > 0 
-                        ? `$${estimates.reduce((sum, e) => sum + parseFloat(e.totalEstimate || "0"), 0).toLocaleString()} total value`
-                        : "No estimates yet"}
-                    </p>
-                  </div>
-                </div>
+                <div className="text-4xl font-bold text-accent mb-2">{estimatesLoading ? "--" : estimates.length}</div>
+                <p className="text-sm text-muted-foreground">
+                  {estimates.length > 0 
+                    ? `$${estimates.reduce((sum, e) => sum + parseFloat(e.totalEstimate || "0"), 0).toLocaleString()} total`
+                    : "No estimates yet"}
+                </p>
               </GlassCard>
             </motion.div>
           </BentoItem>
@@ -251,21 +336,6 @@ export default function Admin() {
                 </div>
                 <div className="text-4xl font-bold text-accent mb-2">{leadsLoading ? "--" : leads.length}</div>
                 <p className="text-sm text-muted-foreground">Total leads captured</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6" glow>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-accent" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold">Analytics</h2>
-                </div>
-                <p className="text-sm text-muted-foreground">Track your business performance</p>
-                <p className="text-xs text-accent mt-2">Coming Soon</p>
               </GlassCard>
             </motion.div>
           </BentoItem>

@@ -1,16 +1,26 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
+import { PinChangeModal } from "@/components/ui/pin-change-modal";
 
-const OWNER_PIN = "1111";
+const DEFAULT_OWNER_PIN = "1111";
+
+const PIPELINE_STAGES = [
+  { id: "new", label: "New", color: "bg-blue-500" },
+  { id: "contacted", label: "Contacted", color: "bg-yellow-500" },
+  { id: "quoted", label: "Quoted", color: "bg-purple-500" },
+  { id: "negotiation", label: "Negotiation", color: "bg-orange-500" },
+  { id: "won", label: "Won", color: "bg-green-500" },
+  { id: "lost", label: "Lost", color: "bg-red-500" },
+];
 
 const TAG_TYPES = [
   { value: "keyword", label: "Keyword", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
@@ -23,6 +33,8 @@ export default function Owner() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  const [currentPin, setCurrentPin] = useState(DEFAULT_OWNER_PIN);
+  const [showPinChangeModal, setShowPinChangeModal] = useState(false);
   
   const [newTagType, setNewTagType] = useState("keyword");
   const [newTagValue, setNewTagValue] = useState("");
@@ -30,6 +42,21 @@ export default function Owner() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const initPin = async () => {
+      try {
+        await fetch("/api/auth/pin/init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "owner", defaultPin: DEFAULT_OWNER_PIN }),
+        });
+      } catch (err) {
+        console.error("Failed to init PIN:", err);
+      }
+    };
+    initPin();
+  }, []);
 
   const { data: leads = [], isLoading: leadsLoading } = useQuery<Lead[]>({
     queryKey: ["/api/leads", searchQuery],
@@ -98,6 +125,16 @@ export default function Owner() {
     },
   });
 
+  const { data: pipelineSummary = [] } = useQuery<{ stage: string; count: number; totalValue: string }[]>({
+    queryKey: ["/api/crm/deals/pipeline/summary"],
+    queryFn: async () => {
+      const res = await fetch("/api/crm/deals/pipeline/summary");
+      if (!res.ok) throw new Error("Failed to fetch pipeline");
+      return res.json();
+    },
+    enabled: isAuthenticated,
+  });
+
   const handleAddTag = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTagValue.trim()) {
@@ -105,15 +142,50 @@ export default function Owner() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === OWNER_PIN) {
+    setError("");
+    
+    try {
+      const res = await fetch("/api/auth/pin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: "owner", pin }),
+      });
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Invalid PIN");
+        setPin("");
+        return;
+      }
+      
+      const data = await res.json();
+      
+      setCurrentPin(pin);
       setIsAuthenticated(true);
-      setError("");
-    } else {
-      setError("Invalid PIN");
+      
+      if (data.mustChangePin) {
+        setShowPinChangeModal(true);
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
       setPin("");
     }
+  };
+
+  const handlePinChangeSuccess = () => {
+    setShowPinChangeModal(false);
+  };
+
+  const getTotalPipelineValue = () => {
+    return pipelineSummary
+      .filter(s => s.stage !== "lost")
+      .reduce((sum, s) => sum + parseFloat(s.totalValue || "0"), 0);
+  };
+
+  const getTotalDeals = () => {
+    return pipelineSummary.reduce((sum, s) => sum + s.count, 0);
   };
 
   const getTagTypeStyle = (type: string) => {
@@ -519,8 +591,69 @@ export default function Owner() {
               </GlassCard>
             </motion.div>
           </BentoItem>
+          {/* Sales Pipeline Summary */}
+          <BentoItem colSpan={4} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-teal-500/10 via-transparent to-accent/5" glow>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-accent/20 flex items-center justify-center">
+                    <Target className="w-5 h-5 text-teal-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-display font-bold">Sales Pipeline</h2>
+                    <p className="text-xs text-muted-foreground">{getTotalDeals()} total deals</p>
+                  </div>
+                </div>
+
+                <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-gold-400/10 to-accent/5 border border-gold-400/20">
+                  <p className="text-xs text-muted-foreground mb-1">Pipeline Value</p>
+                  <p className="text-2xl font-bold text-gold-400">
+                    ${getTotalPipelineValue().toLocaleString()}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  {PIPELINE_STAGES.map((stage) => {
+                    const stageData = pipelineSummary.find(s => s.stage === stage.id);
+                    const count = stageData?.count || 0;
+                    const value = parseFloat(stageData?.totalValue || "0");
+                    
+                    return (
+                      <motion.div
+                        key={stage.id}
+                        className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10"
+                        whileHover={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${stage.color}`} />
+                          <span className="text-sm">{stage.label}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-sm font-medium">{count}</span>
+                          {value > 0 && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              ${value.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
         </BentoGrid>
       </main>
+
+      <PinChangeModal
+        isOpen={showPinChangeModal}
+        role="owner"
+        roleLabel="Owner"
+        currentPin={currentPin}
+        onSuccess={handlePinChangeSuccess}
+        accentColor="gold-400"
+      />
     </PageLayout>
   );
 }
