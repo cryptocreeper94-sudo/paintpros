@@ -52,8 +52,8 @@ export function Navbar() {
             )}
           </button>
           <div 
-            className="text-white tracking-wide text-lg md:text-2xl" 
-            style={{ fontFamily: 'Playfair Display, serif', fontWeight: '700', marginLeft: '-120px' }}
+            className="text-white tracking-wide text-base md:text-xl" 
+            style={{ fontFamily: 'Playfair Display, serif', marginLeft: '-120px' }}
             data-testid="text-header-title"
           >
             Nashville Painting Professionals
