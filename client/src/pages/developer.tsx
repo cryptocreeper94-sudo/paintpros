@@ -149,7 +149,7 @@ function SolanaModalContent() {
           entityType: stampEntityType,
           entityId: stampEntityId,
           documentHash: generatedHash,
-          network: "devnet"
+          network: "mainnet-beta"
         })
       });
       if (res.ok) {
@@ -180,7 +180,7 @@ function SolanaModalContent() {
       const res = await fetch("/api/blockchain/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ signature: verifySignature, network: "devnet" })
+        body: JSON.stringify({ signature: verifySignature, network: "mainnet-beta" })
       });
       if (res.ok) {
         const data = await res.json();

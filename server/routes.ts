@@ -507,7 +507,7 @@ export async function registerRoutes(
   // POST /api/blockchain/stamp - Stamp hash to Solana blockchain
   app.post("/api/blockchain/stamp", async (req, res) => {
     try {
-      const { entityType, entityId, documentHash, network = "devnet" } = req.body;
+      const { entityType, entityId, documentHash, network = "mainnet-beta" } = req.body;
       
       if (!entityType || !entityId || !documentHash) {
         res.status(400).json({ error: "entityType, entityId, and documentHash required" });
@@ -613,7 +613,7 @@ export async function registerRoutes(
   app.get("/api/blockchain/wallet/balance", async (req, res) => {
     try {
       const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
-      const network = (req.query.network as string) || "devnet";
+      const network = (req.query.network as string) || "mainnet-beta";
       
       if (!privateKey) {
         res.status(500).json({ error: "Solana wallet not configured" });

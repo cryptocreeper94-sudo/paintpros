@@ -20,7 +20,7 @@ export function hashData(data: string): string {
   return crypto.createHash('sha256').update(data).digest('hex');
 }
 
-export function getConnection(network: 'devnet' | 'mainnet-beta' = 'devnet'): Connection {
+export function getConnection(network: 'devnet' | 'mainnet-beta' = 'mainnet-beta'): Connection {
   const heliusRpcUrl = process.env.HELIUS_RPC_URL;
   const heliusApiKey = process.env.HELIUS_API_KEY;
   
