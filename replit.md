@@ -6,13 +6,31 @@
 
 ## Project Parameters
 - **Design Style:** True Bento Grid styling.
+- **Layout:**
+  - Tight layout, NO white space on desktop or mobile.
+  - Mixed card sizes adhering to strict grid.
 - **Components:**
-  - Accordion dropdowns where necessary.
-  - Self-contained horizontal scroll carousels within grid items.
-  - Full-screen horizontal scroll carousels for image blocks.
-- **Layout:** Mixed card sizes (half-page, etc.) adhering to the Bento grid strictness.
-- **Platform Targets:** Web App and React Native Expo (Architecture should support both, implementation starts with Web).
-- **Workflow:** Acknowledge statements -> User says "Go" -> Execute.
+  - Accordion dropdowns.
+  - Self-contained horizontal scroll carousels (glassmorphic).
+  - Full-screen horizontal scroll carousels.
+  - Glassmorphic flipping buttons.
+- **Image Strategy:**
+  - Default: Background removed (free-floating) via `remg` style processing.
+  - Exception: Portfolio/Showcase images & Full-card backgrounds.
+- **Aesthetics:**
+  - **Goal:** "Sparkle and Shine", Best painting website.
+  - **Themes:** Light Mode & Dark Mode.
+  - **Dark Mode Base:** Army Green.
+  - **Effects:** Glow effects, Glassmorphism, 3D elements.
+- **Core Features:**
+  - Portfolio Section.
+  - Estimating Tool (Workflow & Accuracy focus).
+  - Voice AI Assistant (Planned).
+  - Twilio Integration (Planned).
+  - Solana Stamping/Blockchain Verification.
+  - Ecosystem Connection.
+- **Platform Targets:** Web App & React Native Expo.
+- **Workflow:** Acknowledge -> User says "Go" -> Execute.
 
 ## Design Decisions
 *To be populated.*
