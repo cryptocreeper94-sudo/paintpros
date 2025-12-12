@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const DEVELOPER_PIN = "0424";
 
@@ -104,9 +105,13 @@ function SolanaModalContent() {
       if (res.ok) {
         const data = await res.json();
         setWalletInfo(prev => prev ? { ...prev, balance: data.newBalance } : null);
+        toast.success("Airdrop successful! +1 SOL");
+      } else {
+        toast.error("Airdrop failed. Try again later.");
       }
     } catch (e) {
       console.error("Airdrop failed", e);
+      toast.error("Network error during airdrop");
     } finally {
       setLoading(prev => ({ ...prev, airdrop: false }));
     }
@@ -123,9 +128,13 @@ function SolanaModalContent() {
       if (res.ok) {
         const data = await res.json();
         setGeneratedHash(data.hash);
+        toast.success("Hash generated successfully");
+      } else {
+        toast.error("Failed to generate hash");
       }
     } catch (e) {
       console.error("Hash generation failed", e);
+      toast.error("Network error generating hash");
     }
   };
 
@@ -145,13 +154,19 @@ function SolanaModalContent() {
       });
       if (res.ok) {
         await fetchStamps();
+        await fetchWalletBalance();
         setGeneratedHash("");
         setHashInput("");
         setStampEntityId("");
         setActiveTab("history");
+        toast.success("Stamped to blockchain successfully!");
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Failed to stamp to blockchain");
       }
     } catch (e) {
       console.error("Stamp failed", e);
+      toast.error("Network error during stamp");
     } finally {
       setLoading(prev => ({ ...prev, stamp: false }));
     }
@@ -170,9 +185,17 @@ function SolanaModalContent() {
       if (res.ok) {
         const data = await res.json();
         setVerifyResult(data);
+        if (data.found) {
+          toast.success("Transaction verified on blockchain");
+        } else {
+          toast.warning("Transaction not found on blockchain");
+        }
+      } else {
+        toast.error("Verification request failed");
       }
     } catch (e) {
       console.error("Verification failed", e);
+      toast.error("Network error during verification");
     } finally {
       setLoading(prev => ({ ...prev, verify: false }));
     }
@@ -192,6 +215,7 @@ function SolanaModalContent() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
   };
 
   const tabs = [
