@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Menu, X } from "lucide-react";
+import { X, PaintRoller } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,15 @@ export function Navbar() {
     { name: "Reviews", href: "/reviews" },
     { name: "Estimate", href: "/estimate", highlight: true },
   ];
+
+  // Custom Hamburger Icon with Paint Roller
+  const PaintRollerMenu = () => (
+    <div className="flex flex-col justify-center items-center gap-[5px] w-6 h-6">
+      <div className="w-full h-[2px] bg-current rounded-full" />
+      <PaintRoller className="w-full h-4 text-accent rotate-90" strokeWidth={2.5} />
+      <div className="w-full h-[2px] bg-current rounded-full" />
+    </div>
+  );
 
   return (
     <nav className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
@@ -39,8 +48,8 @@ export function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        <button className="md:hidden text-foreground hover:text-accent transition-colors" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={24} /> : <PaintRollerMenu />}
         </button>
       </div>
 
@@ -56,7 +65,7 @@ export function Navbar() {
             {links.map((link) => (
               <Link key={link.name} href={link.href}>
                 <span 
-                  className="text-lg font-medium text-foreground block py-2 border-b border-white/5 cursor-pointer"
+                  className="text-lg font-medium text-foreground block py-2 border-b border-white/5 cursor-pointer hover:text-accent transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}

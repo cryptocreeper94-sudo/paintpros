@@ -4,10 +4,11 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Marquee } from "@/components/ui/marquee";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
-import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin } from "lucide-react";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
 import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
 import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
+import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 
 export default function Home() {
   const testimonials = [
@@ -177,16 +178,47 @@ export default function Home() {
 
           {/* 6. Service Area / Map Placeholder */}
           <BentoItem colSpan={6} rowSpan={1}>
-             <GlassCard className="p-0 overflow-hidden group">
-               <div className="absolute inset-0 bg-zinc-900 z-0">
-                  {/* Abstract Map UI Placeholder */}
-                  <div className="w-full h-full opacity-30 bg-[radial-gradient(#4B5320_1px,transparent_1px)] [background-size:16px_16px]" />
+             <GlassCard className="p-0 overflow-hidden group relative">
+               <div className="absolute inset-0 z-0">
+                  <img 
+                    src={mapImage} 
+                    alt="Service Area Map" 
+                    className="w-full h-full object-cover opacity-60 grayscale-[50%] sepia-[20%] group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                </div>
-               <div className="relative z-10 p-8 h-full flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent">
-                  <h3 className="text-2xl font-display font-bold text-white">Serving Greater Nashville</h3>
-                  <p className="text-white/70 text-sm mt-1 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-accent" /> Brentwood, Franklin, Mt. Juliet
-                  </p>
+               
+               {/* Map Markers Overlay - Decorative */}
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full p-8 z-10 pointer-events-none">
+                  {/* Nashville Center */}
+                  <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-3 h-3 bg-accent rounded-full animate-ping absolute inset-0" />
+                    <div className="w-3 h-3 bg-accent rounded-full relative border-2 border-white shadow-lg" />
+                  </div>
+                  {/* Brentwood */}
+                  <div className="absolute top-[60%] left-[50%]">
+                    <div className="w-2 h-2 bg-white/80 rounded-full" />
+                  </div>
+                   {/* Franklin */}
+                  <div className="absolute top-[70%] left-[45%]">
+                    <div className="w-2 h-2 bg-white/80 rounded-full" />
+                  </div>
+               </div>
+
+               <div className="relative z-20 p-8 h-full flex flex-col justify-end">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1.5 bg-accent/20 rounded-md backdrop-blur-md border border-accent/30">
+                      <MapPin className="w-4 h-4 text-accent" />
+                    </div>
+                    <span className="text-accent text-xs font-bold uppercase tracking-wider">Service Area</span>
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-white mb-2">Greater Nashville</h3>
+                  <div className="flex flex-wrap gap-2 text-white/80 text-sm">
+                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Brentwood</span>
+                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Franklin</span>
+                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Belle Meade</span>
+                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Green Hills</span>
+                  </div>
                </div>
              </GlassCard>
           </BentoItem>
