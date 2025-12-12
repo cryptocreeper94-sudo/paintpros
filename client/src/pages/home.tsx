@@ -47,8 +47,8 @@ export default function Home() {
           <BentoItem colSpan={8} rowSpan={2} className="relative group">
             <GlassCard className="p-6 md:p-12 flex flex-col justify-center items-start overflow-hidden border-white/20 min-h-[500px] md:min-h-0">
               <div 
-                className="absolute inset-0 bg-cover bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
-                style={{ backgroundImage: `url(${heroBg})` }}
+                className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
+                style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
               />
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
               
