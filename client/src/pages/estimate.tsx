@@ -1,7 +1,7 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
-import { ArrowRight, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -414,7 +414,7 @@ export default function Estimate() {
                           <p className="text-sm text-muted-foreground mb-4">
                             Enter the total square footage of the area to be painted.
                           </p>
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 flex-wrap">
                             <Input
                               type="number"
                               placeholder="0"
@@ -425,7 +425,34 @@ export default function Estimate() {
                               data-testid="input-square-footage"
                             />
                             <span className="text-lg text-muted-foreground font-medium">sq ft</span>
+                            <div className="flex gap-2 ml-2">
+                              <button
+                                onClick={() => setSquareFootage(0)}
+                                className="px-4 h-10 rounded-lg bg-white/10 hover:bg-white/20 text-sm font-medium transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                data-testid="button-clear-sqft"
+                              >
+                                <X className="w-4 h-4" />
+                                Clear
+                              </button>
+                            </div>
                           </div>
+                          
+                          {/* Animated Arrow Down */}
+                          {squareFootage > 0 && (
+                            <motion.div 
+                              className="flex flex-col items-center mt-8"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                            >
+                              <p className="text-sm text-muted-foreground mb-2">See your estimate below</p>
+                              <motion.div
+                                animate={{ y: [0, 8, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                              >
+                                <ArrowDown className="w-6 h-6 text-accent" />
+                              </motion.div>
+                            </motion.div>
+                          )}
                         </div>
                       )}
 
