@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
-  insertBlockchainStampSchema, insertHallmarkSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
+  insertBlockchainStampSchema, insertHallmarkSchema, insertProposalTemplateSchema, insertProposalSchema,
+  insertPaymentSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
 } from "@shared/schema";
 import { z } from "zod";
 import * as solana from "./solana";
@@ -58,6 +59,21 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/leads/:id - Get a specific lead
+  app.get("/api/leads/:id", async (req, res) => {
+    try {
+      const lead = await storage.getLeadById(req.params.id);
+      if (!lead) {
+        res.status(404).json({ error: "Lead not found" });
+        return;
+      }
+      res.json(lead);
+    } catch (error) {
+      console.error("Error fetching lead:", error);
+      res.status(500).json({ error: "Failed to fetch lead" });
+    }
+  });
+
   // ============ ESTIMATES (New Tool) ============
   
   // POST /api/estimates - Create a new estimate
@@ -88,6 +104,33 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching estimates:", error);
       res.status(500).json({ error: "Failed to fetch estimates" });
+    }
+  });
+
+  // GET /api/estimates/:id - Get a specific estimate
+  app.get("/api/estimates/:id", async (req, res) => {
+    try {
+      const estimate = await storage.getEstimateById(req.params.id);
+      if (!estimate) {
+        res.status(404).json({ error: "Estimate not found" });
+        return;
+      }
+      res.json(estimate);
+    } catch (error) {
+      console.error("Error fetching estimate:", error);
+      res.status(500).json({ error: "Failed to fetch estimate" });
+    }
+  });
+
+  // GET /api/estimates/:id/payment - Get payment for an estimate
+  app.get("/api/estimates/:id/payment", async (req, res) => {
+    try {
+      const payments = await storage.getPaymentsByEstimate(req.params.id);
+      const payment = payments.length > 0 ? payments[0] : null;
+      res.json(payment);
+    } catch (error) {
+      console.error("Error fetching payment:", error);
+      res.status(500).json({ error: "Failed to fetch payment" });
     }
   });
 
@@ -1131,6 +1174,197 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error stamping release:", error);
       res.status(500).json({ error: "Failed to stamp release to blockchain" });
+    }
+  });
+
+  // ============ PROPOSAL TEMPLATES ============
+
+  app.get("/api/proposal-templates", async (req, res) => {
+    try {
+      const { category } = req.query;
+      const templates = category && typeof category === "string"
+        ? await storage.getProposalTemplatesByCategory(category)
+        : await storage.getProposalTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching proposal templates:", error);
+      res.status(500).json({ error: "Failed to fetch templates" });
+    }
+  });
+
+  app.post("/api/proposal-templates", async (req, res) => {
+    try {
+      const validatedData = insertProposalTemplateSchema.parse(req.body);
+      const template = await storage.createProposalTemplate(validatedData);
+      res.status(201).json(template);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid template data", details: error.errors });
+      } else {
+        console.error("Error creating template:", error);
+        res.status(500).json({ error: "Failed to create template" });
+      }
+    }
+  });
+
+  app.put("/api/proposal-templates/:id", async (req, res) => {
+    try {
+      const updated = await storage.updateProposalTemplate(req.params.id, req.body);
+      if (!updated) {
+        res.status(404).json({ error: "Template not found" });
+        return;
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating template:", error);
+      res.status(500).json({ error: "Failed to update template" });
+    }
+  });
+
+  app.delete("/api/proposal-templates/:id", async (req, res) => {
+    try {
+      await storage.deleteProposalTemplate(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting template:", error);
+      res.status(500).json({ error: "Failed to delete template" });
+    }
+  });
+
+  // ============ PROPOSALS ============
+
+  app.get("/api/proposals", async (req, res) => {
+    try {
+      const proposals = await storage.getProposals();
+      res.json(proposals);
+    } catch (error) {
+      console.error("Error fetching proposals:", error);
+      res.status(500).json({ error: "Failed to fetch proposals" });
+    }
+  });
+
+  app.get("/api/proposals/:id", async (req, res) => {
+    try {
+      const proposal = await storage.getProposalById(req.params.id);
+      if (!proposal) {
+        res.status(404).json({ error: "Proposal not found" });
+        return;
+      }
+      res.json(proposal);
+    } catch (error) {
+      console.error("Error fetching proposal:", error);
+      res.status(500).json({ error: "Failed to fetch proposal" });
+    }
+  });
+
+  app.post("/api/proposals", async (req, res) => {
+    try {
+      const validatedData = insertProposalSchema.parse(req.body);
+      const proposal = await storage.createProposal(validatedData);
+      res.status(201).json(proposal);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid proposal data", details: error.errors });
+      } else {
+        console.error("Error creating proposal:", error);
+        res.status(500).json({ error: "Failed to create proposal" });
+      }
+    }
+  });
+
+  app.patch("/api/proposals/:id/status", async (req, res) => {
+    try {
+      const { status } = req.body;
+      const updated = await storage.updateProposalStatus(req.params.id, status);
+      if (!updated) {
+        res.status(404).json({ error: "Proposal not found" });
+        return;
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating proposal:", error);
+      res.status(500).json({ error: "Failed to update proposal" });
+    }
+  });
+
+  // ============ PAYMENTS ============
+
+  app.get("/api/payments", async (req, res) => {
+    try {
+      const payments = await storage.getPayments();
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      res.status(500).json({ error: "Failed to fetch payments" });
+    }
+  });
+
+  app.get("/api/payments/:id", async (req, res) => {
+    try {
+      const payment = await storage.getPaymentById(req.params.id);
+      if (!payment) {
+        res.status(404).json({ error: "Payment not found" });
+        return;
+      }
+      res.json(payment);
+    } catch (error) {
+      console.error("Error fetching payment:", error);
+      res.status(500).json({ error: "Failed to fetch payment" });
+    }
+  });
+
+  app.post("/api/payments", async (req, res) => {
+    try {
+      const validatedData = insertPaymentSchema.parse(req.body);
+      const payment = await storage.createPayment(validatedData);
+      res.status(201).json(payment);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid payment data", details: error.errors });
+      } else {
+        console.error("Error creating payment:", error);
+        res.status(500).json({ error: "Failed to create payment" });
+      }
+    }
+  });
+
+  app.patch("/api/payments/:id/status", async (req, res) => {
+    try {
+      const { status, processorId } = req.body;
+      const updated = await storage.updatePaymentStatus(req.params.id, status, processorId);
+      if (!updated) {
+        res.status(404).json({ error: "Payment not found" });
+        return;
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating payment:", error);
+      res.status(500).json({ error: "Failed to update payment" });
+    }
+  });
+
+  app.post("/api/payments/:id/complete", async (req, res) => {
+    try {
+      const updated = await storage.markPaymentComplete(req.params.id);
+      if (!updated) {
+        res.status(404).json({ error: "Payment not found" });
+        return;
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error completing payment:", error);
+      res.status(500).json({ error: "Failed to complete payment" });
+    }
+  });
+
+  // GET /api/estimates/:id/payment - Get payment info for an estimate
+  app.get("/api/estimates/:id/payment", async (req, res) => {
+    try {
+      const payments = await storage.getPaymentsByEstimate(req.params.id);
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching estimate payments:", error);
+      res.status(500).json({ error: "Failed to fetch payments" });
     }
   });
 

@@ -352,5 +352,93 @@ export const EDITION_PREFIXES = {
 export const ANCHORABLE_TYPES = [
   'invoice', 'paystub', 'payroll', 'letter', 'equipment', 'report',
   'contract', 'certification', 'background_check', 'i9_verification',
-  'release', 'franchise', 'audit', 'estimate', 'quote'
+  'release', 'franchise', 'audit', 'estimate', 'quote', 'proposal'
 ] as const;
+
+// ============ PROPOSAL TEMPLATES ============
+
+// Proposal Templates - Painting industry proposal templates
+export const proposalTemplates = pgTable("proposal_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // interior, exterior, commercial, residential
+  content: text("content").notNull(), // Template content with placeholders
+  isDefault: boolean("is_default").default(false).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertProposalTemplateSchema = createInsertSchema(proposalTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertProposalTemplate = z.infer<typeof insertProposalTemplateSchema>;
+export type ProposalTemplate = typeof proposalTemplates.$inferSelect;
+
+// Proposals - Generated proposals from templates
+export const proposals = pgTable("proposals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  templateId: varchar("template_id").references(() => proposalTemplates.id),
+  estimateId: varchar("estimate_id").references(() => estimates.id),
+  leadId: varchar("lead_id").references(() => leads.id),
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"),
+  customerAddress: text("customer_address"),
+  projectDescription: text("project_description"),
+  content: text("content").notNull(), // Final rendered proposal
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }),
+  status: text("status").notNull().default("draft"), // draft, sent, viewed, accepted, declined
+  sentAt: timestamp("sent_at"),
+  viewedAt: timestamp("viewed_at"),
+  respondedAt: timestamp("responded_at"),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertProposalSchema = createInsertSchema(proposals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  status: true,
+});
+
+export type InsertProposal = z.infer<typeof insertProposalSchema>;
+export type Proposal = typeof proposals.$inferSelect;
+
+// ============ PAYMENTS ============
+
+// Payments Table - Track quote/proposal payments
+export const payments = pgTable("payments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  estimateId: varchar("estimate_id").references(() => estimates.id),
+  proposalId: varchar("proposal_id").references(() => proposals.id),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").notNull().default("usd"),
+  status: text("status").notNull().default("pending"), // pending, processing, completed, failed, refunded
+  paymentMethod: text("payment_method"), // card, bank, crypto
+  processorId: text("processor_id"), // Stripe payment intent ID
+  processorResponse: jsonb("processor_response"),
+  customerEmail: text("customer_email"),
+  customerName: text("customer_name"),
+  description: text("description"),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  status: true,
+  paidAt: true,
+});
+
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type Payment = typeof payments.$inferSelect;

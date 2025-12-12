@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText } from "lucide-react";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
+import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
 import { getAssetBadge, formatDate } from "@/lib/hallmark";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -1243,6 +1244,11 @@ export default function Developer() {
         </div>
       ),
     },
+    proposalTemplates: {
+      title: "Proposal Templates",
+      icon: <ScrollText className="w-8 h-8 text-accent" />,
+      content: <ProposalTemplateManager maxHeight="350px" />,
+    },
     debug: {
       title: "Debug & Environment",
       icon: <Bug className="w-8 h-8 text-accent" />,
@@ -1555,6 +1561,23 @@ export default function Developer() {
                   <h3 className="text-xl font-bold">Color Wheel</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Sherwin-Williams linked</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={6} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("proposalTemplates")}
+              data-testid="card-proposal-templates"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-accent/10 to-purple-500/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <ScrollText className="w-5 h-5 text-accent" />
+                  <h3 className="text-xl font-bold">Proposal Templates</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Manage painting proposal templates</p>
               </GlassCard>
             </motion.div>
           </BentoItem>

@@ -24,7 +24,7 @@ export function HallmarkWatermark({
         className="absolute inset-0 flex items-center justify-center"
         style={{ opacity }}
       >
-        <div className="transform -rotate-45 whitespace-nowrap">
+        <div className="transform -rotate-45 whitespace-nowrap scale-[10]">
           <div className="text-[8rem] font-bold tracking-widest text-current leading-none">
             ORBIT
           </div>

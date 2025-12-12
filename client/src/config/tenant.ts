@@ -184,25 +184,28 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   },
 };
 
-// PaintPros Demo Tenant (for sales presentations)
+// PaintPros.io Platform Demo (for sales presentations)
 export const paintProsDemo: TenantConfig = {
   id: "demo",
-  slug: "demo",
+  slug: "paintpros-demo",
   
-  name: "Your Painting Company",
-  tagline: "Your Tagline Here",
-  description: "Professional painting services for your home or business.",
+  name: "PaintPros.io",
+  tagline: "The Modern Platform for Painting Professionals",
+  description: "PaintPros.io is a complete white-label SaaS platform designed specifically for the painting and home services industry. This demo showcases the full capabilities available to your business.",
+  
+  phone: "(888) PAINT-PRO",
+  email: "demo@paintpros.io",
   
   theme: {
-    primaryColor: "hsl(85, 20%, 35%)",
-    accentColor: "hsl(85, 25%, 45%)",
+    primaryColor: "hsl(220, 70%, 50%)",
+    accentColor: "hsl(45, 90%, 55%)",
     darkMode: {
-      background: "hsl(85, 15%, 8%)",
+      background: "hsl(220, 25%, 8%)",
       foreground: "hsl(45, 30%, 95%)",
     },
     lightMode: {
-      background: "hsl(45, 30%, 97%)",
-      foreground: "hsl(85, 20%, 15%)",
+      background: "hsl(220, 20%, 97%)",
+      foreground: "hsl(220, 25%, 15%)",
     },
   },
   
@@ -224,13 +227,15 @@ export const paintProsDemo: TenantConfig = {
     doorsPerUnit: 150,
     wallsPerSqFt: 2.50,
     fullJobPerSqFt: 5.00,
+    ceilingsPerSqFt: 1.75,
+    trimPerLinearFt: 3.00,
   },
   
   seo: {
-    title: "Your Painting Company | Professional Painters",
-    description: "Professional painting services for residential and commercial properties.",
-    keywords: ["painters", "painting company", "interior painting", "exterior painting"],
-    serviceAreas: [],
+    title: "PaintPros.io | White-Label Painting Business Platform",
+    description: "The complete SaaS platform for painting professionals. Instant estimates, CRM, scheduling, payments, and more. Built by Orbit.",
+    keywords: ["painting software", "contractor platform", "painting business", "home services SaaS", "white-label website"],
+    serviceAreas: ["Nationwide"],
   },
   
   features: {
@@ -244,9 +249,9 @@ export const paintProsDemo: TenantConfig = {
   
   credentials: {
     googleRating: 5.0,
-    reviewCount: 0,
-    yearsInBusiness: undefined,
-    warrantyYears: undefined,
+    reviewCount: 250,
+    yearsInBusiness: 1,
+    warrantyYears: 5,
     licensed: true,
     insured: true,
     bonded: true,

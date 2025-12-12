@@ -13,6 +13,9 @@ import {
   type HallmarkAudit, type InsertHallmarkAudit, hallmarkAudit,
   type BlockchainHashQueue, type InsertBlockchainHashQueue, blockchainHashQueue,
   type ReleaseVersion, type InsertReleaseVersion, releaseVersions,
+  type ProposalTemplate, type InsertProposalTemplate, proposalTemplates,
+  type Proposal, type InsertProposal, proposals,
+  type Payment, type InsertPayment, payments,
   assetNumberCounter
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
@@ -20,12 +23,14 @@ import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
 export interface IStorage {
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
+  getLeadById(id: string): Promise<Lead | undefined>;
   getLeadByEmail(email: string): Promise<Lead | undefined>;
   getLeads(): Promise<Lead[]>;
   searchLeads(query: string): Promise<Lead[]>;
   
   // Estimates (new tool)
   createEstimate(estimate: InsertEstimate): Promise<Estimate>;
+  getEstimateById(id: string): Promise<Estimate | undefined>;
   getEstimatesByLeadId(leadId: string): Promise<Estimate[]>;
   getEstimates(): Promise<Estimate[]>;
   
@@ -98,12 +103,40 @@ export interface IStorage {
   createRelease(release: InsertReleaseVersion): Promise<ReleaseVersion>;
   getLatestRelease(): Promise<ReleaseVersion | undefined>;
   updateReleaseSolanaStatus(id: string, signature: string, status: string): Promise<ReleaseVersion | undefined>;
+  
+  // Proposal Templates
+  createProposalTemplate(template: InsertProposalTemplate): Promise<ProposalTemplate>;
+  getProposalTemplates(): Promise<ProposalTemplate[]>;
+  getProposalTemplateById(id: string): Promise<ProposalTemplate | undefined>;
+  getProposalTemplatesByCategory(category: string): Promise<ProposalTemplate[]>;
+  updateProposalTemplate(id: string, updates: Partial<InsertProposalTemplate>): Promise<ProposalTemplate | undefined>;
+  deleteProposalTemplate(id: string): Promise<void>;
+  
+  // Proposals
+  createProposal(proposal: InsertProposal): Promise<Proposal>;
+  getProposals(): Promise<Proposal[]>;
+  getProposalById(id: string): Promise<Proposal | undefined>;
+  getProposalsByEstimate(estimateId: string): Promise<Proposal[]>;
+  updateProposalStatus(id: string, status: string): Promise<Proposal | undefined>;
+  
+  // Payments
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPayments(): Promise<Payment[]>;
+  getPaymentById(id: string): Promise<Payment | undefined>;
+  getPaymentsByEstimate(estimateId: string): Promise<Payment[]>;
+  updatePaymentStatus(id: string, status: string, processorId?: string): Promise<Payment | undefined>;
+  markPaymentComplete(id: string): Promise<Payment | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
   // Leads
   async createLead(lead: InsertLead): Promise<Lead> {
     const [result] = await db.insert(leads).values(lead).returning();
+    return result;
+  }
+
+  async getLeadById(id: string): Promise<Lead | undefined> {
+    const [result] = await db.select().from(leads).where(eq(leads.id, id));
     return result;
   }
 
@@ -125,6 +158,11 @@ export class DatabaseStorage implements IStorage {
   // Estimates
   async createEstimate(estimate: InsertEstimate): Promise<Estimate> {
     const [result] = await db.insert(estimates).values(estimate).returning();
+    return result;
+  }
+
+  async getEstimateById(id: string): Promise<Estimate | undefined> {
+    const [result] = await db.select().from(estimates).where(eq(estimates.id, id));
     return result;
   }
 
@@ -464,6 +502,113 @@ export class DatabaseStorage implements IStorage {
       .update(releaseVersions)
       .set({ solanaTxSignature: signature, solanaTxStatus: status })
       .where(eq(releaseVersions.id, id))
+      .returning();
+    return result;
+  }
+
+  // Proposal Templates
+  async createProposalTemplate(template: InsertProposalTemplate): Promise<ProposalTemplate> {
+    const [result] = await db.insert(proposalTemplates).values(template).returning();
+    return result;
+  }
+
+  async getProposalTemplates(): Promise<ProposalTemplate[]> {
+    return await db.select().from(proposalTemplates).where(eq(proposalTemplates.isActive, true)).orderBy(desc(proposalTemplates.createdAt));
+  }
+
+  async getProposalTemplateById(id: string): Promise<ProposalTemplate | undefined> {
+    const [result] = await db.select().from(proposalTemplates).where(eq(proposalTemplates.id, id));
+    return result;
+  }
+
+  async getProposalTemplatesByCategory(category: string): Promise<ProposalTemplate[]> {
+    return await db.select().from(proposalTemplates)
+      .where(and(eq(proposalTemplates.category, category), eq(proposalTemplates.isActive, true)))
+      .orderBy(desc(proposalTemplates.createdAt));
+  }
+
+  async updateProposalTemplate(id: string, updates: Partial<InsertProposalTemplate>): Promise<ProposalTemplate | undefined> {
+    const [result] = await db
+      .update(proposalTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(proposalTemplates.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteProposalTemplate(id: string): Promise<void> {
+    await db.update(proposalTemplates).set({ isActive: false, updatedAt: new Date() }).where(eq(proposalTemplates.id, id));
+  }
+
+  // Proposals
+  async createProposal(proposal: InsertProposal): Promise<Proposal> {
+    const [result] = await db.insert(proposals).values(proposal).returning();
+    return result;
+  }
+
+  async getProposals(): Promise<Proposal[]> {
+    return await db.select().from(proposals).orderBy(desc(proposals.createdAt));
+  }
+
+  async getProposalById(id: string): Promise<Proposal | undefined> {
+    const [result] = await db.select().from(proposals).where(eq(proposals.id, id));
+    return result;
+  }
+
+  async getProposalsByEstimate(estimateId: string): Promise<Proposal[]> {
+    return await db.select().from(proposals).where(eq(proposals.estimateId, estimateId)).orderBy(desc(proposals.createdAt));
+  }
+
+  async updateProposalStatus(id: string, status: string): Promise<Proposal | undefined> {
+    const updates: Partial<Proposal> = { status, updatedAt: new Date() };
+    if (status === 'sent') updates.sentAt = new Date();
+    if (status === 'viewed') updates.viewedAt = new Date();
+    if (status === 'accepted' || status === 'declined') updates.respondedAt = new Date();
+    
+    const [result] = await db
+      .update(proposals)
+      .set(updates)
+      .where(eq(proposals.id, id))
+      .returning();
+    return result;
+  }
+
+  // Payments
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const [result] = await db.insert(payments).values(payment).returning();
+    return result;
+  }
+
+  async getPayments(): Promise<Payment[]> {
+    return await db.select().from(payments).orderBy(desc(payments.createdAt));
+  }
+
+  async getPaymentById(id: string): Promise<Payment | undefined> {
+    const [result] = await db.select().from(payments).where(eq(payments.id, id));
+    return result;
+  }
+
+  async getPaymentsByEstimate(estimateId: string): Promise<Payment[]> {
+    return await db.select().from(payments).where(eq(payments.estimateId, estimateId)).orderBy(desc(payments.createdAt));
+  }
+
+  async updatePaymentStatus(id: string, status: string, processorId?: string): Promise<Payment | undefined> {
+    const updates: Partial<Payment> = { status, updatedAt: new Date() };
+    if (processorId) updates.processorId = processorId;
+    
+    const [result] = await db
+      .update(payments)
+      .set(updates)
+      .where(eq(payments.id, id))
+      .returning();
+    return result;
+  }
+
+  async markPaymentComplete(id: string): Promise<Payment | undefined> {
+    const [result] = await db
+      .update(payments)
+      .set({ status: 'completed', paidAt: new Date(), updatedAt: new Date() })
+      .where(eq(payments.id, id))
       .returning();
     return result;
   }
