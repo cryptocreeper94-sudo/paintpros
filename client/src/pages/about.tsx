@@ -1,12 +1,11 @@
-import { Navbar } from "@/components/ui/navbar";
+import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Users, Award, Heart, CheckCircle2 } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
-      <Navbar />
+    <PageLayout>
       <main className="pt-24 px-4 md:px-8">
         <div className="max-w-7xl mx-auto mb-12">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-4">Our Story</h1>
@@ -69,6 +68,6 @@ export default function About() {
           </BentoItem>
         </BentoGrid>
       </main>
-    </div>
+    </PageLayout>
   );
 }

@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/ui/navbar";
+import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { ArrowRight, Calculator, Calendar, Upload } from "lucide-react";
@@ -34,8 +34,7 @@ export default function Estimate() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
-      <Navbar />
+    <PageLayout>
       <main className="pt-24 px-4 md:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -160,6 +159,6 @@ export default function Estimate() {
           </div>
         </div>
       </main>
-    </div>
+    </PageLayout>
   );
 }

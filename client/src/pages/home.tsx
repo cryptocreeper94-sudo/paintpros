@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/ui/navbar";
+import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Marquee } from "@/components/ui/marquee";
@@ -32,9 +32,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary pb-20">
-      <Navbar />
-
+    <PageLayout>
       <main className="pt-24 px-4 md:px-8">
         <BentoGrid>
           
@@ -195,6 +193,6 @@ export default function Home() {
 
         </BentoGrid>
       </main>
-    </div>
+    </PageLayout>
   );
 }
