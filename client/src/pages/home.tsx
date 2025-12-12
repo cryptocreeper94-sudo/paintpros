@@ -1,14 +1,27 @@
-import { Navbar } from "@/components/ui/navbar";
-import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
-import { GlassCard } from "@/components/ui/glass-card";
-import { Marquee } from "@/components/ui/marquee";
-import { FlipButton } from "@/components/ui/flip-button";
-import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
-import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
-import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
-import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
+import { CarouselView } from "@/components/ui/carousel-view";
 
 export default function Home() {
+  const testimonials = [
+    {
+      text: "Absolutely transformed our home. The team was punctual, polite, and the lines are razor sharp. Worth every penny.",
+      author: "Sarah Jenkins",
+      loc: "Brentwood, TN",
+      rating: 4.9
+    },
+    {
+      text: "Best painting crew we've ever hired. They finished ahead of schedule and left the place cleaner than they found it.",
+      author: "Michael Ross",
+      loc: "Franklin, TN",
+      rating: 5.0
+    },
+    {
+      text: "Professional from the first quote to the final walk-through. Highly recommend for any commercial work.",
+      author: "David Chen",
+      loc: "Nashville, TN",
+      rating: 4.8
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary pb-20">
       <Navbar />
@@ -57,7 +70,7 @@ export default function Home() {
 
           {/* 2. CTA Card - High Contrast */}
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="bg-accent/10 border-accent/20 flex flex-col justify-between p-8 group" glow>
+            <GlassCard className="bg-accent/10 border-accent/20 flex flex-col justify-between p-8 group min-h-[200px]" glow>
               <div>
                 <h3 className="text-2xl font-display font-bold mb-2">Free Estimate</h3>
                 <p className="text-sm text-muted-foreground">
@@ -75,7 +88,7 @@ export default function Home() {
 
           {/* 3. Social Proof - Marquee */}
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="flex flex-col justify-center p-0 bg-black/5 dark:bg-white/5">
+            <GlassCard className="flex flex-col justify-center p-0 bg-black/5 dark:bg-white/5 min-h-[120px]">
               <div className="px-6 pt-4 pb-2">
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">As Seen In</span>
               </div>
@@ -100,7 +113,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                 {[
                   { step: "01", title: "Consult", desc: "Vision & Color" },
                   { step: "02", title: "Prep", desc: "Protect & Prime" },
@@ -120,29 +133,37 @@ export default function Home() {
             </GlassCard>
           </BentoItem>
 
-          {/* 5. Testimonial - Horizontal Scroll */}
+          {/* 5. Testimonial - Horizontal Scroll Carousel */}
           <BentoItem colSpan={6} rowSpan={1}>
-            <GlassCard className="p-8 flex items-center relative overflow-hidden">
+            <GlassCard className="p-0 flex items-center relative overflow-hidden">
                <img 
                 src={fanDeck} 
                 alt="Colors" 
-                className="absolute -left-16 -top-16 w-48 h-auto object-contain z-0 opacity-20 rotate-45 blur-[2px]"
+                className="absolute -left-16 -top-16 w-48 h-auto object-contain z-0 opacity-20 rotate-45 blur-[2px] pointer-events-none"
               />
-              <div className="relative z-10 w-full">
-                <div className="flex items-center gap-1 mb-4">
-                  {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-accent text-accent" />)}
-                  <span className="ml-2 text-sm font-bold text-foreground">4.9/5 Google Reviews</span>
-                </div>
-                <blockquote className="text-lg md:text-xl font-display italic text-foreground/90 leading-relaxed">
-                  "Absolutely transformed our home. The team was punctual, polite, and the lines are razor sharp. Worth every penny."
-                </blockquote>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-400" />
-                  <div>
-                    <p className="text-sm font-bold">Sarah Jenkins</p>
-                    <p className="text-xs text-muted-foreground">Brentwood, TN</p>
-                  </div>
-                </div>
+              <div className="relative z-10 w-full h-full">
+                <CarouselView 
+                  className="h-full"
+                  slideClassName="h-full"
+                  slides={testimonials.map((t, i) => (
+                    <div key={i} className="p-8 h-full flex flex-col justify-center">
+                      <div className="flex items-center gap-1 mb-4">
+                        {[1,2,3,4,5].map(star => <Star key={star} className="w-4 h-4 fill-accent text-accent" />)}
+                        <span className="ml-2 text-sm font-bold text-foreground">{t.rating}/5 Google Reviews</span>
+                      </div>
+                      <blockquote className="text-lg md:text-xl font-display italic text-foreground/90 leading-relaxed mb-4">
+                        "{t.text}"
+                      </blockquote>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent/50" />
+                        <div>
+                          <p className="text-sm font-bold">{t.author}</p>
+                          <p className="text-xs text-muted-foreground">{t.loc}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                />
               </div>
             </GlassCard>
           </BentoItem>

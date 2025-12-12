@@ -39,6 +39,18 @@
   
   --font-display: 'Playfair Display', serif;
   --font-body: 'DM Sans', sans-serif;
+
+  --animate-scroll-left: scroll-left 40s linear infinite;
+  --animate-scroll-right: scroll-right 40s linear infinite;
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+  @keyframes scroll-right {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
 }
 
 :root {
