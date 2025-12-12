@@ -28,9 +28,29 @@ export default function Estimate() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // TODO: Connect to backend or Estimating Tool logic
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch("/api/estimate-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit estimate request");
+      }
+
+      const data = await response.json();
+      
+      // Show success message
+      alert("Thank you! Your estimate request has been submitted. We'll contact you within 24 hours.");
+      
+      // Reset form
+      form.reset();
+    } catch (error) {
+      console.error("Error submitting estimate request:", error);
+      alert("There was an error submitting your request. Please try again or call us directly at (615) 930-1550.");
+    }
   }
 
   return (

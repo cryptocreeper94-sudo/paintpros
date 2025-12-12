@@ -1,16 +1,75 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { insertEstimateRequestSchema } from "@shared/schema";
+import { z } from "zod";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  
+  // POST /api/estimate-requests - Create a new estimate request
+  app.post("/api/estimate-requests", async (req, res) => {
+    try {
+      const validatedData = insertEstimateRequestSchema.parse(req.body);
+      const estimateRequest = await storage.createEstimateRequest(validatedData);
+      res.status(201).json(estimateRequest);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid request data", details: error.errors });
+      } else {
+        console.error("Error creating estimate request:", error);
+        res.status(500).json({ error: "Failed to create estimate request" });
+      }
+    }
+  });
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+  // GET /api/estimate-requests - Get all estimate requests (admin)
+  app.get("/api/estimate-requests", async (req, res) => {
+    try {
+      const requests = await storage.getEstimateRequests();
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching estimate requests:", error);
+      res.status(500).json({ error: "Failed to fetch estimate requests" });
+    }
+  });
+
+  // GET /api/estimate-requests/:id - Get a specific estimate request
+  app.get("/api/estimate-requests/:id", async (req, res) => {
+    try {
+      const request = await storage.getEstimateRequestById(req.params.id);
+      if (!request) {
+        res.status(404).json({ error: "Estimate request not found" });
+        return;
+      }
+      res.json(request);
+    } catch (error) {
+      console.error("Error fetching estimate request:", error);
+      res.status(500).json({ error: "Failed to fetch estimate request" });
+    }
+  });
+
+  // PATCH /api/estimate-requests/:id/status - Update estimate request status
+  app.patch("/api/estimate-requests/:id/status", async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status || typeof status !== "string") {
+        res.status(400).json({ error: "Invalid status" });
+        return;
+      }
+      const request = await storage.updateEstimateRequestStatus(req.params.id, status);
+      if (!request) {
+        res.status(404).json({ error: "Estimate request not found" });
+        return;
+      }
+      res.json(request);
+    } catch (error) {
+      console.error("Error updating estimate request:", error);
+      res.status(500).json({ error: "Failed to update estimate request" });
+    }
+  });
 
   return httpServer;
 }
