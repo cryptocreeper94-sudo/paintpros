@@ -51,7 +51,7 @@ export function Navbar() {
             )}
           </button>
           <div 
-            className="text-white tracking-wide text-sm md:text-lg" 
+            className="text-white tracking-wide text-sm md:text-lg -ml-5" 
             style={{ fontFamily: 'Playfair Display, serif' }}
             data-testid="text-header-title"
           >
