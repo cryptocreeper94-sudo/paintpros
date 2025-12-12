@@ -203,7 +203,7 @@ export default function Home() {
                   <div className="absolute top-[45%] left-[35%] w-2 h-2 bg-white/80 rounded-full" />
                </div>
 
-               <div className="relative z-20 p-8 md:p-12 h-full flex flex-col justify-end items-start max-w-4xl">
+               <div className="relative z-20 p-8 md:p-12 h-full flex flex-col justify-end items-center text-center w-full">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="p-2 bg-accent/20 rounded-lg backdrop-blur-md border border-accent/30">
                       <MapPin className="w-5 h-5 text-accent" />
@@ -211,20 +211,7 @@ export default function Home() {
                     <span className="text-accent text-sm font-bold uppercase tracking-wider">Expanded Service Area</span>
                   </div>
                   
-                  <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">Serving All of Middle Tennessee</h3>
-                  
-                  <div className="flex flex-wrap gap-3 text-white/90">
-                    {[
-                      "Nashville", "Brentwood", "Franklin", "Belle Meade", 
-                      "Green Hills", "Forest Hills", "Oak Hill", "Berry Hill",
-                      "Mt. Juliet", "Hendersonville", "Gallatin", "Nolensville",
-                      "Spring Hill", "Thompson's Station", "Leiper's Fork"
-                    ].map((city) => (
-                      <span key={city} className="bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 text-sm font-medium">
-                        {city}
-                      </span>
-                    ))}
-                  </div>
+                  <h3 className="text-3xl md:text-5xl font-display font-bold text-white mb-6 max-w-3xl">Serving All of Middle Tennessee</h3>
                </div>
              </GlassCard>
           </BentoItem>
