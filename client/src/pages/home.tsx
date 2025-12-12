@@ -219,15 +219,26 @@ export default function Home() {
             </BentoItem>
           )}
 
-          {/* 10. Fan Deck Visual */}
+          {/* 10. Fan Deck Visual - Links to Sherwin Williams Color Selector */}
           <BentoItem colSpan={4} rowSpan={1} className="relative group">
-            <GlassCard className="overflow-hidden">
-              <img 
-                src={fanDeck} 
-                alt="Color Selection" 
-                className="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
-              />
-            </GlassCard>
+            <a 
+              href="https://www.sherwin-williams.com/visualizer/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-sherwin-williams-color-selector"
+            >
+              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors">
+                <img 
+                  src={fanDeck} 
+                  alt="Color Selection - Click to explore Sherwin Williams colors" 
+                  className="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
+                />
+                <div className="absolute bottom-2 right-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                  Explore Sherwin Williams Colors
+                </div>
+              </GlassCard>
+            </a>
           </BentoItem>
 
         </BentoGrid>
