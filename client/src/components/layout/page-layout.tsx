@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
-import nppLogo from "@assets/npp_logo_transparent.png";
+import nppEmblem from "@assets/npp_emblem_clean.png";
 import { useTenant } from "@/context/TenantContext";
 
 interface PageLayoutProps {
@@ -16,7 +16,7 @@ export function PageLayout({ children }: PageLayoutProps) {
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.04] dark:opacity-[0.06] overflow-hidden">
         <div className="relative w-[700vw] md:w-[400vw] max-w-[6000px]">
            <img 
-            src={nppLogo} 
+            src={nppEmblem} 
             alt="" 
             className="w-full h-auto object-contain"
           />
