@@ -92,12 +92,21 @@ Location: `assets/branding/`
 
 ## Integrations & Secrets
 The following secrets are configured (manually added, not using Replit connector):
-- **Solana/Helius:** HELIUS_API_KEY, HELIUS_RPC_URL, SOLANA_PRIVATE_KEY, SOLANA_PUBLIC_KEY
+- **Solana/Helius:** HELIUS_API_KEY, PHANTOM_SECRET_KEY
 - **Payments:** Stripe keys, Coinbase Commerce keys
 - **AI:** OpenAI API key
-- **Orbit Ecosystem:** Darkwave Dev Hub connection info
+- **Orbit Ecosystem:** ORBIT_ECOSYSTEM_API_KEY, ORBIT_ECOSYSTEM_API_SECRET, ORBIT_ECOSYSTEM_DEV_URL
 
 Note: Stripe integration uses manual secrets instead of Replit connector.
+
+## Orbit Ecosystem Integration
+Location: `server/orbit.ts`
+
+Connected to Darkwave Dev Hub for:
+- **Payroll Sync:** GET/POST `/api/orbit/payroll`
+- **Staffing/Employees:** GET/POST `/api/orbit/employees`
+- **Code Snippets:** GET/POST `/api/orbit/snippets` (shared between agents)
+- **Health Check:** GET `/api/orbit/status`
 
 ## Solana Blockchain Stamping
 Location: `server/solana.ts`

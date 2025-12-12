@@ -8,6 +8,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import * as solana from "./solana";
+import { orbitEcosystem } from "./orbit";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -654,6 +655,122 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error requesting airdrop:", error);
       res.status(500).json({ error: "Failed to request airdrop" });
+    }
+  });
+
+  // ============ ORBIT ECOSYSTEM ============
+  
+  // GET /api/orbit/status - Check Orbit connection status
+  app.get("/api/orbit/status", async (req, res) => {
+    try {
+      const status = orbitEcosystem.getConnectionStatus();
+      if (status.connected) {
+        try {
+          const ping = await orbitEcosystem.ping();
+          res.json({ ...status, health: ping });
+        } catch {
+          res.json({ ...status, health: { status: 'unreachable' } });
+        }
+      } else {
+        res.json(status);
+      }
+    } catch (error) {
+      console.error("Error checking Orbit status:", error);
+      res.status(500).json({ error: "Failed to check Orbit status" });
+    }
+  });
+
+  // GET /api/orbit/employees - Get employees from staffing app
+  app.get("/api/orbit/employees", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const employees = await orbitEcosystem.getEmployees();
+      res.json(employees);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      res.status(500).json({ error: "Failed to fetch employees from Orbit" });
+    }
+  });
+
+  // POST /api/orbit/employees - Sync employee to staffing app
+  app.post("/api/orbit/employees", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const employee = await orbitEcosystem.syncEmployee(req.body);
+      res.status(201).json(employee);
+    } catch (error) {
+      console.error("Error syncing employee:", error);
+      res.status(500).json({ error: "Failed to sync employee to Orbit" });
+    }
+  });
+
+  // GET /api/orbit/payroll - Get payroll records
+  app.get("/api/orbit/payroll", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const employeeId = req.query.employeeId as string | undefined;
+      const records = await orbitEcosystem.getPayrollRecords(employeeId);
+      res.json(records);
+    } catch (error) {
+      console.error("Error fetching payroll:", error);
+      res.status(500).json({ error: "Failed to fetch payroll from Orbit" });
+    }
+  });
+
+  // POST /api/orbit/payroll - Submit payroll record
+  app.post("/api/orbit/payroll", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const record = await orbitEcosystem.submitPayroll(req.body);
+      res.status(201).json(record);
+    } catch (error) {
+      console.error("Error submitting payroll:", error);
+      res.status(500).json({ error: "Failed to submit payroll to Orbit" });
+    }
+  });
+
+  // GET /api/orbit/snippets - Get shared code snippets
+  app.get("/api/orbit/snippets", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const tag = req.query.tag as string | undefined;
+      const snippets = tag 
+        ? await orbitEcosystem.getSnippetsByTag(tag)
+        : await orbitEcosystem.getSharedSnippets();
+      res.json(snippets);
+    } catch (error) {
+      console.error("Error fetching snippets:", error);
+      res.status(500).json({ error: "Failed to fetch snippets from Orbit" });
+    }
+  });
+
+  // POST /api/orbit/snippets - Share a code snippet
+  app.post("/api/orbit/snippets", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const snippet = await orbitEcosystem.shareSnippet(req.body);
+      res.status(201).json(snippet);
+    } catch (error) {
+      console.error("Error sharing snippet:", error);
+      res.status(500).json({ error: "Failed to share snippet to Orbit" });
     }
   });
 
