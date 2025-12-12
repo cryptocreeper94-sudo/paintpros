@@ -1,4 +1,13 @@
+import { Navbar } from "@/components/ui/navbar";
+import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Marquee } from "@/components/ui/marquee";
+import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
+import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
+import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
+import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
+import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
 
 export default function Home() {
   const testimonials = [
