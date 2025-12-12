@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, Menu, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin } from "lucide-react";
+import { X, Menu, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
+import { useTheme } from "@/context/ThemeContext";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const tenant = useTenant();
+  const { theme, toggleTheme } = useTheme();
 
   const mainLinks = [
     { name: "Services", href: "/services" },
@@ -33,10 +35,9 @@ export function Navbar() {
     return words.map(w => w[0]).join("");
   };
 
-
   return (
     <nav className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <div className="glass-panel rounded-full px-6 py-3 flex items-center gap-8">
+      <div className="glass-panel rounded-full px-4 md:px-6 py-3 flex items-center gap-4 md:gap-8">
         <Link href="/">
           <span className="font-display font-bold text-xl tracking-tighter text-foreground cursor-pointer">
             {getLogoAbbreviation()}<span className="text-accent">.</span>
@@ -58,14 +59,28 @@ export function Navbar() {
           ))}
         </div>
 
+        {/* Theme Toggle */}
+        <button 
+          onClick={toggleTheme}
+          className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+          aria-label="Toggle theme"
+          data-testid="button-theme-toggle"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-4 h-4 text-accent" />
+          ) : (
+            <Moon className="w-4 h-4 text-foreground" />
+          )}
+        </button>
+
         {/* Mobile Toggle - Hamburger Menu */}
         <button 
-          className="md:hidden text-foreground hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" 
+          className="md:hidden w-10 h-10 rounded-full bg-accent/20 hover:bg-accent/30 flex items-center justify-center transition-all" 
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+          {isOpen ? <X size={22} className="text-accent" /> : <Menu size={22} className="text-accent" />}
         </button>
       </div>
 

@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
-import watermark from "@assets/generated_images/minimalist_line_art_of_a_horizontal_paint_roller_for_logo_watermark.png";
+// @ts-ignore - JPG asset import
+import nppLogo from "@assets/Logo_NPP_Vertical_Light_1_(1)_1765567882082.JPG";
 import { useTenant } from "@/context/TenantContext";
 
 interface PageLayoutProps {
@@ -12,17 +13,14 @@ export function PageLayout({ children }: PageLayoutProps) {
   
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
-      {/* Pinned Watermark Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.03] overflow-hidden">
-        <div className="relative w-[80vw] md:w-[50vw] max-w-[800px] aspect-video flex flex-col items-center justify-center -rotate-12">
+      {/* Pinned Watermark Background - NPP Logo */}
+      <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.04] dark:opacity-[0.06] overflow-hidden">
+        <div className="relative w-[70vw] md:w-[40vw] max-w-[600px] -rotate-12">
            <img 
-            src={watermark} 
+            src={nppLogo} 
             alt="" 
-            className="w-full h-auto object-contain mb-4 grayscale"
+            className="w-full h-auto object-contain mix-blend-luminosity dark:mix-blend-soft-light"
           />
-           <h1 className="text-[4vw] md:text-[3vw] font-display font-bold uppercase tracking-widest text-foreground whitespace-nowrap text-center">
-             {tenant.name}
-           </h1>
         </div>
       </div>
 
