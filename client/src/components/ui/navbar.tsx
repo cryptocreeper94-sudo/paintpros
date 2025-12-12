@@ -30,8 +30,8 @@ export function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="w-full px-2 md:px-4 py-0 flex items-center justify-between h-10">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 overflow-visible" style={{ backgroundColor: '#344e41' }}>
+      <div className="w-full px-2 md:px-4 py-0 flex items-center justify-between overflow-visible">
         {/* Left: Hamburger Emblem + Company Name */}
         <div className="flex items-center gap-2 md:gap-3" style={{ marginLeft: '-140px' }}>
           {/* Hamburger Menu Trigger - Emblem with paint roller */}
@@ -47,7 +47,7 @@ export function Navbar() {
               <img 
                 src={nppEmblem} 
                 alt="Menu"
-                className="h-9 md:h-10 w-auto object-contain"
+                className="h-14 md:h-16 w-auto object-contain"
               />
             )}
           </button>
