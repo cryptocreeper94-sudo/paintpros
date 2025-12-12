@@ -1,13 +1,73 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertEstimateRequestSchema } from "@shared/schema";
+import { insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  // ============ LEADS ============
+  
+  // POST /api/leads - Create or get existing lead
+  app.post("/api/leads", async (req, res) => {
+    try {
+      const validatedData = insertLeadSchema.parse(req.body);
+      
+      // Check if lead already exists
+      let lead = await storage.getLeadByEmail(validatedData.email);
+      
+      if (!lead) {
+        lead = await storage.createLead(validatedData);
+      }
+      
+      res.status(201).json(lead);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid email address", details: error.errors });
+      } else {
+        console.error("Error creating lead:", error);
+        res.status(500).json({ error: "Failed to create lead" });
+      }
+    }
+  });
+
+  // ============ ESTIMATES (New Tool) ============
+  
+  // POST /api/estimates - Create a new estimate
+  app.post("/api/estimates", async (req, res) => {
+    try {
+      const validatedData = insertEstimateSchema.parse(req.body);
+      const estimate = await storage.createEstimate(validatedData);
+      
+      // TODO: Send email notification to NPP when business email is provided
+      // This is where we would trigger the email alert
+      
+      res.status(201).json(estimate);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid estimate data", details: error.errors });
+      } else {
+        console.error("Error creating estimate:", error);
+        res.status(500).json({ error: "Failed to create estimate" });
+      }
+    }
+  });
+
+  // GET /api/estimates - Get all estimates (admin)
+  app.get("/api/estimates", async (req, res) => {
+    try {
+      const estimates = await storage.getEstimates();
+      res.json(estimates);
+    } catch (error) {
+      console.error("Error fetching estimates:", error);
+      res.status(500).json({ error: "Failed to fetch estimates" });
+    }
+  });
+
+  // ============ LEGACY ESTIMATE REQUESTS ============
   
   // POST /api/estimate-requests - Create a new estimate request
   app.post("/api/estimate-requests", async (req, res) => {
