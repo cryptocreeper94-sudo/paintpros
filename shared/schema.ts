@@ -312,6 +312,29 @@ export const FOUNDING_ASSETS = {
   },
 } as const;
 
+// Release Versions Table - Track app releases and hallmarks
+export const releaseVersions = pgTable("release_versions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  version: text("version").notNull(),
+  buildNumber: integer("build_number").notNull(),
+  hallmarkId: varchar("hallmark_id").references(() => hallmarks.id),
+  contentHash: text("content_hash").notNull(),
+  solanaTxSignature: text("solana_tx_signature"),
+  solanaTxStatus: text("solana_tx_status").default("pending"),
+  issuedAt: timestamp("issued_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertReleaseVersionSchema = createInsertSchema(releaseVersions).omit({
+  id: true,
+  issuedAt: true,
+  createdAt: true,
+  solanaTxStatus: true,
+});
+
+export type InsertReleaseVersion = z.infer<typeof insertReleaseVersionSchema>;
+export type ReleaseVersion = typeof releaseVersions.$inferSelect;
+
 // Edition Prefixes
 export const EDITION_PREFIXES = {
   GE: 'Genesis Edition',

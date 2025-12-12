@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
-  insertBlockchainStampSchema, insertHallmarkSchema, ANCHORABLE_TYPES
+  insertBlockchainStampSchema, insertHallmarkSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
 } from "@shared/schema";
 import { z } from "zod";
 import * as solana from "./solana";
@@ -954,7 +954,7 @@ export async function registerRoutes(
         hallmark.contentHash,
         wallet,
         network,
-        { hallmarkNumber: hallmark.hallmarkNumber, assetType: hallmark.assetType }
+        { entityType: hallmark.assetType, entityId: hallmark.id }
       );
       
       const explorerUrl = network === "devnet"
@@ -991,6 +991,146 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching founding assets:", error);
       res.status(500).json({ error: "Failed to fetch founding assets" });
+    }
+  });
+
+  // ============ RELEASE VERSIONS ============
+  
+  // GET /api/releases/latest - Get latest release version
+  app.get("/api/releases/latest", async (req, res) => {
+    try {
+      const release = await storage.getLatestRelease();
+      if (!release) {
+        res.json({ 
+          version: "1.0.0", 
+          buildNumber: 0,
+          hallmarkNumber: FOUNDING_ASSETS.ORBIT_PLATFORM.number,
+          solanaTxStatus: "genesis"
+        });
+        return;
+      }
+      
+      let hallmark = null;
+      if (release.hallmarkId) {
+        hallmark = await storage.getHallmarkById(release.hallmarkId);
+      }
+      
+      res.json({
+        ...release,
+        hallmarkNumber: hallmark?.hallmarkNumber || FOUNDING_ASSETS.ORBIT_PLATFORM.number,
+        hallmarkDetails: hallmark
+      });
+    } catch (error) {
+      console.error("Error fetching latest release:", error);
+      res.status(500).json({ error: "Failed to fetch latest release" });
+    }
+  });
+
+  // POST /api/releases/bump - Bump version and create hallmark
+  app.post("/api/releases/bump", async (req, res) => {
+    try {
+      const { bumpType = "patch" } = req.body;
+      
+      const latestRelease = await storage.getLatestRelease();
+      let currentVersion = latestRelease?.version || "1.0.0";
+      let buildNumber = (latestRelease?.buildNumber || 0) + 1;
+      
+      const [major, minor, patch] = currentVersion.split('.').map(Number);
+      let newVersion: string;
+      
+      switch (bumpType) {
+        case 'major':
+          newVersion = `${major + 1}.0.0`;
+          break;
+        case 'minor':
+          newVersion = `${major}.${minor + 1}.0`;
+          break;
+        case 'patch':
+        default:
+          newVersion = `${major}.${minor}.${patch + 1}`;
+      }
+      
+      const contentHash = solana.hashData(`${newVersion}-${buildNumber}-${Date.now()}`);
+      
+      const hallmarkData = hallmarkService.createHallmarkData(
+        'release',
+        'Paint Pros by ORBIT',
+        'system',
+        'system',
+        `v${newVersion} build ${buildNumber}`,
+        { version: newVersion, buildNumber, bumpType }
+      );
+      
+      const savedHallmark = await storage.createHallmark(hallmarkData);
+      
+      const release = await storage.createRelease({
+        version: newVersion,
+        buildNumber,
+        hallmarkId: savedHallmark.id,
+        contentHash,
+      });
+      
+      res.status(201).json({
+        release,
+        hallmark: savedHallmark,
+        message: `Version bumped to ${newVersion} (Build ${buildNumber})`
+      });
+    } catch (error) {
+      console.error("Error bumping version:", error);
+      res.status(500).json({ error: "Failed to bump version" });
+    }
+  });
+
+  // POST /api/releases/:id/stamp - Stamp release to Solana
+  app.post("/api/releases/:id/stamp", async (req, res) => {
+    try {
+      const { network = "mainnet-beta" } = req.body;
+      const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+      
+      if (!privateKey) {
+        res.status(500).json({ error: "Solana wallet not configured" });
+        return;
+      }
+      
+      const release = await storage.getLatestRelease();
+      if (!release || release.id !== req.params.id) {
+        res.status(404).json({ error: "Release not found" });
+        return;
+      }
+      
+      const wallet = solana.getWalletFromPrivateKey(privateKey);
+      const result = await solana.stampHashToBlockchain(
+        release.contentHash,
+        wallet,
+        network,
+        { entityType: 'release', entityId: release.id }
+      );
+      
+      const updated = await storage.updateReleaseSolanaStatus(
+        release.id,
+        result.signature,
+        "confirmed"
+      );
+      
+      if (release.hallmarkId) {
+        const explorerUrl = network === "devnet"
+          ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
+          : `https://explorer.solana.com/tx/${result.signature}`;
+        await storage.updateHallmarkBlockchain(release.hallmarkId, result.signature, explorerUrl);
+      }
+      
+      res.json({
+        release: updated,
+        blockchain: {
+          signature: result.signature,
+          explorerUrl: network === "devnet"
+            ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
+            : `https://explorer.solana.com/tx/${result.signature}`
+        }
+      });
+    } catch (error) {
+      console.error("Error stamping release:", error);
+      res.status(500).json({ error: "Failed to stamp release to blockchain" });
     }
   });
 

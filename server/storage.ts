@@ -12,6 +12,7 @@ import {
   type Hallmark, type InsertHallmark, hallmarks,
   type HallmarkAudit, type InsertHallmarkAudit, hallmarkAudit,
   type BlockchainHashQueue, type InsertBlockchainHashQueue, blockchainHashQueue,
+  type ReleaseVersion, type InsertReleaseVersion, releaseVersions,
   assetNumberCounter
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
@@ -92,6 +93,11 @@ export interface IStorage {
   queueHashForAnchoring(data: InsertBlockchainHashQueue): Promise<BlockchainHashQueue>;
   getQueuedHashes(): Promise<BlockchainHashQueue[]>;
   updateQueueStatus(id: string, status: string, merkleRoot?: string, batchId?: string, txSignature?: string): Promise<BlockchainHashQueue | undefined>;
+  
+  // Release Versions
+  createRelease(release: InsertReleaseVersion): Promise<ReleaseVersion>;
+  getLatestRelease(): Promise<ReleaseVersion | undefined>;
+  updateReleaseSolanaStatus(id: string, signature: string, status: string): Promise<ReleaseVersion | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -436,6 +442,28 @@ export class DatabaseStorage implements IStorage {
       .update(blockchainHashQueue)
       .set(updates)
       .where(eq(blockchainHashQueue.id, id))
+      .returning();
+    return result;
+  }
+
+  // Release Versions
+  async createRelease(release: InsertReleaseVersion): Promise<ReleaseVersion> {
+    const [result] = await db.insert(releaseVersions).values(release).returning();
+    return result;
+  }
+
+  async getLatestRelease(): Promise<ReleaseVersion | undefined> {
+    const [result] = await db.select().from(releaseVersions)
+      .orderBy(desc(releaseVersions.buildNumber))
+      .limit(1);
+    return result;
+  }
+
+  async updateReleaseSolanaStatus(id: string, signature: string, status: string): Promise<ReleaseVersion | undefined> {
+    const [result] = await db
+      .update(releaseVersions)
+      .set({ solanaTxSignature: signature, solanaTxStatus: status })
+      .where(eq(releaseVersions.id, id))
       .returning();
     return result;
   }
