@@ -141,9 +141,9 @@ export default function Home() {
             </GlassCard>
           </BentoItem>
 
-          {/* 5. Testimonial - Horizontal Scroll Carousel */}
-          <BentoItem colSpan={6} rowSpan={1}>
-            <GlassCard className="p-0 flex items-center relative overflow-hidden">
+          {/* 5. Testimonial - Horizontal Scroll Carousel - Expanded Height to Match Process */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <GlassCard className="p-0 flex items-center relative overflow-hidden h-full">
                <img 
                 src={fanDeck} 
                 alt="Colors" 
@@ -176,9 +176,9 @@ export default function Home() {
             </GlassCard>
           </BentoItem>
 
-          {/* 6. Service Area / Map Placeholder */}
-          <BentoItem colSpan={6} rowSpan={1}>
-             <GlassCard className="p-0 overflow-hidden group relative">
+          {/* 6. Service Area / Map Placeholder - Expanded Full Width */}
+          <BentoItem colSpan={12} rowSpan={2}>
+             <GlassCard className="p-0 overflow-hidden group relative min-h-[400px]">
                <div className="absolute inset-0 z-0">
                   <img 
                     src={mapImage} 
@@ -186,38 +186,44 @@ export default function Home() {
                     className="w-full h-full object-cover opacity-60 grayscale-[50%] sepia-[20%] group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
                </div>
                
                {/* Map Markers Overlay - Decorative */}
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full p-8 z-10 pointer-events-none">
+               <div className="absolute inset-0 z-10 pointer-events-none opacity-50">
                   {/* Nashville Center */}
-                  <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-3 h-3 bg-accent rounded-full animate-ping absolute inset-0" />
-                    <div className="w-3 h-3 bg-accent rounded-full relative border-2 border-white shadow-lg" />
+                  <div className="absolute top-[40%] left-[50%]">
+                    <div className="w-4 h-4 bg-accent rounded-full animate-ping absolute inset-0" />
+                    <div className="w-4 h-4 bg-accent rounded-full relative border-2 border-white shadow-lg" />
                   </div>
-                  {/* Brentwood */}
-                  <div className="absolute top-[60%] left-[50%]">
-                    <div className="w-2 h-2 bg-white/80 rounded-full" />
-                  </div>
-                   {/* Franklin */}
-                  <div className="absolute top-[70%] left-[45%]">
-                    <div className="w-2 h-2 bg-white/80 rounded-full" />
-                  </div>
+                  {/* Surrounding Areas */}
+                  <div className="absolute top-[30%] left-[60%] w-2 h-2 bg-white/80 rounded-full" />
+                  <div className="absolute top-[50%] left-[60%] w-2 h-2 bg-white/80 rounded-full" />
+                  <div className="absolute top-[55%] left-[45%] w-2 h-2 bg-white/80 rounded-full" />
+                  <div className="absolute top-[45%] left-[35%] w-2 h-2 bg-white/80 rounded-full" />
                </div>
 
-               <div className="relative z-20 p-8 h-full flex flex-col justify-end">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="p-1.5 bg-accent/20 rounded-md backdrop-blur-md border border-accent/30">
-                      <MapPin className="w-4 h-4 text-accent" />
+               <div className="relative z-20 p-8 md:p-12 h-full flex flex-col justify-end items-start max-w-4xl">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-2 bg-accent/20 rounded-lg backdrop-blur-md border border-accent/30">
+                      <MapPin className="w-5 h-5 text-accent" />
                     </div>
-                    <span className="text-accent text-xs font-bold uppercase tracking-wider">Service Area</span>
+                    <span className="text-accent text-sm font-bold uppercase tracking-wider">Expanded Service Area</span>
                   </div>
-                  <h3 className="text-2xl font-display font-bold text-white mb-2">Greater Nashville</h3>
-                  <div className="flex flex-wrap gap-2 text-white/80 text-sm">
-                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Brentwood</span>
-                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Franklin</span>
-                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Belle Meade</span>
-                    <span className="bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/5">Green Hills</span>
+                  
+                  <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">Serving All of Middle Tennessee</h3>
+                  
+                  <div className="flex flex-wrap gap-3 text-white/90">
+                    {[
+                      "Nashville", "Brentwood", "Franklin", "Belle Meade", 
+                      "Green Hills", "Forest Hills", "Oak Hill", "Berry Hill",
+                      "Mt. Juliet", "Hendersonville", "Gallatin", "Nolensville",
+                      "Spring Hill", "Thompson's Station", "Leiper's Fork"
+                    ].map((city) => (
+                      <span key={city} className="bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 text-sm font-medium">
+                        {city}
+                      </span>
+                    ))}
                   </div>
                </div>
              </GlassCard>
