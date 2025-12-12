@@ -15,11 +15,11 @@ export function PageLayout({ children }: PageLayoutProps) {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
       {/* Pinned Watermark Background - NPP Logo */}
       <div className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.04] dark:opacity-[0.06] overflow-hidden">
-        <div className="relative w-[70vw] md:w-[40vw] max-w-[600px] -rotate-12">
+        <div className="relative w-[70vw] md:w-[40vw] max-w-[600px]">
            <img 
             src={nppLogo} 
             alt="" 
-            className="w-full h-auto object-contain mix-blend-luminosity dark:mix-blend-soft-light"
+            className="w-full h-auto object-contain mix-blend-multiply dark:mix-blend-screen dark:invert"
           />
         </div>
       </div>
