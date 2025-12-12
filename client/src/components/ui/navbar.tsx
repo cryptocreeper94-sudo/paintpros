@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -60,19 +60,47 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Right: Desktop Nav Links + Theme Toggle */}
-        <div className="hidden md:flex items-center gap-6">
-          {mainLinks.map((link) => (
-            <Link key={link.name} href={link.href}>
-              <span className={cn(
-                "text-sm font-medium transition-colors cursor-pointer hover:text-accent",
-                link.highlight ? "text-accent font-bold" : "text-white/80",
-                location === link.href && "text-accent"
-              )}>
-                {link.name}
-              </span>
-            </Link>
-          ))}
+        {/* Right: Navigation + Desktop Nav Links + Theme Toggle */}
+        <div className="flex items-center gap-4">
+          {/* Navigation Buttons */}
+          {location !== "/" && (
+            <>
+              <button 
+                onClick={() => window.history.back()}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center"
+                aria-label="Go back"
+                data-testid="button-back"
+                title="Go back"
+              >
+                <ArrowLeft className="w-5 h-5 text-white" />
+              </button>
+              <Link href="/">
+                <button 
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center"
+                  aria-label="Go home"
+                  data-testid="button-home"
+                  title="Go home"
+                >
+                  <Home className="w-5 h-5 text-white" />
+                </button>
+              </Link>
+            </>
+          )}
+
+          {/* Desktop Nav Links (hidden on mobile) */}
+          <div className="hidden md:flex items-center gap-6">
+            {mainLinks.map((link) => (
+              <Link key={link.name} href={link.href}>
+                <span className={cn(
+                  "text-sm font-medium transition-colors cursor-pointer hover:text-accent",
+                  link.highlight ? "text-accent font-bold" : "text-white/80",
+                  location === link.href && "text-accent"
+                )}>
+                  {link.name}
+                </span>
+              </Link>
+            ))}
+          </div>
 
           {/* Theme Toggle */}
           <button 
@@ -80,22 +108,6 @@ export function Navbar() {
             className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
             aria-label="Toggle theme"
             data-testid="button-theme-toggle"
-          >
-            {theme === "dark" ? (
-              <Sun className="w-4 h-4 text-accent" />
-            ) : (
-              <Moon className="w-4 h-4 text-white" />
-            )}
-          </button>
-        </div>
-
-        {/* Mobile: Theme Toggle only (hamburger is on left now) */}
-        <div className="flex md:hidden items-center">
-          <button 
-            onClick={toggleTheme}
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
-            aria-label="Toggle theme"
-            data-testid="button-theme-toggle-mobile"
           >
             {theme === "dark" ? (
               <Sun className="w-4 h-4 text-accent" />
