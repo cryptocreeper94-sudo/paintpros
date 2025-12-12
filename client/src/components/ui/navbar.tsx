@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, Menu, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useTheme } from "@/context/ThemeContext";
+import nppLogoFull from "@assets/npp_logo_full.png";
+import nppEmblem from "@assets/npp_emblem.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,24 +29,19 @@ export function Navbar() {
     { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
   ];
 
-  const getLogoAbbreviation = () => {
-    const words = tenant.name.split(" ");
-    if (words.length >= 3) {
-      return words.slice(0, 3).map(w => w[0]).join("");
-    }
-    return words.map(w => w[0]).join("");
-  };
-
   return (
-    <nav className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <div className="glass-panel rounded-full px-4 md:px-6 py-3 flex items-center gap-4 md:gap-8">
-        <Link href="/">
-          <span className="font-display font-bold text-xl tracking-tighter text-foreground cursor-pointer">
-            {getLogoAbbreviation()}<span className="text-accent">.</span>
-          </span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/10">
+      <div className="w-full px-4 md:px-8 py-3 flex items-center justify-between">
+        {/* Left: Logo */}
+        <Link href="/" data-testid="link-logo-home">
+          <img 
+            src={nppLogoFull} 
+            alt={tenant.name}
+            className="h-12 md:h-14 w-auto object-contain cursor-pointer"
+          />
         </Link>
 
-        {/* Desktop Nav */}
+        {/* Center/Right: Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
           {mainLinks.map((link) => (
             <Link key={link.name} href={link.href}>
@@ -57,108 +54,135 @@ export function Navbar() {
               </span>
             </Link>
           ))}
+
+          {/* Theme Toggle */}
+          <button 
+            onClick={toggleTheme}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+            aria-label="Toggle theme"
+            data-testid="button-theme-toggle"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-accent" />
+            ) : (
+              <Moon className="w-4 h-4 text-foreground" />
+            )}
+          </button>
         </div>
 
-        {/* Theme Toggle */}
-        <button 
-          onClick={toggleTheme}
-          className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
-          aria-label="Toggle theme"
-          data-testid="button-theme-toggle"
-        >
-          {theme === "dark" ? (
-            <Sun className="w-4 h-4 text-accent" />
-          ) : (
-            <Moon className="w-4 h-4 text-foreground" />
-          )}
-        </button>
+        {/* Mobile: Theme Toggle + Emblem Hamburger */}
+        <div className="flex md:hidden items-center gap-3">
+          {/* Theme Toggle */}
+          <button 
+            onClick={toggleTheme}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+            aria-label="Toggle theme"
+            data-testid="button-theme-toggle-mobile"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-accent" />
+            ) : (
+              <Moon className="w-4 h-4 text-foreground" />
+            )}
+          </button>
 
-        {/* Mobile Toggle - Hamburger Menu */}
-        <button 
-          className="md:hidden w-10 h-10 rounded-full bg-accent/20 hover:bg-accent/30 flex items-center justify-center transition-all" 
-          onClick={() => setIsOpen(!isOpen)}
-          data-testid="button-hamburger-menu"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={22} className="text-accent" /> : <Menu size={22} className="text-accent" />}
-        </button>
+          {/* Emblem as Hamburger Trigger */}
+          <button 
+            className="h-11 w-auto p-1 hover:bg-white/10 rounded-lg transition-all" 
+            onClick={() => setIsOpen(!isOpen)}
+            data-testid="button-hamburger-menu"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? (
+              <X size={28} className="text-accent" />
+            ) : (
+              <img 
+                src={nppEmblem} 
+                alt="Menu"
+                className="h-9 w-auto object-contain"
+              />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="absolute top-20 left-4 right-4 glass-panel rounded-2xl p-6 md:hidden overflow-hidden"
+            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
           >
-            {/* Main Links */}
-            <div className="space-y-1 mb-6">
-              {mainLinks.map((link, index) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link href={link.href}>
-                    <span 
-                      className={cn(
-                        "text-lg font-medium flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer transition-all",
-                        link.highlight 
-                          ? "bg-accent/10 text-accent font-bold" 
-                          : "text-foreground hover:bg-white/5",
-                        location === link.href && "bg-accent/10 text-accent"
-                      )}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                      <ChevronRight className="w-5 h-5 opacity-50" />
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+            <div className="px-4 py-6">
+              {/* Main Links */}
+              <div className="space-y-1 mb-6">
+                {mainLinks.map((link, index) => (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Link href={link.href}>
+                      <span 
+                        className={cn(
+                          "text-lg font-medium flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer transition-all",
+                          link.highlight 
+                            ? "bg-accent/10 text-accent font-bold" 
+                            : "text-foreground hover:bg-white/5",
+                          location === link.href && "bg-accent/10 text-accent"
+                        )}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                        <ChevronRight className="w-5 h-5 opacity-50" />
+                      </span>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
 
-            {/* Divider */}
-            <div className="border-t border-white/10 my-4" />
+              {/* Divider */}
+              <div className="border-t border-white/10 my-4" />
 
-            {/* Admin Links */}
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
-              {adminLinks.map((link, index) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: (mainLinks.length + index) * 0.05 }}
-                >
-                  <Link href={link.href}>
-                    <span 
-                      className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <link.icon className={cn("w-5 h-5", link.color)} />
-                      <span className="text-lg font-medium text-foreground">{link.name}</span>
-                      <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+              {/* Admin Links */}
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
+                {adminLinks.map((link, index) => (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (mainLinks.length + index) * 0.05 }}
+                  >
+                    <Link href={link.href}>
+                      <span 
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <link.icon className={cn("w-5 h-5", link.color)} />
+                        <span className="text-lg font-medium text-foreground">{link.name}</span>
+                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                      </span>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
 
-            {/* Tenant name decoration at bottom */}
-            <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <PaintRoller className="w-5 h-5 text-accent" />
-                <span className="text-xs">{tenant.name}</span>
+              {/* Tenant name decoration at bottom */}
+              <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <PaintRoller className="w-5 h-5 text-accent" />
+                  <span className="text-xs">{tenant.name}</span>
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 }
