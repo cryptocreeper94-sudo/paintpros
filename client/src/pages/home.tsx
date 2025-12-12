@@ -88,20 +88,22 @@ export default function Home() {
 
           {/* 2. CTA Card - High Contrast */}
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="bg-accent/10 border-accent/20 flex flex-col justify-between p-8 group min-h-[200px]" glow>
-              <div>
-                <h3 className="text-2xl font-display font-bold mb-2">Free Estimate</h3>
-                <p className="text-sm text-muted-foreground">
-                  Get a detailed, transparent quote within 24 hours. No hidden fees.
-                </p>
-              </div>
-              <div className="mt-8 flex justify-end">
-                <button className="w-12 h-12 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
-                  <ArrowRight className="w-6 h-6" />
-                </button>
-              </div>
-              <ShieldCheck className="absolute top-4 right-4 w-24 h-24 text-accent/5 -rotate-12" />
-            </GlassCard>
+            <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
+              <GlassCard className="bg-accent/10 border-accent/20 flex flex-col justify-between p-8 group min-h-[200px] cursor-pointer hover:border-accent/40 transition-colors" glow>
+                <div>
+                  <h3 className="text-2xl font-display font-bold mb-2">Free Instant Estimates</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Get a detailed, transparent quote instantly. No hidden fees, no waiting.
+                  </p>
+                </div>
+                <div className="mt-8 flex justify-end">
+                  <div className="w-12 h-12 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
+                    <ArrowRight className="w-6 h-6" />
+                  </div>
+                </div>
+                <ShieldCheck className="absolute top-4 right-4 w-24 h-24 text-accent/5 -rotate-12" />
+              </GlassCard>
+            </a>
           </BentoItem>
 
           {/* 3. Social Proof - Marquee */}
