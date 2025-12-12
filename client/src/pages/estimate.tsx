@@ -1,6 +1,7 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
+import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTenant } from "@/context/TenantContext";
+
+import wallsImg from "@assets/generated_images/interior_wall_painting.png";
+import trimImg from "@assets/generated_images/trim_and_molding.png";
+import ceilingsImg from "@assets/generated_images/ceiling_painting.png";
+import doorsImg from "@assets/generated_images/door_painting.png";
 
 interface LeadData {
   id: string;
@@ -366,52 +372,81 @@ export default function Estimate() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <GlassCard className="p-8" glow>
-                <h2 className="text-2xl font-display font-bold mb-8 flex items-center gap-3">
+              <div className="mb-8">
+                <h2 className="text-2xl font-display font-bold mb-2 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                     <Paintbrush className="w-5 h-5 text-accent" />
                   </div>
                   Select Your Services
                 </h2>
+                <p className="text-muted-foreground text-sm ml-[52px]">Click any card to add it to your estimate</p>
+              </div>
 
-                <div className="space-y-4">
-                  {[
-                    { key: 'walls', label: 'Walls', desc: 'Interior wall painting', icon: Square },
-                    { key: 'trim', label: 'Trim', desc: 'Baseboards, crown molding, window frames', icon: Layers },
-                    { key: 'ceilings', label: 'Ceilings', desc: 'Ceiling painting and touch-ups', icon: Square },
-                    { key: 'doors', label: 'Doors', desc: 'Front & back included - $150 per door', icon: DoorOpen },
-                  ].map((service) => (
+              <GlassCard className="p-6">
+              <BentoGrid className="gap-4">
+                {[
+                  { key: 'walls', label: 'Walls', desc: 'Interior wall painting', icon: Square, image: wallsImg, colSpan: 6, rowSpan: 1 },
+                  { key: 'trim', label: 'Trim', desc: 'Baseboards, crown molding, window frames', icon: Layers, image: trimImg, colSpan: 6, rowSpan: 1 },
+                  { key: 'ceilings', label: 'Ceilings', desc: 'Ceiling painting and touch-ups', icon: Square, image: ceilingsImg, colSpan: 6, rowSpan: 1 },
+                  { key: 'doors', label: 'Doors', desc: `$${PRICING.DOOR_PRICE} per door`, icon: DoorOpen, image: doorsImg, colSpan: 6, rowSpan: 1 },
+                ].map((service) => (
+                  <BentoItem key={service.key} colSpan={service.colSpan} rowSpan={service.rowSpan}>
                     <motion.div 
-                      key={service.key}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative h-full min-h-[140px] rounded-2xl overflow-hidden cursor-pointer border-2 transition-all ${
                         jobSelections[service.key as keyof JobSelections]
-                          ? 'bg-gradient-to-r from-accent/15 to-accent/5 border-accent/50 shadow-lg shadow-accent/10' 
-                          : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
+                          ? 'border-accent shadow-lg shadow-accent/20' 
+                          : 'border-white/10 hover:border-white/30'
                       }`}
                       onClick={() => setJobSelections(prev => ({ ...prev, [service.key]: !prev[service.key as keyof JobSelections] }))}
                       data-testid={`checkbox-${service.key}`}
                     >
-                      <Checkbox 
-                        checked={jobSelections[service.key as keyof JobSelections]}
-                        onCheckedChange={(checked) => setJobSelections(prev => ({ ...prev, [service.key]: !!checked }))}
-                        className="w-6 h-6 border-white/30 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
+                      <img 
+                        src={service.image} 
+                        alt={service.label}
+                        className="absolute inset-0 w-full h-full object-cover"
                       />
-                      <div className="flex-1">
-                        <Label className="text-lg font-bold cursor-pointer block">{service.label}</Label>
-                        <p className="text-sm text-muted-foreground">{service.desc}</p>
+                      <div className={`absolute inset-0 transition-all ${
+                        jobSelections[service.key as keyof JobSelections]
+                          ? 'bg-gradient-to-r from-accent/60 via-accent/40 to-transparent'
+                          : 'bg-gradient-to-r from-black/70 via-black/50 to-transparent'
+                      }`} />
+                      
+                      <div className="absolute inset-0 p-5 flex items-center gap-4">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
+                          jobSelections[service.key as keyof JobSelections]
+                            ? 'bg-accent border-2 border-white'
+                            : 'bg-white/10 border-2 border-white/30'
+                        }`}>
+                          {jobSelections[service.key as keyof JobSelections] && (
+                            <Check className="w-5 h-5 text-white" />
+                          )}
+                        </div>
+                        
+                        <div className="flex-1">
+                          <Label className="text-xl font-display font-bold cursor-pointer block text-white drop-shadow-lg">
+                            {service.label}
+                          </Label>
+                          <p className="text-sm text-white/80 drop-shadow">{service.desc}</p>
+                        </div>
+                        
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                          jobSelections[service.key as keyof JobSelections] ? 'bg-white/20' : 'bg-white/10'
+                        }`}>
+                          <service.icon className="w-6 h-6 text-white" />
+                        </div>
                       </div>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        jobSelections[service.key as keyof JobSelections] ? 'bg-accent/20' : 'bg-white/5'
-                      }`}>
-                        <service.icon className={`w-5 h-5 ${
-                          jobSelections[service.key as keyof JobSelections] ? 'text-accent' : 'text-muted-foreground'
-                        }`} />
-                      </div>
+                      
+                      {jobSelections[service.key as keyof JobSelections] && (
+                        <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-accent text-white text-xs font-bold">
+                          Selected
+                        </div>
+                      )}
                     </motion.div>
-                  ))}
-                </div>
+                  </BentoItem>
+                ))}
+              </BentoGrid>
 
                 {/* Conditional Inputs */}
                 <AnimatePresence mode="wait">
