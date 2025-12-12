@@ -131,7 +131,7 @@ export function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-background/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
+            className="bg-background/95 backdrop-blur-xl border-b border-white/10 overflow-hidden w-full max-h-[70vh] overflow-y-auto md:max-w-sm md:ml-4 md:rounded-b-2xl md:border md:border-white/15 md:shadow-xl"
           >
             <div className="px-4 py-6">
               {/* Main Links */}
