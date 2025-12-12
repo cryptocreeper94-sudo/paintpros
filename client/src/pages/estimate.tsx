@@ -2,7 +2,7 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,22 @@ export default function Estimate() {
   const [emailError, setEmailError] = useState("");
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const [lead, setLead] = useState<LeadData | null>(null);
+
+  // Load saved email from localStorage on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("estimatorEmail");
+    const savedLead = localStorage.getItem("estimatorLead");
+    
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+    
+    if (savedLead) {
+      const leadData = JSON.parse(savedLead);
+      setLead(leadData);
+      setShowEmailModal(false);
+    }
+  }, []);
 
   const [jobSelections, setJobSelections] = useState<JobSelections>({
     walls: false,
@@ -127,6 +143,9 @@ export default function Estimate() {
       if (!response.ok) throw new Error("Failed to submit email");
       const data = await response.json();
       setLead(data);
+      // Save email and lead data to localStorage for future estimates
+      localStorage.setItem("estimatorEmail", email);
+      localStorage.setItem("estimatorLead", JSON.stringify(data));
       setShowEmailModal(false);
     } catch (error) {
       console.error("Error submitting email:", error);
