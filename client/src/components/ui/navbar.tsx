@@ -33,7 +33,7 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-2 md:px-4 py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem + Company Name */}
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-4" style={{ marginLeft: '-100px' }}>
           {/* Hamburger Menu Trigger - Emblem with paint roller */}
           <button 
             className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0" 
@@ -42,12 +42,12 @@ export function Navbar() {
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X size={40} className="text-white" />
+              <X size={56} className="text-white" />
             ) : (
               <img 
                 src={nppEmblem} 
                 alt="Menu"
-                className="h-12 md:h-14 w-auto object-contain"
+                className="h-24 md:h-28 w-auto object-contain"
               />
             )}
           </button>
