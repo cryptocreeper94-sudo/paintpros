@@ -1,0 +1,565 @@
+================================================================================
+ORBIT HALLMARK SYSTEM - COMPLETE AGENT HANDOFF
+Version 1.0 | December 2025
+================================================================================
+
+TABLE OF CONTENTS
+1. System Overview
+2. Asset Number Format & Serial System
+3. Reserved Ranges & Special Editions
+4. Hallmark Creation Process
+5. Verified Badge & Header Display
+6. Blockchain Anchoring Integration
+7. Database Schema
+8. API Endpoints
+9. Component Reference
+10. Complete Code Examples
+
+================================================================================
+1. SYSTEM OVERVIEW
+================================================================================
+
+The ORBIT Hallmark System provides unique, permanent identifiers for every 
+asset in the platform. Each document (paystub, invoice, letter, contract) 
+receives a hallmark number that is:
+
+- UNIQUE: No two assets share the same number
+- PERMANENT: Once assigned, never changes
+- VERIFIABLE: Can be looked up and validated
+- BLOCKCHAIN-BACKED: Optional Solana anchoring for immutability
+
+Key Files:
+- server/hallmarkService.ts - Core hallmark logic
+- client/src/components/HallmarkStamp.tsx - Document stamp display
+- client/src/components/HallmarkBadge.tsx - Saturn badge with QR code
+- client/src/pages/HallmarkVerification.tsx - Public verification page
+
+================================================================================
+2. ASSET NUMBER FORMAT & SERIAL SYSTEM
+================================================================================
+
+FORMAT: #XXXXXXXXX-YY
+
+Components:
+- # = Prefix (required)
+- XXXXXXXXX = 9-digit master asset number (1 billion capacity)
+- YY = 2-digit sub-sequence (100 per master asset)
+
+TOTAL CAPACITY: 100 BILLION hallmarks
+
+EXAMPLES:
+- #000000001-00 = ORBIT Staffing OS (Platform)
+- #000000002-00 = Jason (Founder)
+- #000000003-00 = Sidonie (Team)
+- #000003000-00 = First general asset
+- #000003000-01 = First sub-document of asset 3000
+
+SPECIAL EDITION FORMAT: #XX-XXXXXXXXX-YY
+
+Edition Prefixes:
+- GE = Genesis Edition
+- LE = Limited Edition
+- SE = Special Edition
+- FE = Founder's Edition
+- CE = Collector's Edition
+- ANN = Anniversary Edition
+- PT = Platinum Tier
+- DW = DarkWave Studios
+
+EXAMPLES:
+- #FE-000000002-00 = Jason's Founder's Edition badge
+- #GE-000001000-00 = Genesis Series franchise
+- #PT-000000100-00 = Platinum tier asset
+
+================================================================================
+3. RESERVED RANGES & SPECIAL EDITIONS
+================================================================================
+
+RESERVED RANGES (Permanently blocked from general allocation):
+
+| Range Start | Range End   | Description                    |
+|-------------|-------------|--------------------------------|
+| 1           | 99          | Founder & Core Team Reserved   |
+| 100         | 999         | Special & Limited Editions     |
+| 1,000       | 1,999       | Genesis Series (First Franchises) |
+| 2,000       | 2,999       | Anniversary Editions           |
+| 3,000       | 999,999,999 | General Asset Pool             |
+
+FOUNDING ASSETS (Immutable):
+
+const FOUNDING_ASSETS = {
+  ORBIT_PLATFORM: { 
+    number: '#000000001-00', 
+    special: '#FE-000000001-00',
+    name: 'ORBIT Staffing OS', 
+    type: 'platform',
+    badge: 'Genesis Platform',
+  },
+  JASON_FOUNDER: { 
+    number: '#000000002-00', 
+    special: '#FE-000000002-00',
+    name: 'Jason', 
+    type: 'founder',
+    badge: 'Founding Developer',
+    access: 'dev-bypass', // PIN 0424
+  },
+  SIDONIE_TEAM: { 
+    number: '#000000003-00', 
+    special: '#FE-000000003-00',
+    name: 'Sidonie', 
+    type: 'team',
+    badge: 'Founding Team',
+    access: 'read-only', // PIN 4444
+  },
+};
+
+================================================================================
+4. HALLMARK CREATION PROCESS
+================================================================================
+
+STEP 1: Generate Hallmark Number
+
+// Legacy format (backwards compatible)
+function generateHallmarkNumber(): string {
+  const date = new Date().toISOString().replace(/[-:]/g, '').substring(0, 8);
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `ORBIT-${date}-${random}`;
+  // Example: ORBIT-20251212-AB2K7X
+}
+
+// New asset number format
+async function getNextAssetNumber(): Promise<string> {
+  // Queries database for max asset number, returns next in sequence
+  // Returns: #000003001-00
+}
+
+STEP 2: Generate Content Hash
+
+function generateContentHash(content: string): string {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+STEP 3: Create Hallmark Data Object
+
+interface HallmarkData {
+  hallmarkNumber: string;
+  assetType: 'letter' | 'invoice' | 'paystub' | 'equipment' | 'payroll' | 'report';
+  referenceId?: string;
+  createdBy: string;
+  recipientName: string;
+  recipientRole: 'employee' | 'owner' | 'admin' | 'client';
+  contentHash: string;
+  metadata: Record<string, any>;
+  searchTerms: string;
+}
+
+function createHallmarkData(
+  assetType: HallmarkData['assetType'],
+  recipientName: string,
+  recipientRole: HallmarkData['recipientRole'],
+  createdBy: string,
+  content: string,
+  metadata: Record<string, any> = {},
+  referenceId?: string
+): HallmarkData {
+  const hallmarkNumber = generateHallmarkNumber();
+  const contentHash = generateContentHash(content);
+  
+  const searchTerms = [
+    hallmarkNumber,
+    assetType,
+    recipientName.toLowerCase(),
+    recipientRole,
+    createdBy.toLowerCase(),
+    ...Object.values(metadata).filter(v => typeof v === 'string').map(v => v.toLowerCase())
+  ].join(' ');
+
+  return {
+    hallmarkNumber,
+    assetType,
+    referenceId,
+    createdBy,
+    recipientName,
+    recipientRole,
+    contentHash,
+    metadata,
+    searchTerms,
+  };
+}
+
+STEP 4: Store in Database
+
+INSERT INTO hallmarks (
+  id, hallmark_number, asset_type, reference_id, created_by,
+  recipient_name, recipient_role, content_hash, metadata, search_terms
+) VALUES (...);
+
+STEP 5: Queue for Blockchain (Optional)
+
+async function queueForBlockchain(
+  hallmarkId: string,
+  contentHash: string,
+  assetType: string
+): Promise<{ queued: boolean; message: string }> {
+  if (!solanaService.shouldAnchor(assetType)) {
+    return { queued: false, message: 'Not configured for anchoring' };
+  }
+  await solanaService.queueForAnchoring(hallmarkId, contentHash, assetType);
+  return { queued: true, message: 'Queued for blockchain anchoring' };
+}
+
+================================================================================
+5. VERIFIED BADGE & HEADER DISPLAY
+================================================================================
+
+HALLMARK STAMP (For Documents):
+
+<HallmarkStamp 
+  hallmarkNumber="ORBIT-20251212-AB2K7X"
+  createdAt="2025-12-12T00:00:00Z"
+  compact={false}
+/>
+
+Renders:
+╔═══════════════════════════════════════╗
+║        ◆ ORBIT HALLMARK ◆             ║
+║     ORBIT-20251212-AB2K7X             ║
+║   Unique Asset ID | Issued 12/12/2025 ║
+║   This document is authentic and      ║
+║   cataloged in the ORBIT registry     ║
+╚═══════════════════════════════════════╝
+
+HALLMARK BADGE (Saturn with QR):
+
+<HallmarkBadge 
+  serialNumber="000000001-00"
+  size="md"  // sm, md, lg
+  verificationUrl="https://orbitstaffing.io/verify/000000001-00"
+/>
+
+Features:
+- Saturn planet image with cyan glow
+- QR code centered in planet (clickable for modal)
+- Serial number displayed below
+- "Powered by ORBIT" text
+- Download QR code button
+
+BADGE TIERS (Based on Asset Number):
+
+function getAssetBadge(hallmark: string): { tier, color, icon, glow } {
+  // Returns tier info based on asset number range
+}
+
+| Master Number | Tier           | Color   | Icon | Glow Effect        |
+|---------------|----------------|---------|------|--------------------|
+| 1-3           | Founding Asset | #fbbf24 | 👑   | 0 0 20px #fbbf24   |
+| 4-99          | Core Team      | #f59e0b | ⭐   | 0 0 15px #f59e0b   |
+| 100-999       | Special Edition| #8b5cf6 | 💎   | 0 0 15px #8b5cf6   |
+| 1000-1999     | Genesis Series | #06b6d4 | 🚀   | 0 0 15px #06b6d4   |
+| 2000-2999     | Anniversary    | #ec4899 | 🎉   | 0 0 15px #ec4899   |
+| PT prefix     | Platinum       | #e5e7eb | 🏆   | 0 0 20px #e5e7eb   |
+| DW prefix     | DarkWave       | #14b8a6 | 🌊   | 0 0 15px #14b8a6   |
+| 3000+         | Standard       | #6b7280 | 📄   | none               |
+
+================================================================================
+6. BLOCKCHAIN ANCHORING INTEGRATION
+================================================================================
+
+ANCHORABLE DOCUMENT TYPES:
+- invoice, paystub, payroll, letter, equipment, report
+- contract, certification, background_check, i9_verification
+- release, franchise, audit
+
+FLOW:
+1. Hallmark created with content hash
+2. If assetType is anchorable, queued to blockchain_hash_queue
+3. Batched into Merkle tree with other pending hashes
+4. Merkle root written to Solana (memo program)
+5. Transaction signature stored with hallmark
+6. Verification available via explorerUrl
+
+MODES:
+- SIMULATION: HELIUS_API_KEY not set - generates SIM_xxx signatures
+- LIVE: Real Solana mainnet transactions
+
+VERIFICATION:
+async function verifyHash(contentHash: string): Promise<{
+  found: boolean;
+  batch?: { merkleRoot, transactionSignature, explorerUrl };
+}> {
+  // Checks if hash exists in anchored batches
+}
+
+================================================================================
+7. DATABASE SCHEMA
+================================================================================
+
+TABLE: hallmarks
+| Column            | Type        | Description                    |
+|-------------------|-------------|--------------------------------|
+| id                | varchar     | Primary key (UUID)             |
+| hallmark_number   | varchar(50) | Unique identifier (ORBIT-xxx)  |
+| asset_type        | varchar     | letter/invoice/paystub/etc     |
+| reference_id      | varchar     | External reference ID          |
+| created_by        | varchar     | Creator name/ID                |
+| recipient_name    | varchar     | Document recipient             |
+| recipient_role    | varchar     | employee/owner/admin/client    |
+| content_hash      | varchar     | SHA-256 hash of content        |
+| metadata          | jsonb       | Additional metadata            |
+| search_terms      | text        | Searchable text index          |
+| verified_at       | timestamp   | When verified/audited          |
+| created_at        | timestamp   | Creation timestamp             |
+| updated_at        | timestamp   | Last update timestamp          |
+
+TABLE: hallmark_audit
+| Column      | Type      | Description              |
+|-------------|-----------|--------------------------|
+| id          | varchar   | Primary key              |
+| hallmark_id | varchar   | Reference to hallmarks   |
+| action      | varchar   | viewed/verified/modified |
+| actor       | varchar   | Who performed action     |
+| details     | jsonb     | Action details           |
+| created_at  | timestamp | When action occurred     |
+
+TABLE: company_hallmarks
+| Column            | Type    | Description                    |
+|-------------------|---------|--------------------------------|
+| id                | varchar | Primary key                    |
+| company_id        | varchar | Reference to company           |
+| hallmark_prefix   | varchar | Company's unique prefix        |
+| next_serial_number| integer | Next number in sequence        |
+| created_at        | timestamp| When created                  |
+
+TABLE: blockchain_hash_queue
+| Column          | Type      | Description                   |
+|-----------------|-----------|-------------------------------|
+| id              | varchar   | Primary key                   |
+| hallmark_id     | varchar   | Reference to hallmarks        |
+| content_hash    | varchar   | Hash to anchor                |
+| asset_type      | varchar   | Document type                 |
+| status          | varchar   | queued/batched/anchored       |
+| merkle_root     | varchar   | Batch Merkle root             |
+| batch_id        | varchar   | Reference to batch            |
+| queued_at       | timestamp | When queued                   |
+| anchored_at     | timestamp | When anchored                 |
+
+================================================================================
+8. API ENDPOINTS
+================================================================================
+
+CREATE HALLMARK:
+POST /api/hallmarks
+Body: { assetType, recipientName, recipientRole, createdBy, content, metadata }
+Returns: { hallmark, blockchainStatus }
+
+GET HALLMARK:
+GET /api/hallmarks/:hallmarkNumber
+Returns: { hallmark, verified, blockchainInfo }
+
+SEARCH HALLMARKS:
+GET /api/hallmarks/search?q=searchterm&type=invoice
+Returns: { hallmarks: [], total, page }
+
+VERIFY HALLMARK:
+GET /api/verify/:hallmarkNumber
+Returns: { valid, hallmark, blockchainVerification }
+
+PUBLIC VERIFICATION PAGE:
+GET /verify/:hallmarkNumber
+Renders: Public verification page with QR code
+
+GET BADGE TIER:
+GET /api/hallmarks/:number/badge
+Returns: { tier, color, icon, glow, edition }
+
+================================================================================
+9. COMPONENT REFERENCE
+================================================================================
+
+HALLMARK STAMP (Document Footer):
+import { HallmarkStamp } from '@/components/HallmarkStamp';
+<HallmarkStamp hallmarkNumber="ORBIT-xxx" createdAt="2025-01-01" compact={false} />
+
+HALLMARK BADGE (Saturn + QR):
+import { HallmarkBadge } from '@/components/HallmarkBadge';
+<HallmarkBadge serialNumber="000000001-00" size="md" verificationUrl="https://..." />
+
+POWERED BY ORBIT (Footer Watermark):
+import { PoweredByOrbit } from '@/components/PoweredByOrbit';
+<PoweredByOrbit hallmarkNumber="ORBIT-xxx" />
+
+HALLMARK WATERMARK (Background):
+import { HallmarkWatermark } from '@/components/HallmarkWatermark';
+<HallmarkWatermark opacity={0.1} />
+
+ORBY HALLMARK (Mascot Badge):
+import { OrbyHallmark } from '@/components/OrbyHallmark';
+<OrbyHallmark serialNumber="000000001-00" />
+
+================================================================================
+10. COMPLETE CODE EXAMPLES
+================================================================================
+
+EXAMPLE 1: Create and Store Hallmark
+
+import { createHallmarkData, queueForBlockchain } from './hallmarkService';
+import { db } from './db';
+import { hallmarks } from '@shared/schema';
+
+async function createInvoiceHallmark(
+  invoiceData: any,
+  recipientName: string,
+  createdBy: string
+) {
+  // 1. Create hallmark data
+  const hallmarkData = createHallmarkData(
+    'invoice',
+    recipientName,
+    'client',
+    createdBy,
+    JSON.stringify(invoiceData),
+    { invoiceNumber: invoiceData.number, amount: invoiceData.total }
+  );
+
+  // 2. Store in database
+  const [hallmark] = await db.insert(hallmarks).values({
+    hallmarkNumber: hallmarkData.hallmarkNumber,
+    assetType: hallmarkData.assetType,
+    createdBy: hallmarkData.createdBy,
+    recipientName: hallmarkData.recipientName,
+    recipientRole: hallmarkData.recipientRole,
+    contentHash: hallmarkData.contentHash,
+    metadata: hallmarkData.metadata,
+    searchTerms: hallmarkData.searchTerms,
+  }).returning();
+
+  // 3. Queue for blockchain
+  const blockchainResult = await queueForBlockchain(
+    hallmark.id,
+    hallmarkData.contentHash,
+    'invoice'
+  );
+
+  return { hallmark, blockchainResult };
+}
+
+EXAMPLE 2: Verify Hallmark
+
+async function verifyHallmark(hallmarkNumber: string) {
+  // 1. Look up hallmark
+  const [hallmark] = await db.select()
+    .from(hallmarks)
+    .where(eq(hallmarks.hallmarkNumber, hallmarkNumber));
+
+  if (!hallmark) {
+    return { valid: false, error: 'Hallmark not found' };
+  }
+
+  // 2. Check blockchain status
+  const blockchainVerification = await solanaService.verifyHash(hallmark.contentHash);
+
+  // 3. Log audit
+  await db.insert(hallmarkAudit).values({
+    hallmarkId: hallmark.id,
+    action: 'verified',
+    actor: 'public',
+    details: { timestamp: new Date().toISOString() },
+  });
+
+  return {
+    valid: true,
+    hallmark,
+    blockchain: blockchainVerification.found ? {
+      verified: true,
+      transactionSignature: blockchainVerification.batch?.transactionSignature,
+      explorerUrl: blockchainVerification.batch?.explorerUrl,
+    } : { verified: false },
+  };
+}
+
+EXAMPLE 3: React Component with Badge
+
+import { HallmarkBadge } from '@/components/HallmarkBadge';
+import { HallmarkStamp } from '@/components/HallmarkStamp';
+
+function InvoiceDocument({ invoice, hallmark }) {
+  return (
+    <div className="invoice-container">
+      {/* Header with Badge */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h1>Invoice #{invoice.number}</h1>
+          <p>{invoice.date}</p>
+        </div>
+        <HallmarkBadge 
+          serialNumber={hallmark.hallmarkNumber.replace('ORBIT-', '')}
+          size="sm"
+          verificationUrl={`https://orbitstaffing.io/verify/${hallmark.hallmarkNumber}`}
+        />
+      </div>
+
+      {/* Invoice Content */}
+      <div className="invoice-body">
+        {/* ... invoice details ... */}
+      </div>
+
+      {/* Footer with Stamp */}
+      <HallmarkStamp 
+        hallmarkNumber={hallmark.hallmarkNumber}
+        createdAt={hallmark.createdAt}
+        compact={true}
+      />
+    </div>
+  );
+}
+
+EXAMPLE 4: Generate Special Edition Badge
+
+import { formatSpecialEdition, getAssetBadge } from './hallmarkService';
+
+// Create a Genesis Series franchise hallmark
+const genesisHallmark = formatSpecialEdition('GENESIS', 1050, 0);
+// Result: #GE-000001050-00
+
+// Get badge styling
+const badge = getAssetBadge(genesisHallmark);
+// Result: { tier: 'Genesis Series', color: '#06b6d4', icon: '🚀', glow: '0 0 15px #06b6d4' }
+
+EXAMPLE 5: Parse and Validate Hallmark
+
+import { parseHallmark, parseAssetNumber } from './hallmarkService';
+
+// Parse standard format
+const standard = parseAssetNumber('#000003001-00');
+// Result: { master: 3001, sub: 0 }
+
+// Parse any format (standard or special edition)
+const parsed = parseHallmark('#FE-000000002-00');
+// Result: {
+//   prefix: 'FE',
+//   master: 2,
+//   sub: 0,
+//   edition: "Founder's Edition",
+//   isFounder: true,
+//   isSpecial: true
+// }
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Generate Hallmark: generateHallmarkNumber() → ORBIT-20251212-AB2K7X
+Generate Asset#: getNextAssetNumber() → #000003001-00
+Special Edition: formatSpecialEdition('GENESIS', 1000, 0) → #GE-000001000-00
+Parse Hallmark: parseHallmark('#FE-000000002-00') → { prefix, master, sub, edition }
+Content Hash: generateContentHash(content) → sha256 hex string
+Queue Blockchain: queueForBlockchain(id, hash, type) → { queued: boolean }
+Get Badge: getAssetBadge('#000000002-00') → { tier, color, icon, glow }
+
+ANCHORABLE TYPES:
+invoice, paystub, payroll, letter, equipment, report, contract,
+certification, background_check, i9_verification, release, franchise, audit
+
+================================================================================
+END OF HANDOFF DOCUMENT
+================================================================================
