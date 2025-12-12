@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin } from "lucide-react";
+import { X, Menu, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -33,13 +33,6 @@ export function Navbar() {
     return words.map(w => w[0]).join("");
   };
 
-  const PaintRollerMenu = () => (
-    <div className="flex flex-col justify-center items-center gap-[5px] w-7 h-7">
-      <div className="w-full h-[2.5px] bg-current rounded-full" />
-      <div className="w-full h-[2.5px] bg-current rounded-full" />
-      <PaintRoller className="w-full h-4 text-accent" strokeWidth={2.5} />
-    </div>
-  );
 
   return (
     <nav className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
@@ -65,13 +58,14 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* Mobile Toggle */}
+        {/* Mobile Toggle - Hamburger Menu */}
         <button 
-          className="md:hidden text-foreground hover:text-accent transition-colors p-1" 
+          className="md:hidden text-foreground hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" 
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
+          aria-label="Toggle menu"
         >
-          {isOpen ? <X size={28} /> : <PaintRollerMenu />}
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
