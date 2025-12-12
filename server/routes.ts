@@ -4,11 +4,12 @@ import { storage } from "./storage";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
-  insertBlockchainStampSchema
+  insertBlockchainStampSchema, insertHallmarkSchema, ANCHORABLE_TYPES
 } from "@shared/schema";
 import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
+import * as hallmarkService from "./hallmarkService";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -771,6 +772,225 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error sharing snippet:", error);
       res.status(500).json({ error: "Failed to share snippet to Orbit" });
+    }
+  });
+
+  // ============ ORBIT HALLMARK SYSTEM ============
+  
+  // POST /api/hallmarks - Create a new hallmark
+  app.post("/api/hallmarks", async (req, res) => {
+    try {
+      const { assetType, recipientName, recipientRole, createdBy, content, metadata = {}, referenceId, useAssetNumber } = req.body;
+      
+      if (!assetType || !recipientName || !recipientRole || !createdBy || !content) {
+        res.status(400).json({ error: "Missing required fields: assetType, recipientName, recipientRole, createdBy, content" });
+        return;
+      }
+      
+      let assetNumber: string | undefined;
+      if (useAssetNumber) {
+        const nextNumber = await storage.getNextAssetNumber();
+        assetNumber = hallmarkService.formatAssetNumber(nextNumber);
+      }
+      
+      const hallmarkData = hallmarkService.createHallmarkData(
+        assetType, recipientName, recipientRole, createdBy, content, metadata, referenceId, assetNumber
+      );
+      
+      const hallmark = await storage.createHallmark({
+        hallmarkNumber: hallmarkData.hallmarkNumber,
+        assetNumber: hallmarkData.assetNumber,
+        assetType: hallmarkData.assetType,
+        referenceId: hallmarkData.referenceId,
+        createdBy: hallmarkData.createdBy,
+        recipientName: hallmarkData.recipientName,
+        recipientRole: hallmarkData.recipientRole,
+        contentHash: hallmarkData.contentHash,
+        metadata: hallmarkData.metadata,
+        searchTerms: hallmarkData.searchTerms,
+      });
+      
+      await storage.createHallmarkAudit({
+        hallmarkId: hallmark.id,
+        action: 'created',
+        actor: createdBy,
+        details: { assetType, referenceId },
+      });
+      
+      let blockchainStatus = { queued: false, message: 'Not configured for anchoring' };
+      if (hallmarkService.shouldAnchorToBlockchain(assetType)) {
+        await storage.queueHashForAnchoring({
+          hallmarkId: hallmark.id,
+          contentHash: hallmarkData.contentHash,
+          assetType,
+        });
+        blockchainStatus = { queued: true, message: 'Queued for blockchain anchoring' };
+      }
+      
+      res.status(201).json({ hallmark, blockchainStatus });
+    } catch (error) {
+      console.error("Error creating hallmark:", error);
+      res.status(500).json({ error: "Failed to create hallmark" });
+    }
+  });
+  
+  // GET /api/hallmarks - Get all hallmarks
+  app.get("/api/hallmarks", async (req, res) => {
+    try {
+      const { search, type } = req.query;
+      let result;
+      if (search && typeof search === 'string') {
+        result = await storage.searchHallmarks(search);
+      } else if (type && typeof type === 'string') {
+        result = await storage.getHallmarksByType(type);
+      } else {
+        result = await storage.getHallmarks();
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching hallmarks:", error);
+      res.status(500).json({ error: "Failed to fetch hallmarks" });
+    }
+  });
+  
+  // GET /api/hallmarks/:hallmarkNumber - Get hallmark by number
+  app.get("/api/hallmarks/:hallmarkNumber", async (req, res) => {
+    try {
+      const hallmark = await storage.getHallmarkByNumber(req.params.hallmarkNumber);
+      if (!hallmark) {
+        res.status(404).json({ error: "Hallmark not found" });
+        return;
+      }
+      const badge = hallmarkService.getAssetBadge(hallmark.assetNumber || hallmark.hallmarkNumber);
+      res.json({ hallmark, badge });
+    } catch (error) {
+      console.error("Error fetching hallmark:", error);
+      res.status(500).json({ error: "Failed to fetch hallmark" });
+    }
+  });
+  
+  // GET /api/verify/:hallmarkNumber - Public verification endpoint
+  app.get("/api/verify/:hallmarkNumber", async (req, res) => {
+    try {
+      const hallmark = await storage.getHallmarkByNumber(req.params.hallmarkNumber);
+      if (!hallmark) {
+        res.json({ valid: false, error: "Hallmark not found" });
+        return;
+      }
+      
+      await storage.createHallmarkAudit({
+        hallmarkId: hallmark.id,
+        action: 'verified',
+        actor: 'public',
+        details: { timestamp: new Date().toISOString() },
+      });
+      
+      const badge = hallmarkService.getAssetBadge(hallmark.assetNumber || hallmark.hallmarkNumber);
+      
+      res.json({
+        valid: true,
+        hallmark: {
+          hallmarkNumber: hallmark.hallmarkNumber,
+          assetNumber: hallmark.assetNumber,
+          assetType: hallmark.assetType,
+          recipientName: hallmark.recipientName,
+          createdAt: hallmark.createdAt,
+          verifiedAt: hallmark.verifiedAt,
+        },
+        badge,
+        blockchain: hallmark.blockchainTxSignature ? {
+          verified: true,
+          transactionSignature: hallmark.blockchainTxSignature,
+          explorerUrl: hallmark.blockchainExplorerUrl,
+        } : { verified: false },
+      });
+    } catch (error) {
+      console.error("Error verifying hallmark:", error);
+      res.status(500).json({ error: "Failed to verify hallmark" });
+    }
+  });
+  
+  // GET /api/hallmarks/:hallmarkNumber/badge - Get badge tier for hallmark
+  app.get("/api/hallmarks/:hallmarkNumber/badge", async (req, res) => {
+    try {
+      const badge = hallmarkService.getAssetBadge(req.params.hallmarkNumber);
+      res.json(badge);
+    } catch (error) {
+      console.error("Error getting badge:", error);
+      res.status(500).json({ error: "Failed to get badge" });
+    }
+  });
+  
+  // GET /api/hallmarks/:id/audit - Get audit trail for hallmark
+  app.get("/api/hallmarks/:id/audit", async (req, res) => {
+    try {
+      const audits = await storage.getHallmarkAudits(req.params.id);
+      res.json(audits);
+    } catch (error) {
+      console.error("Error fetching audit trail:", error);
+      res.status(500).json({ error: "Failed to fetch audit trail" });
+    }
+  });
+  
+  // POST /api/hallmarks/:id/anchor - Anchor hallmark to blockchain
+  app.post("/api/hallmarks/:id/anchor", async (req, res) => {
+    try {
+      const hallmark = await storage.getHallmarkById(req.params.id);
+      if (!hallmark) {
+        res.status(404).json({ error: "Hallmark not found" });
+        return;
+      }
+      
+      const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+      if (!privateKey) {
+        res.status(500).json({ error: "Solana wallet not configured" });
+        return;
+      }
+      
+      const wallet = solana.getWalletFromPrivateKey(privateKey);
+      const network = (req.body.network || "mainnet-beta") as "devnet" | "mainnet-beta";
+      
+      const result = await solana.stampHashToBlockchain(
+        hallmark.contentHash,
+        wallet,
+        network,
+        { hallmarkNumber: hallmark.hallmarkNumber, assetType: hallmark.assetType }
+      );
+      
+      const explorerUrl = network === "devnet"
+        ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
+        : `https://explorer.solana.com/tx/${result.signature}`;
+      
+      const updated = await storage.updateHallmarkBlockchain(hallmark.id, result.signature, explorerUrl);
+      
+      await storage.createHallmarkAudit({
+        hallmarkId: hallmark.id,
+        action: 'anchored',
+        actor: 'system',
+        details: { transactionSignature: result.signature, network },
+      });
+      
+      res.json({ hallmark: updated, blockchain: { signature: result.signature, explorerUrl } });
+    } catch (error) {
+      console.error("Error anchoring hallmark:", error);
+      res.status(500).json({ error: "Failed to anchor hallmark to blockchain" });
+    }
+  });
+  
+  // GET /api/hallmarks/founding-assets - Get reserved founding assets
+  app.get("/api/hallmarks/founding-assets", async (req, res) => {
+    try {
+      const assets = Object.entries(hallmarkService.getFoundingAsset('ORBIT_PLATFORM')).length > 0
+        ? {
+            ORBIT_PLATFORM: hallmarkService.getFoundingAsset('ORBIT_PLATFORM'),
+            JASON_FOUNDER: hallmarkService.getFoundingAsset('JASON_FOUNDER'),
+            SIDONIE_TEAM: hallmarkService.getFoundingAsset('SIDONIE_TEAM'),
+          }
+        : {};
+      res.json(assets);
+    } catch (error) {
+      console.error("Error fetching founding assets:", error);
+      res.status(500).json({ error: "Failed to fetch founding assets" });
     }
   });
 

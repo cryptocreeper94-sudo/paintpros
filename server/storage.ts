@@ -8,9 +8,13 @@ import {
   type CrmActivity, type InsertCrmActivity, crmActivities,
   type CrmNote, type InsertCrmNote, crmNotes,
   type UserPin, type InsertUserPin, userPins,
-  type BlockchainStamp, type InsertBlockchainStamp, blockchainStamps
+  type BlockchainStamp, type InsertBlockchainStamp, blockchainStamps,
+  type Hallmark, type InsertHallmark, hallmarks,
+  type HallmarkAudit, type InsertHallmarkAudit, hallmarkAudit,
+  type BlockchainHashQueue, type InsertBlockchainHashQueue, blockchainHashQueue,
+  assetNumberCounter
 } from "@shared/schema";
-import { desc, eq, ilike, or, and, sql } from "drizzle-orm";
+import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
 
 export interface IStorage {
   // Leads
@@ -68,6 +72,26 @@ export interface IStorage {
   getBlockchainStamps(): Promise<BlockchainStamp[]>;
   updateBlockchainStampStatus(id: string, status: string, txSignature?: string, slot?: number, blockTime?: Date): Promise<BlockchainStamp | undefined>;
   getBlockchainStampByHash(documentHash: string): Promise<BlockchainStamp | undefined>;
+  
+  // Hallmarks
+  createHallmark(hallmark: InsertHallmark): Promise<Hallmark>;
+  getHallmarks(): Promise<Hallmark[]>;
+  getHallmarkByNumber(hallmarkNumber: string): Promise<Hallmark | undefined>;
+  getHallmarkById(id: string): Promise<Hallmark | undefined>;
+  searchHallmarks(query: string): Promise<Hallmark[]>;
+  getHallmarksByType(assetType: string): Promise<Hallmark[]>;
+  updateHallmarkBlockchain(id: string, txSignature: string, explorerUrl: string): Promise<Hallmark | undefined>;
+  verifyHallmark(id: string): Promise<Hallmark | undefined>;
+  getNextAssetNumber(): Promise<number>;
+  
+  // Hallmark Audit
+  createHallmarkAudit(audit: InsertHallmarkAudit): Promise<HallmarkAudit>;
+  getHallmarkAudits(hallmarkId: string): Promise<HallmarkAudit[]>;
+  
+  // Blockchain Hash Queue
+  queueHashForAnchoring(data: InsertBlockchainHashQueue): Promise<BlockchainHashQueue>;
+  getQueuedHashes(): Promise<BlockchainHashQueue[]>;
+  updateQueueStatus(id: string, status: string, merkleRoot?: string, batchId?: string, txSignature?: string): Promise<BlockchainHashQueue | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -303,6 +327,116 @@ export class DatabaseStorage implements IStorage {
 
   async getBlockchainStampByHash(documentHash: string): Promise<BlockchainStamp | undefined> {
     const [result] = await db.select().from(blockchainStamps).where(eq(blockchainStamps.documentHash, documentHash));
+    return result;
+  }
+
+  // Hallmarks
+  async createHallmark(hallmark: InsertHallmark): Promise<Hallmark> {
+    const [result] = await db.insert(hallmarks).values(hallmark).returning();
+    return result;
+  }
+
+  async getHallmarks(): Promise<Hallmark[]> {
+    return await db.select().from(hallmarks).orderBy(desc(hallmarks.createdAt));
+  }
+
+  async getHallmarkByNumber(hallmarkNumber: string): Promise<Hallmark | undefined> {
+    const [result] = await db.select().from(hallmarks).where(eq(hallmarks.hallmarkNumber, hallmarkNumber));
+    return result;
+  }
+
+  async getHallmarkById(id: string): Promise<Hallmark | undefined> {
+    const [result] = await db.select().from(hallmarks).where(eq(hallmarks.id, id));
+    return result;
+  }
+
+  async searchHallmarks(query: string): Promise<Hallmark[]> {
+    return await db.select().from(hallmarks)
+      .where(or(
+        ilike(hallmarks.searchTerms, `%${query}%`),
+        ilike(hallmarks.hallmarkNumber, `%${query}%`),
+        ilike(hallmarks.recipientName, `%${query}%`)
+      ))
+      .orderBy(desc(hallmarks.createdAt));
+  }
+
+  async getHallmarksByType(assetType: string): Promise<Hallmark[]> {
+    return await db.select().from(hallmarks).where(eq(hallmarks.assetType, assetType)).orderBy(desc(hallmarks.createdAt));
+  }
+
+  async updateHallmarkBlockchain(id: string, txSignature: string, explorerUrl: string): Promise<Hallmark | undefined> {
+    const [result] = await db
+      .update(hallmarks)
+      .set({ blockchainTxSignature: txSignature, blockchainExplorerUrl: explorerUrl, updatedAt: new Date() })
+      .where(eq(hallmarks.id, id))
+      .returning();
+    return result;
+  }
+
+  async verifyHallmark(id: string): Promise<Hallmark | undefined> {
+    const [result] = await db
+      .update(hallmarks)
+      .set({ verifiedAt: new Date(), updatedAt: new Date() })
+      .where(eq(hallmarks.id, id))
+      .returning();
+    return result;
+  }
+
+  async getNextAssetNumber(): Promise<number> {
+    const [counter] = await db.select().from(assetNumberCounter);
+    if (!counter) {
+      await db.insert(assetNumberCounter).values({ nextMasterNumber: 3001 });
+      return 3000;
+    }
+    const currentNumber = counter.nextMasterNumber;
+    await db.update(assetNumberCounter)
+      .set({ nextMasterNumber: currentNumber + 1, updatedAt: new Date() })
+      .where(eq(assetNumberCounter.id, counter.id));
+    return currentNumber;
+  }
+
+  // Hallmark Audit
+  async createHallmarkAudit(audit: InsertHallmarkAudit): Promise<HallmarkAudit> {
+    const [result] = await db.insert(hallmarkAudit).values(audit).returning();
+    return result;
+  }
+
+  async getHallmarkAudits(hallmarkId: string): Promise<HallmarkAudit[]> {
+    return await db.select().from(hallmarkAudit)
+      .where(eq(hallmarkAudit.hallmarkId, hallmarkId))
+      .orderBy(desc(hallmarkAudit.createdAt));
+  }
+
+  // Blockchain Hash Queue
+  async queueHashForAnchoring(data: InsertBlockchainHashQueue): Promise<BlockchainHashQueue> {
+    const [result] = await db.insert(blockchainHashQueue).values(data).returning();
+    return result;
+  }
+
+  async getQueuedHashes(): Promise<BlockchainHashQueue[]> {
+    return await db.select().from(blockchainHashQueue)
+      .where(eq(blockchainHashQueue.status, 'queued'))
+      .orderBy(blockchainHashQueue.queuedAt);
+  }
+
+  async updateQueueStatus(
+    id: string, 
+    status: string, 
+    merkleRoot?: string, 
+    batchId?: string, 
+    txSignature?: string
+  ): Promise<BlockchainHashQueue | undefined> {
+    const updates: Partial<BlockchainHashQueue> = { status };
+    if (merkleRoot) updates.merkleRoot = merkleRoot;
+    if (batchId) updates.batchId = batchId;
+    if (txSignature) updates.transactionSignature = txSignature;
+    if (status === 'anchored') updates.anchoredAt = new Date();
+    
+    const [result] = await db
+      .update(blockchainHashQueue)
+      .set(updates)
+      .where(eq(blockchainHashQueue.id, id))
+      .returning();
     return result;
   }
 }

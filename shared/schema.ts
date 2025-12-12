@@ -201,3 +201,133 @@ export const insertBlockchainStampSchema = createInsertSchema(blockchainStamps).
 
 export type InsertBlockchainStamp = z.infer<typeof insertBlockchainStampSchema>;
 export type BlockchainStamp = typeof blockchainStamps.$inferSelect;
+
+// ============ ORBIT HALLMARK SYSTEM ============
+
+// Hallmarks Table - Unique asset identifiers
+export const hallmarks = pgTable("hallmarks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  hallmarkNumber: varchar("hallmark_number", { length: 50 }).notNull().unique(),
+  assetNumber: varchar("asset_number", { length: 30 }),
+  assetType: text("asset_type").notNull(),
+  referenceId: varchar("reference_id"),
+  createdBy: text("created_by").notNull(),
+  recipientName: text("recipient_name").notNull(),
+  recipientRole: text("recipient_role").notNull(),
+  contentHash: text("content_hash").notNull(),
+  metadata: jsonb("metadata").default({}),
+  searchTerms: text("search_terms"),
+  verifiedAt: timestamp("verified_at"),
+  blockchainTxSignature: text("blockchain_tx_signature"),
+  blockchainExplorerUrl: text("blockchain_explorer_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertHallmarkSchema = createInsertSchema(hallmarks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  verifiedAt: true,
+  blockchainTxSignature: true,
+  blockchainExplorerUrl: true,
+});
+
+export type InsertHallmark = z.infer<typeof insertHallmarkSchema>;
+export type Hallmark = typeof hallmarks.$inferSelect;
+
+// Hallmark Audit Table - Track all actions on hallmarks
+export const hallmarkAudit = pgTable("hallmark_audit", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  hallmarkId: varchar("hallmark_id").references(() => hallmarks.id).notNull(),
+  action: text("action").notNull(),
+  actor: text("actor").notNull(),
+  details: jsonb("details").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertHallmarkAuditSchema = createInsertSchema(hallmarkAudit).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertHallmarkAudit = z.infer<typeof insertHallmarkAuditSchema>;
+export type HallmarkAudit = typeof hallmarkAudit.$inferSelect;
+
+// Blockchain Hash Queue - For batched blockchain anchoring
+export const blockchainHashQueue = pgTable("blockchain_hash_queue", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  hallmarkId: varchar("hallmark_id").references(() => hallmarks.id).notNull(),
+  contentHash: text("content_hash").notNull(),
+  assetType: text("asset_type").notNull(),
+  status: text("status").notNull().default("queued"),
+  merkleRoot: text("merkle_root"),
+  batchId: varchar("batch_id"),
+  transactionSignature: text("transaction_signature"),
+  queuedAt: timestamp("queued_at").defaultNow().notNull(),
+  anchoredAt: timestamp("anchored_at"),
+});
+
+export const insertBlockchainHashQueueSchema = createInsertSchema(blockchainHashQueue).omit({
+  id: true,
+  queuedAt: true,
+  anchoredAt: true,
+  status: true,
+});
+
+export type InsertBlockchainHashQueue = z.infer<typeof insertBlockchainHashQueueSchema>;
+export type BlockchainHashQueue = typeof blockchainHashQueue.$inferSelect;
+
+// Asset Number Counter - For sequential numbering
+export const assetNumberCounter = pgTable("asset_number_counter", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  nextMasterNumber: integer("next_master_number").notNull().default(3000),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Founding Assets - Reserved immutable assets
+export const FOUNDING_ASSETS = {
+  ORBIT_PLATFORM: { 
+    number: '#000000001-00', 
+    special: '#FE-000000001-00',
+    name: 'Paint Pros by ORBIT', 
+    type: 'platform',
+    badge: 'Genesis Platform',
+  },
+  JASON_FOUNDER: { 
+    number: '#000000002-00', 
+    special: '#FE-000000002-00',
+    name: 'Jason', 
+    type: 'founder',
+    badge: 'Founding Developer',
+    access: 'dev-bypass',
+  },
+  SIDONIE_TEAM: { 
+    number: '#000000003-00', 
+    special: '#FE-000000003-00',
+    name: 'Sidonie', 
+    type: 'team',
+    badge: 'Founding Team',
+    access: 'read-only',
+  },
+} as const;
+
+// Edition Prefixes
+export const EDITION_PREFIXES = {
+  GE: 'Genesis Edition',
+  LE: 'Limited Edition',
+  SE: 'Special Edition',
+  FE: "Founder's Edition",
+  CE: "Collector's Edition",
+  ANN: 'Anniversary Edition',
+  PT: 'Platinum Tier',
+  DW: 'DarkWave Studios',
+  PP: 'Paint Pros Edition',
+} as const;
+
+// Anchorable asset types
+export const ANCHORABLE_TYPES = [
+  'invoice', 'paystub', 'payroll', 'letter', 'equipment', 'report',
+  'contract', 'certification', 'background_check', 'i9_verification',
+  'release', 'franchise', 'audit', 'estimate', 'quote'
+] as const;
