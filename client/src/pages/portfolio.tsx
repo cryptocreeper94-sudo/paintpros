@@ -3,21 +3,24 @@ import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { useTenant } from "@/context/TenantContext";
 
-// Import portfolio images
-import img1 from "@assets/image-6659437108452578519_1765556659912.jpg";
-import img2 from "@assets/image-4159103785892811837_1765556694068.jpg";
-import img3 from "@assets/image-7877320386517089825_1765556733833.jpg";
-import img4 from "@assets/image-9026901987564662371_1765556828087.jpg";
-import img5 from "@assets/image-7112493224091651029_1765556777283.jpg";
-import img6 from "@assets/image-3750419214632467212_1765556810890.jpg";
-import img7 from "@assets/image-4031028444572203316_1765556760806.jpg";
-import img8 from "@assets/image-5024505268070063169_1765556874455.jpg";
-import img9 from "@assets/image-2031027012020148910_1765556860483.jpg";
-import img10 from "@assets/image-7516974362034260370_1765556910322.jpg";
-import img11 from "@assets/image_1765557569989.png";
-import img12 from "@assets/image_1765558252664.png";
-import img13 from "@assets/image_1765558266319.png";
-import img14 from "@assets/image_1765558298096.png";
+// Import AI-generated portfolio images
+import masterBedroom from "@assets/generated_images/master_bedroom_refresh.png";
+import guestRoom from "@assets/generated_images/guest_room_transformation.png";
+import bedroomAccent from "@assets/generated_images/bedroom_accent_wall.png";
+import kitchenCabinet from "@assets/generated_images/kitchen_cabinet_refresh.png";
+import kitchenModern from "@assets/generated_images/modern_kitchen_paint.png";
+import kitchenIsland from "@assets/generated_images/kitchen_island_highlight.png";
+import masterBath from "@assets/generated_images/master_bath_makeover.png";
+import guestBath from "@assets/generated_images/guest_bath_update.png";
+import spaLikeBath from "@assets/generated_images/spa-like_bathroom.png";
+import livingRoom from "@assets/generated_images/living_room_transformation.png";
+import familyRoom from "@assets/generated_images/family_room_refresh.png";
+import denAccent from "@assets/generated_images/den_accent_colors.png";
+import diningRoom from "@assets/generated_images/dining_room_elegance.png";
+import exteriorHome from "@assets/generated_images/home_exterior_update.png";
+import trimDoor from "@assets/generated_images/trim_&_door_refresh.png";
+import garageDoor from "@assets/generated_images/garage_door_paint.png";
+import porch from "@assets/generated_images/porch_&_entry.png";
 
 interface PortfolioImage {
   id: string;
@@ -36,31 +39,31 @@ export default function Portfolio() {
 
   const portfolioImages: PortfolioImage[] = [
     // Bedrooms
-    { id: "bed-1", title: "Master Bedroom Refresh", category: "Bedroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, imageUrl: img1 },
-    { id: "bed-2", title: "Guest Room Transformation", category: "Bedroom", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img2 },
-    { id: "bed-3", title: "Bedroom Accent Wall", category: "Bedroom", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img3 },
+    { id: "bed-1", title: "Master Bedroom Refresh", category: "Bedroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, imageUrl: masterBedroom },
+    { id: "bed-2", title: "Guest Room Transformation", category: "Bedroom", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: guestRoom },
+    { id: "bed-3", title: "Bedroom Accent Wall", category: "Bedroom", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, imageUrl: bedroomAccent },
     
     // Kitchens
-    { id: "kit-1", title: "Kitchen Cabinet Refresh", category: "Kitchen", location: areas[0] || cityName, colSpan: 8, rowSpan: 2, imageUrl: img4 },
-    { id: "kit-2", title: "Modern Kitchen Paint", category: "Kitchen", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img5 },
-    { id: "kit-3", title: "Kitchen Island Highlight", category: "Kitchen", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img6 },
+    { id: "kit-1", title: "Kitchen Cabinet Refresh", category: "Kitchen", location: areas[0] || cityName, colSpan: 8, rowSpan: 2, imageUrl: kitchenCabinet },
+    { id: "kit-2", title: "Modern Kitchen Paint", category: "Kitchen", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: kitchenModern },
+    { id: "kit-3", title: "Kitchen Island Highlight", category: "Kitchen", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, imageUrl: kitchenIsland },
     
     // Bathrooms
-    { id: "bath-1", title: "Master Bath Makeover", category: "Bathroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, imageUrl: img7 },
-    { id: "bath-2", title: "Guest Bath Update", category: "Bathroom", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, imageUrl: img8 },
-    { id: "bath-3", title: "Spa-Like Bathroom", category: "Bathroom", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, imageUrl: img9 },
+    { id: "bath-1", title: "Master Bath Makeover", category: "Bathroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, imageUrl: masterBath },
+    { id: "bath-2", title: "Guest Bath Update", category: "Bathroom", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, imageUrl: guestBath },
+    { id: "bath-3", title: "Spa-Like Bathroom", category: "Bathroom", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, imageUrl: spaLikeBath },
     
     // Living Areas
-    { id: "living-1", title: "Living Room Transformation", category: "Living Area", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, imageUrl: img10 },
-    { id: "living-2", title: "Family Room Refresh", category: "Living Area", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, imageUrl: img11 },
-    { id: "living-3", title: "Den Accent Colors", category: "Living Area", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, imageUrl: img12 },
-    { id: "living-4", title: "Dining Room Elegance", category: "Living Area", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img13 },
+    { id: "living-1", title: "Living Room Transformation", category: "Living Area", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, imageUrl: livingRoom },
+    { id: "living-2", title: "Family Room Refresh", category: "Living Area", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, imageUrl: familyRoom },
+    { id: "living-3", title: "Den Accent Colors", category: "Living Area", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, imageUrl: denAccent },
+    { id: "living-4", title: "Dining Room Elegance", category: "Living Area", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, imageUrl: diningRoom },
     
     // Exteriors
-    { id: "ext-1", title: "Home Exterior Update", category: "Exterior", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, imageUrl: img14 },
-    { id: "ext-2", title: "Trim & Door Refresh", category: "Exterior", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img1 },
-    { id: "ext-3", title: "Garage Door Paint", category: "Exterior", location: areas[2] || cityName, colSpan: 2, rowSpan: 1, imageUrl: img2 },
-    { id: "ext-4", title: "Porch & Entry", category: "Exterior", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, imageUrl: img3 },
+    { id: "ext-1", title: "Home Exterior Update", category: "Exterior", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, imageUrl: exteriorHome },
+    { id: "ext-2", title: "Trim & Door Refresh", category: "Exterior", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: trimDoor },
+    { id: "ext-3", title: "Garage Door Paint", category: "Exterior", location: areas[2] || cityName, colSpan: 2, rowSpan: 1, imageUrl: garageDoor },
+    { id: "ext-4", title: "Porch & Entry", category: "Exterior", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, imageUrl: porch },
   ];
 
   const getCategoryColor = (category: string): string => {
