@@ -5,8 +5,9 @@ import {
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
   insertBlockchainStampSchema, insertHallmarkSchema, insertProposalTemplateSchema, insertProposalSchema,
-  insertPaymentSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
+  insertPaymentSchema, insertRoomScanSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
 } from "@shared/schema";
+import OpenAI from "openai";
 import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
@@ -1365,6 +1366,162 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching estimate payments:", error);
       res.status(500).json({ error: "Failed to fetch payments" });
+    }
+  });
+
+  // ============ ROOM SCAN (AI Vision) ============
+  
+  // POST /api/room-scan - Analyze room image with AI Vision
+  app.post("/api/room-scan", async (req, res) => {
+    try {
+      const { imageBase64, leadId, estimateId, roomType } = req.body;
+      
+      if (!imageBase64) {
+        res.status(400).json({ error: "Image data required" });
+        return;
+      }
+      
+      const openaiKey = process.env.OPENAI_API_KEY;
+      if (!openaiKey) {
+        res.status(500).json({ error: "AI service not configured" });
+        return;
+      }
+      
+      // Create initial scan record (store truncated image reference)
+      const scanData = {
+        leadId: leadId || undefined,
+        estimateId: estimateId || undefined,
+        imageUrl: imageBase64.substring(0, 100) + "...",
+        roomType: roomType || "unknown",
+        modelVersion: "gpt-4o",
+      };
+      const scan = await storage.createRoomScan(scanData);
+      
+      // Update status to processing
+      await storage.updateRoomScanResult(scan.id, { status: "processing" });
+      
+      try {
+        const openai = new OpenAI({ apiKey: openaiKey });
+        
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert at estimating room dimensions from photographs. 
+Analyze the image and estimate the room's approximate dimensions.
+Consider visual cues like:
+- Standard door heights (6'8" or 80 inches)
+- Standard ceiling heights (8-10 feet)
+- Furniture sizes for scale
+- Floor tiles or flooring patterns
+- Outlet and switch plate sizes
+
+IMPORTANT: Provide conservative estimates. It's better to underestimate than overestimate.
+
+Respond ONLY with a JSON object in this exact format:
+{
+  "length_ft": <number>,
+  "width_ft": <number>,
+  "height_ft": <number>,
+  "square_footage": <number>,
+  "confidence": <number 0-100>,
+  "room_type_detected": "<string>",
+  "reasoning": "<brief explanation of how you estimated>"
+}
+
+Do not include any text before or after the JSON.`
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: `Analyze this ${roomType || 'room'} image and estimate its dimensions for painting purposes.`
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: imageBase64.startsWith("data:") ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`,
+                    detail: "high"
+                  }
+                }
+              ]
+            }
+          ],
+          max_tokens: 500
+        });
+        
+        const content = response.choices[0]?.message?.content || "";
+        
+        // Parse AI response
+        let parsed;
+        try {
+          // Extract JSON from response (handle potential markdown code blocks)
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) throw new Error("No JSON found in response");
+          parsed = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+          console.error("Failed to parse AI response:", content);
+          await storage.updateRoomScanResult(scan.id, { 
+            status: "failed",
+            errorMessage: "Failed to parse AI response",
+            aiResponse: { raw: content }
+          });
+          res.status(500).json({ error: "Failed to parse room analysis" });
+          return;
+        }
+        
+        // Update scan with results
+        const updated = await storage.updateRoomScanResult(scan.id, {
+          status: "completed",
+          estimatedLength: parsed.length_ft?.toString(),
+          estimatedWidth: parsed.width_ft?.toString(),
+          estimatedHeight: parsed.height_ft?.toString(),
+          estimatedSquareFootage: parsed.square_footage?.toString(),
+          confidence: parsed.confidence?.toString(),
+          roomType: parsed.room_type_detected || roomType,
+          aiResponse: parsed
+        });
+        
+        res.json({
+          id: scan.id,
+          estimatedSquareFootage: parsed.square_footage,
+          estimatedLength: parsed.length_ft,
+          estimatedWidth: parsed.width_ft,
+          estimatedHeight: parsed.height_ft,
+          confidence: parsed.confidence,
+          roomType: parsed.room_type_detected || roomType,
+          reasoning: parsed.reasoning,
+          status: "completed"
+        });
+        
+      } catch (aiError: any) {
+        console.error("OpenAI Vision error:", aiError);
+        await storage.updateRoomScanResult(scan.id, { 
+          status: "failed",
+          errorMessage: aiError.message || "AI processing failed"
+        });
+        res.status(500).json({ 
+          error: "Failed to analyze room image",
+          details: aiError.message
+        });
+      }
+      
+    } catch (error) {
+      console.error("Error processing room scan:", error);
+      res.status(500).json({ error: "Failed to process room scan" });
+    }
+  });
+  
+  // GET /api/room-scans/:leadId - Get scans for a lead
+  app.get("/api/room-scans/:leadId", async (req, res) => {
+    try {
+      const scans = await storage.getRoomScansByLead(req.params.leadId);
+      res.json(scans);
+    } catch (error) {
+      console.error("Error fetching room scans:", error);
+      res.status(500).json({ error: "Failed to fetch room scans" });
     }
   });
 
