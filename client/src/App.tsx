@@ -16,6 +16,7 @@ import Admin from "@/pages/admin";
 import Owner from "@/pages/owner";
 import Developer from "@/pages/developer";
 import AreaManager from "@/pages/area-manager";
+import Verify from "@/pages/verify";
 
 function Router() {
   return (
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/owner" component={Owner} />
       <Route path="/area-manager" component={AreaManager} />
       <Route path="/developer" component={Developer} />
+      <Route path="/verify/:hallmarkNumber" component={Verify} />
       <Route component={NotFound} />
     </Switch>
   );

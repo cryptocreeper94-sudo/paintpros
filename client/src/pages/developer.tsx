@@ -5,8 +5,11 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
+import { getAssetBadge, formatDate } from "@/lib/hallmark";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const DEVELOPER_PIN = "0424";
 
@@ -541,6 +544,288 @@ function SolanaModalContent() {
   );
 }
 
+interface Hallmark {
+  id: string;
+  hallmarkNumber: string;
+  assetNumber?: string;
+  assetType: string;
+  recipientName: string;
+  recipientRole: string;
+  contentHash: string;
+  createdAt: string;
+  blockchainTxSignature?: string;
+}
+
+function HallmarkModalContent() {
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<"list" | "create" | "search">("list");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newHallmark, setNewHallmark] = useState({
+    assetType: "document",
+    recipientName: "",
+    recipientRole: "client" as const,
+    content: "",
+    metadata: {}
+  });
+
+  const { data: hallmarks = [], isLoading } = useQuery<Hallmark[]>({
+    queryKey: ["/api/hallmarks"],
+    queryFn: async () => {
+      const res = await fetch("/api/hallmarks");
+      if (!res.ok) throw new Error("Failed to fetch hallmarks");
+      return res.json();
+    }
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: typeof newHallmark) => {
+      const res = await fetch("/api/hallmarks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error("Failed to create hallmark");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/hallmarks"] });
+      toast.success("Hallmark created successfully!");
+      setNewHallmark({ assetType: "document", recipientName: "", recipientRole: "client", content: "", metadata: {} });
+      setActiveTab("list");
+    },
+    onError: () => {
+      toast.error("Failed to create hallmark");
+    }
+  });
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  };
+
+  const filteredHallmarks = searchQuery
+    ? hallmarks.filter(h => 
+        h.hallmarkNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        h.recipientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        h.assetType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        h.assetNumber?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : hallmarks;
+
+  const tabs = [
+    { id: "list" as const, label: "All Hallmarks", icon: <FileText className="w-4 h-4" /> },
+    { id: "create" as const, label: "Create", icon: <Plus className="w-4 h-4" /> },
+    { id: "search" as const, label: "Search", icon: <Search className="w-4 h-4" /> }
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 p-1 bg-white/5 rounded-xl">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+              activeTab === tab.id 
+                ? "bg-amber-500/20 text-amber-400" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            data-testid={`tab-hallmark-${tab.id}`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "list" && (
+        <div className="space-y-3 max-h-64 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+            </div>
+          ) : filteredHallmarks.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Award className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>No hallmarks found</p>
+            </div>
+          ) : (
+            filteredHallmarks.slice(0, 10).map((hallmark) => {
+              const badge = getAssetBadge(hallmark.assetNumber || hallmark.hallmarkNumber);
+              return (
+                <div
+                  key={hallmark.id}
+                  className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-amber-500/30 transition-colors"
+                  data-testid={`hallmark-item-${hallmark.id}`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span>{badge.icon}</span>
+                      <span className="text-sm font-bold" style={{ color: badge.color }}>
+                        {badge.tier}
+                      </span>
+                    </div>
+                    {hallmark.blockchainTxSignature && (
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <code className="text-xs font-mono">{hallmark.hallmarkNumber}</code>
+                    <button
+                      onClick={() => copyToClipboard(hallmark.hallmarkNumber)}
+                      className="p-1 hover:bg-white/10 rounded"
+                      data-testid="button-copy-hallmark-id"
+                    >
+                      <Copy className="w-3 h-3 text-muted-foreground" />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                    <span>{hallmark.recipientName}</span>
+                    <span className="capitalize">{hallmark.assetType.replace(/_/g, ' ')}</span>
+                  </div>
+                  {hallmark.assetNumber && (
+                    <div className="mt-1">
+                      <code className="text-xs font-mono" style={{ color: badge.color }}>
+                        {hallmark.assetNumber}
+                      </code>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {activeTab === "create" && (
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Asset Type</label>
+            <select
+              value={newHallmark.assetType}
+              onChange={(e) => setNewHallmark(prev => ({ ...prev, assetType: e.target.value }))}
+              className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm"
+              data-testid="select-hallmark-type"
+            >
+              <option value="document">Document</option>
+              <option value="invoice">Invoice</option>
+              <option value="estimate">Estimate</option>
+              <option value="contract">Contract</option>
+              <option value="paystub">Paystub</option>
+              <option value="certification">Certification</option>
+              <option value="report">Report</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Recipient Name</label>
+            <Input
+              value={newHallmark.recipientName}
+              onChange={(e) => setNewHallmark(prev => ({ ...prev, recipientName: e.target.value }))}
+              placeholder="Enter recipient name"
+              className="bg-black/30 border-white/20"
+              data-testid="input-hallmark-recipient"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Recipient Role</label>
+            <select
+              value={newHallmark.recipientRole}
+              onChange={(e) => setNewHallmark(prev => ({ ...prev, recipientRole: e.target.value as any }))}
+              className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm"
+              data-testid="select-hallmark-role"
+            >
+              <option value="client">Client</option>
+              <option value="employee">Employee</option>
+              <option value="owner">Owner</option>
+              <option value="admin">Admin</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Content (for hash)</label>
+            <textarea
+              value={newHallmark.content}
+              onChange={(e) => setNewHallmark(prev => ({ ...prev, content: e.target.value }))}
+              placeholder="Enter content to be hashed..."
+              className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm h-20 resize-none"
+              data-testid="textarea-hallmark-content"
+            />
+          </div>
+          <motion.button
+            onClick={() => createMutation.mutate(newHallmark)}
+            disabled={createMutation.isPending || !newHallmark.recipientName || !newHallmark.content}
+            className="w-full p-3 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors disabled:opacity-50"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            data-testid="button-create-hallmark"
+          >
+            {createMutation.isPending ? (
+              <Loader2 className="w-4 h-4 inline mr-2 animate-spin" />
+            ) : (
+              <Award className="w-4 h-4 inline mr-2" />
+            )}
+            Create Hallmark
+          </motion.button>
+        </div>
+      )}
+
+      {activeTab === "search" && (
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by hallmark number, recipient, type..."
+              className="bg-black/30 border-white/20 pl-10"
+              data-testid="input-search-hallmark"
+            />
+          </div>
+          <div className="space-y-3 max-h-48 overflow-y-auto">
+            {filteredHallmarks.length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground">
+                <p className="text-sm">No results found</p>
+              </div>
+            ) : (
+              filteredHallmarks.map((hallmark) => {
+                const badge = getAssetBadge(hallmark.assetNumber || hallmark.hallmarkNumber);
+                return (
+                  <a
+                    key={hallmark.id}
+                    href={`/verify/${hallmark.hallmarkNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-white/5 rounded-lg border border-white/10 hover:border-amber-500/30 transition-colors"
+                    data-testid={`search-result-${hallmark.id}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span>{badge.icon}</span>
+                        <code className="text-xs font-mono">{hallmark.hallmarkNumber}</code>
+                      </div>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {hallmark.recipientName} • {hallmark.assetType.replace(/_/g, ' ')}
+                    </div>
+                  </a>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+        <PoweredByOrbit size="sm" />
+        <span className="text-xs text-muted-foreground">
+          {hallmarks.length} total hallmarks
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function Developer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
@@ -731,6 +1016,11 @@ export default function Developer() {
       title: "Solana Blockchain Stamping",
       icon: <Coins className="w-8 h-8 text-gold-400" />,
       content: <SolanaModalContent />,
+    },
+    hallmarks: {
+      title: "ORBIT Hallmark System",
+      icon: <Award className="w-8 h-8 text-amber-400" />,
+      content: <HallmarkModalContent />,
     },
     darkwave: {
       title: "Darkwave Dev Hub Connection",
@@ -1058,6 +1348,23 @@ export default function Developer() {
                   <h3 className="text-xl font-bold">Solana Stamping</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Blockchain-verified estimates</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("hallmarks")}
+              data-testid="card-hallmarks"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-amber-500/10 to-transparent">
+                <div className="flex items-center gap-3 mb-4">
+                  <Award className="w-5 h-5 text-amber-400" />
+                  <h3 className="text-xl font-bold">Hallmarks</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">ORBIT asset verification</p>
               </GlassCard>
             </motion.div>
           </BentoItem>
