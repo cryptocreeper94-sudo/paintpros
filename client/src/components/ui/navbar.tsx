@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useTheme } from "@/context/ThemeContext";
 import nppLogoFull from "@assets/npp_logo_full.png";
-import nppEmblem from "@assets/npp_emblem.png";
+// @ts-ignore - JPG asset import  
+import nppLogoOriginal from "@assets/Logo_NPP_Vertical_Light_1_(1)_1765570197644.JPG";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +31,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-4 md:px-8 py-3 flex items-center justify-between">
         {/* Left: Logo */}
         <Link href="/" data-testid="link-logo-home">
@@ -86,20 +87,20 @@ export function Navbar() {
             )}
           </button>
 
-          {/* Emblem as Hamburger Trigger */}
+          {/* Logo as Hamburger Trigger */}
           <button 
-            className="h-11 w-auto p-1 hover:bg-white/10 rounded-lg transition-all" 
+            className="h-16 w-auto p-1 hover:bg-white/10 rounded-lg transition-all" 
             onClick={() => setIsOpen(!isOpen)}
             data-testid="button-hamburger-menu"
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X size={28} className="text-accent" />
+              <X size={32} className="text-white" />
             ) : (
               <img 
-                src={nppEmblem} 
+                src={nppLogoOriginal} 
                 alt="Menu"
-                className="h-9 w-auto object-contain"
+                className="h-14 w-auto object-contain"
               />
             )}
           </button>
