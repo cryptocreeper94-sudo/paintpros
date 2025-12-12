@@ -460,17 +460,33 @@ export default function Estimate() {
                     </p>
                   </div>
 
+                  {/* Calibration & Best Practices */}
+                  <div className="bg-accent/10 border border-accent/20 rounded-xl p-4 mb-4">
+                    <div className="flex items-start gap-3">
+                      <Camera className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium text-accent mb-2">Calibration Tips for Best Results</p>
+                        <ul className="text-muted-foreground space-y-1 text-xs">
+                          <li><strong>1. Include a door</strong> - Standard doors are 6'8" (80") tall. This helps AI calibrate scale.</li>
+                          <li><strong>2. Stand in corner</strong> - Capture 2 walls for better depth perception.</li>
+                          <li><strong>3. Include furniture</strong> - Standard items (beds, sofas) provide additional scale reference.</li>
+                          <li><strong>4. Good lighting</strong> - Well-lit rooms give clearer dimension cues.</li>
+                          <li><strong>5. Landscape mode</strong> - Hold phone horizontally for wider field of view.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Disclaimers */}
                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                       <div className="text-sm">
-                        <p className="font-medium text-amber-400 mb-1">Important Disclaimers</p>
+                        <p className="font-medium text-amber-400 mb-1">Disclaimer</p>
                         <ul className="text-muted-foreground space-y-1 text-xs">
-                          <li>• AI estimates are approximations only</li>
-                          <li>• For accurate pricing, professional measurement is recommended</li>
-                          <li>• Best results with wide-angle photos showing full room</li>
-                          <li>• Include doors or furniture for scale reference</li>
+                          <li>• AI estimates are approximations only (±10-20% accuracy)</li>
+                          <li>• For final pricing, professional measurement is required</li>
+                          <li>• Results improve with better calibration references</li>
                         </ul>
                       </div>
                     </div>
