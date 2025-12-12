@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useTheme } from "@/context/ThemeContext";
-import nppEmblem from "@assets/npp_emblem_clean.png";
-import nppText from "@assets/npp_text_clean.png";
+import nppEmblem from "@assets/npp_emblem_full.png";
+import nppText from "@assets/npp_text_full.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,29 +30,45 @@ export function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="w-full px-4 md:px-8 py-3 flex items-center justify-between">
-        {/* Left: Logo - Emblem and Text side by side */}
-        <Link href="/" data-testid="link-logo-home" className="flex items-center gap-4">
-          <img 
-            src={nppEmblem} 
-            alt=""
-            className="h-16 md:h-20 w-auto object-contain cursor-pointer"
-          />
-          <img 
-            src={nppText} 
-            alt={tenant.name}
-            className="h-12 md:h-16 w-auto object-contain cursor-pointer hidden sm:block"
-          />
-        </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
+      <div className="w-full px-2 md:px-4 py-1 flex items-center justify-between">
+        {/* Left: Hamburger Emblem + Company Name */}
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Hamburger Menu Trigger - Emblem with paint roller */}
+          <button 
+            className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0" 
+            onClick={() => setIsOpen(!isOpen)}
+            data-testid="button-hamburger-menu"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? (
+              <X size={40} className="text-white" />
+            ) : (
+              <img 
+                src={nppEmblem} 
+                alt="Menu"
+                className="h-12 md:h-14 w-auto object-contain"
+              />
+            )}
+          </button>
 
-        {/* Center/Right: Desktop Nav */}
+          {/* Company Name - Next to hamburger */}
+          <Link href="/" data-testid="link-logo-home">
+            <img 
+              src={nppText} 
+              alt={tenant.name}
+              className="h-8 md:h-10 w-auto object-contain cursor-pointer"
+            />
+          </Link>
+        </div>
+
+        {/* Right: Desktop Nav Links + Theme Toggle */}
         <div className="hidden md:flex items-center gap-6">
           {mainLinks.map((link) => (
             <Link key={link.name} href={link.href}>
               <span className={cn(
                 "text-sm font-medium transition-colors cursor-pointer hover:text-accent",
-                link.highlight ? "text-accent font-bold" : "text-muted-foreground",
+                link.highlight ? "text-accent font-bold" : "text-white/80",
                 location === link.href && "text-accent"
               )}>
                 {link.name}
@@ -70,14 +86,13 @@ export function Navbar() {
             {theme === "dark" ? (
               <Sun className="w-4 h-4 text-accent" />
             ) : (
-              <Moon className="w-4 h-4 text-foreground" />
+              <Moon className="w-4 h-4 text-white" />
             )}
           </button>
         </div>
 
-        {/* Mobile: Theme Toggle + Emblem Hamburger */}
-        <div className="flex md:hidden items-center gap-3">
-          {/* Theme Toggle */}
+        {/* Mobile: Theme Toggle only (hamburger is on left now) */}
+        <div className="flex md:hidden items-center">
           <button 
             onClick={toggleTheme}
             className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
@@ -87,25 +102,7 @@ export function Navbar() {
             {theme === "dark" ? (
               <Sun className="w-4 h-4 text-accent" />
             ) : (
-              <Moon className="w-4 h-4 text-foreground" />
-            )}
-          </button>
-
-          {/* Emblem as Hamburger Trigger */}
-          <button 
-            className="h-16 w-auto p-1 hover:bg-white/10 rounded-lg transition-all" 
-            onClick={() => setIsOpen(!isOpen)}
-            data-testid="button-hamburger-menu"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? (
-              <X size={32} className="text-white" />
-            ) : (
-              <img 
-                src={nppEmblem} 
-                alt="Menu"
-                className="h-14 w-auto object-contain"
-              />
+              <Moon className="w-4 h-4 text-white" />
             )}
           </button>
         </div>
