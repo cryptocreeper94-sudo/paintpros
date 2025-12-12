@@ -5,9 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useTheme } from "@/context/ThemeContext";
-import nppLogoFull from "@assets/npp_logo_full.png";
-// @ts-ignore - JPG asset import  
-import nppLogoOriginal from "@assets/Logo_NPP_Vertical_Light_1_(1)_1765570197644.JPG";
+import nppEmblem from "@assets/npp_emblem_clean.png";
+import nppText from "@assets/npp_text_clean.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,12 +32,17 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-4 md:px-8 py-3 flex items-center justify-between">
-        {/* Left: Logo */}
-        <Link href="/" data-testid="link-logo-home">
+        {/* Left: Logo - Emblem and Text side by side */}
+        <Link href="/" data-testid="link-logo-home" className="flex items-center gap-4">
           <img 
-            src={nppLogoFull} 
+            src={nppEmblem} 
+            alt=""
+            className="h-16 md:h-20 w-auto object-contain cursor-pointer"
+          />
+          <img 
+            src={nppText} 
             alt={tenant.name}
-            className="h-12 md:h-14 w-auto object-contain cursor-pointer"
+            className="h-12 md:h-16 w-auto object-contain cursor-pointer hidden sm:block"
           />
         </Link>
 
@@ -87,7 +91,7 @@ export function Navbar() {
             )}
           </button>
 
-          {/* Logo as Hamburger Trigger */}
+          {/* Emblem as Hamburger Trigger */}
           <button 
             className="h-16 w-auto p-1 hover:bg-white/10 rounded-lg transition-all" 
             onClick={() => setIsOpen(!isOpen)}
@@ -98,7 +102,7 @@ export function Navbar() {
               <X size={32} className="text-white" />
             ) : (
               <img 
-                src={nppLogoOriginal} 
+                src={nppEmblem} 
                 alt="Menu"
                 className="h-14 w-auto object-contain"
               />
