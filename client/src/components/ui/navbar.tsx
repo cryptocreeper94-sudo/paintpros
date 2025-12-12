@@ -39,21 +39,20 @@ export function Navbar() {
             onClick={() => setIsOpen(!isOpen)}
             data-testid="button-hamburger-menu"
             aria-label="Toggle menu"
-            style={{ marginLeft: '-140px', marginTop: '-40px' }}
           >
             {isOpen ? (
-              <X size={56} className="text-white" />
+              <X size={40} className="text-white" />
             ) : (
               <img 
                 src={nppEmblem} 
                 alt="Menu"
-                className="h-20 md:h-[90px] w-auto object-contain"
+                className="h-12 md:h-16 w-auto object-contain"
               />
             )}
           </button>
           <div 
-            className="text-white tracking-wide text-base md:text-xl" 
-            style={{ fontFamily: 'Playfair Display, serif', marginLeft: '-95px' }}
+            className="text-white tracking-wide text-sm md:text-lg" 
+            style={{ fontFamily: 'Playfair Display, serif' }}
             data-testid="text-header-title"
           >
             Nashville Painting Professionals
