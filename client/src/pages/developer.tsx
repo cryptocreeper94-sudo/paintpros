@@ -832,13 +832,20 @@ export default function Developer() {
   const [error, setError] = useState("");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [currentVersion, setCurrentVersion] = useState("1.0.0");
-  const [buildNumber, setBuildNumber] = useState(1);
+  const [buildNumber, setBuildNumber] = useState(0);
+  const [lastReleaseId, setLastReleaseId] = useState<string | null>(null);
+  const [isStamping, setIsStamping] = useState(false);
+  const [stampStatus, setStampStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedVersion = localStorage.getItem("app_version") || "1.0.0";
-    const storedBuild = parseInt(localStorage.getItem("build_number") || "1");
-    setCurrentVersion(storedVersion);
-    setBuildNumber(storedBuild);
+    fetch('/api/releases/latest')
+      .then(res => res.json())
+      .then(data => {
+        setCurrentVersion(data.version || "1.0.0");
+        setBuildNumber(data.buildNumber || 0);
+        if (data.id) setLastReleaseId(data.id);
+      })
+      .catch(() => {});
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -852,24 +859,75 @@ export default function Developer() {
     }
   };
 
-  const bumpVersion = (type: "major" | "minor" | "patch") => {
-    const parts = currentVersion.split(".").map(Number);
-    if (type === "major") {
-      parts[0]++;
-      parts[1] = 0;
-      parts[2] = 0;
-    } else if (type === "minor") {
-      parts[1]++;
-      parts[2] = 0;
-    } else {
-      parts[2]++;
+  const bumpVersion = async (type: "major" | "minor" | "patch") => {
+    try {
+      setStampStatus('Creating new version...');
+      const response = await fetch('/api/releases/bump', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bumpType: type }),
+      });
+      if (!response.ok) {
+        setStampStatus('Failed to create version');
+        return;
+      }
+      const data = await response.json();
+      if (data.release) {
+        setCurrentVersion(data.release.version);
+        setBuildNumber(data.release.buildNumber);
+        setLastReleaseId(data.release.id);
+        setStampStatus(`v${data.release.version} created - auto-stamping to Solana...`);
+        
+        setIsStamping(true);
+        try {
+          const stampResponse = await fetch(`/api/releases/${data.release.id}/stamp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ network: 'mainnet-beta' }),
+          });
+          if (stampResponse.ok) {
+            const stampData = await stampResponse.json();
+            if (stampData.blockchain?.signature) {
+              setStampStatus(`✓ v${data.release.version} stamped: ${stampData.blockchain.signature.slice(0, 16)}...`);
+            } else {
+              setStampStatus(`✓ v${data.release.version} created (stamp pending)`);
+            }
+          } else {
+            setStampStatus(`✓ v${data.release.version} created (stamp unavailable)`);
+          }
+        } catch {
+          setStampStatus(`✓ v${data.release.version} created (stamp unavailable)`);
+        } finally {
+          setIsStamping(false);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to bump version:', err);
+      setStampStatus('Failed to create version');
     }
-    const newVersion = parts.join(".");
-    const newBuild = buildNumber + 1;
-    setCurrentVersion(newVersion);
-    setBuildNumber(newBuild);
-    localStorage.setItem("app_version", newVersion);
-    localStorage.setItem("build_number", String(newBuild));
+  };
+
+  const stampToSolana = async () => {
+    if (!lastReleaseId) return;
+    setIsStamping(true);
+    setStampStatus('Stamping to Solana...');
+    try {
+      const response = await fetch(`/api/releases/${lastReleaseId}/stamp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ network: 'mainnet-beta' }),
+      });
+      const data = await response.json();
+      if (data.blockchain?.signature) {
+        setStampStatus(`✓ Stamped to Solana: ${data.blockchain.signature.slice(0, 16)}...`);
+      } else {
+        setStampStatus('Stamp pending confirmation');
+      }
+    } catch (err) {
+      setStampStatus('Failed to stamp to Solana');
+    } finally {
+      setIsStamping(false);
+    }
   };
 
   const modalContents: Record<string, ModalContent> = {
@@ -1003,10 +1061,31 @@ export default function Developer() {
               <p className="text-xs opacity-70">Breaking changes</p>
             </motion.button>
           </div>
+          
+          {lastReleaseId && (
+            <motion.button
+              onClick={stampToSolana}
+              disabled={isStamping}
+              className="w-full p-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 text-amber-400 hover:from-amber-500/30 hover:to-yellow-500/30 transition-colors disabled:opacity-50"
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              data-testid="button-stamp-solana"
+            >
+              <p className="font-bold">{isStamping ? 'Stamping...' : 'Stamp to Solana Blockchain'}</p>
+              <p className="text-xs opacity-70">Create permanent on-chain record</p>
+            </motion.button>
+          )}
+          
+          {stampStatus && (
+            <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+              <p className="text-sm text-center text-muted-foreground">{stampStatus}</p>
+            </div>
+          )}
+          
           <div className="bg-white/5 rounded-xl p-4 border border-white/10">
             <p className="text-sm text-muted-foreground">
               <Clock className="w-4 h-4 inline mr-2" />
-              Auto-versioning tracks all deployments with semantic versioning
+              Version bumps create hallmarks automatically
             </p>
           </div>
         </div>
