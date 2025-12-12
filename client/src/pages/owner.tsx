@@ -1,7 +1,7 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,6 +31,11 @@ export default function Owner() {
 
   const { data: seoTags = [], isLoading: tagsLoading } = useQuery<SeoTag[]>({
     queryKey: ["/api/seo-tags"],
+    queryFn: async () => {
+      const res = await fetch("/api/seo-tags");
+      if (!res.ok) throw new Error("Failed to fetch SEO tags");
+      return res.json();
+    },
     enabled: isAuthenticated,
   });
 

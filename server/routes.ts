@@ -149,10 +149,16 @@ export async function registerRoutes(
     }
   });
 
-  // GET /api/seo-tags - Get all SEO tags
+  // GET /api/seo-tags - Get all SEO tags (optionally filter by type)
   app.get("/api/seo-tags", async (req, res) => {
     try {
-      const tags = await storage.getSeoTags();
+      const { type } = req.query;
+      let tags;
+      if (type && typeof type === "string") {
+        tags = await storage.getSeoTagsByType(type);
+      } else {
+        tags = await storage.getSeoTags();
+      }
       res.json(tags);
     } catch (error) {
       console.error("Error fetching SEO tags:", error);
