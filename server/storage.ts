@@ -7,7 +7,8 @@ import {
   type CrmDeal, type InsertCrmDeal, crmDeals,
   type CrmActivity, type InsertCrmActivity, crmActivities,
   type CrmNote, type InsertCrmNote, crmNotes,
-  type UserPin, type InsertUserPin, userPins
+  type UserPin, type InsertUserPin, userPins,
+  type BlockchainStamp, type InsertBlockchainStamp, blockchainStamps
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql } from "drizzle-orm";
 
@@ -60,6 +61,13 @@ export interface IStorage {
   getUserPinByRole(role: string): Promise<UserPin | undefined>;
   createOrUpdateUserPin(data: InsertUserPin): Promise<UserPin>;
   updateUserPin(role: string, pin: string, mustChangePin: boolean): Promise<UserPin | undefined>;
+  
+  // Blockchain Stamps
+  createBlockchainStamp(stamp: InsertBlockchainStamp): Promise<BlockchainStamp>;
+  getBlockchainStampsByEntity(entityType: string, entityId: string): Promise<BlockchainStamp[]>;
+  getBlockchainStamps(): Promise<BlockchainStamp[]>;
+  updateBlockchainStampStatus(id: string, status: string, txSignature?: string, slot?: number, blockTime?: Date): Promise<BlockchainStamp | undefined>;
+  getBlockchainStampByHash(documentHash: string): Promise<BlockchainStamp | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -260,6 +268,41 @@ export class DatabaseStorage implements IStorage {
       .set({ pin, mustChangePin, updatedAt: new Date() })
       .where(eq(userPins.role, role))
       .returning();
+    return result;
+  }
+
+  // Blockchain Stamps
+  async createBlockchainStamp(stamp: InsertBlockchainStamp): Promise<BlockchainStamp> {
+    const [result] = await db.insert(blockchainStamps).values(stamp).returning();
+    return result;
+  }
+
+  async getBlockchainStampsByEntity(entityType: string, entityId: string): Promise<BlockchainStamp[]> {
+    return await db.select().from(blockchainStamps)
+      .where(and(eq(blockchainStamps.entityType, entityType), eq(blockchainStamps.entityId, entityId)))
+      .orderBy(desc(blockchainStamps.createdAt));
+  }
+
+  async getBlockchainStamps(): Promise<BlockchainStamp[]> {
+    return await db.select().from(blockchainStamps).orderBy(desc(blockchainStamps.createdAt));
+  }
+
+  async updateBlockchainStampStatus(id: string, status: string, txSignature?: string, slot?: number, blockTime?: Date): Promise<BlockchainStamp | undefined> {
+    const updates: Partial<BlockchainStamp> = { status };
+    if (txSignature) updates.transactionSignature = txSignature;
+    if (slot) updates.slot = slot;
+    if (blockTime) updates.blockTime = blockTime;
+    
+    const [result] = await db
+      .update(blockchainStamps)
+      .set(updates)
+      .where(eq(blockchainStamps.id, id))
+      .returning();
+    return result;
+  }
+
+  async getBlockchainStampByHash(documentHash: string): Promise<BlockchainStamp | undefined> {
+    const [result] = await db.select().from(blockchainStamps).where(eq(blockchainStamps.documentHash, documentHash));
     return result;
   }
 }

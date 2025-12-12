@@ -178,3 +178,26 @@ export const insertUserPinSchema = createInsertSchema(userPins).omit({
 
 export type InsertUserPin = z.infer<typeof insertUserPinSchema>;
 export type UserPin = typeof userPins.$inferSelect;
+
+// Blockchain Stamps - Solana document hashing
+export const blockchainStamps = pgTable("blockchain_stamps", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  entityType: text("entity_type").notNull(), // estimate, document, contract
+  entityId: varchar("entity_id").notNull(),
+  documentHash: text("document_hash").notNull(), // SHA-256 hash
+  transactionSignature: text("transaction_signature"), // Solana tx signature
+  network: text("network").notNull().default("devnet"), // devnet, mainnet-beta
+  slot: integer("slot"), // Solana slot number
+  blockTime: timestamp("block_time"), // Timestamp from blockchain
+  status: text("status").notNull().default("pending"), // pending, confirmed, failed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertBlockchainStampSchema = createInsertSchema(blockchainStamps).omit({
+  id: true,
+  createdAt: true,
+  status: true,
+});
+
+export type InsertBlockchainStamp = z.infer<typeof insertBlockchainStampSchema>;
+export type BlockchainStamp = typeof blockchainStamps.$inferSelect;
