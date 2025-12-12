@@ -73,11 +73,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Floating Element 1 - Adjusted for Mobile */}
+              {/* Floating Element 1 - Hidden on mobile to avoid text overlap */}
               <img 
                 src={paintBrush} 
                 alt="Brush" 
-                className="absolute -right-20 -bottom-10 w-[250px] md:w-[400px] md:-right-10 md:-bottom-20 h-auto object-contain z-10 opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
+                className="hidden md:block absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-[5] opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
               />
             </GlassCard>
           </BentoItem>
