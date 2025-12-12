@@ -203,19 +203,27 @@ export default function Home() {
           {/* 9. Google Rating */}
           {tenant.credentials?.googleRating && (
             <BentoItem colSpan={4} rowSpan={1}>
-              <GlassCard className="p-8 bg-gradient-to-br from-accent/10 to-transparent border-accent/20" glow>
-                <div className="flex items-center gap-4">
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`w-6 h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-accent text-accent" : "text-accent/30"}`} />
-                    ))}
+              <a 
+                href={tenant.social?.googleReviews || "https://www.google.com/maps"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+                data-testid="link-google-reviews"
+              >
+                <GlassCard className="p-8 bg-gradient-to-br from-accent/10 to-transparent border-accent/20 cursor-pointer hover:border-accent/40 transition-colors" glow>
+                  <div className="flex items-center gap-4">
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-6 h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-accent text-accent" : "text-accent/30"}`} />
+                      ))}
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold font-display text-accent">{tenant.credentials.googleRating}</p>
+                      <p className="text-xs text-muted-foreground">Google Rating</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-3xl font-bold font-display text-accent">{tenant.credentials.googleRating}</p>
-                    <p className="text-xs text-muted-foreground">Google Rating</p>
-                  </div>
-                </div>
-              </GlassCard>
+                </GlassCard>
+              </a>
             </BentoItem>
           )}
 

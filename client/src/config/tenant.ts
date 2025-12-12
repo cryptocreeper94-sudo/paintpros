@@ -25,6 +25,7 @@ export interface TenantConfig {
     twitter?: string;
     linkedin?: string;
     google?: string;
+    googleReviews?: string;
   };
   
   // Theme
@@ -109,6 +110,10 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   address: {
     city: "Nashville",
     state: "TN",
+  },
+  
+  social: {
+    googleReviews: "https://www.google.com/maps/place/Nashville+Painting+Professionals",
   },
   
   theme: {
