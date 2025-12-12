@@ -18,7 +18,7 @@ export default function Home() {
           
           {/* 1. Hero Section - Main Headline */}
           <BentoItem colSpan={8} rowSpan={2} className="relative group">
-            <GlassCard className="p-8 md:p-12 flex flex-col justify-center items-start overflow-hidden border-white/20">
+            <GlassCard className="p-6 md:p-12 flex flex-col justify-center items-start overflow-hidden border-white/20 min-h-[500px] md:min-h-0">
               <div 
                 className="absolute inset-0 bg-cover bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
                 style={{ backgroundImage: `url(${heroBg})` }}
@@ -36,7 +36,7 @@ export default function Home() {
                     Craftsmanship.
                   </span>
                 </h1>
-                <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-md leading-relaxed">
+                <p className="text-base md:text-xl text-muted-foreground mb-8 max-w-md leading-relaxed">
                   We don't just paint walls; we curate environments. Experience the highest standard of residential and commercial painting in Nashville.
                 </p>
                 <div className="flex gap-4">
@@ -46,11 +46,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Floating Element 1 */}
+              {/* Floating Element 1 - Adjusted for Mobile */}
               <img 
                 src={paintBrush} 
                 alt="Brush" 
-                className="absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-10 opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2"
+                className="absolute -right-20 -bottom-10 w-[250px] md:w-[400px] md:-right-10 md:-bottom-20 h-auto object-contain z-10 opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
               />
             </GlassCard>
           </BentoItem>

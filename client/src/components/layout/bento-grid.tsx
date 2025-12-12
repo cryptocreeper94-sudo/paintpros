@@ -34,12 +34,16 @@ export const BentoItem = ({ className, children, colSpan = 4, rowSpan = 1 }: Ben
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={cn(
-        `md:col-span-${colSpan} md:row-span-${rowSpan} col-span-12`,
+        // Mobile: Always span full width (1 column in a 1-column grid)
+        // Desktop: Span specific columns
+        `col-span-1 md:col-span-${colSpan} md:row-span-${rowSpan}`,
         className
       )}
       style={{
-        gridColumn: `span ${colSpan} / span ${colSpan}`,
-        gridRow: `span ${rowSpan} / span ${rowSpan}`,
+        // We only want these style overrides for grid-row/col on desktop if needed, 
+        // but tailwind classes usually handle it. 
+        // Removing the inline styles that force spans might be safer for responsive, 
+        // relying on the classes.
       }}
     >
       {children}
