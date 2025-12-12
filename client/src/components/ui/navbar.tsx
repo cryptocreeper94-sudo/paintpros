@@ -57,7 +57,7 @@ export function Navbar() {
             <img 
               src={nppText} 
               alt={tenant.name}
-              className="h-8 md:h-10 w-auto object-contain cursor-pointer"
+              className="h-24 md:h-28 w-auto object-contain cursor-pointer"
             />
           </Link>
         </div>
