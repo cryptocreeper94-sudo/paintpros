@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
-// @ts-ignore - JPG asset import
-import nppLogo from "@assets/Logo_NPP_Vertical_Light_1_(1)_1765567882082.JPG";
+import nppLogo from "@assets/npp_logo_transparent.png";
 import { useTenant } from "@/context/TenantContext";
 
 interface PageLayoutProps {
@@ -19,7 +18,7 @@ export function PageLayout({ children }: PageLayoutProps) {
            <img 
             src={nppLogo} 
             alt="" 
-            className="w-full h-auto object-contain mix-blend-multiply dark:mix-blend-screen dark:invert"
+            className="w-full h-auto object-contain"
           />
         </div>
       </div>
