@@ -75,3 +75,21 @@ export const insertEstimateRequestSchema = createInsertSchema(estimateRequests).
 
 export type InsertEstimateRequest = z.infer<typeof insertEstimateRequestSchema>;
 export type EstimateRequest = typeof estimateRequests.$inferSelect;
+
+// SEO Tags Table - Owner-managed SEO keywords and meta tags
+export const seoTags = pgTable("seo_tags", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tagType: text("tag_type").notNull(), // 'keyword', 'meta_description', 'title', 'geo'
+  value: text("value").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdBy: text("created_by").default("owner"),
+});
+
+export const insertSeoTagSchema = createInsertSchema(seoTags).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertSeoTag = z.infer<typeof insertSeoTagSchema>;
+export type SeoTag = typeof seoTags.$inferSelect;

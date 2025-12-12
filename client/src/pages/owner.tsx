@@ -1,18 +1,89 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
-import { motion } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { SeoTag } from "@shared/schema";
 
 const OWNER_PIN = "1111";
+
+const TAG_TYPES = [
+  { value: "keyword", label: "Keyword", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+  { value: "meta_description", label: "Meta Description", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+  { value: "title", label: "Title Tag", color: "bg-gold-400/20 text-gold-400 border-gold-400/30" },
+  { value: "geo", label: "Location", color: "bg-green-500/20 text-green-400 border-green-500/30" },
+];
 
 export default function Owner() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  
+  const [newTagType, setNewTagType] = useState("keyword");
+  const [newTagValue, setNewTagValue] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  
+  const queryClient = useQueryClient();
+
+  const { data: seoTags = [], isLoading: tagsLoading } = useQuery<SeoTag[]>({
+    queryKey: ["/api/seo-tags"],
+    enabled: isAuthenticated,
+  });
+
+  const createTagMutation = useMutation({
+    mutationFn: async (tag: { tagType: string; value: string }) => {
+      const res = await fetch("/api/seo-tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tag),
+      });
+      if (!res.ok) throw new Error("Failed to create tag");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/seo-tags"] });
+      setNewTagValue("");
+      setShowAddForm(false);
+    },
+  });
+
+  const toggleTagMutation = useMutation({
+    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
+      const res = await fetch(`/api/seo-tags/${id}/toggle`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive }),
+      });
+      if (!res.ok) throw new Error("Failed to toggle tag");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/seo-tags"] });
+    },
+  });
+
+  const deleteTagMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/seo-tags/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete tag");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/seo-tags"] });
+    },
+  });
+
+  const handleAddTag = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newTagValue.trim()) {
+      createTagMutation.mutate({ tagType: newTagType, value: newTagValue.trim() });
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +94,14 @@ export default function Owner() {
       setError("Invalid PIN");
       setPin("");
     }
+  };
+
+  const getTagTypeStyle = (type: string) => {
+    return TAG_TYPES.find(t => t.value === type)?.color || TAG_TYPES[0].color;
+  };
+
+  const getTagTypeLabel = (type: string) => {
+    return TAG_TYPES.find(t => t.value === type)?.label || type;
   };
 
   if (!isAuthenticated) {
@@ -115,6 +194,174 @@ export default function Owner() {
         </motion.div>
 
         <BentoGrid>
+          {/* SEO Tracker - Large Card */}
+          <BentoItem colSpan={8} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="h-full p-6 md:p-8 bg-gradient-to-br from-blue-500/10 via-transparent to-accent/5" glow>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-accent/20 flex items-center justify-center">
+                      <Search className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-display font-bold">SEO Tracker</h2>
+                      <p className="text-sm text-muted-foreground">Manage your website's search visibility</p>
+                    </div>
+                  </div>
+                  <motion.button
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    data-testid="button-add-seo-tag"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Add Tag</span>
+                  </motion.button>
+                </div>
+
+                {/* Add Tag Form */}
+                <AnimatePresence>
+                  {showAddForm && (
+                    <motion.form 
+                      onSubmit={handleAddTag}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mb-6 overflow-hidden"
+                    >
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-4">
+                        <div className="flex flex-wrap gap-2">
+                          {TAG_TYPES.map((type) => (
+                            <motion.button
+                              key={type.value}
+                              type="button"
+                              onClick={() => setNewTagType(type.value)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
+                                newTagType === type.value 
+                                  ? type.color + " ring-2 ring-white/20" 
+                                  : "bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10"
+                              }`}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {type.label}
+                            </motion.button>
+                          ))}
+                        </div>
+                        <div className="flex gap-3">
+                          <Input
+                            type="text"
+                            placeholder={`Enter ${getTagTypeLabel(newTagType).toLowerCase()}...`}
+                            value={newTagValue}
+                            onChange={(e) => setNewTagValue(e.target.value)}
+                            className="flex-1 bg-white/5 border-white/20 rounded-xl"
+                            data-testid="input-seo-tag-value"
+                          />
+                          <motion.button
+                            type="submit"
+                            disabled={!newTagValue.trim() || createTagMutation.isPending}
+                            className="px-4 py-2 rounded-xl bg-accent text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            data-testid="button-submit-seo-tag"
+                          >
+                            <Check className="w-5 h-5" />
+                          </motion.button>
+                          <motion.button
+                            type="button"
+                            onClick={() => setShowAddForm(false)}
+                            className="px-4 py-2 rounded-xl bg-white/10 text-white"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <X className="w-5 h-5" />
+                          </motion.button>
+                        </div>
+                      </div>
+                    </motion.form>
+                  )}
+                </AnimatePresence>
+
+                {/* Tags List */}
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                  {tagsLoading ? (
+                    <div className="text-center py-8 text-muted-foreground">Loading tags...</div>
+                  ) : seoTags.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                      <p className="text-muted-foreground">No SEO tags yet</p>
+                      <p className="text-sm text-muted-foreground/70 mt-1">Add keywords and meta tags to improve searchability</p>
+                    </div>
+                  ) : (
+                    seoTags.map((tag, index) => (
+                      <motion.div
+                        key={tag.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${
+                          tag.isActive 
+                            ? "bg-white/5 border-white/10" 
+                            : "bg-white/2 border-white/5 opacity-60"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <span className={`px-2 py-1 rounded-lg text-xs font-medium border shrink-0 ${getTagTypeStyle(tag.tagType)}`}>
+                            {getTagTypeLabel(tag.tagType)}
+                          </span>
+                          <span className="truncate text-sm">{tag.value}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <motion.button
+                            onClick={() => toggleTagMutation.mutate({ id: tag.id, isActive: !tag.isActive })}
+                            className={`p-2 rounded-lg transition-colors ${
+                              tag.isActive ? "text-green-400 hover:bg-green-500/20" : "text-muted-foreground hover:bg-white/10"
+                            }`}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            data-testid={`button-toggle-tag-${tag.id}`}
+                          >
+                            {tag.isActive ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                          </motion.button>
+                          <motion.button
+                            onClick={() => deleteTagMutation.mutate(tag.id)}
+                            className="p-2 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            data-testid={`button-delete-tag-${tag.id}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+
+                {/* Stats */}
+                <div className="mt-6 pt-4 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">{seoTags.filter(t => t.tagType === "keyword").length}</div>
+                    <div className="text-xs text-muted-foreground">Keywords</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-400">{seoTags.filter(t => t.tagType === "meta_description").length}</div>
+                    <div className="text-xs text-muted-foreground">Meta Descriptions</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gold-400">{seoTags.filter(t => t.tagType === "title").length}</div>
+                    <div className="text-xs text-muted-foreground">Title Tags</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">{seoTags.filter(t => t.tagType === "geo").length}</div>
+                    <div className="text-xs text-muted-foreground">Locations</div>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           <BentoItem colSpan={4} rowSpan={2}>
             <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
               <GlassCard className="h-full p-8 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
@@ -164,6 +411,18 @@ export default function Owner() {
             </motion.div>
           </BentoItem>
 
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  <h3 className="text-xl font-bold">Growth</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Business analytics coming soon</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           <BentoItem colSpan={8} rowSpan={1}>
             <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
               <GlassCard className="h-full p-6">
@@ -194,18 +453,6 @@ export default function Owner() {
                     <p className="text-xs text-accent mt-1">Coming Soon</p>
                   </motion.div>
                 </div>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                  <h3 className="text-xl font-bold">Growth</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Business analytics and projections coming soon</p>
               </GlassCard>
             </motion.div>
           </BentoItem>

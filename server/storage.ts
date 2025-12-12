@@ -2,7 +2,8 @@ import { db } from "./db";
 import { 
   type EstimateRequest, type InsertEstimateRequest, estimateRequests,
   type Lead, type InsertLead, leads,
-  type Estimate, type InsertEstimate, estimates
+  type Estimate, type InsertEstimate, estimates,
+  type SeoTag, type InsertSeoTag, seoTags
 } from "@shared/schema";
 import { desc, eq } from "drizzle-orm";
 
@@ -21,6 +22,13 @@ export interface IStorage {
   getEstimateRequests(): Promise<EstimateRequest[]>;
   getEstimateRequestById(id: string): Promise<EstimateRequest | undefined>;
   updateEstimateRequestStatus(id: string, status: string): Promise<EstimateRequest | undefined>;
+  
+  // SEO Tags
+  createSeoTag(tag: InsertSeoTag): Promise<SeoTag>;
+  getSeoTags(): Promise<SeoTag[]>;
+  getSeoTagsByType(tagType: string): Promise<SeoTag[]>;
+  toggleSeoTagActive(id: string, isActive: boolean): Promise<SeoTag | undefined>;
+  deleteSeoTag(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -71,6 +79,33 @@ export class DatabaseStorage implements IStorage {
       .where(eq(estimateRequests.id, id))
       .returning();
     return result;
+  }
+
+  // SEO Tags
+  async createSeoTag(tag: InsertSeoTag): Promise<SeoTag> {
+    const [result] = await db.insert(seoTags).values(tag).returning();
+    return result;
+  }
+
+  async getSeoTags(): Promise<SeoTag[]> {
+    return await db.select().from(seoTags).orderBy(desc(seoTags.createdAt));
+  }
+
+  async getSeoTagsByType(tagType: string): Promise<SeoTag[]> {
+    return await db.select().from(seoTags).where(eq(seoTags.tagType, tagType)).orderBy(desc(seoTags.createdAt));
+  }
+
+  async toggleSeoTagActive(id: string, isActive: boolean): Promise<SeoTag | undefined> {
+    const [result] = await db
+      .update(seoTags)
+      .set({ isActive })
+      .where(eq(seoTags.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteSeoTag(id: string): Promise<void> {
+    await db.delete(seoTags).where(eq(seoTags.id, id));
   }
 }
 

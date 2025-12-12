@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema } from "@shared/schema";
+import { insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(
@@ -128,6 +128,66 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating estimate request:", error);
       res.status(500).json({ error: "Failed to update estimate request" });
+    }
+  });
+
+  // ============ SEO TAGS ============
+  
+  // POST /api/seo-tags - Create a new SEO tag
+  app.post("/api/seo-tags", async (req, res) => {
+    try {
+      const validatedData = insertSeoTagSchema.parse(req.body);
+      const tag = await storage.createSeoTag(validatedData);
+      res.status(201).json(tag);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid SEO tag data", details: error.errors });
+      } else {
+        console.error("Error creating SEO tag:", error);
+        res.status(500).json({ error: "Failed to create SEO tag" });
+      }
+    }
+  });
+
+  // GET /api/seo-tags - Get all SEO tags
+  app.get("/api/seo-tags", async (req, res) => {
+    try {
+      const tags = await storage.getSeoTags();
+      res.json(tags);
+    } catch (error) {
+      console.error("Error fetching SEO tags:", error);
+      res.status(500).json({ error: "Failed to fetch SEO tags" });
+    }
+  });
+
+  // PATCH /api/seo-tags/:id/toggle - Toggle SEO tag active status
+  app.patch("/api/seo-tags/:id/toggle", async (req, res) => {
+    try {
+      const { isActive } = req.body;
+      if (typeof isActive !== "boolean") {
+        res.status(400).json({ error: "Invalid isActive value" });
+        return;
+      }
+      const tag = await storage.toggleSeoTagActive(req.params.id, isActive);
+      if (!tag) {
+        res.status(404).json({ error: "SEO tag not found" });
+        return;
+      }
+      res.json(tag);
+    } catch (error) {
+      console.error("Error toggling SEO tag:", error);
+      res.status(500).json({ error: "Failed to toggle SEO tag" });
+    }
+  });
+
+  // DELETE /api/seo-tags/:id - Delete an SEO tag
+  app.delete("/api/seo-tags/:id", async (req, res) => {
+    try {
+      await storage.deleteSeoTag(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting SEO tag:", error);
+      res.status(500).json({ error: "Failed to delete SEO tag" });
     }
   });
 
