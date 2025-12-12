@@ -53,7 +53,7 @@ export function Navbar() {
           </button>
 
           {/* Company Name - Next to hamburger */}
-          <Link href="/" data-testid="link-logo-home">
+          <Link href="/" data-testid="link-logo-home" style={{ marginTop: '40px' }}>
             <img 
               src={nppText} 
               alt={tenant.name}
