@@ -35,13 +35,16 @@ export function Navbar() {
         {/* Left: Hamburger Emblem + Title */}
         <div className="flex items-center gap-2">
           <button 
-            className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[93px] -mt-[25px]" 
+            className={cn(
+              "p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
+              isOpen ? "ml-2" : "-ml-[93px] -mt-[25px]"
+            )}
             onClick={() => setIsOpen(!isOpen)}
             data-testid="button-hamburger-menu"
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X size={40} className="text-white" />
+              <X size={32} className="text-white" />
             ) : (
               <img 
                 src={nppEmblem} 
@@ -51,7 +54,10 @@ export function Navbar() {
             )}
           </button>
           <div 
-            className="text-white tracking-wide text-sm md:text-lg -ml-5" 
+            className={cn(
+              "text-white tracking-wide text-sm md:text-lg",
+              isOpen ? "ml-2" : "-ml-5"
+            )}
             style={{ fontFamily: 'Playfair Display, serif' }}
             data-testid="text-header-title"
           >
