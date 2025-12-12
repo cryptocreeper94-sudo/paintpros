@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,7 @@ export function Navbar() {
   const adminLinks = [
     { name: "Admin", href: "/admin", icon: Shield, color: "text-blue-400" },
     { name: "Owner", href: "/owner", icon: Crown, color: "text-gold-400" },
+    { name: "Area Manager", href: "/area-manager", icon: MapPin, color: "text-teal-400" },
     { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
   ];
 

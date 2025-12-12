@@ -13,6 +13,7 @@ import Estimate from "@/pages/estimate";
 import Admin from "@/pages/admin";
 import Owner from "@/pages/owner";
 import Developer from "@/pages/developer";
+import AreaManager from "@/pages/area-manager";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/estimate" component={Estimate} />
       <Route path="/admin" component={Admin} />
       <Route path="/owner" component={Owner} />
+      <Route path="/area-manager" component={AreaManager} />
       <Route path="/developer" component={Developer} />
       <Route component={NotFound} />
     </Switch>
