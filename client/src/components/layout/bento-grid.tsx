@@ -27,6 +27,29 @@ interface BentoItemProps {
 }
 
 export const BentoItem = ({ className, children, colSpan = 4, rowSpan = 1 }: BentoItemProps) => {
+  // Map props to complete class strings so Tailwind scanner can find them
+  const colSpans: Record<number, string> = {
+    1: "md:col-span-1",
+    2: "md:col-span-2",
+    3: "md:col-span-3",
+    4: "md:col-span-4",
+    5: "md:col-span-5",
+    6: "md:col-span-6",
+    7: "md:col-span-7",
+    8: "md:col-span-8",
+    9: "md:col-span-9",
+    10: "md:col-span-10",
+    11: "md:col-span-11",
+    12: "md:col-span-12",
+  };
+
+  const rowSpans: Record<number, string> = {
+    1: "md:row-span-1",
+    2: "md:row-span-2",
+    3: "md:row-span-3",
+    4: "md:row-span-4",
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,17 +57,11 @@ export const BentoItem = ({ className, children, colSpan = 4, rowSpan = 1 }: Ben
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={cn(
-        // Mobile: Always span full width (1 column in a 1-column grid)
-        // Desktop: Span specific columns
-        `col-span-1 md:col-span-${colSpan} md:row-span-${rowSpan}`,
+        "col-span-1", // Mobile default
+        colSpans[colSpan] || "md:col-span-4",
+        rowSpans[rowSpan] || "md:row-span-1",
         className
       )}
-      style={{
-        // We only want these style overrides for grid-row/col on desktop if needed, 
-        // but tailwind classes usually handle it. 
-        // Removing the inline styles that force spans might be safer for responsive, 
-        // relying on the classes.
-      }}
     >
       {children}
     </motion.div>
