@@ -33,10 +33,10 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-2 md:px-4 py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem + Company Name */}
-        <div className="flex items-center gap-2 md:gap-4" style={{ marginLeft: '-140px', marginTop: '-40px' }}>
+        <div className="flex items-center gap-1 md:gap-2" style={{ marginLeft: '-140px' }}>
           {/* Hamburger Menu Trigger - Emblem with paint roller */}
           <button 
-            className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0" 
+            className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center" 
             onClick={() => setIsOpen(!isOpen)}
             data-testid="button-hamburger-menu"
             aria-label="Toggle menu"
@@ -53,11 +53,11 @@ export function Navbar() {
           </button>
 
           {/* Company Name - Next to hamburger */}
-          <Link href="/" data-testid="link-logo-home" style={{ marginTop: '40px' }}>
+          <Link href="/" data-testid="link-logo-home" className="flex-shrink-0">
             <img 
               src={nppText} 
               alt={tenant.name}
-              className="h-8 md:h-10 w-auto object-contain cursor-pointer"
+              className="h-6 md:h-8 w-auto object-contain cursor-pointer"
             />
           </Link>
         </div>
