@@ -48,10 +48,10 @@ export default function About() {
           <BentoItem colSpan={4} rowSpan={1}>
             <GlassCard className="p-8 bg-accent/10 border-accent/20">
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Heart className="w-5 h-5 text-accent" /> Community First
+                <Heart className="w-5 h-5 text-accent" /> Nashville Proud
               </h3>
               <p className="text-sm text-muted-foreground">
-                We donate 5% of our profits to local Nashville housing initiatives every quarter.
+                Locally owned and operated. We're your neighbors, committed to making Nashville beautiful.
               </p>
             </GlassCard>
           </BentoItem>
