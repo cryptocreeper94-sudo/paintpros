@@ -3,18 +3,20 @@ import { Link, useLocation } from "wouter";
 import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTenant } from "@/context/TenantContext";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
+  const tenant = useTenant();
 
   const mainLinks = [
     { name: "Services", href: "/services" },
-    { name: "Portfolio", href: "/portfolio" },
+    { name: "Portfolio", href: "/portfolio", enabled: tenant.features.portfolio },
     { name: "About", href: "/about" },
-    { name: "Reviews", href: "/reviews" },
-    { name: "Estimate", href: "/estimate", highlight: true },
-  ];
+    { name: "Reviews", href: "/reviews", enabled: tenant.features.reviews },
+    { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator },
+  ].filter(link => link.enabled !== false);
 
   const adminLinks = [
     { name: "Admin", href: "/admin", icon: Shield, color: "text-blue-400" },
@@ -22,6 +24,14 @@ export function Navbar() {
     { name: "Area Manager", href: "/area-manager", icon: MapPin, color: "text-teal-400" },
     { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
   ];
+
+  const getLogoAbbreviation = () => {
+    const words = tenant.name.split(" ");
+    if (words.length >= 3) {
+      return words.slice(0, 3).map(w => w[0]).join("");
+    }
+    return words.map(w => w[0]).join("");
+  };
 
   const PaintRollerMenu = () => (
     <div className="flex flex-col justify-center items-center gap-[5px] w-7 h-7">
@@ -36,7 +46,7 @@ export function Navbar() {
       <div className="glass-panel rounded-full px-6 py-3 flex items-center gap-8">
         <Link href="/">
           <span className="font-display font-bold text-xl tracking-tighter text-foreground cursor-pointer">
-            NPP<span className="text-accent">.</span>
+            {getLogoAbbreviation()}<span className="text-accent">.</span>
           </span>
         </Link>
 
@@ -130,11 +140,11 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* Paint roller decoration at bottom */}
+            {/* Tenant name decoration at bottom */}
             <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <PaintRoller className="w-5 h-5 text-accent" />
-                <span className="text-xs">Nashville Painting Professionals</span>
+                <span className="text-xs">{tenant.name}</span>
               </div>
             </div>
           </motion.div>

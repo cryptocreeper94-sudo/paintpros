@@ -1,12 +1,15 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
 import watermark from "@assets/generated_images/minimalist_line_art_of_a_horizontal_paint_roller_for_logo_watermark.png";
+import { useTenant } from "@/context/TenantContext";
 
 interface PageLayoutProps {
   children: React.ReactNode;
 }
 
 export function PageLayout({ children }: PageLayoutProps) {
+  const tenant = useTenant();
+  
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
       {/* Pinned Watermark Background */}
@@ -17,8 +20,8 @@ export function PageLayout({ children }: PageLayoutProps) {
             alt="" 
             className="w-full h-auto object-contain mb-4 grayscale"
           />
-           <h1 className="text-[4vw] md:text-[3vw] font-display font-bold uppercase tracking-widest text-foreground whitespace-nowrap">
-             Nashville Painting <br/> Professionals
+           <h1 className="text-[4vw] md:text-[3vw] font-display font-bold uppercase tracking-widest text-foreground whitespace-nowrap text-center">
+             {tenant.name}
            </h1>
         </div>
       </div>

@@ -7,13 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Pricing constants
-const PRICING = {
-  DOOR_PRICE: 150,
-  FULL_JOB_RATE: 5.00,
-  WALLS_ONLY_RATE: 2.50,
-};
+import { useTenant } from "@/context/TenantContext";
 
 interface LeadData {
   id: string;
@@ -28,6 +22,14 @@ interface JobSelections {
 }
 
 export default function Estimate() {
+  const tenant = useTenant();
+  
+  const PRICING = {
+    DOOR_PRICE: tenant.pricing.doorsPerUnit,
+    FULL_JOB_RATE: tenant.pricing.fullJobPerSqFt,
+    WALLS_ONLY_RATE: tenant.pricing.wallsPerSqFt,
+  };
+
   const [showEmailModal, setShowEmailModal] = useState(true);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -204,7 +206,7 @@ export default function Estimate() {
                     </h2>
                     <p className="text-muted-foreground text-lg">
                       Thank you for choosing{" "}
-                      <span className="text-accent font-semibold">Nashville Painting Professionals</span>
+                      <span className="text-accent font-semibold">{tenant.name}</span>
                     </p>
                   </div>
 

@@ -1,57 +1,115 @@
-# Project Replica Documentation
+# PaintPros.io by Orbit - Documentation
 
 ## Metadata
-**Tags:** #initialization, #requirements, #setup
+**Tags:** #multi-tenant, #painting-industry, #saas
 **Last Updated:** December 12, 2025
 
-## Project Parameters
-- **Design Style:** True Bento Grid styling.
-- **Layout:**
-  - Tight layout, NO white space on desktop or mobile.
-  - Mixed card sizes adhering to strict grid.
-- **Components:**
-  - Accordion dropdowns.
-  - Self-contained horizontal scroll carousels (glassmorphic).
-  - Full-screen horizontal scroll carousels.
-  - Glassmorphic flipping buttons.
-- **Image Strategy:**
-  - Default: Background removed (free-floating) via `remg` style processing.
-  - Exception: Portfolio/Showcase images & Full-card backgrounds.
-- **Aesthetics:**
-  - **Goal:** "Sparkle and Shine", Best painting website.
-  - **Themes:** Light Mode & Dark Mode.
-  - **Dark Mode Base:** Army Green.
-  - **Effects:** Glow effects, Glassmorphism, 3D elements.
-- **Core Features:**
-  - Portfolio Section.
-  - Estimating Tool (Workflow & Accuracy focus).
-  - Voice AI Assistant (Planned).
-  - Twilio Integration (Planned).
-  - Solana Stamping/Blockchain Verification.
-  - Ecosystem Connection.
-- **Platform Targets:** Web App & React Native Expo.
-- **Workflow:** Acknowledge -> User says "Go" -> Execute.
+## Product Overview
+**PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
+- Modern Bento Grid design
+- Interactive estimating tools
+- SEO management
+- Role-based dashboards (Admin, Owner, Area Manager, Developer)
+- Franchisable and standalone licensing options
 
-## Design Decisions
-- **Current State Analysis (Nashville Painting Professionals):**
-  - **Theme:** Navy Blue & Gold (Standard corporate).
-  - **Layout:** Traditional vertical stacking (Hero -> Logos -> Content -> Mission -> Testimonials -> Footer).
-  - **Key Elements:**
-    - Hero: Guitars background (Nashville vibe).
-    - Trust: "As Seen In" logos, Google Reviews (4.9), 3-Year Warranty.
-    - Process: 4-Step flow (Consultation, Prep, Paint, Clean Up).
-    - Service Area: Map of Nashville.
-- **Transformation Plan (Bento/Army Green):**
-  - **Hero:** Convert to a dynamic grid.
-    - *Card 1 (Large):* "Full Service Painters" with 3D/Floating elements.
-    - *Card 2 (Small/Tall):* "Free Estimate" call to action (Glassmorphic).
-    - *Card 3 (Medium):* "As Seen In" auto-scroll marquee.
-  - **Process Section:** Convert 4-step linear flow into a 2x2 Bento cluster or a horizontal glassmorphic scroll.
-  - **Testimonials:** Self-contained horizontal scroll card.
-  - **Visuals:**
-    - Replace Navy with **Army Green** base.
-    - Replace flat backgrounds with depth/texture.
-    - Isolate the "Paint Deck" and "Tools" images (remove backgrounds) to float over the grid.
+## Current Tenant
+**Nashville Painting Professionals** - Beta test client (tenant ID: `npp`)
 
-## Feature Specifications
-*To be populated.*
+## Multi-Tenant Architecture
+
+### Tenant Configuration
+Location: `client/src/config/tenant.ts`
+
+Each tenant has:
+- **Branding:** Name, tagline, logo, colors
+- **Services:** Toggle which services are offered (interior/exterior, commercial/residential, trim, ceilings, doors, drywall repair)
+- **Pricing:** Custom rates per tenant (doors per unit, sqft rates)
+- **SEO:** Title, description, keywords, service areas
+- **Features:** Enable/disable estimator, portfolio, reviews, blog, AI assistant
+- **Credentials:** Google rating, warranty years, licenses
+
+### Context Provider
+Location: `client/src/context/TenantContext.tsx`
+
+- `TenantProvider` wraps the app
+- `useTenant()` hook provides config anywhere in the app
+
+### Tenant Selection
+Currently uses `VITE_TENANT_ID` environment variable. Future: subdomain-based routing.
+
+## Service Descriptions (Important)
+Services must clearly convey:
+- **Interior AND Exterior** painting
+- **Commercial AND Residential** painting
+- **Walls, Ceilings, Trim, Doors** as optional packages or standalone jobs
+- **Drywall REPAIR only** (done during painting prep) - NOT drywall installation/hanging
+
+## Design System
+
+### Aesthetics
+- **Goal:** Premium, "Sparkle and Shine" painting website
+- **Themes:** Light Mode & Dark Mode
+- **Dark Mode Base:** Highly desaturated Army Green (15-25% saturation)
+- **Accent:** Gold highlights
+- **Effects:** Glassmorphism, glow effects, 3D hover animations
+
+### Layout
+- True Bento Grid styling
+- Tight layout, minimal white space
+- Mixed card sizes with strict grid adherence
+- Mobile-first responsive design
+
+### Components
+- Glassmorphic cards (`GlassCard`)
+- Flip buttons (`FlipButton`)
+- Auto-scroll marquees
+- Horizontal scroll carousels
+- Framer Motion animations throughout
+
+## Pricing Logic (Estimator)
+- **Doors:** $150 per door (configurable per tenant)
+- **Walls + Trim + Ceiling (Full Job):** $5.00/sqft
+- **Walls Only:** $2.50/sqft
+- Pricing is tenant-configurable
+
+## Role-Based Access
+- **Admin:** PIN 4444 - Lead management, estimates, analytics
+- **Owner:** PIN 1111 - Revenue, team, financial reports, SEO tracker
+- **Area Manager:** PIN 2222 - Leads, appointments, CRM placeholder
+- **Developer:** PIN 0424 - Technical console
+
+## Database Schema
+- `leads` - Email captures from estimator
+- `estimates` - Detailed quote storage with pricing breakdown
+- `seo_tags` - Owner-managed SEO keywords and meta tags
+- `estimate_requests` - Legacy form submissions
+
+## Future Features
+- AI Voice Assistant (Twilio integration)
+- Room scanning with OpenAI Vision API
+- Online booking
+- Blog/content management
+- Subdomain-based tenant routing
+- Production-ready authentication (replace client-side PINs)
+
+## File Structure
+```
+client/src/
+├── config/tenant.ts       # Multi-tenant configuration
+├── context/TenantContext.tsx  # Tenant provider
+├── pages/
+│   ├── home.tsx           # Homepage with Bento grid
+│   ├── services.tsx       # Service listings (tenant-aware)
+│   ├── estimate.tsx       # Estimator tool
+│   ├── admin.tsx          # Admin dashboard
+│   ├── owner.tsx          # Owner dashboard + SEO tracker
+│   ├── area-manager.tsx   # Sales rep dashboard
+│   └── developer.tsx      # Dev console
+└── components/
+    ├── ui/navbar.tsx      # Tenant-aware navigation
+    └── layout/footer.tsx  # Tenant-aware footer
+
+shared/schema.ts           # Database models (Drizzle)
+server/storage.ts          # Data access layer
+server/routes.ts           # API endpoints
+```

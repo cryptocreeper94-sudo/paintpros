@@ -9,28 +9,34 @@ import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_wi
 import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
 import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
+import { useTenant } from "@/context/TenantContext";
 
 export default function Home() {
+  const tenant = useTenant();
+  
   const testimonials = [
     {
       text: "Absolutely transformed our home. The team was punctual, polite, and the lines are razor sharp. Worth every penny.",
       author: "Sarah Jenkins",
-      loc: "Brentwood, TN",
+      loc: tenant.address?.city ? `${tenant.address.city}, ${tenant.address.state}` : "Local Customer",
       rating: 4.9
     },
     {
       text: "Best painting crew we've ever hired. They finished ahead of schedule and left the place cleaner than they found it.",
       author: "Michael Ross",
-      loc: "Franklin, TN",
+      loc: tenant.seo.serviceAreas[1] ? `${tenant.seo.serviceAreas[1]}, ${tenant.address?.state || ""}` : "Nearby Customer",
       rating: 5.0
     },
     {
       text: "Professional from the first quote to the final walk-through. Highly recommend for any commercial work.",
       author: "David Chen",
-      loc: "Nashville, TN",
+      loc: tenant.address?.city ? `${tenant.address.city}, ${tenant.address.state}` : "Satisfied Customer",
       rating: 4.8
     }
   ];
+
+  const cityName = tenant.address?.city || "Your City";
+  const ratingBadge = tenant.credentials?.googleRating ? `${cityName}'s #1 Rated` : "Top Rated";
 
   return (
     <PageLayout>
@@ -49,7 +55,7 @@ export default function Home() {
               <div className="relative z-10 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-accent-foreground text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
                   <Star className="w-3 h-3 fill-accent text-accent" />
-                  Nashville's #1 Rated
+                  {ratingBadge}
                 </div>
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6 text-glow">
                   Extraordinary <br />
@@ -58,7 +64,7 @@ export default function Home() {
                   </span>
                 </h1>
                 <p className="text-base md:text-xl text-muted-foreground mb-8 max-w-md leading-relaxed">
-                  We don't just paint walls; we curate environments. Experience the highest standard of residential and commercial painting in Nashville.
+                  {tenant.description || `We don't just paint walls; we curate environments. Experience the highest standard of residential and commercial painting.`}
                 </p>
                 <div className="flex gap-4">
                   <FlipButton>
@@ -103,117 +109,125 @@ export default function Home() {
               <Marquee 
                 items={["The Spruce", "Homes & Gardens", "Livingetc", "The Kitchn", "Architectural Digest"]} 
                 speed="slow"
-                className="opacity-70"
               />
             </GlassCard>
           </BentoItem>
 
-          {/* 4. The Process Cluster */}
-          <BentoItem colSpan={6} rowSpan={2} className="relative overflow-hidden">
-            <GlassCard className="p-8">
-              <div className="flex justify-between items-start mb-8 relative z-10">
-                <div>
-                  <h2 className="text-3xl font-display font-bold mb-2">Our Process</h2>
-                  <p className="text-muted-foreground">Systematic perfection in 4 steps.</p>
-                </div>
-                <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-                   <Clock className="w-5 h-5 text-accent" />
-                </div>
+          {/* 4. Key Feature 1 */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <GlassCard className="p-8 flex items-center gap-6" hoverEffect>
+              <div className="bg-accent/10 p-3 rounded-xl">
+                <Brush className="w-8 h-8 text-accent" />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                {[
-                  { step: "01", title: "Consult", desc: "Vision & Color" },
-                  { step: "02", title: "Prep", desc: "Protect & Prime" },
-                  { step: "03", title: "Paint", desc: "Precision Application" },
-                  { step: "04", title: "Clean", desc: "Spotless Finish" },
-                ].map((item) => (
-                  <div key={item.step} className="p-4 rounded-lg bg-background/40 border border-white/5 hover:bg-background/60 transition-colors">
-                    <span className="text-xs font-mono text-accent mb-1 block">{item.step}</span>
-                    <h4 className="font-bold text-foreground mb-1">{item.title}</h4>
-                    <p className="text-xs text-muted-foreground">{item.desc}</p>
-                  </div>
-                ))}
+              <div>
+                <h3 className="font-bold text-lg mb-1">Premium Materials</h3>
+                <p className="text-sm text-muted-foreground">Top-tier paints and finishes only.</p>
               </div>
-
-              {/* Decoration */}
-              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
             </GlassCard>
           </BentoItem>
 
-          {/* 5. Testimonial - Horizontal Scroll Carousel - Expanded Height to Match Process */}
-          <BentoItem colSpan={6} rowSpan={2}>
-            <GlassCard className="p-0 flex items-center relative overflow-hidden h-full">
-               <img 
+          {/* 5. Key Feature 2 */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <GlassCard className="p-8 flex items-center gap-6" hoverEffect>
+              <div className="bg-accent/10 p-3 rounded-xl">
+                <Clock className="w-8 h-8 text-accent" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg mb-1">On-Time Guarantee</h3>
+                <p className="text-sm text-muted-foreground">We value your time as much as our craft.</p>
+              </div>
+            </GlassCard>
+          </BentoItem>
+
+          {/* 6. Key Feature 3 */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <GlassCard className="p-8 flex items-center gap-6" hoverEffect>
+              <div className="bg-accent/10 p-3 rounded-xl">
+                <CheckCircle2 className="w-8 h-8 text-accent" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg mb-1">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
+                <p className="text-sm text-muted-foreground">Full coverage on our workmanship.</p>
+              </div>
+            </GlassCard>
+          </BentoItem>
+
+          {/* 7. Testimonials Carousel */}
+          <BentoItem colSpan={8} rowSpan={1}>
+            <GlassCard className="p-0 overflow-hidden">
+              <CarouselView 
+                slides={testimonials.map((t, i) => (
+                  <div key={i} className="p-8 flex flex-col justify-between h-full min-w-[280px] md:min-w-[320px]">
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, idx) => (
+                        <Star key={idx} className={`w-4 h-4 ${idx < Math.floor(t.rating) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
+                      ))}
+                      <span className="ml-2 text-sm text-muted-foreground">{t.rating}</span>
+                    </div>
+                    <p className="text-foreground leading-relaxed mb-4">"{t.text}"</p>
+                    <div>
+                      <p className="font-bold text-sm">{t.author}</p>
+                      <p className="text-xs text-muted-foreground">{t.loc}</p>
+                    </div>
+                  </div>
+                ))} 
+              />
+            </GlassCard>
+          </BentoItem>
+
+          {/* 8. Service Area Map */}
+          <BentoItem colSpan={4} rowSpan={2}>
+            <GlassCard className="p-0 overflow-hidden relative group">
+              <img 
+                src={mapImage} 
+                alt={`${cityName} Service Area`}
+                className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-5 h-5 text-accent" />
+                  <span className="text-sm font-bold text-accent uppercase tracking-wide">Service Areas</span>
+                </div>
+                <h3 className="text-2xl font-display font-bold mb-2">{cityName} Metro</h3>
+                <p className="text-sm text-muted-foreground">
+                  {tenant.seo.serviceAreas.length > 0 
+                    ? tenant.seo.serviceAreas.slice(0, 4).join(" • ")
+                    : "Serving your local area and surrounding communities"
+                  }
+                </p>
+              </div>
+            </GlassCard>
+          </BentoItem>
+
+          {/* 9. Google Rating */}
+          {tenant.credentials?.googleRating && (
+            <BentoItem colSpan={4} rowSpan={1}>
+              <GlassCard className="p-8 bg-gradient-to-br from-accent/10 to-transparent border-accent/20" glow>
+                <div className="flex items-center gap-4">
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-6 h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-accent text-accent" : "text-accent/30"}`} />
+                    ))}
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold font-display text-accent">{tenant.credentials.googleRating}</p>
+                    <p className="text-xs text-muted-foreground">Google Rating</p>
+                  </div>
+                </div>
+              </GlassCard>
+            </BentoItem>
+          )}
+
+          {/* 10. Fan Deck Visual */}
+          <BentoItem colSpan={4} rowSpan={1} className="relative group">
+            <GlassCard className="overflow-hidden">
+              <img 
                 src={fanDeck} 
-                alt="Colors" 
-                className="absolute -left-16 -top-16 w-48 h-auto object-contain z-0 opacity-20 rotate-45 blur-[2px] pointer-events-none"
+                alt="Color Selection" 
+                className="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
               />
-              <div className="relative z-10 w-full h-full">
-                <CarouselView 
-                  className="h-full"
-                  slideClassName="h-full"
-                  slides={testimonials.map((t, i) => (
-                    <div key={i} className="p-8 h-full flex flex-col justify-center">
-                      <div className="flex items-center gap-1 mb-4">
-                        {[1,2,3,4,5].map(star => <Star key={star} className="w-4 h-4 fill-accent text-accent" />)}
-                        <span className="ml-2 text-sm font-bold text-foreground">{t.rating}/5 Google Reviews</span>
-                      </div>
-                      <blockquote className="text-lg md:text-xl font-display italic text-foreground/90 leading-relaxed mb-4">
-                        "{t.text}"
-                      </blockquote>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent/50" />
-                        <div>
-                          <p className="text-sm font-bold">{t.author}</p>
-                          <p className="text-xs text-muted-foreground">{t.loc}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                />
-              </div>
             </GlassCard>
-          </BentoItem>
-
-          {/* 6. Service Area / Map Placeholder - Expanded Full Width */}
-          <BentoItem colSpan={12} rowSpan={2}>
-             <GlassCard className="p-0 overflow-hidden group relative min-h-[400px]">
-               <div className="absolute inset-0 z-0">
-                  <img 
-                    src={mapImage} 
-                    alt="Service Area Map" 
-                    className="w-full h-full object-cover opacity-60 grayscale-[50%] sepia-[20%] group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent" />
-               </div>
-               
-               {/* Map Markers Overlay - Decorative */}
-               <div className="absolute inset-0 z-10 pointer-events-none opacity-50">
-                  {/* Nashville Center */}
-                  <div className="absolute top-[40%] left-[50%]">
-                    <div className="w-4 h-4 bg-accent rounded-full animate-ping absolute inset-0" />
-                    <div className="w-4 h-4 bg-accent rounded-full relative border-2 border-white shadow-lg" />
-                  </div>
-                  {/* Surrounding Areas */}
-                  <div className="absolute top-[30%] left-[60%] w-2 h-2 bg-white/80 rounded-full" />
-                  <div className="absolute top-[50%] left-[60%] w-2 h-2 bg-white/80 rounded-full" />
-                  <div className="absolute top-[55%] left-[45%] w-2 h-2 bg-white/80 rounded-full" />
-                  <div className="absolute top-[45%] left-[35%] w-2 h-2 bg-white/80 rounded-full" />
-               </div>
-
-               <div className="relative z-20 p-8 md:p-12 h-full flex flex-col justify-end items-center text-center w-full">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="p-2 bg-accent/20 rounded-lg backdrop-blur-md border border-accent/30">
-                      <MapPin className="w-5 h-5 text-accent" />
-                    </div>
-                    <span className="text-accent text-sm font-bold uppercase tracking-wider">Expanded Service Area</span>
-                  </div>
-                  
-                  <h3 className="text-3xl md:text-5xl font-display font-bold text-white mb-6 max-w-3xl">Serving All of Middle Tennessee</h3>
-               </div>
-             </GlassCard>
           </BentoItem>
 
         </BentoGrid>

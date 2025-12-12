@@ -2,33 +2,39 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Star, Quote } from "lucide-react";
+import { useTenant } from "@/context/TenantContext";
 
 export default function Reviews() {
+  const tenant = useTenant();
+  const cityName = tenant.address?.city || "Local";
+  const areas = tenant.seo.serviceAreas;
+  const googleRating = tenant.credentials?.googleRating || 4.9;
+
   const reviews = [
     {
       author: "Sarah Jenkins",
-      loc: "Brentwood, TN",
+      loc: areas[2] ? `${areas[2]}, ${tenant.address?.state || ""}` : cityName,
       rating: 5,
       text: "Absolutely transformed our home. The team was punctual, polite, and the lines are razor sharp. Worth every penny. They even moved the heavy furniture for us.",
       source: "Google"
     },
     {
       author: "Michael Ross",
-      loc: "Franklin, TN",
+      loc: areas[1] ? `${areas[1]}, ${tenant.address?.state || ""}` : "Nearby",
       rating: 5,
       text: "Best painting crew we've ever hired. They finished ahead of schedule and left the place cleaner than they found it. The attention to detail on the trim was exceptional.",
       source: "Houzz"
     },
     {
       author: "David Chen",
-      loc: "Nashville, TN",
+      loc: `${cityName}, ${tenant.address?.state || ""}`,
       rating: 5,
       text: "Professional from the first quote to the final walk-through. Highly recommend for any commercial work. They worked around our office schedule perfectly.",
       source: "Google"
     },
     {
       author: "Emily Watson",
-      loc: "East Nashville",
+      loc: areas[3] || cityName,
       rating: 5,
       text: "I was worried about the disruption, but they were ghost-like. Quiet, efficient, and respectful. The color consultation was also a huge help.",
       source: "Facebook"
@@ -37,7 +43,7 @@ export default function Reviews() {
 
   return (
     <PageLayout>
-      <main className="pt-24 px-4 md:px-8">
+      <main className="pt-24 px-4 md:px-8 pb-24">
         <div className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-4">Client Reviews</h1>
@@ -47,7 +53,7 @@ export default function Reviews() {
           </div>
           <div className="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
             <div className="text-right">
-              <p className="text-3xl font-bold font-display">4.9</p>
+              <p className="text-3xl font-bold font-display">{googleRating}</p>
               <div className="flex gap-0.5">
                 {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-accent text-accent" />)}
               </div>

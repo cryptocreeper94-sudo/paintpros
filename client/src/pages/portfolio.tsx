@@ -1,23 +1,28 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
+import { useTenant } from "@/context/TenantContext";
 
 export default function Portfolio() {
+  const tenant = useTenant();
+  const cityName = tenant.address?.city || "Local";
+  const areas = tenant.seo.serviceAreas;
+
   const projects = [
-    { title: "Modern Farmhouse", location: "Franklin, TN", type: "Interior", colSpan: 8, rowSpan: 2 },
-    { title: "Urban Loft", location: "The Gulch", type: "Commercial", colSpan: 4, rowSpan: 1 },
-    { title: "Victorian Restoration", location: "East Nashville", type: "Exterior", colSpan: 4, rowSpan: 1 },
-    { title: "Luxury Condo", location: "Green Hills", type: "Interior", colSpan: 6, rowSpan: 1 },
+    { title: "Modern Farmhouse", location: areas[1] || "Nearby", type: "Interior", colSpan: 8, rowSpan: 2 },
+    { title: "Urban Loft", location: "Downtown", type: "Commercial", colSpan: 4, rowSpan: 1 },
+    { title: "Victorian Restoration", location: areas[2] || "Historic District", type: "Exterior", colSpan: 4, rowSpan: 1 },
+    { title: "Luxury Condo", location: areas[3] || "Uptown", type: "Interior", colSpan: 6, rowSpan: 1 },
     { title: "Executive Office", location: "Downtown", type: "Commercial", colSpan: 6, rowSpan: 1 },
   ];
 
   return (
     <PageLayout>
-      <main className="pt-24 px-4 md:px-8">
+      <main className="pt-24 px-4 md:px-8 pb-24">
         <div className="max-w-7xl mx-auto mb-12">
           <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-4">Selected Work</h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            A curated collection of our finest transformations across Nashville.
+            A curated collection of our finest transformations across {cityName} and surrounding areas.
           </p>
         </div>
 
@@ -26,7 +31,6 @@ export default function Portfolio() {
             <BentoItem key={index} colSpan={project.colSpan} rowSpan={project.rowSpan}>
               <GlassCard className="p-0 overflow-hidden group min-h-[300px]" hoverEffect={false}>
                 <div className="absolute inset-0 bg-zinc-800 animate-pulse group-hover:animate-none transition-colors" />
-                {/* Placeholder for actual portfolio images */}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors z-10" />
                 
                 <div className="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
