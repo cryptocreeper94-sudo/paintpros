@@ -83,6 +83,28 @@ Services must clearly convey:
 - `estimates` - Detailed quote storage with pricing breakdown
 - `seo_tags` - Owner-managed SEO keywords and meta tags
 - `estimate_requests` - Legacy form submissions
+- `blockchain_stamps` - Solana blockchain document hashes
+
+## Branding Assets
+Location: `assets/branding/`
+- `paintpros-emblem.png` - Pixar-style painter mascot (white background)
+- `paintpros-emblem-transparent.png` - Painter mascot with transparent background
+
+## Integrations & Secrets
+The following secrets are configured (manually added, not using Replit connector):
+- **Solana/Helius:** HELIUS_API_KEY, HELIUS_RPC_URL, SOLANA_PRIVATE_KEY, SOLANA_PUBLIC_KEY
+- **Payments:** Stripe keys, Coinbase Commerce keys
+- **AI:** OpenAI API key
+- **Orbit Ecosystem:** Darkwave Dev Hub connection info
+
+Note: Stripe integration uses manual secrets instead of Replit connector.
+
+## Solana Blockchain Stamping
+Location: `server/solana.ts`
+- Uses Helius RPC when HELIUS_API_KEY or HELIUS_RPC_URL is available
+- Falls back to public Solana RPC endpoints
+- Stamps document hashes to Solana memo program
+- Developer dashboard has full stamping UI (Wallet, Stamp, History, Verify tabs)
 
 ## Future Features
 - AI Voice Assistant (Twilio integration)
