@@ -5,10 +5,6 @@ export function Footer() {
     <footer className="bg-[#4B5320]/20 backdrop-blur-md border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[60px] flex items-center justify-center">
       <div className="max-w-7xl mx-auto px-4 w-full flex flex-col md:flex-row justify-between items-center gap-2">
         
-        {/* Left: Powered By */}
-        <div className="whitespace-nowrap order-2 md:order-1">
-          Powered by <span className="font-bold text-foreground">DarkWave Studios, LLC</span> Copyright 2025
-        </div>
 
         {/* Center: Copyright */}
         <div className="text-center md:absolute md:left-1/2 md:-translate-x-1/2 whitespace-nowrap order-1 md:order-2">
