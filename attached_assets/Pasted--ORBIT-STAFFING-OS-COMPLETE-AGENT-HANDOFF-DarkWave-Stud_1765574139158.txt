@@ -1,0 +1,506 @@
+# ORBIT STAFFING OS - COMPLETE AGENT HANDOFF
+# DarkWave Studios Ecosystem Integration Guide
+# Version 2.7.x | Last Updated: December 2025
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. SYSTEM OVERVIEW
+2. CRM SYSTEM - Full API Reference
+3. SOLANA BLOCKCHAIN STAMPING SYSTEM
+4. VERSION MANAGEMENT & AUTO-STAMPING
+5. DARKWAVE DEVELOPERS HUB INTEGRATION
+6. COMPLETE CODE EXAMPLES
+================================================================================
+1. SYSTEM OVERVIEW
+================================================================================
+BASE URLS:
+- Production: https://orbitstaffing.io
+- Development: https://[repl-name].[username].repl.co
+AUTHENTICATION METHODS:
+- Admin Panel: Session-based with PIN (dev: 0424, prod: ADMIN_PIN env var)
+- Ecosystem API: HMAC-SHA256 signature authentication
+- Multi-tenant: All data scoped by tenantId
+REQUIRED ENVIRONMENT VARIABLES:
+
+DATABASE_URL=postgresql://...
+HELIUS_API_KEY=your_helius_api_key
+SOLANA_WALLET_PRIVATE_KEY=base58_encoded_private_key
+ORBIT_ECOSYSTEM_API_KEY=dw_app_xxxxx
+ORBIT_ECOSYSTEM_API_SECRET=your_secret
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+OPENAI_API_KEY=sk-...
+
+================================================================================
+2. CRM SYSTEM - FULL API REFERENCE
+================================================================================
+DATABASE TABLES:
+| Table                    | Description                    |
+|--------------------------|--------------------------------|
+| crm_activities           | Timeline/interaction history   |
+| crm_notes                | Notes attached to any entity   |
+| crm_deals                | Sales pipeline deals           |
+| crm_meetings             | Scheduled meetings             |
+| crm_custom_fields        | Custom field definitions       |
+| crm_custom_field_values  | Custom field data values       |
+| crm_workflows            | Automation workflows           |
+| crm_workflow_logs        | Workflow execution logs        |
+| crm_duplicates           | Duplicate detection records    |
+| crm_chat_conversations   | Live chat threads              |
+| crm_chat_messages        | Chat messages                  |
+| crm_email_tracking       | Email open/click tracking      |
+CRM API ENDPOINTS (All require session auth, prefix: /api/crm):
+ACTIVITIES:
+  GET  /api/crm/activities/:entityType/:entityId  - Get activity timeline
+  POST /api/crm/activities                         - Create activity
+NOTES:
+  GET    /api/crm/notes/:entityType/:entityId  - Get notes for entity
+  POST   /api/crm/notes                         - Create note
+  PATCH  /api/crm/notes/:id                     - Update note
+  DELETE /api/crm/notes/:id                     - Delete note
+DEALS (Sales Pipeline):
+  GET    /api/crm/deals                    - List deals (filter: stage, ownerId)
+  GET    /api/crm/deals/:id                - Get single deal
+  POST   /api/crm/deals                    - Create deal
+  PATCH  /api/crm/deals/:id                - Update deal
+  DELETE /api/crm/deals/:id                - Delete deal
+  GET    /api/crm/deals/pipeline/summary   - Pipeline summary with totals
+MEETINGS:
+  GET    /api/crm/meetings                 - List meetings (filter: date range)
+  GET    /api/crm/meetings/:id             - Get single meeting
+  POST   /api/crm/meetings                 - Create meeting
+  PATCH  /api/crm/meetings/:id             - Update meeting
+  DELETE /api/crm/meetings/:id             - Delete meeting
+CUSTOM FIELDS:
+  GET    /api/crm/custom-fields/:entityType              - Get field definitions
+  POST   /api/crm/custom-fields                           - Create field definition
+  GET    /api/crm/custom-field-values/:entityType/:entityId  - Get values
+  POST   /api/crm/custom-field-values                     - Set field value
+WORKFLOWS:
+  GET    /api/crm/workflows                - List workflows
+  POST   /api/crm/workflows                - Create workflow
+  PATCH  /api/crm/workflows/:id            - Update workflow
+  DELETE /api/crm/workflows/:id            - Delete workflow
+  GET    /api/crm/workflow-logs            - Get execution logs
+DUPLICATES:
+  GET    /api/crm/duplicates               - List detected duplicates
+  POST   /api/crm/duplicates/scan          - Trigger duplicate scan
+  PATCH  /api/crm/duplicates/:id           - Resolve (merge/dismiss)
+LIVE CHAT:
+  GET    /api/crm/chat/conversations                  - List conversations
+  POST   /api/crm/chat/conversations                  - Start conversation
+  GET    /api/crm/chat/conversations/:id/messages     - Get messages
+  POST   /api/crm/chat/messages                       - Send message
+  PATCH  /api/crm/chat/conversations/:id              - Update status
+EMAIL TRACKING:
+  GET    /api/crm/email-tracking           - List tracked emails
+  POST   /api/crm/email-tracking           - Create tracking record
+  GET    /api/crm/email-tracking/pixel/:id - Tracking pixel (records open)
+  GET    /api/crm/email-tracking/click/:id - Click redirect (records click)
+================================================================================
+3. SOLANA BLOCKCHAIN STAMPING SYSTEM
+================================================================================
+OVERVIEW:
+ORBIT uses Solana blockchain to create immutable verification stamps for
+critical documents. Documents are batched into Merkle trees and only the
+Merkle root is written on-chain to minimize transaction costs.
+ANCHORABLE DOCUMENT TYPES:
+- invoice, paystub, payroll, letter, equipment, report
+- contract, certification, background_check, i9_verification
+- release, franchise, audit
+DATABASE TABLES:
+| Table                      | Description                           |
+|----------------------------|---------------------------------------|
+| blockchain_hash_queue      | Pending hashes awaiting anchoring     |
+| blockchain_anchor_batches  | Completed Merkle batches with TX sig  |
+| release_history            | Software release stamps               |
+MODES:
+- SIMULATION: No blockchain (HELIUS_API_KEY not set) - generates SIM_xxx signatures
+- LIVE: Real Solana mainnet transactions via Helius RPC
+HOW IT WORKS:
+1. Document hash queued via solanaService.queueForAnchoring(hallmarkId, contentHash, assetType)
+2. Hashes batch into Merkle tree (automatic or manual trigger)
+3. Merkle root written to Solana memo program
+4. Transaction signature stored with explorer URL
+5. Verification via solanaService.verifyHash(contentHash)
+API ENDPOINTS:
+  GET  /api/blockchain/stats              - Queue size, batch count, mode
+  GET  /api/blockchain/queue              - View pending hashes
+  POST /api/blockchain/anchor             - Trigger batch anchoring
+  GET  /api/blockchain/batches            - View anchored batches
+  POST /api/blockchain/verify             - Verify a hash exists on-chain
+SOLANA SERVICE METHODS (server/solanaService.ts):
+```typescript
+// Queue a hash for anchoring
+await solanaService.queueForAnchoring(hallmarkId, contentHash, assetType);
+// Anchor all queued hashes as a batch
+const result = await solanaService.anchorBatch();
+// Returns: { merkleRoot, transactionSignature, hashCount, explorerUrl }
+// Verify a hash was anchored
+const verification = await solanaService.verifyHash(contentHash);
+// Returns: { found: boolean, batch?: BatchResult, proof?: string[] }
+// Get stats
+const stats = await solanaService.getStats();
+// Returns: { mode, queueSize, totalBatches, totalAnchored, anchorableTypes }
+
+================================================================================
+4. VERSION MANAGEMENT & AUTO-STAMPING
+AUTOMATIC VERSION BUMPING:
+When the app deploys to production, it automatically:
+
+Bumps the patch version (2.7.1 → 2.7.2)
+Increments build number
+Generates release hash (SHA-256)
+Queues for Solana anchoring
+Writes to version.json and database
+VERSION FILE (version.json):
+
+{
+  "version": "2.7.2",
+  "buildNumber": 3,
+  "lastPublished": "2025-12-12T14:30:00.000Z",
+  "solanaHash": "abc123...",
+  "transactionSignature": "5xYz..."
+}
+
+AUTO-PUBLISH TRIGGER (server/index-prod.ts):
+On production startup, after 10 seconds delay:
+
+const result = await versionManager.publishRelease('patch');
+// Automatically bumps version, generates hash, anchors to Solana
+
+API ENDPOINTS:
+GET /api/version - Get current version info
+POST /api/version/publish - Manual publish trigger (admin only)
+GET /api/version/history - Get release history
+
+VERSION MANAGER METHODS (server/versionManager.ts):
+
+// Get current version
+const info = versionManager.getCurrentVersion();
+// Returns: { version, buildNumber, lastPublished, solanaHash, transactionSignature }
+// Bump version (major/minor/patch)
+const newVersion = versionManager.bumpVersion('patch');
+// Full publish with Solana anchoring
+const result = await versionManager.publishRelease('patch');
+// Returns: { version, buildNumber, hash, solanaResult }
+// Get publish history
+const history = await versionManager.getPublishHistory();
+
+================================================================================
+5. DARKWAVE DEVELOPERS HUB INTEGRATION
+OVERVIEW:
+The DarkWave Ecosystem Hub enables cross-product data syncing between
+DarkWave Studios applications (ORBIT, GarageBot, Brew & Board, Lot Ops Pro, etc.)
+
+AUTHENTICATION: HMAC-SHA256
+All requests must include these headers:
+
+X-Ecosystem-App-Id: Your app ID (e.g., dw_app_xxxxx)
+X-Ecosystem-Timestamp: Unix timestamp in seconds
+X-Ecosystem-Signature: HMAC-SHA256 signature
+SIGNATURE GENERATION:
+
+const crypto = require('crypto');
+function generateSignature(appId: string, secret: string, timestamp: number, body: string): string {
+  const payload = `${appId}:${timestamp}:${body}`;
+  return crypto.createHmac('sha256', secret).update(payload).digest('hex');
+}
+
+ECOSYSTEM API ENDPOINTS:
+
+REGISTRATION (Admin only):
+POST /api/admin/ecosystem/register-app - Register new app
+Body: { appName, appSlug, webhookUrl?, permissions? }
+Returns: { appId, apiKey, apiSecret }
+
+STATUS & INFO:
+GET /api/ecosystem/status - Connection status
+GET /api/ecosystem/debug - Debug info (no auth required)
+
+DATA SYNC ENDPOINTS (All require ecosystem auth):
+POST /api/ecosystem/sync/workers - Sync worker data
+POST /api/ecosystem/sync/contractors - Sync contractor data
+POST /api/ecosystem/sync/timesheets - Sync timesheet data
+POST /api/ecosystem/sync/certifications - Sync certifications
+POST /api/ecosystem/sync/w2 - Sync W-2 data
+POST /api/ecosystem/sync/1099 - Sync 1099 data
+
+QUERY ENDPOINTS:
+GET /api/ecosystem/shops/:shopId/workers - Get workers for a shop
+GET /api/ecosystem/shops/:shopId/payroll - Get payroll for a shop
+
+SNIPPET SHARING:
+GET /api/ecosystem/snippets - Get shared code snippets
+POST /api/ecosystem/snippets - Share a code snippet
+Body: { title, language, code, description?, tags? }
+
+ACTIVITY LOGGING:
+GET /api/ecosystem/logs - Get activity logs
+POST /api/ecosystem/logs - Log an activity
+Body: { action, entityType, entityId?, details?, level? }
+
+RELEASE MANAGER:
+POST /api/release-manager/register - Register app release
+Body: { appSlug, version, releaseHash, changelog?, features? }
+GET /api/release-manager/releases - Get all releases
+GET /api/release-manager/releases/:appSlug - Get releases for app
+GET /api/release-manager/changelog - Get combined changelog
+
+================================================================================
+6. COMPLETE CODE EXAMPLES
+EXAMPLE 1: ECOSYSTEM CLIENT CLASS (For external apps to connect)
+// EcosystemClient.ts - Use this in your external app to connect to ORBIT Hub
+import crypto from 'crypto';
+interface EcosystemConfig {
+  hubUrl: string;
+  appId: string;
+  apiSecret: string;
+}
+export class EcosystemClient {
+  private config: EcosystemConfig;
+  constructor(config: EcosystemConfig) {
+    this.config = config;
+  }
+  private generateSignature(timestamp: number, body: string): string {
+    const payload = `${this.config.appId}:${timestamp}:${body}`;
+    return crypto.createHmac('sha256', this.config.apiSecret).update(payload).digest('hex');
+  }
+  private getHeaders(body: string = ''): Record<string, string> {
+    const timestamp = Math.floor(Date.now() / 1000);
+    return {
+      'Content-Type': 'application/json',
+      'X-Ecosystem-App-Id': this.config.appId,
+      'X-Ecosystem-Timestamp': timestamp.toString(),
+      'X-Ecosystem-Signature': this.generateSignature(timestamp, body),
+    };
+  }
+  async getStatus(): Promise<any> {
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/status`, {
+      headers: this.getHeaders(),
+    });
+    return response.json();
+  }
+  async syncWorkers(workers: any[]): Promise<any> {
+    const body = JSON.stringify({ workers });
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/sync/workers`, {
+      method: 'POST',
+      headers: this.getHeaders(body),
+      body,
+    });
+    return response.json();
+  }
+  async syncContractors(contractors: any[]): Promise<any> {
+    const body = JSON.stringify({ contractors });
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/sync/contractors`, {
+      method: 'POST',
+      headers: this.getHeaders(body),
+      body,
+    });
+    return response.json();
+  }
+  async syncTimesheets(timesheets: any[]): Promise<any> {
+    const body = JSON.stringify({ timesheets });
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/sync/timesheets`, {
+      method: 'POST',
+      headers: this.getHeaders(body),
+      body,
+    });
+    return response.json();
+  }
+  async shareSnippet(snippet: { title: string; language: string; code: string; description?: string; tags?: string[] }): Promise<any> {
+    const body = JSON.stringify(snippet);
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/snippets`, {
+      method: 'POST',
+      headers: this.getHeaders(body),
+      body,
+    });
+    return response.json();
+  }
+  async getSnippets(): Promise<any> {
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/snippets`, {
+      headers: this.getHeaders(),
+    });
+    return response.json();
+  }
+  async logActivity(log: { action: string; entityType: string; entityId?: string; details?: any }): Promise<any> {
+    const body = JSON.stringify(log);
+    const response = await fetch(`${this.config.hubUrl}/api/ecosystem/logs`, {
+      method: 'POST',
+      headers: this.getHeaders(body),
+      body,
+    });
+    return response.json();
+  }
+  async registerRelease(release: { appSlug: string; version: string; releaseHash: string; changelog?: string }): Promise<any> {
+    const body = JSON.stringify(release);
+    const response = await fetch(`${this.config.hubUrl}/api/release-manager/register`, {
+      method: 'POST',
+      headers: this.getHeaders(body),
+      body,
+    });
+    return response.json();
+  }
+}
+// USAGE:
+const client = new EcosystemClient({
+  hubUrl: 'https://orbitstaffing.io',
+  appId: 'dw_app_your_app_id',
+  apiSecret: 'your_api_secret',
+});
+// Check connection
+const status = await client.getStatus();
+console.log('Connected:', status);
+// Sync workers
+await client.syncWorkers([
+  { id: 'w1', name: 'John Doe', email: 'john@example.com', skills: ['welding'] }
+]);
+// Share a code snippet
+await client.shareSnippet({
+  title: 'Auth Helper',
+  language: 'typescript',
+  code: 'function auth() { return true; }',
+  tags: ['auth', 'helper']
+});
+
+EXAMPLE 2: WEBHOOK SIGNATURE VERIFICATION
+// Verify incoming webhook from ORBIT Hub
+function verifyWebhook(req: Request, secret: string): boolean {
+  const appId = req.headers['x-ecosystem-app-id'] as string;
+  const timestamp = req.headers['x-ecosystem-timestamp'] as string;
+  const signature = req.headers['x-ecosystem-signature'] as string;
+  
+  // Check timestamp freshness (5 min window)
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - parseInt(timestamp)) > 300) {
+    return false;
+  }
+  
+  const body = JSON.stringify(req.body);
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(`${appId}:${timestamp}:${body}`)
+    .digest('hex');
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
+
+EXAMPLE 3: CRM DEAL CREATION
+// Create a deal in the CRM (requires authenticated session)
+async function createDeal(dealData: {
+  title: string;
+  value: number;
+  stage: string;
+  clientId?: string;
+  probability?: number;
+  expectedCloseDate?: string;
+}) {
+  const response = await fetch('/api/crm/deals', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // Required for session auth
+    body: JSON.stringify(dealData),
+  });
+  return response.json();
+}
+// Example usage:
+const deal = await createDeal({
+  title: 'Enterprise Staffing Contract',
+  value: 150000,
+  stage: 'proposal',
+  probability: 75,
+  expectedCloseDate: '2025-03-01',
+});
+
+EXAMPLE 4: BLOCKCHAIN HASH VERIFICATION
+// Verify a document hash on the blockchain
+async function verifyDocumentHash(contentHash: string): Promise<{
+  verified: boolean;
+  explorerUrl?: string;
+  anchoredAt?: Date;
+}> {
+  const response = await fetch('/api/blockchain/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contentHash }),
+  });
+  
+  const result = await response.json();
+  
+  if (result.found && result.batch) {
+    return {
+      verified: true,
+      explorerUrl: result.batch.explorerUrl,
+      anchoredAt: new Date(result.batch.anchoredAt),
+    };
+  }
+  
+  return { verified: false };
+}
+// Generate hash for a document
+function generateDocumentHash(content: string): string {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+// Example: Verify an invoice
+const invoiceContent = JSON.stringify({ invoiceId: 'INV-001', amount: 5000 });
+const hash = generateDocumentHash(invoiceContent);
+const verification = await verifyDocumentHash(hash);
+console.log('Verified:', verification.verified);
+
+EXAMPLE 5: VERSION STATUS CHECK
+// Get current version and Solana stamp
+async function getVersionInfo() {
+  const response = await fetch('/api/version');
+  return response.json();
+}
+// Response format:
+// {
+//   version: "2.7.2",
+//   buildNumber: 3,
+//   lastPublished: "2025-12-12T14:30:00.000Z",
+//   solanaHash: "abc123def456...",
+//   transactionSignature: "5xYzAbc...",
+//   explorerUrl: "https://explorer.solana.com/tx/5xYzAbc..."
+// }
+
+================================================================================
+CONNECTED APPS STATUS (Current)
+App	App ID	Status
+ORBIT Staffing OS	dw_app_orbit	Hub/Live
+GarageBot	dw_app_3c88bda688e781...	Active
+Brew & Board	dw_app_brewandboard	Active
+Lot Ops Pro	(pending)	Ready
+DarkWave Pulse	(pending)	Ready
+Orby	(pending)	Ready
+================================================================================
+QUICK REFERENCE - COMMON TASKS
+CONNECT NEW APP TO HUB:
+
+Admin registers app: POST /api/admin/ecosystem/register-app
+Receive appId + apiSecret
+Use EcosystemClient class with credentials
+Test with GET /api/ecosystem/status
+SYNC DATA FROM EXTERNAL APP:
+
+Initialize EcosystemClient
+Call appropriate sync method (syncWorkers, syncContractors, etc.)
+Check response for success/errors
+SHARE CODE SNIPPET:
+
+POST /api/ecosystem/snippets with { title, language, code }
+Snippet visible to all connected apps
+VERIFY DOCUMENT ON BLOCKCHAIN:
+
+Generate SHA-256 hash of document content
+POST /api/blockchain/verify with { contentHash }
+Response includes explorerUrl if found
+CHECK APP VERSION:
+
+GET /api/version
+Returns version, buildNumber, Solana transaction details
+================================================================================
+END OF HANDOFF DOCUMENT
