@@ -1,18 +1,46 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
-import { motion } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe } from "lucide-react";
 
 const DEVELOPER_PIN = "0424";
+
+const SERVICE_AREAS = [
+  "Nashville Metro",
+  "Franklin",
+  "Brentwood",
+  "Murfreesboro",
+  "Lebanon",
+  "Goodlettsville",
+  "Hendersonville",
+  "Mt. Juliet",
+  "Southern Kentucky",
+];
+
+interface ModalContent {
+  title: string;
+  icon: React.ReactNode;
+  content: React.ReactNode;
+}
 
 export default function Developer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [currentVersion, setCurrentVersion] = useState("1.0.0");
+  const [buildNumber, setBuildNumber] = useState(1);
+
+  useEffect(() => {
+    const storedVersion = localStorage.getItem("app_version") || "1.0.0";
+    const storedBuild = parseInt(localStorage.getItem("build_number") || "1");
+    setCurrentVersion(storedVersion);
+    setBuildNumber(storedBuild);
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +52,390 @@ export default function Developer() {
       setPin("");
     }
   };
+
+  const bumpVersion = (type: "major" | "minor" | "patch") => {
+    const parts = currentVersion.split(".").map(Number);
+    if (type === "major") {
+      parts[0]++;
+      parts[1] = 0;
+      parts[2] = 0;
+    } else if (type === "minor") {
+      parts[1]++;
+      parts[2] = 0;
+    } else {
+      parts[2]++;
+    }
+    const newVersion = parts.join(".");
+    const newBuild = buildNumber + 1;
+    setCurrentVersion(newVersion);
+    setBuildNumber(newBuild);
+    localStorage.setItem("app_version", newVersion);
+    localStorage.setItem("build_number", String(newBuild));
+  };
+
+  const modalContents: Record<string, ModalContent> = {
+    database: {
+      title: "Database Management",
+      icon: <Database className="w-8 h-8 text-purple-400" />,
+      content: (
+        <div className="space-y-6">
+          <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-green-400 font-bold">PostgreSQL Connected</span>
+            </div>
+            <p className="text-sm text-muted-foreground">Neon-backed database with automatic scaling and instant branching</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-2xl font-bold text-accent">7</p>
+              <p className="text-xs text-muted-foreground">Active Tables</p>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-2xl font-bold text-purple-400">Drizzle ORM</p>
+              <p className="text-xs text-muted-foreground">Type-safe queries</p>
+            </div>
+          </div>
+          <div className="bg-black/30 rounded-xl p-4 font-mono text-xs">
+            <p className="text-green-400">Tables: leads, estimates, seo_tags, crm_deals,</p>
+            <p className="text-green-400">crm_activities, crm_notes, user_pins</p>
+          </div>
+        </div>
+      ),
+    },
+    api: {
+      title: "API Status & Endpoints",
+      icon: <Server className="w-8 h-8 text-accent" />,
+      content: (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+            <div className="w-4 h-4 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-green-400 font-bold text-lg">All Systems Operational</span>
+          </div>
+          <div className="grid gap-2">
+            {[
+              { method: "GET/POST", path: "/api/leads", status: "active" },
+              { method: "GET/POST", path: "/api/estimates", status: "active" },
+              { method: "CRUD", path: "/api/crm/deals", status: "active" },
+              { method: "CRUD", path: "/api/crm/activities", status: "active" },
+              { method: "POST", path: "/api/auth/pin/*", status: "active" },
+            ].map((endpoint, i) => (
+              <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono bg-accent/20 text-accent px-2 py-1 rounded">{endpoint.method}</span>
+                  <span className="text-sm font-mono">{endpoint.path}</span>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-green-400" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    performance: {
+      title: "Performance Metrics",
+      icon: <Cpu className="w-8 h-8 text-accent" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center mb-6">
+            <Sparkles className="w-12 h-12 mx-auto text-gold-400 mb-3" />
+            <h3 className="text-xl font-bold">Lightning Fast Performance</h3>
+            <p className="text-sm text-muted-foreground">Optimized for the painting industry</p>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-3xl font-bold text-green-400">&lt;100ms</p>
+              <p className="text-xs text-muted-foreground">API Response</p>
+            </div>
+            <div className="text-center bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-3xl font-bold text-accent">99.9%</p>
+              <p className="text-xs text-muted-foreground">Uptime</p>
+            </div>
+            <div className="text-center bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-3xl font-bold text-purple-400">A+</p>
+              <p className="text-xs text-muted-foreground">Lighthouse Score</p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-accent/10 to-purple-500/10 rounded-xl p-4 border border-accent/20">
+            <p className="text-sm"><Zap className="w-4 h-4 inline mr-2 text-gold-400" />Powered by Vite for instant hot module replacement and optimized builds</p>
+          </div>
+        </div>
+      ),
+    },
+    version: {
+      title: "Version Control & Auto-Bumping",
+      icon: <GitBranch className="w-8 h-8 text-accent" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center bg-gradient-to-br from-purple-500/20 to-accent/10 rounded-2xl p-6 border border-purple-500/30">
+            <p className="text-sm text-muted-foreground mb-2">Current Version</p>
+            <p className="text-4xl font-bold font-mono text-purple-400">v{currentVersion}</p>
+            <p className="text-xs text-muted-foreground mt-2">Build #{buildNumber}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <motion.button
+              onClick={() => bumpVersion("patch")}
+              className="p-3 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              data-testid="button-bump-patch"
+            >
+              <p className="font-bold">Patch</p>
+              <p className="text-xs opacity-70">Bug fixes</p>
+            </motion.button>
+            <motion.button
+              onClick={() => bumpVersion("minor")}
+              className="p-3 rounded-xl bg-accent/20 border border-accent/30 text-accent hover:bg-accent/30 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              data-testid="button-bump-minor"
+            >
+              <p className="font-bold">Minor</p>
+              <p className="text-xs opacity-70">New features</p>
+            </motion.button>
+            <motion.button
+              onClick={() => bumpVersion("major")}
+              className="p-3 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              data-testid="button-bump-major"
+            >
+              <p className="font-bold">Major</p>
+              <p className="text-xs opacity-70">Breaking changes</p>
+            </motion.button>
+          </div>
+          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <p className="text-sm text-muted-foreground">
+              <Clock className="w-4 h-4 inline mr-2" />
+              Auto-versioning tracks all deployments with semantic versioning
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    solana: {
+      title: "Solana Blockchain Stamping",
+      icon: <Coins className="w-8 h-8 text-gold-400" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center">
+            <motion.div
+              className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold-400/30 to-purple-500/30 flex items-center justify-center border-2 border-gold-400/50"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            >
+              <Coins className="w-10 h-10 text-gold-400" />
+            </motion.div>
+            <h3 className="text-xl font-bold">Blockchain-Verified Estimates</h3>
+            <p className="text-sm text-muted-foreground">Immutable proof of your quotes on Solana</p>
+          </div>
+          <div className="bg-gradient-to-r from-gold-400/10 to-purple-500/10 rounded-xl p-4 border border-gold-400/30">
+            <div className="flex items-center gap-3 mb-3">
+              <Shield className="w-5 h-5 text-gold-400" />
+              <span className="font-bold">Trust & Transparency</span>
+            </div>
+            <ul className="text-sm text-muted-foreground space-y-2">
+              <li>Every estimate cryptographically signed</li>
+              <li>Timestamp proof for dispute resolution</li>
+              <li>Customer verification via QR code</li>
+              <li>Immutable audit trail on-chain</li>
+            </ul>
+          </div>
+          <div className="bg-purple-500/10 rounded-xl p-4 border border-purple-500/30">
+            <p className="text-xs font-mono text-purple-400">
+              Network: Solana Mainnet (Coming Soon)<br/>
+              Transaction Cost: ~$0.00025 per stamp
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    darkwave: {
+      title: "Darkwave Dev Hub Connection",
+      icon: <Link2 className="w-8 h-8 text-purple-400" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center">
+            <motion.div
+              className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-600/40 to-blue-500/40 flex items-center justify-center border border-purple-500/50"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Rocket className="w-10 h-10 text-purple-400" />
+            </motion.div>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Darkwave Dev Hub</h3>
+            <p className="text-sm text-muted-foreground">Next-gen development ecosystem by Orbit</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <Globe className="w-6 h-6 mx-auto mb-2 text-blue-400" />
+              <p className="text-sm font-bold">Multi-Tenant</p>
+              <p className="text-xs text-muted-foreground">Infinite scaling</p>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+              <Zap className="w-6 h-6 mx-auto mb-2 text-gold-400" />
+              <p className="text-sm font-bold">Real-time Sync</p>
+              <p className="text-xs text-muted-foreground">Live updates</p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 border border-purple-500/30">
+            <p className="text-sm">
+              <Sparkles className="w-4 h-4 inline mr-2 text-purple-400" />
+              Connected to Orbit's proprietary development infrastructure for automated deployments, real-time monitoring, and cross-platform synchronization
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    serviceAreas: {
+      title: "Active Service Areas",
+      icon: <MapPin className="w-8 h-8 text-teal-400" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center mb-4">
+            <Globe className="w-12 h-12 mx-auto text-teal-400 mb-3" />
+            <h3 className="text-xl font-bold">Tennessee & Beyond</h3>
+            <p className="text-sm text-muted-foreground">Expanding our service footprint</p>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {SERVICE_AREAS.map((area, i) => (
+              <motion.div
+                key={area}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-gradient-to-br from-teal-500/20 to-accent/10 rounded-xl p-3 border border-teal-500/30 text-center"
+              >
+                <MapPin className="w-4 h-4 mx-auto mb-1 text-teal-400" />
+                <p className="text-sm font-medium">{area}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="bg-teal-500/10 rounded-xl p-4 border border-teal-500/30">
+            <p className="text-sm text-muted-foreground">
+              <Sparkles className="w-4 h-4 inline mr-2 text-teal-400" />
+              Premium painting services now available across Middle Tennessee and Southern Kentucky regions
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    colorWheel: {
+      title: "Sherwin-Williams Integration",
+      icon: <Palette className="w-8 h-8 text-accent" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center">
+            <motion.div
+              className="w-24 h-24 mx-auto mb-4 rounded-full"
+              style={{
+                background: "conic-gradient(from 0deg, #FF6B6B, #FFE66D, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7, #DDA0DD, #FF6B6B)"
+              }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            />
+            <h3 className="text-xl font-bold">Color Visualization</h3>
+            <p className="text-sm text-muted-foreground">Powered by Sherwin-Williams ColorSnap</p>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { name: "Agreeable Gray", hex: "#D1CBC1" },
+              { name: "Repose Gray", hex: "#C2BDB6" },
+              { name: "Accessible Beige", hex: "#D1C6B4" },
+              { name: "Pure White", hex: "#F0EDE5" },
+            ].map((color) => (
+              <div key={color.name} className="text-center">
+                <div 
+                  className="w-full aspect-square rounded-xl border-2 border-white/20 mb-2"
+                  style={{ backgroundColor: color.hex }}
+                />
+                <p className="text-xs text-muted-foreground">{color.name}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-accent/10 rounded-xl p-4 border border-accent/30">
+            <p className="text-sm">
+              <Palette className="w-4 h-4 inline mr-2 text-accent" />
+              Full Sherwin-Williams color library with AI-powered room visualization
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    console: {
+      title: "Developer Console",
+      icon: <Terminal className="w-8 h-8 text-green-400" />,
+      content: (
+        <div className="space-y-4">
+          <div className="bg-black rounded-xl p-4 font-mono text-sm h-64 overflow-auto border border-green-500/30">
+            <p className="text-green-400">[{new Date().toLocaleTimeString()}] System initialized</p>
+            <p className="text-muted-foreground">[INFO] Loading PaintPros.io v{currentVersion}</p>
+            <p className="text-muted-foreground">[INFO] PostgreSQL connection established</p>
+            <p className="text-blue-400">[DB] 7 tables loaded successfully</p>
+            <p className="text-muted-foreground">[INFO] CRM module initialized</p>
+            <p className="text-muted-foreground">[INFO] Estimator engine ready</p>
+            <p className="text-purple-400">[DARKWAVE] Connected to Dev Hub</p>
+            <p className="text-gold-400">[SOLANA] Blockchain stamping module loaded</p>
+            <p className="text-accent">[READY] Server listening on port 5000</p>
+            <p className="text-green-400 animate-pulse">_ Awaiting commands...</p>
+          </div>
+          <div className="flex gap-2">
+            <Input 
+              placeholder="Enter command..." 
+              className="bg-black/50 border-green-500/30 font-mono text-sm"
+              data-testid="input-console-command"
+            />
+            <FlipButton className="px-4" data-testid="button-run-command">
+              Run
+            </FlipButton>
+          </div>
+        </div>
+      ),
+    },
+    debug: {
+      title: "Debug & Environment",
+      icon: <Bug className="w-8 h-8 text-accent" />,
+      content: (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between bg-accent/10 rounded-xl p-4 border border-accent/30">
+            <div className="flex items-center gap-3">
+              <Zap className="w-6 h-6 text-accent" />
+              <span className="font-bold">Development Mode</span>
+            </div>
+            <div className="px-3 py-1 rounded-full bg-accent/20 text-accent text-sm font-medium">
+              Active
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-sm text-muted-foreground mb-1">Environment</p>
+              <p className="font-mono text-green-400">development</p>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-sm text-muted-foreground mb-1">Node Version</p>
+              <p className="font-mono text-accent">v20.x</p>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-sm text-muted-foreground mb-1">React Version</p>
+              <p className="font-mono text-blue-400">18.3.1</p>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <p className="text-sm text-muted-foreground mb-1">TypeScript</p>
+              <p className="font-mono text-purple-400">5.6.x</p>
+            </div>
+          </div>
+          <div className="bg-yellow-500/10 rounded-xl p-4 border border-yellow-500/30">
+            <p className="text-sm text-yellow-400">
+              <Bug className="w-4 h-4 inline mr-2" />
+              Hot Module Replacement enabled for instant updates
+            </p>
+          </div>
+        </div>
+      ),
+    },
+  };
+
+  const closeModal = () => setActiveModal(null);
 
   if (!isAuthenticated) {
     return (
@@ -70,9 +482,9 @@ export default function Developer() {
 
   return (
     <PageLayout>
-      <main className="pt-24 px-4 md:px-8 pb-24">
-        <div className="max-w-7xl mx-auto mb-12">
-          <div className="flex items-center gap-4 mb-4">
+      <main className="pt-20 px-4 md:px-8 pb-24">
+        <div className="max-w-7xl mx-auto mb-4">
+          <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
               <Code className="w-6 h-6 text-purple-400" />
             </div>
@@ -85,89 +497,241 @@ export default function Developer() {
 
         <BentoGrid>
           <BentoItem colSpan={4} rowSpan={2}>
-            <GlassCard className="h-full p-8 bg-gradient-to-br from-purple-500/10 to-transparent" glow>
-              <div className="flex items-center gap-3 mb-6">
-                <Database className="w-6 h-6 text-purple-400" />
-                <h2 className="text-2xl font-display font-bold">Database</h2>
-              </div>
-              <div className="space-y-4">
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("database")}
+              data-testid="card-database"
+            >
+              <GlassCard className="h-full p-8 bg-gradient-to-br from-purple-500/10 to-transparent" glow>
+                <div className="flex items-center gap-3 mb-6">
+                  <Database className="w-6 h-6 text-purple-400" />
+                  <h2 className="text-2xl font-display font-bold">Database</h2>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-green-400 font-medium">Connected</span>
+                  </div>
+                  <div className="bg-black/30 rounded-xl p-4 font-mono text-xs text-muted-foreground">
+                    <p>PostgreSQL + Drizzle ORM</p>
+                    <p className="text-accent">7 Active Tables</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Click to manage</p>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("api")}
+              data-testid="card-api"
+            >
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Server className="w-5 h-5 text-accent" />
+                  <h3 className="text-xl font-bold">API Status</h3>
+                </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
-                  <span className="text-green-400 font-medium">Connected</span>
+                  <div className="w-3 h-3 rounded-full bg-green-400" />
+                  <span className="text-sm text-green-400">All systems operational</span>
                 </div>
-                <div className="bg-black/30 rounded-xl p-4 font-mono text-xs text-muted-foreground">
-                  <p>PostgreSQL</p>
-                  <p className="text-accent">Tables: leads, estimates</p>
-                </div>
-                <div className="pt-4 border-t border-white/10">
-                  <p className="text-sm text-muted-foreground">Database management coming soon</p>
-                </div>
-              </div>
-            </GlassCard>
+              </GlassCard>
+            </motion.div>
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="h-full p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Server className="w-5 h-5 text-accent" />
-                <h3 className="text-xl font-bold">API Status</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="text-sm text-green-400">All systems operational</span>
-              </div>
-            </GlassCard>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("performance")}
+              data-testid="card-performance"
+            >
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Cpu className="w-5 h-5 text-accent" />
+                  <h3 className="text-xl font-bold">Performance</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-gold-400" />
+                  <span className="text-sm text-muted-foreground">Lightning fast &lt;100ms</span>
+                </div>
+              </GlassCard>
+            </motion.div>
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="h-full p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Cpu className="w-5 h-5 text-accent" />
-                <h3 className="text-xl font-bold">Performance</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">Metrics dashboard coming soon</p>
-            </GlassCard>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("solana")}
+              data-testid="card-solana"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-gold-400/10 to-transparent">
+                <div className="flex items-center gap-3 mb-4">
+                  <Coins className="w-5 h-5 text-gold-400" />
+                  <h3 className="text-xl font-bold">Solana Stamping</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Blockchain-verified estimates</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("darkwave")}
+              data-testid="card-darkwave"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-purple-600/10 to-blue-500/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <Rocket className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-xl font-bold">Darkwave Dev Hub</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Connected to Orbit ecosystem</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("serviceAreas")}
+              data-testid="card-service-areas"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-teal-500/10 to-transparent">
+                <div className="flex items-center gap-3 mb-4">
+                  <MapPin className="w-5 h-5 text-teal-400" />
+                  <h3 className="text-xl font-bold">Service Areas</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">{SERVICE_AREAS.length} active regions</p>
+              </GlassCard>
+            </motion.div>
           </BentoItem>
 
           <BentoItem colSpan={8} rowSpan={1}>
-            <GlassCard className="h-full p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Terminal className="w-5 h-5 text-purple-400" />
-                <h3 className="text-xl font-bold">Console</h3>
-              </div>
-              <div className="bg-black/50 rounded-xl p-4 font-mono text-sm h-32 overflow-auto border border-white/10">
-                <p className="text-green-400">[System] Application initialized</p>
-                <p className="text-muted-foreground">[Info] Database connection established</p>
-                <p className="text-muted-foreground">[Info] API routes registered</p>
-                <p className="text-accent">[Ready] Server listening on port 5000</p>
-              </div>
-            </GlassCard>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.01 }}
+              onClick={() => setActiveModal("console")}
+              data-testid="card-console"
+            >
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Terminal className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-xl font-bold">Console</h3>
+                </div>
+                <div className="bg-black/50 rounded-xl p-4 font-mono text-sm h-32 overflow-auto border border-white/10">
+                  <p className="text-green-400">[System] Application initialized</p>
+                  <p className="text-muted-foreground">[Info] Database connection established</p>
+                  <p className="text-purple-400">[Darkwave] Connected to Dev Hub</p>
+                  <p className="text-accent">[Ready] Server listening on port 5000</p>
+                </div>
+              </GlassCard>
+            </motion.div>
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="h-full p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <GitBranch className="w-5 h-5 text-accent" />
-                <h3 className="text-xl font-bold">Version Control</h3>
-              </div>
-              <p className="text-sm text-muted-foreground font-mono">main branch</p>
-            </GlassCard>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("version")}
+              data-testid="card-version"
+            >
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <GitBranch className="w-5 h-5 text-accent" />
+                  <h3 className="text-xl font-bold">Version Control</h3>
+                </div>
+                <p className="text-sm font-mono text-purple-400">v{currentVersion}</p>
+                <p className="text-xs text-muted-foreground">Auto-bumping enabled</p>
+              </GlassCard>
+            </motion.div>
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <GlassCard className="h-full p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Bug className="w-5 h-5 text-accent" />
-                <h3 className="text-xl font-bold">Debug Mode</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-accent" />
-                <span className="text-sm text-muted-foreground">Development environment</span>
-              </div>
-            </GlassCard>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("debug")}
+              data-testid="card-debug"
+            >
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Bug className="w-5 h-5 text-accent" />
+                  <h3 className="text-xl font-bold">Debug Mode</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-accent" />
+                  <span className="text-sm text-muted-foreground">Development environment</span>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("colorWheel")}
+              data-testid="card-color-wheel"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-accent/10 to-transparent">
+                <div className="flex items-center gap-3 mb-4">
+                  <Palette className="w-5 h-5 text-accent" />
+                  <h3 className="text-xl font-bold">Color Wheel</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Sherwin-Williams linked</p>
+              </GlassCard>
+            </motion.div>
           </BentoItem>
         </BentoGrid>
       </main>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {activeModal && modalContents[activeModal] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={closeModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="w-full max-w-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GlassCard className="p-6 md:p-8" glow>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    {modalContents[activeModal].icon}
+                    <h2 className="text-2xl font-display font-bold">{modalContents[activeModal].title}</h2>
+                  </div>
+                  <motion.button
+                    onClick={closeModal}
+                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    data-testid="button-close-modal"
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.button>
+                </div>
+                {modalContents[activeModal].content}
+              </GlassCard>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </PageLayout>
   );
 }

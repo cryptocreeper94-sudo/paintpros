@@ -118,7 +118,7 @@ export default function Admin() {
                   >
                     <Shield className="w-10 h-10 text-accent" />
                   </motion.div>
-                  <h1 className="text-3xl font-display font-bold mb-2">Operations Manager</h1>
+                  <h1 className="text-3xl font-display font-bold mb-2">Chief Operations Officer</h1>
                   <p className="text-muted-foreground">Enter your PIN to continue</p>
                 </div>
 
@@ -150,13 +150,13 @@ export default function Admin() {
       <PinChangeModal
         isOpen={showPinChange}
         role="ops_manager"
-        roleLabel="Operations Manager"
+        roleLabel="Chief Operations Officer"
         currentPin={currentPin}
         onSuccess={handlePinChangeSuccess}
       />
 
-      <main className="pt-24 px-4 md:px-8 pb-24">
-        <div className="max-w-7xl mx-auto mb-8">
+      <main className="pt-20 px-4 md:px-8 pb-24">
+        <div className="max-w-7xl mx-auto mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <motion.div 
@@ -166,7 +166,7 @@ export default function Admin() {
                 <Shield className="w-7 h-7 text-accent" />
               </motion.div>
               <div>
-                <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Operations Manager</h1>
+                <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Chief Operations Officer</h1>
                 <p className="text-muted-foreground">CRM & Business Operations</p>
               </div>
             </div>
