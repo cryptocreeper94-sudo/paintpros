@@ -30,6 +30,7 @@ export function Navbar() {
   ];
 
   return (
+    <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-2 md:px-4 py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem + Title */}
@@ -123,83 +124,106 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+    </header>
+
+      {/* Sidebar Menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-background/95 backdrop-blur-xl border-b border-white/10 overflow-hidden w-full max-h-[70vh] overflow-y-auto md:max-w-sm md:ml-4 md:rounded-b-2xl md:border md:border-white/15 md:shadow-xl"
-          >
-            <div className="px-4 py-6">
-              {/* Main Links */}
-              <div className="space-y-1 mb-6">
-                {mainLinks.map((link, index) => (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link href={link.href}>
-                      <span 
-                        className={cn(
-                          "text-lg font-medium flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer transition-all",
-                          link.highlight 
-                            ? "bg-accent/10 text-accent font-bold" 
-                            : "text-foreground hover:bg-white/5",
-                          location === link.href && "bg-accent/10 text-accent"
-                        )}
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {link.name}
-                        <ChevronRight className="w-5 h-5 opacity-50" />
-                      </span>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 z-40"
+              onClick={() => setIsOpen(false)}
+            />
+            {/* Sidebar */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed top-0 left-0 h-full w-72 bg-background border-r border-white/10 z-50 overflow-y-auto"
+            >
+              <div className="px-4 py-6">
+                {/* Close button */}
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="mb-6 p-2 hover:bg-white/10 rounded-lg transition-all"
+                  aria-label="Close menu"
+                >
+                  <X size={24} className="text-white" />
+                </button>
 
-              {/* Divider */}
-              <div className="border-t border-white/10 my-4" />
+                {/* Main Links */}
+                <div className="space-y-1 mb-6">
+                  {mainLinks.map((link, index) => (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <Link href={link.href}>
+                        <span 
+                          className={cn(
+                            "text-lg font-medium flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer transition-all",
+                            link.highlight 
+                              ? "bg-accent/10 text-accent font-bold" 
+                              : "text-foreground hover:bg-white/5",
+                            location === link.href && "bg-accent/10 text-accent"
+                          )}
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {link.name}
+                          <ChevronRight className="w-5 h-5 opacity-50" />
+                        </span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
 
-              {/* Admin Links */}
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
-                {adminLinks.map((link, index) => (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (mainLinks.length + index) * 0.05 }}
-                  >
-                    <Link href={link.href}>
-                      <span 
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <link.icon className={cn("w-5 h-5", link.color)} />
-                        <span className="text-lg font-medium text-foreground">{link.name}</span>
-                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                      </span>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+                {/* Divider */}
+                <div className="border-t border-white/10 my-4" />
 
-              {/* Tenant name decoration at bottom */}
-              <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <PaintRoller className="w-5 h-5 text-accent" />
-                  <span className="text-xs">{tenant.name}</span>
+                {/* Admin Links */}
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
+                  {adminLinks.map((link, index) => (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (mainLinks.length + index) * 0.05 }}
+                    >
+                      <Link href={link.href}>
+                        <span 
+                          className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <link.icon className={cn("w-5 h-5", link.color)} />
+                          <span className="text-lg font-medium text-foreground">{link.name}</span>
+                          <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                        </span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Tenant name decoration at bottom */}
+                <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <PaintRoller className="w-5 h-5 text-accent" />
+                    <span className="text-xs">{tenant.name}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
