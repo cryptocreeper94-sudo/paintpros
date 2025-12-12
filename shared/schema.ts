@@ -442,3 +442,33 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 export type Payment = typeof payments.$inferSelect;
+
+// ============ ROOM SCANS ============
+
+// Room Scans Table - AI-powered room dimension estimation
+export const roomScans = pgTable("room_scans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  leadId: varchar("lead_id").references(() => leads.id),
+  estimateId: varchar("estimate_id").references(() => estimates.id),
+  imageUrl: text("image_url"), // Base64 or stored URL
+  roomType: text("room_type"), // living_room, bedroom, bathroom, etc.
+  estimatedLength: decimal("estimated_length", { precision: 10, scale: 2 }),
+  estimatedWidth: decimal("estimated_width", { precision: 10, scale: 2 }),
+  estimatedHeight: decimal("estimated_height", { precision: 10, scale: 2 }),
+  estimatedSquareFootage: decimal("estimated_square_footage", { precision: 10, scale: 2 }),
+  confidence: decimal("confidence", { precision: 5, scale: 2 }), // 0-100
+  aiResponse: jsonb("ai_response"), // Full AI response for debugging
+  modelVersion: text("model_version").default("gpt-4o"),
+  status: text("status").notNull().default("pending"), // pending, processing, completed, failed
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertRoomScanSchema = createInsertSchema(roomScans).omit({
+  id: true,
+  createdAt: true,
+  status: true,
+});
+
+export type InsertRoomScan = z.infer<typeof insertRoomScanSchema>;
+export type RoomScan = typeof roomScans.$inferSelect;

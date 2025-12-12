@@ -16,6 +16,7 @@ import {
   type ProposalTemplate, type InsertProposalTemplate, proposalTemplates,
   type Proposal, type InsertProposal, proposals,
   type Payment, type InsertPayment, payments,
+  type RoomScan, type InsertRoomScan, roomScans,
   assetNumberCounter
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
@@ -126,6 +127,12 @@ export interface IStorage {
   getPaymentsByEstimate(estimateId: string): Promise<Payment[]>;
   updatePaymentStatus(id: string, status: string, processorId?: string): Promise<Payment | undefined>;
   markPaymentComplete(id: string): Promise<Payment | undefined>;
+  
+  // Room Scans
+  createRoomScan(scan: InsertRoomScan): Promise<RoomScan>;
+  getRoomScanById(id: string): Promise<RoomScan | undefined>;
+  getRoomScansByLead(leadId: string): Promise<RoomScan[]>;
+  updateRoomScanResult(id: string, result: Partial<RoomScan>): Promise<RoomScan | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -611,6 +618,30 @@ export class DatabaseStorage implements IStorage {
       .where(eq(payments.id, id))
       .returning();
     return result;
+  }
+
+  // Room Scans
+  async createRoomScan(scan: InsertRoomScan): Promise<RoomScan> {
+    const [result] = await db.insert(roomScans).values(scan).returning();
+    return result;
+  }
+
+  async getRoomScanById(id: string): Promise<RoomScan | undefined> {
+    const [result] = await db.select().from(roomScans).where(eq(roomScans.id, id));
+    return result;
+  }
+
+  async getRoomScansByLead(leadId: string): Promise<RoomScan[]> {
+    return await db.select().from(roomScans).where(eq(roomScans.leadId, leadId)).orderBy(desc(roomScans.createdAt));
+  }
+
+  async updateRoomScanResult(id: string, result: Partial<RoomScan>): Promise<RoomScan | undefined> {
+    const [updated] = await db
+      .update(roomScans)
+      .set(result)
+      .where(eq(roomScans.id, id))
+      .returning();
+    return updated;
   }
 }
 
