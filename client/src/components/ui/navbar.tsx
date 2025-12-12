@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link } from "wouter";
-import { X, PaintRoller } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [location] = useLocation();
 
-  const links = [
+  const mainLinks = [
     { name: "Services", href: "/services" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "About", href: "/about" },
@@ -15,12 +16,17 @@ export function Navbar() {
     { name: "Estimate", href: "/estimate", highlight: true },
   ];
 
-  // Custom Hamburger Icon with Paint Roller
+  const adminLinks = [
+    { name: "Admin", href: "/admin", icon: Shield, color: "text-blue-400" },
+    { name: "Owner", href: "/owner", icon: Crown, color: "text-gold-400" },
+    { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
+  ];
+
   const PaintRollerMenu = () => (
-    <div className="flex flex-col justify-center items-center gap-[5px] w-6 h-6">
-      <div className="w-full h-[2px] bg-current rounded-full" />
-      <PaintRoller className="w-full h-4 text-accent rotate-90" strokeWidth={2.5} />
-      <div className="w-full h-[2px] bg-current rounded-full" />
+    <div className="flex flex-col justify-center items-center gap-[5px] w-7 h-7">
+      <div className="w-full h-[2.5px] bg-current rounded-full" />
+      <div className="w-full h-[2.5px] bg-current rounded-full" />
+      <PaintRoller className="w-full h-4 text-accent" strokeWidth={2.5} />
     </div>
   );
 
@@ -35,11 +41,12 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
-          {links.map((link) => (
+          {mainLinks.map((link) => (
             <Link key={link.name} href={link.href}>
               <span className={cn(
                 "text-sm font-medium transition-colors cursor-pointer hover:text-accent",
-                link.highlight ? "text-accent font-bold" : "text-muted-foreground"
+                link.highlight ? "text-accent font-bold" : "text-muted-foreground",
+                location === link.href && "text-accent"
               )}>
                 {link.name}
               </span>
@@ -48,8 +55,12 @@ export function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden text-foreground hover:text-accent transition-colors" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={24} /> : <PaintRollerMenu />}
+        <button 
+          className="md:hidden text-foreground hover:text-accent transition-colors p-1" 
+          onClick={() => setIsOpen(!isOpen)}
+          data-testid="button-hamburger-menu"
+        >
+          {isOpen ? <X size={28} /> : <PaintRollerMenu />}
         </button>
       </div>
 
@@ -60,18 +71,71 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-20 left-4 right-4 glass-panel rounded-2xl p-6 flex flex-col gap-4 md:hidden"
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="absolute top-20 left-4 right-4 glass-panel rounded-2xl p-6 md:hidden overflow-hidden"
           >
-            {links.map((link) => (
-              <Link key={link.name} href={link.href}>
-                <span 
-                  className="text-lg font-medium text-foreground block py-2 border-b border-white/5 cursor-pointer hover:text-accent transition-colors"
-                  onClick={() => setIsOpen(false)}
+            {/* Main Links */}
+            <div className="space-y-1 mb-6">
+              {mainLinks.map((link, index) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  {link.name}
-                </span>
-              </Link>
-            ))}
+                  <Link href={link.href}>
+                    <span 
+                      className={cn(
+                        "text-lg font-medium flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer transition-all",
+                        link.highlight 
+                          ? "bg-accent/10 text-accent font-bold" 
+                          : "text-foreground hover:bg-white/5",
+                        location === link.href && "bg-accent/10 text-accent"
+                      )}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {link.name}
+                      <ChevronRight className="w-5 h-5 opacity-50" />
+                    </span>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-white/10 my-4" />
+
+            {/* Admin Links */}
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
+              {adminLinks.map((link, index) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: (mainLinks.length + index) * 0.05 }}
+                >
+                  <Link href={link.href}>
+                    <span 
+                      className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <link.icon className={cn("w-5 h-5", link.color)} />
+                      <span className="text-lg font-medium text-foreground">{link.name}</span>
+                      <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                    </span>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Paint roller decoration at bottom */}
+            <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <PaintRoller className="w-5 h-5 text-accent" />
+                <span className="text-xs">Nashville Painting Professionals</span>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

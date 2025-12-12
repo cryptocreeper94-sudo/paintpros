@@ -10,6 +10,9 @@ import Portfolio from "@/pages/portfolio";
 import About from "@/pages/about";
 import Reviews from "@/pages/reviews";
 import Estimate from "@/pages/estimate";
+import Admin from "@/pages/admin";
+import Owner from "@/pages/owner";
+import Developer from "@/pages/developer";
 
 function Router() {
   return (
@@ -20,6 +23,9 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/reviews" component={Reviews} />
       <Route path="/estimate" component={Estimate} />
+      <Route path="/admin" component={Admin} />
+      <Route path="/owner" component={Owner} />
+      <Route path="/developer" component={Developer} />
       <Route component={NotFound} />
     </Switch>
   );
