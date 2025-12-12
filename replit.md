@@ -33,7 +33,25 @@
 - **Workflow:** Acknowledge -> User says "Go" -> Execute.
 
 ## Design Decisions
-*To be populated.*
+- **Current State Analysis (Nashville Painting Professionals):**
+  - **Theme:** Navy Blue & Gold (Standard corporate).
+  - **Layout:** Traditional vertical stacking (Hero -> Logos -> Content -> Mission -> Testimonials -> Footer).
+  - **Key Elements:**
+    - Hero: Guitars background (Nashville vibe).
+    - Trust: "As Seen In" logos, Google Reviews (4.9), 3-Year Warranty.
+    - Process: 4-Step flow (Consultation, Prep, Paint, Clean Up).
+    - Service Area: Map of Nashville.
+- **Transformation Plan (Bento/Army Green):**
+  - **Hero:** Convert to a dynamic grid.
+    - *Card 1 (Large):* "Full Service Painters" with 3D/Floating elements.
+    - *Card 2 (Small/Tall):* "Free Estimate" call to action (Glassmorphic).
+    - *Card 3 (Medium):* "As Seen In" auto-scroll marquee.
+  - **Process Section:** Convert 4-step linear flow into a 2x2 Bento cluster or a horizontal glassmorphic scroll.
+  - **Testimonials:** Self-contained horizontal scroll card.
+  - **Visuals:**
+    - Replace Navy with **Army Green** base.
+    - Replace flat backgrounds with depth/texture.
+    - Isolate the "Paint Deck" and "Tools" images (remove backgrounds) to float over the grid.
 
 ## Feature Specifications
 *To be populated.*
