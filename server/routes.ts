@@ -514,7 +514,7 @@ export async function registerRoutes(
         return;
       }
       
-      const privateKey = process.env.SOLANA_PRIVATE_KEY;
+      const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
       if (!privateKey) {
         res.status(500).json({ error: "Solana wallet not configured" });
         return;
@@ -612,14 +612,16 @@ export async function registerRoutes(
   // GET /api/blockchain/wallet/balance - Get wallet balance
   app.get("/api/blockchain/wallet/balance", async (req, res) => {
     try {
-      const publicKey = process.env.SOLANA_PUBLIC_KEY;
+      const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
       const network = (req.query.network as string) || "devnet";
       
-      if (!publicKey) {
+      if (!privateKey) {
         res.status(500).json({ error: "Solana wallet not configured" });
         return;
       }
       
+      const wallet = solana.getWalletFromPrivateKey(privateKey);
+      const publicKey = wallet.publicKey.toBase58();
       const balance = await solana.getWalletBalance(publicKey, network as "devnet" | "mainnet-beta");
       res.json({ publicKey, balance, network });
     } catch (error) {
@@ -631,13 +633,15 @@ export async function registerRoutes(
   // POST /api/blockchain/wallet/airdrop - Request devnet airdrop
   app.post("/api/blockchain/wallet/airdrop", async (req, res) => {
     try {
-      const publicKey = process.env.SOLANA_PUBLIC_KEY;
+      const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
       
-      if (!publicKey) {
+      if (!privateKey) {
         res.status(500).json({ error: "Solana wallet not configured" });
         return;
       }
       
+      const wallet = solana.getWalletFromPrivateKey(privateKey);
+      const publicKey = wallet.publicKey.toBase58();
       const signature = await solana.requestDevnetAirdrop(publicKey);
       const balance = await solana.getWalletBalance(publicKey, "devnet");
       
