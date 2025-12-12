@@ -38,7 +38,7 @@ export function Navbar() {
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
-          style={{ marginLeft: '-140px' }}
+          style={{ marginLeft: '-140px', marginTop: '-40px' }}
         >
           {isOpen ? (
             <X size={56} className="text-white" />
