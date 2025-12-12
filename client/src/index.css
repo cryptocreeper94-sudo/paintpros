@@ -54,71 +54,69 @@
 }
 
 :root {
-  /* Army Green Theme Base */
-  /* Primary Green: #4B5320 -> HSL: 70deg 44% 23% */
-  /* Lighter Green: #78866B -> HSL: 91deg 11% 47% */
-  /* Gold/Accent: #C5A059 -> HSL: 40deg 50% 56% */
-
-  --background: 80 20% 98%; /* Very light greenish-white for light mode */
-  --foreground: 80 40% 15%; /* Dark green text */
+  /* Army Green Theme Base - Washed Out */
+  /* Primary Green: Reduced saturation from 44% to 25%, Lightness increased slightly */
+  
+  --background: 80 15% 98%; /* More neutral light background */
+  --foreground: 80 20% 20%; /* Softer dark text */
 
   --card: 0 0% 100%;
-  --card-foreground: 80 40% 15%;
+  --card-foreground: 80 20% 20%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 80 40% 15%;
+  --popover-foreground: 80 20% 20%;
 
-  --primary: 80 44% 23%; /* Army Green */
-  --primary-foreground: 80 20% 98%;
+  --primary: 80 25% 30%; /* Washed out Army Green */
+  --primary-foreground: 80 15% 98%;
 
-  --secondary: 91 11% 90%; /* Light sage */
-  --secondary-foreground: 80 44% 23%;
+  --secondary: 91 15% 90%; /* Washed out sage */
+  --secondary-foreground: 80 25% 30%;
 
   --muted: 80 10% 94%;
-  --muted-foreground: 80 10% 40%;
+  --muted-foreground: 80 5% 50%;
 
-  --accent: 40 50% 56%; /* Gold */
-  --accent-foreground: 80 44% 23%;
+  --accent: 40 40% 60%; /* Desaturated Gold */
+  --accent-foreground: 80 25% 30%;
 
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 80 20% 90%;
-  --input: 80 20% 90%;
-  --ring: 80 44% 23%;
+  --border: 80 15% 90%;
+  --input: 80 15% 90%;
+  --ring: 80 25% 30%;
 
   --radius: 0.75rem;
 }
 
 .dark {
-  /* Deep Army Green Theme */
-  --background: 80 30% 10%; /* Very dark green */
-  --foreground: 80 20% 95%;
+  /* Deep Army Green Theme - Washed Out */
+  --background: 80 15% 12%; /* Desaturated dark green */
+  --foreground: 80 15% 90%;
 
-  --card: 80 25% 14%; /* Slightly lighter dark green */
-  --card-foreground: 80 20% 95%;
+  --card: 80 15% 16%; /* Desaturated card bg */
+  --card-foreground: 80 15% 90%;
 
-  --popover: 80 25% 14%;
-  --popover-foreground: 80 20% 95%;
+  --popover: 80 15% 16%;
+  --popover-foreground: 80 15% 90%;
 
-  --primary: 80 40% 45%; /* Lighter army green for visibility */
-  --primary-foreground: 80 30% 10%;
+  --primary: 80 20% 50%; /* Softer green for dark mode */
+  --primary-foreground: 80 15% 12%;
 
-  --secondary: 80 20% 20%;
-  --secondary-foreground: 80 20% 95%;
+  --secondary: 80 10% 25%;
+  --secondary-foreground: 80 15% 90%;
 
-  --muted: 80 20% 20%;
-  --muted-foreground: 80 10% 60%;
+  --muted: 80 10% 25%;
+  --muted-foreground: 80 5% 65%;
 
-  --accent: 40 60% 60%; /* Bright Gold */
-  --accent-foreground: 80 30% 10%;
+  --accent: 40 45% 65%; /* Softer Gold */
+  --accent-foreground: 80 15% 12%;
 
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 80 20% 20%;
-  --input: 80 20% 20%;
-  --ring: 40 60% 60%; /* Gold ring */
+  --border: 80 10% 25%;
+  --input: 80 10% 25%;
+  --ring: 40 45% 65%;
 }
 
 @layer base {
