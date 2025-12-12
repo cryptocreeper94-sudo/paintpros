@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -10,9 +11,12 @@ import paintBrush from "@assets/generated_images/isolated_professional_paint_bru
 import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import { useTenant } from "@/context/TenantContext";
+import { ServiceAreaModal } from "@/components/service-area-modal";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 export default function Home() {
   const tenant = useTenant();
+  const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
   
   const testimonials = [
     {
@@ -175,29 +179,32 @@ export default function Home() {
             </GlassCard>
           </BentoItem>
 
-          {/* 8. Service Area Map */}
+          {/* 8. Service Area Map - Clickable */}
           <BentoItem colSpan={4} rowSpan={2}>
-            <GlassCard className="p-0 overflow-hidden relative group">
-              <img 
-                src={mapImage} 
-                alt={`${cityName} Service Area`}
-                className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <MapPin className="w-5 h-5 text-accent" />
-                  <span className="text-sm font-bold text-accent uppercase tracking-wide">Service Areas</span>
+            <button 
+              onClick={() => setServiceAreaOpen(true)}
+              className="w-full h-full text-left"
+              data-testid="button-service-area"
+            >
+              <GlassCard className="p-0 overflow-hidden relative group cursor-pointer hover:border-accent/40 transition-colors">
+                <img 
+                  src={mapImage} 
+                  alt={`${cityName} Service Area`}
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MapPin className="w-5 h-5 text-accent" />
+                    <span className="text-sm font-bold text-accent uppercase tracking-wide">Service Areas</span>
+                  </div>
+                  <h3 className="text-2xl font-display font-bold mb-2">{cityName} Metro & Beyond</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Middle TN • Southern KY • Tap to explore
+                  </p>
                 </div>
-                <h3 className="text-2xl font-display font-bold mb-2">{cityName} Metro</h3>
-                <p className="text-sm text-muted-foreground">
-                  {tenant.seo.serviceAreas.length > 0 
-                    ? tenant.seo.serviceAreas.slice(0, 4).join(" • ")
-                    : "Serving your local area and surrounding communities"
-                  }
-                </p>
-              </div>
-            </GlassCard>
+              </GlassCard>
+            </button>
           </BentoItem>
 
           {/* 9. Google Rating */}
@@ -251,6 +258,12 @@ export default function Home() {
 
         </BentoGrid>
       </main>
+
+      <ServiceAreaModal 
+        isOpen={serviceAreaOpen} 
+        onClose={() => setServiceAreaOpen(false)} 
+      />
+      <PWAInstallPrompt />
     </PageLayout>
   );
 }
