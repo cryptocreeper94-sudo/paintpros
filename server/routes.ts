@@ -3,9 +3,11 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
-  insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema
+  insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
+  insertBlockchainStampSchema
 } from "@shared/schema";
 import { z } from "zod";
+import * as solana from "./solana";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -481,6 +483,173 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error initializing PINs:", error);
       res.status(500).json({ error: "Failed to initialize PINs" });
+    }
+  });
+
+  // ============ BLOCKCHAIN STAMPING ============
+  
+  // POST /api/blockchain/hash - Generate hash from data
+  app.post("/api/blockchain/hash", async (req, res) => {
+    try {
+      const { data } = req.body;
+      if (!data || typeof data !== "string") {
+        res.status(400).json({ error: "Data string required" });
+        return;
+      }
+      const hash = solana.hashData(data);
+      res.json({ hash });
+    } catch (error) {
+      console.error("Error hashing data:", error);
+      res.status(500).json({ error: "Failed to hash data" });
+    }
+  });
+  
+  // POST /api/blockchain/stamp - Stamp hash to Solana blockchain
+  app.post("/api/blockchain/stamp", async (req, res) => {
+    try {
+      const { entityType, entityId, documentHash, network = "devnet" } = req.body;
+      
+      if (!entityType || !entityId || !documentHash) {
+        res.status(400).json({ error: "entityType, entityId, and documentHash required" });
+        return;
+      }
+      
+      const privateKey = process.env.SOLANA_PRIVATE_KEY;
+      if (!privateKey) {
+        res.status(500).json({ error: "Solana wallet not configured" });
+        return;
+      }
+      
+      const stamp = await storage.createBlockchainStamp({
+        entityType,
+        entityId,
+        documentHash,
+        network
+      });
+      
+      try {
+        const wallet = solana.getWalletFromPrivateKey(privateKey);
+        const result = await solana.stampHashToBlockchain(documentHash, wallet, network, { entityType, entityId });
+        
+        const updated = await storage.updateBlockchainStampStatus(
+          stamp.id, 
+          "confirmed", 
+          result.signature, 
+          result.slot, 
+          result.blockTime
+        );
+        
+        res.status(201).json({
+          ...updated,
+          explorerUrl: network === "devnet" 
+            ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
+            : `https://explorer.solana.com/tx/${result.signature}`
+        });
+      } catch (stampError: any) {
+        await storage.updateBlockchainStampStatus(stamp.id, "failed");
+        console.error("Blockchain stamp failed:", stampError);
+        res.status(500).json({ 
+          error: "Failed to stamp to blockchain", 
+          details: stampError.message,
+          stamp 
+        });
+      }
+    } catch (error) {
+      console.error("Error creating stamp:", error);
+      res.status(500).json({ error: "Failed to create stamp" });
+    }
+  });
+  
+  // GET /api/blockchain/stamps - Get all stamps
+  app.get("/api/blockchain/stamps", async (req, res) => {
+    try {
+      const stamps = await storage.getBlockchainStamps();
+      res.json(stamps);
+    } catch (error) {
+      console.error("Error fetching stamps:", error);
+      res.status(500).json({ error: "Failed to fetch stamps" });
+    }
+  });
+  
+  // GET /api/blockchain/stamps/:entityType/:entityId - Get stamps for entity
+  app.get("/api/blockchain/stamps/:entityType/:entityId", async (req, res) => {
+    try {
+      const stamps = await storage.getBlockchainStampsByEntity(req.params.entityType, req.params.entityId);
+      res.json(stamps);
+    } catch (error) {
+      console.error("Error fetching stamps:", error);
+      res.status(500).json({ error: "Failed to fetch stamps" });
+    }
+  });
+  
+  // POST /api/blockchain/verify - Verify a stamp on blockchain
+  app.post("/api/blockchain/verify", async (req, res) => {
+    try {
+      const { signature, network = "devnet" } = req.body;
+      if (!signature) {
+        res.status(400).json({ error: "Transaction signature required" });
+        return;
+      }
+      const result = await solana.verifyStamp(signature, network);
+      res.json(result);
+    } catch (error) {
+      console.error("Error verifying stamp:", error);
+      res.status(500).json({ error: "Failed to verify stamp" });
+    }
+  });
+  
+  // POST /api/blockchain/wallet/generate - Generate new wallet (dev only)
+  app.post("/api/blockchain/wallet/generate", async (req, res) => {
+    try {
+      const wallet = solana.generateNewWallet();
+      res.json(wallet);
+    } catch (error) {
+      console.error("Error generating wallet:", error);
+      res.status(500).json({ error: "Failed to generate wallet" });
+    }
+  });
+  
+  // GET /api/blockchain/wallet/balance - Get wallet balance
+  app.get("/api/blockchain/wallet/balance", async (req, res) => {
+    try {
+      const publicKey = process.env.SOLANA_PUBLIC_KEY;
+      const network = (req.query.network as string) || "devnet";
+      
+      if (!publicKey) {
+        res.status(500).json({ error: "Solana wallet not configured" });
+        return;
+      }
+      
+      const balance = await solana.getWalletBalance(publicKey, network as "devnet" | "mainnet-beta");
+      res.json({ publicKey, balance, network });
+    } catch (error) {
+      console.error("Error getting balance:", error);
+      res.status(500).json({ error: "Failed to get balance" });
+    }
+  });
+  
+  // POST /api/blockchain/wallet/airdrop - Request devnet airdrop
+  app.post("/api/blockchain/wallet/airdrop", async (req, res) => {
+    try {
+      const publicKey = process.env.SOLANA_PUBLIC_KEY;
+      
+      if (!publicKey) {
+        res.status(500).json({ error: "Solana wallet not configured" });
+        return;
+      }
+      
+      const signature = await solana.requestDevnetAirdrop(publicKey);
+      const balance = await solana.getWalletBalance(publicKey, "devnet");
+      
+      res.json({ 
+        success: true, 
+        signature, 
+        newBalance: balance,
+        explorerUrl: `https://explorer.solana.com/tx/${signature}?cluster=devnet`
+      });
+    } catch (error) {
+      console.error("Error requesting airdrop:", error);
+      res.status(500).json({ error: "Failed to request airdrop" });
     }
   });
 
