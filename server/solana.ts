@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 
-const NETWORKS = {
+const DEFAULT_NETWORKS = {
   devnet: 'https://api.devnet.solana.com',
   'mainnet-beta': 'https://api.mainnet-beta.solana.com'
 };
@@ -21,7 +21,21 @@ export function hashData(data: string): string {
 }
 
 export function getConnection(network: 'devnet' | 'mainnet-beta' = 'devnet'): Connection {
-  return new Connection(NETWORKS[network], 'confirmed');
+  const heliusRpcUrl = process.env.HELIUS_RPC_URL;
+  const heliusApiKey = process.env.HELIUS_API_KEY;
+  
+  if (heliusRpcUrl) {
+    return new Connection(heliusRpcUrl, 'confirmed');
+  }
+  
+  if (heliusApiKey) {
+    const heliusUrl = network === 'devnet' 
+      ? `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`
+      : `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`;
+    return new Connection(heliusUrl, 'confirmed');
+  }
+  
+  return new Connection(DEFAULT_NETWORKS[network], 'confirmed');
 }
 
 export function getWalletFromPrivateKey(privateKeyBase58: string): Keypair {
