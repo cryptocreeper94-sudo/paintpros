@@ -61,10 +61,10 @@ export function Navbar() {
         </div>
 
         {/* Right: Navigation + Desktop Nav Links + Theme Toggle */}
-        <div className="flex items-center gap-4">
-          {/* Navigation Buttons */}
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Navigation Buttons - Hidden on mobile to avoid overlap with title */}
           {location !== "/" && (
-            <>
+            <div className="hidden md:flex items-center gap-2">
               <button 
                 onClick={() => window.history.back()}
                 className="p-2 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center"
@@ -84,7 +84,7 @@ export function Navbar() {
                   <Home className="w-5 h-5 text-white" />
                 </button>
               </Link>
-            </>
+            </div>
           )}
 
           {/* Desktop Nav Links (hidden on mobile) */}
