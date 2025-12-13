@@ -17,6 +17,8 @@ import {
   type Proposal, type InsertProposal, proposals,
   type Payment, type InsertPayment, payments,
   type RoomScan, type InsertRoomScan, roomScans,
+  type PageView, type InsertPageView, pageViews,
+  type AnalyticsSummary, type InsertAnalyticsSummary, analyticsSummary,
   assetNumberCounter
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
@@ -133,6 +135,24 @@ export interface IStorage {
   getRoomScanById(id: string): Promise<RoomScan | undefined>;
   getRoomScansByLead(leadId: string): Promise<RoomScan[]>;
   updateRoomScanResult(id: string, result: Partial<RoomScan>): Promise<RoomScan | undefined>;
+  
+  // Analytics
+  trackPageView(view: InsertPageView): Promise<PageView>;
+  getPageViews(startDate?: Date, endDate?: Date): Promise<PageView[]>;
+  getAnalyticsDashboard(): Promise<{
+    today: { views: number; visitors: number };
+    thisWeek: { views: number; visitors: number };
+    thisMonth: { views: number; visitors: number };
+    allTime: { views: number; visitors: number };
+    recentViews: PageView[];
+    topPages: { page: string; views: number }[];
+    topReferrers: { referrer: string; count: number }[];
+    deviceBreakdown: { desktop: number; mobile: number; tablet: number };
+    hourlyTraffic: { hour: number; views: number }[];
+    dailyTraffic: { date: string; views: number; visitors: number }[];
+  }>;
+  getPageViewsByPage(page: string): Promise<PageView[]>;
+  getLiveVisitorCount(): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -642,6 +662,159 @@ export class DatabaseStorage implements IStorage {
       .where(eq(roomScans.id, id))
       .returning();
     return updated;
+  }
+
+  // Analytics
+  async trackPageView(view: InsertPageView): Promise<PageView> {
+    const [result] = await db.insert(pageViews).values(view).returning();
+    return result;
+  }
+
+  async getPageViews(startDate?: Date, endDate?: Date): Promise<PageView[]> {
+    if (startDate && endDate) {
+      return await db.select().from(pageViews)
+        .where(and(
+          sql`${pageViews.createdAt} >= ${startDate}`,
+          sql`${pageViews.createdAt} <= ${endDate}`
+        ))
+        .orderBy(desc(pageViews.createdAt));
+    }
+    return await db.select().from(pageViews).orderBy(desc(pageViews.createdAt)).limit(1000);
+  }
+
+  async getPageViewsByPage(page: string): Promise<PageView[]> {
+    return await db.select().from(pageViews)
+      .where(eq(pageViews.page, page))
+      .orderBy(desc(pageViews.createdAt));
+  }
+
+  async getLiveVisitorCount(): Promise<number> {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const result = await db.select({ count: sql<number>`count(distinct ${pageViews.sessionId})::int` })
+      .from(pageViews)
+      .where(sql`${pageViews.createdAt} >= ${fiveMinutesAgo}`);
+    return result[0]?.count || 0;
+  }
+
+  async getAnalyticsDashboard(): Promise<{
+    today: { views: number; visitors: number };
+    thisWeek: { views: number; visitors: number };
+    thisMonth: { views: number; visitors: number };
+    allTime: { views: number; visitors: number };
+    recentViews: PageView[];
+    topPages: { page: string; views: number }[];
+    topReferrers: { referrer: string; count: number }[];
+    deviceBreakdown: { desktop: number; mobile: number; tablet: number };
+    hourlyTraffic: { hour: number; views: number }[];
+    dailyTraffic: { date: string; views: number; visitors: number }[];
+  }> {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Today's stats
+    const todayStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(sql`${pageViews.createdAt} >= ${startOfToday}`);
+
+    // This week's stats
+    const weekStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(sql`${pageViews.createdAt} >= ${startOfWeek}`);
+
+    // This month's stats
+    const monthStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(sql`${pageViews.createdAt} >= ${startOfMonth}`);
+
+    // All time stats
+    const allTimeStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews);
+
+    // Recent page views
+    const recentViews = await db.select().from(pageViews)
+      .orderBy(desc(pageViews.createdAt))
+      .limit(20);
+
+    // Top pages (last 30 days)
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const topPagesResult = await db.select({
+      page: pageViews.page,
+      views: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`)
+      .groupBy(pageViews.page)
+      .orderBy(sql`count(*) desc`)
+      .limit(10);
+
+    // Top referrers
+    const topReferrersResult = await db.select({
+      referrer: pageViews.referrer,
+      count: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(
+        sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`,
+        sql`${pageViews.referrer} is not null`,
+        sql`${pageViews.referrer} != ''`
+      ))
+      .groupBy(pageViews.referrer)
+      .orderBy(sql`count(*) desc`)
+      .limit(10);
+
+    // Device breakdown
+    const deviceResult = await db.select({
+      deviceType: pageViews.deviceType,
+      count: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`)
+      .groupBy(pageViews.deviceType);
+
+    const deviceBreakdown = { desktop: 0, mobile: 0, tablet: 0 };
+    deviceResult.forEach(d => {
+      if (d.deviceType === 'desktop') deviceBreakdown.desktop = d.count;
+      else if (d.deviceType === 'mobile') deviceBreakdown.mobile = d.count;
+      else if (d.deviceType === 'tablet') deviceBreakdown.tablet = d.count;
+    });
+
+    // Hourly traffic (today)
+    const hourlyResult = await db.select({
+      hour: sql<number>`extract(hour from ${pageViews.createdAt})::int`,
+      views: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(sql`${pageViews.createdAt} >= ${startOfToday}`)
+      .groupBy(sql`extract(hour from ${pageViews.createdAt})`)
+      .orderBy(sql`extract(hour from ${pageViews.createdAt})`);
+
+    // Daily traffic (last 30 days)
+    const dailyResult = await db.select({
+      date: sql<string>`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`,
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews)
+      .where(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`)
+      .groupBy(sql`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`)
+      .orderBy(sql`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`);
+
+    return {
+      today: todayStats[0] || { views: 0, visitors: 0 },
+      thisWeek: weekStats[0] || { views: 0, visitors: 0 },
+      thisMonth: monthStats[0] || { views: 0, visitors: 0 },
+      allTime: allTimeStats[0] || { views: 0, visitors: 0 },
+      recentViews,
+      topPages: topPagesResult,
+      topReferrers: topReferrersResult.map(r => ({ referrer: r.referrer || 'Direct', count: r.count })),
+      deviceBreakdown,
+      hourlyTraffic: hourlyResult,
+      dailyTraffic: dailyResult
+    };
   }
 }
 

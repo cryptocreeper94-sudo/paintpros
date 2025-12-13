@@ -472,3 +472,53 @@ export const insertRoomScanSchema = createInsertSchema(roomScans).omit({
 
 export type InsertRoomScan = z.infer<typeof insertRoomScanSchema>;
 export type RoomScan = typeof roomScans.$inferSelect;
+
+// ============ ANALYTICS ============
+
+// Page Views Table - Track all page visits
+export const pageViews = pgTable("page_views", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  page: text("page").notNull(), // /home, /services, /estimate, etc.
+  referrer: text("referrer"), // Where they came from
+  userAgent: text("user_agent"),
+  ipHash: text("ip_hash"), // Hashed IP for unique visitor tracking (privacy)
+  sessionId: text("session_id"), // Track unique sessions
+  deviceType: text("device_type"), // desktop, mobile, tablet
+  browser: text("browser"),
+  country: text("country"),
+  city: text("city"),
+  duration: integer("duration"), // Time on page in seconds
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPageViewSchema = createInsertSchema(pageViews).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPageView = z.infer<typeof insertPageViewSchema>;
+export type PageView = typeof pageViews.$inferSelect;
+
+// Analytics Summary Cache - Pre-computed stats for fast retrieval
+export const analyticsSummary = pgTable("analytics_summary", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  date: timestamp("date").notNull(), // Day of the summary
+  totalViews: integer("total_views").default(0).notNull(),
+  uniqueVisitors: integer("unique_visitors").default(0).notNull(),
+  avgDuration: integer("avg_duration").default(0), // Average time on site in seconds
+  bounceRate: decimal("bounce_rate", { precision: 5, scale: 2 }), // Percentage
+  topPages: jsonb("top_pages").default([]), // [{page, views}]
+  topReferrers: jsonb("top_referrers").default([]), // [{referrer, count}]
+  deviceBreakdown: jsonb("device_breakdown").default({}), // {desktop: x, mobile: y, tablet: z}
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertAnalyticsSummarySchema = createInsertSchema(analyticsSummary).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertAnalyticsSummary = z.infer<typeof insertAnalyticsSummarySchema>;
+export type AnalyticsSummary = typeof analyticsSummary.$inferSelect;
