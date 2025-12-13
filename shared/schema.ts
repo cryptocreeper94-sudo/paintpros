@@ -522,3 +522,101 @@ export const insertAnalyticsSummarySchema = createInsertSchema(analyticsSummary)
 
 export type InsertAnalyticsSummary = z.infer<typeof insertAnalyticsSummarySchema>;
 export type AnalyticsSummary = typeof analyticsSummary.$inferSelect;
+
+// ============ ENHANCED ESTIMATING FEATURES ============
+
+// Estimate Photos - Attach photos to estimates
+export const estimatePhotos = pgTable("estimate_photos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  estimateId: varchar("estimate_id").references(() => estimates.id).notNull(),
+  photoUrl: text("photo_url").notNull(), // Base64 data URL or external URL
+  caption: text("caption"),
+  roomType: text("room_type"), // living_room, bedroom, kitchen, bathroom, exterior, etc.
+  photoType: text("photo_type").notNull().default("before"), // before, during, after, damage, reference
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEstimatePhotoSchema = createInsertSchema(estimatePhotos).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertEstimatePhoto = z.infer<typeof insertEstimatePhotoSchema>;
+export type EstimatePhoto = typeof estimatePhotos.$inferSelect;
+
+// Estimate Pricing Options - Good/Better/Best tiers
+export const estimatePricingOptions = pgTable("estimate_pricing_options", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  estimateId: varchar("estimate_id").references(() => estimates.id).notNull(),
+  optionType: text("option_type").notNull(), // good, better, best
+  optionName: text("option_name").notNull(), // "Basic", "Standard", "Premium"
+  description: text("description"),
+  includesWalls: boolean("includes_walls").default(false),
+  includesTrim: boolean("includes_trim").default(false),
+  includesCeilings: boolean("includes_ceilings").default(false),
+  includedDoors: integer("included_doors").default(0),
+  paintQuality: text("paint_quality"), // economy, standard, premium
+  warranty: text("warranty"), // 1 year, 2 years, 5 years
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  breakdown: jsonb("breakdown").default({}), // {walls: x, trim: y, ceilings: z, doors: w}
+  isSelected: boolean("is_selected").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEstimatePricingOptionSchema = createInsertSchema(estimatePricingOptions).omit({
+  id: true,
+  createdAt: true,
+  isSelected: true,
+});
+
+export type InsertEstimatePricingOption = z.infer<typeof insertEstimatePricingOptionSchema>;
+export type EstimatePricingOption = typeof estimatePricingOptions.$inferSelect;
+
+// Proposal Signatures - E-signature collection
+export const proposalSignatures = pgTable("proposal_signatures", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  proposalId: varchar("proposal_id").references(() => proposals.id).notNull(),
+  signerName: text("signer_name").notNull(),
+  signerEmail: text("signer_email"),
+  signatureData: text("signature_data").notNull(), // Base64 signature image
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  signedAt: timestamp("signed_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertProposalSignatureSchema = createInsertSchema(proposalSignatures).omit({
+  id: true,
+  createdAt: true,
+  signedAt: true,
+});
+
+export type InsertProposalSignature = z.infer<typeof insertProposalSignatureSchema>;
+export type ProposalSignature = typeof proposalSignatures.$inferSelect;
+
+// Estimate Follow-ups - Automated reminder scheduling
+export const estimateFollowups = pgTable("estimate_followups", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  estimateId: varchar("estimate_id").references(() => estimates.id).notNull(),
+  followupType: text("followup_type").notNull(), // initial, reminder_24h, reminder_72h, final
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  sentAt: timestamp("sent_at"),
+  status: text("status").notNull().default("pending"), // pending, sent, cancelled, failed
+  emailSubject: text("email_subject"),
+  emailContent: text("email_content"),
+  recipientEmail: text("recipient_email").notNull(),
+  templateKey: text("template_key"), // Which template was used
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEstimateFollowupSchema = createInsertSchema(estimateFollowups).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+  status: true,
+});
+
+export type InsertEstimateFollowup = z.infer<typeof insertEstimateFollowupSchema>;
+export type EstimateFollowup = typeof estimateFollowups.$inferSelect;

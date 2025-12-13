@@ -19,6 +19,10 @@ import {
   type RoomScan, type InsertRoomScan, roomScans,
   type PageView, type InsertPageView, pageViews,
   type AnalyticsSummary, type InsertAnalyticsSummary, analyticsSummary,
+  type EstimatePhoto, type InsertEstimatePhoto, estimatePhotos,
+  type EstimatePricingOption, type InsertEstimatePricingOption, estimatePricingOptions,
+  type ProposalSignature, type InsertProposalSignature, proposalSignatures,
+  type EstimateFollowup, type InsertEstimateFollowup, estimateFollowups,
   assetNumberCounter
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
@@ -153,6 +157,27 @@ export interface IStorage {
   }>;
   getPageViewsByPage(page: string): Promise<PageView[]>;
   getLiveVisitorCount(): Promise<number>;
+  
+  // Estimate Photos
+  createEstimatePhoto(photo: InsertEstimatePhoto): Promise<EstimatePhoto>;
+  getEstimatePhotos(estimateId: string): Promise<EstimatePhoto[]>;
+  deleteEstimatePhoto(id: string): Promise<void>;
+  
+  // Estimate Pricing Options (Good/Better/Best)
+  createEstimatePricingOption(option: InsertEstimatePricingOption): Promise<EstimatePricingOption>;
+  getEstimatePricingOptions(estimateId: string): Promise<EstimatePricingOption[]>;
+  selectPricingOption(optionId: string, estimateId: string): Promise<EstimatePricingOption | undefined>;
+  
+  // Proposal Signatures
+  createProposalSignature(signature: InsertProposalSignature): Promise<ProposalSignature>;
+  getProposalSignature(proposalId: string): Promise<ProposalSignature | undefined>;
+  
+  // Estimate Follow-ups
+  createEstimateFollowup(followup: InsertEstimateFollowup): Promise<EstimateFollowup>;
+  getEstimateFollowups(estimateId: string): Promise<EstimateFollowup[]>;
+  getPendingFollowups(): Promise<EstimateFollowup[]>;
+  markFollowupSent(id: string): Promise<EstimateFollowup | undefined>;
+  cancelFollowup(id: string): Promise<EstimateFollowup | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -815,6 +840,99 @@ export class DatabaseStorage implements IStorage {
       hourlyTraffic: hourlyResult,
       dailyTraffic: dailyResult
     };
+  }
+
+  // Estimate Photos
+  async createEstimatePhoto(photo: InsertEstimatePhoto): Promise<EstimatePhoto> {
+    const [result] = await db.insert(estimatePhotos).values(photo).returning();
+    return result;
+  }
+
+  async getEstimatePhotos(estimateId: string): Promise<EstimatePhoto[]> {
+    return await db.select().from(estimatePhotos)
+      .where(eq(estimatePhotos.estimateId, estimateId))
+      .orderBy(estimatePhotos.sortOrder);
+  }
+
+  async deleteEstimatePhoto(id: string): Promise<void> {
+    await db.delete(estimatePhotos).where(eq(estimatePhotos.id, id));
+  }
+
+  // Estimate Pricing Options (Good/Better/Best)
+  async createEstimatePricingOption(option: InsertEstimatePricingOption): Promise<EstimatePricingOption> {
+    const [result] = await db.insert(estimatePricingOptions).values(option).returning();
+    return result;
+  }
+
+  async getEstimatePricingOptions(estimateId: string): Promise<EstimatePricingOption[]> {
+    return await db.select().from(estimatePricingOptions)
+      .where(eq(estimatePricingOptions.estimateId, estimateId))
+      .orderBy(estimatePricingOptions.optionType);
+  }
+
+  async selectPricingOption(optionId: string, estimateId: string): Promise<EstimatePricingOption | undefined> {
+    await db.update(estimatePricingOptions)
+      .set({ isSelected: false })
+      .where(eq(estimatePricingOptions.estimateId, estimateId));
+    
+    const [result] = await db.update(estimatePricingOptions)
+      .set({ isSelected: true })
+      .where(eq(estimatePricingOptions.id, optionId))
+      .returning();
+    return result;
+  }
+
+  // Proposal Signatures
+  async createProposalSignature(signature: InsertProposalSignature): Promise<ProposalSignature> {
+    const [result] = await db.insert(proposalSignatures).values(signature).returning();
+    await db.update(proposals)
+      .set({ status: 'accepted', respondedAt: new Date() })
+      .where(eq(proposals.id, signature.proposalId));
+    return result;
+  }
+
+  async getProposalSignature(proposalId: string): Promise<ProposalSignature | undefined> {
+    const [result] = await db.select().from(proposalSignatures)
+      .where(eq(proposalSignatures.proposalId, proposalId));
+    return result;
+  }
+
+  // Estimate Follow-ups
+  async createEstimateFollowup(followup: InsertEstimateFollowup): Promise<EstimateFollowup> {
+    const [result] = await db.insert(estimateFollowups).values(followup).returning();
+    return result;
+  }
+
+  async getEstimateFollowups(estimateId: string): Promise<EstimateFollowup[]> {
+    return await db.select().from(estimateFollowups)
+      .where(eq(estimateFollowups.estimateId, estimateId))
+      .orderBy(estimateFollowups.scheduledFor);
+  }
+
+  async getPendingFollowups(): Promise<EstimateFollowup[]> {
+    const now = new Date();
+    return await db.select().from(estimateFollowups)
+      .where(and(
+        eq(estimateFollowups.status, 'pending'),
+        sql`${estimateFollowups.scheduledFor} <= ${now}`
+      ))
+      .orderBy(estimateFollowups.scheduledFor);
+  }
+
+  async markFollowupSent(id: string): Promise<EstimateFollowup | undefined> {
+    const [result] = await db.update(estimateFollowups)
+      .set({ status: 'sent', sentAt: new Date() })
+      .where(eq(estimateFollowups.id, id))
+      .returning();
+    return result;
+  }
+
+  async cancelFollowup(id: string): Promise<EstimateFollowup | undefined> {
+    const [result] = await db.update(estimateFollowups)
+      .set({ status: 'cancelled' })
+      .where(eq(estimateFollowups.id, id))
+      .returning();
+    return result;
   }
 }
 
