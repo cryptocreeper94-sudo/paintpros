@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera } from "lucide-react";
+import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
@@ -556,6 +557,10 @@ export default function Owner() {
                 <p className="text-sm text-muted-foreground">Business analytics coming soon</p>
               </GlassCard>
             </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <RoomScannerCard locked={true} accentColor="gold-400" />
           </BentoItem>
 
           <BentoItem colSpan={8} rowSpan={1}>

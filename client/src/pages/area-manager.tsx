@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Palette, Sparkles } from "lucide-react";
+import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Palette, Sparkles, Camera } from "lucide-react";
+import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
@@ -279,6 +280,10 @@ export default function AreaManager() {
                   </motion.div>
                 </div>
               </GlassCard>
+            </BentoItem>
+
+            <BentoItem colSpan={4} rowSpan={1}>
+              <RoomScannerCard locked={true} accentColor="teal-400" />
             </BentoItem>
           </BentoGrid>
         </div>

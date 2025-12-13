@@ -8,7 +8,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera } from "lucide-react";
+import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
 import type { Lead, Estimate } from "@shared/schema";
 import { format } from "date-fns";
@@ -354,6 +355,10 @@ export default function Admin() {
                 </p>
               </GlassCard>
             </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <RoomScannerCard locked={true} accentColor="accent" />
           </BentoItem>
         </BentoGrid>
       </main>

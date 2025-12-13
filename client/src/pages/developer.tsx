@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera } from "lucide-react";
+import { RoomScannerCard } from "@/components/room-scanner";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
 import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
@@ -1546,6 +1547,10 @@ export default function Developer() {
                 </div>
               </GlassCard>
             </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <RoomScannerCard locked={true} accentColor="purple-400" />
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
