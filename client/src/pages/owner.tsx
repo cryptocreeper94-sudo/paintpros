@@ -7,6 +7,7 @@ import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera } from "lucide-react";
 import { RoomScannerCard } from "@/components/room-scanner";
+import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
@@ -647,6 +648,11 @@ export default function Owner() {
                 </div>
               </GlassCard>
             </motion.div>
+          </BentoItem>
+
+          {/* Analytics Dashboard - Full Width */}
+          <BentoItem colSpan={12} rowSpan={4}>
+            <AnalyticsDashboard />
           </BentoItem>
         </BentoGrid>
       </main>

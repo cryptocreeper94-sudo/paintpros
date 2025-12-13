@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle } from "lucide-react";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
@@ -1291,6 +1291,89 @@ export default function Developer() {
         </div>
       ),
     },
+    integrations: {
+      title: "Integrations Roadmap",
+      icon: <ListTodo className="w-8 h-8 text-blue-400" />,
+      content: (
+        <div className="space-y-6">
+          <div className="text-center mb-4">
+            <ListTodo className="w-12 h-12 mx-auto text-blue-400 mb-3" />
+            <h3 className="text-xl font-bold">Future Integrations</h3>
+            <p className="text-sm text-muted-foreground">Planned enhancements for analytics & tracking</p>
+          </div>
+          <div className="space-y-4">
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <BarChart3 className="w-4 h-4 text-orange-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-orange-400">Google Analytics 4</h4>
+                    <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400">Planned</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Connect GA4 for advanced audience insights, conversion tracking, and cross-platform analytics
+                  </p>
+                  <div className="mt-3 space-y-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Circle className="w-3 h-3 text-yellow-400" />
+                      <span>Add GOOGLE_ANALYTICS_ID to secrets</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Circle className="w-3 h-3 text-yellow-400" />
+                      <span>Implement gtag.js script loader</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Circle className="w-3 h-3 text-yellow-400" />
+                      <span>Add event tracking for estimates & leads</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Globe className="w-4 h-4 text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-blue-400">Facebook Pixel</h4>
+                    <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">Future</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Track conversions from Facebook/Instagram ads and build remarketing audiences
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Zap className="w-4 h-4 text-green-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-green-400">Hotjar / Heatmaps</h4>
+                    <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">Future</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Visual heatmaps and session recordings to understand user behavior
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/30">
+            <p className="text-sm text-blue-400">
+              <Sparkles className="w-4 h-4 inline mr-2" />
+              Currently using built-in analytics. External integrations coming soon!
+            </p>
+          </div>
+        </div>
+      ),
+    },
   };
 
   const closeModal = () => setActiveModal(null);
@@ -1583,6 +1666,23 @@ export default function Developer() {
                   <h3 className="text-xl font-bold">Proposal Templates</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Manage painting proposal templates</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={6} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("integrations")}
+              data-testid="card-integrations"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-blue-500/10 to-orange-500/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <ListTodo className="w-5 h-5 text-blue-400" />
+                  <h3 className="text-xl font-bold">Integrations Roadmap</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Google Analytics, Facebook Pixel & more</p>
               </GlassCard>
             </motion.div>
           </BentoItem>

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TenantProvider } from "@/context/TenantContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Services from "@/pages/services";
@@ -18,6 +19,11 @@ import Developer from "@/pages/developer";
 import AreaManager from "@/pages/area-manager";
 import Verify from "@/pages/verify";
 import Pay from "@/pages/pay";
+
+function AnalyticsTracker() {
+  useAnalytics();
+  return null;
+}
 
 function Router() {
   return (
@@ -45,6 +51,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <TenantProvider>
           <TooltipProvider>
+            <AnalyticsTracker />
             <Toaster />
             <Router />
           </TooltipProvider>
