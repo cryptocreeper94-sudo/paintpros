@@ -34,31 +34,25 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-2 md:px-4 py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem + Title */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2">
           <button 
-            className={cn(
-              "p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
-              isOpen ? "ml-2" : "-ml-[93px] -mt-[25px]"
-            )}
+            className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
             onClick={() => setIsOpen(!isOpen)}
             data-testid="button-hamburger-menu"
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X size={32} className="text-white" />
+              <X size={24} className="text-white" />
             ) : (
               <img 
                 src={nppEmblem} 
                 alt="Menu"
-                className="h-12 md:h-16 w-auto object-contain"
+                className="h-8 md:h-12 w-auto object-contain"
               />
             )}
           </button>
           <div 
-            className={cn(
-              "text-white tracking-wide text-sm md:text-lg",
-              isOpen ? "ml-2" : "-ml-5"
-            )}
+            className="text-white tracking-wide text-xs md:text-lg truncate max-w-[180px] md:max-w-none"
             style={{ fontFamily: 'Playfair Display, serif' }}
             data-testid="text-header-title"
           >

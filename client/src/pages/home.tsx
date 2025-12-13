@@ -44,7 +44,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <main className="pt-24 px-4 md:px-8">
+      <main className="pt-16 md:pt-24 px-2 md:px-8">
         <BentoGrid>
           
           {/* 1. Hero Section - Main Headline */}
@@ -91,9 +91,9 @@ export default function Home() {
             <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
               <GlassCard className="bg-accent/10 border-accent/20 flex flex-col justify-between p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors" glow>
                 <div>
-                  <h3 className="text-sm md:text-2xl font-display font-bold mb-1">Free Estimates</h3>
-                  <p className="text-xs text-muted-foreground hidden md:block">
-                    Get a detailed, transparent quote instantly.
+                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
+                  <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-2">
+                    Get your quote instantly!
                   </p>
                 </div>
                 <div className="flex justify-end">
