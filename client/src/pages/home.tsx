@@ -67,7 +67,7 @@ export default function Home() {
                     Craftsmanship.
                   </span>
                 </h1>
-                <p className="text-base md:text-xl text-white font-semibold mb-8 max-w-md leading-relaxed drop-shadow-lg">
+                <p className="text-base md:text-xl text-gray-800 dark:text-white font-semibold mb-8 max-w-md leading-relaxed drop-shadow-lg">
                   {tenant.description || `We don't just paint walls; we curate environments. Experience the highest standard of residential and commercial painting.`}
                 </p>
                 <div className="flex gap-4">
