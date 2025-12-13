@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -32,27 +32,30 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="w-full px-0 md:px-4 py-0 md:py-1 flex items-center justify-between">
-        {/* Left: Hamburger Emblem + Title */}
-        <div className="flex items-center gap-0 md:gap-2">
+      <div className="w-full px-1 md:px-4 py-1 md:py-1 flex items-center justify-between">
+        {/* Left: Hamburger + Title */}
+        <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-0">
           <button 
-            className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
+            className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
             onClick={() => setIsOpen(!isOpen)}
             data-testid="button-hamburger-menu"
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X size={24} className="text-white ml-2" />
+              <X size={22} className="text-white" />
             ) : (
-              <img 
-                src={nppEmblem} 
-                alt="Menu"
-                className="h-10 md:h-12 w-auto object-contain"
-              />
+              <>
+                <Menu size={22} className="text-white md:hidden" />
+                <img 
+                  src={nppEmblem} 
+                  alt="Menu"
+                  className="hidden md:block h-12 w-auto object-contain"
+                />
+              </>
             )}
           </button>
           <div 
-            className="text-white tracking-wide text-xs md:text-lg truncate max-w-[160px] md:max-w-none"
+            className="text-white tracking-wide text-[11px] md:text-lg truncate flex-1"
             style={{ fontFamily: 'Playfair Display, serif' }}
             data-testid="text-header-title"
           >
