@@ -5,7 +5,8 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Marquee } from "@/components/ui/marquee";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
-import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin } from "lucide-react";
+import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, ChevronDown } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
 import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
 import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
@@ -17,6 +18,11 @@ import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 export default function Home() {
   const tenant = useTenant();
   const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  
+  const toggleCard = (cardId: string) => {
+    setExpandedCard(expandedCard === cardId ? null : cardId);
+  };
   
   const testimonials = [
     {
@@ -118,30 +124,97 @@ export default function Home() {
             </GlassCard>
           </BentoItem>
 
-          {/* 4. Key Feature 1 */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
-            <GlassCard className="p-2 md:p-8 flex items-center gap-2 md:gap-6 h-full" hoverEffect>
-              <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
-                <Brush className="w-4 h-4 md:w-8 md:h-8 text-accent" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-xs md:text-lg truncate">Premium Materials</h3>
-                <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Top-tier paints and finishes only.</p>
-              </div>
-            </GlassCard>
+          {/* 4. Key Feature 1 - Premium Materials (Expandable) */}
+          <BentoItem colSpan={4} rowSpan={expandedCard === 'materials' ? 2 : 1} mobileColSpan={2} mobileRowSpan={expandedCard === 'materials' ? 3 : 1}>
+            <button 
+              onClick={() => toggleCard('materials')} 
+              className="w-full h-full text-left"
+              data-testid="button-premium-materials"
+            >
+              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all" hoverEffect>
+                <div className="flex items-center gap-2 md:gap-4">
+                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
+                    <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-xs md:text-lg">Premium Materials</h3>
+                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Top-tier paints and finishes only.</p>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedCard === 'materials' ? 'rotate-180' : ''}`} />
+                </div>
+                <AnimatePresence>
+                  {expandedCard === 'materials' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                        <p className="text-[10px] md:text-xs text-muted-foreground">We partner with industry-leading brands:</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span className="px-2 py-0.5 bg-accent/10 rounded text-[9px] md:text-xs text-accent font-medium">Sherwin-Williams</span>
+                          <span className="px-2 py-0.5 bg-accent/10 rounded text-[9px] md:text-xs text-accent font-medium">Benjamin Moore</span>
+                        </div>
+                        <p className="text-[9px] md:text-xs text-muted-foreground leading-relaxed">
+                          Premium paints with superior coverage, durability, and color retention. Low-VOC options available for eco-conscious homes.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </button>
           </BentoItem>
 
-          {/* 5. Key Feature 2 */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
-            <GlassCard className="p-2 md:p-8 flex items-center gap-2 md:gap-6 h-full" hoverEffect>
-              <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
-                <Clock className="w-4 h-4 md:w-8 md:h-8 text-accent" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-xs md:text-lg truncate">On-Time</h3>
-                <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">We value your time.</p>
-              </div>
-            </GlassCard>
+          {/* 5. Key Feature 2 - On-Time (Expandable) */}
+          <BentoItem colSpan={4} rowSpan={expandedCard === 'ontime' ? 2 : 1} mobileColSpan={2} mobileRowSpan={expandedCard === 'ontime' ? 3 : 1}>
+            <button 
+              onClick={() => toggleCard('ontime')} 
+              className="w-full h-full text-left"
+              data-testid="button-on-time"
+            >
+              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all" hoverEffect>
+                <div className="flex items-center gap-2 md:gap-4">
+                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
+                    <Clock className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-xs md:text-lg">On-Time</h3>
+                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">We value your time.</p>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedCard === 'ontime' ? 'rotate-180' : ''}`} />
+                </div>
+                <AnimatePresence>
+                  {expandedCard === 'ontime' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                        <p className="text-[10px] md:text-xs text-muted-foreground">Our scheduling promise:</p>
+                        <ul className="space-y-1 text-[9px] md:text-xs text-muted-foreground">
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                            Same-day arrival windows
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                            Real-time project updates
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                            Guaranteed completion dates
+                          </li>
+                        </ul>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </button>
           </BentoItem>
 
           {/* 6. Key Feature 3 */}
