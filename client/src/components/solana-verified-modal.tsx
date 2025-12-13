@@ -19,6 +19,16 @@ interface BlockchainStamp {
   createdAt: string;
 }
 
+interface TenantRelease {
+  id: string;
+  version: string;
+  hallmarkNumber: string;
+  solanaTxSignature: string | null;
+  solanaTxStatus: string;
+  createdAt: string;
+  tenantId: string;
+}
+
 interface SolanaVerifiedModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,12 +40,16 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
   const [qrExpanded, setQrExpanded] = useState(false);
   const [stamps, setStamps] = useState<BlockchainStamp[]>([]);
   const [loadingStamps, setLoadingStamps] = useState(false);
+  const [latestRelease, setLatestRelease] = useState<TenantRelease | null>(null);
+  const [loadingRelease, setLoadingRelease] = useState(false);
   const isDemo = tenant.id === "demo";
   const solanaLabel = isDemo ? "Painting Company Software" : "Painting Company";
   
   useEffect(() => {
     if (isOpen) {
       setLoadingStamps(true);
+      setLoadingRelease(true);
+      
       fetch('/api/blockchain/stamps')
         .then(res => res.json())
         .then(data => {
@@ -46,15 +60,29 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           setStamps([]);
           setLoadingStamps(false);
         });
+      
+      const tenantId = isDemo ? 'demo' : 'npp';
+      fetch(`/api/releases/latest?tenantId=${tenantId}`)
+        .then(res => res.json())
+        .then(data => {
+          setLatestRelease(data);
+          setLoadingRelease(false);
+        })
+        .catch(() => {
+          setLatestRelease(null);
+          setLoadingRelease(false);
+        });
     }
-  }, [isOpen]);
+  }, [isOpen, isDemo]);
   
   const tenantAsset = isDemo ? FOUNDING_ASSETS.PAINTPROS_PLATFORM : FOUNDING_ASSETS.NPP_GENESIS;
   const serialNumber = tenantAsset.number;
   const displaySerial = serialNumber.replace('#', '');
-  const solscanUrl = isDemo 
-    ? "https://solscan.io/account/PaintPros000000000002"
-    : "https://solscan.io/account/NPP0000000001";
+  
+  const hasSolanaVerification = latestRelease?.solanaTxSignature && latestRelease?.solanaTxStatus === 'confirmed';
+  const solscanUrl = hasSolanaVerification 
+    ? `https://solscan.io/tx/${latestRelease.solanaTxSignature}`
+    : null;
 
   const features = [
     {
@@ -103,21 +131,37 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           {/* Combined Header with QR and Serial */}
           <GlassCard className="p-3 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
             <div className="flex gap-3">
-              <button
-                onClick={() => setQrExpanded(!qrExpanded)}
-                className="rounded-lg bg-white p-1 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all self-start"
-                data-testid="button-expand-qr"
-                style={{ lineHeight: 0 }}
-              >
-                <QRCodeCanvas 
-                  value={solscanUrl}
-                  size={qrExpanded ? 120 : 60}
-                  level="L"
-                  includeMargin={false}
-                  bgColor="#14F195"
-                  fgColor="#000000"
-                />
-              </button>
+              {solscanUrl ? (
+                <a
+                  href={solscanUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setQrExpanded(!qrExpanded)}
+                  className="rounded-lg bg-white p-1 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all self-start"
+                  data-testid="button-expand-qr"
+                  style={{ lineHeight: 0 }}
+                >
+                  <QRCodeCanvas 
+                    value={solscanUrl}
+                    size={qrExpanded ? 120 : 60}
+                    level="L"
+                    includeMargin={false}
+                    bgColor="#14F195"
+                    fgColor="#000000"
+                  />
+                </a>
+              ) : (
+                <div 
+                  className="rounded-lg bg-gradient-to-br from-[#9945FF]/30 to-[#14F195]/30 p-3 flex items-center justify-center self-start"
+                  style={{ width: 60, height: 60 }}
+                >
+                  {loadingRelease ? (
+                    <Loader2 className="w-5 h-5 text-[#14F195] animate-spin" />
+                  ) : (
+                    <ShieldCheck className="w-6 h-6 text-[#14F195]" />
+                  )}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[8px] font-bold uppercase tracking-wider mb-1">
                   <Award className="w-2.5 h-2.5" />
@@ -130,6 +174,14 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                   <Hash className="w-3 h-3 text-muted-foreground" />
                   <span className="font-mono text-sm font-bold text-[#14F195]">{displaySerial}</span>
                 </div>
+                {latestRelease?.version && (
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
+                    {hasSolanaVerification && (
+                      <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </GlassCard>
@@ -179,21 +231,34 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                 </div>
               </GlassCard>
             </button>
-            <a
-              href={solscanUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1"
-              data-testid="link-verify-platform"
-            >
-              <GlassCard className="p-2 hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20">
-                <div className="flex items-center gap-1.5">
-                  <Search className="w-3 h-3 text-[#14F195]" />
-                  <span className="font-bold text-[10px] text-[#14F195]">Verify on Solana</span>
-                  <ExternalLink className="w-3 h-3 text-[#14F195] ml-auto" />
-                </div>
-              </GlassCard>
-            </a>
+            {solscanUrl ? (
+              <a
+                href={solscanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1"
+                data-testid="link-verify-solscan"
+              >
+                <GlassCard className="p-2 hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20">
+                  <div className="flex items-center gap-1.5">
+                    <Search className="w-3 h-3 text-[#14F195]" />
+                    <span className="font-bold text-[10px] text-[#14F195]">View on SolScan</span>
+                    <ExternalLink className="w-3 h-3 text-[#14F195] ml-auto" />
+                  </div>
+                </GlassCard>
+              </a>
+            ) : (
+              <div className="flex-1" data-testid="status-pending-verification">
+                <GlassCard className="p-2 h-full bg-yellow-500/10 border-yellow-500/20">
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-3 h-3 text-yellow-400" />
+                    <span className="font-bold text-[10px] text-yellow-400">
+                      {loadingRelease ? "Loading..." : "Pending Verification"}
+                    </span>
+                  </div>
+                </GlassCard>
+              </div>
+            )}
           </div>
 
           {/* Expandable History */}
@@ -219,11 +284,12 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                       <span className="font-mono text-[#14F195]/70 truncate flex-1">{stamp.documentHash.substring(0, 16)}...</span>
                       {stamp.transactionSignature && (
                         <a
-                          href={`https://explorer.solana.com/tx/${stamp.transactionSignature}`}
+                          href={`https://solscan.io/tx/${stamp.transactionSignature}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[#14F195] hover:underline"
                           onClick={(e) => e.stopPropagation()}
+                          title="View on SolScan"
                         >
                           <ExternalLink className="w-2.5 h-2.5" />
                         </a>
