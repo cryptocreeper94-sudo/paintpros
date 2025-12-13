@@ -57,7 +57,7 @@ export function Navbar() {
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
-          Nashville Painting Professionals
+          {tenant.id === "demo" ? "PaintPros.io by Orbit" : tenant.name}
         </div>
 
         {/* Right: Navigation + Desktop Nav Links + Theme Toggle */}

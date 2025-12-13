@@ -168,7 +168,10 @@ export function PaintBuddy() {
               </p>
             </motion.div>
 
-            <motion.div
+            <motion.img
+              src={painterMascot}
+              alt="Paint Buddy"
+              className="w-32 h-32 object-contain drop-shadow-2xl"
               animate={{
                 y: [0, -10, 0],
               }}
@@ -177,15 +180,7 @@ export function PaintBuddy() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="relative"
-            >
-              <div className="absolute inset-0 bg-accent/30 blur-xl rounded-full scale-110" />
-              <img
-                src={painterMascot}
-                alt="Paint Buddy"
-                className="w-32 h-32 object-contain relative z-10 drop-shadow-2xl"
-              />
-            </motion.div>
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -233,14 +228,11 @@ export function PaintBuddy() {
             data-testid="panel-paint-buddy-chat"
           >
             <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-gradient-to-r from-accent/20 to-cyan-500/20">
-              <div className="relative">
-                <div className="absolute inset-0 bg-accent/30 blur-md rounded-full" />
-                <img
-                  src={painterMascot}
-                  alt="Rollie"
-                  className="w-12 h-12 object-contain relative z-10"
-                />
-              </div>
+              <img
+                src={painterMascot}
+                alt="Rollie"
+                className="w-12 h-12 object-contain drop-shadow-lg"
+              />
               <div className="flex-1">
                 <h3 className="font-bold text-white">Rollie</h3>
                 <p className="text-xs text-green-400 flex items-center gap-1">
