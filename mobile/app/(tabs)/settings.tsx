@@ -15,12 +15,14 @@ import {
 } from "lucide-react-native";
 import { useState } from "react";
 import GlassCard from "../../components/GlassCard";
+import SolanaVerifiedModal from "../../components/SolanaVerifiedModal";
 
 const ACCENT_COLOR = "hsl(45, 90%, 55%)";
 
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  const [showSolanaModal, setShowSolanaModal] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -104,24 +106,32 @@ export default function SettingsScreen() {
         </GlassCard>
 
         {/* Blockchain Verification */}
-        <GlassCard className="p-4 mb-8 border border-accent/30">
-          <View className="flex-row items-center gap-3">
-            <View className="w-12 h-12 rounded-full bg-accent/20 items-center justify-center">
-              <Shield size={24} color={ACCENT_COLOR} />
+        <Pressable onPress={() => setShowSolanaModal(true)}>
+          <GlassCard className="p-4 mb-8 border border-accent/30">
+            <View className="flex-row items-center gap-3">
+              <View className="w-12 h-12 rounded-full bg-accent/20 items-center justify-center">
+                <Shield size={24} color={ACCENT_COLOR} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-accent font-bold">Solana Verified</Text>
+                <Text className="text-muted-foreground text-sm">
+                  Powered by PaintPros.io blockchain
+                </Text>
+              </View>
+              <ExternalLink size={20} color="rgba(255,255,255,0.5)" />
             </View>
-            <View className="flex-1">
-              <Text className="text-accent font-bold">Solana Verified</Text>
-              <Text className="text-muted-foreground text-sm">
-                Powered by PaintPros.io blockchain
-              </Text>
-            </View>
-            <ExternalLink size={20} color="rgba(255,255,255,0.5)" />
-          </View>
-        </GlassCard>
+          </GlassCard>
+        </Pressable>
 
         {/* Bottom Padding */}
         <View className="h-8" />
       </ScrollView>
+
+      {/* Solana Modal */}
+      <SolanaVerifiedModal 
+        isOpen={showSolanaModal} 
+        onClose={() => setShowSolanaModal(false)} 
+      />
     </SafeAreaView>
   );
 }

@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { View, Text, ScrollView, Pressable, Image, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 import { Phone, Star, Shield, Award, ChevronRight, Sparkles } from "lucide-react-native";
 import GlassCard from "../../components/GlassCard";
+import SolanaVerifiedModal from "../../components/SolanaVerifiedModal";
 
 const ACCENT_COLOR = "hsl(45, 90%, 55%)";
 const PRIMARY_COLOR = "hsl(85, 20%, 35%)";
 
 export default function HomeScreen() {
+  const [showSolanaModal, setShowSolanaModal] = useState(false);
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
@@ -108,24 +112,32 @@ export default function HomeScreen() {
         </View>
 
         {/* Solana Verification Badge */}
-        <GlassCard className="p-4 mb-8 border border-accent/30">
-          <View className="flex-row items-center gap-3">
-            <View className="w-12 h-12 rounded-full bg-accent/20 items-center justify-center">
-              <Shield size={24} color={ACCENT_COLOR} />
+        <Pressable onPress={() => setShowSolanaModal(true)}>
+          <GlassCard className="p-4 mb-8 border border-accent/30">
+            <View className="flex-row items-center gap-3">
+              <View className="w-12 h-12 rounded-full bg-accent/20 items-center justify-center">
+                <Shield size={24} color={ACCENT_COLOR} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-accent font-bold">Blockchain Verified</Text>
+                <Text className="text-muted-foreground text-sm">
+                  All estimates secured on Solana
+                </Text>
+              </View>
+              <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
             </View>
-            <View className="flex-1">
-              <Text className="text-accent font-bold">Blockchain Verified</Text>
-              <Text className="text-muted-foreground text-sm">
-                All estimates secured on Solana
-              </Text>
-            </View>
-            <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
-          </View>
-        </GlassCard>
+          </GlassCard>
+        </Pressable>
 
         {/* Bottom Padding */}
         <View className="h-8" />
       </ScrollView>
+
+      {/* Solana Modal */}
+      <SolanaVerifiedModal 
+        isOpen={showSolanaModal} 
+        onClose={() => setShowSolanaModal(false)} 
+      />
     </SafeAreaView>
   );
 }
