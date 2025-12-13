@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { 
   DollarSign, TrendingUp, Users, Building2, Globe, 
   Rocket, Shield, Zap, Copy, CheckCircle, Award,
-  BarChart3, Target, Layers, ArrowRight
+  BarChart3, Target, Layers, ArrowRight, X, Check
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -21,6 +21,24 @@ const PROJECTIONS = [
   { year: "2025", customers: 100, mrr: "$25K", revenue: "$300K", profit: "$120K" },
   { year: "2026", customers: 500, mrr: "$125K", revenue: "$1.5M", profit: "$900K" },
   { year: "2027", customers: 2000, mrr: "$500K", revenue: "$6M", profit: "$3.6M" },
+];
+
+const COMPETITORS = [
+  { name: "Jobber", pricing: "$29-$629/mo", setup: "Minimal", type: "Per-user CRM", whiteLabel: false, estimator: false, blockchain: false },
+  { name: "ServiceTitan", pricing: "$125-$400/user/mo", setup: "$5K-$30K", type: "Enterprise FSM", whiteLabel: false, estimator: true, blockchain: false },
+  { name: "HouseCall Pro", pricing: "$49-$169/mo", setup: "Minimal", type: "Per-user scheduling", whiteLabel: false, estimator: false, blockchain: false },
+  { name: "PaintScout", pricing: "$39-$199/mo", setup: "None", type: "Estimating only", whiteLabel: false, estimator: true, blockchain: false },
+];
+
+const PAINTPROS_FEATURES = [
+  { feature: "White-label branded website", us: true, them: false },
+  { feature: "Customer-facing estimator", us: true, them: "Partial" },
+  { feature: "Role-based dashboards", us: true, them: "Partial" },
+  { feature: "Blockchain verification", us: true, them: false },
+  { feature: "Multi-location support", us: true, them: true },
+  { feature: "Premium design (Bento Grid)", us: true, them: false },
+  { feature: "SEO management tools", us: true, them: false },
+  { feature: "Orbit ecosystem integration", us: true, them: false },
 ];
 
 export default function Investors() {
@@ -65,13 +83,34 @@ Painting Contractors: 300,000+
 Residential Growth: 4.2% CAGR
 Commercial Growth: 3.8% CAGR
 
-COMPETITIVE ADVANTAGES
+COMPETITIVE LANDSCAPE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-• Industry Specialization - Built for painters, not generic field service
-• Blockchain Trust - Solana verification for document integrity
-• Orbit Ecosystem - Connected payroll, staffing, development tools
-• Premium Design - Modern Bento Grid + glassmorphism aesthetics
+Platform          Monthly              Setup        Type
+─────────────────────────────────────────────────────────
+Jobber            $29-$629/mo          Minimal      Per-user CRM
+ServiceTitan      $125-$400/user/mo    $5K-$30K     Enterprise FSM
+HouseCall Pro     $49-$169/mo          Minimal      Per-user scheduling
+PaintScout        $39-$199/mo          None         Estimating only
+PaintPros.io      $2,500+/mo           $3,500+      White-Label Platform
+
+KEY DIFFERENTIATORS
+• White-label branded website (competitors: none)
+• Customer-facing estimator (competitors: partial)
+• Blockchain verification (competitors: none)
+• Premium Bento Grid design (competitors: none)
+• SEO management tools (competitors: none)
+• Orbit ecosystem integration (competitors: none)
+
+TRUE COST COMPARISON
+Traditional approach (Jobber + custom website + agency):
+• Jobber (30 users): $249/mo
+• Custom website: $5K-$15K upfront
+• Hosting/updates: $200-500/mo
+• Ongoing development: $500-2K/mo
+• Total: ~$1,500-3,000/mo + coordination overhead
+
+PaintPros.io: $2,500/mo all-inclusive
 
 DARKWAVE STUDIOS ECOSYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -208,6 +247,127 @@ Ecosystem: https://darkwavestudios.io`;
                     </ul>
                   </motion.div>
                 ))}
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mb-12"
+          >
+            <GlassCard className="p-8">
+              <h2 className="text-2xl font-bold flex items-center gap-3 mb-6">
+                <Target className="w-6 h-6 text-red-400" />
+                Competitive Landscape
+              </h2>
+
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Industry Software Pricing</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Platform</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Monthly</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Setup</th>
+                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {COMPETITORS.map((c, i) => (
+                        <tr key={c.name} className={`border-b border-white/5 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
+                          <td className="py-3 px-4 font-medium">{c.name}</td>
+                          <td className="py-3 px-4 font-mono text-yellow-400">{c.pricing}</td>
+                          <td className="py-3 px-4 text-muted-foreground">{c.setup}</td>
+                          <td className="py-3 px-4 text-xs text-muted-foreground">{c.type}</td>
+                        </tr>
+                      ))}
+                      <tr className="bg-accent/10 border border-accent/30">
+                        <td className="py-3 px-4 font-bold text-accent">PaintPros.io</td>
+                        <td className="py-3 px-4 font-mono font-bold text-green-400">$2,500+/mo</td>
+                        <td className="py-3 px-4 text-green-400">$3,500+</td>
+                        <td className="py-3 px-4 text-xs font-medium text-accent">White-Label Platform</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Check className="w-5 h-5 text-green-400" />
+                    Why We're Different
+                  </h3>
+                  <div className="space-y-3">
+                    {PAINTPROS_FEATURES.map((f) => (
+                      <div key={f.feature} className="flex items-center gap-3 text-sm">
+                        <div className="w-6 text-center">
+                          {f.us === true ? (
+                            <Check className="w-4 h-4 text-green-400 mx-auto" />
+                          ) : (
+                            <X className="w-4 h-4 text-red-400 mx-auto" />
+                          )}
+                        </div>
+                        <span className="flex-1">{f.feature}</span>
+                        <div className="w-20 text-center text-xs">
+                          {f.them === true ? (
+                            <span className="text-yellow-400">Competitors</span>
+                          ) : f.them === "Partial" ? (
+                            <span className="text-yellow-400/60">Partial</span>
+                          ) : (
+                            <span className="text-red-400/60">None</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-400" />
+                    True Cost Comparison
+                  </h3>
+                  <div className="bg-white/5 rounded-xl p-5 border border-white/10">
+                    <p className="text-sm text-muted-foreground mb-4">
+                      A painting company using Jobber + custom website + marketing agency:
+                    </p>
+                    <div className="space-y-2 text-sm mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Jobber (30 users)</span>
+                        <span className="font-mono">$249/mo</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Custom website build</span>
+                        <span className="font-mono">$5K-$15K</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Website hosting/updates</span>
+                        <span className="font-mono">$200-500/mo</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Ongoing development</span>
+                        <span className="font-mono">$500-2K/mo</span>
+                      </div>
+                    </div>
+                    <div className="border-t border-white/10 pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Traditional Total</span>
+                        <span className="font-mono text-red-400 font-bold">~$1,500-3,000/mo</span>
+                      </div>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="font-medium text-accent">PaintPros.io</span>
+                        <span className="font-mono text-green-400 font-bold">$2,500/mo</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-4">
+                      Plus: no vendor coordination, single support point, continuous updates included
+                    </p>
+                  </div>
+                </div>
               </div>
             </GlassCard>
           </motion.div>
