@@ -83,6 +83,7 @@ export function Footer() {
             </div>
             <div className="h-4 w-px bg-white/20 hidden md:block" />
             <div className="gap-4 whitespace-nowrap hidden md:flex">
+              <a href="/investors" className="hover:text-accent transition-colors" data-testid="link-investors">Investors</a>
               <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-accent transition-colors">Terms & Conditions</a>
             </div>

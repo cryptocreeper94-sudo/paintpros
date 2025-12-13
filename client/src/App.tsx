@@ -20,6 +20,7 @@ import AreaManager from "@/pages/area-manager";
 import Verify from "@/pages/verify";
 import Pay from "@/pages/pay";
 import ProposalSign from "@/pages/proposal-sign";
+import Investors from "@/pages/investors";
 
 function AnalyticsTracker() {
   useAnalytics();
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/verify/:hallmarkNumber" component={Verify} />
       <Route path="/pay/:estimateId" component={Pay} />
       <Route path="/proposal/:id/sign" component={ProposalSign} />
+      <Route path="/investors" component={Investors} />
       <Route component={NotFound} />
     </Switch>
   );
