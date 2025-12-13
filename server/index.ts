@@ -13,10 +13,11 @@ const httpServer = createServer(app);
 let autoDeployProcessed = false;
 
 // Registered tenants for auto-deploy versioning
+// NPP is MANUAL versioning only - bump when user requests
+// Demo (PAINTPROS) is AUTO versioning on every publish
 const DEPLOY_TENANTS = [
-  { id: 'orbit', name: 'ORBIT Platform' },
-  { id: 'npp', name: 'Nashville Painting Professionals' },
-  // Add more tenants here as they onboard
+  { id: 'demo', name: 'PaintPros.io Platform' },
+  // NPP removed - manual versioning only per user request
 ];
 
 /**
