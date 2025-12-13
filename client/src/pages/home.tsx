@@ -67,14 +67,14 @@ export default function Home() {
                     Craftsmanship.
                   </span>
                 </h1>
-                <p className="text-sm md:text-xl text-cyan-400 font-semibold mb-4 md:mb-8 max-w-md leading-relaxed drop-shadow-lg line-clamp-2 md:line-clamp-none">
+                <p className="text-xs md:text-xl text-cyan-400 font-semibold mb-3 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
                   {tenant.description || `Premium residential and commercial painting.`}
                 </p>
-                <div className="flex gap-4">
+                <a href="/portfolio" className="inline-block">
                   <FlipButton>
                     View Portfolio <ArrowRight className="w-4 h-4" />
                   </FlipButton>
-                </div>
+                </a>
               </div>
 
               {/* Floating Element 1 - Hidden on mobile to avoid text overlap */}
