@@ -155,40 +155,27 @@ export function PaintBuddy() {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleOpen}
             className="fixed bottom-6 right-6 z-50 group"
             data-testid="button-paint-buddy-open"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-accent/40 to-cyan-400/40 blur-lg rounded-full scale-125 group-hover:scale-150 transition-transform" />
-              <div className="absolute -inset-1 bg-gradient-to-r from-accent to-cyan-400 rounded-full opacity-50 group-hover:opacity-75 animate-pulse" />
-              
-              <div className="relative bg-gray-900/80 backdrop-blur-sm rounded-full p-2 border border-accent/50">
-                <motion.img
-                  src={paintBuddyImage}
-                  alt="Paint Buddy"
-                  className="w-14 h-14 object-contain"
-                  animate={{
-                    rotate: [0, -5, 5, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              </div>
-              
-              <motion.div
-                className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </div>
+            <motion.img
+              src={paintBuddyImage}
+              alt="Paint Buddy"
+              className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
+              animate={{
+                y: [0, -4, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
             
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Ask Rollie!
             </span>
           </motion.button>
