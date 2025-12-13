@@ -158,7 +158,7 @@ export function PaintBuddy() {
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleOpen}
-            className="fixed bottom-6 right-6 z-50 group"
+            className="fixed bottom-[54px] right-6 z-50 group"
             data-testid="button-paint-buddy-open"
           >
             <motion.img
@@ -188,7 +188,7 @@ export function PaintBuddy() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-[380px] h-[500px] bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-[54px] right-6 z-50 w-[380px] h-[500px] bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden"
             data-testid="panel-paint-buddy-chat"
           >
             <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-gradient-to-r from-accent/20 to-cyan-500/20">
