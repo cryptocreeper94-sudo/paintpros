@@ -295,8 +295,8 @@ export const FOUNDING_ASSETS = {
     badge: 'Genesis Asset',
   },
   PAINTPROS_PLATFORM: { 
-    number: '#000000000-02', 
-    special: '#FE-000000000-02',
+    number: 'PAINTPROS-000000000-01', 
+    special: 'PAINTPROS-FE-000000000-01',
     name: 'Paint Pros by ORBIT', 
     type: 'platform',
     badge: 'Paint Pros Platform',
@@ -369,7 +369,8 @@ export const EDITION_PREFIXES = {
 
 export const TENANT_PREFIXES: Record<string, { prefix: string; name: string; color: string }> = {
   npp: { prefix: 'NPP', name: 'Nashville Painting Professionals', color: '#5a7a4d' },
-  demo: { prefix: 'PP', name: 'PaintPros.io', color: '#d4a853' },
+  demo: { prefix: 'PAINTPROS', name: 'PaintPros.io', color: '#d4a853' },
+  orbit: { prefix: 'ORBIT', name: 'ORBIT Platform', color: '#9945FF' },
 } as const;
 
 // Anchorable asset types

@@ -95,15 +95,41 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
     };
   }
 
-  // Check for tenant-prefixed hallmarks (NPP-YYYYMMDD-RANDOM or PP-YYYYMMDD-RANDOM)
-  const tenantHallmarkMatch = hallmarkNumber.match(/^(NPP|PP)-\d{8}-[A-Z0-9]{6}$/);
+  // Check for PAINTPROS prefix (main platform)
+  if (hallmarkNumber.startsWith('PAINTPROS-')) {
+    const assetMatch = hallmarkNumber.match(/^PAINTPROS-(\d{9})-(\d{2})$/);
+    if (assetMatch) {
+      return {
+        prefix: 'PAINTPROS',
+        master: parseInt(assetMatch[1], 10),
+        sub: parseInt(assetMatch[2], 10),
+        edition: 'PaintPros.io Platform',
+        isFounder: true,
+        isSpecial: true,
+        raw: hallmarkNumber,
+      };
+    }
+    // Dynamic PAINTPROS hallmark
+    return {
+      prefix: 'PAINTPROS',
+      master: 0,
+      sub: 0,
+      edition: 'PaintPros.io Platform',
+      isFounder: false,
+      isSpecial: true,
+      raw: hallmarkNumber,
+    };
+  }
+
+  // Check for tenant-prefixed hallmarks (NPP-YYYYMMDD-RANDOM)
+  const tenantHallmarkMatch = hallmarkNumber.match(/^(NPP)-\d{8}-[A-Z0-9]{6}$/);
   if (tenantHallmarkMatch) {
     const prefix = tenantHallmarkMatch[1];
     return {
       prefix,
       master: 0,
       sub: 0,
-      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      edition: 'Nashville Painting Professionals',
       isFounder: false,
       isSpecial: true,
       raw: hallmarkNumber,
@@ -111,7 +137,7 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
   }
 
   // Check for tenant asset numbers (NPP-000000001-01)
-  const tenantAssetMatch = hallmarkNumber.match(/^(NPP|PP)-(\d{9})-(\d{2})$/);
+  const tenantAssetMatch = hallmarkNumber.match(/^(NPP)-(\d{9})-(\d{2})$/);
   if (tenantAssetMatch) {
     const prefix = tenantAssetMatch[1];
     const master = parseInt(tenantAssetMatch[2], 10);
@@ -120,7 +146,7 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
       prefix,
       master,
       sub,
-      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      edition: 'Nashville Painting Professionals',
       isFounder: master <= 3,
       isSpecial: true,
       raw: hallmarkNumber,
@@ -166,6 +192,11 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
     return { tier: 'Standard', color: '#6b7280', icon: '📄', glow: 'none' };
   }
 
+  // PAINTPROS (Main platform) badge
+  if (parsed.prefix === 'PAINTPROS') {
+    return { tier: 'Paint Pros Platform', color: '#d4a853', icon: '🎨', glow: '0 0 20px #d4a853', edition: 'PaintPros.io Platform' };
+  }
+
   // NPP (Nashville Painting Professionals) tenant badge
   if (parsed.prefix === 'NPP') {
     return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nashville Painting Professionals' };
@@ -177,10 +208,6 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
   
   if (parsed.prefix === 'DW') {
     return { tier: 'DarkWave', color: '#14b8a6', icon: '🌊', glow: '0 0 15px #14b8a6', edition: 'DarkWave Studios' };
-  }
-
-  if (parsed.prefix === 'PP') {
-    return { tier: 'Paint Pros', color: '#d4a853', icon: '🎨', glow: '0 0 15px #d4a853', edition: 'Paint Pros Edition' };
   }
 
   if (parsed.master >= 1 && parsed.master <= 3) {
@@ -261,10 +288,15 @@ export function validateHallmarkNumber(hallmarkNumber: string): boolean {
     return /^ORBIT-\d{8}-[A-Z0-9]{6}$/.test(hallmarkNumber);
   }
   
-  // NPP or PP tenant hallmark numbers
-  if (hallmarkNumber.startsWith('NPP-') || hallmarkNumber.startsWith('PP-')) {
+  // PAINTPROS platform hallmark numbers
+  if (hallmarkNumber.startsWith('PAINTPROS-')) {
+    return /^PAINTPROS-(\d{8}-[A-Z0-9]{6}|\d{9}-\d{2})$/.test(hallmarkNumber);
+  }
+  
+  // NPP tenant hallmark numbers
+  if (hallmarkNumber.startsWith('NPP-')) {
     // Match: NPP-YYYYMMDD-RANDOM or NPP-000000001-01
-    return /^(NPP|PP)-(\d{8}-[A-Z0-9]{6}|\d{9}-\d{2})$/.test(hallmarkNumber);
+    return /^NPP-(\d{8}-[A-Z0-9]{6}|\d{9}-\d{2})$/.test(hallmarkNumber);
   }
   
   if (hallmarkNumber.startsWith('#')) {

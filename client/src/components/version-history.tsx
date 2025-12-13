@@ -63,7 +63,7 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20 }: Versio
   const tenantNames: Record<string, string> = {
     orbit: "ORBIT Platform",
     npp: "Nashville Painting Professionals",
-    demo: "PaintPros.io Demo",
+    demo: "PaintPros.io Platform",
   };
 
   return (
