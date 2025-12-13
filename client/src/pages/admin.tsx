@@ -8,7 +8,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera, Clock, Send, X, CheckCircle } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera, Clock, Send, X, CheckCircle, GitBranch } from "lucide-react";
+import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
 import type { Lead, Estimate, EstimateFollowup } from "@shared/schema";
@@ -26,7 +27,7 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showPinChange, setShowPinChange] = useState(false);
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
-  const [activeTab, setActiveTab] = useState<"deals" | "leads" | "activities" | "followups">("deals");
+  const [activeTab, setActiveTab] = useState<"deals" | "leads" | "activities" | "followups" | "versions">("deals");
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -225,6 +226,7 @@ export default function Admin() {
               { id: "leads", label: "Email Database", icon: Database },
               { id: "followups", label: "Follow-ups", icon: Clock, badge: pendingFollowups.length },
               { id: "activities", label: "Activities", icon: Bell },
+              { id: "versions", label: "Versions", icon: GitBranch },
             ].map((tab) => (
               <motion.button
                 key={tab.id}
@@ -460,6 +462,15 @@ export default function Admin() {
                   </div>
                 )}
               </GlassCard>
+            </motion.div>
+          )}
+
+          {activeTab === "versions" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <VersionHistory maxItems={15} />
             </motion.div>
           )}
         </div>

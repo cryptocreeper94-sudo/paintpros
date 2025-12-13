@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History } from "lucide-react";
+import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { toast } from "sonner";
@@ -1970,6 +1971,13 @@ export default function Developer() {
                 </div>
                 <p className="text-sm text-muted-foreground">Google Analytics, Facebook Pixel & more</p>
               </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Version History - Full Width - All Tenants */}
+          <BentoItem colSpan={12} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+              <VersionHistory showAllTenants={true} maxItems={30} />
             </motion.div>
           </BentoItem>
 

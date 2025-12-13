@@ -25,7 +25,12 @@ export function Footer() {
   const [showVersionModal, setShowVersionModal] = useState(false);
   
   const { data: releaseInfo } = useQuery<ReleaseInfo>({
-    queryKey: ['/api/releases/latest'],
+    queryKey: ['/api/releases/latest', tenant.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/releases/latest?tenantId=${tenant.id}`);
+      if (!res.ok) throw new Error('Failed to fetch release');
+      return res.json();
+    },
     staleTime: 60000,
   });
   

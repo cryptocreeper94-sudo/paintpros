@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera, Shield } from "lucide-react";
+import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -647,6 +648,13 @@ export default function Owner() {
                   })}
                 </div>
               </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Version History - Tenant Specific */}
+          <BentoItem colSpan={12} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+              <VersionHistory maxItems={10} />
             </motion.div>
           </BentoItem>
 
