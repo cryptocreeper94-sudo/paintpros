@@ -25,20 +25,27 @@ export function getConnection(network: 'devnet' | 'mainnet-beta' = 'mainnet-beta
   const heliusRpcUrl = process.env.HELIUS_RPC_URL;
   const heliusApiKey = process.env.HELIUS_API_KEY;
   
-  // Use public RPC by default - Helius key may be invalid
-  // Uncomment below when Helius key is verified working
-  /*
   if (heliusRpcUrl) {
+    console.log(`[solana] Using HELIUS_RPC_URL for ${network}`);
     return new Connection(heliusRpcUrl, 'confirmed');
   }
   
-  if (heliusApiKey) {
+  if (heliusApiKey && heliusApiKey.trim()) {
+    const trimmedKey = heliusApiKey.trim();
+    
+    // Check if HELIUS_API_KEY is actually a full URL (legacy format)
+    if (trimmedKey.startsWith('http')) {
+      console.log(`[solana] Using HELIUS_API_KEY as full RPC URL for ${network}`);
+      return new Connection(trimmedKey, 'confirmed');
+    }
+    
+    // Otherwise, build the URL with the API key
     const heliusUrl = network === 'devnet' 
-      ? `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`
-      : `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`;
+      ? `https://devnet.helius-rpc.com/?api-key=${trimmedKey}`
+      : `https://mainnet.helius-rpc.com/?api-key=${trimmedKey}`;
+    console.log(`[solana] Using Helius API for ${network}`);
     return new Connection(heliusUrl, 'confirmed');
   }
-  */
   
   console.log(`[solana] Using public RPC for ${network}`);
   return new Connection(DEFAULT_NETWORKS[network], 'confirmed');
