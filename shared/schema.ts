@@ -285,6 +285,58 @@ export const assetNumberCounter = pgTable("asset_number_counter", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Tenant Asset Counters - Per-tenant sequential hallmark numbering
+export const tenantAssetCounters = pgTable("tenant_asset_counters", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().unique(), // npp, demo, orbit
+  prefix: text("prefix").notNull(), // NPP, PAINTPROS, ORBIT
+  nextOrdinal: integer("next_ordinal").notNull().default(2), // Start at 2 since 01 is genesis/app
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+});
+
+export const insertTenantAssetCounterSchema = createInsertSchema(tenantAssetCounters).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export type InsertTenantAssetCounter = z.infer<typeof insertTenantAssetCounterSchema>;
+export type TenantAssetCounter = typeof tenantAssetCounters.$inferSelect;
+
+// Document Assets - Trackable assets with opt-in Solana hashing
+export const documentAssets = pgTable("document_assets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(), // npp, demo, orbit
+  sourceType: text("source_type").notNull(), // estimate, contract, invoice, employee, warranty, etc.
+  sourceId: varchar("source_id").notNull(), // Reference to the source record ID
+  hallmarkNumber: varchar("hallmark_number", { length: 50 }).notNull().unique(), // NPP-000000000-02
+  ordinal: integer("ordinal").notNull(), // The sequence number (2, 3, 4...)
+  sha256Hash: text("sha256_hash").notNull(), // Hash of the document content
+  title: text("title").notNull(), // Human-readable title
+  description: text("description"), // Optional description
+  hashToSolana: boolean("hash_to_solana").default(false).notNull(), // User opt-in for blockchain
+  solanaStatus: text("solana_status").default("not_requested"), // not_requested, queued, pending, confirmed, failed
+  solanaTxSignature: text("solana_tx_signature"), // Blockchain transaction signature
+  solanaSlot: integer("solana_slot"), // Solana slot number
+  solanaBlockTime: timestamp("solana_block_time"), // Timestamp from blockchain
+  metadata: jsonb("metadata").default({}), // Additional document metadata
+  createdBy: text("created_by"), // Who created this asset
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertDocumentAssetSchema = createInsertSchema(documentAssets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  solanaStatus: true,
+  solanaTxSignature: true,
+  solanaSlot: true,
+  solanaBlockTime: true,
+});
+
+export type InsertDocumentAsset = z.infer<typeof insertDocumentAssetSchema>;
+export type DocumentAsset = typeof documentAssets.$inferSelect;
+
 // Founding Assets - Reserved immutable assets
 export const FOUNDING_ASSETS = {
   ORBIT_GENESIS: { 

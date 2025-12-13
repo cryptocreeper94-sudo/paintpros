@@ -23,7 +23,10 @@ import {
   type EstimatePricingOption, type InsertEstimatePricingOption, estimatePricingOptions,
   type ProposalSignature, type InsertProposalSignature, proposalSignatures,
   type EstimateFollowup, type InsertEstimateFollowup, estimateFollowups,
-  assetNumberCounter
+  type DocumentAsset, type InsertDocumentAsset, documentAssets,
+  type TenantAssetCounter, type InsertTenantAssetCounter, tenantAssetCounters,
+  assetNumberCounter,
+  TENANT_PREFIXES
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
 
@@ -178,6 +181,17 @@ export interface IStorage {
   getPendingFollowups(): Promise<EstimateFollowup[]>;
   markFollowupSent(id: string): Promise<EstimateFollowup | undefined>;
   cancelFollowup(id: string): Promise<EstimateFollowup | undefined>;
+  
+  // Document Assets - Tenant-aware document hashing
+  createDocumentAsset(asset: InsertDocumentAsset): Promise<DocumentAsset>;
+  getDocumentAssetById(id: string): Promise<DocumentAsset | undefined>;
+  getDocumentAssetByHallmark(hallmarkNumber: string): Promise<DocumentAsset | undefined>;
+  getDocumentAssetsByTenant(tenantId: string): Promise<DocumentAsset[]>;
+  getDocumentAssetsBySource(sourceType: string, sourceId: string): Promise<DocumentAsset[]>;
+  updateDocumentAssetSolanaStatus(id: string, status: string, txSignature?: string, slot?: number, blockTime?: Date): Promise<DocumentAsset | undefined>;
+  getNextTenantOrdinal(tenantId: string): Promise<{ ordinal: number; hallmarkNumber: string }>;
+  initializeTenantCounter(tenantId: string): Promise<TenantAssetCounter>;
+  getTenantCounter(tenantId: string): Promise<TenantAssetCounter | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -969,6 +983,95 @@ export class DatabaseStorage implements IStorage {
       .set({ status: 'cancelled' })
       .where(eq(estimateFollowups.id, id))
       .returning();
+    return result;
+  }
+
+  // Document Assets - Tenant-aware document hashing
+  async createDocumentAsset(asset: InsertDocumentAsset): Promise<DocumentAsset> {
+    const [result] = await db.insert(documentAssets).values(asset).returning();
+    return result;
+  }
+
+  async getDocumentAssetById(id: string): Promise<DocumentAsset | undefined> {
+    const [result] = await db.select().from(documentAssets).where(eq(documentAssets.id, id));
+    return result;
+  }
+
+  async getDocumentAssetByHallmark(hallmarkNumber: string): Promise<DocumentAsset | undefined> {
+    const [result] = await db.select().from(documentAssets)
+      .where(eq(documentAssets.hallmarkNumber, hallmarkNumber));
+    return result;
+  }
+
+  async getDocumentAssetsByTenant(tenantId: string): Promise<DocumentAsset[]> {
+    return await db.select().from(documentAssets)
+      .where(eq(documentAssets.tenantId, tenantId))
+      .orderBy(desc(documentAssets.createdAt));
+  }
+
+  async getDocumentAssetsBySource(sourceType: string, sourceId: string): Promise<DocumentAsset[]> {
+    return await db.select().from(documentAssets)
+      .where(and(
+        eq(documentAssets.sourceType, sourceType),
+        eq(documentAssets.sourceId, sourceId)
+      ));
+  }
+
+  async updateDocumentAssetSolanaStatus(
+    id: string, 
+    status: string, 
+    txSignature?: string, 
+    slot?: number, 
+    blockTime?: Date
+  ): Promise<DocumentAsset | undefined> {
+    const updates: Partial<DocumentAsset> = { solanaStatus: status, updatedAt: new Date() };
+    if (txSignature) updates.solanaTxSignature = txSignature;
+    if (slot) updates.solanaSlot = slot;
+    if (blockTime) updates.solanaBlockTime = blockTime;
+    
+    const [result] = await db.update(documentAssets)
+      .set(updates)
+      .where(eq(documentAssets.id, id))
+      .returning();
+    return result;
+  }
+
+  async getNextTenantOrdinal(tenantId: string): Promise<{ ordinal: number; hallmarkNumber: string }> {
+    let counter = await this.getTenantCounter(tenantId);
+    if (!counter) {
+      counter = await this.initializeTenantCounter(tenantId);
+    }
+    
+    const ordinal = counter.nextOrdinal;
+    const ordinalStr = ordinal.toString().padStart(2, '0');
+    const hallmarkNumber = `${counter.prefix}-000000000-${ordinalStr}`;
+    
+    await db.update(tenantAssetCounters)
+      .set({ nextOrdinal: ordinal + 1, lastUpdated: new Date() })
+      .where(eq(tenantAssetCounters.tenantId, tenantId));
+    
+    return { ordinal, hallmarkNumber };
+  }
+
+  async initializeTenantCounter(tenantId: string): Promise<TenantAssetCounter> {
+    const tenantConfig = TENANT_PREFIXES[tenantId];
+    const prefix = tenantConfig?.prefix || tenantId.toUpperCase();
+    
+    const [result] = await db.insert(tenantAssetCounters)
+      .values({ tenantId, prefix, nextOrdinal: 2 })
+      .onConflictDoNothing()
+      .returning();
+    
+    if (result) return result;
+    
+    const [existing] = await db.select().from(tenantAssetCounters)
+      .where(eq(tenantAssetCounters.tenantId, tenantId));
+    return existing;
+  }
+
+  async getTenantCounter(tenantId: string): Promise<TenantAssetCounter | undefined> {
+    const [result] = await db.select().from(tenantAssetCounters)
+      .where(eq(tenantAssetCounters.tenantId, tenantId));
     return result;
   }
 }
