@@ -12,11 +12,12 @@ interface SolanaVerifiedModalProps {
 
 export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProps) {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [qrExpanded, setQrExpanded] = useState(false);
   
   const platformAsset = FOUNDING_ASSETS.ORBIT_PLATFORM;
   const serialNumber = platformAsset.number;
   const displaySerial = serialNumber.replace('#', '');
-  const verifyUrl = `${window.location.origin}/verify/${encodeURIComponent(serialNumber)}`;
+  const solscanUrl = "https://solscan.io/account/PaintPros000000000001";
 
   const features = [
     {
@@ -57,16 +58,30 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
         <div className="space-y-4 pt-2">
           <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
             <div className="flex gap-4">
-              <div className="rounded-lg bg-white p-1.5 inline-block leading-[0]">
-                <QRCodeCanvas 
-                  value={verifyUrl}
-                  size={80}
-                  level="L"
-                  includeMargin={false}
-                  bgColor="#14F195"
-                  fgColor="#000000"
-                />
-              </div>
+              <button
+                onClick={() => setQrExpanded(!qrExpanded)}
+                className="rounded-lg bg-white p-1.5 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all"
+                data-testid="button-expand-qr"
+                style={{ lineHeight: 0 }}
+              >
+                <div 
+                  className="overflow-hidden"
+                  style={{ 
+                    width: qrExpanded ? 160 : 75, 
+                    height: qrExpanded ? 160 : 75,
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <QRCodeCanvas 
+                    value={solscanUrl}
+                    size={qrExpanded ? 160 : 75}
+                    level="L"
+                    includeMargin={false}
+                    bgColor="#14F195"
+                    fgColor="#000000"
+                  />
+                </div>
+              </button>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
                   <Award className="w-4 h-4 text-[#14F195]" />
@@ -141,7 +156,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           </GlassCard>
 
           <a
-            href={verifyUrl}
+            href={solscanUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full py-2.5 px-4 bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white font-medium rounded-lg text-center hover:opacity-90 transition-all"
