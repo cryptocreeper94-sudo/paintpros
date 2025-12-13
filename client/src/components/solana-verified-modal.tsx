@@ -1,9 +1,22 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, Lock, Search, FileCheck, ExternalLink, ChevronDown, Hash, Award } from "lucide-react";
-import { useState } from "react";
+import { ShieldCheck, Lock, Search, FileCheck, ExternalLink, ChevronDown, Hash, Award, History, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
+
+interface BlockchainStamp {
+  id: string;
+  entityType: string;
+  entityId: string;
+  documentHash: string;
+  transactionSignature: string | null;
+  network: string;
+  slot: number | null;
+  blockTime: string | null;
+  status: string;
+  createdAt: string;
+}
 
 interface SolanaVerifiedModalProps {
   isOpen: boolean;
@@ -13,6 +26,24 @@ interface SolanaVerifiedModalProps {
 export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProps) {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [qrExpanded, setQrExpanded] = useState(false);
+  const [stamps, setStamps] = useState<BlockchainStamp[]>([]);
+  const [loadingStamps, setLoadingStamps] = useState(false);
+  
+  useEffect(() => {
+    if (isOpen) {
+      setLoadingStamps(true);
+      fetch('/api/blockchain/stamps')
+        .then(res => res.json())
+        .then(data => {
+          setStamps(Array.isArray(data) ? data : []);
+          setLoadingStamps(false);
+        })
+        .catch(() => {
+          setStamps([]);
+          setLoadingStamps(false);
+        });
+    }
+  }, [isOpen]);
   
   const platformAsset = FOUNDING_ASSETS.ORBIT_PLATFORM;
   const serialNumber = platformAsset.number;
@@ -139,6 +170,89 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               </button>
             ))}
           </div>
+
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'history' ? null : 'history')}
+            className="w-full text-left"
+            data-testid="button-blockchain-history"
+          >
+            <GlassCard className="p-3 hover:border-[#14F195]/40 transition-all">
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-[#14F195]/10 flex-shrink-0 mt-0.5">
+                  <History className="w-4 h-4 text-[#14F195]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <h5 className="font-bold text-sm">Blockchain Hash History</h5>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedSection === 'history' ? 'rotate-180' : ''}`} />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {stamps.length > 0 ? `${stamps.length} verified stamps on Solana` : 'View all blockchain stamps'}
+                  </p>
+                  {expandedSection === 'history' && (
+                    <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                      {loadingStamps ? (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Loading stamps...
+                        </div>
+                      ) : stamps.length === 0 ? (
+                        <p className="text-xs text-muted-foreground/70">
+                          No blockchain stamps yet. Stamps are created when documents are verified.
+                        </p>
+                      ) : (
+                        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                          {stamps.slice(0, 10).map((stamp) => (
+                            <div key={stamp.id} className="p-2 rounded-lg bg-white/5 border border-white/10">
+                              <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center gap-1.5">
+                                  {stamp.status === 'confirmed' ? (
+                                    <CheckCircle2 className="w-3 h-3 text-[#14F195]" />
+                                  ) : stamp.status === 'failed' ? (
+                                    <AlertCircle className="w-3 h-3 text-red-400" />
+                                  ) : (
+                                    <Clock className="w-3 h-3 text-yellow-400" />
+                                  )}
+                                  <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                                    {stamp.entityType}
+                                  </span>
+                                </div>
+                                <span className="text-[9px] text-muted-foreground/60">
+                                  {stamp.createdAt ? new Date(stamp.createdAt).toLocaleDateString() : 'N/A'}
+                                </span>
+                              </div>
+                              <p className="font-mono text-[9px] text-[#14F195]/80 break-all leading-relaxed">
+                                {stamp.documentHash.substring(0, 32)}...
+                              </p>
+                              {stamp.transactionSignature && (
+                                <a
+                                  href={stamp.network === 'devnet' 
+                                    ? `https://explorer.solana.com/tx/${stamp.transactionSignature}?cluster=devnet`
+                                    : `https://explorer.solana.com/tx/${stamp.transactionSignature}`
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 mt-1 text-[9px] text-[#14F195] hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  View on Solana <ExternalLink className="w-2.5 h-2.5" />
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                          {stamps.length > 10 && (
+                            <p className="text-[10px] text-muted-foreground/60 text-center pt-1">
+                              + {stamps.length - 10} more stamps
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </GlassCard>
+          </button>
 
           <GlassCard className="p-4">
             <h4 className="text-sm font-bold mb-2 flex items-center gap-2">
