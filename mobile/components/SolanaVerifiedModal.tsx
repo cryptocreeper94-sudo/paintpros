@@ -16,23 +16,12 @@ import {
   Info
 } from "lucide-react-native";
 import GlassCard from "./GlassCard";
+import { BlockchainStamp } from "../types";
+import { getTenant } from "../config/app";
 
 const SOLANA_GREEN = "#14F195";
 const SOLANA_PURPLE = "#9945FF";
 const ACCENT_COLOR = "hsl(45, 90%, 55%)";
-
-interface BlockchainStamp {
-  id: string;
-  entityType: string;
-  entityId: string;
-  documentHash: string;
-  transactionSignature: string | null;
-  network: string;
-  slot: number | null;
-  blockTime: string | null;
-  status: string;
-  createdAt: string;
-}
 
 interface SolanaVerifiedModalProps {
   isOpen: boolean;
@@ -40,19 +29,16 @@ interface SolanaVerifiedModalProps {
   apiBaseUrl?: string;
 }
 
-const FOUNDING_ASSET = {
-  badge: "Founding Member",
-  number: "#0000001",
-};
-
 export default function SolanaVerifiedModal({ isOpen, onClose, apiBaseUrl }: SolanaVerifiedModalProps) {
+  const tenant = getTenant();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [stamps, setStamps] = useState<BlockchainStamp[]>([]);
   const [loadingStamps, setLoadingStamps] = useState(false);
   const [stampError, setStampError] = useState<string | null>(null);
   
-  const solscanUrl = "https://solscan.io/account/NPP0000000001";
-  const displaySerial = FOUNDING_ASSET.number.replace('#', '');
+  const solscanUrl = tenant.foundingAsset.solscanUrl;
+  const displaySerial = tenant.foundingAsset.number.replace('#', '');
+  const foundingBadge = tenant.foundingAsset.badge;
 
   const openUrl = useCallback(async (url: string) => {
     try {
@@ -176,7 +162,7 @@ export default function SolanaVerifiedModal({ isOpen, onClose, apiBaseUrl }: Sol
                     <View className="flex-row items-center gap-1">
                       <Award size={10} color="#fff" />
                       <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>
-                        {FOUNDING_ASSET.badge}
+                        {foundingBadge}
                       </Text>
                     </View>
                   </View>
