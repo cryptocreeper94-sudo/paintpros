@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { GlassCard } from "@/components/ui/glass-card";
 import { ShieldCheck, Lock, Search, FileCheck, ExternalLink, ChevronDown, Hash, Award } from "lucide-react";
 import { useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
 
 interface SolanaVerifiedModalProps {
@@ -57,15 +57,14 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
         <div className="space-y-4 pt-2">
           <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
             <div className="flex gap-4">
-              <div className="rounded-lg bg-white p-1.5 inline-block">
-                <QRCodeSVG 
+              <div className="rounded-lg bg-white p-1.5 inline-block leading-[0]">
+                <QRCodeCanvas 
                   value={verifyUrl}
                   size={80}
                   level="L"
                   includeMargin={false}
                   bgColor="#14F195"
                   fgColor="#000000"
-                  className="block"
                 />
               </div>
               <div className="flex-1 min-w-0">
