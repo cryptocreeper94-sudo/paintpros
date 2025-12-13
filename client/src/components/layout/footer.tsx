@@ -45,7 +45,17 @@ export function Footer() {
           
           {/* Copyright */}
           <div className="whitespace-nowrap text-[9px] md:text-[10px]">
-            © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">NPP</span>
+            {isDemo ? (
+              <>
+                <span className="hidden sm:inline">Powered by Darkwave Studios, LLC</span>
+                <span className="sm:hidden">Darkwave Studios</span>
+                <span className="ml-1">© 2025</span>
+              </>
+            ) : (
+              <>
+                © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">NPP</span>
+              </>
+            )}
           </div>
           
           {/* Hallmark Badge */}
