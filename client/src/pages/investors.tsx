@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const PRICING_TIERS = [
-  { tier: "Starter", price: "$1,500/mo", setup: "$2,500", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
-  { tier: "Professional", price: "$2,500/mo", setup: "$4,500", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
-  { tier: "Franchise Core", price: "$4,000/mo + $500/loc", setup: "$7,500", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
-  { tier: "Enterprise", price: "$8,000/mo base", setup: "$15,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
+  { tier: "Starter", price: "$2,500/mo", setup: "$3,500", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
+  { tier: "Professional", price: "$4,000/mo", setup: "$5,500", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
+  { tier: "Franchise Core", price: "$6,500/mo + $750/loc", setup: "$10,000", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
+  { tier: "Enterprise", price: "$12,000/mo base", setup: "$20,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
 ];
 
 const PROJECTIONS = [
@@ -35,10 +35,10 @@ LICENSING TIERS
 
 Tier                    Monthly             Setup Fee    Target
 ─────────────────────────────────────────────────────────────
-Starter                 $1,500/mo           $2,500       Solo contractors
-Professional            $2,500/mo           $4,500       1-3 locations
-Franchise Core          $4,000/mo + $500/loc  $7,500     5+ sites
-Enterprise White-Label  $8,000/mo base      $15,000      Large franchises
+Starter                 $2,500/mo           $3,500       Solo contractors
+Professional            $4,000/mo           $5,500       1-3 locations
+Franchise Core          $6,500/mo + $750/loc  $10,000    5+ sites
+Enterprise White-Label  $12,000/mo base     $20,000      Large franchises
 
 UNIT ECONOMICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

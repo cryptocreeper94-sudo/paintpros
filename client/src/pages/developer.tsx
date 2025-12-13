@@ -838,22 +838,22 @@ LICENSING TIERS
 
 Tier                    Monthly         Setup Fee    Target Customer
 ──────────────────────────────────────────────────────────────────
-Starter                 $1,500/mo       $2,500       Solo contractors, 1 location
-Professional            $2,500/mo       $4,500       Growing painters, 1-3 locations
-Franchise Core          $4,000/mo + $500/loc  $7,500 Multi-location (5+ sites)
-Enterprise White-Label  $8,000/mo base  $15,000      Large franchises
+Starter                 $2,500/mo       $3,500       Solo contractors, 1 location
+Professional            $4,000/mo       $5,500       Growing painters, 1-3 locations
+Franchise Core          $6,500/mo + $750/loc  $10,000  Multi-location (5+ sites)
+Enterprise White-Label  $12,000/mo base $20,000      Large franchises
 
 FEATURE MATRIX
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-STARTER ($1,500/month)
+STARTER ($2,500/month)
 • White-label website with Bento Grid design
 • Interactive estimator tool
 • Basic lead capture & CRM
 • Email support (2 business day response)
 • Blockchain stamping add-on ($49/mo)
 
-PROFESSIONAL ($2,500/month)
+PROFESSIONAL ($4,000/month)
 • Everything in Essentials
 • Full analytics dashboard
 • Role-based dashboards (Owner, Admin, Area Manager)
@@ -861,7 +861,7 @@ PROFESSIONAL ($2,500/month)
 • 2 strategy sessions per year
 • Blockchain stamping included
 
-FRANCHISE CORE ($4,000/month + $500/location)
+FRANCHISE CORE ($6,500/month + $750/location)
 • Everything in Professional
 • Multi-tenant management console
 • Shared asset libraries
@@ -869,7 +869,7 @@ FRANCHISE CORE ($4,000/month + $500/location)
 • Dedicated account manager
 • Compliance & audit trail
 
-ENTERPRISE WHITE-LABEL ($8,000/month base)
+ENTERPRISE WHITE-LABEL ($12,000/month base)
 • Full brand suppression
 • API priority access
 • Co-branded marketing assets
@@ -959,10 +959,10 @@ Ecosystem: https://darkwavestudios.io`;
         </h3>
         <div className="grid gap-2">
           {[
-            { tier: "Essentials", price: "$149/mo", setup: "$999", target: "Solo contractors" },
-            { tier: "Professional", price: "$299/mo", setup: "$1,499", target: "1-3 locations" },
-            { tier: "Franchise Core", price: "$749/mo + $99/loc", setup: "$4,999", target: "5+ sites" },
-            { tier: "Enterprise", price: "$1,499/mo base", setup: "$9,500", target: "Large franchises" },
+            { tier: "Starter", price: "$2,500/mo", setup: "$3,500", target: "Solo contractors" },
+            { tier: "Professional", price: "$4,000/mo", setup: "$5,500", target: "1-3 locations" },
+            { tier: "Franchise Core", price: "$6,500/mo + $750/loc", setup: "$10,000", target: "5+ sites" },
+            { tier: "Enterprise", price: "$12,000/mo base", setup: "$20,000", target: "Large franchises" },
           ].map((item) => (
             <div key={item.tier} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
               <div>
