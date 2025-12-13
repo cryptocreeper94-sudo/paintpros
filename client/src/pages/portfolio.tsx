@@ -29,6 +29,8 @@ interface PortfolioImage {
   location: string;
   colSpan: number;
   rowSpan: number;
+  mobileColSpan: number;
+  mobileRowSpan: number;
   imageUrl: string;
 }
 
@@ -39,31 +41,31 @@ export default function Portfolio() {
 
   const portfolioImages: PortfolioImage[] = [
     // Bedrooms
-    { id: "bed-1", title: "Master Bedroom Refresh", category: "Bedroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, imageUrl: masterBedroom },
-    { id: "bed-2", title: "Guest Room Transformation", category: "Bedroom", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: guestRoom },
-    { id: "bed-3", title: "Bedroom Accent Wall", category: "Bedroom", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, imageUrl: bedroomAccent },
+    { id: "bed-1", title: "Master Bedroom Refresh", category: "Bedroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: masterBedroom },
+    { id: "bed-2", title: "Guest Room Transformation", category: "Bedroom", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: guestRoom },
+    { id: "bed-3", title: "Bedroom Accent Wall", category: "Bedroom", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: bedroomAccent },
     
     // Kitchens
-    { id: "kit-1", title: "Kitchen Cabinet Refresh", category: "Kitchen", location: areas[0] || cityName, colSpan: 8, rowSpan: 2, imageUrl: kitchenCabinet },
-    { id: "kit-2", title: "Modern Kitchen Paint", category: "Kitchen", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: kitchenModern },
-    { id: "kit-3", title: "Kitchen Island Highlight", category: "Kitchen", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, imageUrl: kitchenIsland },
+    { id: "kit-1", title: "Kitchen Cabinet Refresh", category: "Kitchen", location: areas[0] || cityName, colSpan: 8, rowSpan: 2, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: kitchenCabinet },
+    { id: "kit-2", title: "Modern Kitchen Paint", category: "Kitchen", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: kitchenModern },
+    { id: "kit-3", title: "Kitchen Island Highlight", category: "Kitchen", location: areas[2] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: kitchenIsland },
     
     // Bathrooms
-    { id: "bath-1", title: "Master Bath Makeover", category: "Bathroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, imageUrl: masterBath },
-    { id: "bath-2", title: "Guest Bath Update", category: "Bathroom", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, imageUrl: guestBath },
-    { id: "bath-3", title: "Spa-Like Bathroom", category: "Bathroom", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, imageUrl: spaLikeBath },
+    { id: "bath-1", title: "Master Bath Makeover", category: "Bathroom", location: areas[0] || cityName, colSpan: 6, rowSpan: 1, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: masterBath },
+    { id: "bath-2", title: "Guest Bath Update", category: "Bathroom", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: guestBath },
+    { id: "bath-3", title: "Spa-Like Bathroom", category: "Bathroom", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: spaLikeBath },
     
     // Living Areas
-    { id: "living-1", title: "Living Room Transformation", category: "Living Area", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, imageUrl: livingRoom },
-    { id: "living-2", title: "Family Room Refresh", category: "Living Area", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, imageUrl: familyRoom },
-    { id: "living-3", title: "Den Accent Colors", category: "Living Area", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, imageUrl: denAccent },
-    { id: "living-4", title: "Dining Room Elegance", category: "Living Area", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, imageUrl: diningRoom },
+    { id: "living-1", title: "Living Room Transformation", category: "Living Area", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: livingRoom },
+    { id: "living-2", title: "Family Room Refresh", category: "Living Area", location: areas[1] || cityName, colSpan: 3, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: familyRoom },
+    { id: "living-3", title: "Den Accent Colors", category: "Living Area", location: areas[2] || cityName, colSpan: 3, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: denAccent },
+    { id: "living-4", title: "Dining Room Elegance", category: "Living Area", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: diningRoom },
     
     // Exteriors
-    { id: "ext-1", title: "Home Exterior Update", category: "Exterior", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, imageUrl: exteriorHome },
-    { id: "ext-2", title: "Trim & Door Refresh", category: "Exterior", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, imageUrl: trimDoor },
-    { id: "ext-3", title: "Garage Door Paint", category: "Exterior", location: areas[2] || cityName, colSpan: 2, rowSpan: 1, imageUrl: garageDoor },
-    { id: "ext-4", title: "Porch & Entry", category: "Exterior", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, imageUrl: porch },
+    { id: "ext-1", title: "Home Exterior Update", category: "Exterior", location: areas[0] || cityName, colSpan: 6, rowSpan: 2, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: exteriorHome },
+    { id: "ext-2", title: "Trim & Door Refresh", category: "Exterior", location: areas[1] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: trimDoor },
+    { id: "ext-3", title: "Garage Door Paint", category: "Exterior", location: areas[2] || cityName, colSpan: 2, rowSpan: 1, mobileColSpan: 2, mobileRowSpan: 2, imageUrl: garageDoor },
+    { id: "ext-4", title: "Porch & Entry", category: "Exterior", location: areas[0] || cityName, colSpan: 4, rowSpan: 1, mobileColSpan: 4, mobileRowSpan: 2, imageUrl: porch },
   ];
 
   const getCategoryColor = (category: string): string => {
@@ -80,18 +82,18 @@ export default function Portfolio() {
   return (
     <PageLayout>
       <main className="pt-24 px-4 md:px-8 pb-24">
-        <div className="max-w-7xl mx-auto mb-12">
-          <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-4">Selected Work</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl">
+        <div className="max-w-7xl mx-auto mb-6 md:mb-12">
+          <h1 className="text-2xl md:text-6xl font-display font-bold text-foreground mb-2 md:mb-4">Selected Work</h1>
+          <p className="text-sm md:text-xl text-muted-foreground max-w-2xl">
             A curated collection of our finest transformations across {cityName} and surrounding areas.
           </p>
         </div>
 
         <BentoGrid>
           {portfolioImages.map((image) => (
-            <BentoItem key={image.id} colSpan={image.colSpan} rowSpan={image.rowSpan}>
+            <BentoItem key={image.id} colSpan={image.colSpan} rowSpan={image.rowSpan} mobileColSpan={image.mobileColSpan} mobileRowSpan={image.mobileRowSpan}>
               <GlassCard 
-                className="p-0 overflow-hidden group min-h-[300px]"
+                className="p-0 overflow-hidden group min-h-[150px] md:min-h-[300px]"
                 hoverEffect={false}
               >
                 {/* Portfolio Image */}
