@@ -60,7 +60,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
             <div className="flex gap-4">
               <button
                 onClick={() => setQrExpanded(!qrExpanded)}
-                className="rounded-lg bg-white p-1.5 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all"
+                className="rounded-lg bg-white p-1.5 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all self-start"
                 data-testid="button-expand-qr"
                 style={{ lineHeight: 0 }}
               >
