@@ -105,7 +105,7 @@ export function Footer() {
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-amber-400" />
-                <h3 className="text-lg font-semibold text-white">Verified Platform</h3>
+                <h3 className="text-lg font-semibold text-white">Solana Verified Platform</h3>
               </div>
               <button 
                 onClick={() => setShowModal(false)}
