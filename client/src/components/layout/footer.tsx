@@ -46,10 +46,10 @@ export function Footer() {
             {/* Hallmark Badge - Icon only on mobile, full on desktop */}
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-1.5 p-1.5 md:px-2 md:py-1 rounded-full md:rounded-md bg-gradient-to-r from-fuchsia-500/30 to-cyan-500/30 border border-fuchsia-400/50 hover:border-fuchsia-300/70 transition-all hover:scale-110 group shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_20px_rgba(236,72,153,0.6)]"
+              className="flex items-center gap-1.5 transition-all hover:scale-110 group"
               data-testid="button-hallmark-badge"
             >
-              <Shield className="w-4 h-4 md:w-3 md:h-3 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_4px_rgba(236,72,153,0.8)]" />
+              <Shield className="w-4 h-4 md:w-3.5 md:h-3.5 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
               <span className="hidden md:inline text-fuchsia-300/90 font-mono text-[9px] group-hover:text-fuchsia-200">
                 {displayHallmark}
               </span>
