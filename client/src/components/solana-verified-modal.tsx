@@ -52,25 +52,32 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
 
   const features = [
     {
-      id: "security",
-      icon: Lock,
-      title: "Immutable Security",
-      summary: "Your data is cryptographically secured on the Solana blockchain.",
-      details: "Every estimate, contract, and transaction is hashed and timestamped on the Solana blockchain. This creates an unalterable record that can never be modified or deleted, protecting both you and our company."
+      id: "antifraud",
+      icon: ShieldCheck,
+      title: "Anti-Fraud Protection",
+      summary: "Every document is tamper-proof and permanently recorded.",
+      details: "Your estimates, contracts, and warranties are cryptographically hashed and stored on the Solana blockchain. No one—not even us—can alter or delete these records. This protects you from fraud, disputes, and 'he said, she said' situations."
+    },
+    {
+      id: "recall",
+      icon: Search,
+      title: "Document Recall",
+      summary: "Access your complete project history anytime.",
+      details: "Lost your estimate? Forgot what was quoted? Every document we create for you is permanently stored with a blockchain timestamp. You can recall your paint colors, pricing agreements, warranty terms, and project details years from now."
     },
     {
       id: "verify",
-      icon: Search,
-      title: "Verifiable Records",
-      summary: "Look up any document hash on the public blockchain.",
-      details: "Each document you receive includes a unique blockchain hash. You can verify this hash on any Solana blockchain explorer to confirm its authenticity and timestamp. This proves exactly when your estimate or contract was created."
+      icon: FileCheck,
+      title: "Instant Verification",
+      summary: "Prove authenticity with one click.",
+      details: "Each document includes a unique hash that can be verified on any Solana blockchain explorer. This proves exactly when your quote was created and that it hasn't been changed—perfect for insurance claims, warranties, or disputes."
     },
     {
       id: "trust",
-      icon: FileCheck,
+      icon: Lock,
       title: "Transparent Business",
-      summary: "We prove our legitimacy with blockchain technology.",
-      details: "Unlike traditional businesses that can alter records, our blockchain verification means every promise we make is permanently recorded. You can trust that your quote, warranty terms, and project details will never change without your knowledge."
+      summary: "We prove our legitimacy through technology.",
+      details: "While other contractors can alter records and change their quotes, our blockchain verification means every promise is permanent. You can trust that your warranty terms, project scope, and pricing will never change without your knowledge."
     }
   ];
 
@@ -79,7 +86,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
       <DialogContent className="max-w-lg bg-background/95 backdrop-blur-xl border-white/10 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-xl font-display">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195]">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] shadow-[0_0_20px_rgba(20,241,149,0.4)]">
               <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             Solana Blockchain Verified
@@ -87,6 +94,24 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
         </DialogHeader>
         
         <div className="space-y-4 pt-2">
+          {/* FIRST IN INDUSTRY Banner */}
+          <GlassCard className="p-4 bg-gradient-to-r from-[#9945FF]/20 via-[#14F195]/10 to-[#9945FF]/20 border-[#14F195]/40 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#9945FF]/10 via-transparent to-[#14F195]/10 animate-pulse" />
+            <div className="relative z-10 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[10px] font-bold uppercase tracking-wider mb-2">
+                <Award className="w-3 h-3" />
+                Industry First
+              </div>
+              <h3 className="text-lg md:text-xl font-display font-bold text-white mb-1">
+                The <span className="text-[#14F195]">First</span> Solana-Verified
+                <br />Commercial & Residential <span className="text-[#14F195]">Painting Company</span>
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Setting a new standard in contractor transparency and trust
+              </p>
+            </div>
+          </GlassCard>
+
           <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
             <div className="flex gap-4">
               <button
@@ -134,12 +159,12 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
 
           <GlassCard className="p-4 border-accent/20">
             <p className="text-sm leading-relaxed">
-              We use <span className="font-bold text-[#14F195]">Solana blockchain technology</span> to permanently record and verify all customer documents. This ensures complete transparency and trust in every transaction.
+              We use <span className="font-bold text-[#14F195]">Solana blockchain technology</span> to permanently record and verify all customer documents. Your estimates, contracts, and warranties are <span className="font-bold text-white">tamper-proof</span> and can be recalled anytime—protecting you from fraud and disputes.
             </p>
           </GlassCard>
 
           <div className="space-y-2">
-            <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">How It Works</h4>
+            <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Why This Matters</h4>
             
             {features.map((feature) => (
               <button

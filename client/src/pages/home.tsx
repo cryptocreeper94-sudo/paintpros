@@ -126,29 +126,50 @@ export default function Home() {
             </GlassCard>
           </BentoItem>
 
-          {/* Solana Verified Badge */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
+          {/* Solana Verified Badge - FIRST IN INDUSTRY */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
             <button
               onClick={() => setSolanaVerifiedOpen(true)}
               className="w-full h-full text-left"
               data-testid="button-solana-verified"
             >
               <GlassCard 
-                className="p-2 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-r from-[#9945FF]/5 to-[#14F195]/5 border-[#14F195]/20"
+                className="p-3 md:p-5 cursor-pointer hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
                 hoverEffect
+                glow
               >
-                <div className="flex items-center gap-2 md:gap-3 h-full">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] flex-shrink-0">
-                    <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="font-bold text-xs md:text-sm text-[#14F195]">Solana Verified</h3>
-                      <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-[#14F195]/10 rounded text-[#14F195] font-medium">Blockchain</span>
+                {/* Animated gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#9945FF]/20 via-transparent to-[#14F195]/20 animate-pulse opacity-50" />
+                
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* First in Industry Badge */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] flex-shrink-0 shadow-[0_0_15px_rgba(20,241,149,0.4)]">
+                      <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
-                    <p className="text-[9px] md:text-xs text-muted-foreground mt-0.5 hidden md:block">Click to learn how we protect your data</p>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] md:text-xs font-bold text-[#14F195] uppercase tracking-wider">Industry First</span>
+                      <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-[#9945FF] to-[#14F195] rounded text-white font-bold inline-block w-fit">SOLANA BLOCKCHAIN</span>
+                    </div>
                   </div>
-                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-[#14F195] opacity-60" />
+                  
+                  {/* Main Headline */}
+                  <h3 className="font-display font-bold text-sm md:text-lg text-white leading-tight mb-1">
+                    The <span className="text-[#14F195]">First</span> Solana-Verified
+                    <br className="hidden md:block" />
+                    <span className="text-[#14F195]"> Painting Company</span>
+                  </h3>
+                  
+                  {/* Anti-fraud messaging */}
+                  <p className="text-[9px] md:text-xs text-muted-foreground leading-relaxed">
+                    <span className="text-[#14F195] font-medium">Anti-fraud protection</span> • Immutable records • Verifiable documents
+                  </p>
+                  
+                  {/* Learn More CTA */}
+                  <div className="flex items-center gap-1 mt-auto pt-2 text-[#14F195]">
+                    <span className="text-[9px] md:text-xs font-medium">Learn how we protect you</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </div>
                 </div>
               </GlassCard>
             </button>

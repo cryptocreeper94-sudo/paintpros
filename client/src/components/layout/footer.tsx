@@ -122,6 +122,13 @@ export function Footer() {
             </div>
             
             <div className="space-y-4">
+              {/* First in Industry Badge */}
+              <div className="bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20 border border-[#14F195]/30 rounded-lg p-3 text-center">
+                <span className="text-[10px] font-bold text-[#14F195] uppercase tracking-wider">Industry First</span>
+                <p className="text-sm font-semibold text-white mt-0.5">
+                  First Solana-Verified <span className="text-[#14F195]">Painting Company</span>
+                </p>
+              </div>
               {/* QR Code */}
               <div className="flex justify-center p-4 bg-white rounded-xl">
                 <QRCodeSVG 
