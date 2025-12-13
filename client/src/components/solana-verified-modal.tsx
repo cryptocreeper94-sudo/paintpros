@@ -1,7 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, Lock, Search, FileCheck, ExternalLink, ChevronDown } from "lucide-react";
+import { ShieldCheck, Lock, Search, FileCheck, ExternalLink, ChevronDown, Hash, Award } from "lucide-react";
 import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { FOUNDING_ASSETS } from "@shared/schema";
 
 interface SolanaVerifiedModalProps {
   isOpen: boolean;
@@ -10,6 +12,11 @@ interface SolanaVerifiedModalProps {
 
 export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProps) {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  
+  const platformAsset = FOUNDING_ASSETS.ORBIT_PLATFORM;
+  const serialNumber = platformAsset.number;
+  const displaySerial = serialNumber.replace('#', '');
+  const verifyUrl = `${window.location.origin}/verify/${encodeURIComponent(serialNumber)}`;
 
   const features = [
     {
@@ -49,6 +56,35 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
         
         <div className="space-y-4 pt-2">
           <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 p-3 bg-white rounded-xl">
+                <QRCodeSVG 
+                  value={verifyUrl}
+                  size={100}
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <Award className="w-4 h-4 text-[#14F195]" />
+                  <span className="text-xs font-bold text-[#14F195] uppercase tracking-wide">{platformAsset.badge}</span>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <Hash className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Serial Number:</span>
+                  </div>
+                  <p className="font-mono text-lg font-bold text-[#14F195] tracking-wider">{displaySerial}</p>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  Scan QR code or check footer to verify
+                </p>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-4 border-accent/20">
             <p className="text-sm leading-relaxed">
               We use <span className="font-bold text-[#14F195]">Solana blockchain technology</span> to permanently record and verify all customer documents. This ensures complete transparency and trust in every transaction.
             </p>
@@ -101,6 +137,16 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               <li>Search for the transaction to see the timestamp and verification</li>
             </ol>
           </GlassCard>
+
+          <a
+            href={verifyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-2.5 px-4 bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white font-medium rounded-lg text-center hover:opacity-90 transition-all"
+            data-testid="link-verify-platform"
+          >
+            Verify Platform Authenticity
+          </a>
 
           <a
             href="https://solana.com"
