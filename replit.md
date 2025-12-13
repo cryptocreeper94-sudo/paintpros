@@ -63,8 +63,29 @@ Services must clearly convey:
 - Glassmorphic cards (`GlassCard`)
 - Flip buttons (`FlipButton`)
 - Auto-scroll marquees
-- Horizontal scroll carousels
+- Horizontal scroll carousels (`Carousel`, `CarouselContent`, `CarouselItem`) - Embla-based
+- Accordion sections (`Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent`) - Radix-based
 - Framer Motion animations throughout
+
+### Mobile-First Carousel Pattern
+For horizontal scrolling on mobile, use:
+```tsx
+<Carousel opts={{ align: "start", dragFree: true }} className="w-full">
+  <CarouselContent className="-ml-2">
+    <CarouselItem className="pl-2 basis-[280px] md:basis-1/3">
+      <GlassCard>Content with Accordion for details</GlassCard>
+    </CarouselItem>
+  </CarouselContent>
+  <CarouselPrevious className="left-0" />
+  <CarouselNext className="right-0" />
+</Carousel>
+```
+
+### Accordion for Collapsible Content
+Use accordions to collapse secondary information:
+- Admin follow-ups: Details accordion inside each carousel card
+- Pricing tiers: Features accordion below tier selector
+- Proposal page: Customer/Pricing/Content sections in accordions
 
 ## Pricing Logic (Estimator)
 - **Doors:** $150 per door (configurable per tenant)
