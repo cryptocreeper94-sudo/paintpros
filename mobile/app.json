@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "PaintPros",
+    "slug": "paintpros",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "paintpros",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1f16"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.paintpros.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1f16"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "io.paintpros.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
