@@ -33,34 +33,34 @@ export function Navbar() {
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-1 md:px-4 py-1 md:py-1 flex items-center justify-between">
-        {/* Left: Hamburger + Title */}
-        <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-0">
-          <button 
-            className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
-            onClick={() => setIsOpen(!isOpen)}
-            data-testid="button-hamburger-menu"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? (
-              <X size={22} className="text-white" />
-            ) : (
-              <>
-                <Menu size={22} className="text-white md:hidden" />
-                <img 
-                  src={nppEmblem} 
-                  alt="Menu"
-                  className="hidden md:block h-12 w-auto object-contain"
-                />
-              </>
-            )}
-          </button>
-          <div 
-            className="text-white tracking-wide text-[11px] md:text-lg truncate flex-1"
-            style={{ fontFamily: 'Playfair Display, serif' }}
-            data-testid="text-header-title"
-          >
-            Nashville Painting Professionals
-          </div>
+        {/* Left: Hamburger */}
+        <button 
+          className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
+          onClick={() => setIsOpen(!isOpen)}
+          data-testid="button-hamburger-menu"
+          aria-label="Toggle menu"
+        >
+          {isOpen ? (
+            <X size={22} className="text-white" />
+          ) : (
+            <>
+              <Menu size={22} className="text-white md:hidden" />
+              <img 
+                src={nppEmblem} 
+                alt="Menu"
+                className="hidden md:block h-12 w-auto object-contain"
+              />
+            </>
+          )}
+        </button>
+        
+        {/* Center: Title */}
+        <div 
+          className="absolute left-1/2 -translate-x-1/2 text-white tracking-wide text-[11px] md:text-lg whitespace-nowrap"
+          style={{ fontFamily: 'Playfair Display, serif' }}
+          data-testid="text-header-title"
+        >
+          Nashville Painting Professionals
         </div>
 
         {/* Right: Navigation + Desktop Nav Links + Theme Toggle */}
