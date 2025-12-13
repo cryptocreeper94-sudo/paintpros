@@ -265,10 +265,27 @@ export const tenants: Record<string, TenantConfig> = {
   "demo": paintProsDemo,
 };
 
-// Get current tenant based on environment or subdomain
+// Domain to tenant mapping
+const domainTenantMap: Record<string, string> = {
+  "paintpros.io": "demo",
+  "www.paintpros.io": "demo",
+  "nashpaintpros.io": "npp",
+  "www.nashpaintpros.io": "npp",
+};
+
+// Get current tenant based on domain or environment
 export function getCurrentTenant(): TenantConfig {
-  // For now, default to Nashville Painting Professionals
-  // In production, this would check subdomain or env variable
+  // Check if we're in a browser environment
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname.toLowerCase();
+    
+    // Check domain mapping first
+    if (domainTenantMap[hostname]) {
+      return tenants[domainTenantMap[hostname]] || nashvillePaintingProfessionals;
+    }
+  }
+  
+  // Fallback to environment variable (for dev/staging)
   const tenantId = import.meta.env.VITE_TENANT_ID || "npp";
   return tenants[tenantId] || nashvillePaintingProfessionals;
 }
