@@ -13,11 +13,13 @@ import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png"
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
+import { ColorSelectorModal } from "@/components/color-selector-modal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 export default function Home() {
   const tenant = useTenant();
   const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
+  const [colorSelectorOpen, setColorSelectorOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   
   const toggleCard = (cardId: string) => {
@@ -346,26 +348,24 @@ export default function Home() {
             </BentoItem>
           )}
 
-          {/* 10. Fan Deck Visual - Links to Sherwin Williams Color Selector */}
+          {/* 10. Fan Deck Visual - Opens Color Selector Modal */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2} className="relative group">
-            <a 
-              href="https://www.sherwin-williams.com/visualizer/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block h-full"
-              data-testid="link-sherwin-williams-color-selector"
+            <button 
+              onClick={() => setColorSelectorOpen(true)}
+              className="block h-full w-full text-left"
+              data-testid="button-color-selector"
             >
               <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full">
                 <img 
                   src={fanDeck} 
-                  alt="Color Selection - Click to explore Sherwin Williams colors" 
+                  alt="Color Selection - Click to explore paint colors" 
                   className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
                 />
                 <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-[10px] md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   Colors
                 </div>
               </GlassCard>
-            </a>
+            </button>
           </BentoItem>
 
         </BentoGrid>
@@ -374,6 +374,10 @@ export default function Home() {
       <ServiceAreaModal 
         isOpen={serviceAreaOpen} 
         onClose={() => setServiceAreaOpen(false)} 
+      />
+      <ColorSelectorModal
+        isOpen={colorSelectorOpen}
+        onClose={() => setColorSelectorOpen(false)}
       />
       <PWAInstallPrompt />
     </PageLayout>
