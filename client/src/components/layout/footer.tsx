@@ -196,7 +196,7 @@ export function Footer() {
               
               {/* Powered by */}
               <p className="text-center text-[10px] text-gray-500">
-                Powered by ORBIT Hallmark System
+                {isDemo ? "ORBIT Hallmark System" : "Powered by ORBIT • NPP Verified"}
               </p>
             </div>
           </div>

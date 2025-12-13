@@ -151,7 +151,7 @@ export default function Verify() {
             </motion.div>
             <h1 className="text-3xl font-bold mb-2">Verified Authentic</h1>
             <p className="text-muted-foreground">
-              This document has been verified by the ORBIT Hallmark System
+              This document has been verified and is authentic
             </p>
           </div>
 
