@@ -5,7 +5,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Marquee } from "@/components/ui/marquee";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
-import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, ChevronDown } from "lucide-react";
+import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, ChevronDown, BadgeCheck } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
 import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
@@ -14,12 +14,14 @@ import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_sur
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
+import { SolanaVerifiedModal } from "@/components/solana-verified-modal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 export default function Home() {
   const tenant = useTenant();
   const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
   const [colorSelectorOpen, setColorSelectorOpen] = useState(false);
+  const [solanaVerifiedOpen, setSolanaVerifiedOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   
   const toggleCard = (cardId: string) => {
@@ -122,6 +124,34 @@ export default function Home() {
                 speed="slow"
               />
             </GlassCard>
+          </BentoItem>
+
+          {/* Solana Verified Badge */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
+            <button
+              onClick={() => setSolanaVerifiedOpen(true)}
+              className="w-full h-full text-left"
+              data-testid="button-solana-verified"
+            >
+              <GlassCard 
+                className="p-2 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-r from-[#9945FF]/5 to-[#14F195]/5 border-[#14F195]/20"
+                hoverEffect
+              >
+                <div className="flex items-center gap-2 md:gap-3 h-full">
+                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] flex-shrink-0">
+                    <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-bold text-xs md:text-sm text-[#14F195]">Solana Verified</h3>
+                      <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-[#14F195]/10 rounded text-[#14F195] font-medium">Blockchain</span>
+                    </div>
+                    <p className="text-[9px] md:text-xs text-muted-foreground mt-0.5 hidden md:block">Click to learn how we protect your data</p>
+                  </div>
+                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-[#14F195] opacity-60" />
+                </div>
+              </GlassCard>
+            </button>
           </BentoItem>
 
           {/* 4. Key Feature 1 - Premium Materials (Expandable) */}
@@ -378,6 +408,10 @@ export default function Home() {
       <ColorSelectorModal
         isOpen={colorSelectorOpen}
         onClose={() => setColorSelectorOpen(false)}
+      />
+      <SolanaVerifiedModal
+        isOpen={solanaVerifiedOpen}
+        onClose={() => setSolanaVerifiedOpen(false)}
       />
       <PWAInstallPrompt />
     </PageLayout>
