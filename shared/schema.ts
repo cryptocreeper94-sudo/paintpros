@@ -292,7 +292,7 @@ export const FOUNDING_ASSETS = {
     special: '#FE-000000000-01',
     name: 'Paint Pros by ORBIT', 
     type: 'platform',
-    badge: 'Genesis Platform',
+    badge: 'Paint Pros Platform',
   },
   JASON_FOUNDER: { 
     number: '#000000002-00', 
