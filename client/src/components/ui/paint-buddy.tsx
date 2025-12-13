@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Loader2, Volume2, VolumeX } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import painterMascot from "@assets/generated_images/painter_mascot_transparent.png";
+import painterMascot from "@assets/generated_images/pixar_painter_mascot_transparent.png";
 
 interface Message {
   role: "user" | "assistant";
