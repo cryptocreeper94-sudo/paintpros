@@ -8,6 +8,7 @@ import {
   sendAndConfirmTransaction
 } from '@solana/web3.js';
 import * as crypto from 'crypto';
+import bs58 from 'bs58';
 
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 
@@ -24,6 +25,9 @@ export function getConnection(network: 'devnet' | 'mainnet-beta' = 'mainnet-beta
   const heliusRpcUrl = process.env.HELIUS_RPC_URL;
   const heliusApiKey = process.env.HELIUS_API_KEY;
   
+  // Use public RPC by default - Helius key may be invalid
+  // Uncomment below when Helius key is verified working
+  /*
   if (heliusRpcUrl) {
     return new Connection(heliusRpcUrl, 'confirmed');
   }
@@ -34,12 +38,13 @@ export function getConnection(network: 'devnet' | 'mainnet-beta' = 'mainnet-beta
       : `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`;
     return new Connection(heliusUrl, 'confirmed');
   }
+  */
   
+  console.log(`[solana] Using public RPC for ${network}`);
   return new Connection(DEFAULT_NETWORKS[network], 'confirmed');
 }
 
 export function getWalletFromPrivateKey(privateKeyBase58: string): Keypair {
-  const bs58 = require('bs58');
   const privateKey = bs58.decode(privateKeyBase58);
   return Keypair.fromSecretKey(privateKey);
 }
