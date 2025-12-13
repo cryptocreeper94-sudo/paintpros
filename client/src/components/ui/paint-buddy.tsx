@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Loader2, Volume2, VolumeX } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import painterMascot from "@assets/generated_images/pixar_painter_mascot_transparent.png";
+import rollieMascot from "@assets/generated_images/cute_paint_roller_ai_mascot.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -169,7 +169,7 @@ export function PaintBuddy() {
             </motion.div>
 
             <motion.img
-              src={painterMascot}
+              src={rollieMascot}
               alt="Paint Buddy"
               className="w-32 h-32 object-contain drop-shadow-2xl"
               animate={{
@@ -198,7 +198,7 @@ export function PaintBuddy() {
             data-testid="button-paint-buddy-open"
           >
             <motion.img
-              src={painterMascot}
+              src={rollieMascot}
               alt="Paint Buddy"
               className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
               animate={{
@@ -229,7 +229,7 @@ export function PaintBuddy() {
           >
             <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-gradient-to-r from-accent/20 to-cyan-500/20">
               <img
-                src={painterMascot}
+                src={rollieMascot}
                 alt="Rollie"
                 className="w-12 h-12 object-contain drop-shadow-lg"
               />
