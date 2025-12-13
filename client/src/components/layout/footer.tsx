@@ -34,7 +34,7 @@ export function Footer() {
   
   return (
     <>
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#4B5320]/20 backdrop-blur-md border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[60px] flex items-center">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#4B5320]/20 backdrop-blur-md border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[60px] flex items-center">
         <div className="max-w-7xl mx-auto px-4 w-full flex justify-between items-center">
           
           {/* Left: Copyright + Hallmark Badge */}
