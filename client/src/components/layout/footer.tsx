@@ -56,7 +56,7 @@ export function Footer() {
             </button>
             
             {/* Version */}
-            <span className="text-muted-foreground/60 font-mono text-[9px] hidden sm:inline">
+            <span className="text-muted-foreground/60 font-mono text-[9px]">
               v{version}
             </span>
           </div>
