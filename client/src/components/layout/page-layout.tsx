@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
+import { FloatingAIButton } from "@/components/floating-ai-button";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ export function PageLayout({ children }: PageLayoutProps) {
         {children}
       </div>
       <Footer />
+      <FloatingAIButton />
     </div>
   );
 }

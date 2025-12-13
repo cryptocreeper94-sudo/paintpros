@@ -190,8 +190,9 @@ export const paintProsDemo: TenantConfig = {
   slug: "paintpros-demo",
   
   name: "PaintPros.io",
-  tagline: "The Modern Platform for Painting Professionals",
-  description: "PaintPros.io is a complete white-label SaaS platform designed specifically for the painting and home services industry. This demo showcases the full capabilities available to your business.",
+  tagline: "The First Solana-Verified Painting Company Software",
+  description: "PaintPros.io is a complete white-label SaaS platform designed specifically for the painting and home services industry. Anti-fraud protection, document recall, and blockchain verification built-in.",
+  logo: "/icons/paintpros-mascot.png",
   
   phone: "(888) PAINT-PRO",
   email: "demo@paintpros.io",
