@@ -49,12 +49,12 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
     }
   }, [isOpen]);
   
-  const tenantAsset = isDemo ? FOUNDING_ASSETS.ORBIT_PLATFORM : FOUNDING_ASSETS.NPP_BETA;
+  const tenantAsset = isDemo ? FOUNDING_ASSETS.PAINTPROS_PLATFORM : FOUNDING_ASSETS.NPP_GENESIS;
   const serialNumber = tenantAsset.number;
   const displaySerial = serialNumber.replace('#', '');
   const solscanUrl = isDemo 
-    ? "https://solscan.io/account/PaintPros000000000001"
-    : "https://solscan.io/account/NPP000000000002";
+    ? "https://solscan.io/account/PaintPros000000000002"
+    : "https://solscan.io/account/NPP0000000001";
 
   const features = [
     {

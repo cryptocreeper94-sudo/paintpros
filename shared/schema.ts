@@ -287,19 +287,26 @@ export const assetNumberCounter = pgTable("asset_number_counter", {
 
 // Founding Assets - Reserved immutable assets
 export const FOUNDING_ASSETS = {
-  ORBIT_PLATFORM: { 
+  ORBIT_GENESIS: { 
     number: '#000000000-01', 
     special: '#FE-000000000-01',
+    name: 'ORBIT Genesis', 
+    type: 'genesis',
+    badge: 'Genesis Asset',
+  },
+  PAINTPROS_PLATFORM: { 
+    number: '#000000000-02', 
+    special: '#FE-000000000-02',
     name: 'Paint Pros by ORBIT', 
     type: 'platform',
     badge: 'Paint Pros Platform',
   },
-  NPP_BETA: { 
-    number: '#000000000-02', 
-    special: '#FE-000000000-02',
+  NPP_GENESIS: { 
+    number: 'NPP-00000000-01', 
+    special: 'NPP-FE-00000000-01',
     name: 'Nashville Painting Professionals', 
-    type: 'tenant',
-    badge: 'Beta Partner',
+    type: 'tenant-genesis',
+    badge: 'NPP Genesis',
   },
   JASON_FOUNDER: { 
     number: '#000000002-00', 

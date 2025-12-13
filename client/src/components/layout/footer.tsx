@@ -32,7 +32,7 @@ export function Footer() {
   const version = releaseInfo?.version || "1.0.0";
   const buildNumber = releaseInfo?.buildNumber || 0;
   const isDemo = tenant.id === "demo";
-  const tenantAsset = isDemo ? FOUNDING_ASSETS.ORBIT_PLATFORM : FOUNDING_ASSETS.NPP_BETA;
+  const tenantAsset = isDemo ? FOUNDING_ASSETS.PAINTPROS_PLATFORM : FOUNDING_ASSETS.NPP_GENESIS;
   const hallmarkNumber = releaseInfo?.hallmarkNumber || tenantAsset.number;
   const displayHallmark = hallmarkNumber.replace('#', '');
   
