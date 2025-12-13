@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Facebook, Instagram, Linkedin, Shield, X } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
@@ -10,15 +10,19 @@ interface ReleaseInfo {
   buildNumber: number;
   hallmarkNumber: string;
   solanaTxStatus: string;
+  solanaTxSignature?: string;
+  createdAt?: string;
   hallmarkDetails?: {
     blockchainTxSignature?: string;
     blockchainExplorerUrl?: string;
+    metadata?: Record<string, any>;
   };
 }
 
 export function Footer() {
   const tenant = useTenant();
   const [showModal, setShowModal] = useState(false);
+  const [showVersionModal, setShowVersionModal] = useState(false);
   
   const { data: releaseInfo } = useQuery<ReleaseInfo>({
     queryKey: ['/api/releases/latest'],
@@ -54,10 +58,14 @@ export function Footer() {
             </span>
           </button>
           
-          {/* Version */}
-          <span className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px]">
+          {/* Version - Clickable */}
+          <button
+            onClick={() => setShowVersionModal(true)}
+            className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px] hover:text-amber-400 transition-colors underline decoration-dotted underline-offset-2"
+            data-testid="button-version"
+          >
             v{version}
-          </span>
+          </button>
 
           {/* Socials */}
           <div className="flex gap-2 md:gap-3">
@@ -170,6 +178,112 @@ export function Footer() {
               {/* Powered by */}
               <p className="text-center text-[10px] text-gray-500">
                 Powered by ORBIT Hallmark System
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Version Info Modal */}
+      {showVersionModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowVersionModal(false)}
+        >
+          <div 
+            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                <h3 className="text-lg font-semibold text-white">Version {version}</h3>
+              </div>
+              <button 
+                onClick={() => setShowVersionModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+                data-testid="button-close-version-modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Version Details */}
+              <div className="bg-black/30 rounded-lg p-4 space-y-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <Hash className="w-4 h-4 text-amber-400" />
+                  <span className="text-gray-400">Build:</span>
+                  <span className="font-mono text-white">#{buildNumber}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="w-4 h-4 text-amber-400" />
+                  <span className="text-gray-400">Released:</span>
+                  <span className="text-white">
+                    {releaseInfo?.createdAt 
+                      ? new Date(releaseInfo.createdAt).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          year: 'numeric' 
+                        })
+                      : 'Genesis Release'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Shield className="w-4 h-4 text-amber-400" />
+                  <span className="text-gray-400">Status:</span>
+                  <span className={`font-medium ${
+                    releaseInfo?.solanaTxStatus === 'confirmed' 
+                      ? 'text-green-400' 
+                      : 'text-amber-400'
+                  }`}>
+                    {releaseInfo?.solanaTxStatus === 'confirmed' 
+                      ? '✓ Blockchain Verified' 
+                      : '★ Verified Platform'}
+                  </span>
+                </div>
+              </div>
+
+              {/* What's New */}
+              <div>
+                <h4 className="text-sm font-medium text-amber-400 mb-2">What's New in v{version}</h4>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">•</span>
+                    <span>Automatic version stamping on deploy</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">•</span>
+                    <span>Improved mobile layout with compact grid</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">•</span>
+                    <span>Enhanced estimator with photo uploads</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">•</span>
+                    <span>Solana blockchain verification</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Blockchain Link */}
+              {releaseInfo?.solanaTxSignature && (
+                <a 
+                  href={`https://explorer.solana.com/tx/${releaseInfo.solanaTxSignature}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white font-medium rounded-lg text-center hover:from-purple-400 hover:to-fuchsia-400 transition-all"
+                  data-testid="link-blockchain-tx"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  View on Solana Explorer
+                </a>
+              )}
+              
+              {/* Powered by */}
+              <p className="text-center text-[10px] text-gray-500">
+                Paint Pros by ORBIT • Verified Software
               </p>
             </div>
           </div>
