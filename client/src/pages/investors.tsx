@@ -11,16 +11,16 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const PRICING_TIERS = [
-  { tier: "Starter", price: "$2,500/mo", setup: "$3,500", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
-  { tier: "Professional", price: "$4,000/mo", setup: "$5,500", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
-  { tier: "Franchise Core", price: "$6,500/mo + $750/loc", setup: "$10,000", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
-  { tier: "Enterprise", price: "$12,000/mo base", setup: "$20,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
+  { tier: "Starter", price: "$249/mo", setup: "$3,500", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
+  { tier: "Professional", price: "$399/mo", setup: "$5,000", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
+  { tier: "Franchise Core", price: "$599/mo + $75/loc", setup: "$7,500", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
+  { tier: "Enterprise", price: "$999/mo base", setup: "$12,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
 ];
 
 const PROJECTIONS = [
-  { year: "2025", customers: 100, mrr: "$25K", revenue: "$300K", profit: "$120K" },
-  { year: "2026", customers: 500, mrr: "$125K", revenue: "$1.5M", profit: "$900K" },
-  { year: "2027", customers: 2000, mrr: "$500K", revenue: "$6M", profit: "$3.6M" },
+  { year: "2025", customers: 100, mrr: "$25K", revenue: "$300K + $350K setup", profit: "$200K" },
+  { year: "2026", customers: 500, mrr: "$125K", revenue: "$1.5M + $1.4M setup", profit: "$1.2M" },
+  { year: "2027", customers: 2000, mrr: "$500K", revenue: "$6M + $4M setup", profit: "$5M" },
 ];
 
 const COMPETITORS = [
@@ -53,27 +53,29 @@ LICENSING TIERS
 
 Tier                    Monthly             Setup Fee    Target
 ─────────────────────────────────────────────────────────────
-Starter                 $2,500/mo           $3,500       Solo contractors
-Professional            $4,000/mo           $5,500       1-3 locations
-Franchise Core          $6,500/mo + $750/loc  $10,000    5+ sites
-Enterprise White-Label  $12,000/mo base     $20,000      Large franchises
+Starter                 $249/mo             $3,500       Solo contractors
+Professional            $399/mo             $5,000       1-3 locations
+Franchise Core          $599/mo + $75/loc   $7,500       5+ sites
+Enterprise White-Label  $999/mo base        $12,000      Large franchises
+
+* Custom development beyond base platform priced separately
 
 UNIT ECONOMICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Gross Margin:           65%
-LTV:CAC Ratio:          22:1
-ARPU:                   $2,500/month
-3-Year Customer LTV:    $8,964
+Gross Margin:           85% (low infrastructure cost)
+LTV:CAC Ratio:          30:1
+ARPU:                   $249/month + $3,500 setup
+3-Year Customer LTV:    $12,464 ($3,500 + 36 x $249)
 CAC (projected):        $400
 
 REVENUE PROJECTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Year    Customers    MRR        Annual Revenue    Net Profit
-2025    100          $25K       $300K             $120K
-2026    500          $125K      $1.5M             $900K
-2027    2,000        $500K      $6M               $3.6M
+Year    Customers    MRR        Revenue (MRR + Setup)    Net Profit
+2025    100          $25K       $650K                    $200K
+2026    500          $125K      $2.9M                    $1.2M
+2027    2,000        $500K      $10M                     $5M
 
 MARKET OPPORTUNITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -92,7 +94,7 @@ Jobber            $29-$629/mo          Minimal      Per-user CRM
 ServiceTitan      $125-$400/user/mo    $5K-$30K     Enterprise FSM
 HouseCall Pro     $49-$169/mo          Minimal      Per-user scheduling
 PaintScout        $39-$199/mo          None         Estimating only
-PaintPros.io      $2,500+/mo           $3,500+      White-Label Platform
+PaintPros.io      $249/mo              $3,500       White-Label Platform
 
 KEY DIFFERENTIATORS
 • White-label branded website (competitors: none)
@@ -101,6 +103,7 @@ KEY DIFFERENTIATORS
 • Premium Bento Grid design (competitors: none)
 • SEO management tools (competitors: none)
 • Orbit ecosystem integration (competitors: none)
+• Custom development available (priced separately)
 
 TRUE COST COMPARISON
 Traditional approach (Jobber + custom website + agency):
@@ -110,7 +113,7 @@ Traditional approach (Jobber + custom website + agency):
 • Ongoing development: $500-2K/mo
 • Total: ~$1,500-3,000/mo + coordination overhead
 
-PaintPros.io: $2,500/mo all-inclusive
+PaintPros.io: $249/mo + $3,500 setup (all-inclusive platform)
 
 DARKWAVE STUDIOS ECOSYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -286,8 +289,8 @@ Ecosystem: https://darkwavestudios.io`;
                       ))}
                       <tr className="bg-accent/10 border border-accent/30">
                         <td className="py-3 px-4 font-bold text-accent">PaintPros.io</td>
-                        <td className="py-3 px-4 font-mono font-bold text-green-400">$2,500+/mo</td>
-                        <td className="py-3 px-4 text-green-400">$3,500+</td>
+                        <td className="py-3 px-4 font-mono font-bold text-green-400">$249/mo</td>
+                        <td className="py-3 px-4 text-green-400">$3,500</td>
                         <td className="py-3 px-4 text-xs font-medium text-accent">White-Label Platform</td>
                       </tr>
                     </tbody>
@@ -360,11 +363,11 @@ Ecosystem: https://darkwavestudios.io`;
                       </div>
                       <div className="flex justify-between items-center mt-2">
                         <span className="font-medium text-accent">PaintPros.io</span>
-                        <span className="font-mono text-green-400 font-bold">$2,500/mo</span>
+                        <span className="font-mono text-green-400 font-bold">$249/mo + $3,500 setup</span>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-4">
-                      Plus: no vendor coordination, single support point, continuous updates included
+                      All-inclusive platform. Custom development priced separately.
                     </p>
                   </div>
                 </div>
@@ -428,10 +431,10 @@ Ecosystem: https://darkwavestudios.io`;
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { label: "Gross Margin", value: "65%", color: "text-green-400" },
-                    { label: "LTV:CAC Ratio", value: "22:1", color: "text-blue-400" },
-                    { label: "ARPU", value: "$2,500/mo", color: "text-accent" },
-                    { label: "3-Year Customer LTV", value: "$8,964", color: "text-purple-400" },
+                    { label: "Gross Margin", value: "85%", color: "text-green-400" },
+                    { label: "LTV:CAC Ratio", value: "30:1", color: "text-blue-400" },
+                    { label: "ARPU", value: "$249/mo + $3,500 setup", color: "text-accent" },
+                    { label: "3-Year Customer LTV", value: "$12,464", color: "text-purple-400" },
                     { label: "Infrastructure Cost", value: "~$45/tenant", color: "text-muted-foreground" },
                   ].map((item) => (
                     <div key={item.label} className="flex justify-between items-center py-2 border-b border-white/5">

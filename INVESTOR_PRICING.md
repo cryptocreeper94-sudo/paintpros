@@ -1,7 +1,7 @@
 # PaintPros.io - Investor Pricing Sheet
 
 **Prepared by:** Orbit Development Team  
-**Version:** 1.0 | December 2025
+**Version:** 2.0 | December 2025
 
 ---
 
@@ -9,23 +9,25 @@
 
 | Tier | Monthly | Setup Fee | Target Customer |
 |------|---------|-----------|-----------------|
-| **Starter** | $2,500/mo | $3,500 | Solo contractors, 1 location |
-| **Professional** | $4,000/mo | $5,500 | Growing painters, 1-3 locations |
-| **Franchise Core** | $6,500/mo + $750/location | $10,000 | Multi-location (5+ sites) |
-| **Enterprise White-Label** | $12,000/mo base + $750/location | $20,000 | Large franchises |
+| **Starter** | $249/mo | $3,500 | Solo contractors, 1 location |
+| **Professional** | $399/mo | $5,000 | Growing painters, 1-3 locations |
+| **Franchise Core** | $599/mo + $75/location | $7,500 | Multi-location (5+ sites) |
+| **Enterprise White-Label** | $999/mo base | $12,000 | Large franchises |
+
+*Custom development beyond base platform priced separately.*
 
 ---
 
 ## Feature Matrix by Tier
 
-### Starter ($2,500/month)
+### Starter ($249/month + $3,500 setup)
 - White-label website with Bento Grid design
 - Interactive estimator tool
 - Basic lead capture & CRM
 - Email support (2 business day response)
-- Blockchain stamping available as add-on ($99/mo)
+- Blockchain stamping available as add-on ($49/mo)
 
-### Professional ($4,000/month)
+### Professional ($399/month + $5,000 setup)
 - Everything in Starter
 - Full analytics dashboard with real-time tracking
 - Role-based dashboards (Owner, Admin, Area Manager)
@@ -33,7 +35,7 @@
 - 2 strategy sessions per year
 - Blockchain stamping included
 
-### Franchise Core ($6,500/month + $750/location)
+### Franchise Core ($599/month + $75/location + $7,500 setup)
 - Everything in Professional
 - Multi-tenant management console
 - Shared asset libraries across locations
@@ -41,52 +43,24 @@
 - Dedicated account manager
 - Compliance & audit trail
 
-### Enterprise White-Label ($12,000/month base)
+### Enterprise White-Label ($999/month base + $12,000 setup)
 - Full brand suppression (Orbit/PaintPros branding removed)
 - API priority access
 - Co-branded marketing assets
 - SLA guarantees (99.9% uptime, 4-hour critical response)
 - Custom contract terms
-- Additional locations: $750/location/month
 
 ---
 
-## Monthly Support Packages
-
-| Package | Monthly Cost | Response Time | Features |
-|---------|--------------|---------------|----------|
-| **Starter Care** | Included | 2 business days | Email support, quarterly webinars |
-| **ProCare** | $500/mo | 24 hours | Priority email/phone, 2 strategy sessions, analytics reviews |
-| **Enterprise SLA** | $1,500/mo | 4 hours (critical) | Dedicated CSM, monthly roadmap sync, priority blockchain monitoring |
-
----
-
-## Customization Menu
+## Customization Menu (Priced Separately)
 
 | Service | Price | Timeline |
 |---------|-------|----------|
-| Branding Refresh | $3,500 | 2 weeks |
-| Custom Theme/Layout Pack | $5,000 | 2-3 weeks |
-| Feature Module Build | $7,500 - $15,000 | 4-8 weeks |
-| Third-Party Integration | $250/hr (avg $5K-$10K) | Varies |
-| Data Migration | $1,500/system | 1-2 weeks |
-| Franchise Rollout Workshop | $7,500 | 2-day onsite |
-
----
-
-## Scaling & Volume Discounts
-
-| Number of Locations | Discount |
-|--------------------|----------|
-| 1-10 locations | Standard pricing |
-| 11-25 locations | 12% off |
-| 26-50 locations | 18% off |
-| 51+ locations | Custom enterprise deal |
-
-### Enterprise Contract Options
-- **3-year commitment:** 10% discount on monthly fees
-- **Annual prepay:** Additional 5% discount
-- **Minimum ACV:** $100,000 for enterprise tier
+| Branding Refresh | $2,000 | 1 week |
+| Custom Theme/Layout Pack | $3,500 | 2 weeks |
+| Feature Module Build | $5,000 - $10,000 | 3-6 weeks |
+| Third-Party Integration | $150/hr | Varies |
+| Data Migration | $1,000/system | 1 week |
 
 ---
 
@@ -94,40 +68,53 @@
 
 | Metric | Value |
 |--------|-------|
-| **Gross Margin** | 75% at $2,500 price point |
+| **Gross Margin** | 85% (low infrastructure cost) |
 | **Infrastructure Cost** | ~$45/tenant/month |
 | **LTV:CAC Ratio** | 30:1 |
-| **Average Revenue Per User (ARPU)** | $4,000/month |
-| **Customer Lifetime Value (3-year)** | $144,000 |
-| **Customer Acquisition Cost** | $4,800 (projected) |
+| **Average Revenue Per User (ARPU)** | $249/month + $3,500 setup |
+| **Customer Lifetime Value (3-year)** | $12,464 |
+| **Customer Acquisition Cost** | $400 (projected) |
 
 ---
 
 ## Revenue Projections
 
-| Year | Customers | MRR | Annual Revenue | Net Profit |
-|------|-----------|-----|----------------|------------|
-| 2025 | 50 | $200K | $2.4M | $1.2M |
-| 2026 | 150 | $600K | $7.2M | $4.3M |
-| 2027 | 400 | $1.6M | $19.2M | $11.5M |
+| Year | Customers | MRR | Revenue (MRR + Setup) | Net Profit |
+|------|-----------|-----|-----------------------|------------|
+| 2025 | 100 | $25K | $650K | $200K |
+| 2026 | 500 | $125K | $2.9M | $1.2M |
+| 2027 | 2,000 | $500K | $10M | $5M |
 
 ---
 
-## Competitive Positioning
+## Competitive Landscape
 
-| Competitor | Their Price | Our Advantage |
-|------------|-------------|---------------|
-| Jobber | $249/mo | Industry-specific, white-label, blockchain |
-| ServiceTitan | $398+/mo | Premium design, Orbit ecosystem |
-| Housecall Pro | $199/mo | Full customization, dedicated support |
-| Custom Development | $50K-$150K | Turnkey, managed, scalable |
+| Platform | Monthly | Setup | Type |
+|----------|---------|-------|------|
+| Jobber | $29-$629/mo | Minimal | Per-user CRM |
+| ServiceTitan | $125-$400/user/mo | $5K-$30K | Enterprise FSM |
+| HouseCall Pro | $49-$169/mo | Minimal | Per-user scheduling |
+| PaintScout | $39-$199/mo | None | Estimating only |
+| **PaintPros.io** | **$249/mo** | **$3,500** | **White-Label Platform** |
 
-### Premium Justification
-1. **Industry Specialization** - Built for painters, not generic field service
-2. **White-Label Architecture** - Full branding control for franchises
-3. **Blockchain Trust** - Solana verification (unique differentiator)
-4. **Orbit Ecosystem** - Connected payroll, staffing, code snippets
-5. **Premium Design** - Bento Grid + glassmorphism aesthetics
+### Key Differentiators
+- White-label branded website (competitors: none)
+- Customer-facing estimator (competitors: partial)
+- Blockchain verification (competitors: none)
+- Premium Bento Grid design (competitors: none)
+- SEO management tools (competitors: none)
+- Orbit ecosystem integration (competitors: none)
+- Custom development available (priced separately)
+
+### True Cost Comparison
+Traditional approach (Jobber + custom website + agency):
+- Jobber (30 users): $249/mo
+- Custom website: $5K-$15K upfront
+- Hosting/updates: $200-500/mo
+- Ongoing development: $500-2K/mo
+- **Total: ~$1,500-3,000/mo + coordination overhead**
+
+**PaintPros.io: $249/mo + $3,500 setup (all-inclusive platform)**
 
 ---
 
