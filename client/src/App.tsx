@@ -21,6 +21,7 @@ import Verify from "@/pages/verify";
 import Pay from "@/pages/pay";
 import ProposalSign from "@/pages/proposal-sign";
 import Investors from "@/pages/investors";
+import Compare from "@/pages/compare";
 
 function AnalyticsTracker() {
   useAnalytics();
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/pay/:estimateId" component={Pay} />
       <Route path="/proposal/:id/sign" component={ProposalSign} />
       <Route path="/investors" component={Investors} />
+      <Route path="/compare" component={Compare} />
       <Route component={NotFound} />
     </Switch>
   );

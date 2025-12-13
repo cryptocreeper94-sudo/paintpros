@@ -19,6 +19,7 @@ export function Navbar() {
     { name: "Portfolio", href: "/portfolio", enabled: tenant.features.portfolio },
     { name: "About", href: "/about" },
     { name: "Reviews", href: "/reviews", enabled: tenant.features.reviews },
+    { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
     { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator },
   ].filter(link => link.enabled !== false);
 
@@ -33,15 +34,20 @@ export function Navbar() {
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-0 md:px-4 py-0 md:py-1 flex items-center justify-between">
-        {/* Left: Hamburger Emblem */}
+        {/* Left: Hamburger Menu */}
         <button 
-          className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[45px] -mt-[15px] md:ml-0 md:mt-0"
+          className={cn(
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
+            tenant.id === "demo" ? "p-2 md:p-3" : "p-0 -ml-[45px] -mt-[15px] md:ml-0 md:mt-0"
+          )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
             <X size={24} className="text-white" />
+          ) : tenant.id === "demo" ? (
+            <Menu size={28} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
