@@ -31,6 +31,7 @@ interface JobSelections {
 
 export default function Estimate() {
   const tenant = useTenant();
+  const isDemo = tenant.id === "demo";
   
   const PRICING = {
     DOOR_PRICE: tenant.pricing.doorsPerUnit,
@@ -38,14 +39,22 @@ export default function Estimate() {
     WALLS_ONLY_RATE: tenant.pricing.wallsPerSqFt,
   };
 
-  const [showEmailModal, setShowEmailModal] = useState(true);
+  const [showEmailModal, setShowEmailModal] = useState(!isDemo);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const [lead, setLead] = useState<LeadData | null>(null);
 
-  // Load saved email from localStorage on mount
+  // Load saved email from localStorage on mount (skip for demo)
   useEffect(() => {
+    if (isDemo) {
+      // For demo mode, set hardcoded example values
+      setJobSelections({ walls: true, trim: true, ceilings: false, doors: true });
+      setSquareFootage(2500);
+      setDoorCount(8);
+      return;
+    }
+    
     const savedEmail = localStorage.getItem("estimatorEmail");
     const savedLead = localStorage.getItem("estimatorLead");
     
@@ -58,7 +67,7 @@ export default function Estimate() {
       setLead(leadData);
       setShowEmailModal(false);
     }
-  }, []);
+  }, [isDemo]);
 
   const [jobSelections, setJobSelections] = useState<JobSelections>({
     walls: false,
@@ -360,9 +369,37 @@ export default function Estimate() {
 
   return (
     <PageLayout>
+      {/* Demo Lock Overlay */}
+      {isDemo && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-md px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-accent/90 to-amber-500/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/20"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-black/20">
+                <Lock className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-black text-sm">Demo Mode - Estimates Locked</h3>
+                <p className="text-black/70 text-xs">This is a preview. Subscribe for full estimator access.</p>
+              </div>
+              <a 
+                href="/investors" 
+                className="px-3 py-1.5 bg-black text-white text-xs font-bold rounded-lg hover:bg-black/80 transition-colors whitespace-nowrap"
+                data-testid="button-demo-subscribe"
+              >
+                View Plans
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* Email Capture Modal */}
       <AnimatePresence>
-        {showEmailModal && (
+        {showEmailModal && !isDemo && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
