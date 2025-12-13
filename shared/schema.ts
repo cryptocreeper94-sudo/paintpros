@@ -302,8 +302,8 @@ export const FOUNDING_ASSETS = {
     badge: 'Paint Pros Platform',
   },
   NPP_GENESIS: { 
-    number: 'NPP-000000001-01', 
-    special: 'NPP-FE-000000001-01',
+    number: 'NPP-000000000-01', 
+    special: 'NPP-FE-000000000-01',
     name: 'Nashville Painting Professionals', 
     type: 'tenant-genesis',
     badge: 'NPP Verified',
