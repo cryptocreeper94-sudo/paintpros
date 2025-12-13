@@ -85,6 +85,41 @@ export default function Estimate() {
   // Feature is locked for beta
   const SCANNER_LOCKED = true;
 
+  // Photo upload state
+  interface UploadedPhoto {
+    id: string;
+    base64: string;
+    roomType: string;
+    caption: string;
+  }
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [photoRoomType, setPhotoRoomType] = useState("living_room");
+  const [photoCaption, setPhotoCaption] = useState("");
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      const newPhoto: UploadedPhoto = {
+        id: `photo-${Date.now()}`,
+        base64,
+        roomType: photoRoomType,
+        caption: photoCaption
+      };
+      setUploadedPhotos(prev => [...prev, newPhoto]);
+      setPhotoCaption("");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = (photoId: string) => {
+    setUploadedPhotos(prev => prev.filter(p => p.id !== photoId));
+  };
+
   const needsSquareFootage = jobSelections.walls || jobSelections.trim || jobSelections.ceilings;
 
   const pricingTier = useMemo(() => {
@@ -200,6 +235,26 @@ export default function Estimate() {
         }),
       });
       if (!response.ok) throw new Error("Failed to submit estimate");
+      const estimateData = await response.json();
+      
+      if (uploadedPhotos.length > 0) {
+        for (const photo of uploadedPhotos) {
+          try {
+            await fetch(`/api/estimates/${estimateData.id}/photos`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                imageBase64: photo.base64,
+                roomType: photo.roomType,
+                caption: photo.caption || null
+              }),
+            });
+          } catch (photoError) {
+            console.error("Error uploading photo:", photoError);
+          }
+        }
+      }
+      
       setEstimateSubmitted(true);
     } catch (error) {
       console.error("Error submitting estimate:", error);
@@ -406,6 +461,8 @@ export default function Estimate() {
                       setJobSelections({ walls: false, trim: false, ceilings: false, doors: false });
                       setSquareFootage(0);
                       setDoorCount(1);
+                      setUploadedPhotos([]);
+                      setShowPhotoUpload(false);
                     }}
                     data-testid="button-new-estimate"
                   >
@@ -886,6 +943,110 @@ export default function Estimate() {
                     </button>
                   </div>
                 </div>
+              </GlassCard>
+
+              {/* Photo Upload Section */}
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                      <Camera className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg">Room Photos</h3>
+                      <p className="text-xs text-muted-foreground">Optional: Help us see your space</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowPhotoUpload(!showPhotoUpload)}
+                    className="px-4 py-2 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 text-sm font-medium transition-all"
+                    data-testid="button-toggle-photos"
+                  >
+                    {showPhotoUpload ? "Hide" : uploadedPhotos.length > 0 ? `${uploadedPhotos.length} Photos` : "Add Photos"}
+                  </button>
+                </div>
+
+                <AnimatePresence>
+                  {showPhotoUpload && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-4 border-t border-white/10">
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                          <div>
+                            <Label className="text-sm mb-2 block">Room Type</Label>
+                            <select
+                              value={photoRoomType}
+                              onChange={(e) => setPhotoRoomType(e.target.value)}
+                              className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/20 text-sm"
+                              data-testid="select-photo-room-type"
+                            >
+                              <option value="living_room">Living Room</option>
+                              <option value="bedroom">Bedroom</option>
+                              <option value="bathroom">Bathroom</option>
+                              <option value="kitchen">Kitchen</option>
+                              <option value="dining_room">Dining Room</option>
+                              <option value="office">Office</option>
+                              <option value="hallway">Hallway</option>
+                              <option value="other">Other</option>
+                            </select>
+                          </div>
+                          <div>
+                            <Label className="text-sm mb-2 block">Caption (optional)</Label>
+                            <Input
+                              value={photoCaption}
+                              onChange={(e) => setPhotoCaption(e.target.value)}
+                              placeholder="e.g., North wall"
+                              className="bg-white/5 border-white/20 h-10"
+                              data-testid="input-photo-caption"
+                            />
+                          </div>
+                        </div>
+
+                        <label className="block w-full h-24 rounded-xl border-2 border-dashed border-white/20 hover:border-accent/50 transition-colors cursor-pointer bg-white/5 mb-4">
+                          <div className="flex flex-col items-center justify-center h-full gap-2">
+                            <Upload className="w-6 h-6 text-accent" />
+                            <p className="text-sm text-muted-foreground">Click to upload photo</p>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                            data-testid="input-photo-upload"
+                          />
+                        </label>
+
+                        {uploadedPhotos.length > 0 && (
+                          <div className="grid grid-cols-3 gap-2">
+                            {uploadedPhotos.map((photo) => (
+                              <div key={photo.id} className="relative group">
+                                <img
+                                  src={photo.base64}
+                                  alt={photo.caption || "Room photo"}
+                                  className="w-full h-20 object-cover rounded-lg"
+                                />
+                                <button
+                                  onClick={() => removePhoto(photo.id)}
+                                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  data-testid={`button-remove-photo-${photo.id}`}
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] px-1 py-0.5 rounded-b-lg truncate">
+                                  {photo.roomType.replace('_', ' ')}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </GlassCard>
             </motion.div>
 

@@ -5,7 +5,8 @@ import {
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
   insertBlockchainStampSchema, insertHallmarkSchema, insertProposalTemplateSchema, insertProposalSchema,
-  insertPaymentSchema, insertRoomScanSchema, insertPageViewSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
+  insertPaymentSchema, insertRoomScanSchema, insertPageViewSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS,
+  insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema
 } from "@shared/schema";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -1601,6 +1602,262 @@ Do not include any text before or after the JSON.`
     } catch (error) {
       console.error("Error fetching page analytics:", error);
       res.status(500).json({ error: "Failed to fetch page analytics" });
+    }
+  });
+
+  // ============ ESTIMATE PHOTOS ============
+  
+  // POST /api/estimates/:id/photos - Add photo to estimate
+  app.post("/api/estimates/:id/photos", async (req, res) => {
+    try {
+      const { imageBase64, caption, roomType } = req.body;
+      if (!imageBase64) {
+        res.status(400).json({ error: "Image data required" });
+        return;
+      }
+      
+      const estimate = await storage.getEstimateById(req.params.id);
+      if (!estimate) {
+        res.status(404).json({ error: "Estimate not found" });
+        return;
+      }
+      
+      const existingPhotos = await storage.getEstimatePhotos(req.params.id);
+      
+      const photoData = {
+        estimateId: req.params.id,
+        imageBase64,
+        caption: caption || null,
+        roomType: roomType || null,
+        sortOrder: existingPhotos.length
+      };
+      
+      const validatedData = insertEstimatePhotoSchema.parse(photoData);
+      const photo = await storage.createEstimatePhoto(validatedData);
+      res.status(201).json(photo);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid photo data", details: error.errors });
+      } else {
+        console.error("Error adding photo:", error);
+        res.status(500).json({ error: "Failed to add photo" });
+      }
+    }
+  });
+
+  // GET /api/estimates/:id/photos - Get all photos for estimate
+  app.get("/api/estimates/:id/photos", async (req, res) => {
+    try {
+      const photos = await storage.getEstimatePhotos(req.params.id);
+      res.json(photos);
+    } catch (error) {
+      console.error("Error fetching photos:", error);
+      res.status(500).json({ error: "Failed to fetch photos" });
+    }
+  });
+
+  // DELETE /api/estimates/:id/photos/:photoId - Delete photo
+  app.delete("/api/estimates/:id/photos/:photoId", async (req, res) => {
+    try {
+      await storage.deleteEstimatePhoto(req.params.photoId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting photo:", error);
+      res.status(500).json({ error: "Failed to delete photo" });
+    }
+  });
+
+  // ============ ESTIMATE PRICING OPTIONS (Good/Better/Best) ============
+  
+  // POST /api/estimates/:id/pricing-options - Create pricing option
+  app.post("/api/estimates/:id/pricing-options", async (req, res) => {
+    try {
+      const estimate = await storage.getEstimateById(req.params.id);
+      if (!estimate) {
+        res.status(404).json({ error: "Estimate not found" });
+        return;
+      }
+      
+      const optionData = {
+        ...req.body,
+        estimateId: req.params.id
+      };
+      
+      const validatedData = insertEstimatePricingOptionSchema.parse(optionData);
+      const option = await storage.createEstimatePricingOption(validatedData);
+      res.status(201).json(option);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid pricing option data", details: error.errors });
+      } else {
+        console.error("Error creating pricing option:", error);
+        res.status(500).json({ error: "Failed to create pricing option" });
+      }
+    }
+  });
+
+  // GET /api/estimates/:id/pricing-options - Get all pricing options
+  app.get("/api/estimates/:id/pricing-options", async (req, res) => {
+    try {
+      const options = await storage.getEstimatePricingOptions(req.params.id);
+      res.json(options);
+    } catch (error) {
+      console.error("Error fetching pricing options:", error);
+      res.status(500).json({ error: "Failed to fetch pricing options" });
+    }
+  });
+
+  // POST /api/estimates/:id/pricing-options/:optionId/select - Select a pricing option
+  app.post("/api/estimates/:id/pricing-options/:optionId/select", async (req, res) => {
+    try {
+      const option = await storage.selectPricingOption(req.params.optionId, req.params.id);
+      if (!option) {
+        res.status(404).json({ error: "Pricing option not found" });
+        return;
+      }
+      res.json(option);
+    } catch (error) {
+      console.error("Error selecting pricing option:", error);
+      res.status(500).json({ error: "Failed to select pricing option" });
+    }
+  });
+
+  // ============ PROPOSAL SIGNATURES ============
+  
+  // POST /api/proposals/:id/signature - Submit e-signature
+  app.post("/api/proposals/:id/signature", async (req, res) => {
+    try {
+      const { signatureData, signerName, signerEmail, ipAddress } = req.body;
+      if (!signatureData || !signerName) {
+        res.status(400).json({ error: "Signature data and signer name required" });
+        return;
+      }
+      
+      const existingSignature = await storage.getProposalSignature(req.params.id);
+      if (existingSignature) {
+        res.status(400).json({ error: "Proposal already signed" });
+        return;
+      }
+      
+      const signaturePayload = {
+        proposalId: req.params.id,
+        signatureData,
+        signerName,
+        signerEmail: signerEmail || null,
+        ipAddress: ipAddress || req.ip || null
+      };
+      
+      const validatedData = insertProposalSignatureSchema.parse(signaturePayload);
+      const signature = await storage.createProposalSignature(validatedData);
+      res.status(201).json(signature);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid signature data", details: error.errors });
+      } else {
+        console.error("Error saving signature:", error);
+        res.status(500).json({ error: "Failed to save signature" });
+      }
+    }
+  });
+
+  // GET /api/proposals/:id/signature - Get signature for proposal
+  app.get("/api/proposals/:id/signature", async (req, res) => {
+    try {
+      const signature = await storage.getProposalSignature(req.params.id);
+      res.json(signature || null);
+    } catch (error) {
+      console.error("Error fetching signature:", error);
+      res.status(500).json({ error: "Failed to fetch signature" });
+    }
+  });
+
+  // ============ ESTIMATE FOLLOW-UPS ============
+  
+  // POST /api/estimates/:id/followups - Schedule follow-up
+  app.post("/api/estimates/:id/followups", async (req, res) => {
+    try {
+      const estimate = await storage.getEstimateById(req.params.id);
+      if (!estimate) {
+        res.status(404).json({ error: "Estimate not found" });
+        return;
+      }
+      
+      const { followupType, scheduledFor, emailSubject, emailBody } = req.body;
+      if (!followupType || !scheduledFor) {
+        res.status(400).json({ error: "Follow-up type and scheduled date required" });
+        return;
+      }
+      
+      const followupData = {
+        estimateId: req.params.id,
+        followupType,
+        scheduledFor: new Date(scheduledFor),
+        emailSubject: emailSubject || null,
+        emailBody: emailBody || null
+      };
+      
+      const validatedData = insertEstimateFollowupSchema.parse(followupData);
+      const followup = await storage.createEstimateFollowup(validatedData);
+      res.status(201).json(followup);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid follow-up data", details: error.errors });
+      } else {
+        console.error("Error scheduling follow-up:", error);
+        res.status(500).json({ error: "Failed to schedule follow-up" });
+      }
+    }
+  });
+
+  // GET /api/estimates/:id/followups - Get follow-ups for estimate
+  app.get("/api/estimates/:id/followups", async (req, res) => {
+    try {
+      const followups = await storage.getEstimateFollowups(req.params.id);
+      res.json(followups);
+    } catch (error) {
+      console.error("Error fetching follow-ups:", error);
+      res.status(500).json({ error: "Failed to fetch follow-ups" });
+    }
+  });
+
+  // GET /api/followups/pending - Get all pending follow-ups (for cron job)
+  app.get("/api/followups/pending", async (req, res) => {
+    try {
+      const followups = await storage.getPendingFollowups();
+      res.json(followups);
+    } catch (error) {
+      console.error("Error fetching pending follow-ups:", error);
+      res.status(500).json({ error: "Failed to fetch pending follow-ups" });
+    }
+  });
+
+  // POST /api/followups/:id/sent - Mark follow-up as sent
+  app.post("/api/followups/:id/sent", async (req, res) => {
+    try {
+      const followup = await storage.markFollowupSent(req.params.id);
+      if (!followup) {
+        res.status(404).json({ error: "Follow-up not found" });
+        return;
+      }
+      res.json(followup);
+    } catch (error) {
+      console.error("Error marking follow-up sent:", error);
+      res.status(500).json({ error: "Failed to mark follow-up sent" });
+    }
+  });
+
+  // POST /api/followups/:id/cancel - Cancel follow-up
+  app.post("/api/followups/:id/cancel", async (req, res) => {
+    try {
+      const followup = await storage.cancelFollowup(req.params.id);
+      if (!followup) {
+        res.status(404).json({ error: "Follow-up not found" });
+        return;
+      }
+      res.json(followup);
+    } catch (error) {
+      console.error("Error cancelling follow-up:", error);
+      res.status(500).json({ error: "Failed to cancel follow-up" });
     }
   });
 
