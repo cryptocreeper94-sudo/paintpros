@@ -35,58 +35,55 @@ export function Footer() {
   return (
     <>
       <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#4B5320]/20 backdrop-blur-md border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[60px] flex items-center">
-        <div className="w-full px-2 md:px-4 flex justify-between items-center">
+        <div className="w-full px-3 md:px-4 flex justify-evenly md:justify-between items-center">
           
-          {/* Left: Copyright + Hallmark Badge + Version */}
-          <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
-            <div className="whitespace-nowrap text-[9px] md:text-[10px]">
-              © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">NPP</span>
-            </div>
-            
-            {/* Hallmark Badge */}
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-1 transition-all hover:scale-110 group flex-shrink-0"
-              data-testid="button-hallmark-badge"
-            >
-              <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
-              <span className="hidden md:inline text-fuchsia-300/90 font-mono text-[9px] group-hover:text-fuchsia-200">
-                {displayHallmark}
-              </span>
-            </button>
-            
-            {/* Version */}
-            <span className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px]">
-              v{version}
-            </span>
+          {/* Copyright */}
+          <div className="whitespace-nowrap text-[9px] md:text-[10px]">
+            © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">NPP</span>
           </div>
+          
+          {/* Hallmark Badge */}
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-1 transition-all hover:scale-110 group"
+            data-testid="button-hallmark-badge"
+          >
+            <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
+            <span className="hidden md:inline text-fuchsia-300/90 font-mono text-[9px] group-hover:text-fuchsia-200">
+              {displayHallmark}
+            </span>
+          </button>
+          
+          {/* Version */}
+          <span className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px]">
+            v{version}
+          </span>
 
-          {/* Right: Socials & Links */}
-          <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-            <div className="flex gap-2 md:gap-3">
-              {tenant.social?.instagram && (
-                <a href={tenant.social.instagram} className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-              )}
-              {tenant.social?.facebook && (
-                <a href={tenant.social.facebook} className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-              )}
-              {tenant.social?.linkedin && (
-                <a href={tenant.social.linkedin} className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-              )}
-              {!tenant.social?.instagram && !tenant.social?.facebook && !tenant.social?.linkedin && (
-                <>
-                  <a href="#" className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                  <a href="#" className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                  <a href="#" className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                </>
-              )}
-            </div>
-            <div className="h-4 w-px bg-white/20 hidden md:block" />
-            <div className="gap-4 whitespace-nowrap hidden md:flex">
-              <a href="/investors" className="hover:text-accent transition-colors" data-testid="link-investors">Investors</a>
-              <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-accent transition-colors">Terms & Conditions</a>
-            </div>
+          {/* Socials */}
+          <div className="flex gap-2 md:gap-3">
+            {tenant.social?.instagram && (
+              <a href={tenant.social.instagram} className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+            )}
+            {tenant.social?.facebook && (
+              <a href={tenant.social.facebook} className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+            )}
+            {tenant.social?.linkedin && (
+              <a href={tenant.social.linkedin} className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+            )}
+            {!tenant.social?.instagram && !tenant.social?.facebook && !tenant.social?.linkedin && (
+              <>
+                <a href="#" className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+                <a href="#" className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+                <a href="#" className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+              </>
+            )}
+          </div>
+          
+          {/* Desktop Links */}
+          <div className="gap-4 whitespace-nowrap hidden md:flex">
+            <a href="/investors" className="hover:text-accent transition-colors" data-testid="link-investors">Investors</a>
+            <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-accent transition-colors">Terms & Conditions</a>
           </div>
 
         </div>
