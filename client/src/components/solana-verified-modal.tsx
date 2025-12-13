@@ -104,10 +104,10 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               </div>
               <h3 className="text-lg md:text-xl font-display font-bold text-white mb-1">
                 The <span className="text-[#14F195]">First</span> Solana-Verified
-                <br />Commercial & Residential <span className="text-[#14F195]">Painting Company</span>
+                <br /><span className="text-[#14F195]">Painting Company Software</span>
               </h3>
               <p className="text-xs text-muted-foreground">
-                Setting a new standard in contractor transparency and trust
+                Built for commercial & residential painting contractors
               </p>
             </div>
           </GlassCard>
