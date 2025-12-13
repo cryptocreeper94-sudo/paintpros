@@ -95,16 +95,16 @@ export default function Home() {
           {/* 2. CTA Card - High Contrast */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
             <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
-              <GlassCard className="bg-accent/10 border-accent/20 flex flex-col justify-between p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors" glow>
-                <div>
+              <GlassCard className="bg-accent/10 border-accent/20 flex flex-col p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
+                <div className="flex-1">
                   <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
                   <p className="text-[10px] md:text-xs text-muted-foreground">
                     Use our instant calculator to get a custom quote for your painting project in seconds.
                   </p>
                 </div>
-                <div className="flex justify-end">
-                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
-                    <ArrowRight className="w-4 h-4 md:w-6 md:h-6" />
+                <div className="flex justify-end mt-2">
+                  <div className="w-7 h-7 md:w-12 md:h-12 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
+                    <ArrowRight className="w-3.5 h-3.5 md:w-6 md:h-6" />
                   </div>
                 </div>
               </GlassCard>
@@ -217,17 +217,57 @@ export default function Home() {
             </button>
           </BentoItem>
 
-          {/* 6. Key Feature 3 */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
-            <GlassCard className="p-2 md:p-8 flex items-center gap-2 md:gap-6 h-full" hoverEffect>
-              <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
-                <CheckCircle2 className="w-4 h-4 md:w-8 md:h-8 text-accent" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-xs md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
-                <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Full coverage on our workmanship.</p>
-              </div>
-            </GlassCard>
+          {/* 6. Key Feature 3 - Warranty (Expandable) */}
+          <BentoItem colSpan={4} rowSpan={expandedCard === 'warranty' ? 2 : 1} mobileColSpan={4} mobileRowSpan={expandedCard === 'warranty' ? 2 : 1}>
+            <button 
+              onClick={() => toggleCard('warranty')} 
+              className="w-full h-full text-left"
+              data-testid="button-warranty"
+            >
+              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all" hoverEffect>
+                <div className="flex items-center gap-2 md:gap-4">
+                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
+                    <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-xs md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
+                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Full coverage on our workmanship.</p>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedCard === 'warranty' ? 'rotate-180' : ''}`} />
+                </div>
+                <AnimatePresence>
+                  {expandedCard === 'warranty' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                        <p className="text-[10px] md:text-xs text-muted-foreground">Our commitment to quality:</p>
+                        <ul className="space-y-1 text-[9px] md:text-xs text-muted-foreground">
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                            Full workmanship coverage
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                            Free touch-ups & repairs
+                          </li>
+                          <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                            100% satisfaction guarantee
+                          </li>
+                        </ul>
+                        <p className="text-[9px] md:text-xs text-muted-foreground/70 italic">
+                          We stand behind every project. If you're not completely satisfied, we'll make it right.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </GlassCard>
+            </button>
           </BentoItem>
 
           {/* 7. Testimonials Carousel */}
