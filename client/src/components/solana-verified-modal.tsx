@@ -4,6 +4,7 @@ import { ShieldCheck, Lock, Search, FileCheck, ExternalLink, ChevronDown, Hash, 
 import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
+import { useTenant } from "@/context/TenantContext";
 
 interface BlockchainStamp {
   id: string;
@@ -24,10 +25,13 @@ interface SolanaVerifiedModalProps {
 }
 
 export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProps) {
+  const tenant = useTenant();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [qrExpanded, setQrExpanded] = useState(false);
   const [stamps, setStamps] = useState<BlockchainStamp[]>([]);
   const [loadingStamps, setLoadingStamps] = useState(false);
+  const isDemo = tenant.id === "demo";
+  const solanaLabel = isDemo ? "Painting Company Software" : "Painting Company";
   
   useEffect(() => {
     if (isOpen) {
@@ -104,7 +108,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               </div>
               <h3 className="text-lg md:text-xl font-display font-bold text-white mb-1">
                 The <span className="text-[#14F195]">First</span> Solana-Verified
-                <br /><span className="text-[#14F195]">Painting Company Software</span>
+                <br /><span className="text-[#14F195]">{solanaLabel}</span>
               </h3>
               <p className="text-xs text-muted-foreground">
                 Built for commercial & residential painting contractors

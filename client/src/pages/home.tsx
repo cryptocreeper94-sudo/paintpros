@@ -51,6 +51,8 @@ export default function Home() {
 
   const cityName = tenant.address?.city || "Your City";
   const ratingBadge = tenant.credentials?.googleRating ? `${cityName}'s #1 Rated` : "Top Rated";
+  const isDemo = tenant.id === "demo";
+  const solanaLabel = isDemo ? "Painting Company Software" : "Painting Company";
 
   return (
     <PageLayout>
@@ -156,7 +158,7 @@ export default function Home() {
                   {/* Main Headline */}
                   <h3 className="font-display font-bold text-xs md:text-base text-white leading-tight mb-1">
                     The <span className="text-[#14F195]">First</span> Solana-Verified
-                    <span className="text-[#14F195]"> Painting Company Software</span>
+                    <span className="text-[#14F195]"> {solanaLabel}</span>
                   </h3>
                   
                   {/* Anti-fraud messaging */}
