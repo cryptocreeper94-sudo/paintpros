@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Loader2, Volume2, VolumeX } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import rollieMascot from "@assets/generated_images/cute_paint_roller_ai_mascot.png";
+import rollieMascot from "@assets/generated_images/rollie_transparent.png";
 
 interface Message {
   role: "user" | "assistant";

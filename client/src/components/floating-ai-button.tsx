@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Sparkles } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import rollieMascot from "@assets/generated_images/cute_paint_roller_ai_mascot.png";
+import rollieMascot from "@assets/generated_images/rollie_transparent.png";
 
 interface FloatingAIButtonProps {
   onOpenChat?: () => void;
