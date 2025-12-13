@@ -2,7 +2,7 @@
 
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
-**Last Updated:** December 12, 2025
+**Last Updated:** December 13, 2025
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
@@ -84,6 +84,12 @@ Services must clearly convey:
 - `seo_tags` - Owner-managed SEO keywords and meta tags
 - `estimate_requests` - Legacy form submissions
 - `blockchain_stamps` - Solana blockchain document hashes
+- `page_views` - Analytics tracking for all page visits
+- `analytics_summary` - Cached analytics stats for fast retrieval
+
+## Business Documentation
+- **BUSINESS_PLAN.md** - Comprehensive business plan with executive summary, market analysis, pricing tiers, go-to-market strategy, and financial projections
+- **VERSION_SEPARATION_STRATEGY.md** - Strategy for separating beta from commercial version, includes architecture options, implementation timeline, and migration path
 
 ## Branding Assets
 Location: `assets/branding/`
