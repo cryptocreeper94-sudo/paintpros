@@ -35,13 +35,13 @@ export function Navbar() {
       <div className="w-full px-0 md:px-4 py-0 md:py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem */}
         <button 
-          className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
+          className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-3 md:ml-0"
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={24} className="text-white ml-2" />
+            <X size={24} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
