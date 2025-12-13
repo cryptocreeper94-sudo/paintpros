@@ -99,239 +99,144 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4 pt-2">
-          {/* FIRST IN INDUSTRY Banner */}
-          <GlassCard className="p-4 bg-gradient-to-r from-[#9945FF]/20 via-[#14F195]/10 to-[#9945FF]/20 border-[#14F195]/40 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#9945FF]/10 via-transparent to-[#14F195]/10 animate-pulse" />
-            <div className="relative z-10 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[10px] font-bold uppercase tracking-wider mb-2">
-                <Award className="w-3 h-3" />
-                Industry First
-              </div>
-              <h3 className="text-lg md:text-xl font-display font-bold text-white mb-1">
-                The <span className="text-[#14F195]">First</span> Solana-Verified
-                <br /><span className="text-[#14F195]">{solanaLabel}</span>
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Built for commercial & residential painting contractors
-              </p>
-            </div>
-          </GlassCard>
-
-          <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
-            <div className="flex gap-4">
+        <div className="space-y-2 pt-1">
+          {/* Combined Header with QR and Serial */}
+          <GlassCard className="p-3 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
+            <div className="flex gap-3">
               <button
                 onClick={() => setQrExpanded(!qrExpanded)}
-                className="rounded-lg bg-white p-1.5 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all self-start"
+                className="rounded-lg bg-white p-1 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all self-start"
                 data-testid="button-expand-qr"
                 style={{ lineHeight: 0 }}
               >
-                <div 
-                  className="overflow-hidden"
-                  style={{ 
-                    width: qrExpanded ? 160 : 75, 
-                    height: qrExpanded ? 160 : 75,
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <QRCodeCanvas 
-                    value={solscanUrl}
-                    size={qrExpanded ? 160 : 75}
-                    level="L"
-                    includeMargin={false}
-                    bgColor="#14F195"
-                    fgColor="#000000"
-                  />
-                </div>
+                <QRCodeCanvas 
+                  value={solscanUrl}
+                  size={qrExpanded ? 120 : 60}
+                  level="L"
+                  includeMargin={false}
+                  bgColor="#14F195"
+                  fgColor="#000000"
+                />
               </button>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <Award className="w-4 h-4 text-[#14F195]" />
-                  <span className="text-xs font-bold text-[#14F195] uppercase tracking-wide">{tenantAsset.badge}</span>
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[8px] font-bold uppercase tracking-wider mb-1">
+                  <Award className="w-2.5 h-2.5" />
+                  {tenantAsset.badge}
                 </div>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <Hash className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">Serial Number:</span>
-                  </div>
-                  <p className="font-mono text-lg font-bold text-[#14F195] tracking-wider">{displaySerial}</p>
+                <h3 className="text-sm font-display font-bold text-white leading-tight">
+                  The <span className="text-[#14F195]">First</span> Solana-Verified <span className="text-[#14F195]">{solanaLabel}</span>
+                </h3>
+                <div className="flex items-center gap-1 mt-1">
+                  <Hash className="w-3 h-3 text-muted-foreground" />
+                  <span className="font-mono text-sm font-bold text-[#14F195]">{displaySerial}</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  Scan QR code or check footer to verify
-                </p>
               </div>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-4 border-accent/20">
-            <p className="text-sm leading-relaxed">
-              We use <span className="font-bold text-[#14F195]">Solana blockchain technology</span> to permanently record and verify all customer documents. Your estimates, contracts, and warranties are <span className="font-bold text-white">tamper-proof</span> and can be recalled anytime—protecting you from fraud and disputes.
-            </p>
-          </GlassCard>
+          <p className="text-xs text-muted-foreground px-1">
+            <span className="text-[#14F195] font-medium">Blockchain verified</span> — Your documents are tamper-proof and permanently recorded.
+          </p>
 
-          <div className="space-y-2">
-            <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Why This Matters</h4>
-            
+          {/* Compact Features Grid */}
+          <div className="grid grid-cols-2 gap-1.5">
             {features.map((feature) => (
               <button
                 key={feature.id}
                 onClick={() => setExpandedSection(expandedSection === feature.id ? null : feature.id)}
-                className="w-full text-left"
+                className="text-left"
                 data-testid={`button-solana-feature-${feature.id}`}
               >
-                <GlassCard className="p-3 hover:border-accent/40 transition-all">
-                  <div className="flex items-start gap-3">
-                    <div className="p-1.5 rounded-lg bg-accent/10 flex-shrink-0 mt-0.5">
-                      <feature.icon className="w-4 h-4 text-accent" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h5 className="font-bold text-sm">{feature.title}</h5>
-                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedSection === feature.id ? 'rotate-180' : ''}`} />
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{feature.summary}</p>
-                      {expandedSection === feature.id && (
-                        <p className="text-xs text-muted-foreground/80 mt-2 pt-2 border-t border-white/10 leading-relaxed">
-                          {feature.details}
-                        </p>
-                      )}
-                    </div>
+                <GlassCard className="p-2 hover:border-accent/40 transition-all h-full">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <feature.icon className="w-3 h-3 text-accent flex-shrink-0" />
+                    <h5 className="font-bold text-[10px] leading-tight">{feature.title}</h5>
                   </div>
+                  <p className="text-[9px] text-muted-foreground leading-tight">{feature.summary}</p>
+                  {expandedSection === feature.id && (
+                    <p className="text-[9px] text-muted-foreground/80 mt-1 pt-1 border-t border-white/10 leading-snug">
+                      {feature.details}
+                    </p>
+                  )}
                 </GlassCard>
               </button>
             ))}
           </div>
 
-          <button
-            onClick={() => setExpandedSection(expandedSection === 'history' ? null : 'history')}
-            className="w-full text-left"
-            data-testid="button-blockchain-history"
-          >
-            <GlassCard className="p-3 hover:border-[#14F195]/40 transition-all">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-[#14F195]/10 flex-shrink-0 mt-0.5">
-                  <History className="w-4 h-4 text-[#14F195]" />
+          {/* History & Verify Row */}
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => setExpandedSection(expandedSection === 'history' ? null : 'history')}
+              className="flex-1 text-left"
+              data-testid="button-blockchain-history"
+            >
+              <GlassCard className="p-2 hover:border-[#14F195]/40 transition-all h-full">
+                <div className="flex items-center gap-1.5">
+                  <History className="w-3 h-3 text-[#14F195]" />
+                  <span className="font-bold text-[10px]">History</span>
+                  <span className="text-[9px] text-muted-foreground">({stamps.length})</span>
+                  <ChevronDown className={`w-3 h-3 text-muted-foreground ml-auto transition-transform ${expandedSection === 'history' ? 'rotate-180' : ''}`} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <h5 className="font-bold text-sm">Blockchain Hash History</h5>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedSection === 'history' ? 'rotate-180' : ''}`} />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {stamps.length > 0 ? `${stamps.length} verified stamps on Solana` : 'View all blockchain stamps'}
-                  </p>
-                  {expandedSection === 'history' && (
-                    <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                      {loadingStamps ? (
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                          Loading stamps...
-                        </div>
-                      ) : stamps.length === 0 ? (
-                        <p className="text-xs text-muted-foreground/70">
-                          No blockchain stamps yet. Stamps are created when documents are verified.
-                        </p>
+              </GlassCard>
+            </button>
+            <a
+              href={solscanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1"
+              data-testid="link-verify-platform"
+            >
+              <GlassCard className="p-2 hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20">
+                <div className="flex items-center gap-1.5">
+                  <Search className="w-3 h-3 text-[#14F195]" />
+                  <span className="font-bold text-[10px] text-[#14F195]">Verify on Solana</span>
+                  <ExternalLink className="w-3 h-3 text-[#14F195] ml-auto" />
+                </div>
+              </GlassCard>
+            </a>
+          </div>
+
+          {/* Expandable History */}
+          {expandedSection === 'history' && (
+            <GlassCard className="p-2">
+              {loadingStamps ? (
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Loading...
+                </div>
+              ) : stamps.length === 0 ? (
+                <p className="text-[10px] text-muted-foreground/70">No stamps yet.</p>
+              ) : (
+                <div className="space-y-1 max-h-[120px] overflow-y-auto">
+                  {stamps.slice(0, 5).map((stamp) => (
+                    <div key={stamp.id} className="flex items-center gap-2 text-[9px]">
+                      {stamp.status === 'confirmed' ? (
+                        <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
                       ) : (
-                        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
-                          {stamps.slice(0, 10).map((stamp) => (
-                            <div key={stamp.id} className="p-2 rounded-lg bg-white/5 border border-white/10">
-                              <div className="flex items-center justify-between mb-1">
-                                <div className="flex items-center gap-1.5">
-                                  {stamp.status === 'confirmed' ? (
-                                    <CheckCircle2 className="w-3 h-3 text-[#14F195]" />
-                                  ) : stamp.status === 'failed' ? (
-                                    <AlertCircle className="w-3 h-3 text-red-400" />
-                                  ) : (
-                                    <Clock className="w-3 h-3 text-yellow-400" />
-                                  )}
-                                  <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                                    {stamp.entityType}
-                                  </span>
-                                </div>
-                                <span className="text-[9px] text-muted-foreground/60">
-                                  {stamp.createdAt ? new Date(stamp.createdAt).toLocaleDateString() : 'N/A'}
-                                </span>
-                              </div>
-                              <p className="font-mono text-[9px] text-[#14F195]/80 break-all leading-relaxed">
-                                {stamp.documentHash.substring(0, 32)}...
-                              </p>
-                              {stamp.transactionSignature && (
-                                <a
-                                  href={stamp.network === 'devnet' 
-                                    ? `https://explorer.solana.com/tx/${stamp.transactionSignature}?cluster=devnet`
-                                    : `https://explorer.solana.com/tx/${stamp.transactionSignature}`
-                                  }
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 mt-1 text-[9px] text-[#14F195] hover:underline"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  View on Solana <ExternalLink className="w-2.5 h-2.5" />
-                                </a>
-                              )}
-                            </div>
-                          ))}
-                          {stamps.length > 10 && (
-                            <p className="text-[10px] text-muted-foreground/60 text-center pt-1">
-                              + {stamps.length - 10} more stamps
-                            </p>
-                          )}
-                        </div>
+                        <Clock className="w-2.5 h-2.5 text-yellow-400" />
+                      )}
+                      <span className="text-muted-foreground uppercase">{stamp.entityType}</span>
+                      <span className="font-mono text-[#14F195]/70 truncate flex-1">{stamp.documentHash.substring(0, 16)}...</span>
+                      {stamp.transactionSignature && (
+                        <a
+                          href={`https://explorer.solana.com/tx/${stamp.transactionSignature}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#14F195] hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
                       )}
                     </div>
-                  )}
+                  ))}
                 </div>
-              </div>
+              )}
             </GlassCard>
-          </button>
+          )}
 
-          <GlassCard className="p-4">
-            <h4 className="text-sm font-bold mb-2 flex items-center gap-2">
-              <Search className="w-4 h-4 text-accent" />
-              Verify Your Documents
-            </h4>
-            <p className="text-xs text-muted-foreground mb-3">
-              Every estimate and contract includes a unique hash in the footer. You can verify this on the Solana blockchain:
-            </p>
-            <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
-              <li>Copy the document hash from your estimate or contract</li>
-              <li>Visit any Solana blockchain explorer</li>
-              <li>Search for the transaction to see the timestamp and verification</li>
-            </ol>
-          </GlassCard>
-
-          <a
-            href={solscanUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full py-2.5 px-4 bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white font-medium rounded-lg text-center hover:opacity-90 transition-all"
-            data-testid="link-verify-platform"
-          >
-            Verify Platform Authenticity
-          </a>
-
-          <a
-            href="https://solana.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-            data-testid="link-learn-solana"
-          >
-            <GlassCard className="p-3 hover:border-[#14F195]/40 transition-all group">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">S</span>
-                  </div>
-                  <span className="text-sm font-medium group-hover:text-[#14F195] transition-colors">Learn more about Solana</span>
-                </div>
-                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-[#14F195] transition-colors" />
-              </div>
-            </GlassCard>
-          </a>
-
-          <p className="text-[10px] text-muted-foreground/60 text-center">
-            Powered by Solana blockchain • Fast, secure, and eco-friendly
+          <p className="text-[8px] text-muted-foreground/50 text-center">
+            Powered by Solana • Fast, secure, eco-friendly
           </p>
         </div>
       </DialogContent>
