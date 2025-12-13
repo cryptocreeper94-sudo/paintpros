@@ -288,8 +288,8 @@ export const assetNumberCounter = pgTable("asset_number_counter", {
 // Founding Assets - Reserved immutable assets
 export const FOUNDING_ASSETS = {
   ORBIT_PLATFORM: { 
-    number: '#000000001-00', 
-    special: '#FE-000000001-00',
+    number: '#000000000-01', 
+    special: '#FE-000000000-01',
     name: 'Paint Pros by ORBIT', 
     type: 'platform',
     badge: 'Genesis Platform',
