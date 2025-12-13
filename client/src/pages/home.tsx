@@ -44,7 +44,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <main className="pt-16 md:pt-24 px-2 md:px-8">
+      <main className="pt-12 md:pt-24 px-2 md:px-8">
         <BentoGrid>
           
           {/* 1. Hero Section - Main Headline */}
