@@ -9,6 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTenant } from "@/context/TenantContext";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 import wallsImg from "@assets/generated_images/interior_wall_painting.png";
 import trimImg from "@assets/generated_images/trim_and_molding.png";
@@ -1160,88 +1162,97 @@ export default function Estimate() {
                           </div>
                         )}
 
-                        {/* Good/Better/Best Pricing Tier Selector */}
+                        {/* Good/Better/Best Pricing Tier Selector - Horizontal Carousel */}
                         {estimate.baseTotal > 0 && (
                           <div className="pt-6 mt-6 border-t border-white/10">
                             <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                               <Award className="w-4 h-4 text-accent" />
                               Choose Your Package
                             </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                              {(["good", "better", "best"] as const).map((tier) => {
-                                const tierData = pricingTierOptions[tier];
-                                const isSelected = selectedPricingTier === tier;
-                                const tierTotal = estimate.baseTotal * tierData.multiplier;
-                                
-                                return (
-                                  <motion.button
-                                    key={tier}
-                                    onClick={() => setSelectedPricingTier(tier)}
-                                    className={`relative p-3 rounded-xl text-left transition-all border-2 ${
-                                      isSelected 
-                                        ? 'border-accent bg-accent/10 shadow-lg shadow-accent/20' 
-                                        : 'border-white/10 bg-white/5 hover:border-white/30'
-                                    }`}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    data-testid={`button-tier-${tier}`}
-                                  >
-                                    {tierData.badge && (
-                                      <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                        tier === "better" ? "bg-accent text-white" : "bg-gradient-to-r from-amber-500 to-yellow-400 text-black"
-                                      }`}>
-                                        {tierData.badge}
-                                      </div>
-                                    )}
+                            <div className="px-8">
+                              <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
+                                <CarouselContent className="-ml-2">
+                                  {(["good", "better", "best"] as const).map((tier) => {
+                                    const tierData = pricingTierOptions[tier];
+                                    const isSelected = selectedPricingTier === tier;
+                                    const tierTotal = estimate.baseTotal * tierData.multiplier;
                                     
-                                    <div className="flex items-center gap-1 mb-1">
-                                      {tier === "good" && <Star className="w-3 h-3 text-muted-foreground" />}
-                                      {tier === "better" && <Star className="w-3 h-3 text-accent" />}
-                                      {tier === "best" && <Crown className="w-3 h-3 text-amber-400" />}
-                                      <span className={`text-xs font-bold ${isSelected ? 'text-accent' : 'text-foreground'}`}>
-                                        {tierData.name}
-                                      </span>
-                                    </div>
-                                    
-                                    <div className={`text-sm font-bold ${isSelected ? 'text-accent' : 'text-foreground'}`}>
-                                      ${tierTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                                    </div>
-                                    
-                                    {isSelected && (
-                                      <motion.div 
-                                        className="absolute top-2 right-2"
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                      >
-                                        <Check className="w-3 h-3 text-accent" />
-                                      </motion.div>
-                                    )}
-                                  </motion.button>
-                                );
-                              })}
+                                    return (
+                                      <CarouselItem key={tier} className="pl-2 basis-[140px] md:basis-1/3">
+                                        <motion.button
+                                          onClick={() => setSelectedPricingTier(tier)}
+                                          className={`relative w-full p-3 rounded-xl text-left transition-all border-2 ${
+                                            isSelected 
+                                              ? 'border-accent bg-accent/10 shadow-lg shadow-accent/20' 
+                                              : 'border-white/10 bg-white/5 hover:border-white/30'
+                                          }`}
+                                          whileHover={{ scale: 1.02 }}
+                                          whileTap={{ scale: 0.98 }}
+                                          data-testid={`button-tier-${tier}`}
+                                        >
+                                          {tierData.badge && (
+                                            <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                              tier === "better" ? "bg-accent text-white" : "bg-gradient-to-r from-amber-500 to-yellow-400 text-black"
+                                            }`}>
+                                              {tierData.badge}
+                                            </div>
+                                          )}
+                                          
+                                          <div className="flex items-center gap-1 mb-1">
+                                            {tier === "good" && <Star className="w-3 h-3 text-muted-foreground" />}
+                                            {tier === "better" && <Star className="w-3 h-3 text-accent" />}
+                                            {tier === "best" && <Crown className="w-3 h-3 text-amber-400" />}
+                                            <span className={`text-xs font-bold ${isSelected ? 'text-accent' : 'text-foreground'}`}>
+                                              {tierData.name}
+                                            </span>
+                                          </div>
+                                          
+                                          <div className={`text-sm font-bold ${isSelected ? 'text-accent' : 'text-foreground'}`}>
+                                            ${tierTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                          </div>
+                                          
+                                          {isSelected && (
+                                            <motion.div 
+                                              className="absolute top-2 right-2"
+                                              initial={{ scale: 0 }}
+                                              animate={{ scale: 1 }}
+                                            >
+                                              <Check className="w-3 h-3 text-accent" />
+                                            </motion.div>
+                                          )}
+                                        </motion.button>
+                                      </CarouselItem>
+                                    );
+                                  })}
+                                </CarouselContent>
+                                <CarouselPrevious className="left-0 hidden sm:flex" />
+                                <CarouselNext className="right-0 hidden sm:flex" />
+                              </Carousel>
                             </div>
                             
-                            {/* Selected Tier Features */}
-                            <motion.div 
-                              key={selectedPricingTier}
-                              initial={{ opacity: 0, y: 5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="mt-3 p-3 rounded-lg bg-white/5"
-                            >
-                              <p className="text-xs text-muted-foreground mb-2">{pricingTierOptions[selectedPricingTier].description}</p>
-                              <div className="flex flex-wrap gap-1">
-                                {pricingTierOptions[selectedPricingTier].features.slice(0, 3).map((feature, i) => (
-                                  <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">
-                                    {feature}
+                            {/* Selected Tier Features - Accordion */}
+                            <Accordion type="single" collapsible defaultValue="features" className="mt-3">
+                              <AccordionItem value="features" className="border-0 bg-white/5 rounded-lg overflow-hidden">
+                                <AccordionTrigger className="text-xs px-3 py-2 hover:no-underline">
+                                  <span className="flex items-center gap-2">
+                                    {selectedPricingTier === "good" && <Star className="w-3 h-3 text-muted-foreground" />}
+                                    {selectedPricingTier === "better" && <Star className="w-3 h-3 text-accent" />}
+                                    {selectedPricingTier === "best" && <Crown className="w-3 h-3 text-amber-400" />}
+                                    {pricingTierOptions[selectedPricingTier].name} Package Details
                                   </span>
-                                ))}
-                                {pricingTierOptions[selectedPricingTier].features.length > 3 && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground">
-                                    +{pricingTierOptions[selectedPricingTier].features.length - 3} more
-                                  </span>
-                                )}
-                              </div>
-                            </motion.div>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-3 pb-3">
+                                  <p className="text-xs text-muted-foreground mb-2">{pricingTierOptions[selectedPricingTier].description}</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {pricingTierOptions[selectedPricingTier].features.map((feature, i) => (
+                                      <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">
+                                        {feature}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
                           </div>
                         )}
 

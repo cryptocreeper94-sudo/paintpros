@@ -14,6 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { Lead, Estimate, EstimateFollowup } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const DEFAULT_PIN = "4444";
 
@@ -368,76 +370,95 @@ export default function Admin() {
                   </div>
                 </div>
 
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  {followupsLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">Loading follow-ups...</div>
-                  ) : pendingFollowups.length === 0 ? (
-                    <div className="text-center py-12">
-                      <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500/50" />
-                      <p className="text-muted-foreground">All caught up! No pending follow-ups.</p>
-                    </div>
-                  ) : (
-                    pendingFollowups.map((followup, index) => (
-                      <motion.div
-                        key={followup.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-                        data-testid={`followup-row-${followup.id}`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className={`px-2 py-0.5 text-xs rounded-full ${
-                                followup.followupType === "reminder" 
-                                  ? "bg-blue-500/20 text-blue-400"
-                                  : followup.followupType === "quote_expiring"
-                                  ? "bg-yellow-500/20 text-yellow-400"
-                                  : "bg-purple-500/20 text-purple-400"
-                              }`}>
-                                {followup.followupType === "reminder" ? "Reminder" : 
-                                 followup.followupType === "quote_expiring" ? "Quote Expiring" : "Thank You"}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                Estimate #{followup.estimateId}
-                              </span>
-                            </div>
-                            {followup.emailSubject && (
-                              <p className="font-medium mb-1 truncate">{followup.emailSubject}</p>
-                            )}
-                            <p className="text-sm text-muted-foreground flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              Scheduled: {format(new Date(followup.scheduledFor), "MMM d, yyyy 'at' h:mm a")}
-                            </p>
-                          </div>
-                          <div className="flex gap-2">
-                            <motion.button
-                              onClick={() => handleMarkSent(followup.id)}
-                              className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              title="Mark as sent"
-                              data-testid={`button-mark-sent-${followup.id}`}
+                {followupsLoading ? (
+                  <div className="text-center py-8 text-muted-foreground">Loading follow-ups...</div>
+                ) : pendingFollowups.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500/50" />
+                    <p className="text-muted-foreground">All caught up! No pending follow-ups.</p>
+                  </div>
+                ) : (
+                  <div className="px-12">
+                    <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
+                      <CarouselContent className="-ml-3">
+                        {pendingFollowups.map((followup, index) => (
+                          <CarouselItem key={followup.id} className="pl-3 basis-[280px] md:basis-[320px] lg:basis-1/3">
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: index * 0.05 }}
                             >
-                              <Send className="w-4 h-4" />
-                            </motion.button>
-                            <motion.button
-                              onClick={() => handleCancelFollowup(followup.id)}
-                              className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              title="Cancel follow-up"
-                              data-testid={`button-cancel-followup-${followup.id}`}
-                            >
-                              <X className="w-4 h-4" />
-                            </motion.button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
-                </div>
+                              <GlassCard 
+                                className="p-4 h-full border border-white/10"
+                                data-testid={`followup-card-${followup.id}`}
+                              >
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                    followup.followupType === "reminder" 
+                                      ? "bg-blue-500/20 text-blue-400"
+                                      : followup.followupType === "quote_expiring"
+                                      ? "bg-yellow-500/20 text-yellow-400"
+                                      : "bg-purple-500/20 text-purple-400"
+                                  }`}>
+                                    {followup.followupType === "reminder" ? "Reminder" : 
+                                     followup.followupType === "quote_expiring" ? "Quote Expiring" : "Thank You"}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    #{followup.estimateId}
+                                  </span>
+                                </div>
+                                
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-3">
+                                  <Calendar className="w-3 h-3 flex-shrink-0" />
+                                  {format(new Date(followup.scheduledFor), "MMM d 'at' h:mm a")}
+                                </p>
+
+                                <div className="flex gap-2 mb-3">
+                                  <motion.button
+                                    onClick={() => handleMarkSent(followup.id)}
+                                    className="flex-1 p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center justify-center gap-1 text-xs"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    data-testid={`button-mark-sent-${followup.id}`}
+                                  >
+                                    <Send className="w-3 h-3" /> Sent
+                                  </motion.button>
+                                  <motion.button
+                                    onClick={() => handleCancelFollowup(followup.id)}
+                                    className="flex-1 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors flex items-center justify-center gap-1 text-xs"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    data-testid={`button-cancel-followup-${followup.id}`}
+                                  >
+                                    <X className="w-3 h-3" /> Cancel
+                                  </motion.button>
+                                </div>
+
+                                <Accordion type="single" collapsible className="border-t border-white/10">
+                                  <AccordionItem value="details" className="border-b-0">
+                                    <AccordionTrigger className="text-xs py-2 hover:no-underline">
+                                      Details
+                                    </AccordionTrigger>
+                                    <AccordionContent className="text-xs">
+                                      {followup.emailSubject && (
+                                        <p className="font-medium mb-2">{followup.emailSubject}</p>
+                                      )}
+                                      <p className="text-muted-foreground">
+                                        Full date: {format(new Date(followup.scheduledFor), "EEEE, MMMM d, yyyy 'at' h:mm a")}
+                                      </p>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </GlassCard>
+                            </motion.div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-0" />
+                      <CarouselNext className="right-0" />
+                    </Carousel>
+                  </div>
+                )}
               </GlassCard>
             </motion.div>
           )}

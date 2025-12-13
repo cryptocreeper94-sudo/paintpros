@@ -5,9 +5,10 @@ import { useRoute } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, FileText, Pen, AlertCircle, Loader2, Calendar, DollarSign, CheckCircle, X } from "lucide-react";
+import { Check, FileText, Pen, AlertCircle, Loader2, Calendar, DollarSign, CheckCircle, X, User, Mail, MapPin, Info } from "lucide-react";
 import SignatureCanvas from "react-signature-canvas";
 import type { Proposal, ProposalSignature } from "@shared/schema";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 export default function ProposalSign() {
   const [, params] = useRoute("/proposal/:id/sign");
@@ -136,53 +137,107 @@ export default function ProposalSign() {
             </p>
           </div>
 
-          {/* Proposal Details */}
-          <GlassCard className="p-8 mb-8">
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">Customer</h3>
-                <p className="text-lg font-semibold">{proposal.customerName || "N/A"}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
-                <p className="text-lg">{proposal.customerEmail || "N/A"}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
-                <p className="text-lg">{proposal.customerAddress || "N/A"}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
+          {/* Proposal Summary Card - Compact with Total */}
+          <GlassCard className="p-6 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-gold-400/10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-accent" />
+                </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Created</h3>
-                  <p className="text-lg">{proposal.createdAt ? new Date(proposal.createdAt).toLocaleDateString() : "N/A"}</p>
+                  <p className="text-lg font-semibold">{proposal.customerName || "Customer"}</p>
+                  <p className="text-sm text-muted-foreground">{proposal.customerEmail || "N/A"}</p>
                 </div>
               </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="border-t border-white/10 pt-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-accent" />
-                Pricing Summary
-              </h3>
-              <div className="flex justify-between py-4 border-t-2 border-accent/30">
-                <span className="text-lg font-semibold">Total Amount</span>
-                <span className="text-2xl font-bold text-accent">
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Total Amount</p>
+                <p className="text-2xl font-bold text-accent">
                   ${Number(proposal.totalAmount || 0).toFixed(2)}
-                </span>
+                </p>
               </div>
             </div>
+            
+            {/* Accordion Sections for Details */}
+            <Accordion type="multiple" defaultValue={["info"]} className="space-y-2">
+              {/* Customer Info Section */}
+              <AccordionItem value="info" className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+                <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                  <span className="flex items-center gap-2 text-sm">
+                    <Info className="w-4 h-4 text-accent" />
+                    Customer Details
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-start gap-2">
+                      <User className="w-4 h-4 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Name</p>
+                        <p className="text-sm font-medium">{proposal.customerName || "N/A"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Mail className="w-4 h-4 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Email</p>
+                        <p className="text-sm font-medium truncate">{proposal.customerEmail || "N/A"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Address</p>
+                        <p className="text-sm font-medium">{proposal.customerAddress || "N/A"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Calendar className="w-4 h-4 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Created</p>
+                        <p className="text-sm font-medium">{proposal.createdAt ? new Date(proposal.createdAt).toLocaleDateString() : "N/A"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Proposal Content */}
-            {proposal.content && (
-              <div className="border-t border-white/10 pt-6">
-                <h3 className="text-lg font-semibold mb-4">Proposal Details</h3>
-                <div className="prose prose-invert max-w-none text-sm text-muted-foreground whitespace-pre-wrap">
-                  {proposal.content}
-                </div>
-              </div>
-            )}
+              {/* Pricing Section */}
+              <AccordionItem value="pricing" className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+                <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                  <span className="flex items-center gap-2 text-sm">
+                    <DollarSign className="w-4 h-4 text-accent" />
+                    Pricing Breakdown
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="flex justify-between items-center py-3 border-b border-white/10">
+                    <span className="text-sm text-muted-foreground">Subtotal</span>
+                    <span className="text-sm font-medium">${Number(proposal.totalAmount || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3">
+                    <span className="text-sm font-semibold">Total Due</span>
+                    <span className="text-lg font-bold text-accent">${Number(proposal.totalAmount || 0).toFixed(2)}</span>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Proposal Content Section */}
+              {proposal.content && (
+                <AccordionItem value="content" className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <span className="flex items-center gap-2 text-sm">
+                      <FileText className="w-4 h-4 text-accent" />
+                      Proposal Details
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="prose prose-invert max-w-none text-sm text-muted-foreground whitespace-pre-wrap">
+                      {proposal.content}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+            </Accordion>
           </GlassCard>
 
           {/* Signature Section */}
