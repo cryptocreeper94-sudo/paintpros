@@ -2,7 +2,7 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
-import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle } from "lucide-react";
+import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -97,6 +97,34 @@ export default function Estimate() {
   const [photoRoomType, setPhotoRoomType] = useState("living_room");
   const [photoCaption, setPhotoCaption] = useState("");
 
+  // Good/Better/Best pricing tier selection
+  type PricingTierLevel = "good" | "better" | "best";
+  const [selectedPricingTier, setSelectedPricingTier] = useState<PricingTierLevel>("better");
+
+  const pricingTierOptions = {
+    good: {
+      name: "Good",
+      description: "Quality work at an affordable price",
+      multiplier: 1.0,
+      features: ["Standard paint quality", "1-year warranty", "Basic prep work"],
+      badge: null,
+    },
+    better: {
+      name: "Better",
+      description: "Premium finish with enhanced durability",
+      multiplier: 1.20,
+      features: ["Premium paint brands", "3-year warranty", "Thorough prep & priming", "Touch-up kit included"],
+      badge: "Most Popular",
+    },
+    best: {
+      name: "Best",
+      description: "Top-tier luxury finish with full protection",
+      multiplier: 1.40,
+      features: ["Luxury paint brands", "5-year warranty", "Complete surface repair", "Custom color matching", "Deep cleaning included", "Priority scheduling"],
+      badge: "Premium",
+    },
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -176,10 +204,12 @@ export default function Estimate() {
       doorsPrice = doorCount * PRICING.DOOR_PRICE;
     }
 
-    const total = wallsPrice + trimPrice + ceilingsPrice + doorsPrice;
+    const baseTotal = wallsPrice + trimPrice + ceilingsPrice + doorsPrice;
+    const tierMultiplier = pricingTierOptions[selectedPricingTier].multiplier;
+    const total = baseTotal * tierMultiplier;
 
-    return { wallsPrice, trimPrice, ceilingsPrice, doorsPrice, total, rate, rateLabel };
-  }, [jobSelections, squareFootage, doorCount]);
+    return { wallsPrice, trimPrice, ceilingsPrice, doorsPrice, baseTotal, total, rate, rateLabel, tierMultiplier };
+  }, [jobSelections, squareFootage, doorCount, selectedPricingTier]);
 
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -226,12 +256,14 @@ export default function Estimate() {
           includeCeilings: jobSelections.ceilings,
           doorCount: jobSelections.doors ? doorCount : 0,
           squareFootage: needsSquareFootage ? squareFootage : 0,
-          wallsPrice: estimate.wallsPrice.toFixed(2),
-          trimPrice: estimate.trimPrice.toFixed(2),
-          ceilingsPrice: estimate.ceilingsPrice.toFixed(2),
-          doorsPrice: estimate.doorsPrice.toFixed(2),
+          wallsPrice: (estimate.wallsPrice * estimate.tierMultiplier).toFixed(2),
+          trimPrice: (estimate.trimPrice * estimate.tierMultiplier).toFixed(2),
+          ceilingsPrice: (estimate.ceilingsPrice * estimate.tierMultiplier).toFixed(2),
+          doorsPrice: (estimate.doorsPrice * estimate.tierMultiplier).toFixed(2),
           totalEstimate: estimate.total.toFixed(2),
           pricingTier,
+          selectedPackage: selectedPricingTier,
+          tierMultiplier: estimate.tierMultiplier.toFixed(2),
         }),
       });
       if (!response.ok) throw new Error("Failed to submit estimate");
@@ -447,7 +479,14 @@ export default function Estimate() {
                     Estimate Saved!
                   </h2>
                   <div className="bg-gradient-to-r from-accent/20 to-gold-400/10 rounded-xl p-6 mb-6 border border-accent/20">
-                    <p className="text-muted-foreground mb-2 text-sm">Your estimated total</p>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      {selectedPricingTier === "best" && <Crown className="w-4 h-4 text-amber-400" />}
+                      {selectedPricingTier === "better" && <Star className="w-4 h-4 text-accent" />}
+                      {selectedPricingTier === "good" && <Star className="w-4 h-4 text-muted-foreground" />}
+                      <p className="text-muted-foreground text-sm">
+                        {pricingTierOptions[selectedPricingTier].name} Package
+                      </p>
+                    </div>
                     <p className="text-4xl font-display font-bold text-accent">
                       ${estimate.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
@@ -463,6 +502,7 @@ export default function Estimate() {
                       setDoorCount(1);
                       setUploadedPhotos([]);
                       setShowPhotoUpload(false);
+                      setSelectedPricingTier("better");
                     }}
                     data-testid="button-new-estimate"
                   >
@@ -1117,6 +1157,91 @@ export default function Estimate() {
                               <Zap className="w-4 h-4" />
                               Enter square footage to calculate
                             </p>
+                          </div>
+                        )}
+
+                        {/* Good/Better/Best Pricing Tier Selector */}
+                        {estimate.baseTotal > 0 && (
+                          <div className="pt-6 mt-6 border-t border-white/10">
+                            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                              <Award className="w-4 h-4 text-accent" />
+                              Choose Your Package
+                            </h4>
+                            <div className="grid grid-cols-3 gap-2">
+                              {(["good", "better", "best"] as const).map((tier) => {
+                                const tierData = pricingTierOptions[tier];
+                                const isSelected = selectedPricingTier === tier;
+                                const tierTotal = estimate.baseTotal * tierData.multiplier;
+                                
+                                return (
+                                  <motion.button
+                                    key={tier}
+                                    onClick={() => setSelectedPricingTier(tier)}
+                                    className={`relative p-3 rounded-xl text-left transition-all border-2 ${
+                                      isSelected 
+                                        ? 'border-accent bg-accent/10 shadow-lg shadow-accent/20' 
+                                        : 'border-white/10 bg-white/5 hover:border-white/30'
+                                    }`}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    data-testid={`button-tier-${tier}`}
+                                  >
+                                    {tierData.badge && (
+                                      <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                        tier === "better" ? "bg-accent text-white" : "bg-gradient-to-r from-amber-500 to-yellow-400 text-black"
+                                      }`}>
+                                        {tierData.badge}
+                                      </div>
+                                    )}
+                                    
+                                    <div className="flex items-center gap-1 mb-1">
+                                      {tier === "good" && <Star className="w-3 h-3 text-muted-foreground" />}
+                                      {tier === "better" && <Star className="w-3 h-3 text-accent" />}
+                                      {tier === "best" && <Crown className="w-3 h-3 text-amber-400" />}
+                                      <span className={`text-xs font-bold ${isSelected ? 'text-accent' : 'text-foreground'}`}>
+                                        {tierData.name}
+                                      </span>
+                                    </div>
+                                    
+                                    <div className={`text-sm font-bold ${isSelected ? 'text-accent' : 'text-foreground'}`}>
+                                      ${tierTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                    </div>
+                                    
+                                    {isSelected && (
+                                      <motion.div 
+                                        className="absolute top-2 right-2"
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                      >
+                                        <Check className="w-3 h-3 text-accent" />
+                                      </motion.div>
+                                    )}
+                                  </motion.button>
+                                );
+                              })}
+                            </div>
+                            
+                            {/* Selected Tier Features */}
+                            <motion.div 
+                              key={selectedPricingTier}
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-3 p-3 rounded-lg bg-white/5"
+                            >
+                              <p className="text-xs text-muted-foreground mb-2">{pricingTierOptions[selectedPricingTier].description}</p>
+                              <div className="flex flex-wrap gap-1">
+                                {pricingTierOptions[selectedPricingTier].features.slice(0, 3).map((feature, i) => (
+                                  <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">
+                                    {feature}
+                                  </span>
+                                ))}
+                                {pricingTierOptions[selectedPricingTier].features.length > 3 && (
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground">
+                                    +{pricingTierOptions[selectedPricingTier].features.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            </motion.div>
                           </div>
                         )}
 

@@ -8,10 +8,11 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera, Clock, Send, X, CheckCircle } from "lucide-react";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
-import type { Lead, Estimate } from "@shared/schema";
+import type { Lead, Estimate, EstimateFollowup } from "@shared/schema";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 
 const DEFAULT_PIN = "4444";
@@ -23,7 +24,8 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showPinChange, setShowPinChange] = useState(false);
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
-  const [activeTab, setActiveTab] = useState<"deals" | "leads" | "activities">("deals");
+  const [activeTab, setActiveTab] = useState<"deals" | "leads" | "activities" | "followups">("deals");
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const initPin = async () => {
@@ -62,6 +64,38 @@ export default function Admin() {
     },
     enabled: isAuthenticated && !showPinChange,
   });
+
+  const { data: pendingFollowups = [], isLoading: followupsLoading } = useQuery<EstimateFollowup[]>({
+    queryKey: ["/api/followups/pending"],
+    queryFn: async () => {
+      const res = await fetch("/api/followups/pending");
+      if (!res.ok) throw new Error("Failed to fetch follow-ups");
+      return res.json();
+    },
+    enabled: isAuthenticated && !showPinChange,
+  });
+
+  const handleMarkSent = async (followupId: string) => {
+    try {
+      const res = await fetch(`/api/followups/${followupId}/sent`, { method: "POST" });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/followups/pending"] });
+      }
+    } catch (err) {
+      console.error("Failed to mark follow-up as sent:", err);
+    }
+  };
+
+  const handleCancelFollowup = async (followupId: string) => {
+    try {
+      const res = await fetch(`/api/followups/${followupId}/cancel`, { method: "POST" });
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/followups/pending"] });
+      }
+    } catch (err) {
+      console.error("Failed to cancel follow-up:", err);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,6 +221,7 @@ export default function Admin() {
             {[
               { id: "deals", label: "Deals Pipeline", icon: BarChart3 },
               { id: "leads", label: "Email Database", icon: Database },
+              { id: "followups", label: "Follow-ups", icon: Clock, badge: pendingFollowups.length },
               { id: "activities", label: "Activities", icon: Bell },
             ].map((tab) => (
               <motion.button
@@ -203,6 +238,11 @@ export default function Admin() {
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
+                {"badge" in tab && typeof tab.badge === "number" && tab.badge > 0 && (
+                  <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-accent/30 text-accent">
+                    {tab.badge}
+                  </span>
+                )}
               </motion.button>
             ))}
           </div>
@@ -301,6 +341,102 @@ export default function Admin() {
             >
               <GlassCard className="p-6 md:p-8" glow>
                 <ActivityTimeline showAll maxHeight="500px" />
+              </GlassCard>
+            </motion.div>
+          )}
+
+          {activeTab === "followups" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <GlassCard className="p-6 md:p-8 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-accent" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-display font-bold">Scheduled Follow-ups</h2>
+                      <p className="text-sm text-muted-foreground">Manage pending email reminders</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-accent">{pendingFollowups.length}</div>
+                    <div className="text-xs text-muted-foreground">Pending</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                  {followupsLoading ? (
+                    <div className="text-center py-8 text-muted-foreground">Loading follow-ups...</div>
+                  ) : pendingFollowups.length === 0 ? (
+                    <div className="text-center py-12">
+                      <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500/50" />
+                      <p className="text-muted-foreground">All caught up! No pending follow-ups.</p>
+                    </div>
+                  ) : (
+                    pendingFollowups.map((followup, index) => (
+                      <motion.div
+                        key={followup.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        data-testid={`followup-row-${followup.id}`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                followup.followupType === "reminder" 
+                                  ? "bg-blue-500/20 text-blue-400"
+                                  : followup.followupType === "quote_expiring"
+                                  ? "bg-yellow-500/20 text-yellow-400"
+                                  : "bg-purple-500/20 text-purple-400"
+                              }`}>
+                                {followup.followupType === "reminder" ? "Reminder" : 
+                                 followup.followupType === "quote_expiring" ? "Quote Expiring" : "Thank You"}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                Estimate #{followup.estimateId}
+                              </span>
+                            </div>
+                            {followup.emailSubject && (
+                              <p className="font-medium mb-1 truncate">{followup.emailSubject}</p>
+                            )}
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              Scheduled: {format(new Date(followup.scheduledFor), "MMM d, yyyy 'at' h:mm a")}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <motion.button
+                              onClick={() => handleMarkSent(followup.id)}
+                              className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              title="Mark as sent"
+                              data-testid={`button-mark-sent-${followup.id}`}
+                            >
+                              <Send className="w-4 h-4" />
+                            </motion.button>
+                            <motion.button
+                              onClick={() => handleCancelFollowup(followup.id)}
+                              className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              title="Cancel follow-up"
+                              data-testid={`button-cancel-followup-${followup.id}`}
+                            >
+                              <X className="w-4 h-4" />
+                            </motion.button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
               </GlassCard>
             </motion.div>
           )}
