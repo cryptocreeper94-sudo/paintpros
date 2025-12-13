@@ -49,10 +49,12 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
     }
   }, [isOpen]);
   
-  const platformAsset = FOUNDING_ASSETS.ORBIT_PLATFORM;
-  const serialNumber = platformAsset.number;
+  const tenantAsset = isDemo ? FOUNDING_ASSETS.ORBIT_PLATFORM : FOUNDING_ASSETS.NPP_BETA;
+  const serialNumber = tenantAsset.number;
   const displaySerial = serialNumber.replace('#', '');
-  const solscanUrl = "https://solscan.io/account/PaintPros000000000001";
+  const solscanUrl = isDemo 
+    ? "https://solscan.io/account/PaintPros000000000001"
+    : "https://solscan.io/account/NPP000000000002";
 
   const features = [
     {
@@ -145,7 +147,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
                   <Award className="w-4 h-4 text-[#14F195]" />
-                  <span className="text-xs font-bold text-[#14F195] uppercase tracking-wide">{platformAsset.badge}</span>
+                  <span className="text-xs font-bold text-[#14F195] uppercase tracking-wide">{tenantAsset.badge}</span>
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">

@@ -294,6 +294,13 @@ export const FOUNDING_ASSETS = {
     type: 'platform',
     badge: 'Paint Pros Platform',
   },
+  NPP_BETA: { 
+    number: '#000000000-02', 
+    special: '#FE-000000000-02',
+    name: 'Nashville Painting Professionals', 
+    type: 'tenant',
+    badge: 'Beta Partner',
+  },
   JASON_FOUNDER: { 
     number: '#000000002-00', 
     special: '#FE-000000002-00',

@@ -31,7 +31,9 @@ export function Footer() {
   
   const version = releaseInfo?.version || "1.0.0";
   const buildNumber = releaseInfo?.buildNumber || 0;
-  const hallmarkNumber = releaseInfo?.hallmarkNumber || FOUNDING_ASSETS.ORBIT_PLATFORM.number;
+  const isDemo = tenant.id === "demo";
+  const tenantAsset = isDemo ? FOUNDING_ASSETS.ORBIT_PLATFORM : FOUNDING_ASSETS.NPP_BETA;
+  const hallmarkNumber = releaseInfo?.hallmarkNumber || tenantAsset.number;
   const displayHallmark = hallmarkNumber.replace('#', '');
   
   const verifyUrl = `${window.location.origin}/verify/${encodeURIComponent(hallmarkNumber)}`;
