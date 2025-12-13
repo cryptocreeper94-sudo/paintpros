@@ -1,12 +1,15 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile } from "fs/promises";
+import { preBuildStamp } from "./pre-build-stamp.js";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
 const allowlist = [
   "@google/generative-ai",
+  "@solana/web3.js",
   "axios",
+  "bs58",
   "connect-pg-simple",
   "cors",
   "date-fns",
@@ -33,6 +36,8 @@ const allowlist = [
 ];
 
 async function buildAll() {
+  await preBuildStamp();
+  
   await rm("dist", { recursive: true, force: true });
 
   console.log("building client...");
