@@ -120,6 +120,18 @@ export function Navbar() {
 
     </header>
 
+      {/* Mobile Back Button - Fixed below header */}
+      {location !== "/" && (
+        <button 
+          onClick={() => window.history.back()}
+          className="fixed top-12 left-2 z-40 md:hidden p-2 bg-background/80 backdrop-blur-sm border border-white/10 rounded-full shadow-lg hover:bg-white/10 transition-all"
+          aria-label="Go back"
+          data-testid="button-back-mobile"
+        >
+          <ArrowLeft className="w-5 h-5 text-white" />
+        </button>
+      )}
+
       {/* Sidebar Menu */}
       <AnimatePresence>
         {isOpen && (
