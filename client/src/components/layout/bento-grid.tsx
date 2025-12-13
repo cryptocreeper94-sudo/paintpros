@@ -10,7 +10,7 @@ export const BentoGrid = ({ className, children }: BentoGridProps) => {
   return (
     <div
       className={cn(
-        "grid grid-cols-1 md:grid-cols-12 gap-4 max-w-7xl mx-auto auto-rows-[minmax(180px,auto)]",
+        "grid grid-cols-4 md:grid-cols-12 gap-3 md:gap-4 max-w-7xl mx-auto auto-rows-[minmax(120px,auto)] md:auto-rows-[minmax(180px,auto)]",
         className
       )}
     >
@@ -22,12 +22,37 @@ export const BentoGrid = ({ className, children }: BentoGridProps) => {
 interface BentoItemProps {
   className?: string;
   children: React.ReactNode;
-  colSpan?: number; // 1-12
-  rowSpan?: number; // 1-4
+  colSpan?: number;
+  rowSpan?: number;
+  mobileColSpan?: number;
+  mobileRowSpan?: number;
 }
 
-export const BentoItem = ({ className, children, colSpan = 4, rowSpan = 1 }: BentoItemProps) => {
-  // Map props to complete class strings so Tailwind scanner can find them
+export const BentoItem = ({ 
+  className, 
+  children, 
+  colSpan = 4, 
+  rowSpan = 1,
+  mobileColSpan,
+  mobileRowSpan
+}: BentoItemProps) => {
+  const mobileCol = mobileColSpan ?? (colSpan >= 8 ? 4 : colSpan >= 4 ? 2 : 2);
+  const mobileRow = mobileRowSpan ?? rowSpan;
+
+  const mobileColSpans: Record<number, string> = {
+    1: "col-span-1",
+    2: "col-span-2",
+    3: "col-span-3",
+    4: "col-span-4",
+  };
+
+  const mobileRowSpans: Record<number, string> = {
+    1: "row-span-1",
+    2: "row-span-2",
+    3: "row-span-3",
+    4: "row-span-4",
+  };
+
   const colSpans: Record<number, string> = {
     1: "md:col-span-1",
     2: "md:col-span-2",
@@ -57,7 +82,8 @@ export const BentoItem = ({ className, children, colSpan = 4, rowSpan = 1 }: Ben
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={cn(
-        "col-span-1", // Mobile default
+        mobileColSpans[mobileCol] || "col-span-2",
+        mobileRowSpans[mobileRow] || "row-span-1",
         colSpans[colSpan] || "md:col-span-4",
         rowSpans[rowSpan] || "md:row-span-1",
         className
