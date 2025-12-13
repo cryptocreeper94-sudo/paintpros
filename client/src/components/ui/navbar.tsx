@@ -53,7 +53,7 @@ export function Navbar() {
         
         {/* Center: Title */}
         <div 
-          className="absolute left-1/2 -translate-x-1/2 text-white tracking-wide text-[11px] md:text-lg whitespace-nowrap"
+          className="absolute left-1/2 -translate-x-1/2 text-white tracking-wide text-sm md:text-lg whitespace-nowrap"
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
