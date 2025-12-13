@@ -5,7 +5,7 @@ import {
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
   insertBlockchainStampSchema, insertHallmarkSchema, insertProposalTemplateSchema, insertProposalSchema,
-  insertPaymentSchema, insertRoomScanSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
+  insertPaymentSchema, insertRoomScanSchema, insertPageViewSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS
 } from "@shared/schema";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -1522,6 +1522,85 @@ Do not include any text before or after the JSON.`
     } catch (error) {
       console.error("Error fetching room scans:", error);
       res.status(500).json({ error: "Failed to fetch room scans" });
+    }
+  });
+
+  // ============ ANALYTICS ============
+
+  // POST /api/analytics/track - Track a page view
+  app.post("/api/analytics/track", async (req, res) => {
+    try {
+      const { page, referrer, sessionId, duration } = req.body;
+      
+      // Parse user agent for device type and browser
+      const userAgent = req.headers["user-agent"] || "";
+      let deviceType = "desktop";
+      if (/mobile/i.test(userAgent)) deviceType = "mobile";
+      else if (/tablet|ipad/i.test(userAgent)) deviceType = "tablet";
+      
+      let browser = "unknown";
+      if (/chrome/i.test(userAgent)) browser = "Chrome";
+      else if (/firefox/i.test(userAgent)) browser = "Firefox";
+      else if (/safari/i.test(userAgent)) browser = "Safari";
+      else if (/edge/i.test(userAgent)) browser = "Edge";
+      
+      // Hash IP for privacy
+      const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+      const ipHash = Buffer.from(String(ip)).toString("base64").slice(0, 16);
+      
+      const pageView = await storage.trackPageView({
+        page: page || "/",
+        referrer: referrer || null,
+        userAgent: userAgent.slice(0, 500),
+        ipHash,
+        sessionId: sessionId || null,
+        deviceType,
+        browser,
+        duration: duration || null
+      });
+      
+      res.status(201).json({ success: true, id: pageView.id });
+    } catch (error) {
+      console.error("Error tracking page view:", error);
+      res.status(500).json({ error: "Failed to track page view" });
+    }
+  });
+
+  // GET /api/analytics/dashboard - Get full analytics dashboard data
+  app.get("/api/analytics/dashboard", async (req, res) => {
+    try {
+      const dashboard = await storage.getAnalyticsDashboard();
+      const liveCount = await storage.getLiveVisitorCount();
+      res.json({ ...dashboard, liveVisitors: liveCount });
+    } catch (error) {
+      console.error("Error fetching analytics dashboard:", error);
+      res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  });
+
+  // GET /api/analytics/live - Get live visitor count
+  app.get("/api/analytics/live", async (req, res) => {
+    try {
+      const count = await storage.getLiveVisitorCount();
+      res.json({ liveVisitors: count });
+    } catch (error) {
+      console.error("Error fetching live count:", error);
+      res.status(500).json({ error: "Failed to fetch live visitors" });
+    }
+  });
+
+  // GET /api/analytics/page/:page - Get analytics for a specific page
+  app.get("/api/analytics/page/:page", async (req, res) => {
+    try {
+      const views = await storage.getPageViewsByPage(decodeURIComponent(req.params.page));
+      res.json({ 
+        page: req.params.page,
+        totalViews: views.length,
+        views: views.slice(0, 100)
+      });
+    } catch (error) {
+      console.error("Error fetching page analytics:", error);
+      res.status(500).json({ error: "Failed to fetch page analytics" });
     }
   });
 
