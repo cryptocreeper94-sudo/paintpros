@@ -104,19 +104,36 @@ export default function EstimateScreen() {
 
               <ServiceToggle
                 label="Trim & Molding"
-                description="Baseboards, crown molding, window trim"
+                description="Add to walls for full job pricing"
                 value={estimate.includeTrim}
                 onToggle={(v) => setEstimate({ ...estimate, includeTrim: v })}
               />
 
               <ServiceToggle
                 label="Ceilings"
-                description="Ceiling painting included"
+                description="Add to walls for full job pricing"
                 value={estimate.includeCeilings}
                 onToggle={(v) => setEstimate({ ...estimate, includeCeilings: v })}
                 noBorder
               />
             </GlassCard>
+
+            {/* Full Job Package Note */}
+            {estimate.includeWalls && estimate.includeTrim && estimate.includeCeilings && (
+              <GlassCard className="p-3 mb-4 border border-accent/30">
+                <Text className="text-accent text-center text-sm font-medium">
+                  Full Job Package: $5.00/sqft (walls + trim + ceilings)
+                </Text>
+              </GlassCard>
+            )}
+
+            {estimate.includeWalls && !(estimate.includeTrim && estimate.includeCeilings) && (
+              <GlassCard className="p-3 mb-4">
+                <Text className="text-muted-foreground text-center text-sm">
+                  Add trim & ceilings for the full job package deal
+                </Text>
+              </GlassCard>
+            )}
 
             {/* Door Count */}
             <GlassCard className="p-4 mb-6">
@@ -182,17 +199,21 @@ export default function EstimateScreen() {
                 </View>
               )}
 
-              {estimate.includeTrim && estimate.includeWalls && (
+              {estimate.includeTrim && (
                 <View className="flex-row justify-between py-2 border-b border-muted">
                   <Text className="text-muted-foreground">Trim & Molding</Text>
-                  <Text className="text-foreground">Included</Text>
+                  <Text className="text-foreground">
+                    {estimate.includeWalls && estimate.includeCeilings ? "Included" : "+$0"}
+                  </Text>
                 </View>
               )}
 
-              {estimate.includeCeilings && estimate.includeWalls && (
+              {estimate.includeCeilings && (
                 <View className="flex-row justify-between py-2 border-b border-muted">
                   <Text className="text-muted-foreground">Ceilings</Text>
-                  <Text className="text-foreground">Included</Text>
+                  <Text className="text-foreground">
+                    {estimate.includeWalls && estimate.includeTrim ? "Included" : "+$0"}
+                  </Text>
                 </View>
               )}
 
