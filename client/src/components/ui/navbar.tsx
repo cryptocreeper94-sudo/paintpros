@@ -34,7 +34,7 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="w-full px-2 md:px-4 py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem + Title */}
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-1 md:gap-2 -ml-2 md:ml-0">
           <button 
             className="p-1 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center"
             onClick={() => setIsOpen(!isOpen)}
@@ -47,7 +47,7 @@ export function Navbar() {
               <img 
                 src={nppEmblem} 
                 alt="Menu"
-                className="h-8 md:h-12 w-auto object-contain"
+                className="h-10 md:h-12 w-auto object-contain"
               />
             )}
           </button>
