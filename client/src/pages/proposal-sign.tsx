@@ -258,7 +258,7 @@ export default function ProposalSign() {
               exit={{ scale: 0.9, opacity: 0 }}
               className="w-full max-w-lg"
             >
-              <GlassCard className="p-8 relative" glow>
+              <GlassCard className="p-4 sm:p-8 relative max-h-[90vh] overflow-y-auto" glow>
                 <button
                   onClick={() => {
                     setShowSignatureModal(false);
@@ -270,11 +270,11 @@ export default function ProposalSign() {
                   <X className="w-4 h-4" />
                 </button>
 
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-display font-bold mb-2">
+                <div className="text-center mb-4 sm:mb-6">
+                  <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">
                     Sign Your Proposal
                   </h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Draw your signature below
                   </p>
                 </div>

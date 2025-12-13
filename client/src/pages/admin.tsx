@@ -217,7 +217,7 @@ export default function Admin() {
         </div>
 
         <div className="max-w-7xl mx-auto mb-6">
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {[
               { id: "deals", label: "Deals Pipeline", icon: BarChart3 },
               { id: "leads", label: "Email Database", icon: Database },
@@ -227,7 +227,7 @@ export default function Admin() {
               <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors ${
+                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl border transition-colors whitespace-nowrap flex-shrink-0 ${
                   activeTab === tab.id
                     ? "bg-accent/20 border-accent/30 text-accent"
                     : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10"
@@ -237,7 +237,8 @@ export default function Admin() {
                 data-testid={`tab-${tab.id}`}
               >
                 <tab.icon className="w-4 h-4" />
-                {tab.label}
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.id === "followups" ? "Follow" : tab.id === "activities" ? "Activity" : tab.id === "deals" ? "Deals" : "Leads"}</span>
                 {"badge" in tab && typeof tab.badge === "number" && tab.badge > 0 && (
                   <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-accent/30 text-accent">
                     {tab.badge}

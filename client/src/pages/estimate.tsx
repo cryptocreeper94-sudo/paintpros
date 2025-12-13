@@ -1167,7 +1167,7 @@ export default function Estimate() {
                               <Award className="w-4 h-4 text-accent" />
                               Choose Your Package
                             </h4>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                               {(["good", "better", "best"] as const).map((tier) => {
                                 const tierData = pricingTierOptions[tier];
                                 const isSelected = selectedPricingTier === tier;
