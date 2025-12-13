@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Sparkles } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import mascotImage from "/icons/paintpros-mascot.png";
+import rollieMascot from "@assets/generated_images/cute_paint_roller_ai_mascot.png";
 
 interface FloatingAIButtonProps {
   onOpenChat?: () => void;
@@ -37,9 +37,9 @@ export function FloatingAIButton({ onOpenChat }: FloatingAIButtonProps) {
         data-testid="button-ai-assistant"
       >
         <img
-          src={tenant.logo || mascotImage}
-          alt="AI Assistant"
-          className="w-full h-full object-cover"
+          src={rollieMascot}
+          alt="Rollie - AI Assistant"
+          className="w-full h-full object-contain"
         />
         
         <AnimatePresence>
@@ -68,12 +68,12 @@ export function FloatingAIButton({ onOpenChat }: FloatingAIButtonProps) {
             <div className="p-4 border-b border-white/10 bg-gradient-to-r from-accent/10 to-transparent flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <img
-                  src={tenant.logo || mascotImage}
-                  alt="AI"
-                  className="w-10 h-10 rounded-full border border-accent/30"
+                  src={rollieMascot}
+                  alt="Rollie"
+                  className="w-10 h-10 object-contain"
                 />
                 <div>
-                  <h3 className="font-bold text-sm">Paint Pro AI</h3>
+                  <h3 className="font-bold text-sm">Rollie</h3>
                   <p className="text-[10px] text-muted-foreground">Your painting assistant</p>
                 </div>
               </div>
