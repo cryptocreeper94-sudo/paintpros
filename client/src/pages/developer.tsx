@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download } from "lucide-react";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
@@ -828,6 +828,269 @@ function HallmarkModalContent() {
   );
 }
 
+function InvestorPricingContent() {
+  const copyAllContent = () => {
+    const content = `PaintPros.io - Investor Pricing Sheet
+Prepared by: Orbit Development Team | December 2025
+
+LICENSING TIERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tier                    Monthly         Setup Fee    Target Customer
+──────────────────────────────────────────────────────────────────
+Essentials              $149/mo         $999         Solo contractors, 1 location
+Professional            $299/mo         $1,499       Growing painters, 1-3 locations
+Franchise Core          $749/mo + $99/loc   $4,999   Multi-location (5+ sites)
+Enterprise White-Label  $1,499/mo + $199/loc  $9,500 Large franchises
+
+FEATURE MATRIX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ESSENTIALS ($149/month)
+• White-label website with Bento Grid design
+• Interactive estimator tool
+• Basic lead capture & CRM
+• Email support (2 business day response)
+• Blockchain stamping add-on ($49/mo)
+
+PROFESSIONAL ($299/month)
+• Everything in Essentials
+• Full analytics dashboard
+• Role-based dashboards (Owner, Admin, Area Manager)
+• Phone support (24-hour response)
+• 2 strategy sessions per year
+• Blockchain stamping included
+
+FRANCHISE CORE ($749/month + $99/location)
+• Everything in Professional
+• Multi-tenant management console
+• Shared asset libraries
+• Orbit ecosystem integrations
+• Dedicated account manager
+• Compliance & audit trail
+
+ENTERPRISE WHITE-LABEL ($1,499/month base)
+• Full brand suppression
+• API priority access
+• Co-branded marketing assets
+• SLA guarantees (99.9% uptime)
+• Custom contract terms
+• Additional locations: $199/location
+
+SUPPORT PACKAGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Essentials Care     Included    2 business days    Email support, quarterly webinars
+ProCare             $249/mo     24 hours           Priority support, 2 strategy sessions
+Enterprise SLA      $799/mo     4 hours critical   Dedicated CSM, monthly roadmap sync
+
+CUSTOMIZATION MENU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Branding Refresh            $1,800          2 weeks
+Custom Theme/Layout Pack    $2,500          2-3 weeks
+Feature Module Build        $3,500-$8,000   4-8 weeks
+Third-Party Integration     $185/hr         Varies
+Data Migration              $750/system     1-2 weeks
+Franchise Rollout Workshop  $4,500          2-day onsite
+
+VOLUME DISCOUNTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1-10 locations      Standard pricing
+11-25 locations     12% off
+26-50 locations     18% off
+51+ locations       Custom enterprise deal
+
+UNIT ECONOMICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Gross Margin                65%
+Infrastructure Cost         ~$45/tenant/month
+LTV:CAC Ratio              22:1
+ARPU                       $249/month
+3-Year Customer LTV        $8,964
+CAC (projected)            $400
+
+REVENUE PROJECTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Year    Customers    MRR      Annual Revenue    Net Profit
+2025    100          $25K     $300K             $120K
+2026    500          $125K    $1.5M             $900K
+2027    2,000        $500K    $6M               $3.6M
+
+MARKET OPPORTUNITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+U.S. Painting Services Market: $46.5B annually
+Painting Contractors: 300,000+
+Residential Growth: 4.2% CAGR
+Commercial Growth: 3.8% CAGR
+
+Contact: Orbit Development Team
+Website: https://paintpros.io
+Ecosystem: https://darkwavestudios.io`;
+
+    navigator.clipboard.writeText(content);
+    toast.success("Investor pricing sheet copied to clipboard!");
+  };
+
+  return (
+    <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm text-muted-foreground">Copy-ready for investor presentations</p>
+        <motion.button
+          onClick={copyAllContent}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors text-sm"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          data-testid="button-copy-investor-sheet"
+        >
+          <Copy className="w-4 h-4" />
+          Copy All
+        </motion.button>
+      </div>
+
+      <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/30">
+        <h3 className="font-bold text-lg flex items-center gap-2 mb-3">
+          <DollarSign className="w-5 h-5 text-green-400" />
+          Licensing Tiers
+        </h3>
+        <div className="grid gap-2">
+          {[
+            { tier: "Essentials", price: "$149/mo", setup: "$999", target: "Solo contractors" },
+            { tier: "Professional", price: "$299/mo", setup: "$1,499", target: "1-3 locations" },
+            { tier: "Franchise Core", price: "$749/mo + $99/loc", setup: "$4,999", target: "5+ sites" },
+            { tier: "Enterprise", price: "$1,499/mo base", setup: "$9,500", target: "Large franchises" },
+          ].map((item) => (
+            <div key={item.tier} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
+              <div>
+                <span className="font-bold text-sm">{item.tier}</span>
+                <span className="text-xs text-muted-foreground ml-2">({item.target})</span>
+              </div>
+              <div className="text-right">
+                <span className="text-green-400 font-mono text-sm">{item.price}</span>
+                <span className="text-xs text-muted-foreground ml-2">+ {item.setup}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <h4 className="font-bold text-sm flex items-center gap-2 mb-3">
+            <TrendingUp className="w-4 h-4 text-blue-400" />
+            Unit Economics
+          </h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Gross Margin</span>
+              <span className="font-mono text-green-400">65%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">LTV:CAC</span>
+              <span className="font-mono text-blue-400">22:1</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">ARPU</span>
+              <span className="font-mono text-accent">$249/mo</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">3yr LTV</span>
+              <span className="font-mono text-purple-400">$8,964</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <h4 className="font-bold text-sm flex items-center gap-2 mb-3">
+            <Users className="w-4 h-4 text-purple-400" />
+            Volume Discounts
+          </h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">1-10 sites</span>
+              <span className="font-mono">Standard</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">11-25 sites</span>
+              <span className="font-mono text-green-400">-12%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">26-50 sites</span>
+              <span className="font-mono text-green-400">-18%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">51+ sites</span>
+              <span className="font-mono text-gold-400">Custom</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-purple-500/10 to-accent/10 rounded-xl p-4 border border-purple-500/30">
+        <h4 className="font-bold text-sm flex items-center gap-2 mb-3">
+          <Building2 className="w-4 h-4 text-purple-400" />
+          Revenue Projections
+        </h4>
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div>
+            <p className="text-xs text-muted-foreground">2025</p>
+            <p className="font-bold text-lg text-green-400">$300K</p>
+            <p className="text-xs">100 customers</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">2026</p>
+            <p className="font-bold text-lg text-blue-400">$1.5M</p>
+            <p className="text-xs">500 customers</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">2027</p>
+            <p className="font-bold text-lg text-purple-400">$6M</p>
+            <p className="text-xs">2,000 customers</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-accent/10 rounded-xl p-4 border border-accent/30">
+        <h4 className="font-bold text-sm flex items-center gap-2 mb-2">
+          <Globe className="w-4 h-4 text-accent" />
+          Market Opportunity
+        </h4>
+        <p className="text-sm text-muted-foreground">
+          <strong className="text-foreground">$46.5B</strong> U.S. painting market • 
+          <strong className="text-foreground"> 300,000+</strong> contractors • 
+          <strong className="text-foreground"> 4.2%</strong> CAGR
+        </p>
+      </div>
+
+      <div className="flex gap-2">
+        <a
+          href="/INVESTOR_PRICING.md"
+          target="_blank"
+          className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors text-sm"
+          data-testid="link-download-md"
+        >
+          <Download className="w-4 h-4" />
+          View Full Document
+        </a>
+        <motion.button
+          onClick={copyAllContent}
+          className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors text-sm"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          data-testid="button-copy-investor-sheet-bottom"
+        >
+          <Copy className="w-4 h-4" />
+          Copy for Email
+        </motion.button>
+      </div>
+    </div>
+  );
+}
+
 export default function Developer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
@@ -1291,6 +1554,11 @@ export default function Developer() {
         </div>
       ),
     },
+    investorPricing: {
+      title: "Investor Pricing Sheet",
+      icon: <DollarSign className="w-8 h-8 text-green-400" />,
+      content: <InvestorPricingContent />,
+    },
     integrations: {
       title: "Integrations Roadmap",
       icon: <ListTodo className="w-8 h-8 text-blue-400" />,
@@ -1551,6 +1819,23 @@ export default function Developer() {
                   <h3 className="text-xl font-bold">Darkwave Dev Hub</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Connected to Orbit ecosystem</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              whileHover={{ scale: 1.02 }}
+              onClick={() => setActiveModal("investorPricing")}
+              data-testid="card-investor-pricing"
+            >
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-green-500/10 to-blue-500/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <DollarSign className="w-5 h-5 text-green-400" />
+                  <h3 className="text-xl font-bold">Investor Pricing</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Licensing & valuation sheet</p>
               </GlassCard>
             </motion.div>
           </BentoItem>
