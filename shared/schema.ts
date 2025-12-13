@@ -321,6 +321,8 @@ export const releaseVersions = pgTable("release_versions", {
   contentHash: text("content_hash").notNull(),
   solanaTxSignature: text("solana_tx_signature"),
   solanaTxStatus: text("solana_tx_status").default("pending"),
+  deploymentId: text("deployment_id"),
+  metadata: jsonb("metadata"),
   issuedAt: timestamp("issued_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
