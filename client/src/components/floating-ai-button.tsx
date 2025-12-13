@@ -31,7 +31,7 @@ export function FloatingAIButton({ onOpenChat }: FloatingAIButtonProps) {
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="fixed bottom-20 right-4 z-40 w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden bg-transparent hover:scale-110 transition-transform"
+        className="fixed bottom-20 right-4 z-40 w-16 h-16 md:w-20 md:h-20 bg-transparent hover:scale-110 transition-transform"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         data-testid="button-ai-assistant"
