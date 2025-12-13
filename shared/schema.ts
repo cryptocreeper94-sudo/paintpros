@@ -362,6 +362,12 @@ export const EDITION_PREFIXES = {
   PT: 'Platinum Tier',
   DW: 'DarkWave Studios',
   PP: 'Paint Pros Edition',
+  NPP: 'Nashville Painting Professionals',
+} as const;
+
+export const TENANT_PREFIXES: Record<string, { prefix: string; name: string; color: string }> = {
+  npp: { prefix: 'NPP', name: 'Nashville Painting Professionals', color: '#5a7a4d' },
+  demo: { prefix: 'PP', name: 'PaintPros.io', color: '#d4a853' },
 } as const;
 
 // Anchorable asset types

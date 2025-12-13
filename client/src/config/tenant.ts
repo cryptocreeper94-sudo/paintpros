@@ -104,6 +104,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   name: "Nashville Painting Professionals",
   tagline: "Exceptional Painters. Extraordinary Service.",
   description: "Nashville's premier painting company offering professional interior and exterior painting services for residential and commercial properties.",
+  logo: "/icons/npp-mascot.png",
   
   phone: "",
   email: "",
@@ -170,7 +171,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     reviews: true,
     blog: false,
     onlineBooking: false,
-    aiAssistant: false,
+    aiAssistant: true,
   },
   
   credentials: {

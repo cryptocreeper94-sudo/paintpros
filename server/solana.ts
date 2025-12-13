@@ -48,13 +48,17 @@ export async function stampHashToBlockchain(
   documentHash: string,
   wallet: Keypair,
   network: 'devnet' | 'mainnet-beta' = 'devnet',
-  metadata?: { entityType: string; entityId: string }
+  metadata?: { entityType: string; entityId: string },
+  tenantId?: string
 ): Promise<{ signature: string; slot: number; blockTime: Date }> {
   const connection = getConnection(network);
   
+  // Use tenant prefix for memo data (NPP for Nashville Painting Professionals, PP for PaintPros.io demo, ORBIT for platform)
+  const prefix = tenantId === 'npp' ? 'NPP' : tenantId === 'demo' ? 'PP' : 'ORBIT';
+  
   const memoData = metadata 
-    ? `NPP:${metadata.entityType}:${metadata.entityId}:${documentHash}`
-    : `NPP:HASH:${documentHash}`;
+    ? `${prefix}:${metadata.entityType}:${metadata.entityId}:${documentHash}`
+    : `${prefix}:HASH:${documentHash}`;
   
   const transaction = new Transaction().add(
     SystemProgram.transfer({

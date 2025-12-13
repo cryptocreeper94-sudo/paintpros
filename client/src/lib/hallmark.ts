@@ -1,4 +1,4 @@
-import { EDITION_PREFIXES } from "@shared/schema";
+import { EDITION_PREFIXES, TENANT_PREFIXES } from "@shared/schema";
 
 export interface BadgeTier {
   tier: string;
@@ -25,6 +25,38 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
       sub: 0,
       isFounder: false,
       isSpecial: false,
+      raw: hallmarkNumber,
+    };
+  }
+
+  // Check for tenant-prefixed hallmarks (NPP-YYYYMMDD-RANDOM or PP-YYYYMMDD-RANDOM)
+  const tenantHallmarkMatch = hallmarkNumber.match(/^(NPP|PP)-\d{8}-[A-Z0-9]{6}$/);
+  if (tenantHallmarkMatch) {
+    const prefix = tenantHallmarkMatch[1];
+    return {
+      prefix,
+      master: 0,
+      sub: 0,
+      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      isFounder: false,
+      isSpecial: true,
+      raw: hallmarkNumber,
+    };
+  }
+
+  // Check for tenant asset numbers (NPP-000000001-01)
+  const tenantAssetMatch = hallmarkNumber.match(/^(NPP|PP)-(\d{9})-(\d{2})$/);
+  if (tenantAssetMatch) {
+    const prefix = tenantAssetMatch[1];
+    const master = parseInt(tenantAssetMatch[2], 10);
+    const sub = parseInt(tenantAssetMatch[3], 10);
+    return {
+      prefix,
+      master,
+      sub,
+      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      isFounder: master <= 3,
+      isSpecial: true,
       raw: hallmarkNumber,
     };
   }
@@ -66,6 +98,11 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
   
   if (!parsed) {
     return { tier: 'Standard', color: '#6b7280', icon: '📄', glow: 'none' };
+  }
+
+  // NPP (Nashville Painting Professionals) tenant badge
+  if (parsed.prefix === 'NPP') {
+    return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nashville Painting Professionals' };
   }
 
   if (parsed.prefix === 'PT') {

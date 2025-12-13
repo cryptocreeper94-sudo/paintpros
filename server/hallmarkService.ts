@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { ANCHORABLE_TYPES, EDITION_PREFIXES, FOUNDING_ASSETS } from "@shared/schema";
+import { ANCHORABLE_TYPES, EDITION_PREFIXES, FOUNDING_ASSETS, TENANT_PREFIXES } from "@shared/schema";
 
 export interface HallmarkData {
   hallmarkNumber: string;
@@ -32,10 +32,27 @@ export interface ParsedHallmark {
   raw: string;
 }
 
-export function generateHallmarkNumber(): string {
+export function generateHallmarkNumber(tenantId?: string): string {
   const date = new Date().toISOString().replace(/[-:]/g, '').substring(0, 8);
   const random = crypto.randomBytes(3).toString('hex').toUpperCase();
+  
+  if (tenantId && TENANT_PREFIXES[tenantId]) {
+    return `${TENANT_PREFIXES[tenantId].prefix}-${date}-${random}`;
+  }
+  
   return `ORBIT-${date}-${random}`;
+}
+
+export function generateTenantAssetNumber(
+  tenantId: string,
+  master: number,
+  sub: number = 1
+): string {
+  const tenantConfig = TENANT_PREFIXES[tenantId];
+  const prefix = tenantConfig?.prefix || 'STD';
+  const masterStr = master.toString().padStart(9, '0');
+  const subStr = sub.toString().padStart(2, '0');
+  return `${prefix}-${masterStr}-${subStr}`;
 }
 
 export function generateContentHash(content: string): string {
@@ -78,6 +95,38 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
     };
   }
 
+  // Check for tenant-prefixed hallmarks (NPP-YYYYMMDD-RANDOM or PP-YYYYMMDD-RANDOM)
+  const tenantHallmarkMatch = hallmarkNumber.match(/^(NPP|PP)-\d{8}-[A-Z0-9]{6}$/);
+  if (tenantHallmarkMatch) {
+    const prefix = tenantHallmarkMatch[1];
+    return {
+      prefix,
+      master: 0,
+      sub: 0,
+      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      isFounder: false,
+      isSpecial: true,
+      raw: hallmarkNumber,
+    };
+  }
+
+  // Check for tenant asset numbers (NPP-000000001-01)
+  const tenantAssetMatch = hallmarkNumber.match(/^(NPP|PP)-(\d{9})-(\d{2})$/);
+  if (tenantAssetMatch) {
+    const prefix = tenantAssetMatch[1];
+    const master = parseInt(tenantAssetMatch[2], 10);
+    const sub = parseInt(tenantAssetMatch[3], 10);
+    return {
+      prefix,
+      master,
+      sub,
+      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      isFounder: master <= 3,
+      isSpecial: true,
+      raw: hallmarkNumber,
+    };
+  }
+
   const specialMatch = hallmarkNumber.match(/^#([A-Z]+)-(\d{9})-(\d{2})$/);
   if (specialMatch) {
     const prefix = specialMatch[1] as keyof typeof EDITION_PREFIXES;
@@ -115,6 +164,11 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
   
   if (!parsed) {
     return { tier: 'Standard', color: '#6b7280', icon: '📄', glow: 'none' };
+  }
+
+  // NPP (Nashville Painting Professionals) tenant badge
+  if (parsed.prefix === 'NPP') {
+    return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nashville Painting Professionals' };
   }
 
   if (parsed.prefix === 'PT') {
@@ -160,9 +214,10 @@ export function createHallmarkData(
   content: string,
   metadata: Record<string, any> = {},
   referenceId?: string,
-  assetNumber?: string
+  assetNumber?: string,
+  tenantId?: string
 ): HallmarkData {
-  const hallmarkNumber = generateHallmarkNumber();
+  const hallmarkNumber = generateHallmarkNumber(tenantId);
   const contentHash = generateContentHash(content);
   
   const searchTerms = [
@@ -204,6 +259,12 @@ export function isReservedAssetNumber(masterNumber: number): boolean {
 export function validateHallmarkNumber(hallmarkNumber: string): boolean {
   if (hallmarkNumber.startsWith('ORBIT-')) {
     return /^ORBIT-\d{8}-[A-Z0-9]{6}$/.test(hallmarkNumber);
+  }
+  
+  // NPP or PP tenant hallmark numbers
+  if (hallmarkNumber.startsWith('NPP-') || hallmarkNumber.startsWith('PP-')) {
+    // Match: NPP-YYYYMMDD-RANDOM or NPP-000000001-01
+    return /^(NPP|PP)-(\d{8}-[A-Z0-9]{6}|\d{9}-\d{2})$/.test(hallmarkNumber);
   }
   
   if (hallmarkNumber.startsWith('#')) {
