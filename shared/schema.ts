@@ -326,9 +326,10 @@ export const FOUNDING_ASSETS = {
   },
 } as const;
 
-// Release Versions Table - Track app releases and hallmarks
+// Release Versions Table - Track app releases and hallmarks (tenant-aware)
 export const releaseVersions = pgTable("release_versions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("orbit").notNull(), // orbit = platform, npp = Nashville Painting Professionals, demo = PaintPros demo
   version: text("version").notNull(),
   buildNumber: integer("build_number").notNull(),
   hallmarkId: varchar("hallmark_id").references(() => hallmarks.id),
@@ -336,6 +337,7 @@ export const releaseVersions = pgTable("release_versions", {
   solanaTxSignature: text("solana_tx_signature"),
   solanaTxStatus: text("solana_tx_status").default("pending"),
   deploymentId: text("deployment_id"),
+  releaseNotes: text("release_notes"), // What changed in this version
   metadata: jsonb("metadata"),
   issuedAt: timestamp("issued_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

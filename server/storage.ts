@@ -536,16 +536,44 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  // Release Versions
+  // Release Versions (tenant-aware)
   async createRelease(release: InsertReleaseVersion): Promise<ReleaseVersion> {
     const [result] = await db.insert(releaseVersions).values(release).returning();
     return result;
   }
 
-  async getLatestRelease(): Promise<ReleaseVersion | undefined> {
+  async getLatestRelease(tenantId?: string): Promise<ReleaseVersion | undefined> {
+    if (tenantId) {
+      const [result] = await db.select().from(releaseVersions)
+        .where(eq(releaseVersions.tenantId, tenantId))
+        .orderBy(desc(releaseVersions.buildNumber))
+        .limit(1);
+      return result;
+    }
+    // Default: get ORBIT platform releases (tenantId = 'orbit')
     const [result] = await db.select().from(releaseVersions)
+      .where(eq(releaseVersions.tenantId, 'orbit'))
       .orderBy(desc(releaseVersions.buildNumber))
       .limit(1);
+    return result;
+  }
+
+  async getReleasesByTenant(tenantId: string, limit: number = 20): Promise<ReleaseVersion[]> {
+    return await db.select().from(releaseVersions)
+      .where(eq(releaseVersions.tenantId, tenantId))
+      .orderBy(desc(releaseVersions.buildNumber))
+      .limit(limit);
+  }
+
+  async getAllReleases(limit: number = 50): Promise<ReleaseVersion[]> {
+    return await db.select().from(releaseVersions)
+      .orderBy(desc(releaseVersions.buildNumber))
+      .limit(limit);
+  }
+
+  async getReleaseById(id: string): Promise<ReleaseVersion | undefined> {
+    const [result] = await db.select().from(releaseVersions)
+      .where(eq(releaseVersions.id, id));
     return result;
   }
 
@@ -553,6 +581,15 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db
       .update(releaseVersions)
       .set({ solanaTxSignature: signature, solanaTxStatus: status })
+      .where(eq(releaseVersions.id, id))
+      .returning();
+    return result;
+  }
+
+  async updateReleaseNotes(id: string, releaseNotes: string): Promise<ReleaseVersion | undefined> {
+    const [result] = await db
+      .update(releaseVersions)
+      .set({ releaseNotes })
       .where(eq(releaseVersions.id, id))
       .returning();
     return result;

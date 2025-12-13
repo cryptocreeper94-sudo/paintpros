@@ -1025,13 +1025,13 @@ export async function registerRoutes(
   // GET /api/hallmarks/founding-assets - Get reserved founding assets
   app.get("/api/hallmarks/founding-assets", async (req, res) => {
     try {
-      const assets = Object.entries(hallmarkService.getFoundingAsset('ORBIT_PLATFORM')).length > 0
-        ? {
-            ORBIT_PLATFORM: hallmarkService.getFoundingAsset('ORBIT_PLATFORM'),
-            JASON_FOUNDER: hallmarkService.getFoundingAsset('JASON_FOUNDER'),
-            SIDONIE_TEAM: hallmarkService.getFoundingAsset('SIDONIE_TEAM'),
-          }
-        : {};
+      const assets = {
+        ORBIT_GENESIS: hallmarkService.getFoundingAsset('ORBIT_GENESIS'),
+        PAINTPROS_PLATFORM: hallmarkService.getFoundingAsset('PAINTPROS_PLATFORM'),
+        NPP_GENESIS: hallmarkService.getFoundingAsset('NPP_GENESIS'),
+        JASON_FOUNDER: hallmarkService.getFoundingAsset('JASON_FOUNDER'),
+        SIDONIE_TEAM: hallmarkService.getFoundingAsset('SIDONIE_TEAM'),
+      };
       res.json(assets);
     } catch (error) {
       console.error("Error fetching founding assets:", error);
@@ -1041,15 +1041,21 @@ export async function registerRoutes(
 
   // ============ RELEASE VERSIONS ============
   
-  // GET /api/releases/latest - Get latest release version
+  // GET /api/releases/latest - Get latest release version (supports tenantId query param)
   app.get("/api/releases/latest", async (req, res) => {
     try {
-      const release = await storage.getLatestRelease();
+      const tenantId = req.query.tenantId as string | undefined;
+      const release = await storage.getLatestRelease(tenantId);
+      
       if (!release) {
+        const genesisAsset = tenantId === 'npp' 
+          ? FOUNDING_ASSETS.NPP_GENESIS 
+          : FOUNDING_ASSETS.PAINTPROS_PLATFORM;
         res.json({ 
           version: "1.0.0", 
           buildNumber: 0,
-          hallmarkNumber: FOUNDING_ASSETS.ORBIT_PLATFORM.number,
+          tenantId: tenantId || 'orbit',
+          hallmarkNumber: genesisAsset.number,
           solanaTxStatus: "genesis"
         });
         return;
@@ -1062,7 +1068,7 @@ export async function registerRoutes(
       
       res.json({
         ...release,
-        hallmarkNumber: hallmark?.hallmarkNumber || FOUNDING_ASSETS.ORBIT_PLATFORM.number,
+        hallmarkNumber: hallmark?.hallmarkNumber || FOUNDING_ASSETS.PAINTPROS_PLATFORM.number,
         hallmarkDetails: hallmark
       });
     } catch (error) {
@@ -1071,12 +1077,30 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/releases/bump - Bump version and create hallmark
+  // GET /api/releases - Get all releases (supports tenantId filter)
+  app.get("/api/releases", async (req, res) => {
+    try {
+      const tenantId = req.query.tenantId as string | undefined;
+      const limit = parseInt(req.query.limit as string) || 20;
+      
+      const releases = tenantId 
+        ? await storage.getReleasesByTenant(tenantId, limit)
+        : await storage.getAllReleases(limit);
+      
+      res.json(releases);
+    } catch (error) {
+      console.error("Error fetching releases:", error);
+      res.status(500).json({ error: "Failed to fetch releases" });
+    }
+  });
+
+  // POST /api/releases/bump - Bump version and create hallmark (tenant-aware)
   app.post("/api/releases/bump", async (req, res) => {
     try {
-      const { bumpType = "patch" } = req.body;
+      const { bumpType = "patch", tenantId = "orbit", releaseNotes } = req.body;
       
-      const latestRelease = await storage.getLatestRelease();
+      // Get tenant-specific latest release
+      const latestRelease = await storage.getLatestRelease(tenantId);
       let currentVersion = latestRelease?.version || "1.0.0";
       let buildNumber = (latestRelease?.buildNumber || 0) + 1;
       
@@ -1095,30 +1119,44 @@ export async function registerRoutes(
           newVersion = `${major}.${minor}.${patch + 1}`;
       }
       
-      const contentHash = solana.hashData(`${newVersion}-${buildNumber}-${Date.now()}`);
+      // Include tenant ID in the hash for uniqueness
+      const contentHash = solana.hashData(`${tenantId}-${newVersion}-${buildNumber}-${Date.now()}`);
+      
+      // Get tenant name for hallmark
+      const tenantNames: Record<string, string> = {
+        'orbit': 'ORBIT Platform',
+        'npp': 'Nashville Painting Professionals',
+        'demo': 'PaintPros.io Demo',
+      };
+      const recipientName = tenantNames[tenantId] || tenantId;
       
       const hallmarkData = hallmarkService.createHallmarkData(
         'release',
-        'Paint Pros by ORBIT',
+        recipientName,
         'system',
         'system',
         `v${newVersion} build ${buildNumber}`,
-        { version: newVersion, buildNumber, bumpType }
+        { version: newVersion, buildNumber, bumpType, tenantId },
+        undefined,
+        undefined,
+        tenantId // Pass tenantId for proper prefix (NPP-, PP-, etc.)
       );
       
       const savedHallmark = await storage.createHallmark(hallmarkData);
       
       const release = await storage.createRelease({
+        tenantId,
         version: newVersion,
         buildNumber,
         hallmarkId: savedHallmark.id,
         contentHash,
+        releaseNotes,
       });
       
       res.status(201).json({
         release,
         hallmark: savedHallmark,
-        message: `Version bumped to ${newVersion} (Build ${buildNumber})`
+        message: `${recipientName} version bumped to ${newVersion} (Build ${buildNumber})`
       });
     } catch (error) {
       console.error("Error bumping version:", error);
@@ -1126,7 +1164,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/releases/:id/stamp - Stamp release to Solana
+  // POST /api/releases/:id/stamp - Stamp release to Solana (tenant-aware)
   app.post("/api/releases/:id/stamp", async (req, res) => {
     try {
       const { network = "mainnet-beta" } = req.body;
@@ -1137,8 +1175,8 @@ export async function registerRoutes(
         return;
       }
       
-      const release = await storage.getLatestRelease();
-      if (!release || release.id !== req.params.id) {
+      const release = await storage.getReleaseById(req.params.id);
+      if (!release) {
         res.status(404).json({ error: "Release not found" });
         return;
       }
@@ -1148,7 +1186,8 @@ export async function registerRoutes(
         release.contentHash,
         wallet,
         network,
-        { entityType: 'release', entityId: release.id }
+        { entityType: 'release', entityId: release.id },
+        release.tenantId // Pass tenant for proper memo prefix
       );
       
       const updated = await storage.updateReleaseSolanaStatus(

@@ -12,9 +12,17 @@ const httpServer = createServer(app);
 // Track if we've already processed auto-deploy for this instance
 let autoDeployProcessed = false;
 
+// Registered tenants for auto-deploy versioning
+const DEPLOY_TENANTS = [
+  { id: 'orbit', name: 'ORBIT Platform' },
+  { id: 'npp', name: 'Nashville Painting Professionals' },
+  // Add more tenants here as they onboard
+];
+
 /**
  * Automatic Version Bump & Solana Stamp on Production Deployment
  * This runs once when the server starts in production mode
+ * Bumps versions for ALL registered tenants independently
  */
 async function autoDeployVersionBump(): Promise<void> {
   if (autoDeployProcessed) {
@@ -30,98 +38,110 @@ async function autoDeployVersionBump(): Promise<void> {
     return;
   }
   
-  console.log("[auto-deploy] Production detected, starting automatic version bump...");
+  console.log("[auto-deploy] Production detected, starting automatic version bump for all tenants...");
   
-  try {
-    // Get latest release to check if we already processed this deployment
-    const latestRelease = await storage.getLatestRelease();
-    
-    // Check if this deployment ID was already processed
-    if (deploymentId && latestRelease?.deploymentId === deploymentId) {
-      console.log("[auto-deploy] This deployment already processed, skipping");
-      autoDeployProcessed = true;
-      return;
-    }
-    
-    // Calculate new version
-    let currentVersion = latestRelease?.version || "1.0.0";
-    let buildNumber = (latestRelease?.buildNumber || 0) + 1;
-    
-    const [major, minor, patch] = currentVersion.split('.').map(Number);
-    const newVersion = `${major}.${minor}.${patch + 1}`;
-    
-    console.log(`[auto-deploy] Bumping version: ${currentVersion} -> ${newVersion} (Build ${buildNumber})`);
-    
-    // Create content hash
-    const contentHash = solana.hashData(`${newVersion}-${buildNumber}-${Date.now()}-${deploymentId || 'manual'}`);
-    
-    // Create hallmark for this release
-    const hallmarkData = hallmarkService.createHallmarkData(
-      'release',
-      'Paint Pros by ORBIT',
-      'system',
-      'system',
-      `v${newVersion} build ${buildNumber}`,
-      { 
-        version: newVersion, 
-        buildNumber, 
-        bumpType: 'patch',
-        deploymentId: deploymentId || 'manual',
-        autoDeployed: true,
-        timestamp: new Date().toISOString()
+  const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+  const wallet = privateKey ? solana.getWalletFromPrivateKey(privateKey) : null;
+  const network: 'devnet' | 'mainnet-beta' = 'mainnet-beta';
+  
+  // Process each tenant independently
+  for (const tenant of DEPLOY_TENANTS) {
+    try {
+      console.log(`[auto-deploy][${tenant.id}] Processing ${tenant.name}...`);
+      
+      // Get tenant-specific latest release
+      const latestRelease = await storage.getLatestRelease(tenant.id);
+      
+      // Check if this deployment ID was already processed for this tenant
+      if (deploymentId && latestRelease?.deploymentId === deploymentId) {
+        console.log(`[auto-deploy][${tenant.id}] Deployment already processed, skipping`);
+        continue;
       }
-    );
-    
-    const savedHallmark = await storage.createHallmark(hallmarkData);
-    console.log(`[auto-deploy] Created hallmark: ${savedHallmark.hallmarkNumber}`);
-    
-    // Create release record with deployment ID
-    const release = await storage.createRelease({
-      version: newVersion,
-      buildNumber,
-      hallmarkId: savedHallmark.id,
-      contentHash,
-      deploymentId: deploymentId || `manual-${Date.now()}`,
-    });
-    console.log(`[auto-deploy] Created release: v${newVersion}`);
-    
-    // Attempt Solana blockchain stamp
-    const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
-    
-    if (privateKey) {
-      try {
-        console.log("[auto-deploy] Stamping to Solana blockchain...");
-        const wallet = solana.getWalletFromPrivateKey(privateKey);
-        const network: 'devnet' | 'mainnet-beta' = 'mainnet-beta';
-        
-        const result = await solana.stampHashToBlockchain(
-          contentHash,
-          wallet,
-          network,
-          { entityType: 'release', entityId: release.id }
-        );
-        
-        await storage.updateReleaseSolanaStatus(release.id, result.signature, "confirmed");
-        
-        const explorerUrl = `https://explorer.solana.com/tx/${result.signature}`;
-        await storage.updateHallmarkBlockchain(savedHallmark.id, result.signature, explorerUrl);
-        
-        console.log(`[auto-deploy] SUCCESS! Solana TX: ${result.signature}`);
-        console.log(`[auto-deploy] Explorer: ${explorerUrl}`);
-      } catch (stampError) {
-        console.error("[auto-deploy] Solana stamp failed:", stampError);
-        console.log("[auto-deploy] Version bumped but blockchain stamp failed - will retry on next deploy");
+      
+      // Calculate new version for this tenant
+      let currentVersion = latestRelease?.version || "1.0.0";
+      let buildNumber = (latestRelease?.buildNumber || 0) + 1;
+      
+      const [major, minor, patch] = currentVersion.split('.').map(Number);
+      const newVersion = `${major}.${minor}.${patch + 1}`;
+      
+      console.log(`[auto-deploy][${tenant.id}] Bumping: ${currentVersion} -> ${newVersion} (Build ${buildNumber})`);
+      
+      // Create tenant-specific content hash
+      const contentHash = solana.hashData(`${tenant.id}-${newVersion}-${buildNumber}-${Date.now()}-${deploymentId || 'manual'}`);
+      
+      // Create hallmark for this tenant's release
+      const hallmarkData = hallmarkService.createHallmarkData(
+        'release',
+        tenant.name,
+        'system',
+        'system',
+        `v${newVersion} build ${buildNumber}`,
+        { 
+          version: newVersion, 
+          buildNumber, 
+          bumpType: 'patch',
+          tenantId: tenant.id,
+          deploymentId: deploymentId || 'manual',
+          autoDeployed: true,
+          timestamp: new Date().toISOString()
+        },
+        undefined,
+        undefined,
+        tenant.id // Use tenant ID for proper prefix (NPP-, PP-, ORBIT-)
+      );
+      
+      const savedHallmark = await storage.createHallmark(hallmarkData);
+      console.log(`[auto-deploy][${tenant.id}] Created hallmark: ${savedHallmark.hallmarkNumber}`);
+      
+      // Create tenant-specific release record
+      const release = await storage.createRelease({
+        tenantId: tenant.id,
+        version: newVersion,
+        buildNumber,
+        hallmarkId: savedHallmark.id,
+        contentHash,
+        deploymentId: deploymentId || `manual-${Date.now()}`,
+        releaseNotes: `Automatic deployment ${new Date().toISOString()}`,
+      });
+      console.log(`[auto-deploy][${tenant.id}] Created release: v${newVersion}`);
+      
+      // Attempt Solana blockchain stamp for this tenant
+      if (wallet) {
+        try {
+          console.log(`[auto-deploy][${tenant.id}] Stamping to Solana...`);
+          
+          const result = await solana.stampHashToBlockchain(
+            contentHash,
+            wallet,
+            network,
+            { entityType: 'release', entityId: release.id },
+            tenant.id // Pass tenant ID for memo prefix
+          );
+          
+          await storage.updateReleaseSolanaStatus(release.id, result.signature, "confirmed");
+          
+          const explorerUrl = `https://explorer.solana.com/tx/${result.signature}`;
+          await storage.updateHallmarkBlockchain(savedHallmark.id, result.signature, explorerUrl);
+          
+          console.log(`[auto-deploy][${tenant.id}] SUCCESS! TX: ${result.signature}`);
+        } catch (stampError) {
+          console.error(`[auto-deploy][${tenant.id}] Solana stamp failed:`, stampError);
+        }
+      } else {
+        console.log(`[auto-deploy][${tenant.id}] No wallet - version bumped without blockchain stamp`);
       }
-    } else {
-      console.log("[auto-deploy] No Solana wallet configured - version bumped without blockchain stamp");
+      
+      console.log(`[auto-deploy][${tenant.id}] COMPLETE: v${newVersion} (Build ${buildNumber})`);
+      
+    } catch (error) {
+      console.error(`[auto-deploy][${tenant.id}] Error:`, error);
+      // Continue with other tenants even if one fails
     }
-    
-    autoDeployProcessed = true;
-    console.log(`[auto-deploy] COMPLETE: v${newVersion} (Build ${buildNumber})`);
-    
-  } catch (error) {
-    console.error("[auto-deploy] Error during automatic version bump:", error);
   }
+  
+  autoDeployProcessed = true;
+  console.log("[auto-deploy] All tenants processed successfully");
 }
 
 declare module "http" {
