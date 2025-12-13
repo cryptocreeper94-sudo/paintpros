@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Loader2 } from "lucide-react";
+import { X, Send, Loader2, Volume2, VolumeX } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import paintBuddyImage from "@assets/generated_images/paint_buddy_transparent.png";
+import painterMascot from "@assets/generated_images/painter_mascot_transparent.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -18,7 +18,10 @@ export function PaintBuddy() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("paintbuddy_visited");
@@ -44,6 +47,43 @@ export function PaintBuddy() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const speakText = async (text: string) => {
+    if (!voiceEnabled) return;
+    
+    try {
+      setIsSpeaking(true);
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) throw new Error("TTS failed");
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      await audio.play();
+    } catch (error) {
+      console.error("TTS error:", error);
+      setIsSpeaking(false);
+    }
+  };
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -88,6 +128,7 @@ export function PaintBuddy() {
         ...prev,
         { role: "assistant", content: data.message },
       ]);
+      speakText(data.message);
     } catch (error) {
       setMessages((prev) => [
         ...prev,
@@ -140,7 +181,7 @@ export function PaintBuddy() {
             >
               <div className="absolute inset-0 bg-accent/30 blur-xl rounded-full scale-110" />
               <img
-                src={paintBuddyImage}
+                src={painterMascot}
                 alt="Paint Buddy"
                 className="w-32 h-32 object-contain relative z-10 drop-shadow-2xl"
               />
@@ -162,7 +203,7 @@ export function PaintBuddy() {
             data-testid="button-paint-buddy-open"
           >
             <motion.img
-              src={paintBuddyImage}
+              src={painterMascot}
               alt="Paint Buddy"
               className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
               animate={{
@@ -195,7 +236,7 @@ export function PaintBuddy() {
               <div className="relative">
                 <div className="absolute inset-0 bg-accent/30 blur-md rounded-full" />
                 <img
-                  src={paintBuddyImage}
+                  src={painterMascot}
                   alt="Rollie"
                   className="w-12 h-12 object-contain relative z-10"
                 />
@@ -207,6 +248,18 @@ export function PaintBuddy() {
                   Online - Ready to help!
                 </p>
               </div>
+              <button
+                onClick={() => setVoiceEnabled(!voiceEnabled)}
+                className={`p-2 hover:bg-white/10 rounded-lg transition-colors ${isSpeaking ? "animate-pulse" : ""}`}
+                data-testid="button-paint-buddy-voice"
+                title={voiceEnabled ? "Mute voice" : "Enable voice"}
+              >
+                {voiceEnabled ? (
+                  <Volume2 className="w-5 h-5 text-accent" />
+                ) : (
+                  <VolumeX className="w-5 h-5 text-white/50" />
+                )}
+              </button>
               <button
                 onClick={handleClose}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"

@@ -1918,5 +1918,39 @@ Use occasional paint-related puns or references to keep things fun!`;
     }
   });
 
+  // POST /api/tts - Convert text to speech using OpenAI TTS
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { text } = req.body;
+      
+      if (!text || typeof text !== "string") {
+        res.status(400).json({ error: "Text is required" });
+        return;
+      }
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const mp3Response = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: "nova",
+        input: text.slice(0, 4096),
+      });
+
+      const buffer = Buffer.from(await mp3Response.arrayBuffer());
+      
+      res.set({
+        "Content-Type": "audio/mpeg",
+        "Content-Length": buffer.length.toString(),
+      });
+      res.send(buffer);
+    } catch (error) {
+      console.error("Error in TTS:", error);
+      res.status(500).json({ error: "Failed to generate speech" });
+    }
+  });
+
   return httpServer;
 }
