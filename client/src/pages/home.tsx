@@ -67,7 +67,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
               
               <div className="relative z-10 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-accent-foreground text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-white text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
                   <Star className="w-3 h-3 fill-accent text-accent" />
                   {ratingBadge}
                 </div>
