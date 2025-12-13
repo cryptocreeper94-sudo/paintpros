@@ -35,7 +35,7 @@ export function Navbar() {
       <div className="w-full px-0 md:px-4 py-0 md:py-1 flex items-center justify-between">
         {/* Left: Hamburger Emblem */}
         <button 
-          className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[45px] -mt-[10px] md:ml-0 md:mt-0"
+          className="p-0 hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[45px] -mt-[15px] md:ml-0 md:mt-0"
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
