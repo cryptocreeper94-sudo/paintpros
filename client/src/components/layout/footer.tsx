@@ -43,14 +43,14 @@ export function Footer() {
               © {new Date().getFullYear()} {tenant.name}
             </div>
             
-            {/* Hallmark Badge */}
+            {/* Hallmark Badge - Icon only on mobile, full on desktop */}
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 hover:border-amber-400/50 transition-all hover:scale-105 group"
+              className="flex items-center gap-1.5 p-1.5 md:px-2 md:py-1 rounded-full md:rounded-md bg-gradient-to-r from-fuchsia-500/30 to-cyan-500/30 border border-fuchsia-400/50 hover:border-fuchsia-300/70 transition-all hover:scale-110 group shadow-[0_0_12px_rgba(236,72,153,0.4)] hover:shadow-[0_0_20px_rgba(236,72,153,0.6)]"
               data-testid="button-hallmark-badge"
             >
-              <Shield className="w-3 h-3 text-amber-400 group-hover:text-amber-300" />
-              <span className="text-amber-400/90 font-mono text-[9px] group-hover:text-amber-300">
+              <Shield className="w-4 h-4 md:w-3 md:h-3 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_4px_rgba(236,72,153,0.8)]" />
+              <span className="hidden md:inline text-fuchsia-300/90 font-mono text-[9px] group-hover:text-fuchsia-200">
                 {displayHallmark}
               </span>
             </button>
