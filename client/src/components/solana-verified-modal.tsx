@@ -57,12 +57,14 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
         <div className="space-y-4 pt-2">
           <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
             <div className="flex gap-4">
-              <div className="flex-shrink-0 p-3 bg-white rounded-xl">
+              <div className="flex-shrink-0 rounded-lg overflow-hidden" style={{ backgroundColor: '#14F195' }}>
                 <QRCodeSVG 
                   value={verifyUrl}
                   size={100}
                   level="H"
                   includeMargin={false}
+                  bgColor="#14F195"
+                  fgColor="#000000"
                 />
               </div>
               <div className="flex-1 min-w-0">
