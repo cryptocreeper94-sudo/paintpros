@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const PRICING_TIERS = [
-  { tier: "Essentials", price: "$149/mo", setup: "$999", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
-  { tier: "Professional", price: "$299/mo", setup: "$1,499", target: "1-3 locations", features: ["Everything in Essentials", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
-  { tier: "Franchise Core", price: "$749/mo + $99/loc", setup: "$4,999", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
-  { tier: "Enterprise", price: "$1,499/mo base", setup: "$9,500", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
+  { tier: "Starter", price: "$1,500/mo", setup: "$2,500", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
+  { tier: "Professional", price: "$2,500/mo", setup: "$4,500", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
+  { tier: "Franchise Core", price: "$4,000/mo + $500/loc", setup: "$7,500", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
+  { tier: "Enterprise", price: "$8,000/mo base", setup: "$15,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
 ];
 
 const PROJECTIONS = [
@@ -35,17 +35,17 @@ LICENSING TIERS
 
 Tier                    Monthly             Setup Fee    Target
 ─────────────────────────────────────────────────────────────
-Essentials              $149/mo             $999         Solo contractors
-Professional            $299/mo             $1,499       1-3 locations
-Franchise Core          $749/mo + $99/loc   $4,999       5+ sites
-Enterprise White-Label  $1,499/mo base      $9,500       Large franchises
+Starter                 $1,500/mo           $2,500       Solo contractors
+Professional            $2,500/mo           $4,500       1-3 locations
+Franchise Core          $4,000/mo + $500/loc  $7,500     5+ sites
+Enterprise White-Label  $8,000/mo base      $15,000      Large franchises
 
 UNIT ECONOMICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Gross Margin:           65%
 LTV:CAC Ratio:          22:1
-ARPU:                   $249/month
+ARPU:                   $2,500/month
 3-Year Customer LTV:    $8,964
 CAC (projected):        $400
 
@@ -270,7 +270,7 @@ Ecosystem: https://darkwavestudios.io`;
                   {[
                     { label: "Gross Margin", value: "65%", color: "text-green-400" },
                     { label: "LTV:CAC Ratio", value: "22:1", color: "text-blue-400" },
-                    { label: "ARPU", value: "$249/mo", color: "text-accent" },
+                    { label: "ARPU", value: "$2,500/mo", color: "text-accent" },
                     { label: "3-Year Customer LTV", value: "$8,964", color: "text-purple-400" },
                     { label: "Infrastructure Cost", value: "~$45/tenant", color: "text-muted-foreground" },
                   ].map((item) => (

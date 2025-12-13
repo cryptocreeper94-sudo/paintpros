@@ -838,22 +838,22 @@ LICENSING TIERS
 
 Tier                    Monthly         Setup Fee    Target Customer
 ──────────────────────────────────────────────────────────────────
-Essentials              $149/mo         $999         Solo contractors, 1 location
-Professional            $299/mo         $1,499       Growing painters, 1-3 locations
-Franchise Core          $749/mo + $99/loc   $4,999   Multi-location (5+ sites)
-Enterprise White-Label  $1,499/mo + $199/loc  $9,500 Large franchises
+Starter                 $1,500/mo       $2,500       Solo contractors, 1 location
+Professional            $2,500/mo       $4,500       Growing painters, 1-3 locations
+Franchise Core          $4,000/mo + $500/loc  $7,500 Multi-location (5+ sites)
+Enterprise White-Label  $8,000/mo base  $15,000      Large franchises
 
 FEATURE MATRIX
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-ESSENTIALS ($149/month)
+STARTER ($1,500/month)
 • White-label website with Bento Grid design
 • Interactive estimator tool
 • Basic lead capture & CRM
 • Email support (2 business day response)
 • Blockchain stamping add-on ($49/mo)
 
-PROFESSIONAL ($299/month)
+PROFESSIONAL ($2,500/month)
 • Everything in Essentials
 • Full analytics dashboard
 • Role-based dashboards (Owner, Admin, Area Manager)
@@ -861,7 +861,7 @@ PROFESSIONAL ($299/month)
 • 2 strategy sessions per year
 • Blockchain stamping included
 
-FRANCHISE CORE ($749/month + $99/location)
+FRANCHISE CORE ($4,000/month + $500/location)
 • Everything in Professional
 • Multi-tenant management console
 • Shared asset libraries
@@ -869,20 +869,20 @@ FRANCHISE CORE ($749/month + $99/location)
 • Dedicated account manager
 • Compliance & audit trail
 
-ENTERPRISE WHITE-LABEL ($1,499/month base)
+ENTERPRISE WHITE-LABEL ($8,000/month base)
 • Full brand suppression
 • API priority access
 • Co-branded marketing assets
 • SLA guarantees (99.9% uptime)
 • Custom contract terms
-• Additional locations: $199/location
+• Additional locations: $500/location
 
 SUPPORT PACKAGES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Essentials Care     Included    2 business days    Email support, quarterly webinars
-ProCare             $249/mo     24 hours           Priority support, 2 strategy sessions
-Enterprise SLA      $799/mo     4 hours critical   Dedicated CSM, monthly roadmap sync
+Starter Care        Included    2 business days    Email support, quarterly webinars
+ProCare             $500/mo     24 hours           Priority support, 2 strategy sessions
+Enterprise SLA      $1,500/mo   4 hours critical   Dedicated CSM, monthly roadmap sync
 
 CUSTOMIZATION MENU
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
