@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { useTenant } from "@/context/TenantContext";
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Import AI-generated portfolio images
 import masterBedroom from "@assets/generated_images/master_bedroom_refresh.png";
@@ -38,6 +41,7 @@ export default function Portfolio() {
   const tenant = useTenant();
   const cityName = tenant.address?.city || "Local";
   const areas = tenant.seo.serviceAreas;
+  const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
 
   const portfolioImages: PortfolioImage[] = [
     // Bedrooms
@@ -92,37 +96,64 @@ export default function Portfolio() {
         <BentoGrid>
           {portfolioImages.map((image) => (
             <BentoItem key={image.id} colSpan={image.colSpan} rowSpan={image.rowSpan} mobileColSpan={image.mobileColSpan} mobileRowSpan={image.mobileRowSpan}>
-              <GlassCard 
-                className="p-0 overflow-hidden group min-h-[150px] md:min-h-[300px]"
-                hoverEffect={false}
+              <button 
+                onClick={() => setSelectedImage(image)}
+                className="w-full h-full text-left"
+                data-testid={`button-portfolio-${image.id}`}
               >
-                {/* Portfolio Image */}
-                <img 
-                  src={image.imageUrl}
-                  alt={image.title}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors z-10" />
-                
-                {/* Content overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black via-black/70 to-transparent">
-                  <span className="text-accent text-xs font-bold uppercase tracking-wider mb-2 block opacity-0 group-hover:opacity-100 transition-opacity delay-100">
-                    {image.category}
-                  </span>
-                  <h3 className="text-lg font-display font-bold text-white mb-1" data-testid={`portfolio-title-${image.id}`}>
-                    {image.title}
-                  </h3>
-                  <p className="text-white/70 text-sm" data-testid={`portfolio-location-${image.id}`}>
-                    {image.location}
-                  </p>
-                </div>
-              </GlassCard>
+                <GlassCard 
+                  className="p-0 overflow-hidden group min-h-[150px] md:min-h-[300px] cursor-pointer"
+                  hoverEffect={false}
+                >
+                  <img 
+                    src={image.imageUrl}
+                    alt={image.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors z-10" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 md:p-6 z-20 bg-gradient-to-t from-black via-black/70 to-transparent">
+                    <h3 className="text-sm md:text-lg font-display font-bold text-white mb-0.5" data-testid={`portfolio-title-${image.id}`}>
+                      {image.title}
+                    </h3>
+                    <p className="text-white/70 text-xs md:text-sm" data-testid={`portfolio-location-${image.id}`}>
+                      {image.location}
+                    </p>
+                  </div>
+                </GlassCard>
+              </button>
             </BentoItem>
           ))}
         </BentoGrid>
       </main>
+
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              data-testid="button-close-lightbox"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={selectedImage.imageUrl}
+              alt={selectedImage.title}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </PageLayout>
   );
 }
