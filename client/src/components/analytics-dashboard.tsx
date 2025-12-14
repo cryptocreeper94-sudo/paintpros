@@ -1,12 +1,100 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { motion } from "framer-motion";
 import { 
   BarChart3, Users, Eye, Clock, Globe, Smartphone, Monitor, Tablet,
-  TrendingUp, Activity, ArrowUpRight, RefreshCw, Zap
+  TrendingUp, Activity, ArrowUpRight, RefreshCw, Zap, X, Info, HelpCircle
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+interface MetricExplanation {
+  title: string;
+  description: string;
+  details: string[];
+  tips: string[];
+}
+
+const METRIC_EXPLANATIONS: Record<string, MetricExplanation> = {
+  live: {
+    title: "Live Visitors",
+    description: "The number of people currently browsing your website right now.",
+    details: [
+      "Updates every 30 seconds automatically",
+      "A visitor is considered 'live' if they've been active in the last 5 minutes",
+      "This includes anyone on any page of your site"
+    ],
+    tips: [
+      "Higher numbers during business hours indicate good marketing",
+      "Share your site link to see this number increase",
+      "Live visitors may become leads if they request an estimate"
+    ]
+  },
+  today: {
+    title: "Today's Traffic",
+    description: "Total page views and unique visitors for today (since midnight).",
+    details: [
+      "Page Views: Total number of pages loaded (includes repeat visits)",
+      "Visitors: Unique people who visited (counted once per device)",
+      "Resets at midnight each day"
+    ],
+    tips: [
+      "Compare to previous days to spot trends",
+      "More visitors than views means people are bouncing quickly",
+      "Views much higher than visitors means people are exploring multiple pages"
+    ]
+  },
+  week: {
+    title: "This Week's Traffic",
+    description: "Total page views and unique visitors for the current week (Sunday to Saturday).",
+    details: [
+      "Shows cumulative traffic for the entire week",
+      "Helps identify weekly patterns and trends",
+      "Resets every Sunday"
+    ],
+    tips: [
+      "Weekday vs weekend traffic can reveal your audience habits",
+      "Use this to measure marketing campaign effectiveness",
+      "Consistent weekly growth indicates healthy site performance"
+    ]
+  },
+  month: {
+    title: "This Month's Traffic",
+    description: "Total page views and unique visitors for the current calendar month.",
+    details: [
+      "Counts all traffic from the 1st of the month",
+      "Best metric for monthly business reporting",
+      "Resets on the 1st of each month"
+    ],
+    tips: [
+      "Compare month-over-month to track growth",
+      "Set monthly traffic goals to measure success",
+      "Use this number in business reports and investor updates"
+    ]
+  },
+  allTime: {
+    title: "All Time Traffic",
+    description: "Total page views and visitors since your website launched.",
+    details: [
+      "Cumulative total of all traffic ever recorded",
+      "Never resets - keeps growing over time",
+      "Shows the full history of your site's reach"
+    ],
+    tips: [
+      "Great for measuring overall business growth",
+      "Impressive numbers can be used in marketing",
+      "Milestone achievements (1K, 10K, 100K) are worth celebrating"
+    ]
+  }
+};
 
 interface AnalyticsData {
   today: { views: number; visitors: number };
@@ -28,6 +116,8 @@ const DEVICE_COLORS = {
 };
 
 export function AnalyticsDashboard() {
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  
   const { data, isLoading, refetch, isFetching } = useQuery<AnalyticsData>({
     queryKey: ["/api/analytics/dashboard"],
     queryFn: async () => {
@@ -95,9 +185,18 @@ export function AnalyticsDashboard() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <GlassCard className="p-5 relative overflow-hidden" glow>
+        <motion.div 
+          whileHover={{ scale: 1.02 }} 
+          transition={{ type: "spring", stiffness: 300 }}
+          onClick={() => setSelectedMetric("live")}
+          className="cursor-pointer"
+          data-testid="card-metric-live"
+        >
+          <GlassCard className="p-5 relative overflow-hidden group" glow>
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <HelpCircle className="w-4 h-4 text-green-400/60" />
+            </div>
             <div className="relative">
               <div className="flex items-center gap-2 text-sm text-green-400 mb-1">
                 <Zap className="w-4 h-4" />
@@ -111,9 +210,18 @@ export function AnalyticsDashboard() {
           </GlassCard>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <GlassCard className="p-5 relative overflow-hidden">
+        <motion.div 
+          whileHover={{ scale: 1.02 }} 
+          transition={{ type: "spring", stiffness: 300 }}
+          onClick={() => setSelectedMetric("today")}
+          className="cursor-pointer"
+          data-testid="card-metric-today"
+        >
+          <GlassCard className="p-5 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-gold-400/10 to-transparent" />
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <HelpCircle className="w-4 h-4 text-gold-400/60" />
+            </div>
             <div className="relative">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <Eye className="w-4 h-4" />
@@ -128,9 +236,18 @@ export function AnalyticsDashboard() {
           </GlassCard>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <GlassCard className="p-5 relative overflow-hidden">
+        <motion.div 
+          whileHover={{ scale: 1.02 }} 
+          transition={{ type: "spring", stiffness: 300 }}
+          onClick={() => setSelectedMetric("week")}
+          className="cursor-pointer"
+          data-testid="card-metric-week"
+        >
+          <GlassCard className="p-5 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <HelpCircle className="w-4 h-4 text-blue-400/60" />
+            </div>
             <div className="relative">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <TrendingUp className="w-4 h-4" />
@@ -145,9 +262,18 @@ export function AnalyticsDashboard() {
           </GlassCard>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <GlassCard className="p-5 relative overflow-hidden">
+        <motion.div 
+          whileHover={{ scale: 1.02 }} 
+          transition={{ type: "spring", stiffness: 300 }}
+          onClick={() => setSelectedMetric("month")}
+          className="cursor-pointer"
+          data-testid="card-metric-month"
+        >
+          <GlassCard className="p-5 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <HelpCircle className="w-4 h-4 text-purple-400/60" />
+            </div>
             <div className="relative">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <Activity className="w-4 h-4" />
@@ -162,9 +288,18 @@ export function AnalyticsDashboard() {
           </GlassCard>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <GlassCard className="p-5 relative overflow-hidden">
+        <motion.div 
+          whileHover={{ scale: 1.02 }} 
+          transition={{ type: "spring", stiffness: 300 }}
+          onClick={() => setSelectedMetric("allTime")}
+          className="cursor-pointer"
+          data-testid="card-metric-alltime"
+        >
+          <GlassCard className="p-5 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent" />
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <HelpCircle className="w-4 h-4 text-accent/60" />
+            </div>
             <div className="relative">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                 <Globe className="w-4 h-4" />
@@ -179,6 +314,57 @@ export function AnalyticsDashboard() {
           </GlassCard>
         </motion.div>
       </div>
+
+      {/* Metric Explanation Modal */}
+      <Dialog open={selectedMetric !== null} onOpenChange={() => setSelectedMetric(null)}>
+        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-white/10">
+          {selectedMetric && METRIC_EXPLANATIONS[selectedMetric] && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl">
+                  <Info className="w-5 h-5 text-gold-400" />
+                  {METRIC_EXPLANATIONS[selectedMetric].title}
+                </DialogTitle>
+                <DialogDescription className="text-base pt-2">
+                  {METRIC_EXPLANATIONS[selectedMetric].description}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 pt-4">
+                <div>
+                  <h4 className="text-sm font-semibold text-gold-400 mb-2 flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
+                    How It Works
+                  </h4>
+                  <ul className="space-y-2">
+                    {METRIC_EXPLANATIONS[selectedMetric].details.map((detail, i) => (
+                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <span className="text-gold-400 mt-1">•</span>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="pt-2 border-t border-white/10">
+                  <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Tips for Success
+                  </h4>
+                  <ul className="space-y-2">
+                    {METRIC_EXPLANATIONS[selectedMetric].tips.map((tip, i) => (
+                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <span className="text-blue-400 mt-1">•</span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <BentoGrid className="gap-4">
         <BentoItem colSpan={8} rowSpan={2}>
