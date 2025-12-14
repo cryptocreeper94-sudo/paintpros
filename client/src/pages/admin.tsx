@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera, Clock, Send, X, CheckCircle, GitBranch } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera, Clock, Send, X, CheckCircle, GitBranch, Eye } from "lucide-react";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
@@ -17,11 +17,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { useTenant } from "@/context/TenantContext";
 
 const DEFAULT_PIN = "4444";
 
 export default function Admin() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const tenant = useTenant();
+  const isDemo = tenant.id === "demo";
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -194,6 +197,26 @@ export default function Admin() {
       />
 
       <main className="pt-20 px-4 md:px-8 pb-24">
+        {isDemo && (
+          <motion.div 
+            className="max-w-7xl mx-auto mb-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/20 via-accent/10 to-blue-500/20 border border-blue-500/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/20">
+                  <Eye className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-blue-400">Demo Mode - Private Back-Office Control Panel</p>
+                  <p className="text-sm text-muted-foreground">This is an admin dashboard your customers never see. PIN-protected access for your operations team to manage leads, deals, and follow-ups.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div className="max-w-7xl mx-auto mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -208,14 +231,16 @@ export default function Admin() {
                 <p className="text-muted-foreground">CRM & Business Operations</p>
               </div>
             </div>
-            <motion.button
-              onClick={() => setShowPinChange(true)}
-              className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              data-testid="button-settings"
-            >
-              <Settings className="w-5 h-5 text-muted-foreground" />
-            </motion.button>
+            {!isDemo && (
+              <motion.button
+                onClick={() => setShowPinChange(true)}
+                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                data-testid="button-settings"
+              >
+                <Settings className="w-5 h-5 text-muted-foreground" />
+              </motion.button>
+            )}
           </div>
         </div>
 

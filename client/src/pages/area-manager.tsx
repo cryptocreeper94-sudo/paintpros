@@ -5,18 +5,21 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Palette, Sparkles, Camera } from "lucide-react";
+import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Palette, Sparkles, Camera, Eye } from "lucide-react";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import type { Lead } from "@shared/schema";
+import { useTenant } from "@/context/TenantContext";
 
 const DEFAULT_AREA_MANAGER_PIN = "2222";
 
 export default function AreaManager() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const tenant = useTenant();
+  const isDemo = tenant.id === "demo";
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [currentPin, setCurrentPin] = useState(DEFAULT_AREA_MANAGER_PIN);
@@ -147,6 +150,26 @@ export default function AreaManager() {
   return (
     <PageLayout>
       <main className="pt-24 px-4 md:px-8 pb-24">
+        {isDemo && (
+          <motion.div 
+            className="max-w-7xl mx-auto mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="p-4 rounded-xl bg-gradient-to-r from-teal-500/20 via-accent/10 to-teal-500/20 border border-teal-500/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-teal-500/20">
+                  <Eye className="w-5 h-5 text-teal-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-teal-400">Demo Mode - Private Area Manager Control Panel</p>
+                  <p className="text-sm text-muted-foreground">This is a sales rep dashboard that customers never see. PIN-protected access for your area managers to track their territories, leads, and sales pipeline.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div className="max-w-7xl mx-auto mb-12">
           <div className="flex items-center gap-4 mb-4">
             <motion.div 

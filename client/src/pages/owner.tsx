@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera, Shield } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera, Shield, Eye } from "lucide-react";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
@@ -13,6 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
+import { useTenant } from "@/context/TenantContext";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -33,7 +34,9 @@ const TAG_TYPES = [
 ];
 
 export default function Owner() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const tenant = useTenant();
+  const isDemo = tenant.id === "demo";
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [currentPin, setCurrentPin] = useState(DEFAULT_OWNER_PIN);
@@ -249,6 +252,26 @@ export default function Owner() {
   return (
     <PageLayout>
       <main className="pt-24 px-4 md:px-8 pb-24">
+        {isDemo && (
+          <motion.div 
+            className="max-w-7xl mx-auto mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="p-4 rounded-xl bg-gradient-to-r from-gold-400/20 via-accent/10 to-gold-400/20 border border-gold-400/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gold-400/20">
+                  <Eye className="w-5 h-5 text-gold-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-gold-400">Demo Mode - Private Owner Control Panel</p>
+                  <p className="text-sm text-muted-foreground">This is your private owner dashboard that customers never see. PIN-protected access to manage SEO, view analytics, track revenue, and oversee your entire business.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div className="max-w-7xl mx-auto mb-12">
           <div className="flex items-center gap-4 mb-4">
             <motion.div 
