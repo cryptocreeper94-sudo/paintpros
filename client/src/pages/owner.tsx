@@ -258,7 +258,7 @@ export default function Owner() {
                 </div>
                 <div>
                   <p className="font-bold text-gold-400 text-sm">Demo Mode - Private Owner Control Panel</p>
-                  <p className="text-xs text-muted-foreground">PIN-protected access for SEO, analytics, and business management.</p>
+                  <p className="text-xs text-muted-foreground">PIN-protected access for SEO, analytics, and business management. <span className="text-gold-400 font-medium">SEO tracking is live!</span></p>
                 </div>
               </div>
             </div>
