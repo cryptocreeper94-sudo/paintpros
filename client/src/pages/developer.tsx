@@ -21,6 +21,7 @@ import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { TenantAnalyticsDashboard } from "@/components/tenant-analytics-dashboard";
+import { LiveVisitorsCard } from "@/components/live-visitors-card";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
 import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
@@ -1733,6 +1734,11 @@ export default function Developer() {
           animate="visible"
         >
         <BentoGrid>
+          {/* Live Visitors Card */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <LiveVisitorsCard />
+          </BentoItem>
+
           <BentoItem colSpan={4} rowSpan={2}>
             <motion.div 
               className="h-full cursor-pointer" 

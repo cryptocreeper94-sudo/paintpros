@@ -17,6 +17,7 @@ import {
   springTransition 
 } from "@/lib/theme-effects";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
+import { LiveVisitorsCard } from "@/components/live-visitors-card";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { BookingsCard } from "@/components/bookings-card";
@@ -310,6 +311,11 @@ export default function Owner() {
           animate="visible"
         >
           <BentoGrid className="max-w-7xl mx-auto">
+            {/* Live Visitors Card */}
+            <BentoItem colSpan={3} rowSpan={1}>
+              <LiveVisitorsCard />
+            </BentoItem>
+
             {/* Stats Row - 4 small cards */}
             <BentoItem colSpan={3} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={0} whileHover={hover3DSubtle}>

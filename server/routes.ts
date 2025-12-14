@@ -19,6 +19,16 @@ import { sendContactEmail, type ContactFormData } from "./resend";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import type { RequestHandler } from "express";
 
+// Helper function to format time ago
+function formatTimeAgo(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}h ago`;
+}
+
 // Role-based access middleware
 const hasRole = (allowedRoles: string[]): RequestHandler => {
   return async (req, res, next) => {
@@ -1879,6 +1889,87 @@ Do not include any text before or after the JSON.`
       res.json({ liveVisitors: count });
     } catch (error) {
       console.error("Error fetching live count:", error);
+      res.status(500).json({ error: "Failed to fetch live visitors" });
+    }
+  });
+
+  // GET /api/analytics/live-visitors - Get detailed live visitor data
+  app.get("/api/analytics/live-visitors", async (req, res) => {
+    try {
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const recentViews = await storage.getPageViews(fiveMinutesAgo, new Date());
+      
+      // Group by session to get unique visitors
+      const sessionMap = new Map<string, {
+        sessionId: string;
+        deviceType: string;
+        browser: string;
+        page: string;
+        userAgent: string;
+        lastSeen: Date;
+      }>();
+      
+      const botPatterns = /bot|crawler|spider|headless|preview|replit/i;
+      
+      for (const view of recentViews) {
+        const sessionId = view.sessionId || view.ipHash || `anon-${view.id}`;
+        const existing = sessionMap.get(sessionId);
+        const viewTime = new Date(view.createdAt);
+        
+        if (!existing || viewTime > existing.lastSeen) {
+          sessionMap.set(sessionId, {
+            sessionId,
+            deviceType: view.deviceType || "desktop",
+            browser: view.browser || "Unknown",
+            page: view.page,
+            userAgent: view.userAgent || "",
+            lastSeen: viewTime,
+          });
+        }
+      }
+      
+      const visitors = Array.from(sessionMap.values());
+      const realVisitors = visitors.filter(v => !botPatterns.test(v.userAgent));
+      const bots = visitors.filter(v => botPatterns.test(v.userAgent));
+      
+      // Count by device
+      const byDevice = { desktop: 0, mobile: 0, tablet: 0 };
+      for (const v of realVisitors) {
+        if (v.deviceType === "mobile") byDevice.mobile++;
+        else if (v.deviceType === "tablet") byDevice.tablet++;
+        else byDevice.desktop++;
+      }
+      
+      // Count by page
+      const pageCount = new Map<string, number>();
+      for (const v of realVisitors) {
+        pageCount.set(v.page, (pageCount.get(v.page) || 0) + 1);
+      }
+      const byPage = Array.from(pageCount.entries())
+        .map(([page, count]) => ({ page, count }))
+        .sort((a, b) => b.count - a.count);
+      
+      // Format visitor data
+      const now = Date.now();
+      const formattedVisitors = realVisitors.map(v => ({
+        sessionId: v.sessionId.slice(0, 8) + "...",
+        deviceType: v.deviceType,
+        browser: v.browser,
+        page: v.page,
+        lastSeen: formatTimeAgo(now - v.lastSeen.getTime()),
+        isBot: false,
+      }));
+      
+      res.json({
+        total: visitors.length,
+        realVisitors: realVisitors.length,
+        bots: bots.length,
+        byDevice,
+        byPage,
+        visitors: formattedVisitors,
+      });
+    } catch (error) {
+      console.error("Error fetching live visitors:", error);
       res.status(500).json({ error: "Failed to fetch live visitors" });
     }
   });
