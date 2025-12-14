@@ -13,19 +13,21 @@ This document outlines the strategy for separating the **Beta Version** (current
 
 ## Current State
 
-### Beta Version (v1.0-beta)
+### Beta Version (v1.0.3)
 - **Tenant:** Nashville Painting Professionals (NPP)
 - **Tenant ID:** `npp`
-- **Environment:** Development/Staging on Replit
+- **Environment:** Production on Replit (mainnet blockchain)
 - **Purpose:** Product validation, feature testing, feedback collection
-- **Database:** Shared development database
+- **Database:** PostgreSQL with Drizzle ORM
+- **Last Updated:** December 14, 2025
 
 ### Key Beta Characteristics
 - All features enabled for testing
-- Client-side PIN authentication (development-grade)
-- Debug tools and developer console exposed
-- Direct database access for testing
-- Blockchain on devnet (test network)
+- PIN-based authentication (development-grade)
+- Developer console with blockchain tools
+- Solana mainnet integration for document verification
+- Document Asset system with opt-in blockchain hashing
+- Per-tenant hallmark numbering (NPP-000000000-XX format)
 
 ---
 
