@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, ExternalLink, Hash, Award, CheckCircle2, Loader2, Clock } from "lucide-react";
+import { ShieldCheck, ExternalLink, Hash, Award, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
@@ -24,35 +24,22 @@ interface SolanaVerifiedModalProps {
 export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProps) {
   const tenant = useTenant();
   const [latestRelease, setLatestRelease] = useState<TenantRelease | null>(null);
-  const [loadingRelease, setLoadingRelease] = useState(false);
   const isDemo = tenant.id === "demo";
-  const solanaLabel = isDemo ? "Painting Company Software" : "Painting Company";
+  const companyName = tenant.name;
   
   useEffect(() => {
     if (isOpen) {
-      setLoadingRelease(true);
-      
       const tenantId = isDemo ? 'demo' : 'npp';
       fetch(`/api/releases/latest?tenantId=${tenantId}`)
         .then(res => res.json())
-        .then(data => {
-          setLatestRelease(data);
-          setLoadingRelease(false);
-        })
-        .catch(() => {
-          setLatestRelease(null);
-          setLoadingRelease(false);
-        });
+        .then(data => setLatestRelease(data))
+        .catch(() => setLatestRelease(null));
     }
   }, [isOpen, isDemo]);
   
   const tenantAsset = isDemo ? FOUNDING_ASSETS.PAINTPROS_PLATFORM : FOUNDING_ASSETS.NPP_GENESIS;
   const serialNumber = tenantAsset.number;
   const displaySerial = serialNumber.replace('#', '');
-  
-  const hasSolanaVerification = latestRelease?.solanaTxSignature || 
-    latestRelease?.solanaTxStatus === 'confirmed' || 
-    latestRelease?.solanaTxStatus === 'genesis';
   
   const solscanUrl = latestRelease?.solanaTxSignature 
     ? `https://solscan.io/tx/${latestRelease.solanaTxSignature}`
@@ -66,7 +53,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
             <div className="p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] shadow-[0_0_20px_rgba(20,241,149,0.4)]">
               <ShieldCheck className="w-4 h-4 text-white" />
             </div>
-            Solana Blockchain Verified
+            <span className="text-cyan-700 dark:text-[#14F195]">{companyName}</span> Verified
           </DialogTitle>
         </DialogHeader>
         
@@ -122,34 +109,16 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                 </div>
               </GlassCard>
             </a>
-          ) : hasSolanaVerification ? (
+          ) : (
             <GlassCard className="p-3 bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20 border-[#14F195]/30">
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-cyan-700 dark:text-[#14F195]" />
                 <div>
                   <h4 className="font-display font-bold text-sm text-cyan-700 dark:text-[#14F195]">
-                    Blockchain Verified
+                    {companyName} Verified
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    This company is registered on Solana
-                  </p>
-                </div>
-              </div>
-            </GlassCard>
-          ) : (
-            <GlassCard className="p-3 bg-yellow-500/10 border-yellow-500/20">
-              <div className="flex items-center gap-3">
-                {loadingRelease ? (
-                  <Loader2 className="w-5 h-5 text-yellow-400 animate-spin" />
-                ) : (
-                  <Clock className="w-5 h-5 text-yellow-400" />
-                )}
-                <div>
-                  <h4 className="font-display font-bold text-sm text-yellow-400">
-                    {loadingRelease ? "Loading..." : "Verification Pending"}
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    Blockchain verification is being processed
+                    Registered on Solana blockchain
                   </p>
                 </div>
               </div>
@@ -170,9 +139,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               {latestRelease?.version && (
                 <div className="flex items-center gap-1 ml-auto">
                   <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
-                  {hasSolanaVerification && (
-                    <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
-                  )}
+                  <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
                 </div>
               )}
             </div>
