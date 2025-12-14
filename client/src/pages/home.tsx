@@ -443,8 +443,8 @@ export default function Home() {
               data-testid="button-color-selector"
             >
               <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-card relative">
-                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
-                  <h3 className="text-xs md:text-sm font-display font-bold text-foreground">Choose Your Color</h3>
+                <div className="absolute top-2 left-0 right-0 md:top-4 z-10 text-center">
+                  <h3 className="text-xs md:text-sm font-display font-bold text-foreground">Color Samples</h3>
                 </div>
                 {/* Light mode: use color wheel with white bg, Dark mode: use fan deck */}
                 <img 
