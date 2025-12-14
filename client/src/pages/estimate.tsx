@@ -386,7 +386,7 @@ export default function Estimate() {
     <PageLayout>
       {/* Demo Lock Overlay */}
       {isDemo && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-md px-4 pointer-events-none">
+        <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 z-40 w-full max-w-md px-4 pointer-events-none">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
