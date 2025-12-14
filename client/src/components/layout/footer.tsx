@@ -49,11 +49,11 @@ export function Footer() {
   
   return (
     <>
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#344e41] border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[40px] max-h-[40px] flex items-center">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#344e41] border-t border-white/10 text-base md:text-xs text-muted-foreground h-[40px] max-h-[40px] flex items-center">
         <div className="w-full px-3 md:px-4 flex justify-evenly md:justify-between items-center">
           
           {/* Copyright */}
-          <div className="whitespace-nowrap text-[9px] md:text-[10px]">
+          <div className="whitespace-nowrap text-base md:text-base">
             {isDemo ? (
               <>
                 <span className="hidden sm:inline">Powered by Darkwave Studios, LLC</span>
@@ -74,7 +74,7 @@ export function Footer() {
             data-testid="button-hallmark-badge"
           >
             <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
-            <span className="hidden md:inline text-fuchsia-300/90 font-mono text-[9px] group-hover:text-fuchsia-200">
+            <span className="hidden md:inline text-fuchsia-300/90 font-mono text-base group-hover:text-fuchsia-200">
               {displayHallmark}
             </span>
           </button>
@@ -82,7 +82,7 @@ export function Footer() {
           {/* Version - Clickable */}
           <button
             onClick={() => setShowVersionModal(true)}
-            className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px] hover:text-amber-400 transition-colors underline decoration-dotted underline-offset-2"
+            className="text-muted-foreground/60 font-mono text-sm md:text-base hover:text-amber-400 transition-colors underline decoration-dotted underline-offset-2"
             data-testid="button-version"
           >
             v{version}
@@ -152,7 +152,7 @@ export function Footer() {
                 />
                 <div>
                   <h3 className="font-bold text-sm">Rollie</h3>
-                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Your painting assistant</p>
+                  <p className="text-base md:text-base text-muted-foreground">Your painting assistant</p>
                 </div>
               </div>
               <button
@@ -169,7 +169,7 @@ export function Footer() {
                 <p className="text-muted-foreground text-xs md:text-sm">
                   Hi! I'm Rollie, your Paint Pro assistant. I can help with:
                 </p>
-                <ul className="mt-2 space-y-1 text-[10px] md:text-xs text-muted-foreground/80">
+                <ul className="mt-2 space-y-1 text-base md:text-xs text-muted-foreground/80">
                   <li>• Estimating your painting project</li>
                   <li>• Choosing the right colors</li>
                   <li>• Understanding our services</li>
@@ -229,7 +229,7 @@ export function Footer() {
             <div className="space-y-4">
               {/* First in Industry Badge */}
               <div className="bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20 border border-[#14F195]/30 rounded-lg p-3 text-center">
-                <span className="text-[10px] font-bold text-[#14F195] uppercase tracking-wider">Industry First</span>
+                <span className="text-base font-bold text-[#14F195] uppercase tracking-wider">Industry First</span>
                 <p className="text-sm font-semibold text-white mt-0.5">
                   First Solana-Verified <span className="text-[#14F195]">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span>
                 </p>
@@ -288,7 +288,7 @@ export function Footer() {
               </a>
               
               {/* Powered by */}
-              <p className="text-center text-[10px] text-gray-500">
+              <p className="text-center text-base text-gray-500">
                 {isDemo ? "ORBIT Hallmark System" : "Powered by ORBIT • NPP Verified"}
               </p>
             </div>
@@ -394,7 +394,7 @@ export function Footer() {
               )}
               
               {/* Powered by */}
-              <p className="text-center text-[10px] text-gray-500">
+              <p className="text-center text-base text-gray-500">
                 Paint Pros by ORBIT • Verified Software
               </p>
             </div>

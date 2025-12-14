@@ -81,7 +81,7 @@ export function ColorSelectorModal({ isOpen, onClose }: ColorSelectorModalProps)
             ))}
           </div>
           
-          <p className="text-[10px] text-muted-foreground/60 text-center pt-2">
+          <p className="text-base text-muted-foreground/60 text-center pt-2">
             Both tools are free to use and will open in a new tab
           </p>
         </div>

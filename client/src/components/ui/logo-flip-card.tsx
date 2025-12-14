@@ -35,7 +35,7 @@ export function LogoFlipCard() {
 
   return (
     <GlassCard className="h-full flex flex-col justify-center items-center p-4 md:p-6 bg-white/80 dark:bg-white/5 backdrop-blur-xl border-white/30 dark:border-white/10 overflow-hidden">
-      <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 mb-2 md:mb-4">
+      <span className="text-base md:text-base font-bold uppercase tracking-[0.2em] text-muted-foreground/60 mb-2 md:mb-4">
         As Seen In
       </span>
       

@@ -39,28 +39,28 @@ export function AboutUsModal({ isOpen, onClose }: AboutUsModalProps) {
               <Shield className="w-5 h-5 text-accent flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold">Licensed & Insured</p>
-                <p className="text-[10px] text-muted-foreground">Full coverage</p>
+                <p className="text-base text-muted-foreground">Full coverage</p>
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-accent/10">
               <Award className="w-5 h-5 text-accent flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold">{tenant.credentials?.warrantyYears || 3}-Year Warranty</p>
-                <p className="text-[10px] text-muted-foreground">Workmanship</p>
+                <p className="text-base text-muted-foreground">Workmanship</p>
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-accent/10">
               <Clock className="w-5 h-5 text-accent flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold">On-Time</p>
-                <p className="text-[10px] text-muted-foreground">Always punctual</p>
+                <p className="text-base text-muted-foreground">Always punctual</p>
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-accent/10">
               <Star className="w-5 h-5 text-accent flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold">500+ Projects</p>
-                <p className="text-[10px] text-muted-foreground">Completed</p>
+                <p className="text-base text-muted-foreground">Completed</p>
               </div>
             </div>
           </div>

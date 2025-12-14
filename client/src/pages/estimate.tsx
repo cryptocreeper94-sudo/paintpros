@@ -1014,7 +1014,7 @@ export default function Estimate() {
                                 >
                                   <X className="w-3 h-3" />
                                 </button>
-                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] px-1 py-0.5 rounded-b-lg truncate">
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-base px-1 py-0.5 rounded-b-lg truncate">
                                   {photo.roomType.replace('_', ' ')}
                                 </div>
                               </div>
@@ -1127,7 +1127,7 @@ export default function Estimate() {
                                           data-testid={`button-tier-${tier}`}
                                         >
                                           {tierData.badge && (
-                                            <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                            <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-base font-bold ${
                                               tier === "better" ? "bg-accent text-white" : "bg-gradient-to-r from-amber-500 to-yellow-400 text-black"
                                             }`}>
                                               {tierData.badge}
@@ -1181,7 +1181,7 @@ export default function Estimate() {
                                   <p className="text-xs text-muted-foreground mb-2">{pricingTierOptions[selectedPricingTier].description}</p>
                                   <div className="flex flex-wrap gap-1">
                                     {pricingTierOptions[selectedPricingTier].features.map((feature, i) => (
-                                      <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">
+                                      <span key={i} className="text-base px-2 py-0.5 rounded-full bg-accent/10 text-accent">
                                         {feature}
                                       </span>
                                     ))}
@@ -1215,7 +1215,7 @@ export default function Estimate() {
                               </div>
                               <div>
                                 <p className="text-sm font-medium text-foreground">Blockchain Verification</p>
-                                <p className="text-[10px] text-muted-foreground">Tamper-proof record on Solana</p>
+                                <p className="text-base text-muted-foreground">Tamper-proof record on Solana</p>
                               </div>
                             </div>
                             <Switch

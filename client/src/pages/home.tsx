@@ -82,17 +82,17 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
               
               <div className="relative z-10 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-base md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
                   <Star className="w-3 h-3 fill-accent text-accent" />
                   {ratingBadge}
                 </div>
-                <h1 className="text-lg md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
+                <h1 className="text-2xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
                   Extraordinary <br className="hidden md:block" />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-amber-700 dark:to-white">
                     Craftsmanship.
                   </span>
                 </h1>
-                <p className="text-[10px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
+                <p className="text-base md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
                   {tenant.description || `Premium residential and commercial painting.`}
                 </p>
                 <a href="/portfolio" className="inline-block">
@@ -116,8 +116,8 @@ export default function Home() {
             <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
               <GlassCard className="bg-accent/10 border-accent/20 relative p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
                 <div className="relative z-10">
-                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
-                  <p className="text-[10px] md:text-xs text-muted-foreground pr-8">
+                  <h3 className="text-xl md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
+                  <p className="text-base md:text-xs text-muted-foreground pr-8">
                     Use our instant calculator to get a custom quote for your painting project in seconds.
                   </p>
                 </div>
@@ -168,25 +168,25 @@ export default function Home() {
                       <BadgeCheck className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[9px] md:text-[10px] font-bold text-cyan-700 dark:text-[#14F195] uppercase tracking-wider">Industry First</span>
-                      <span className="text-[7px] md:text-[9px] px-1.5 py-0.5 bg-gradient-to-r from-[#9945FF] to-[#14F195] rounded text-white font-bold inline-block w-fit">SOLANA BLOCKCHAIN</span>
+                      <span className="text-base md:text-base font-bold text-cyan-700 dark:text-[#14F195] uppercase tracking-wider">Industry First</span>
+                      <span className="text-sm md:text-base px-1.5 py-0.5 bg-gradient-to-r from-[#9945FF] to-[#14F195] rounded text-white font-bold inline-block w-fit">SOLANA BLOCKCHAIN</span>
                     </div>
                   </div>
                   
                   {/* Main Headline */}
-                  <h3 className="font-display font-bold text-xs md:text-base text-foreground dark:text-white leading-tight mb-1">
+                  <h3 className="font-display font-bold text-base md:text-base text-foreground dark:text-white leading-tight mb-1">
                     The <span className="text-cyan-700 dark:text-[#14F195]">First</span> Solana-Verified
                     <span className="text-cyan-700 dark:text-[#14F195]"> {solanaLabel}</span>
                   </h3>
                   
                   {/* Anti-fraud messaging */}
-                  <p className="text-[8px] md:text-[10px] text-muted-foreground leading-snug">
+                  <p className="text-sm md:text-base text-muted-foreground leading-snug">
                     <span className="text-cyan-700 dark:text-[#14F195] font-medium">Anti-fraud</span> • Immutable records • Document recall
                   </p>
                   
                   {/* Learn More CTA */}
                   <div className="flex items-center gap-1 pt-1 text-cyan-700 dark:text-[#14F195]">
-                    <span className="text-[8px] md:text-[10px] font-medium">Learn how we protect you</span>
+                    <span className="text-sm md:text-base font-medium">Learn how we protect you</span>
                     <ArrowRight className="w-2.5 h-2.5" />
                   </div>
                 </div>
@@ -212,8 +212,8 @@ export default function Home() {
                     <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg">Premium Materials</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Top-tier paints and finishes only.</p>
+                    <h3 className="font-bold text-base md:text-lg">Premium Materials</h3>
+                    <p className="text-base md:text-sm text-muted-foreground hidden md:block">Top-tier paints and finishes only.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
@@ -239,8 +239,8 @@ export default function Home() {
                     <Clock className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg">On-Time</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">We value your time.</p>
+                    <h3 className="font-bold text-base md:text-lg">On-Time</h3>
+                    <p className="text-base md:text-sm text-muted-foreground hidden md:block">We value your time.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
@@ -266,8 +266,8 @@ export default function Home() {
                     <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Full coverage on our workmanship.</p>
+                    <h3 className="font-bold text-base md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
+                    <p className="text-base md:text-sm text-muted-foreground hidden md:block">Full coverage on our workmanship.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
@@ -290,12 +290,12 @@ export default function Home() {
                       {[...Array(5)].map((_, idx) => (
                         <Star key={idx} className={`w-3 h-3 md:w-4 md:h-4 ${idx < Math.floor(t.rating) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
                       ))}
-                      <span className="ml-1 md:ml-2 text-[10px] md:text-sm text-muted-foreground">{t.rating}</span>
+                      <span className="ml-1 md:ml-2 text-base md:text-sm text-muted-foreground">{t.rating}</span>
                     </div>
-                    <p className="text-xs md:text-base text-foreground leading-snug md:leading-relaxed mb-2 md:mb-4 line-clamp-3 md:line-clamp-none">"{t.text}"</p>
+                    <p className="text-base md:text-base text-foreground leading-snug md:leading-relaxed mb-2 md:mb-4 line-clamp-3 md:line-clamp-none">"{t.text}"</p>
                     <div>
-                      <p className="font-bold text-xs md:text-sm">{t.author}</p>
-                      <p className="text-[10px] md:text-xs text-muted-foreground">{t.loc}</p>
+                      <p className="font-bold text-sm md:text-sm">{t.author}</p>
+                      <p className="text-base md:text-xs text-muted-foreground">{t.loc}</p>
                     </div>
                   </div>
                 ))} 
@@ -320,10 +320,10 @@ export default function Home() {
                 <div className="absolute bottom-2 md:bottom-6 left-2 md:left-6 right-2 md:right-6">
                   <div className="flex items-center gap-1 md:gap-2 mb-1 md:mb-2">
                     <MapPin className="w-3 h-3 md:w-5 md:h-5 text-accent" />
-                    <span className="text-[10px] md:text-sm font-bold text-accent uppercase tracking-wide">Service Areas</span>
+                    <span className="text-base md:text-sm font-bold text-accent uppercase tracking-wide">Service Areas</span>
                   </div>
-                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-2">{cityName} Metro</h3>
-                  <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">
+                  <h3 className="text-xl md:text-2xl font-display font-bold mb-0.5 md:mb-2">{cityName} Metro</h3>
+                  <p className="text-base md:text-sm text-muted-foreground hidden md:block">
                     Middle TN • Southern KY • Tap to explore
                   </p>
                 </div>
@@ -340,13 +340,13 @@ export default function Home() {
                     <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
                       <ShieldCheck className="w-4 h-4 text-accent" />
                     </div>
-                    <span className="text-[10px] md:text-xs font-bold text-accent uppercase tracking-wider">White-Label Solution</span>
+                    <span className="text-base md:text-xs font-bold text-accent uppercase tracking-wider">White-Label Solution</span>
                   </div>
                   <h3 className="text-sm md:text-xl font-display font-bold mb-2">Fully Configurable</h3>
-                  <p className="text-[10px] md:text-sm text-muted-foreground leading-relaxed mb-3">
+                  <p className="text-base md:text-sm text-muted-foreground leading-relaxed mb-3">
                     Everything you see is customizable — branding, colors, services, pricing, and features. Built to fit <span className="text-accent font-medium">your business</span>, not the other way around.
                   </p>
-                  <ul className="space-y-1.5 text-[9px] md:text-xs text-muted-foreground">
+                  <ul className="space-y-1.5 text-base md:text-xs text-muted-foreground">
                     <li className="flex items-center gap-1.5">
                       <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
                       Your logo, colors & branding
@@ -363,7 +363,7 @@ export default function Home() {
                 </div>
                 <button 
                   onClick={() => setContactOpen(true)}
-                  className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition-colors text-xs md:text-sm"
+                  className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition-colors text-sm md:text-sm"
                   data-testid="button-contact-demo"
                 >
                   Contact Us <ArrowRight className="w-3 h-3" />
@@ -381,15 +381,15 @@ export default function Home() {
                       <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
                         <Star className="w-3 h-3 md:w-4 md:h-4 text-accent fill-accent" />
                       </div>
-                      <span className="text-[9px] md:text-xs font-bold text-accent uppercase tracking-wider">About Us</span>
+                      <span className="text-base md:text-xs font-bold text-accent uppercase tracking-wider">About Us</span>
                     </div>
                     <h3 className="text-xs md:text-xl font-display font-bold mb-1 md:mb-2">{tenant.name}</h3>
-                    <p className="text-[9px] md:text-sm text-muted-foreground leading-snug line-clamp-2 md:line-clamp-3">
+                    <p className="text-base md:text-sm text-muted-foreground leading-snug line-clamp-2 md:line-clamp-3">
                       Family-owned since 2015, transforming homes across Middle Tennessee.
                     </p>
                   </div>
                   <div className="flex items-center justify-between mt-2 md:mt-4">
-                    <div className="flex items-center gap-1 text-[8px] md:text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 text-sm md:text-xs text-muted-foreground">
                       <CheckCircle2 className="w-3 h-3 text-green-400" />
                       <span>Licensed & Insured</span>
                     </div>
@@ -426,7 +426,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-lg md:text-3xl font-bold font-display text-accent">{tenant.credentials.googleRating}</p>
-                      <p className="text-[10px] md:text-xs text-muted-foreground">Google</p>
+                      <p className="text-base md:text-xs text-muted-foreground">Google</p>
                     </div>
                   </div>
                 </GlassCard>
@@ -447,7 +447,7 @@ export default function Home() {
                   alt="Color Selection - Click to explore paint colors" 
                   className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 mix-blend-multiply dark:mix-blend-normal"
                 />
-                <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-[10px] md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-base md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   Colors
                 </div>
               </GlassCard>
@@ -480,12 +480,12 @@ export default function Home() {
                   {/* Center: Title & Description */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-0.5 md:mb-1">
-                      <span className="text-[7px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold flex-shrink-0">CRYPTO ACCEPTED</span>
-                      <h3 className="text-[10px] md:text-lg font-display font-bold">
+                      <span className="text-sm md:text-base px-1 md:px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold flex-shrink-0">CRYPTO ACCEPTED</span>
+                      <h3 className="text-base md:text-lg font-display font-bold">
                         The Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Payments</span>
                       </h3>
                     </div>
-                    <p className="text-[9px] md:text-xs text-muted-foreground leading-snug hidden md:block">
+                    <p className="text-base md:text-xs text-muted-foreground leading-snug hidden md:block">
                       Pay for your painting project with Bitcoin, Ethereum, and other cryptocurrencies. Instant, secure, no bank delays.
                     </p>
                   </div>
@@ -493,7 +493,7 @@ export default function Home() {
                   {/* Right: Features (desktop) & CTA */}
                   <div className="flex items-center gap-4 md:gap-6 flex-shrink-0">
                     {/* Features - hidden on mobile */}
-                    <div className="hidden lg:flex items-center gap-4 text-[10px] text-muted-foreground">
+                    <div className="hidden lg:flex items-center gap-4 text-base text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3 text-green-400" />
                         <span>Instant & Secure</span>

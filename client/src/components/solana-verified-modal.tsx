@@ -100,7 +100,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                       <h4 className="font-display font-bold text-sm text-cyan-700 dark:text-[#14F195]">
                         Verify Our Data Here
                       </h4>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-base text-muted-foreground">
                         View our blockchain registry on Solscan
                       </p>
                     </div>
@@ -117,7 +117,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                   <h4 className="font-display font-bold text-sm text-cyan-700 dark:text-[#14F195]">
                     {companyName} Verified
                   </h4>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     Registered on Solana blockchain
                   </p>
                 </div>
@@ -128,7 +128,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           {/* Company Badge & Serial - Compact */}
           <GlassCard className="p-2.5 bg-gradient-to-br from-[#9945FF]/5 to-[#14F195]/5 border-white/10">
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[8px] font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-sm font-bold uppercase tracking-wider">
                 <Award className="w-2.5 h-2.5" />
                 {tenantAsset.badge}
               </div>
@@ -138,14 +138,14 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               </div>
               {latestRelease?.version && (
                 <div className="flex items-center gap-1 ml-auto">
-                  <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
+                  <span className="text-base text-muted-foreground">v{latestRelease.version}</span>
                   <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
                 </div>
               )}
             </div>
           </GlassCard>
 
-          <p className="text-[8px] text-muted-foreground/50 text-center">
+          <p className="text-sm text-muted-foreground/50 text-center">
             Powered by Solana • Fast, secure, eco-friendly
           </p>
         </div>

@@ -514,7 +514,7 @@ export default function Admin() {
                                   data-testid={`followup-card-${followup.id}`}
                                 >
                                   <div className="flex items-center justify-between mb-2">
-                                    <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${
+                                    <span className={`px-1.5 py-0.5 text-base rounded-full ${
                                       followup.followupType === "reminder" 
                                         ? "bg-blue-500/20 text-blue-400"
                                         : followup.followupType === "quote_expiring"
@@ -524,7 +524,7 @@ export default function Admin() {
                                       {followup.followupType === "reminder" ? "Reminder" : 
                                        followup.followupType === "quote_expiring" ? "Expiring" : "Thanks"}
                                     </span>
-                                    <span className="text-[10px] text-muted-foreground">#{followup.estimateId}</span>
+                                    <span className="text-base text-muted-foreground">#{followup.estimateId}</span>
                                   </div>
                                   
                                   <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
@@ -535,7 +535,7 @@ export default function Admin() {
                                   <div className="flex gap-1.5 mb-2">
                                     <motion.button
                                       onClick={() => handleMarkSent(followup.id)}
-                                      className="flex-1 p-1.5 rounded-md bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center justify-center gap-1 text-[10px]"
+                                      className="flex-1 p-1.5 rounded-md bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center justify-center gap-1 text-base"
                                       whileHover={{ scale: 1.02 }}
                                       whileTap={{ scale: 0.98 }}
                                       data-testid={`button-mark-sent-${followup.id}`}
@@ -544,7 +544,7 @@ export default function Admin() {
                                     </motion.button>
                                     <motion.button
                                       onClick={() => handleCancelFollowup(followup.id)}
-                                      className="flex-1 p-1.5 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors flex items-center justify-center gap-1 text-[10px]"
+                                      className="flex-1 p-1.5 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors flex items-center justify-center gap-1 text-base"
                                       whileHover={{ scale: 1.02 }}
                                       whileTap={{ scale: 0.98 }}
                                       data-testid={`button-cancel-followup-${followup.id}`}
@@ -555,8 +555,8 @@ export default function Admin() {
 
                                   <Accordion type="single" collapsible className="border-t border-border dark:border-white/10">
                                     <AccordionItem value="details" className="border-b-0">
-                                      <AccordionTrigger className="text-[10px] py-1.5 hover:no-underline">Details</AccordionTrigger>
-                                      <AccordionContent className="text-[10px]">
+                                      <AccordionTrigger className="text-base py-1.5 hover:no-underline">Details</AccordionTrigger>
+                                      <AccordionContent className="text-base">
                                         {followup.emailSubject && <p className="font-medium mb-1">{followup.emailSubject}</p>}
                                         <p className="text-muted-foreground">{format(new Date(followup.scheduledFor), "EEEE, MMM d 'at' h:mm a")}</p>
                                       </AccordionContent>

@@ -117,7 +117,7 @@ export function BookingsCard() {
                       </div>
                     </div>
                     <span 
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-medium border shrink-0 ${statusConfig.color}`}
+                      className={`px-2 py-0.5 rounded-full text-base font-medium border shrink-0 ${statusConfig.color}`}
                       data-testid={`badge-status-${booking.id}`}
                     >
                       {statusConfig.label}
@@ -143,7 +143,7 @@ export function BookingsCard() {
                         <motion.button
                           onClick={() => updateStatusMutation.mutate({ id: booking.id, status: "confirmed" })}
                           disabled={isPending}
-                          className="flex-1 px-2 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[10px] font-medium border border-green-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                          className="flex-1 px-2 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 text-base font-medium border border-green-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           data-testid={`button-confirm-${booking.id}`}
@@ -156,7 +156,7 @@ export function BookingsCard() {
                         <motion.button
                           onClick={() => updateStatusMutation.mutate({ id: booking.id, status: "completed" })}
                           disabled={isPending}
-                          className="flex-1 px-2 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-[10px] font-medium border border-blue-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                          className="flex-1 px-2 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-base font-medium border border-blue-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           data-testid={`button-complete-${booking.id}`}
@@ -168,7 +168,7 @@ export function BookingsCard() {
                       <motion.button
                         onClick={() => cancelMutation.mutate(booking.id)}
                         disabled={isPending}
-                        className="flex-1 px-2 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 text-[10px] font-medium border border-red-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                        className="flex-1 px-2 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 text-base font-medium border border-red-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         data-testid={`button-cancel-${booking.id}`}

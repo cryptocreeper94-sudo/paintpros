@@ -201,7 +201,7 @@ export function LiveVisitorsCard() {
                             </div>
                           ))}
                           {page.count > 5 && (
-                            <div className="w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[10px]">
+                            <div className="w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-base">
                               +{page.count - 5}
                             </div>
                           )}
