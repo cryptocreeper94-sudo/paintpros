@@ -12,7 +12,7 @@ const publications: Publication[] = [
   { name: "Homes & Gardens", style: "font-serif tracking-wide text-rose-700 dark:text-rose-400" },
   { name: "Livingetc", style: "font-sans font-black uppercase tracking-tighter text-orange-600 dark:text-orange-400" },
   { name: "The Kitchn", style: "font-serif font-light text-amber-700 dark:text-amber-400" },
-  { name: "Architectural Digest", style: "font-serif tracking-widest uppercase text-slate-700 dark:text-slate-300" },
+  { name: "Architectural Digest", style: "font-serif tracking-wide uppercase text-slate-700 dark:text-slate-300 text-base md:text-xl lg:text-2xl" },
 ];
 
 export function LogoFlipCard() {
@@ -50,7 +50,7 @@ export function LogoFlipCard() {
             className="absolute inset-0 flex items-center justify-center backface-hidden"
             style={{ transformStyle: "preserve-3d" }}
           >
-            <span className={`text-lg md:text-2xl lg:text-3xl whitespace-nowrap ${currentPub.style}`}>
+            <span className={`text-lg md:text-2xl lg:text-3xl ${currentPub.style}`}>
               {currentPub.name}
             </span>
           </motion.div>
