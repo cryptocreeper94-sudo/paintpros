@@ -442,21 +442,21 @@ export default function Home() {
               className="block h-full w-full text-left"
               data-testid="button-color-selector"
             >
-              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-card">
+              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-card relative">
+                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+                  <h3 className="text-xs md:text-sm font-display font-bold text-foreground">Choose Your Color</h3>
+                </div>
                 {/* Light mode: use color wheel with white bg, Dark mode: use fan deck */}
                 <img 
                   src={colorWheelWhiteBg} 
                   alt="Color Selection - Click to explore paint colors" 
-                  className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 dark:hidden"
+                  className="w-full h-full object-contain p-2 pt-6 md:p-8 md:pt-10 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 dark:hidden"
                 />
                 <img 
                   src={fanDeck} 
                   alt="Color Selection - Click to explore paint colors" 
-                  className="hidden dark:block w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
+                  className="hidden dark:block w-full h-full object-contain p-2 pt-6 md:p-8 md:pt-10 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
                 />
-                <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-[10px] md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                  Colors
-                </div>
               </GlassCard>
             </button>
           </BentoItem>
