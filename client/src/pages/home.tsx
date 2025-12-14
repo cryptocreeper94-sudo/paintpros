@@ -457,6 +457,9 @@ export default function Home() {
                   alt="Color Selection - Click to explore paint colors" 
                   className="hidden dark:block w-full h-full object-contain p-2 pt-6 md:p-8 md:pt-10 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
                 />
+                <div className="absolute bottom-2 left-0 right-0 md:bottom-4 z-10 text-center">
+                  <p className="text-[10px] md:text-xs text-muted-foreground italic">Any Color You'd Like</p>
+                </div>
               </GlassCard>
             </button>
           </BentoItem>
