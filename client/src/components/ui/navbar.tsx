@@ -46,21 +46,21 @@ export function Navbar() {
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={24} className="text-white" />
+            <X size={36} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={28} className="text-white" />
+            <Menu size={42} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-10 md:h-12 w-auto object-contain"
+              className="h-14 md:h-16 w-auto object-contain"
             />
           )}
         </button>
         
         {/* Center: Title - takes up most width */}
         <div 
-          className="flex-1 text-center text-white tracking-wide text-lg md:text-xl lg:text-2xl mx-0 leading-tight"
+          className="flex-1 text-center text-white tracking-wide text-xl md:text-2xl lg:text-3xl mx-4 leading-tight"
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
@@ -73,11 +73,11 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0"
+          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
-          {theme === "dark" ? <Sun className="w-4 h-4 text-accent" /> : <Moon className="w-4 h-4 text-white" />}
+          {theme === "dark" ? <Sun className="w-6 h-6 text-accent" /> : <Moon className="w-6 h-6 text-white" />}
         </button>
       </div>
     </header>
