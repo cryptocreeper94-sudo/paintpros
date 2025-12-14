@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Marquee } from "@/components/ui/marquee";
+import { LogoFlipCard } from "@/components/ui/logo-flip-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
 import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, ChevronDown, BadgeCheck } from "lucide-react";
@@ -125,17 +125,9 @@ export default function Home() {
             </a>
           </BentoItem>
 
-          {/* 3. Social Proof - Marquee */}
+          {/* 3. Social Proof - Logo Flip Card */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-            <GlassCard className="flex flex-col justify-center p-0 bg-black/5 dark:bg-white/5 h-full overflow-hidden">
-              <div className="px-3 md:px-6 pt-2 md:pt-4 pb-1 md:pb-2">
-                <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground/70">As Seen In</span>
-              </div>
-              <Marquee 
-                items={["The Spruce", "Homes & Gardens", "Livingetc", "The Kitchn", "Architectural Digest"]} 
-                speed="slow"
-              />
-            </GlassCard>
+            <LogoFlipCard />
           </BentoItem>
 
           {/* Solana Verified Badge - FIRST IN INDUSTRY */}
