@@ -111,13 +111,11 @@ export default function Home() {
                     Use our instant calculator to get a custom quote for your painting project in seconds.
                   </p>
                 </div>
-                {isDemo && (
-                  <img 
-                    src={estimateImage} 
-                    alt="Professional estimate consultation" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity"
-                  />
-                )}
+                <img 
+                  src={estimateImage} 
+                  alt="Professional estimate consultation" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity"
+                />
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
                   <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
                     <ArrowRight className="w-3 h-3 md:w-5 md:h-5" />
