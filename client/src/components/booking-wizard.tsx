@@ -124,6 +124,19 @@ export function BookingWizard({ lead }: BookingWizardProps) {
     initAvailabilityMutation.mutate();
   }, []);
 
+  // Sync bookingData when lead data is available/changes
+  useEffect(() => {
+    if (lead) {
+      setBookingData(prev => ({
+        ...prev,
+        customerFirstName: lead.firstName || prev.customerFirstName,
+        customerLastName: lead.lastName || prev.customerLastName,
+        customerEmail: lead.email || prev.customerEmail,
+        customerPhone: lead.phone || prev.customerPhone,
+      }));
+    }
+  }, [lead]);
+
   const handleServiceSelect = (serviceId: string) => {
     setBookingData(prev => ({ ...prev, serviceType: serviceId }));
   };

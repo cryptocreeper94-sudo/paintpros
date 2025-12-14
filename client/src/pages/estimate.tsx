@@ -74,6 +74,10 @@ export default function Estimate() {
     if (savedLead) {
       const leadData = JSON.parse(savedLead);
       setLead(leadData);
+      setEmail(leadData.email || '');
+      setFirstName(leadData.firstName || '');
+      setLastName(leadData.lastName || '');
+      setPhone(leadData.phone || '');
       setShowEmailModal(false);
     }
   }, [isDemo]);
@@ -249,14 +253,23 @@ export default function Estimate() {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, firstName, lastName, phone }),
+        body: JSON.stringify({ email }), // Only send email to API
       });
       if (!response.ok) throw new Error("Failed to submit email");
       const data = await response.json();
-      const leadData = { ...data, firstName, lastName, phone };
-      setLead(leadData);
+      
+      // Build complete lead data combining API response with form state
+      const fullLeadData: LeadData = {
+        id: data.id,
+        email,
+        firstName,
+        lastName,
+        phone,
+      };
+      
+      setLead(fullLeadData);
       localStorage.setItem("estimatorEmail", email);
-      localStorage.setItem("estimatorLead", JSON.stringify(leadData));
+      localStorage.setItem("estimatorLead", JSON.stringify(fullLeadData));
       setShowEmailModal(false);
     } catch (error) {
       console.error("Error submitting email:", error);
