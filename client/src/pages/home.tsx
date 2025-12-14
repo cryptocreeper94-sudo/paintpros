@@ -151,7 +151,7 @@ export default function Home() {
                 <img 
                   src={solanaLogo} 
                   alt="" 
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-20 h-20 md:w-28 md:h-28 object-contain opacity-30"
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 object-contain opacity-25"
                 />
                 {/* Animated gradient background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#9945FF]/20 via-transparent to-[#14F195]/20 animate-pulse opacity-50" />
