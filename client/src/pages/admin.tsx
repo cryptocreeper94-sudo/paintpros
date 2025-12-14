@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, Eye } from "lucide-react";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
+import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { useQuery } from "@tanstack/react-query";
 import type { Lead, Estimate, EstimateFollowup } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -512,6 +513,13 @@ export default function Admin() {
           {/* Room Scanner */}
           <BentoItem colSpan={6} rowSpan={1}>
             <RoomScannerCard locked={false} accentColor="accent" />
+          </BentoItem>
+
+          {/* Site Analytics */}
+          <BentoItem colSpan={12} rowSpan={4}>
+            <GlassCard className="h-full p-4 md:p-6" glow>
+              <AnalyticsDashboard />
+            </GlassCard>
           </BentoItem>
         </BentoGrid>
       </main>
