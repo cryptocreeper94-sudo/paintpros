@@ -70,7 +70,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <main className="pt-4 md:pt-4 px-2 md:px-8">
+      <main className="pt-6 md:pt-4 px-2 md:px-8">
         <BentoGrid>
           
           {/* 1. Hero Section - Main Headline */}
