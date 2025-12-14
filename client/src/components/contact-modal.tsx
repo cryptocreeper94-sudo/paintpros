@@ -64,7 +64,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25 }}
-          className="relative glass-panel rounded-2xl border border-accent/30 w-full max-w-lg p-6 md:p-8 shadow-2xl"
+          className="relative glass-panel rounded-2xl border border-accent/30 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 shadow-2xl"
         >
           <button
             onClick={onClose}
