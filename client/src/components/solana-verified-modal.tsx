@@ -127,68 +127,102 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-2 pt-1">
-          {/* Combined Header with QR and Serial */}
-          <GlassCard className="p-3 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
-            <div className="flex gap-3">
-              {solscanUrl ? (
-                <a
-                  href={solscanUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setQrExpanded(!qrExpanded)}
-                  className="rounded-lg bg-white p-1 block cursor-pointer hover:ring-2 hover:ring-[#14F195] transition-all self-start"
-                  data-testid="button-expand-qr"
-                  style={{ lineHeight: 0 }}
-                >
-                  <QRCodeCanvas 
-                    value={solscanUrl}
-                    size={qrExpanded ? 120 : 60}
-                    level="L"
-                    includeMargin={false}
-                    bgColor="#14F195"
-                    fgColor="#000000"
-                  />
-                </a>
-              ) : (
-                <div 
-                  className="rounded-lg bg-gradient-to-br from-[#9945FF]/30 to-[#14F195]/30 p-3 flex items-center justify-center self-start"
-                  style={{ width: 60, height: 60 }}
-                >
-                  {loadingRelease ? (
-                    <Loader2 className="w-5 h-5 text-[#14F195] animate-spin" />
-                  ) : (
-                    <ShieldCheck className="w-6 h-6 text-[#14F195]" />
+        <div className="space-y-3 pt-1">
+          {/* How We Protect You - Main Description */}
+          <GlassCard className="p-4 bg-gradient-to-br from-[#9945FF]/10 to-[#14F195]/10 border-[#14F195]/20">
+            <h3 className="text-sm font-display font-bold text-foreground dark:text-white mb-2 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-cyan-700 dark:text-[#14F195]" />
+              How We Protect You
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+              Every estimate, contract, and warranty we create is <span className="text-cyan-700 dark:text-[#14F195] font-medium">permanently recorded on the Solana blockchain</span>. 
+              This means your documents are tamper-proof and can never be altered, deleted, or disputed. 
+              Unlike traditional contractors who can change quotes or deny agreements, our blockchain verification 
+              creates an immutable record that protects you from fraud and ensures complete transparency.
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <span className="text-cyan-700 dark:text-[#14F195] font-medium">What this means for you:</span> Your pricing agreements, warranty terms, 
+              and project scope are locked in permanently. Years from now, you can still verify exactly what was promised 
+              and when—perfect for insurance claims, warranty disputes, or simply peace of mind.
+            </p>
+          </GlassCard>
+
+          {/* Verify Our Data Button - Prominent CTA */}
+          {solscanUrl ? (
+            <a
+              href={solscanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+              data-testid="link-verify-data-solscan"
+            >
+              <GlassCard className="p-4 bg-gradient-to-r from-[#9945FF]/30 to-[#14F195]/30 border-[#14F195]/40 hover:border-[#14F195]/60 transition-all cursor-pointer">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-white p-1" style={{ lineHeight: 0 }}>
+                      <QRCodeCanvas 
+                        value={solscanUrl}
+                        size={50}
+                        level="L"
+                        includeMargin={false}
+                        bgColor="#14F195"
+                        fgColor="#000000"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-display font-bold text-sm text-cyan-700 dark:text-[#14F195]">
+                        Verify Our Data Here
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        View our verified blockchain registry on Solscan
+                      </p>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-5 h-5 text-cyan-700 dark:text-[#14F195]" />
+                </div>
+              </GlassCard>
+            </a>
+          ) : (
+            <GlassCard className="p-4 bg-yellow-500/10 border-yellow-500/20">
+              <div className="flex items-center gap-3">
+                {loadingRelease ? (
+                  <Loader2 className="w-5 h-5 text-yellow-400 animate-spin" />
+                ) : (
+                  <Clock className="w-5 h-5 text-yellow-400" />
+                )}
+                <div>
+                  <h4 className="font-display font-bold text-sm text-yellow-400">
+                    {loadingRelease ? "Loading Verification..." : "Verification Pending"}
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Blockchain verification is being processed
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+          )}
+
+          {/* Company Badge & Serial */}
+          <GlassCard className="p-3 bg-gradient-to-br from-[#9945FF]/5 to-[#14F195]/5 border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[8px] font-bold uppercase tracking-wider">
+                <Award className="w-2.5 h-2.5" />
+                {tenantAsset.badge}
+              </div>
+              <div className="flex items-center gap-1">
+                <Hash className="w-3 h-3 text-muted-foreground" />
+                <span className="font-mono text-sm font-bold text-cyan-700 dark:text-[#14F195]">{displaySerial}</span>
+              </div>
+              {latestRelease?.version && (
+                <div className="flex items-center gap-1 ml-auto">
+                  <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
+                  {hasSolanaVerification && (
+                    <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
                   )}
                 </div>
               )}
-              <div className="flex-1 min-w-0">
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[8px] font-bold uppercase tracking-wider mb-1">
-                  <Award className="w-2.5 h-2.5" />
-                  {tenantAsset.badge}
-                </div>
-                <h3 className="text-sm font-display font-bold text-foreground dark:text-white leading-tight">
-                  The <span className="text-cyan-700 dark:text-[#14F195]">First</span> Solana-Verified <span className="text-cyan-700 dark:text-[#14F195]">{solanaLabel}</span>
-                </h3>
-                <div className="flex items-center gap-1 mt-1">
-                  <Hash className="w-3 h-3 text-muted-foreground" />
-                  <span className="font-mono text-sm font-bold text-cyan-700 dark:text-[#14F195]">{displaySerial}</span>
-                </div>
-                {latestRelease?.version && (
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
-                    {hasSolanaVerification && (
-                      <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
-                    )}
-                  </div>
-                )}
-              </div>
             </div>
           </GlassCard>
-
-          <p className="text-xs text-muted-foreground px-1">
-            <span className="text-cyan-700 dark:text-[#14F195] font-medium">Blockchain verified</span> — Your documents are tamper-proof and permanently recorded.
-          </p>
 
           {/* Compact Features Grid */}
           <div className="grid grid-cols-2 gap-1.5">
