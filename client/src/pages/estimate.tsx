@@ -419,20 +419,20 @@ export default function Estimate() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="w-full max-w-md my-auto"
+              className="w-full max-w-[min(28rem,100vw-2rem)] max-h-[calc(100dvh-2rem)] flex flex-col"
             >
-              <div className="relative">
+              <div className="relative flex flex-col min-h-0">
                 {/* Glow effect behind card */}
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50" />
+                <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50 pointer-events-none" />
                 
-                <GlassCard className="relative p-6 md:p-10 border-accent/20 max-h-[90vh] overflow-y-auto" glow>
+                <GlassCard className="relative p-5 md:p-8 border-accent/20 overflow-y-auto flex-1 min-h-0" glow>
                   <button
                     onClick={() => setShowEmailModal(false)}
                     className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
@@ -564,12 +564,12 @@ export default function Estimate() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-md"
+              className="w-full max-w-[min(28rem,100vw-2rem)] max-h-[calc(100dvh-2rem)] flex flex-col"
             >
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 via-accent/20 to-green-500/30 blur-3xl opacity-50" />
+              <div className="relative flex flex-col min-h-0">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 via-accent/20 to-green-500/30 blur-3xl opacity-50 pointer-events-none" />
                 
-                <GlassCard className="relative p-10 text-center border-green-500/20" glow>
+                <GlassCard className="relative p-6 md:p-10 text-center border-green-500/20 overflow-y-auto flex-1 min-h-0" glow>
                   <button
                     onClick={() => setEstimateSubmitted(false)}
                     className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
