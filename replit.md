@@ -3,7 +3,7 @@
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
 **Last Updated:** December 14, 2025
-**Beta Version:** v1.1.0
+**Beta Version:** v1.1.1
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
