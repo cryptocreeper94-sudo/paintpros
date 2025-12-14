@@ -48,12 +48,12 @@ export function Navbar() {
           {isOpen ? (
             <X size={36} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={42} className="text-white" />
+            <Menu size={52} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-14 md:h-16 w-auto object-contain"
+              className="h-[70px] md:h-16 w-auto object-contain"
             />
           )}
         </button>
