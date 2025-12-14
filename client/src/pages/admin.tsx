@@ -194,6 +194,7 @@ export default function Admin() {
         roleLabel="Admin"
         currentPin={currentPin}
         onSuccess={handlePinChangeSuccess}
+        onClose={() => setShowPinChange(false)}
       />
 
       <main className="pt-20 px-4 md:px-6 pb-24">

@@ -433,6 +433,13 @@ export default function Estimate() {
                 <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50" />
                 
                 <GlassCard className="relative p-6 md:p-10 border-accent/20 max-h-[90vh] overflow-y-auto" glow>
+                  <button
+                    onClick={() => setShowEmailModal(false)}
+                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    data-testid="button-close-email-modal"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                   <div className="text-center mb-6">
                     <motion.div 
                       className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-accent/30 to-gold-400/20 flex items-center justify-center border border-accent/30 shadow-lg shadow-accent/20"
@@ -563,6 +570,13 @@ export default function Estimate() {
                 <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 via-accent/20 to-green-500/30 blur-3xl opacity-50" />
                 
                 <GlassCard className="relative p-10 text-center border-green-500/20" glow>
+                  <button
+                    onClick={() => setEstimateSubmitted(false)}
+                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    data-testid="button-close-estimate-modal"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                   <motion.div 
                     className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-green-500/30 to-green-400/20 flex items-center justify-center border border-green-500/30 shadow-lg shadow-green-500/20"
                     initial={{ scale: 0 }}

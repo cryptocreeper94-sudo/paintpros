@@ -375,6 +375,7 @@ export default function AreaManager() {
         roleLabel="Area Manager"
         currentPin={currentPin}
         onSuccess={handlePinChangeSuccess}
+        onClose={() => setShowPinChangeModal(false)}
         accentColor="teal-400"
       />
     </PageLayout>

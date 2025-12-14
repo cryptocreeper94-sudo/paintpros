@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "./glass-card";
 import { Input } from "./input";
 import { FlipButton } from "./flip-button";
-import { Lock, AlertCircle, Check } from "lucide-react";
+import { Lock, AlertCircle, Check, X } from "lucide-react";
 
 interface PinChangeModalProps {
   isOpen: boolean;
@@ -11,6 +11,7 @@ interface PinChangeModalProps {
   roleLabel: string;
   currentPin: string;
   onSuccess: () => void;
+  onClose: () => void;
   accentColor?: string;
 }
 
@@ -20,6 +21,7 @@ export function PinChangeModal({
   roleLabel, 
   currentPin, 
   onSuccess,
+  onClose,
   accentColor = "accent"
 }: PinChangeModalProps) {
   const [newPin, setNewPin] = useState("");
@@ -89,6 +91,13 @@ export function PinChangeModal({
           className="w-full max-w-md"
         >
           <GlassCard className="p-8 border-accent/30" glow>
+            <button
+              onClick={onClose}
+              className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              data-testid="button-close-pin-modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <div className="text-center mb-6">
               <motion.div 
                 className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-${accentColor}/30 to-blue-500/20 flex items-center justify-center border border-${accentColor}/30`}

@@ -625,6 +625,7 @@ export default function Owner() {
         roleLabel="Owner"
         currentPin={currentPin}
         onSuccess={handlePinChangeSuccess}
+        onClose={() => setShowPinChangeModal(false)}
         accentColor="gold-400"
       />
     </PageLayout>
