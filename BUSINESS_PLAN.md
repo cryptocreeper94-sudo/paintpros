@@ -1,6 +1,6 @@
 # PaintPros.io Business Plan & Executive Summary
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Date:** December 14, 2025  
 **Prepared by:** Orbit Development Team
 
@@ -11,9 +11,10 @@
 **PaintPros.io** is a multi-tenant SaaS platform designed specifically for the painting and home services industry. Built by Orbit, it provides franchise-ready, white-label websites for painting companies with modern design, intelligent estimating tools, comprehensive CRM capabilities, and blockchain-verified documentation.
 
 ### Current Status
-- **Beta Version:** v1.0.3 (Nashville Painting Professionals)
+- **Beta Version:** v1.0.4 (Nashville Painting Professionals)
 - **Platform Status:** Production-ready, actively in beta testing
 - **Blockchain:** Solana mainnet integration complete with opt-in document hashing
+- **Online Booking:** Full consultation booking system with availability management
 
 ### Vision
 To become the premier digital platform powering painting businesses across North America, enabling small-to-medium painting contractors to operate with enterprise-level efficiency and customer experience.
@@ -295,7 +296,7 @@ Empower painting professionals with cutting-edge technology that streamlines ope
 
 ## Appendix
 
-### A. Current Feature Status (v1.0.3)
+### A. Current Feature Status (v1.0.4)
 
 | Feature | Status | Notes |
 |---------|--------|-------|
@@ -312,11 +313,18 @@ Empower painting professionals with cutting-edge technology that streamlines ope
 | Hallmark verification | Complete | ORBIT system with tenant prefixes |
 | Document Assets | Complete | Opt-in Solana hashing for estimates |
 | Version tracking | Complete | Per-tenant release management |
+| Online booking system | Complete | 5-step wizard with availability |
+| Enhanced lead capture | Complete | firstName, lastName, email, phone |
+| Navigation improvements | Complete | Home/Back buttons, modal close buttons |
 | Payment processing | In Progress | Stripe + Crypto |
 | AI room scanning | In Progress | OpenAI Vision |
 
 ### B. Recent Updates (December 2025)
 
+- **v1.0.4:** Online Booking System with 5-step wizard and availability management
+- **v1.0.4:** Enhanced lead capture (firstName, lastName, email, phone fields)
+- **v1.0.4:** Navigation improvements (Home/Back buttons, modal close buttons)
+- **v1.0.4:** Modal overflow handling and UX polish
 - Document Asset system with opt-in blockchain hashing
 - Tenant-specific hallmark numbering (NPP-000000000-XX format)
 - Solana Verified modal for customer trust

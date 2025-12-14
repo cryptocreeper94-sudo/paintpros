@@ -3,7 +3,7 @@
 **Prepared by:** Orbit Development Team  
 **Version:** 2.1 | December 14, 2025
 
-**Beta Status:** v1.0.3 (Nashville Painting Professionals - Active)
+**Beta Status:** v1.0.4 (Nashville Painting Professionals - Active)
 
 ---
 
@@ -102,6 +102,7 @@
 ### Key Differentiators
 - White-label branded website (competitors: none)
 - Customer-facing estimator with lead capture (competitors: partial)
+- **Online booking system with availability management** (competitors: partial)
 - Solana blockchain verification with opt-in hashing (competitors: none)
 - Premium Bento Grid design with glassmorphism (competitors: none)
 - SEO management tools with keyword tracking (competitors: none)
