@@ -156,9 +156,9 @@ export default function Home() {
                   </div>
                   
                   {/* Main Headline */}
-                  <h3 className="font-display font-bold text-xs md:text-base text-white leading-tight mb-1">
-                    The <span className="text-[#14F195]">First</span> Solana-Verified
-                    <span className="text-[#14F195]"> {solanaLabel}</span>
+                  <h3 className="font-display font-bold text-xs md:text-base text-foreground dark:text-white leading-tight mb-1">
+                    The <span className="text-[#14F195] dark:text-[#14F195]">First</span> Solana-Verified
+                    <span className="text-[#14F195] dark:text-[#14F195]"> {solanaLabel}</span>
                   </h3>
                   
                   {/* Anti-fraud messaging */}
