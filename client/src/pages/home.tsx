@@ -442,7 +442,7 @@ export default function Home() {
               className="block h-full w-full text-left"
               data-testid="button-color-selector"
             >
-              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full">
+              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-card">
                 {/* Light mode: use transparent color wheel, Dark mode: use fan deck */}
                 <img 
                   src={colorWheelTransparent} 
