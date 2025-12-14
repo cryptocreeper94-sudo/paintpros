@@ -3,7 +3,7 @@
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
 **Last Updated:** December 14, 2025
-**Beta Version:** v1.0.4
+**Beta Version:** v1.0.5
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
@@ -173,15 +173,19 @@ Location: `server/solana.ts`
 - Document Asset system with opt-in blockchain hashing
 - Per-tenant hallmark numbering (e.g., NPP-000000000-02)
 
-## Recent Updates (v1.0.4)
+## Recent Updates (v1.0.5)
+- Premium glassmorphic dashboard styling with 3D hover effects
+- Unified theme-effects.ts for motion variants and glow presets
+- Enhanced GlassCard with animated borders and depth effects
+- Analytics integration on Admin dashboard
+- Pricing tier updates across all pricing pages
+- Staggered animations on all 4 dashboards (Admin, Owner, Area Manager, Developer)
+
+### Previous (v1.0.4)
 - Online Booking System with 5-step wizard and availability management
 - Enhanced lead capture (firstName, lastName, email, phone fields)
 - BookingWizard pre-fills from lead data for seamless UX
 - Navigation improvements (Home/Back buttons on desktop pages)
-- Close buttons on all modals for consistent user experience
-- Demo Mode banner positioning fixes
-- Modal overflow handling for long content (scrollable)
-- FlipButton component prop forwarding fixes
 
 ## Future Features
 - AI Voice Assistant (Twilio integration)
