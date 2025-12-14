@@ -12,7 +12,7 @@ const publications: Publication[] = [
   { name: "Homes & Gardens", style: "font-serif tracking-wide text-rose-700 dark:text-rose-400" },
   { name: "Livingetc", style: "font-sans font-black uppercase tracking-tighter text-orange-600 dark:text-orange-400" },
   { name: "The Kitchn", style: "font-serif font-light text-amber-700 dark:text-amber-400" },
-  { name: "Architectural Digest", style: "font-serif tracking-wide uppercase text-slate-700 dark:text-slate-300 text-base md:text-xl lg:text-2xl" },
+  { name: "Architectural Digest", style: "font-serif tracking-tight uppercase text-slate-700 dark:text-slate-300 text-sm md:text-lg lg:text-xl" },
 ];
 
 export function LogoFlipCard() {
