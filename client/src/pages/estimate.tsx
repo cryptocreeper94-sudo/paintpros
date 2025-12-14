@@ -2,7 +2,8 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
-import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award } from "lucide-react";
+import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award, Shield } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -111,6 +112,14 @@ export default function Estimate() {
   // Good/Better/Best pricing tier selection
   type PricingTierLevel = "good" | "better" | "best";
   const [selectedPricingTier, setSelectedPricingTier] = useState<PricingTierLevel>("better");
+
+  // Blockchain verification opt-in
+  const [blockchainOptIn, setBlockchainOptIn] = useState(false);
+  const [blockchainResult, setBlockchainResult] = useState<{
+    hallmarkNumber: string;
+    solscanUrl?: string;
+    solanaStatus: string;
+  } | null>(null);
 
   const pricingTierOptions = {
     good: {
@@ -295,6 +304,53 @@ export default function Estimate() {
           } catch (photoError) {
             console.error("Error uploading photo:", photoError);
           }
+        }
+      }
+      
+      // Create blockchain-verified document asset if opted in
+      if (blockchainOptIn) {
+        try {
+          const estimateContent = JSON.stringify({
+            estimateId: estimateData.id,
+            leadEmail: lead.email,
+            selections: jobSelections,
+            squareFootage: needsSquareFootage ? squareFootage : 0,
+            doorCount: jobSelections.doors ? doorCount : 0,
+            pricing: {
+              walls: estimate.wallsPrice * estimate.tierMultiplier,
+              trim: estimate.trimPrice * estimate.tierMultiplier,
+              ceilings: estimate.ceilingsPrice * estimate.tierMultiplier,
+              doors: estimate.doorsPrice * estimate.tierMultiplier,
+              total: estimate.total
+            },
+            package: selectedPricingTier,
+            createdAt: new Date().toISOString()
+          });
+
+          const assetResponse = await fetch("/api/document-assets", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              tenantId: tenant.id,
+              sourceType: "estimate",
+              sourceId: estimateData.id,
+              title: `Estimate #${estimateData.id} - ${lead.email}`,
+              content: estimateContent,
+              hashToSolana: true,
+              createdBy: "customer"
+            }),
+          });
+
+          if (assetResponse.ok) {
+            const assetData = await assetResponse.json();
+            setBlockchainResult({
+              hallmarkNumber: assetData.hallmarkNumber,
+              solscanUrl: assetData.solscanUrl,
+              solanaStatus: assetData.solanaStatus
+            });
+          }
+        } catch (blockchainError) {
+          console.error("Blockchain verification error:", blockchainError);
         }
       }
       
@@ -530,9 +586,33 @@ export default function Estimate() {
                       ${estimate.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
-                  <p className="text-muted-foreground mb-8">
+                  <p className="text-muted-foreground mb-6">
                     We'll send detailed information to <span className="text-accent font-medium">{lead?.email}</span> and reach out to finalize your quote.
                   </p>
+                  
+                  {blockchainResult && (
+                    <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl p-4 mb-6 border border-purple-500/20">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Shield className="w-4 h-4 text-purple-400" />
+                        <p className="text-purple-300 text-sm font-medium">Blockchain Verified</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Hallmark: <span className="text-purple-300 font-mono">{blockchainResult.hallmarkNumber}</span>
+                      </p>
+                      {blockchainResult.solscanUrl && (
+                        <a 
+                          href={blockchainResult.solscanUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-xs text-purple-400 hover:text-purple-300 underline"
+                          data-testid="link-solscan"
+                        >
+                          View on Solscan
+                        </a>
+                      )}
+                    </div>
+                  )}
+                  
                   <FlipButton 
                     onClick={() => {
                       setEstimateSubmitted(false);
@@ -542,6 +622,8 @@ export default function Estimate() {
                       setUploadedPhotos([]);
                       setShowPhotoUpload(false);
                       setSelectedPricingTier("better");
+                      setBlockchainOptIn(false);
+                      setBlockchainResult(null);
                     }}
                     data-testid="button-new-estimate"
                   >
@@ -1307,6 +1389,26 @@ export default function Estimate() {
                           </div>
                         </div>
 
+                        {/* Blockchain Verification Toggle */}
+                        <div className="pt-4 mt-4 border-t border-white/10">
+                          <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                <Shield className="w-4 h-4 text-purple-400" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">Blockchain Verification</p>
+                                <p className="text-[10px] text-muted-foreground">Tamper-proof record on Solana</p>
+                              </div>
+                            </div>
+                            <Switch
+                              checked={blockchainOptIn}
+                              onCheckedChange={setBlockchainOptIn}
+                              data-testid="switch-blockchain-optin"
+                            />
+                          </div>
+                        </div>
+
                         <div className="pt-6">
                           <FlipButton 
                             className="w-full h-14 text-base" 
@@ -1314,7 +1416,7 @@ export default function Estimate() {
                             disabled={(needsSquareFootage && squareFootage === 0) || estimate.total === 0 || isSubmittingEstimate}
                             data-testid="button-submit-estimate"
                           >
-                            {isSubmittingEstimate ? "Saving..." : "Save My Estimate"}
+                            {isSubmittingEstimate ? (blockchainOptIn ? "Verifying on Blockchain..." : "Saving...") : "Save My Estimate"}
                             <ArrowRight className="w-5 h-5" />
                           </FlipButton>
                           <p className="text-xs text-muted-foreground text-center mt-4">
