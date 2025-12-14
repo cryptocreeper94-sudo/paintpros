@@ -123,15 +123,17 @@
   * {
     @apply border-border;
   }
-  html {
-    font-size: 18px; /* Increased base font size for better readability */
-  }
   body {
     @apply font-body antialiased bg-background text-foreground;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
   }
+}
+
+/* Force 18px base font - placed AFTER @layer base to ensure it wins in production builds */
+html {
+  font-size: 18px !important;
 }
 
 @layer utilities {
