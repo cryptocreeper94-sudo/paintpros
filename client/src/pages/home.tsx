@@ -14,6 +14,8 @@ import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_sur
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import premiumMaterialsImage from "@assets/generated_images/premium_paint_materials_display.png";
 import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png";
+import warrantyImage from "@assets/generated_images/warranty_shield_certificate_badge.png";
+import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
@@ -290,8 +292,13 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-warranty"
             >
-              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all" hoverEffect>
-                <div className="flex items-center gap-2 md:gap-4">
+              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+                <img 
+                  src={warrantyImage} 
+                  alt="Warranty guarantee" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                />
+                <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
                     <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
@@ -307,7 +314,7 @@ export default function Home() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
+                      className="overflow-hidden relative z-10"
                     >
                       <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
                         <p className="text-[10px] md:text-xs text-muted-foreground">Our commitment to quality:</p>
@@ -338,10 +345,15 @@ export default function Home() {
 
           {/* 7. Testimonials Carousel */}
           <BentoItem colSpan={8} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
-            <GlassCard className="p-0 overflow-hidden h-full">
+            <GlassCard className="p-0 overflow-hidden h-full relative">
+              <img 
+                src={testimonialImage} 
+                alt="Beautiful painted home" 
+                className="absolute inset-0 w-full h-full object-cover opacity-15 transition-opacity"
+              />
               <CarouselView 
                 slides={testimonials.map((t, i) => (
-                  <div key={i} className="p-3 md:p-8 flex flex-col justify-between h-full min-w-[200px] md:min-w-[320px]">
+                  <div key={i} className="p-3 md:p-8 flex flex-col justify-between h-full min-w-[200px] md:min-w-[320px] relative z-10">
                     <div className="flex gap-0.5 md:gap-1 mb-2 md:mb-4">
                       {[...Array(5)].map((_, idx) => (
                         <Star key={idx} className={`w-3 h-3 md:w-4 md:h-4 ${idx < Math.floor(t.rating) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
