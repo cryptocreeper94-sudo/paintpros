@@ -543,7 +543,7 @@ export default function Home() {
           </BentoItem>
 
           {/* Crypto Payment Banner - Full Width Horizontal at Bottom */}
-          <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
+          <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
             <button
               onClick={() => setCryptoModalOpen(true)}
               className="w-full h-full text-left"
@@ -554,7 +554,7 @@ export default function Home() {
                 <img 
                   src={bitcoinWatermark} 
                   alt="" 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 object-contain opacity-20"
+                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-32 md:h-32 object-contain opacity-15"
                 />
                 
                 {/* Horizontal Layout */}
