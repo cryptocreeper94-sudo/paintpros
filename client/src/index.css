@@ -131,9 +131,9 @@
   }
 }
 
-/* Force 20px base font - placed AFTER @layer base to ensure it wins in production builds */
+/* Force 17px base font - placed AFTER @layer base to ensure it wins in production builds */
 html {
-  font-size: 20px !important;
+  font-size: 17px !important;
 }
 
 @layer utilities {
