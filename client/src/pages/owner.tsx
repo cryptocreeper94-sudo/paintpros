@@ -5,12 +5,12 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, Palette, Sparkles, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Camera, Shield, Eye } from "lucide-react";
-import { VersionHistory } from "@/components/version-history";
-import { RoomScannerCard } from "@/components/room-scanner";
+import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings } from "lucide-react";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { RoomScannerCard } from "@/components/room-scanner";
+import { VersionHistory } from "@/components/version-history";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
@@ -19,19 +19,10 @@ import { useTenant } from "@/context/TenantContext";
 
 const DEFAULT_OWNER_PIN = "1111";
 
-const PIPELINE_STAGES = [
-  { id: "new", label: "New", color: "bg-blue-500" },
-  { id: "contacted", label: "Contacted", color: "bg-yellow-500" },
-  { id: "quoted", label: "Quoted", color: "bg-purple-500" },
-  { id: "negotiation", label: "Negotiation", color: "bg-orange-500" },
-  { id: "won", label: "Won", color: "bg-green-500" },
-  { id: "lost", label: "Lost", color: "bg-red-500" },
-];
-
 const TAG_TYPES = [
   { value: "keyword", label: "Keyword", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  { value: "meta_description", label: "Meta Description", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
-  { value: "title", label: "Title Tag", color: "bg-gold-400/20 text-gold-400 border-gold-400/30" },
+  { value: "meta_description", label: "Meta", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+  { value: "title", label: "Title", color: "bg-gold-400/20 text-gold-400 border-gold-400/30" },
   { value: "geo", label: "Location", color: "bg-green-500/20 text-green-400 border-green-500/30" },
 ];
 
@@ -253,94 +244,134 @@ export default function Owner() {
 
   return (
     <PageLayout>
-      <main className="pt-24 px-4 md:px-8 pb-24">
+      <main className="pt-20 px-4 md:px-6 pb-24">
         {isDemo && (
           <motion.div 
-            className="max-w-7xl mx-auto mb-6"
+            className="max-w-7xl mx-auto mb-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="p-4 rounded-xl bg-gradient-to-r from-gold-400/20 via-accent/10 to-gold-400/20 border border-gold-400/30 backdrop-blur-sm">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-gold-400/20 via-accent/10 to-gold-400/20 border border-gold-400/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gold-400/20">
-                  <Eye className="w-5 h-5 text-gold-400" />
+                  <Eye className="w-4 h-4 text-gold-400" />
                 </div>
                 <div>
-                  <p className="font-bold text-gold-400">Demo Mode - Private Owner Control Panel</p>
-                  <p className="text-sm text-muted-foreground">This is your private owner dashboard that customers never see. PIN-protected access to manage SEO, view analytics, track revenue, and oversee your entire business.</p>
+                  <p className="font-bold text-gold-400 text-sm">Demo Mode - Private Owner Control Panel</p>
+                  <p className="text-xs text-muted-foreground">PIN-protected access for SEO, analytics, and business management.</p>
                 </div>
               </div>
             </div>
           </motion.div>
         )}
 
-        <div className="max-w-7xl mx-auto mb-12">
-          <div className="flex items-center gap-4 mb-4">
-            <motion.div 
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-400/30 to-accent/20 flex items-center justify-center shadow-lg shadow-gold-400/20 border border-gold-400/20"
-              whileHover={{ scale: 1.1, rotateZ: 5 }}
-            >
-              <Crown className="w-7 h-7 text-gold-400" />
-            </motion.div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Owner Dashboard</h1>
-              <p className="text-muted-foreground">Business overview and financials</p>
+        <div className="max-w-7xl mx-auto mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <motion.div 
+                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-400/30 to-accent/20 flex items-center justify-center shadow-lg shadow-gold-400/20 border border-gold-400/20"
+                whileHover={{ scale: 1.1, rotateZ: 5 }}
+              >
+                <Crown className="w-6 h-6 text-gold-400" />
+              </motion.div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">Owner Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Business overview and financials</p>
+              </div>
             </div>
+            {!isDemo && (
+              <motion.button
+                onClick={() => setShowPinChangeModal(true)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                data-testid="button-settings"
+              >
+                <Settings className="w-4 h-4 text-muted-foreground" />
+              </motion.button>
+            )}
           </div>
         </div>
 
-        {/* Configurable Notice */}
-        <motion.div 
-          className="max-w-7xl mx-auto mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <GlassCard className="p-6 border-dashed border-gold-400/30 bg-gradient-to-r from-gold-400/5 via-accent/5 to-gold-400/5">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400/20 to-accent/20 flex items-center justify-center flex-shrink-0">
-                <Palette className="w-6 h-6 text-gold-400" />
-              </div>
-              <div>
+        <BentoGrid className="max-w-7xl mx-auto">
+          {/* Stats Row - 4 small cards */}
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-bold text-lg">Fully Customizable Dashboard</h3>
-                  <Sparkles className="w-4 h-4 text-gold-400" />
+                  <DollarSign className="w-4 h-4 text-gold-400" />
+                  <span className="text-sm font-medium">Revenue</span>
                 </div>
-                <p className="text-muted-foreground">
-                  This dashboard can be configured any way you want. Name your design, describe your needs, and it will be made to your specifications.
-                </p>
-              </div>
-            </div>
-          </GlassCard>
-        </motion.div>
+                <div className="text-3xl font-bold text-gold-400">$--</div>
+                <p className="text-xs text-muted-foreground mt-1">Coming soon</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
 
-        <BentoGrid>
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-teal-500/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="w-4 h-4 text-teal-400" />
+                  <span className="text-sm font-medium">Pipeline</span>
+                </div>
+                <div className="text-3xl font-bold text-teal-400">${getTotalPipelineValue().toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground mt-1">{getTotalDeals()} deals</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-blue-400" />
+                  <span className="text-sm font-medium">Leads</span>
+                </div>
+                <div className="text-3xl font-bold text-blue-400">{leadsLoading ? "--" : leads.length}</div>
+                <p className="text-xs text-muted-foreground mt-1">Total captured</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-green-500/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-4 h-4 text-green-400" />
+                  <span className="text-sm font-medium">Growth</span>
+                </div>
+                <div className="text-3xl font-bold text-green-400">--%</div>
+                <p className="text-xs text-muted-foreground mt-1">Coming soon</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           {/* SEO Tracker - Large Card */}
           <BentoItem colSpan={8} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6 md:p-8 bg-gradient-to-br from-blue-500/10 via-transparent to-accent/5" glow>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-accent/20 flex items-center justify-center">
-                      <Search className="w-6 h-6 text-blue-400" />
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 via-transparent to-accent/5" glow>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-accent/20 flex items-center justify-center">
+                      <Search className="w-4 h-4 text-blue-400" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-display font-bold">SEO Tracker</h2>
-                      <p className="text-sm text-muted-foreground">Manage your website's search visibility</p>
+                      <h2 className="text-lg font-display font-bold">SEO Tracker</h2>
+                      <p className="text-xs text-muted-foreground">{seoTags.length} tags</p>
                     </div>
                   </div>
                   <motion.button
                     onClick={() => setShowAddForm(!showAddForm)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 transition-colors text-sm"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     data-testid="button-add-seo-tag"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span className="hidden sm:inline">Add Tag</span>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Add</span>
                   </motion.button>
                 </div>
 
-                {/* Add Tag Form */}
                 <AnimatePresence>
                   {showAddForm && (
                     <motion.form 
@@ -348,18 +379,18 @@ export default function Owner() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mb-6 overflow-hidden"
+                      className="mb-3 overflow-hidden"
                     >
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-4">
-                        <div className="flex flex-wrap gap-2">
+                      <div className="bg-white/5 rounded-lg p-3 border border-white/10 space-y-3">
+                        <div className="flex flex-wrap gap-1.5">
                           {TAG_TYPES.map((type) => (
                             <motion.button
                               key={type.value}
                               type="button"
                               onClick={() => setNewTagType(type.value)}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
+                              className={`px-2 py-1 rounded-md text-xs font-medium border transition-all ${
                                 newTagType === type.value 
-                                  ? type.color + " ring-2 ring-white/20" 
+                                  ? type.color + " ring-1 ring-white/20" 
                                   : "bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10"
                               }`}
                               whileHover={{ scale: 1.05 }}
@@ -369,33 +400,33 @@ export default function Owner() {
                             </motion.button>
                           ))}
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
                           <Input
                             type="text"
                             placeholder={`Enter ${getTagTypeLabel(newTagType).toLowerCase()}...`}
                             value={newTagValue}
                             onChange={(e) => setNewTagValue(e.target.value)}
-                            className="flex-1 bg-white/5 border-white/20 rounded-xl"
+                            className="flex-1 bg-white/5 border-white/20 rounded-lg h-8 text-sm"
                             data-testid="input-seo-tag-value"
                           />
                           <motion.button
                             type="submit"
                             disabled={!newTagValue.trim() || createTagMutation.isPending}
-                            className="px-4 py-2 rounded-xl bg-accent text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1.5 rounded-lg bg-accent text-white font-medium disabled:opacity-50 text-sm"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             data-testid="button-submit-seo-tag"
                           >
-                            <Check className="w-5 h-5" />
+                            <Check className="w-4 h-4" />
                           </motion.button>
                           <motion.button
                             type="button"
                             onClick={() => setShowAddForm(false)}
-                            className="px-4 py-2 rounded-xl bg-white/10 text-white"
+                            className="px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
-                            <X className="w-5 h-5" />
+                            <X className="w-4 h-4" />
                           </motion.button>
                         </div>
                       </div>
@@ -403,55 +434,53 @@ export default function Owner() {
                   )}
                 </AnimatePresence>
 
-                {/* Tags List */}
-                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
                   {tagsLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">Loading tags...</div>
+                    <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
                   ) : seoTags.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                      <p className="text-muted-foreground">No SEO tags yet</p>
-                      <p className="text-sm text-muted-foreground/70 mt-1">Add keywords and meta tags to improve searchability</p>
+                    <div className="text-center py-8">
+                      <Tag className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
+                      <p className="text-sm text-muted-foreground">No SEO tags yet</p>
                     </div>
                   ) : (
                     seoTags.map((tag, index) => (
                       <motion.div
                         key={tag.id}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${
+                        transition={{ delay: index * 0.03 }}
+                        className={`flex items-center justify-between gap-2 p-2 rounded-lg border transition-all ${
                           tag.isActive 
                             ? "bg-white/5 border-white/10" 
                             : "bg-white/2 border-white/5 opacity-60"
                         }`}
                       >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <span className={`px-2 py-1 rounded-lg text-xs font-medium border shrink-0 ${getTagTypeStyle(tag.tagType)}`}>
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium border shrink-0 ${getTagTypeStyle(tag.tagType)}`}>
                             {getTagTypeLabel(tag.tagType)}
                           </span>
                           <span className="truncate text-sm">{tag.value}</span>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0">
                           <motion.button
                             onClick={() => toggleTagMutation.mutate({ id: tag.id, isActive: !tag.isActive })}
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-1.5 rounded transition-colors ${
                               tag.isActive ? "text-green-400 hover:bg-green-500/20" : "text-muted-foreground hover:bg-white/10"
                             }`}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             data-testid={`button-toggle-tag-${tag.id}`}
                           >
-                            {tag.isActive ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                            {tag.isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
                           </motion.button>
                           <motion.button
                             onClick={() => deleteTagMutation.mutate(tag.id)}
-                            className="p-2 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
+                            className="p-1.5 rounded text-red-400 hover:bg-red-500/20 transition-colors"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             data-testid={`button-delete-tag-${tag.id}`}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </motion.button>
                         </div>
                       </motion.div>
@@ -459,83 +488,80 @@ export default function Owner() {
                   )}
                 </div>
 
-                {/* Stats */}
-                <div className="mt-6 pt-4 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-4 gap-2">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-400">{seoTags.filter(t => t.tagType === "keyword").length}</div>
-                    <div className="text-xs text-muted-foreground">Keywords</div>
+                    <div className="text-lg font-bold text-blue-400">{seoTags.filter(t => t.tagType === "keyword").length}</div>
+                    <div className="text-[10px] text-muted-foreground">Keywords</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-400">{seoTags.filter(t => t.tagType === "meta_description").length}</div>
-                    <div className="text-xs text-muted-foreground">Meta Descriptions</div>
+                    <div className="text-lg font-bold text-purple-400">{seoTags.filter(t => t.tagType === "meta_description").length}</div>
+                    <div className="text-[10px] text-muted-foreground">Meta</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gold-400">{seoTags.filter(t => t.tagType === "title").length}</div>
-                    <div className="text-xs text-muted-foreground">Title Tags</div>
+                    <div className="text-lg font-bold text-gold-400">{seoTags.filter(t => t.tagType === "title").length}</div>
+                    <div className="text-[10px] text-muted-foreground">Titles</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-400">{seoTags.filter(t => t.tagType === "geo").length}</div>
-                    <div className="text-xs text-muted-foreground">Locations</div>
+                    <div className="text-lg font-bold text-green-400">{seoTags.filter(t => t.tagType === "geo").length}</div>
+                    <div className="text-[10px] text-muted-foreground">Locations</div>
                   </div>
                 </div>
               </GlassCard>
             </motion.div>
           </BentoItem>
 
-          {/* Email Database Card */}
+          {/* Email Database - Side Card */}
           <BentoItem colSpan={4} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
-                      <Database className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-display font-bold">Email Database</h2>
-                      <p className="text-xs text-muted-foreground">{leads.length} leads</p>
-                    </div>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
+                    <Database className="w-4 h-4 text-accent" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-display font-bold">Email Database</h2>
+                    <p className="text-xs text-muted-foreground">{leads.length} leads</p>
                   </div>
                 </div>
 
-                <div className="relative mb-4">
+                <div className="relative mb-3">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder="Search emails..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-white/5 border-white/20 rounded-xl h-10 text-sm"
+                    className="pl-9 bg-white/5 border-white/20 rounded-lg h-8 text-sm"
                     data-testid="input-search-leads-owner"
                   />
                 </div>
 
-                <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
                   {leadsLoading ? (
                     <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
                   ) : leads.length === 0 ? (
                     <div className="text-center py-8">
-                      <Mail className="w-10 h-10 mx-auto mb-3 text-muted-foreground/50" />
+                      <Mail className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
                       <p className="text-sm text-muted-foreground">
                         {searchQuery ? "No matches" : "No leads yet"}
                       </p>
                     </div>
                   ) : (
-                    leads.slice(0, 10).map((lead, index) => (
+                    leads.slice(0, 6).map((lead, index) => (
                       <motion.div
                         key={lead.id}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.02 }}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                       >
-                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                          <Mail className="w-4 h-4 text-accent" />
+                        <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-3.5 h-3.5 text-accent" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium truncate">{lead.email}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {format(new Date(lead.createdAt), "MMM d, yyyy")}
+                          <p className="text-[10px] text-muted-foreground">
+                            {format(new Date(lead.createdAt), "MMM d, h:mm a")}
                           </p>
                         </div>
                       </motion.div>
@@ -546,128 +572,38 @@ export default function Owner() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gold-400/20 flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-gold-400" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold">Revenue</h2>
-                </div>
-                <div className="text-4xl font-bold text-gold-400 mb-2">$--</div>
-                <p className="text-sm text-muted-foreground">Revenue tracking coming soon</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Users className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Team</h3>
-                </div>
-                <div className="text-3xl font-bold text-accent mb-2">--</div>
-                <p className="text-sm text-muted-foreground">Active team members</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                  <h3 className="text-xl font-bold">Growth</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Business analytics coming soon</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <RoomScannerCard locked={false} accentColor="gold-400" />
-          </BentoItem>
-
-          <BentoItem colSpan={8} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <FileText className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Financial Reports</h3>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <motion.div 
-                    className="bg-white/5 rounded-xl p-4 text-center border border-white/10"
-                    whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.2)" }}
-                  >
-                    <p className="text-sm text-muted-foreground">P&L Report</p>
-                    <p className="text-xs text-accent mt-1">Coming Soon</p>
-                  </motion.div>
-                  <motion.div 
-                    className="bg-white/5 rounded-xl p-4 text-center border border-white/10"
-                    whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.2)" }}
-                  >
-                    <p className="text-sm text-muted-foreground">Payroll</p>
-                    <p className="text-xs text-accent mt-1">Coming Soon</p>
-                  </motion.div>
-                  <motion.div 
-                    className="bg-white/5 rounded-xl p-4 text-center border border-white/10"
-                    whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.2)" }}
-                  >
-                    <p className="text-sm text-muted-foreground">Tax Summary</p>
-                    <p className="text-xs text-accent mt-1">Coming Soon</p>
-                  </motion.div>
-                </div>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-          {/* CRM Deals Pipeline - Full Width */}
-          <BentoItem colSpan={12} rowSpan={2}>
+          {/* Deals Pipeline - Large Card */}
+          <BentoItem colSpan={8} rowSpan={2}>
             <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-teal-500/10 via-transparent to-accent/5" glow>
+              <GlassCard className="h-full p-4" glow>
                 <DealsPipeline />
               </GlassCard>
             </motion.div>
           </BentoItem>
 
-          {/* Activity Timeline */}
+          {/* Activity Timeline - Side Card */}
+          <BentoItem colSpan={4} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4" glow>
+                <ActivityTimeline maxHeight="280px" />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Version History */}
           <BentoItem colSpan={8} rowSpan={1}>
             <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <GlassCard className="h-full p-6">
-                <ActivityTimeline />
-              </GlassCard>
+              <VersionHistory maxItems={5} />
             </motion.div>
           </BentoItem>
 
-          {/* Pipeline Value Summary */}
+          {/* Room Scanner */}
           <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gold-400/20 flex items-center justify-center">
-                    <Target className="w-5 h-5 text-gold-400" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold">Pipeline Value</h2>
-                </div>
-                <div className="text-3xl font-bold text-gold-400 mb-2">
-                  ${getTotalPipelineValue().toLocaleString()}
-                </div>
-                <p className="text-sm text-muted-foreground">{getTotalDeals()} active deals</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          {/* Version History - Tenant Specific */}
-          <BentoItem colSpan={12} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <VersionHistory maxItems={10} />
-            </motion.div>
+            <RoomScannerCard locked={false} accentColor="gold-400" />
           </BentoItem>
 
           {/* Analytics Dashboard - Full Width */}
-          <BentoItem colSpan={12} rowSpan={4}>
+          <BentoItem colSpan={12} rowSpan={3}>
             <AnalyticsDashboard />
           </BentoItem>
         </BentoGrid>

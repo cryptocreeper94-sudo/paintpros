@@ -26,9 +26,10 @@ interface ReleaseVersion {
 interface VersionHistoryProps {
   showAllTenants?: boolean;
   maxItems?: number;
+  compact?: boolean;
 }
 
-export function VersionHistory({ showAllTenants = false, maxItems = 20 }: VersionHistoryProps) {
+export function VersionHistory({ showAllTenants = false, maxItems = 20, compact = false }: VersionHistoryProps) {
   const tenant = useTenant();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterTenant, setFilterTenant] = useState<string | null>(null);
@@ -65,6 +66,40 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20 }: Versio
     npp: "Nashville Painting Professionals",
     demo: "PaintPros.io Platform",
   };
+
+  if (compact) {
+    return (
+      <div className="space-y-2">
+        {isLoading ? (
+          <div className="text-center py-4 text-muted-foreground text-sm">Loading...</div>
+        ) : filteredReleases.length === 0 ? (
+          <div className="text-center py-4 text-muted-foreground text-sm">No versions</div>
+        ) : (
+          filteredReleases.map((release) => (
+            <div
+              key={release.id}
+              className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10"
+            >
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-bold text-primary text-sm">v{release.version}</span>
+                <span className="text-[10px] text-muted-foreground">#{release.buildNumber}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {release.solanaTxStatus === "confirmed" ? (
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                ) : (
+                  <Clock className="w-3 h-3 text-yellow-500" />
+                )}
+                <span className="text-[10px] text-muted-foreground">
+                  {format(new Date(release.createdAt), "MMM d")}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    );
+  }
 
   return (
     <GlassCard className="p-4">

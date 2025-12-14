@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, BarChart3, Bell, Sparkles, ArrowRight, Palette, Search, Mail, Calendar, Database, Settings, Camera, Clock, Send, X, CheckCircle, GitBranch, Eye } from "lucide-react";
+import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, Eye } from "lucide-react";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
@@ -30,7 +30,6 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showPinChange, setShowPinChange] = useState(false);
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
-  const [activeTab, setActiveTab] = useState<"deals" | "leads" | "activities" | "followups" | "versions">("deals");
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -196,21 +195,21 @@ export default function Admin() {
         onSuccess={handlePinChangeSuccess}
       />
 
-      <main className="pt-20 px-4 md:px-8 pb-24">
+      <main className="pt-20 px-4 md:px-6 pb-24">
         {isDemo && (
           <motion.div 
             className="max-w-7xl mx-auto mb-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/20 via-accent/10 to-blue-500/20 border border-blue-500/30 backdrop-blur-sm">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500/20 via-accent/10 to-blue-500/20 border border-blue-500/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/20">
-                  <Eye className="w-5 h-5 text-blue-400" />
+                  <Eye className="w-4 h-4 text-blue-400" />
                 </div>
                 <div>
-                  <p className="font-bold text-blue-400">Demo Mode - Private Back-Office Control Panel</p>
-                  <p className="text-sm text-muted-foreground">This is an admin dashboard your customers never see. PIN-protected access for your operations team to manage leads, deals, and follow-ups.</p>
+                  <p className="font-bold text-blue-400 text-sm">Demo Mode - Private Back-Office Control Panel</p>
+                  <p className="text-xs text-muted-foreground">PIN-protected access for your operations team.</p>
                 </div>
               </div>
             </div>
@@ -219,142 +218,163 @@ export default function Admin() {
 
         <div className="max-w-7xl mx-auto mb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <motion.div 
-                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/30 to-blue-500/20 flex items-center justify-center shadow-lg shadow-accent/20 border border-accent/20"
+                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent/30 to-blue-500/20 flex items-center justify-center shadow-lg shadow-accent/20 border border-accent/20"
                 whileHover={{ scale: 1.1, rotateZ: 5 }}
               >
-                <Shield className="w-7 h-7 text-accent" />
+                <Shield className="w-6 h-6 text-accent" />
               </motion.div>
               <div>
-                <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Admin Dashboard</h1>
-                <p className="text-muted-foreground">Lead & Deal Management</p>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">Admin Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Lead & Deal Management</p>
               </div>
             </div>
             {!isDemo && (
               <motion.button
                 onClick={() => setShowPinChange(true)}
-                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 data-testid="button-settings"
               >
-                <Settings className="w-5 h-5 text-muted-foreground" />
+                <Settings className="w-4 h-4 text-muted-foreground" />
               </motion.button>
             )}
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto mb-6">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {[
-              { id: "deals", label: "Deals Pipeline", icon: BarChart3 },
-              { id: "leads", label: "Email Database", icon: Database },
-              { id: "followups", label: "Follow-ups", icon: Clock, badge: pendingFollowups.length },
-              { id: "activities", label: "Activities", icon: Bell },
-              { id: "versions", label: "Versions", icon: GitBranch },
-            ].map((tab) => (
-              <motion.button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl border transition-colors whitespace-nowrap flex-shrink-0 ${
-                  activeTab === tab.id
-                    ? "bg-accent/20 border-accent/30 text-accent"
-                    : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10"
-                }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                data-testid={`tab-${tab.id}`}
-              >
-                <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden">{tab.id === "followups" ? "Follow" : tab.id === "activities" ? "Activity" : tab.id === "deals" ? "Deals" : "Leads"}</span>
-                {"badge" in tab && typeof tab.badge === "number" && tab.badge > 0 && (
-                  <span className="ml-1 px-2 py-0.5 text-xs rounded-full bg-accent/30 text-accent">
-                    {tab.badge}
-                  </span>
-                )}
-              </motion.button>
-            ))}
-          </div>
-        </div>
+        <BentoGrid className="max-w-7xl mx-auto">
+          {/* Stats Row - 4 small cards */}
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-accent/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-accent" />
+                  <span className="text-sm font-medium">Estimates</span>
+                </div>
+                <div className="text-3xl font-bold text-accent">{estimatesLoading ? "--" : estimates.length}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  ${estimates.reduce((sum, e) => sum + parseFloat(e.totalEstimate || "0"), 0).toLocaleString()}
+                </p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
 
-        <div className="max-w-7xl mx-auto">
-          {activeTab === "deals" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <GlassCard className="p-6 md:p-8" glow>
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-blue-400" />
+                  <span className="text-sm font-medium">Leads</span>
+                </div>
+                <div className="text-3xl font-bold text-blue-400">{leadsLoading ? "--" : leads.length}</div>
+                <p className="text-xs text-muted-foreground mt-1">Total captured</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-yellow-500/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm font-medium">Follow-ups</span>
+                </div>
+                <div className="text-3xl font-bold text-yellow-400">{followupsLoading ? "--" : pendingFollowups.length}</div>
+                <p className="text-xs text-muted-foreground mt-1">Pending</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={3} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-green-500/10 to-transparent" glow>
+                <div className="flex items-center gap-2 mb-2">
+                  <Bell className="w-4 h-4 text-green-400" />
+                  <span className="text-sm font-medium">Activity</span>
+                </div>
+                <div className="text-lg font-bold text-green-400">
+                  {leads.length > 0 ? format(new Date(leads[0]?.createdAt || new Date()), "MMM d") : "--"}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Last lead</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Deals Pipeline - Large Card */}
+          <BentoItem colSpan={8} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+              <GlassCard className="h-full p-4 md:p-6" glow>
                 <DealsPipeline />
               </GlassCard>
             </motion.div>
-          )}
+          </BentoItem>
 
-          {activeTab === "leads" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <GlassCard className="p-6 md:p-8 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
-                      <Database className="w-6 h-6 text-accent" />
+          {/* Activity Timeline - Side Card */}
+          <BentoItem colSpan={4} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4" glow>
+                <ActivityTimeline maxHeight="280px" />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Email Database - Medium Card */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
+                      <Database className="w-4 h-4 text-accent" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-display font-bold">Email Database</h2>
-                      <p className="text-sm text-muted-foreground">Search and manage leads</p>
+                      <h2 className="text-lg font-display font-bold">Email Database</h2>
+                      <p className="text-xs text-muted-foreground">{leads.length} leads</p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-accent">{leads.length}</div>
-                    <div className="text-xs text-muted-foreground">Total Leads</div>
                   </div>
                 </div>
 
-                <div className="relative mb-6">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Search by email..."
+                    placeholder="Search emails..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 bg-white/5 border-white/20 rounded-xl h-12"
+                    className="pl-9 bg-white/5 border-white/20 rounded-lg h-9 text-sm"
                     data-testid="input-search-leads"
                   />
                 </div>
 
-                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
                   {leadsLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">Loading leads...</div>
+                    <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
                   ) : leads.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Mail className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                      <p className="text-muted-foreground">
-                        {searchQuery ? "No leads match your search" : "No leads captured yet"}
+                    <div className="text-center py-8">
+                      <Mail className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
+                      <p className="text-sm text-muted-foreground">
+                        {searchQuery ? "No matches" : "No leads yet"}
                       </p>
                     </div>
                   ) : (
-                    leads.map((lead, index) => (
+                    leads.slice(0, 8).map((lead, index) => (
                       <motion.div
                         key={lead.id}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.03 }}
-                        className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        transition={{ delay: index * 0.02 }}
+                        className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                         data-testid={`lead-row-${lead.id}`}
                       >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                            <Mail className="w-5 h-5 text-accent" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-medium truncate">{lead.email}</p>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {format(new Date(lead.createdAt), "MMM d, yyyy 'at' h:mm a")}
-                            </p>
-                          </div>
+                        <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-3.5 h-3.5 text-accent" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{lead.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {format(new Date(lead.createdAt), "MMM d, h:mm a")}
+                          </p>
                         </div>
                       </motion.div>
                     ))
@@ -362,65 +382,48 @@ export default function Admin() {
                 </div>
               </GlassCard>
             </motion.div>
-          )}
+          </BentoItem>
 
-          {activeTab === "activities" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <GlassCard className="p-6 md:p-8" glow>
-                <ActivityTimeline showAll maxHeight="500px" />
-              </GlassCard>
-            </motion.div>
-          )}
-
-          {activeTab === "followups" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <GlassCard className="p-6 md:p-8 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-accent" />
+          {/* Follow-ups - Medium Card with Carousel */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-yellow-500/10 via-transparent to-accent/5" glow>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-500/20 to-accent/20 flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-yellow-400" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-display font-bold">Scheduled Follow-ups</h2>
-                      <p className="text-sm text-muted-foreground">Manage pending email reminders</p>
+                      <h2 className="text-lg font-display font-bold">Follow-ups</h2>
+                      <p className="text-xs text-muted-foreground">{pendingFollowups.length} pending</p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-accent">{pendingFollowups.length}</div>
-                    <div className="text-xs text-muted-foreground">Pending</div>
                   </div>
                 </div>
 
                 {followupsLoading ? (
-                  <div className="text-center py-8 text-muted-foreground">Loading follow-ups...</div>
+                  <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
                 ) : pendingFollowups.length === 0 ? (
-                  <div className="text-center py-12">
-                    <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500/50" />
-                    <p className="text-muted-foreground">All caught up! No pending follow-ups.</p>
+                  <div className="text-center py-8">
+                    <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500/50" />
+                    <p className="text-sm text-muted-foreground">All caught up!</p>
                   </div>
                 ) : (
-                  <div className="px-12">
+                  <div className="px-8">
                     <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
-                      <CarouselContent className="-ml-3">
+                      <CarouselContent className="-ml-2">
                         {pendingFollowups.map((followup, index) => (
-                          <CarouselItem key={followup.id} className="pl-3 basis-[280px] md:basis-[320px] lg:basis-1/3">
+                          <CarouselItem key={followup.id} className="pl-2 basis-[220px]">
                             <motion.div
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: index * 0.05 }}
                             >
                               <GlassCard 
-                                className="p-4 h-full border border-white/10"
+                                className="p-3 h-full border border-white/10"
                                 data-testid={`followup-card-${followup.id}`}
                               >
-                                <div className="flex items-center justify-between mb-3">
-                                  <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${
                                     followup.followupType === "reminder" 
                                       ? "bg-blue-500/20 text-blue-400"
                                       : followup.followupType === "quote_expiring"
@@ -428,51 +431,43 @@ export default function Admin() {
                                       : "bg-purple-500/20 text-purple-400"
                                   }`}>
                                     {followup.followupType === "reminder" ? "Reminder" : 
-                                     followup.followupType === "quote_expiring" ? "Quote Expiring" : "Thank You"}
+                                     followup.followupType === "quote_expiring" ? "Expiring" : "Thanks"}
                                   </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    #{followup.estimateId}
-                                  </span>
+                                  <span className="text-[10px] text-muted-foreground">#{followup.estimateId}</span>
                                 </div>
                                 
-                                <p className="text-sm text-muted-foreground flex items-center gap-1 mb-3">
-                                  <Calendar className="w-3 h-3 flex-shrink-0" />
-                                  {format(new Date(followup.scheduledFor), "MMM d 'at' h:mm a")}
+                                <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
+                                  <Calendar className="w-3 h-3" />
+                                  {format(new Date(followup.scheduledFor), "MMM d, h:mm a")}
                                 </p>
 
-                                <div className="flex gap-2 mb-3">
+                                <div className="flex gap-1.5 mb-2">
                                   <motion.button
                                     onClick={() => handleMarkSent(followup.id)}
-                                    className="flex-1 p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center justify-center gap-1 text-xs"
+                                    className="flex-1 p-1.5 rounded-md bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center justify-center gap-1 text-[10px]"
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     data-testid={`button-mark-sent-${followup.id}`}
                                   >
-                                    <Send className="w-3 h-3" /> Sent
+                                    <Send className="w-2.5 h-2.5" /> Sent
                                   </motion.button>
                                   <motion.button
                                     onClick={() => handleCancelFollowup(followup.id)}
-                                    className="flex-1 p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors flex items-center justify-center gap-1 text-xs"
+                                    className="flex-1 p-1.5 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors flex items-center justify-center gap-1 text-[10px]"
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     data-testid={`button-cancel-followup-${followup.id}`}
                                   >
-                                    <X className="w-3 h-3" /> Cancel
+                                    <X className="w-2.5 h-2.5" /> Cancel
                                   </motion.button>
                                 </div>
 
                                 <Accordion type="single" collapsible className="border-t border-white/10">
                                   <AccordionItem value="details" className="border-b-0">
-                                    <AccordionTrigger className="text-xs py-2 hover:no-underline">
-                                      Details
-                                    </AccordionTrigger>
-                                    <AccordionContent className="text-xs">
-                                      {followup.emailSubject && (
-                                        <p className="font-medium mb-2">{followup.emailSubject}</p>
-                                      )}
-                                      <p className="text-muted-foreground">
-                                        Full date: {format(new Date(followup.scheduledFor), "EEEE, MMMM d, yyyy 'at' h:mm a")}
-                                      </p>
+                                    <AccordionTrigger className="text-[10px] py-1.5 hover:no-underline">Details</AccordionTrigger>
+                                    <AccordionContent className="text-[10px]">
+                                      {followup.emailSubject && <p className="font-medium mb-1">{followup.emailSubject}</p>}
+                                      <p className="text-muted-foreground">{format(new Date(followup.scheduledFor), "EEEE, MMM d 'at' h:mm a")}</p>
                                     </AccordionContent>
                                   </AccordionItem>
                                 </Accordion>
@@ -481,76 +476,29 @@ export default function Admin() {
                           </CarouselItem>
                         ))}
                       </CarouselContent>
-                      <CarouselPrevious className="left-0" />
-                      <CarouselNext className="right-0" />
+                      <CarouselPrevious className="left-0 h-6 w-6" />
+                      <CarouselNext className="right-0 h-6 w-6" />
                     </Carousel>
                   </div>
                 )}
               </GlassCard>
             </motion.div>
-          )}
+          </BentoItem>
 
-          {activeTab === "versions" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <VersionHistory maxItems={15} />
-            </motion.div>
-          )}
-        </div>
-
-        <BentoGrid className="mt-8">
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6" glow>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-accent" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold">Estimates</h2>
+          {/* Version History - Medium Card */}
+          <BentoItem colSpan={8} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+              <GlassCard className="h-full p-4" glow>
+                <div className="flex items-center gap-2 mb-3">
+                  <GitBranch className="w-4 h-4 text-purple-400" />
+                  <h2 className="text-lg font-display font-bold">Version History</h2>
                 </div>
-                <div className="text-4xl font-bold text-accent mb-2">{estimatesLoading ? "--" : estimates.length}</div>
-                <p className="text-sm text-muted-foreground">
-                  {estimates.length > 0 
-                    ? `$${estimates.reduce((sum, e) => sum + parseFloat(e.totalEstimate || "0"), 0).toLocaleString()} total`
-                    : "No estimates yet"}
-                </p>
+                <VersionHistory maxItems={3} compact />
               </GlassCard>
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-              <GlassCard className="h-full p-6" glow>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                    <Users className="w-5 h-5 text-accent" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold">Leads</h2>
-                </div>
-                <div className="text-4xl font-bold text-accent mb-2">{leadsLoading ? "--" : leads.length}</div>
-                <p className="text-sm text-muted-foreground">Total leads captured</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={4} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
-              <GlassCard className="h-full p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Bell className="w-5 h-5 text-accent" />
-                  <h3 className="text-xl font-bold">Recent Activity</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {leads.length > 0 
-                    ? `Last lead: ${format(new Date(leads[0]?.createdAt || new Date()), "MMM d")}`
-                    : "No recent activity"}
-                </p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
+          {/* Room Scanner */}
           <BentoItem colSpan={4} rowSpan={1}>
             <RoomScannerCard locked={false} accentColor="accent" />
           </BentoItem>
