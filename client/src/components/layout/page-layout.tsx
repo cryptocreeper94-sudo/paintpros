@@ -2,6 +2,7 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Home, ArrowLeft } from "lucide-react";
 import { useLocation, Link } from "wouter";
+import paintRollerWatermark from "@assets/paint_roller_transparent.png";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,14 @@ export function PageLayout({ children }: PageLayoutProps) {
   
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
+      {/* Watermark background - paint roller */}
+      <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center">
+        <img 
+          src={paintRollerWatermark} 
+          alt="" 
+          className="w-[75vw] max-w-4xl h-auto opacity-[0.08] dark:opacity-[0.06]"
+        />
+      </div>
       <Navbar />
       {location !== "/" && (
         <div className="fixed top-16 left-4 z-30 hidden md:flex gap-2">

@@ -18,7 +18,6 @@ import warrantyImage from "@assets/generated_images/warranty_shield_certificate_
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
 import googleRatingImage from "@assets/generated_images/five_star_google_rating.png";
-import paintRollerWatermark from "@assets/paint_roller_transparent.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
@@ -70,15 +69,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      {/* Watermark background - paint roller */}
-      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-        <img 
-          src={paintRollerWatermark} 
-          alt="" 
-          className="w-[75vw] max-w-4xl h-auto opacity-[0.15] dark:opacity-[0.12]"
-        />
-      </div>
-      <main className="pt-1 md:pt-4 px-2 md:px-8 relative z-10">
+      <main className="pt-1 md:pt-4 px-2 md:px-8">
         <BentoGrid>
           
           {/* 1. Hero Section - Main Headline */}
