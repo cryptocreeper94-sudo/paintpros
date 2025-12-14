@@ -60,7 +60,7 @@ export function Navbar() {
         
         {/* Center: Title - takes up most width */}
         <div 
-          className="flex-1 text-center text-white tracking-wide text-sm md:text-base lg:text-lg mx-2 leading-tight"
+          className="flex-1 text-center text-white tracking-wide text-sm md:text-base lg:text-lg mx-0 leading-tight"
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
