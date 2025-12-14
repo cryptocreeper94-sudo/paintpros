@@ -15,12 +15,43 @@ import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
+import { sendContactEmail, type ContactFormData } from "./resend";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   
+  // ============ CONTACT FORM (Resend) ============
+  
+  // POST /api/contact - Send contact form email via Resend
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const contactSchema = z.object({
+        name: z.string().min(1, "Name is required"),
+        email: z.string().email("Valid email is required"),
+        company: z.string().optional(),
+        message: z.string().min(10, "Message must be at least 10 characters")
+      });
+      
+      const validatedData = contactSchema.parse(req.body) as ContactFormData;
+      const result = await sendContactEmail(validatedData);
+      
+      if (result.success) {
+        res.status(200).json({ success: true, message: "Message sent successfully" });
+      } else {
+        res.status(500).json({ success: false, error: result.error || "Failed to send message" });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, error: "Invalid form data", details: error.errors });
+      } else {
+        console.error("Error sending contact email:", error);
+        res.status(500).json({ success: false, error: "Failed to send message" });
+      }
+    }
+  });
+
   // ============ LEADS ============
   
   // POST /api/leads - Create or get existing lead

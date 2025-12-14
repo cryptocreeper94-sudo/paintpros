@@ -16,12 +16,14 @@ import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
 import { SolanaVerifiedModal } from "@/components/solana-verified-modal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
+import { ContactModal } from "@/components/contact-modal";
 
 export default function Home() {
   const tenant = useTenant();
   const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
   const [colorSelectorOpen, setColorSelectorOpen] = useState(false);
   const [solanaVerifiedOpen, setSolanaVerifiedOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   
   const toggleCard = (cardId: string) => {
@@ -404,13 +406,13 @@ export default function Home() {
                       </li>
                     </ul>
                   </div>
-                  <a 
-                    href="mailto:contact@paintpros.io" 
+                  <button 
+                    onClick={() => setContactOpen(true)}
                     className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition-colors text-xs md:text-sm"
-                    data-testid="link-contact-demo"
+                    data-testid="button-contact-demo"
                   >
                     Contact Us <ArrowRight className="w-3 h-3" />
-                  </a>
+                  </button>
                 </>
               ) : (
                 <>
@@ -513,6 +515,10 @@ export default function Home() {
       <SolanaVerifiedModal
         isOpen={solanaVerifiedOpen}
         onClose={() => setSolanaVerifiedOpen(false)}
+      />
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
       />
       <PWAInstallPrompt />
     </PageLayout>
