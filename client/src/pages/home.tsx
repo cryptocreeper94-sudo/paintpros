@@ -124,7 +124,7 @@ export default function Home() {
                 <img 
                   src={estimateImage} 
                   alt="Professional estimate consultation" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.65] group-hover:opacity-75 transition-opacity"
                 />
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
                   <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
@@ -205,7 +205,7 @@ export default function Home() {
                 <img 
                   src={premiumMaterialsImage} 
                   alt="Premium paint materials" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.65] transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -232,7 +232,7 @@ export default function Home() {
                 <img 
                   src={onTimeImage} 
                   alt="On-time service" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.65] transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -259,7 +259,7 @@ export default function Home() {
                 <img 
                   src={warrantyImage} 
                   alt="Warranty guarantee" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.65] transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -281,7 +281,7 @@ export default function Home() {
               <img 
                 src={testimonialImage} 
                 alt="Beautiful painted home" 
-                className="absolute inset-0 w-full h-full object-cover opacity-15 transition-opacity"
+                className="absolute inset-0 w-full h-full object-cover opacity-[0.65] transition-opacity"
               />
               <CarouselView 
                 slides={testimonials.map((t, i) => (
@@ -314,7 +314,7 @@ export default function Home() {
                 <img 
                   src={mapImage} 
                   alt={`${cityName} Service Area`}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-opacity duration-500"
+                  className="w-full h-full object-cover opacity-[0.65] group-hover:opacity-80 transition-opacity duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
                 <div className="absolute bottom-2 md:bottom-6 left-2 md:left-6 right-2 md:right-6">
@@ -416,7 +416,7 @@ export default function Home() {
                   <img 
                     src={googleRatingImage} 
                     alt="Five star rating" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-20"
+                    className="absolute inset-0 w-full h-full object-cover opacity-[0.65]"
                   />
                   <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
                     <div className="flex gap-0.5">
