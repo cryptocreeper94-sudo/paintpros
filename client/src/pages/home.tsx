@@ -75,7 +75,7 @@ export default function Home() {
         <img 
           src={paintRollerWatermark} 
           alt="" 
-          className="w-[75vw] max-w-4xl h-auto opacity-[0.03] dark:opacity-[0.05]"
+          className="w-[75vw] max-w-4xl h-auto opacity-[0.15] dark:opacity-[0.12]"
         />
       </div>
       <main className="pt-1 md:pt-4 px-2 md:px-8 relative z-10">
