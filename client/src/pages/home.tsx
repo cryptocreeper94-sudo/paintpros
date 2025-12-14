@@ -95,7 +95,7 @@ export default function Home() {
                 <p className="text-[10px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
                   {tenant.description || `Premium residential and commercial painting.`}
                 </p>
-                <a href="/portfolio" className="inline-block">
+                <a href="/portfolio" className="inline-block mb-1">
                   <FlipButton>
                     View Portfolio <ArrowRight className="w-4 h-4" />
                   </FlipButton>
