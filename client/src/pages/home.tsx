@@ -118,14 +118,14 @@ export default function Home() {
               <GlassCard className="bg-accent/10 border-accent/20 relative p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
                 <div className="relative z-10">
                   <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
-                  <p className="text-[10px] md:text-xs text-muted-foreground pr-8">
+                  <p className="text-[10px] md:text-xs text-muted-foreground pr-8 font-bold">
                     Use our instant calculator to get a custom quote for your painting project in seconds.
                   </p>
                 </div>
                 <img 
                   src={estimateImage} 
                   alt="Professional estimate consultation" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
                 />
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
                   <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
@@ -206,7 +206,7 @@ export default function Home() {
                 <img 
                   src={premiumMaterialsImage} 
                   alt="Premium paint materials" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -214,7 +214,7 @@ export default function Home() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-bold text-xs md:text-lg">Premium Materials</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Top-tier paints and finishes only.</p>
+                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block font-bold">Top-tier paints and finishes only.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
@@ -233,7 +233,7 @@ export default function Home() {
                 <img 
                   src={onTimeImage} 
                   alt="On-time service" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -241,7 +241,7 @@ export default function Home() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-bold text-xs md:text-lg">On-Time</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">We value your time.</p>
+                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block font-bold">We value your time.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
@@ -260,7 +260,7 @@ export default function Home() {
                 <img 
                   src={warrantyImage} 
                   alt="Warranty guarantee" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -268,7 +268,7 @@ export default function Home() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-bold text-xs md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Full coverage on our workmanship.</p>
+                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block font-bold">Full coverage on our workmanship.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
@@ -282,7 +282,7 @@ export default function Home() {
               <img 
                 src={testimonialImage} 
                 alt="Beautiful painted home" 
-                className="absolute inset-0 w-full h-full object-cover opacity-15 transition-opacity"
+                className="absolute inset-0 w-full h-full object-cover opacity-25 transition-opacity"
               />
               <CarouselView 
                 slides={testimonials.map((t, i) => (
@@ -293,7 +293,7 @@ export default function Home() {
                       ))}
                       <span className="ml-1 md:ml-2 text-[10px] md:text-sm text-muted-foreground">{t.rating}</span>
                     </div>
-                    <p className="text-xs md:text-base text-foreground leading-snug md:leading-relaxed mb-2 md:mb-4 line-clamp-3 md:line-clamp-none">"{t.text}"</p>
+                    <p className="text-xs md:text-base text-foreground leading-snug md:leading-relaxed mb-2 md:mb-4 line-clamp-3 md:line-clamp-none font-bold">"{t.text}"</p>
                     <div>
                       <p className="font-bold text-xs md:text-sm">{t.author}</p>
                       <p className="text-[10px] md:text-xs text-muted-foreground">{t.loc}</p>
@@ -417,7 +417,7 @@ export default function Home() {
                   <img 
                     src={googleRatingImage} 
                     alt="Five star rating" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-20"
+                    className="absolute inset-0 w-full h-full object-cover opacity-30"
                   />
                   <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
                     <div className="flex gap-0.5">
