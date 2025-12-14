@@ -52,7 +52,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25 }}
-          className="relative glass-panel rounded-2xl border border-accent/30 max-w-4xl w-full max-h-[90vh] shadow-2xl my-auto"
+          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[85vh] shadow-2xl my-auto"
         >
           <button
             onClick={onClose}
@@ -62,9 +62,9 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
             <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
-          <div className="overflow-y-auto max-h-[90vh] overscroll-contain touch-pan-y">
-            {/* Large landscape map on mobile */}
-            <div className="relative h-[50vw] min-h-[200px] md:h-64 overflow-hidden">
+          <div className="overflow-y-auto max-h-[85vh] overscroll-contain touch-pan-y">
+            {/* Landscape map header */}
+            <div className="relative h-[35vw] min-h-[150px] max-h-[180px] md:h-48 overflow-hidden">
               <img 
                 src={mapImage} 
                 alt="Service Area Map"
@@ -80,87 +80,82 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
               </div>
             </div>
 
-            <div className="p-3 md:p-8 bg-gradient-to-b from-amber-50 to-white dark:from-[#f5f0e6] dark:to-[#faf8f3]">
-              <div className="rounded-xl p-3 md:p-6 mb-4 md:mb-8 border border-[#344e41]/20 bg-white/80 shadow-sm">
-                <div className="flex items-start gap-2 md:gap-4">
-                  <Star className="w-5 h-5 md:w-8 md:h-8 text-[#344e41] flex-shrink-0 mt-0.5" />
+            <div className="p-3 md:p-6 bg-gradient-to-b from-amber-50 to-white dark:from-[#f5f0e6] dark:to-[#faf8f3]">
+              <div className="rounded-xl p-3 md:p-4 mb-3 md:mb-5 border border-[#344e41]/20 bg-white/80 shadow-sm">
+                <div className="flex items-start gap-2 md:gap-3">
+                  <Star className="w-5 h-5 md:w-6 md:h-6 text-[#344e41] flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-900">Your Neighborhood Painting Experts</h3>
-                    <p className="text-xs md:text-base text-gray-700 leading-relaxed line-clamp-3 md:line-clamp-none">
+                    <h3 className="text-sm md:text-lg font-bold mb-1 text-gray-900">Your Neighborhood Painting Experts</h3>
+                    <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
                       From the rolling hills of Franklin to downtown Nashville — we bring <span className="text-[#344e41] font-semibold">world-class craftsmanship</span> right to your doorstep.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-8 mb-4 md:mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-3 md:mb-5">
                 <div>
-                  <div className="flex items-center gap-1 md:gap-2 mb-2 md:mb-4">
-                    <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-[#344e41]/20 flex items-center justify-center">
-                      <MapPin className="w-3 h-3 md:w-4 md:h-4 text-[#344e41]" />
+                  <div className="flex items-center gap-1 md:gap-2 mb-2 md:mb-3">
+                    <div className="w-6 h-6 rounded-lg bg-[#344e41]/20 flex items-center justify-center">
+                      <MapPin className="w-3 h-3 text-[#344e41]" />
                     </div>
-                    <h3 className="text-xs md:text-lg font-bold text-gray-900">Middle TN</h3>
+                    <h3 className="text-xs md:text-base font-bold text-gray-900">Middle TN</h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2">
+                  <div className="flex flex-wrap gap-1 md:gap-1.5">
                     {middleTNAreas.slice(0, 6).map((area) => (
                       <div 
                         key={area.name}
-                        className="rounded-lg p-1.5 md:p-3 border border-[#344e41]/20 bg-white/60 hover:border-[#344e41]/40 transition-colors group"
+                        className="rounded-md px-2 py-1 border border-[#344e41]/20 bg-white/60 hover:border-[#344e41]/40 transition-colors"
                       >
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-[#344e41] flex-shrink-0" />
-                          <span className="font-medium text-[10px] md:text-sm truncate text-gray-800">{area.name}</span>
-                        </div>
+                        <span className="font-medium text-[10px] md:text-xs text-gray-800">{area.name}</span>
                       </div>
                     ))}
-                    <div className="text-[10px] md:text-xs text-gray-600 p-1">+{middleTNAreas.length - 6} more</div>
+                    <span className="text-[10px] md:text-xs text-gray-500 px-1 py-1">+{middleTNAreas.length - 6} more</span>
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-1 md:gap-2 mb-2 md:mb-4">
-                    <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-[#344e41]/20 flex items-center justify-center">
-                      <Truck className="w-3 h-3 md:w-4 md:h-4 text-[#344e41]" />
+                  <div className="flex items-center gap-1 md:gap-2 mb-2 md:mb-3">
+                    <div className="w-6 h-6 rounded-lg bg-[#344e41]/20 flex items-center justify-center">
+                      <Truck className="w-3 h-3 text-[#344e41]" />
                     </div>
-                    <h3 className="text-xs md:text-lg font-bold text-gray-900">Southern KY</h3>
+                    <h3 className="text-xs md:text-base font-bold text-gray-900">Southern KY</h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 mb-2 md:mb-6">
+                  <div className="flex flex-wrap gap-1 md:gap-1.5">
                     {southernKYAreas.map((area) => (
                       <div 
                         key={area.name}
-                        className="rounded-lg p-1.5 md:p-3 border border-[#344e41]/20 bg-white/60 hover:border-[#344e41]/40 transition-colors group"
+                        className="rounded-md px-2 py-1 border border-[#344e41]/20 bg-white/60 hover:border-[#344e41]/40 transition-colors"
                       >
-                        <div className="flex items-center gap-1 md:gap-2">
-                          <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-[#344e41] flex-shrink-0" />
-                          <span className="font-medium text-[10px] md:text-sm truncate text-gray-800">{area.name}</span>
-                        </div>
+                        <span className="font-medium text-[10px] md:text-xs text-gray-800">{area.name}</span>
                       </div>
                     ))}
                   </div>
+                </div>
 
-                  <div className="rounded-lg md:rounded-xl p-2 md:p-5 border border-[#344e41]/20 bg-[#344e41]/10 hidden md:block">
-                    <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-3">
-                      <Clock className="w-4 h-4 md:w-5 md:h-5 text-[#344e41]" />
-                      <span className="text-xs md:text-base font-bold text-gray-900">Extended Coverage</span>
+                <div className="col-span-2 md:col-span-1">
+                  <div className="rounded-lg p-3 border border-[#344e41]/20 bg-[#344e41]/10 h-full flex items-center">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#344e41] flex-shrink-0" />
+                      <p className="text-xs text-gray-700">
+                        We travel up to <span className="text-[#344e41] font-semibold">75 miles</span> from Nashville!
+                      </p>
                     </div>
-                    <p className="text-[10px] md:text-sm text-gray-700">
-                      We travel up to <span className="text-[#344e41] font-semibold">75 miles</span> from Nashville!
-                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 md:gap-4 justify-center">
+              <div className="flex flex-row gap-2 md:gap-3 justify-center">
                 <a
                   href="/estimate"
-                  className="py-2 md:py-4 px-4 md:px-8 bg-[#344e41] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#2a3f35] transition-colors shadow-lg text-sm md:text-lg"
+                  className="py-2 md:py-3 px-4 md:px-6 bg-[#344e41] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#2a3f35] transition-colors shadow-lg text-xs md:text-base"
                   data-testid="link-get-estimate-modal"
                 >
                   Get Your Free Estimate
                 </a>
                 <button
                   onClick={onClose}
-                  className="py-2 md:py-4 px-4 md:px-8 bg-gray-200 border border-gray-300 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition-colors text-sm md:text-base"
+                  className="py-2 md:py-3 px-4 md:px-6 bg-gray-200 border border-gray-300 text-gray-800 font-bold rounded-xl hover:bg-gray-300 transition-colors text-xs md:text-sm"
                   data-testid="button-close-modal-bottom"
                 >
                   Close
