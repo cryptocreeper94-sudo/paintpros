@@ -464,7 +464,7 @@ export default function Home() {
 
           {/* 9. Google Rating */}
           {tenant.credentials?.googleRating && (
-            <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
+            <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
               <a 
                 href={tenant.social?.googleReviews || "https://www.google.com/maps"}
                 target="_blank"
