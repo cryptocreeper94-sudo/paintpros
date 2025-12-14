@@ -359,11 +359,11 @@ export default function Estimate() {
     <PageLayout>
       {/* Demo Lock Overlay */}
       {isDemo && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-md px-4">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-full max-w-md px-4 pointer-events-none">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-accent/90 to-amber-500/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/20"
+            className="bg-gradient-to-r from-accent/90 to-amber-500/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/20 pointer-events-auto"
           >
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-full bg-black/20">

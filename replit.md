@@ -112,6 +112,29 @@ Use accordions to collapse secondary information:
 - `tenant_asset_counters` - Per-tenant sequential hallmark numbering
 - `release_versions` - App version tracking with blockchain stamps
 - `hallmarks` - ORBIT Hallmark System asset identifiers
+- `bookings` - Customer consultation bookings (name, email, service type, date/time)
+- `availability_windows` - Configurable availability per tenant and day of week
+
+## Online Booking System
+Location: `client/src/components/booking-wizard.tsx`
+
+### Customer Booking Wizard
+5-step wizard on the `/estimate` page:
+1. **Service Type** - Interior, Exterior, Commercial, Residential
+2. **Select Date** - Calendar picker (Mon-Sat available, Sundays disabled)
+3. **Select Time** - Hourly slots from 8am-5pm
+4. **Contact Details** - Name, email (required), phone, address, description
+5. **Confirmation** - Success message with booking summary
+
+### Admin Dashboard
+`client/src/components/bookings-card.tsx` - Displays upcoming bookings on Admin, Owner, and Developer dashboards
+
+### API Endpoints
+- `POST /api/availability/init` - Initializes default availability windows for tenant
+- `GET /api/availability/slots?date=YYYY-MM-DD&tenantId=xxx` - Get available time slots
+- `GET /api/bookings/upcoming?tenantId=xxx` - Get upcoming bookings
+- `POST /api/bookings` - Create new booking
+- `PATCH /api/bookings/:id` - Update booking status
 
 ## Business Documentation
 - **BUSINESS_PLAN.md** - Comprehensive business plan v1.1 with executive summary, market analysis, pricing tiers, go-to-market strategy, and financial projections
@@ -152,8 +175,6 @@ Location: `server/solana.ts`
 
 ## Future Features
 - AI Voice Assistant (Twilio integration)
-- Room scanning with OpenAI Vision API
-- Online booking
 - Blog/content management
 - Subdomain-based tenant routing
 - Production-ready authentication (replace client-side PINs)

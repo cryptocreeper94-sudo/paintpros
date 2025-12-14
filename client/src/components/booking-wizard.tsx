@@ -105,10 +105,8 @@ export function BookingWizard() {
   });
 
   useEffect(() => {
-    if (slotsData && slotsData.slots && slotsData.slots.length === 0 && dateString) {
-      initAvailabilityMutation.mutate();
-    }
-  }, [slotsData, dateString]);
+    initAvailabilityMutation.mutate();
+  }, []);
 
   const handleServiceSelect = (serviceId: string) => {
     setBookingData(prev => ({ ...prev, serviceType: serviceId }));
@@ -241,6 +239,7 @@ export function BookingWizard() {
                 selected={bookingData.scheduledDate || undefined}
                 onSelect={handleDateSelect}
                 disabled={(date) => date < new Date() || date.getDay() === 0}
+                defaultMonth={new Date()}
                 className="rounded-lg border"
                 data-testid="date-picker"
               />
@@ -275,10 +274,9 @@ export function BookingWizard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
+                <div className="text-center py-12" data-testid="no-availability-message">
                   <CalendarDays className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">No available slots for this date.</p>
-                  <p className="text-sm text-muted-foreground mt-2">Please select a different date.</p>
+                  <p className="text-muted-foreground">No availability for this date. Please try another day.</p>
                 </div>
               )}
             </div>

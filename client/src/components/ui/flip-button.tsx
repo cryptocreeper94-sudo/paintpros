@@ -1,22 +1,20 @@
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 
-interface FlipButtonProps {
+interface FlipButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
   children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-  disabled?: boolean;
 }
 
-export function FlipButton({ children, onClick, className, disabled }: FlipButtonProps) {
+export function FlipButton({ children, onClick, className, disabled, ...props }: FlipButtonProps) {
   return (
     <motion.button
-      className={`glass-btn px-6 py-3 rounded-full text-foreground font-bold tracking-wide uppercase text-sm ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`glass-btn px-6 py-3 rounded-full text-foreground font-bold tracking-wide uppercase text-sm ${className || ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       onClick={onClick}
       disabled={disabled}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       initial="initial"
       whileInView="animate"
+      {...props}
     >
       <span className="relative z-10 flex items-center gap-2">
         {children}
