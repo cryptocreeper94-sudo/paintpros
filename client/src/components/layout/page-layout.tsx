@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
-import { FloatingAIButton } from "@/components/floating-ai-button";
 import { Home, ArrowLeft } from "lucide-react";
 import { useLocation, Link } from "wouter";
 
@@ -38,7 +37,6 @@ export function PageLayout({ children }: PageLayoutProps) {
         {children}
       </div>
       <Footer />
-      <FloatingAIButton />
     </div>
   );
 }
