@@ -26,6 +26,8 @@ import {
   type DocumentAsset, type InsertDocumentAsset, documentAssets,
   type TenantAssetCounter, type InsertTenantAssetCounter, tenantAssetCounters,
   type User, type UpsertUser, users,
+  type Booking, type InsertBooking, bookings,
+  type AvailabilityWindow, type InsertAvailabilityWindow, availabilityWindows,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -1248,6 +1250,181 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.select().from(tenantAssetCounters)
       .where(eq(tenantAssetCounters.tenantId, tenantId));
     return result;
+  }
+
+  // ============ BOOKINGS ============
+
+  async createBooking(booking: InsertBooking): Promise<Booking> {
+    const [result] = await db.insert(bookings).values(booking).returning();
+    return result;
+  }
+
+  async getBookings(tenantId?: string): Promise<Booking[]> {
+    if (tenantId) {
+      return await db.select().from(bookings)
+        .where(eq(bookings.tenantId, tenantId))
+        .orderBy(desc(bookings.scheduledDate));
+    }
+    return await db.select().from(bookings).orderBy(desc(bookings.scheduledDate));
+  }
+
+  async getBookingById(id: string): Promise<Booking | undefined> {
+    const [result] = await db.select().from(bookings).where(eq(bookings.id, id));
+    return result;
+  }
+
+  async getBookingsByDate(date: Date, tenantId?: string): Promise<Booking[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const conditions = [
+      sql`${bookings.scheduledDate} >= ${startOfDay}`,
+      sql`${bookings.scheduledDate} <= ${endOfDay}`
+    ];
+    if (tenantId) {
+      conditions.push(eq(bookings.tenantId, tenantId));
+    }
+
+    return await db.select().from(bookings)
+      .where(and(...conditions))
+      .orderBy(bookings.scheduledTime);
+  }
+
+  async getBookingsByStatus(status: string, tenantId?: string): Promise<Booking[]> {
+    const conditions = [eq(bookings.status, status)];
+    if (tenantId) {
+      conditions.push(eq(bookings.tenantId, tenantId));
+    }
+    return await db.select().from(bookings)
+      .where(and(...conditions))
+      .orderBy(desc(bookings.scheduledDate));
+  }
+
+  async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
+    const updates: Partial<Booking> = { status, updatedAt: new Date() };
+    if (status === 'confirmed') updates.confirmedAt = new Date();
+    if (status === 'completed') updates.completedAt = new Date();
+    if (status === 'cancelled') updates.cancelledAt = new Date();
+
+    const [result] = await db.update(bookings)
+      .set(updates)
+      .where(eq(bookings.id, id))
+      .returning();
+    return result;
+  }
+
+  async cancelBooking(id: string, reason?: string): Promise<Booking | undefined> {
+    const [result] = await db.update(bookings)
+      .set({ 
+        status: 'cancelled', 
+        cancelledAt: new Date(), 
+        cancellationReason: reason,
+        updatedAt: new Date() 
+      })
+      .where(eq(bookings.id, id))
+      .returning();
+    return result;
+  }
+
+  async getUpcomingBookings(tenantId?: string, limit = 10): Promise<Booking[]> {
+    const now = new Date();
+    const conditions = [
+      sql`${bookings.scheduledDate} >= ${now}`,
+      sql`${bookings.status} NOT IN ('cancelled', 'completed')`
+    ];
+    if (tenantId) {
+      conditions.push(eq(bookings.tenantId, tenantId));
+    }
+
+    return await db.select().from(bookings)
+      .where(and(...conditions))
+      .orderBy(bookings.scheduledDate, bookings.scheduledTime)
+      .limit(limit);
+  }
+
+  // ============ AVAILABILITY WINDOWS ============
+
+  async createAvailabilityWindow(window: InsertAvailabilityWindow): Promise<AvailabilityWindow> {
+    const [result] = await db.insert(availabilityWindows).values(window).returning();
+    return result;
+  }
+
+  async getAvailabilityWindows(tenantId?: string): Promise<AvailabilityWindow[]> {
+    if (tenantId) {
+      return await db.select().from(availabilityWindows)
+        .where(eq(availabilityWindows.tenantId, tenantId))
+        .orderBy(availabilityWindows.dayOfWeek, availabilityWindows.startTime);
+    }
+    return await db.select().from(availabilityWindows)
+      .orderBy(availabilityWindows.dayOfWeek, availabilityWindows.startTime);
+  }
+
+  async getAvailabilityByDay(dayOfWeek: number, tenantId?: string): Promise<AvailabilityWindow[]> {
+    const conditions = [
+      eq(availabilityWindows.dayOfWeek, dayOfWeek),
+      eq(availabilityWindows.isActive, true)
+    ];
+    if (tenantId) {
+      conditions.push(eq(availabilityWindows.tenantId, tenantId));
+    }
+    return await db.select().from(availabilityWindows)
+      .where(and(...conditions))
+      .orderBy(availabilityWindows.startTime);
+  }
+
+  async updateAvailabilityWindow(id: string, updates: Partial<InsertAvailabilityWindow>): Promise<AvailabilityWindow | undefined> {
+    const [result] = await db.update(availabilityWindows)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(availabilityWindows.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteAvailabilityWindow(id: string): Promise<void> {
+    await db.delete(availabilityWindows).where(eq(availabilityWindows.id, id));
+  }
+
+  async getAvailableSlots(date: Date, tenantId: string): Promise<string[]> {
+    const dayOfWeek = date.getDay();
+    const windows = await this.getAvailabilityByDay(dayOfWeek, tenantId);
+    const existingBookings = await this.getBookingsByDate(date, tenantId);
+    
+    const bookedSlots = new Set(
+      existingBookings
+        .filter(b => b.status !== 'cancelled')
+        .map(b => b.scheduledTime)
+    );
+
+    const availableSlots: string[] = [];
+    for (const window of windows) {
+      const [startHour, startMin] = window.startTime.split(':').map(Number);
+      const [endHour, endMin] = window.endTime.split(':').map(Number);
+      
+      let currentHour = startHour;
+      let currentMin = startMin;
+      
+      while (currentHour < endHour || (currentHour === endHour && currentMin < endMin)) {
+        const timeSlot = `${currentHour.toString().padStart(2, '0')}:${currentMin.toString().padStart(2, '0')}`;
+        
+        const bookingsAtSlot = existingBookings.filter(
+          b => b.scheduledTime === timeSlot && b.status !== 'cancelled'
+        ).length;
+        
+        if (bookingsAtSlot < window.maxBookings) {
+          availableSlots.push(timeSlot);
+        }
+        
+        currentMin += window.slotDuration;
+        while (currentMin >= 60) {
+          currentMin -= 60;
+          currentHour++;
+        }
+      }
+    }
+    
+    return availableSlots;
   }
 }
 
