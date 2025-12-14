@@ -17,11 +17,106 @@ import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
 
+// Domain to tenant mapping (server-side)
+const domainTenantMap: Record<string, string> = {
+  "paintpros.io": "paintpros",
+  "www.paintpros.io": "paintpros",
+  "nashpaintpros.io": "npp",
+  "www.nashpaintpros.io": "npp",
+  "localhost": "npp",
+};
+
+// PWA manifest configurations per tenant
+const pwaConfigs: Record<string, {
+  name: string;
+  shortName: string;
+  description: string;
+  backgroundColor: string;
+  themeColor: string;
+  iconPath: string;
+}> = {
+  npp: {
+    name: "Nashville Painting Professionals",
+    shortName: "NPP Painters",
+    description: "Professional interior & exterior painting services in Nashville, TN",
+    backgroundColor: "#3a4f41",
+    themeColor: "#3a4f41",
+    iconPath: "/pwa/npp"
+  },
+  paintpros: {
+    name: "PaintPros.io",
+    shortName: "PaintPros",
+    description: "White-label painting business platform by Orbit",
+    backgroundColor: "#b49050",
+    themeColor: "#d4a853",
+    iconPath: "/pwa/paintpros"
+  }
+};
+
+function getTenantFromHostname(hostname: string): string {
+  const host = hostname.toLowerCase().split(':')[0]; // Remove port if present
+  return domainTenantMap[host] || "npp";
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
+
+  // ============ PWA ROUTES (Dynamic per tenant) ============
+
+  // Dynamic manifest.json based on hostname
+  app.get("/manifest.json", (req, res) => {
+    const tenantId = getTenantFromHostname(req.hostname);
+    const config = pwaConfigs[tenantId] || pwaConfigs.npp;
+    
+    const manifest = {
+      name: config.name,
+      short_name: config.shortName,
+      description: config.description,
+      start_url: "/",
+      display: "standalone",
+      background_color: config.backgroundColor,
+      theme_color: config.themeColor,
+      orientation: "portrait-primary",
+      icons: [
+        {
+          src: `${config.iconPath}/icon-192.png`,
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any maskable"
+        },
+        {
+          src: `${config.iconPath}/icon-512.png`,
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable"
+        }
+      ],
+      categories: ["business", "lifestyle"],
+      lang: "en-US",
+      dir: "ltr"
+    };
+    
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(manifest);
+  });
+
+  // Dynamic apple-touch-icon based on hostname
+  app.get("/apple-touch-icon.png", (req, res) => {
+    const tenantId = getTenantFromHostname(req.hostname);
+    const config = pwaConfigs[tenantId] || pwaConfigs.npp;
+    res.redirect(`${config.iconPath}/icon-192.png`);
+  });
+
+  // Dynamic favicon based on hostname
+  app.get("/favicon.ico", (req, res) => {
+    const tenantId = getTenantFromHostname(req.hostname);
+    const config = pwaConfigs[tenantId] || pwaConfigs.npp;
+    res.redirect(`${config.iconPath}/icon-192.png`);
+  });
+
   // ============ CONTACT FORM (Resend) ============
   
   // POST /api/contact - Send contact form email via Resend
