@@ -37,6 +37,9 @@ export interface IStorage {
   // User operations (for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  updateUserRole(id: string, role: string, tenantId?: string): Promise<User | undefined>;
+  getUsersByTenant(tenantId: string): Promise<User[]>;
   
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
@@ -237,6 +240,24 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async updateUserRole(id: string, role: string, tenantId?: string): Promise<User | undefined> {
+    const updateData: Partial<User> = { role, updatedAt: new Date() };
+    if (tenantId !== undefined) {
+      updateData.tenantId = tenantId;
+    }
+    const [user] = await db.update(users).set(updateData).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async getUsersByTenant(tenantId: string): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.tenantId, tenantId));
   }
 
   // Leads

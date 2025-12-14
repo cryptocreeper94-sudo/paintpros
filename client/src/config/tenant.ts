@@ -266,27 +266,62 @@ export const tenants: Record<string, TenantConfig> = {
   "demo": paintProsDemo,
 };
 
-// Domain to tenant mapping
+// Domain to tenant mapping (custom domains)
 const domainTenantMap: Record<string, string> = {
   "paintpros.io": "demo",
   "www.paintpros.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
+  "nashvillepaintingprofessionals.com": "npp",
+  "www.nashvillepaintingprofessionals.com": "npp",
+  "localhost": "npp",
 };
+
+// Subdomain to tenant mapping for *.paintpros.io
+const subdomainTenantMap: Record<string, string> = {
+  "nashpaintpros": "npp",
+  "npp": "npp",
+  "demo": "demo",
+  "www": "demo",
+};
+
+// Parse tenant from hostname (client-side)
+export function getTenantIdFromHostname(hostname: string): string {
+  const host = hostname.toLowerCase().split(':')[0];
+  
+  // Check full domain mapping first
+  if (domainTenantMap[host]) {
+    return domainTenantMap[host];
+  }
+  
+  // Check for subdomain pattern: subdomain.paintpros.io
+  const parts = host.split('.');
+  if (parts.length >= 3) {
+    const subdomain = parts[0];
+    const baseDomain = parts.slice(-2).join('.');
+    
+    if (baseDomain === 'paintpros.io' && subdomainTenantMap[subdomain]) {
+      return subdomainTenantMap[subdomain];
+    }
+  }
+  
+  // Fallback to env variable
+  return import.meta.env.VITE_TENANT_ID || "npp";
+}
 
 // Get current tenant based on domain or environment
 export function getCurrentTenant(): TenantConfig {
-  // Check if we're in a browser environment
   if (typeof window !== "undefined") {
-    const hostname = window.location.hostname.toLowerCase();
-    
-    // Check domain mapping first
-    if (domainTenantMap[hostname]) {
-      return tenants[domainTenantMap[hostname]] || nashvillePaintingProfessionals;
-    }
+    const tenantId = getTenantIdFromHostname(window.location.hostname);
+    return tenants[tenantId] || nashvillePaintingProfessionals;
   }
   
   // Fallback to environment variable (for dev/staging)
   const tenantId = import.meta.env.VITE_TENANT_ID || "npp";
+  return tenants[tenantId] || nashvillePaintingProfessionals;
+}
+
+// Get tenant by ID
+export function getTenantById(tenantId: string): TenantConfig {
   return tenants[tenantId] || nashvillePaintingProfessionals;
 }

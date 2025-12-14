@@ -17,14 +17,56 @@ import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import type { RequestHandler } from "express";
+
+// Role-based access middleware
+const hasRole = (allowedRoles: string[]): RequestHandler => {
+  return async (req, res, next) => {
+    const user = req.user as any;
+    
+    if (!req.isAuthenticated() || !user?.claims?.sub) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+      const userId = user.claims.sub;
+      const dbUser = await storage.getUser(userId);
+      
+      if (!dbUser) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      if (!dbUser.role || !allowedRoles.includes(dbUser.role)) {
+        return res.status(403).json({ message: "Forbidden: Insufficient role permissions" });
+      }
+      
+      (req as any).dbUser = dbUser;
+      return next();
+    } catch (error) {
+      console.error("Error checking user role:", error);
+      return res.status(500).json({ message: "Failed to verify permissions" });
+    }
+  };
+};
 
 // Domain to tenant mapping (server-side)
+// Full custom domains map directly
 const domainTenantMap: Record<string, string> = {
-  "paintpros.io": "paintpros",
-  "www.paintpros.io": "paintpros",
+  "paintpros.io": "demo",
+  "www.paintpros.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
+  "nashvillepaintingprofessionals.com": "npp",
+  "www.nashvillepaintingprofessionals.com": "npp",
   "localhost": "npp",
+};
+
+// Subdomain to tenant mapping for *.paintpros.io
+const subdomainTenantMap: Record<string, string> = {
+  "nashpaintpros": "npp",
+  "npp": "npp",
+  "demo": "demo",
+  "www": "demo",
 };
 
 // PWA manifest configurations per tenant
@@ -56,7 +98,26 @@ const pwaConfigs: Record<string, {
 
 function getTenantFromHostname(hostname: string): string {
   const host = hostname.toLowerCase().split(':')[0]; // Remove port if present
-  return domainTenantMap[host] || "npp";
+  
+  // Check full domain mapping first (custom domains)
+  if (domainTenantMap[host]) {
+    return domainTenantMap[host];
+  }
+  
+  // Check for subdomain pattern: subdomain.paintpros.io
+  const parts = host.split('.');
+  if (parts.length >= 3) {
+    const subdomain = parts[0];
+    const baseDomain = parts.slice(-2).join('.');
+    
+    // Only parse subdomains for paintpros.io
+    if (baseDomain === 'paintpros.io' && subdomainTenantMap[subdomain]) {
+      return subdomainTenantMap[subdomain];
+    }
+  }
+  
+  // Default fallback
+  return "npp";
 }
 
 export async function registerRoutes(
@@ -77,6 +138,17 @@ export async function registerRoutes(
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
+  });
+
+  // ============ TENANT API ============
+  
+  // GET /api/tenant - Get tenant ID based on hostname
+  app.get("/api/tenant", (req, res) => {
+    const tenantId = getTenantFromHostname(req.hostname);
+    res.json({ 
+      tenantId,
+      hostname: req.hostname
+    });
   });
 
   // ============ PWA ROUTES (Dynamic per tenant) ============
