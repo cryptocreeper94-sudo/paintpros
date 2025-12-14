@@ -2345,5 +2345,241 @@ Use occasional paint-related puns or references to keep things fun!`;
     }
   });
 
+  // ============ ONLINE BOOKING ============
+
+  // GET /api/bookings - Get all bookings (optionally filtered by tenant)
+  app.get("/api/bookings", async (req, res) => {
+    try {
+      const { tenantId } = req.query;
+      const bookings = await storage.getBookings(tenantId as string | undefined);
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      res.status(500).json({ error: "Failed to fetch bookings" });
+    }
+  });
+
+  // GET /api/bookings/upcoming - Get upcoming bookings
+  app.get("/api/bookings/upcoming", async (req, res) => {
+    try {
+      const { tenantId, limit } = req.query;
+      const bookings = await storage.getUpcomingBookings(
+        tenantId as string | undefined,
+        limit ? parseInt(limit as string) : 10
+      );
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error fetching upcoming bookings:", error);
+      res.status(500).json({ error: "Failed to fetch upcoming bookings" });
+    }
+  });
+
+  // GET /api/bookings/:id - Get booking by ID
+  app.get("/api/bookings/:id", async (req, res) => {
+    try {
+      const booking = await storage.getBookingById(req.params.id);
+      if (!booking) {
+        res.status(404).json({ error: "Booking not found" });
+        return;
+      }
+      res.json(booking);
+    } catch (error) {
+      console.error("Error fetching booking:", error);
+      res.status(500).json({ error: "Failed to fetch booking" });
+    }
+  });
+
+  // POST /api/bookings - Create a new booking
+  app.post("/api/bookings", async (req, res) => {
+    try {
+      const { customerName, customerEmail, customerPhone, customerAddress, serviceType, projectDescription, scheduledDate, scheduledTime, customerNotes, tenantId } = req.body;
+      
+      if (!customerName || !customerEmail || !serviceType || !scheduledDate || !scheduledTime) {
+        res.status(400).json({ error: "Missing required fields: customerName, customerEmail, serviceType, scheduledDate, scheduledTime" });
+        return;
+      }
+
+      const booking = await storage.createBooking({
+        tenantId: tenantId || "npp",
+        customerName,
+        customerEmail,
+        customerPhone,
+        customerAddress,
+        serviceType,
+        projectDescription,
+        scheduledDate: new Date(scheduledDate),
+        scheduledTime,
+        customerNotes
+      });
+
+      res.status(201).json(booking);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      res.status(500).json({ error: "Failed to create booking" });
+    }
+  });
+
+  // PATCH /api/bookings/:id/status - Update booking status
+  app.patch("/api/bookings/:id/status", async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status || !['pending', 'confirmed', 'completed', 'cancelled', 'no_show'].includes(status)) {
+        res.status(400).json({ error: "Invalid status" });
+        return;
+      }
+
+      const booking = await storage.updateBookingStatus(req.params.id, status);
+      if (!booking) {
+        res.status(404).json({ error: "Booking not found" });
+        return;
+      }
+      res.json(booking);
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      res.status(500).json({ error: "Failed to update booking status" });
+    }
+  });
+
+  // POST /api/bookings/:id/cancel - Cancel a booking
+  app.post("/api/bookings/:id/cancel", async (req, res) => {
+    try {
+      const { reason } = req.body;
+      const booking = await storage.cancelBooking(req.params.id, reason);
+      if (!booking) {
+        res.status(404).json({ error: "Booking not found" });
+        return;
+      }
+      res.json(booking);
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      res.status(500).json({ error: "Failed to cancel booking" });
+    }
+  });
+
+  // ============ AVAILABILITY WINDOWS ============
+
+  // GET /api/availability - Get all availability windows
+  app.get("/api/availability", async (req, res) => {
+    try {
+      const { tenantId } = req.query;
+      const windows = await storage.getAvailabilityWindows(tenantId as string | undefined);
+      res.json(windows);
+    } catch (error) {
+      console.error("Error fetching availability:", error);
+      res.status(500).json({ error: "Failed to fetch availability" });
+    }
+  });
+
+  // GET /api/availability/slots - Get available time slots for a specific date
+  app.get("/api/availability/slots", async (req, res) => {
+    try {
+      const { date, tenantId } = req.query;
+      if (!date) {
+        res.status(400).json({ error: "Date parameter required" });
+        return;
+      }
+
+      const slots = await storage.getAvailableSlots(
+        new Date(date as string),
+        (tenantId as string) || "npp"
+      );
+      res.json({ date, slots });
+    } catch (error) {
+      console.error("Error fetching available slots:", error);
+      res.status(500).json({ error: "Failed to fetch available slots" });
+    }
+  });
+
+  // POST /api/availability - Create availability window
+  app.post("/api/availability", async (req, res) => {
+    try {
+      const { tenantId, dayOfWeek, startTime, endTime, slotDuration, maxBookings } = req.body;
+      
+      if (dayOfWeek === undefined || !startTime || !endTime) {
+        res.status(400).json({ error: "Missing required fields: dayOfWeek, startTime, endTime" });
+        return;
+      }
+
+      const window = await storage.createAvailabilityWindow({
+        tenantId: tenantId || "npp",
+        dayOfWeek,
+        startTime,
+        endTime,
+        slotDuration: slotDuration || 60,
+        maxBookings: maxBookings || 1
+      });
+
+      res.status(201).json(window);
+    } catch (error) {
+      console.error("Error creating availability window:", error);
+      res.status(500).json({ error: "Failed to create availability window" });
+    }
+  });
+
+  // PATCH /api/availability/:id - Update availability window
+  app.patch("/api/availability/:id", async (req, res) => {
+    try {
+      const window = await storage.updateAvailabilityWindow(req.params.id, req.body);
+      if (!window) {
+        res.status(404).json({ error: "Availability window not found" });
+        return;
+      }
+      res.json(window);
+    } catch (error) {
+      console.error("Error updating availability:", error);
+      res.status(500).json({ error: "Failed to update availability" });
+    }
+  });
+
+  // DELETE /api/availability/:id - Delete availability window
+  app.delete("/api/availability/:id", async (req, res) => {
+    try {
+      await storage.deleteAvailabilityWindow(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting availability:", error);
+      res.status(500).json({ error: "Failed to delete availability" });
+    }
+  });
+
+  // POST /api/availability/init - Initialize default business hours
+  app.post("/api/availability/init", async (req, res) => {
+    try {
+      const { tenantId } = req.body;
+      const tenant = tenantId || "npp";
+      
+      const existing = await storage.getAvailabilityWindows(tenant);
+      if (existing.length > 0) {
+        res.json({ message: "Availability already configured", windows: existing });
+        return;
+      }
+
+      const defaultHours = [
+        { dayOfWeek: 1, startTime: "08:00", endTime: "17:00" },
+        { dayOfWeek: 2, startTime: "08:00", endTime: "17:00" },
+        { dayOfWeek: 3, startTime: "08:00", endTime: "17:00" },
+        { dayOfWeek: 4, startTime: "08:00", endTime: "17:00" },
+        { dayOfWeek: 5, startTime: "08:00", endTime: "17:00" },
+        { dayOfWeek: 6, startTime: "09:00", endTime: "14:00" },
+      ];
+
+      const created = [];
+      for (const hours of defaultHours) {
+        const window = await storage.createAvailabilityWindow({
+          tenantId: tenant,
+          ...hours,
+          slotDuration: 60,
+          maxBookings: 2
+        });
+        created.push(window);
+      }
+
+      res.status(201).json({ message: "Default availability created", windows: created });
+    } catch (error) {
+      console.error("Error initializing availability:", error);
+      res.status(500).json({ error: "Failed to initialize availability" });
+    }
+  });
+
   return httpServer;
 }
