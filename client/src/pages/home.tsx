@@ -24,6 +24,7 @@ import { ColorSelectorModal } from "@/components/color-selector-modal";
 import { SolanaVerifiedModal } from "@/components/solana-verified-modal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { ContactModal } from "@/components/contact-modal";
+import { SiBitcoin, SiEthereum } from "react-icons/si";
 
 export default function Home() {
   const tenant = useTenant();
@@ -517,6 +518,28 @@ export default function Home() {
               </a>
             </BentoItem>
           )}
+
+          {/* Crypto Payment Banner */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
+            <a href="/estimate" className="block h-full" data-testid="link-crypto-payment">
+              <GlassCard className="p-3 md:p-6 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden" hoverEffect>
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="flex -space-x-2">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
+                      <SiBitcoin className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+                    </div>
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
+                      <SiEthereum className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-sm md:text-lg font-bold">We Accept Crypto!</h3>
+                    <p className="text-[10px] md:text-xs text-muted-foreground">Pay with Bitcoin, Ethereum & more</p>
+                  </div>
+                </div>
+              </GlassCard>
+            </a>
+          </BentoItem>
 
           {/* 10. Fan Deck Visual - Opens Color Selector Modal */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2} className="relative group">

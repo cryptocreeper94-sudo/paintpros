@@ -1,31 +1,33 @@
 import { useState, useEffect } from "react";
-import { useParams } from "wouter";
+import { useParams, useSearch } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
   CreditCard, Check, Shield, Lock, AlertCircle, 
   FileText, DollarSign, Clock, CheckCircle2, Loader2,
-  Home, Paintbrush
+  Home, Paintbrush, Coins
 } from "lucide-react";
+import { SiBitcoin, SiEthereum } from "react-icons/si";
 import { toast } from "sonner";
 import type { Estimate, Lead, Payment } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Pay() {
   const { estimateId } = useParams<{ estimateId: string }>();
+  const searchString = useSearch();
   const config = useTenant();
   const [paymentStep, setPaymentStep] = useState<"review" | "payment" | "success">("review");
-  const [formData, setFormData] = useState({
-    cardName: "",
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-    email: "",
-  });
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Parse URL params for payment status
+  const urlParams = new URLSearchParams(searchString);
+  const paymentStatus = urlParams.get("status");
+  const paymentMethod = urlParams.get("method");
 
   const { data: estimate, isLoading: estimateLoading, error: estimateError } = useQuery<Estimate>({
     queryKey: ["/api/estimates", estimateId],
@@ -57,41 +59,15 @@ export default function Pay() {
     enabled: !!estimate?.leadId,
   });
 
-  const createPaymentMutation = useMutation({
-    mutationFn: async (data: { estimateId: string; amount: string; customerEmail: string }) => {
-      const res = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          paymentMethod: "card",
-          description: `Payment for estimate ${estimateId}`,
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to create payment");
-      return res.json();
-    },
-  });
-
-  const completePaymentMutation = useMutation({
-    mutationFn: async (paymentId: string) => {
-      const res = await fetch(`/api/payments/${paymentId}/complete`, {
-        method: "POST",
-      });
-      if (!res.ok) throw new Error("Failed to complete payment");
-      return res.json();
-    },
-    onSuccess: () => {
-      setPaymentStep("success");
-      toast.success("Payment successful!");
-    },
-  });
-
+  // Handle successful payment from URL params
   useEffect(() => {
-    if (lead?.email) {
-      setFormData(prev => ({ ...prev, email: lead.email }));
+    if (paymentStatus === "success") {
+      setPaymentStep("success");
+      toast.success(paymentMethod === "crypto" ? "Crypto payment confirmed!" : "Payment successful!");
+    } else if (paymentStatus === "cancelled") {
+      toast.error("Payment was cancelled. Please try again.");
     }
-  }, [lead]);
+  }, [paymentStatus, paymentMethod]);
 
   useEffect(() => {
     if (existingPayment?.status === "completed") {
@@ -99,41 +75,60 @@ export default function Pay() {
     }
   }, [existingPayment]);
 
-  const handleSubmitPayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  // Stripe payment handler
+  const handleStripePayment = async () => {
     if (!estimate) return;
-
+    
+    setIsProcessing(true);
     try {
-      const payment = await createPaymentMutation.mutateAsync({
-        estimateId: estimate.id,
-        amount: estimate.totalEstimate,
-        customerEmail: formData.email,
+      const response = await apiRequest("/api/payments/stripe/create-checkout-session", {
+        method: "POST",
+        body: JSON.stringify({
+          estimateId: estimate.id,
+          amount: parseFloat(estimate.totalEstimate),
+          description: `Painting Services - ${config.name}`,
+          customerEmail: lead?.email,
+        }),
       });
 
-      await completePaymentMutation.mutateAsync(payment.id);
-    } catch (error) {
-      toast.error("Payment failed. Please try again.");
+      if (response.url) {
+        window.location.href = response.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (error: any) {
+      console.error("Stripe error:", error);
+      toast.error(error.message || "Failed to initiate payment. Please try again.");
+      setIsProcessing(false);
     }
   };
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || "";
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    return parts.length ? parts.join(" ") : value;
-  };
+  // Coinbase payment handler
+  const handleCryptoPayment = async () => {
+    if (!estimate) return;
+    
+    setIsProcessing(true);
+    try {
+      const response = await apiRequest("/api/payments/coinbase/create-charge", {
+        method: "POST",
+        body: JSON.stringify({
+          estimateId: estimate.id,
+          amount: parseFloat(estimate.totalEstimate),
+          description: `Painting Services - ${config.name}`,
+          customerEmail: lead?.email,
+        }),
+      });
 
-  const formatExpiry = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    if (v.length >= 2) {
-      return v.slice(0, 2) + "/" + v.slice(2, 4);
+      if (response.url) {
+        window.location.href = response.url;
+      } else {
+        throw new Error("No payment URL returned");
+      }
+    } catch (error: any) {
+      console.error("Coinbase error:", error);
+      toast.error(error.message || "Failed to initiate crypto payment. Please try again.");
+      setIsProcessing(false);
     }
-    return v;
   };
 
   if (estimateLoading) {
@@ -274,7 +269,7 @@ export default function Pay() {
               </GlassCard>
             </div>
 
-            {/* Payment Form */}
+            {/* Payment Options */}
             <div className="md:col-span-3">
               <GlassCard className="p-6 md:p-8" glow>
                 {paymentStep === "review" && (
@@ -332,113 +327,94 @@ export default function Pay() {
                         <CreditCard className="w-5 h-5 text-accent" />
                       </div>
                       <div>
-                        <h2 className="font-bold">Payment Details</h2>
-                        <p className="text-xs text-muted-foreground">Enter your card information</p>
+                        <h2 className="font-bold">Choose Payment Method</h2>
+                        <p className="text-xs text-muted-foreground">Select how you'd like to pay</p>
                       </div>
                     </div>
 
-                    <form onSubmit={handleSubmitPayment} className="space-y-4">
-                      <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">Email</label>
-                        <Input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="your@email.com"
-                          className="bg-white/5 border-white/20"
-                          required
-                          data-testid="input-payment-email"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">Name on Card</label>
-                        <Input
-                          type="text"
-                          value={formData.cardName}
-                          onChange={(e) => setFormData({ ...formData, cardName: e.target.value })}
-                          placeholder="John Doe"
-                          className="bg-white/5 border-white/20"
-                          required
-                          data-testid="input-card-name"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">Card Number</label>
-                        <Input
-                          type="text"
-                          value={formData.cardNumber}
-                          onChange={(e) => setFormData({ ...formData, cardNumber: formatCardNumber(e.target.value) })}
-                          placeholder="4242 4242 4242 4242"
-                          className="bg-white/5 border-white/20 font-mono"
-                          maxLength={19}
-                          required
-                          data-testid="input-card-number"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">Expiry</label>
-                          <Input
-                            type="text"
-                            value={formData.expiry}
-                            onChange={(e) => setFormData({ ...formData, expiry: formatExpiry(e.target.value) })}
-                            placeholder="MM/YY"
-                            className="bg-white/5 border-white/20 font-mono"
-                            maxLength={5}
-                            required
-                            data-testid="input-card-expiry"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">CVV</label>
-                          <Input
-                            type="text"
-                            value={formData.cvv}
-                            onChange={(e) => setFormData({ ...formData, cvv: e.target.value.replace(/\D/g, "") })}
-                            placeholder="123"
-                            className="bg-white/5 border-white/20 font-mono"
-                            maxLength={4}
-                            required
-                            data-testid="input-card-cvv"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground bg-white/5 rounded-xl p-3 border border-white/10">
-                        <Lock className="w-4 h-4 text-green-400" />
-                        <span>Your payment information is encrypted and secure</span>
-                      </div>
-
-                      <FlipButton 
-                        className="w-full"
-                        onClick={() => handleSubmitPayment({ preventDefault: () => {} } as React.FormEvent)}
-                        data-testid="button-submit-payment"
-                      >
-                        {createPaymentMutation.isPending || completePaymentMutation.isPending ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <Shield className="w-4 h-4 mr-2" />
-                            Pay ${parseFloat(estimate.totalEstimate).toLocaleString()}
-                          </>
-                        )}
-                      </FlipButton>
-
+                    <div className="space-y-4">
+                      {/* Credit Card Option - Stripe */}
                       <button
-                        type="button"
-                        onClick={() => setPaymentStep("review")}
-                        className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        data-testid="button-back-review"
+                        onClick={handleStripePayment}
+                        disabled={isProcessing}
+                        className="w-full text-left group"
+                        data-testid="button-pay-stripe"
                       >
-                        Back to review
+                        <div className="bg-white/5 rounded-xl p-5 border border-white/10 hover:border-accent/40 transition-all group-hover:bg-white/10">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                <CreditCard className="w-6 h-6 text-blue-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-bold text-lg">Credit / Debit Card</h3>
+                                <p className="text-sm text-muted-foreground">Visa, Mastercard, Amex</p>
+                              </div>
+                            </div>
+                            {isProcessing ? (
+                              <Loader2 className="w-5 h-5 animate-spin text-accent" />
+                            ) : (
+                              <div className="text-accent font-bold">
+                                ${parseFloat(estimate.totalEstimate).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                          <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Shield className="w-3 h-3" />
+                            <span>Powered by Stripe - Secure payment processing</span>
+                          </div>
+                        </div>
                       </button>
-                    </form>
+
+                      {/* Crypto Option - Coinbase */}
+                      <button
+                        onClick={handleCryptoPayment}
+                        disabled={isProcessing}
+                        className="w-full text-left group"
+                        data-testid="button-pay-crypto"
+                      >
+                        <div className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 rounded-xl p-5 border border-orange-500/20 hover:border-orange-500/40 transition-all group-hover:from-orange-500/20 group-hover:to-purple-500/20">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/30 to-purple-500/30 flex items-center justify-center">
+                                <Coins className="w-6 h-6 text-orange-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-bold text-lg flex items-center gap-2">
+                                  Pay with Crypto
+                                  <span className="text-xs px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded-full">NEW</span>
+                                </h3>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <SiBitcoin className="w-4 h-4 text-orange-400" />
+                                  <SiEthereum className="w-4 h-4 text-purple-400" />
+                                  <span>Bitcoin, Ethereum & more</span>
+                                </div>
+                              </div>
+                            </div>
+                            {isProcessing ? (
+                              <Loader2 className="w-5 h-5 animate-spin text-orange-400" />
+                            ) : (
+                              <div className="text-orange-400 font-bold">
+                                ${parseFloat(estimate.totalEstimate).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                          <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                            <Lock className="w-3 h-3" />
+                            <span>Powered by Coinbase Commerce - Fast & secure</span>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentStep("review")}
+                      className="w-full mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      data-testid="button-back-review"
+                    >
+                      Back to review
+                    </button>
                   </motion.div>
                 )}
               </GlassCard>

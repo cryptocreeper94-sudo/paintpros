@@ -2752,5 +2752,240 @@ Use occasional paint-related puns or references to keep things fun!`;
     }
   });
 
+  // ============ STRIPE PAYMENT ENDPOINTS ============
+  
+  // Initialize Stripe
+  const Stripe = await import("stripe");
+  const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
+  const stripe = stripeSecretKey ? new Stripe.default(stripeSecretKey) : null;
+
+  // POST /api/payments/stripe/create-checkout-session - Create Stripe checkout session
+  app.post("/api/payments/stripe/create-checkout-session", async (req, res) => {
+    try {
+      if (!stripe) {
+        res.status(500).json({ error: "Stripe not configured" });
+        return;
+      }
+
+      const { estimateId, amount, description, customerEmail, successUrl, cancelUrl } = req.body;
+
+      if (!estimateId || !amount) {
+        res.status(400).json({ error: "Missing required fields: estimateId and amount" });
+        return;
+      }
+
+      // Get the host for redirect URLs
+      const host = `https://${req.get("host")}`;
+      const success = successUrl || `${host}/pay/${estimateId}?status=success`;
+      const cancel = cancelUrl || `${host}/pay/${estimateId}?status=cancelled`;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: description || "Painting Services Deposit",
+                description: `Estimate #${estimateId}`,
+              },
+              unit_amount: Math.round(amount * 100), // Convert to cents
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: success,
+        cancel_url: cancel,
+        customer_email: customerEmail,
+        metadata: {
+          estimateId,
+          type: "deposit",
+        },
+      });
+
+      res.json({ 
+        sessionId: session.id, 
+        url: session.url 
+      });
+    } catch (error: any) {
+      console.error("Error creating Stripe checkout session:", error);
+      res.status(500).json({ error: error.message || "Failed to create checkout session" });
+    }
+  });
+
+  // POST /api/payments/stripe/webhook - Handle Stripe webhooks
+  app.post("/api/payments/stripe/webhook", async (req, res) => {
+    try {
+      if (!stripe) {
+        res.status(500).json({ error: "Stripe not configured" });
+        return;
+      }
+
+      const sig = req.headers["stripe-signature"];
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+      let event;
+
+      if (webhookSecret && sig) {
+        try {
+          event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        } catch (err: any) {
+          console.error("Webhook signature verification failed:", err.message);
+          res.status(400).json({ error: `Webhook Error: ${err.message}` });
+          return;
+        }
+      } else {
+        // For testing without webhook signature
+        event = req.body;
+      }
+
+      // Handle the event
+      switch (event.type) {
+        case "checkout.session.completed":
+          const session = event.data.object;
+          console.log("Payment successful for estimate:", session.metadata?.estimateId);
+          
+          // Create payment record
+          if (session.metadata?.estimateId) {
+            await storage.createPayment({
+              estimateId: session.metadata.estimateId,
+              amount: String((session.amount_total || 0) / 100),
+              paymentMethod: "card",
+              processorId: session.payment_intent as string,
+              paidAt: new Date(),
+            });
+          }
+          break;
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Error processing Stripe webhook:", error);
+      res.status(500).json({ error: error.message || "Webhook processing failed" });
+    }
+  });
+
+  // ============ COINBASE COMMERCE ENDPOINTS ============
+
+  // POST /api/payments/coinbase/create-charge - Create Coinbase Commerce charge
+  app.post("/api/payments/coinbase/create-charge", async (req, res) => {
+    try {
+      const coinbaseApiKey = process.env.COINBASE_COMMERCE_API_KEY;
+      
+      if (!coinbaseApiKey) {
+        res.status(500).json({ error: "Coinbase Commerce not configured" });
+        return;
+      }
+
+      const { estimateId, amount, description, customerEmail } = req.body;
+
+      if (!estimateId || !amount) {
+        res.status(400).json({ error: "Missing required fields: estimateId and amount" });
+        return;
+      }
+
+      const host = `https://${req.get("host")}`;
+
+      const chargeData = {
+        name: description || "Painting Services Deposit",
+        description: `Estimate #${estimateId}`,
+        pricing_type: "fixed_price",
+        local_price: {
+          amount: String(amount),
+          currency: "USD",
+        },
+        metadata: {
+          estimateId,
+          customerEmail,
+        },
+        redirect_url: `${host}/pay/${estimateId}?status=success&method=crypto`,
+        cancel_url: `${host}/pay/${estimateId}?status=cancelled&method=crypto`,
+      };
+
+      const response = await fetch("https://api.commerce.coinbase.com/charges", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CC-Api-Key": coinbaseApiKey,
+          "X-CC-Version": "2018-03-22",
+        },
+        body: JSON.stringify(chargeData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || "Failed to create charge");
+      }
+
+      const charge = await response.json();
+
+      res.json({
+        chargeId: charge.data.id,
+        code: charge.data.code,
+        url: charge.data.hosted_url,
+        expiresAt: charge.data.expires_at,
+      });
+    } catch (error: any) {
+      console.error("Error creating Coinbase charge:", error);
+      res.status(500).json({ error: error.message || "Failed to create crypto payment" });
+    }
+  });
+
+  // POST /api/payments/coinbase/webhook - Handle Coinbase Commerce webhooks
+  app.post("/api/payments/coinbase/webhook", async (req, res) => {
+    try {
+      const webhookSecret = process.env.COINBASE_COMMERCE_WEBHOOK_SECRET;
+      const signature = req.headers["x-cc-webhook-signature"];
+
+      // Verify webhook signature if secret is configured
+      if (webhookSecret && signature) {
+        const hmac = crypto.createHmac("sha256", webhookSecret);
+        const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+        const computedSignature = hmac.update(rawBody).digest("hex");
+        
+        if (signature !== computedSignature) {
+          console.error("Coinbase webhook signature mismatch");
+          res.status(400).json({ error: "Invalid signature" });
+          return;
+        }
+      }
+
+      const event = req.body;
+      const eventType = event.event?.type;
+
+      switch (eventType) {
+        case "charge:confirmed":
+        case "charge:completed":
+          const charge = event.event?.data;
+          console.log("Crypto payment confirmed for estimate:", charge?.metadata?.estimateId);
+          
+          if (charge?.metadata?.estimateId) {
+            const pricing = charge.pricing?.local || charge.pricing?.bitcoin;
+            await storage.createPayment({
+              estimateId: charge.metadata.estimateId,
+              amount: pricing?.amount || "0",
+              paymentMethod: "crypto",
+              processorId: charge.code,
+              paidAt: new Date(),
+            });
+          }
+          break;
+        case "charge:failed":
+          console.log("Crypto payment failed:", event.event?.data?.code);
+          break;
+        default:
+          console.log(`Unhandled Coinbase event type: ${eventType}`);
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error("Error processing Coinbase webhook:", error);
+      res.status(500).json({ error: error.message || "Webhook processing failed" });
+    }
+  });
+
   return httpServer;
 }
