@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
 import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
 import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
-import colorWheelTransparent from "@assets/generated_images/paint_color_wheel_transparent_background.png";
+import colorWheelWhiteBg from "@assets/generated_images/paint_color_wheel_white_bg.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import premiumMaterialsImage from "@assets/generated_images/premium_paint_materials_display.png";
@@ -443,9 +443,9 @@ export default function Home() {
               data-testid="button-color-selector"
             >
               <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-card">
-                {/* Light mode: use transparent color wheel, Dark mode: use fan deck */}
+                {/* Light mode: use color wheel with white bg, Dark mode: use fan deck */}
                 <img 
-                  src={colorWheelTransparent} 
+                  src={colorWheelWhiteBg} 
                   alt="Color Selection - Click to explore paint colors" 
                   className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 dark:hidden"
                 />
