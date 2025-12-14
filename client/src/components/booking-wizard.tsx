@@ -16,11 +16,24 @@ import {
   ArrowLeft, ArrowRight, Loader2
 } from "lucide-react";
 
+interface LeadData {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
+interface BookingWizardProps {
+  lead?: LeadData | null;
+}
+
 interface BookingData {
   serviceType: string;
   scheduledDate: Date | null;
   scheduledTime: string;
-  customerName: string;
+  customerFirstName: string;
+  customerLastName: string;
   customerEmail: string;
   customerPhone: string;
   customerAddress: string;
@@ -42,20 +55,23 @@ const steps = [
   { id: 5, title: "Confirmation", icon: CheckCircle },
 ];
 
-export function BookingWizard() {
+export function BookingWizard({ lead }: BookingWizardProps) {
   const tenant = useTenant();
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingData, setBookingData] = useState<BookingData>({
     serviceType: "",
     scheduledDate: null,
     scheduledTime: "",
-    customerName: "",
-    customerEmail: "",
-    customerPhone: "",
+    customerFirstName: lead?.firstName || "",
+    customerLastName: lead?.lastName || "",
+    customerEmail: lead?.email || "",
+    customerPhone: lead?.phone || "",
     customerAddress: "",
     projectDescription: "",
   });
   const [submittedBooking, setSubmittedBooking] = useState<any>(null);
+  
+  const hasLeadEmail = !!(lead?.email);
 
   const dateString = bookingData.scheduledDate 
     ? format(bookingData.scheduledDate, "yyyy-MM-dd") 
@@ -87,7 +103,7 @@ export function BookingWizard() {
     mutationFn: async (data: BookingData) => {
       const res = await apiRequest("POST", "/api/bookings", {
         tenantId: tenant.id,
-        customerName: data.customerName,
+        customerName: `${data.customerFirstName} ${data.customerLastName}`.trim(),
         customerEmail: data.customerEmail,
         customerPhone: data.customerPhone,
         customerAddress: data.customerAddress,
@@ -131,7 +147,7 @@ export function BookingWizard() {
       case 1: return !!bookingData.serviceType;
       case 2: return !!bookingData.scheduledDate;
       case 3: return !!bookingData.scheduledTime;
-      case 4: return !!(bookingData.customerName && bookingData.customerEmail);
+      case 4: return !!(bookingData.customerFirstName && bookingData.customerLastName && bookingData.customerEmail);
       default: return false;
     }
   };
@@ -156,9 +172,10 @@ export function BookingWizard() {
       serviceType: "",
       scheduledDate: null,
       scheduledTime: "",
-      customerName: "",
-      customerEmail: "",
-      customerPhone: "",
+      customerFirstName: lead?.firstName || "",
+      customerLastName: lead?.lastName || "",
+      customerEmail: lead?.email || "",
+      customerPhone: lead?.phone || "",
       customerAddress: "",
       projectDescription: "",
     });
@@ -286,13 +303,23 @@ export function BookingWizard() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="customerName">Name *</Label>
+                  <Label htmlFor="customerFirstName">First Name *</Label>
                   <Input
-                    id="customerName"
-                    value={bookingData.customerName}
-                    onChange={handleInputChange("customerName")}
-                    placeholder="Your full name"
-                    data-testid="input-name"
+                    id="customerFirstName"
+                    value={bookingData.customerFirstName}
+                    onChange={handleInputChange("customerFirstName")}
+                    placeholder="John"
+                    data-testid="input-first-name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="customerLastName">Last Name *</Label>
+                  <Input
+                    id="customerLastName"
+                    value={bookingData.customerLastName}
+                    onChange={handleInputChange("customerLastName")}
+                    placeholder="Smith"
+                    data-testid="input-last-name"
                   />
                 </div>
                 <div>
@@ -303,8 +330,13 @@ export function BookingWizard() {
                     value={bookingData.customerEmail}
                     onChange={handleInputChange("customerEmail")}
                     placeholder="your@email.com"
+                    readOnly={hasLeadEmail}
+                    className={hasLeadEmail ? "bg-muted/30 cursor-not-allowed" : ""}
                     data-testid="input-email"
                   />
+                  {hasLeadEmail && (
+                    <p className="text-xs text-muted-foreground mt-1">Email captured from estimate</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="customerPhone">Phone</Label>
@@ -317,7 +349,7 @@ export function BookingWizard() {
                     data-testid="input-phone"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <Label htmlFor="customerAddress">Address</Label>
                   <Input
                     id="customerAddress"
@@ -359,7 +391,7 @@ export function BookingWizard() {
                 <p><strong>Service:</strong> {serviceTypes.find(s => s.id === bookingData.serviceType)?.label}</p>
                 <p><strong>Date:</strong> {bookingData.scheduledDate ? format(bookingData.scheduledDate, "MMMM d, yyyy") : ""}</p>
                 <p><strong>Time:</strong> {formatTimeDisplay(bookingData.scheduledTime)}</p>
-                <p><strong>Name:</strong> {bookingData.customerName}</p>
+                <p><strong>Name:</strong> {bookingData.customerFirstName} {bookingData.customerLastName}</p>
                 <p><strong>Email:</strong> {bookingData.customerEmail}</p>
               </div>
               <p className="text-sm text-muted-foreground mt-4">

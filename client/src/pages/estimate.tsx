@@ -23,6 +23,9 @@ import doorsImg from "@assets/generated_images/door_painting.png";
 interface LeadData {
   id: string;
   email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
 }
 
 interface JobSelections {
@@ -44,6 +47,9 @@ export default function Estimate() {
 
   const [showEmailModal, setShowEmailModal] = useState(!isDemo);
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
   const [lead, setLead] = useState<LeadData | null>(null);
@@ -225,6 +231,14 @@ export default function Estimate() {
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!firstName.trim()) {
+      setEmailError("Please enter your first name");
+      return;
+    }
+    if (!lastName.trim()) {
+      setEmailError("Please enter your last name");
+      return;
+    }
     if (!validateEmail(email)) {
       setEmailError("Please enter a valid email address");
       return;
@@ -235,14 +249,14 @@ export default function Estimate() {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, firstName, lastName, phone }),
       });
       if (!response.ok) throw new Error("Failed to submit email");
       const data = await response.json();
-      setLead(data);
-      // Save email and lead data to localStorage for future estimates
+      const leadData = { ...data, firstName, lastName, phone };
+      setLead(leadData);
       localStorage.setItem("estimatorEmail", email);
-      localStorage.setItem("estimatorLead", JSON.stringify(data));
+      localStorage.setItem("estimatorLead", JSON.stringify(leadData));
       setShowEmailModal(false);
     } catch (error) {
       console.error("Error submitting email:", error);
@@ -405,54 +419,96 @@ export default function Estimate() {
                 {/* Glow effect behind card */}
                 <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50" />
                 
-                <GlassCard className="relative p-6 md:p-10 border-accent/20" glow>
-                  <div className="text-center mb-8">
+                <GlassCard className="relative p-6 md:p-10 border-accent/20 max-h-[90vh] overflow-y-auto" glow>
+                  <div className="text-center mb-6">
                     <motion.div 
-                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent/30 to-gold-400/20 flex items-center justify-center border border-accent/30 shadow-lg shadow-accent/20"
+                      className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-accent/30 to-gold-400/20 flex items-center justify-center border border-accent/30 shadow-lg shadow-accent/20"
                       animate={{ rotate: [0, 5, -5, 0] }}
                       transition={{ duration: 4, repeat: Infinity }}
                     >
-                      <Calculator className="w-10 h-10 text-accent" />
+                      <Calculator className="w-8 h-8 text-accent" />
                     </motion.div>
-                    <h2 className="text-3xl font-display font-bold text-foreground mb-3">
+                    <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
                       Instant Quote Calculator
                     </h2>
-                    <p className="text-muted-foreground text-lg">
+                    <p className="text-muted-foreground text-base">
                       Thank you for choosing{" "}
                       <span className="text-accent font-semibold">{tenant.name}</span>
                     </p>
                   </div>
 
-                  <div className="bg-gradient-to-r from-army-green-800/40 to-army-green-700/30 rounded-xl p-5 mb-8 border border-white/10 backdrop-blur-sm">
+                  <div className="bg-gradient-to-r from-army-green-800/40 to-army-green-700/30 rounded-xl p-4 mb-6 border border-white/10 backdrop-blur-sm">
                     <div className="flex items-start gap-3">
                       <Sparkles className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        To reduce spam and provide you with personalized quote information, 
-                        please enter your email address below.
+                        To provide you with a personalized quote, please enter your details below.
                       </p>
                     </div>
                   </div>
 
-                  <form onSubmit={handleEmailSubmit} className="space-y-5">
-                    <div className="relative">
+                  <form onSubmit={handleEmailSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="firstName" className="text-xs text-muted-foreground mb-1 block">First Name *</Label>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          placeholder="John"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                          data-testid="input-first-name-capture"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lastName" className="text-xs text-muted-foreground mb-1 block">Last Name *</Label>
+                        <Input
+                          id="lastName"
+                          type="text"
+                          placeholder="Smith"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                          data-testid="input-last-name-capture"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="emailCapture" className="text-xs text-muted-foreground mb-1 block">Email *</Label>
                       <Input
+                        id="emailCapture"
                         type="email"
                         placeholder="your@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="bg-white/5 border-white/20 text-center text-lg h-14 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                        className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
                         data-testid="input-email-capture"
                       />
-                      {emailError && (
-                        <motion.p 
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-red-400 text-sm mt-3 text-center"
-                        >
-                          {emailError}
-                        </motion.p>
-                      )}
                     </div>
+                    
+                    <div>
+                      <Label htmlFor="phoneCapture" className="text-xs text-muted-foreground mb-1 block">Phone <span className="text-muted-foreground/60">(optional, for text updates)</span></Label>
+                      <Input
+                        id="phoneCapture"
+                        type="tel"
+                        placeholder="(555) 123-4567"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                        data-testid="input-phone-capture"
+                      />
+                    </div>
+
+                    {emailError && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-red-400 text-sm text-center"
+                      >
+                        {emailError}
+                      </motion.p>
+                    )}
 
                     <FlipButton 
                       className="w-full h-14 text-base" 
@@ -464,7 +520,7 @@ export default function Estimate() {
                     </FlipButton>
                   </form>
 
-                  <p className="text-xs text-muted-foreground text-center mt-6 flex items-center justify-center gap-2">
+                  <p className="text-xs text-muted-foreground text-center mt-4 flex items-center justify-center gap-2">
                     <Zap className="w-3 h-3" />
                     We respect your privacy. No spam, ever.
                   </p>
@@ -1199,7 +1255,7 @@ export default function Estimate() {
                       Schedule a time for our team to visit and provide a detailed quote
                     </p>
                   </div>
-                  <BookingWizard />
+                  <BookingWizard lead={lead} />
                 </motion.div>
               </div>
             </motion.div>
