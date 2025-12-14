@@ -5,7 +5,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { LogoFlipCard } from "@/components/ui/logo-flip-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
-import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, ChevronDown, BadgeCheck } from "lucide-react";
+import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, BadgeCheck } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
 import paintBrush from "@assets/generated_images/isolated_professional_paint_brush.png";
@@ -26,6 +26,7 @@ import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { ContactModal } from "@/components/contact-modal";
 import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
 import { AboutUsModal } from "@/components/about-us-modal";
+import { FeatureModal } from "@/components/feature-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
 
 export default function Home() {
@@ -36,11 +37,9 @@ export default function Home() {
   const [contactOpen, setContactOpen] = useState(false);
   const [cryptoModalOpen, setCryptoModalOpen] = useState(false);
   const [aboutUsOpen, setAboutUsOpen] = useState(false);
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  
-  const toggleCard = (cardId: string) => {
-    setExpandedCard(expandedCard === cardId ? null : cardId);
-  };
+  const [materialsModalOpen, setMaterialsModalOpen] = useState(false);
+  const [ontimeModalOpen, setOntimeModalOpen] = useState(false);
+  const [warrantyModalOpen, setWarrantyModalOpen] = useState(false);
   
   const testimonials = [
     {
@@ -195,10 +194,10 @@ export default function Home() {
             </button>
           </BentoItem>
 
-          {/* 4. Key Feature 1 - Premium Materials (Expandable) */}
-          <BentoItem colSpan={4} rowSpan={expandedCard === 'materials' ? 2 : 1} mobileColSpan={2} mobileRowSpan={expandedCard === 'materials' ? 3 : 1}>
+          {/* 4. Key Feature 1 - Premium Materials (Modal) */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
             <button 
-              onClick={() => toggleCard('materials')} 
+              onClick={() => setMaterialsModalOpen(true)} 
               className="w-full h-full text-left"
               data-testid="button-premium-materials"
             >
@@ -216,37 +215,16 @@ export default function Home() {
                     <h3 className="font-bold text-xs md:text-lg">Premium Materials</h3>
                     <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Top-tier paints and finishes only.</p>
                   </div>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedCard === 'materials' ? 'rotate-180' : ''}`} />
+                  <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
-                <AnimatePresence>
-                  {expandedCard === 'materials' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden relative z-10"
-                    >
-                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                        <p className="text-[10px] md:text-xs text-muted-foreground">We partner with industry-leading brands:</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span className="px-2 py-0.5 bg-accent/10 rounded text-[9px] md:text-xs text-accent font-medium">Sherwin-Williams</span>
-                          <span className="px-2 py-0.5 bg-accent/10 rounded text-[9px] md:text-xs text-accent font-medium">Benjamin Moore</span>
-                        </div>
-                        <p className="text-[9px] md:text-xs text-muted-foreground leading-relaxed">
-                          Premium paints with superior coverage, durability, and color retention. Low-VOC options available for eco-conscious homes.
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </GlassCard>
             </button>
           </BentoItem>
 
-          {/* 5. Key Feature 2 - On-Time (Expandable) */}
-          <BentoItem colSpan={4} rowSpan={expandedCard === 'ontime' ? 2 : 1} mobileColSpan={2} mobileRowSpan={expandedCard === 'ontime' ? 3 : 1}>
+          {/* 5. Key Feature 2 - On-Time (Modal) */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
             <button 
-              onClick={() => toggleCard('ontime')} 
+              onClick={() => setOntimeModalOpen(true)} 
               className="w-full h-full text-left"
               data-testid="button-on-time"
             >
@@ -264,44 +242,16 @@ export default function Home() {
                     <h3 className="font-bold text-xs md:text-lg">On-Time</h3>
                     <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">We value your time.</p>
                   </div>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedCard === 'ontime' ? 'rotate-180' : ''}`} />
+                  <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
-                <AnimatePresence>
-                  {expandedCard === 'ontime' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden relative z-10"
-                    >
-                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                        <p className="text-[10px] md:text-xs text-muted-foreground">Our scheduling promise:</p>
-                        <ul className="space-y-1 text-[9px] md:text-xs text-muted-foreground">
-                          <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                            Same-day arrival windows
-                          </li>
-                          <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                            Real-time project updates
-                          </li>
-                          <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                            Guaranteed completion dates
-                          </li>
-                        </ul>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </GlassCard>
             </button>
           </BentoItem>
 
-          {/* 6. Key Feature 3 - Warranty (Expandable) */}
-          <BentoItem colSpan={4} rowSpan={expandedCard === 'warranty' ? 2 : 1} mobileColSpan={4} mobileRowSpan={expandedCard === 'warranty' ? 2 : 1}>
+          {/* 6. Key Feature 3 - Warranty (Modal) */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
             <button 
-              onClick={() => toggleCard('warranty')} 
+              onClick={() => setWarrantyModalOpen(true)} 
               className="w-full h-full text-left"
               data-testid="button-warranty"
             >
@@ -319,39 +269,8 @@ export default function Home() {
                     <h3 className="font-bold text-xs md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
                     <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block">Full coverage on our workmanship.</p>
                   </div>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedCard === 'warranty' ? 'rotate-180' : ''}`} />
+                  <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
-                <AnimatePresence>
-                  {expandedCard === 'warranty' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden relative z-10"
-                    >
-                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                        <p className="text-[10px] md:text-xs text-muted-foreground">Our commitment to quality:</p>
-                        <ul className="space-y-1 text-[9px] md:text-xs text-muted-foreground">
-                          <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                            Full workmanship coverage
-                          </li>
-                          <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                            Free touch-ups & repairs
-                          </li>
-                          <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                            100% satisfaction guarantee
-                          </li>
-                        </ul>
-                        <p className="text-[9px] md:text-xs text-muted-foreground/70 italic">
-                          We stand behind every project. If you're not completely satisfied, we'll make it right.
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </GlassCard>
             </button>
           </BentoItem>
@@ -621,6 +540,22 @@ export default function Home() {
       <AboutUsModal
         isOpen={aboutUsOpen}
         onClose={() => setAboutUsOpen(false)}
+      />
+      <FeatureModal
+        open={materialsModalOpen}
+        onOpenChange={setMaterialsModalOpen}
+        type="materials"
+      />
+      <FeatureModal
+        open={ontimeModalOpen}
+        onOpenChange={setOntimeModalOpen}
+        type="ontime"
+      />
+      <FeatureModal
+        open={warrantyModalOpen}
+        onOpenChange={setWarrantyModalOpen}
+        type="warranty"
+        warrantyYears={tenant.credentials?.warrantyYears || 3}
       />
       <PWAInstallPrompt />
     </PageLayout>
