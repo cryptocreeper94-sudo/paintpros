@@ -52,3 +52,4 @@ expertMode = true
 
 [userenv.shared]
 VITE_TENANT_ID = "demo"
+CONTACT_EMAIL = "Cryptocreeper94@gmail.com"
