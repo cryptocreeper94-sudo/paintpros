@@ -543,7 +543,6 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
   createdAt: true,
   updatedAt: true,
   status: true,
-  paidAt: true,
 });
 
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
