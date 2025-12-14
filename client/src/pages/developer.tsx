@@ -5,6 +5,16 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
+import { 
+  hover3D, 
+  hover3DSubtle, 
+  cardVariants, 
+  staggerContainer, 
+  iconContainerStyles, 
+  cardBackgroundStyles, 
+  glowGradients,
+  tapEffect 
+} from "@/lib/theme-effects";
 import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History } from "lucide-react";
 import { BookingsCard } from "@/components/bookings-card";
 import { VersionHistory } from "@/components/version-history";
@@ -1696,29 +1706,50 @@ export default function Developer() {
   return (
     <PageLayout>
       <main className="pt-20 px-4 md:px-8 pb-24">
-        <div className="max-w-7xl mx-auto mb-4">
+        <motion.div 
+          className="max-w-7xl mx-auto mb-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-              <Code className="w-6 h-6 text-purple-400" />
-            </div>
+            <motion.div 
+              className={`${iconContainerStyles.sizes.xl} ${iconContainerStyles.base} ${iconContainerStyles.gradients.purple}`}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Code className="w-7 h-7 text-purple-400" />
+            </motion.div>
             <div>
               <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground">Developer Console</h1>
               <p className="text-muted-foreground">System configuration and debugging</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
         <BentoGrid>
           <BentoItem colSpan={4} rowSpan={2}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("database")}
               data-testid="card-database"
             >
-              <GlassCard className="h-full p-8 bg-gradient-to-br from-purple-500/10 to-transparent" glow>
+              <GlassCard className={`h-full p-8 ${cardBackgroundStyles.purple}`} glow="purple" animatedBorder>
                 <div className="flex items-center gap-3 mb-6">
-                  <Database className="w-6 h-6 text-purple-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.lg} ${iconContainerStyles.base} ${iconContainerStyles.gradients.purple}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Database className="w-5 h-5 text-purple-400" />
+                  </motion.div>
                   <h2 className="text-2xl font-display font-bold">Database</h2>
                 </div>
                 <div className="space-y-4">
@@ -1739,13 +1770,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("api")}
               data-testid="card-api"
             >
-              <GlassCard className="h-full p-6">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.accent}`} glow="accent">
                 <div className="flex items-center gap-3 mb-4">
-                  <Server className="w-5 h-5 text-accent" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.accent}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Server className="w-4 h-4 text-accent" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">API Status</h3>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1759,13 +1797,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("performance")}
               data-testid="card-performance"
             >
-              <GlassCard className="h-full p-6">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.blue}`} glow="blue">
                 <div className="flex items-center gap-3 mb-4">
-                  <Cpu className="w-5 h-5 text-accent" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.blue}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Cpu className="w-4 h-4 text-blue-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Performance</h3>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1779,13 +1824,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("solana")}
               data-testid="card-solana"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-gold-400/10 to-transparent">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.gold}`} glow="gold" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <Coins className="w-5 h-5 text-gold-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.gold}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Coins className="w-4 h-4 text-gold-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Solana Stamping</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Blockchain-verified estimates</p>
@@ -1796,13 +1848,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("hallmarks")}
               data-testid="card-hallmarks"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-amber-500/10 to-transparent">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.gold}`} glow="gold" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <Award className="w-5 h-5 text-amber-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.gold}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Award className="w-4 h-4 text-amber-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Hallmarks</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">ORBIT asset verification</p>
@@ -1813,13 +1872,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("darkwave")}
               data-testid="card-darkwave"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-purple-600/10 to-blue-500/10">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.purple}`} glow="purple" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <Rocket className="w-5 h-5 text-purple-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.purple}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Rocket className="w-4 h-4 text-purple-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Darkwave Dev Hub</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Connected to Orbit ecosystem</p>
@@ -1830,13 +1896,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("investorPricing")}
               data-testid="card-investor-pricing"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-green-500/10 to-blue-500/10">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.green}`} glow="green" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <DollarSign className="w-5 h-5 text-green-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <DollarSign className="w-4 h-4 text-green-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Investor Pricing</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Licensing & valuation sheet</p>
@@ -1847,13 +1920,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("serviceAreas")}
               data-testid="card-service-areas"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-teal-500/10 to-transparent">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.accent}`} glow="accent">
                 <div className="flex items-center gap-3 mb-4">
-                  <MapPin className="w-5 h-5 text-teal-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.accent}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <MapPin className="w-4 h-4 text-teal-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Service Areas</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">{SERVICE_AREAS.length} active regions</p>
@@ -1864,13 +1944,20 @@ export default function Developer() {
           <BentoItem colSpan={8} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.01 }}
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("console")}
               data-testid="card-console"
             >
-              <GlassCard className="h-full p-6">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.green}`} glow="green">
                 <div className="flex items-center gap-3 mb-4">
-                  <Terminal className="w-5 h-5 text-purple-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Terminal className="w-4 h-4 text-green-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Console</h3>
                 </div>
                 <div className="bg-black/50 rounded-xl p-4 font-mono text-sm h-32 overflow-auto border border-white/10">
@@ -1886,13 +1973,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("version")}
               data-testid="card-version"
             >
-              <GlassCard className="h-full p-6">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.purple}`} glow="purple">
                 <div className="flex items-center gap-3 mb-4">
-                  <GitBranch className="w-5 h-5 text-accent" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.purple}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <GitBranch className="w-4 h-4 text-purple-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Version Control</h3>
                 </div>
                 <p className="text-sm font-mono text-purple-400">v{currentVersion}</p>
@@ -1904,13 +1998,20 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("debug")}
               data-testid="card-debug"
             >
-              <GlassCard className="h-full p-6">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.accent}`} glow="accent">
                 <div className="flex items-center gap-3 mb-4">
-                  <Bug className="w-5 h-5 text-accent" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.accent}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <Bug className="w-4 h-4 text-accent" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Debug Mode</h3>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1928,13 +2029,21 @@ export default function Developer() {
           <BentoItem colSpan={4} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("colorWheel")}
               data-testid="card-color-wheel"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-accent/10 to-transparent">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.mixed}`} glow="accent" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <Palette className="w-5 h-5 text-accent" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.accent}`}
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Palette className="w-4 h-4 text-accent" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Color Wheel</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Sherwin-Williams linked</p>
@@ -1945,13 +2054,20 @@ export default function Developer() {
           <BentoItem colSpan={6} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("proposalTemplates")}
               data-testid="card-proposal-templates"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-accent/10 to-purple-500/10">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.mixed}`} glow="accent" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <ScrollText className="w-5 h-5 text-accent" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.accent}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <ScrollText className="w-4 h-4 text-accent" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Proposal Templates</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Manage painting proposal templates</p>
@@ -1962,13 +2078,20 @@ export default function Developer() {
           <BentoItem colSpan={6} rowSpan={1}>
             <motion.div 
               className="h-full cursor-pointer" 
-              whileHover={{ scale: 1.02 }}
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
               onClick={() => setActiveModal("integrations")}
               data-testid="card-integrations"
             >
-              <GlassCard className="h-full p-6 bg-gradient-to-br from-blue-500/10 to-orange-500/10">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.blue}`} glow="blue" animatedBorder>
                 <div className="flex items-center gap-3 mb-4">
-                  <ListTodo className="w-5 h-5 text-blue-400" />
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.blue}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <ListTodo className="w-4 h-4 text-blue-400" />
+                  </motion.div>
                   <h3 className="text-xl font-bold">Integrations Roadmap</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Google Analytics, Facebook Pixel & more</p>
@@ -1978,8 +2101,13 @@ export default function Developer() {
 
           {/* Bookings Management */}
           <BentoItem colSpan={6} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-purple-500/10 via-transparent to-accent/5" glow>
+            <motion.div 
+              className="h-full" 
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
+            >
+              <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" animatedBorder>
                 <BookingsCard />
               </GlassCard>
             </motion.div>
@@ -1987,7 +2115,12 @@ export default function Developer() {
 
           {/* Version History - All Tenants */}
           <BentoItem colSpan={6} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+            <motion.div 
+              className="h-full" 
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
+            >
               <VersionHistory showAllTenants={true} maxItems={10} />
             </motion.div>
           </BentoItem>
@@ -1999,11 +2132,14 @@ export default function Developer() {
 
           {/* Tenant Analytics Dashboard - Per-Client Analytics */}
           <BentoItem colSpan={12} rowSpan={4}>
-            <GlassCard className="h-full p-6" glow>
-              <TenantAnalyticsDashboard />
-            </GlassCard>
+            <motion.div variants={cardVariants} className="h-full">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.mixed}`} glow="purple" animatedBorder>
+                <TenantAnalyticsDashboard />
+              </GlassCard>
+            </motion.div>
           </BentoItem>
         </BentoGrid>
+        </motion.div>
       </main>
 
       {/* Modal */}

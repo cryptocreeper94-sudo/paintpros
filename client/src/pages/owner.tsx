@@ -6,6 +6,16 @@ import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings } from "lucide-react";
+import { 
+  hover3D, 
+  hover3DSubtle, 
+  cardVariants, 
+  staggerContainer, 
+  iconContainerStyles, 
+  cardBackgroundStyles, 
+  glowGradients,
+  springTransition 
+} from "@/lib/theme-effects";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
@@ -210,9 +220,9 @@ export default function Owner() {
               <GlassCard className="relative p-10 border-gold-400/20" glow>
                 <div className="text-center mb-8">
                   <motion.div 
-                    className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-gold-400/30 to-accent/20 flex items-center justify-center border border-gold-400/30 shadow-lg shadow-gold-400/20"
-                    whileHover={{ scale: 1.05, rotateY: 10 }}
-                    transition={{ type: "spring" }}
+                    className={`w-20 h-20 mx-auto mb-6 rounded-2xl ${iconContainerStyles.gradients.gold} ${iconContainerStyles.base} border-gold-400/30`}
+                    whileHover={hover3D}
+                    transition={springTransition}
                   >
                     <Crown className="w-10 h-10 text-gold-400" />
                   </motion.div>
@@ -270,8 +280,9 @@ export default function Owner() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <motion.div 
-                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-400/30 to-accent/20 flex items-center justify-center shadow-lg shadow-gold-400/20 border border-gold-400/20"
-                whileHover={{ scale: 1.1, rotateZ: 5 }}
+                className={`${iconContainerStyles.sizes.lg} rounded-2xl ${iconContainerStyles.gradients.gold} ${iconContainerStyles.base} border-gold-400/20`}
+                whileHover={hover3D}
+                transition={springTransition}
               >
                 <Crown className="w-6 h-6 text-gold-400" />
               </motion.div>
@@ -293,74 +304,107 @@ export default function Owner() {
           </div>
         </div>
 
-        <BentoGrid className="max-w-7xl mx-auto">
-          {/* Stats Row - 4 small cards */}
-          <BentoItem colSpan={3} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
-                <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-4 h-4 text-gold-400" />
-                  <span className="text-sm font-medium">Revenue</span>
-                </div>
-                <div className="text-3xl font-bold text-gold-400">$--</div>
-                <p className="text-xs text-muted-foreground mt-1">Coming soon</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={3} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-teal-500/10 to-transparent" glow>
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="w-4 h-4 text-teal-400" />
-                  <span className="text-sm font-medium">Pipeline</span>
-                </div>
-                <div className="text-3xl font-bold text-teal-400">${getTotalPipelineValue().toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground mt-1">{getTotalDeals()} deals</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={3} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 to-transparent" glow>
-                <div className="flex items-center gap-2 mb-2">
-                  <Users className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm font-medium">Leads</span>
-                </div>
-                <div className="text-3xl font-bold text-blue-400">{leadsLoading ? "--" : leads.length}</div>
-                <p className="text-xs text-muted-foreground mt-1">Total captured</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          <BentoItem colSpan={3} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-green-500/10 to-transparent" glow>
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-4 h-4 text-green-400" />
-                  <span className="text-sm font-medium">Growth</span>
-                </div>
-                <div className="text-3xl font-bold text-green-400">--%</div>
-                <p className="text-xs text-muted-foreground mt-1">Coming soon</p>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
-
-          {/* SEO Tracker - Large Card */}
-          <BentoItem colSpan={8} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 via-transparent to-accent/5" glow>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-accent/20 flex items-center justify-center">
-                      <Search className="w-4 h-4 text-blue-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-display font-bold">SEO Tracker</h2>
-                      <p className="text-xs text-muted-foreground">{seoTags.length} tags</p>
-                    </div>
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          <BentoGrid className="max-w-7xl mx-auto">
+            {/* Stats Row - 4 small cards */}
+            <BentoItem colSpan={3} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={0} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.gold}`} glow="gold" hoverEffect="3d">
+                  <div className="flex items-center gap-2 mb-2">
+                    <motion.div 
+                      className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.gold} ${iconContainerStyles.base}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={springTransition}
+                    >
+                      <DollarSign className="w-4 h-4 text-gold-400" />
+                    </motion.div>
+                    <span className="text-sm font-medium">Revenue</span>
                   </div>
+                  <div className="text-3xl font-bold text-gold-400">$--</div>
+                  <p className="text-xs text-muted-foreground mt-1">Coming soon</p>
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            <BentoItem colSpan={3} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={1} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect="3d">
+                  <div className="flex items-center gap-2 mb-2">
+                    <motion.div 
+                      className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.green} ${iconContainerStyles.base}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={springTransition}
+                    >
+                      <Target className="w-4 h-4 text-teal-400" />
+                    </motion.div>
+                    <span className="text-sm font-medium">Pipeline</span>
+                  </div>
+                  <div className="text-3xl font-bold text-teal-400">${getTotalPipelineValue().toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground mt-1">{getTotalDeals()} deals</p>
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            <BentoItem colSpan={3} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={2} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.blue}`} glow="blue" hoverEffect="3d">
+                  <div className="flex items-center gap-2 mb-2">
+                    <motion.div 
+                      className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.blue} ${iconContainerStyles.base}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={springTransition}
+                    >
+                      <Users className="w-4 h-4 text-blue-400" />
+                    </motion.div>
+                    <span className="text-sm font-medium">Leads</span>
+                  </div>
+                  <div className="text-3xl font-bold text-blue-400">{leadsLoading ? "--" : leads.length}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Total captured</p>
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            <BentoItem colSpan={3} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={3} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect="3d">
+                  <div className="flex items-center gap-2 mb-2">
+                    <motion.div 
+                      className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.green} ${iconContainerStyles.base}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={springTransition}
+                    >
+                      <TrendingUp className="w-4 h-4 text-green-400" />
+                    </motion.div>
+                    <span className="text-sm font-medium">Growth</span>
+                  </div>
+                  <div className="text-3xl font-bold text-green-400">--%</div>
+                  <p className="text-xs text-muted-foreground mt-1">Coming soon</p>
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            {/* SEO Tracker - Large Card */}
+            <BentoItem colSpan={8} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={4} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.blue}`} glow="blue" hoverEffect="subtle">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <motion.div 
+                        className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.blue} ${iconContainerStyles.base}`}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={springTransition}
+                      >
+                        <Search className="w-4 h-4 text-blue-400" />
+                      </motion.div>
+                      <div>
+                        <h2 className="text-lg font-display font-bold">SEO Tracker</h2>
+                        <p className="text-xs text-muted-foreground">{seoTags.length} tags</p>
+                      </div>
+                    </div>
                   <motion.button
                     onClick={() => setShowAddForm(!showAddForm)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 transition-colors text-sm"
@@ -507,18 +551,22 @@ export default function Owner() {
                     <div className="text-[10px] text-muted-foreground">Locations</div>
                   </div>
                 </div>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
 
-          {/* Email Database - Side Card */}
-          <BentoItem colSpan={4} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent/20 to-blue-500/20 flex items-center justify-center">
-                    <Database className="w-4 h-4 text-accent" />
-                  </div>
+            {/* Email Database - Side Card */}
+            <BentoItem colSpan={4} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={5} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent" hoverEffect="subtle">
+                  <div className="flex items-center gap-2 mb-3">
+                    <motion.div 
+                      className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.accent} ${iconContainerStyles.base}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={springTransition}
+                    >
+                      <Database className="w-4 h-4 text-accent" />
+                    </motion.div>
                   <div>
                     <h2 className="text-lg font-display font-bold">Email Database</h2>
                     <p className="text-xs text-muted-foreground">{leads.length} leads</p>
@@ -569,54 +617,59 @@ export default function Owner() {
                     ))
                   )}
                 </div>
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
 
-          {/* Deals Pipeline - Large Card */}
-          <BentoItem colSpan={8} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <GlassCard className="h-full p-4" glow>
-                <DealsPipeline />
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
+            {/* Deals Pipeline - Large Card */}
+            <BentoItem colSpan={8} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={6} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" hoverEffect="subtle">
+                  <DealsPipeline />
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
 
-          {/* Activity Timeline - Side Card */}
-          <BentoItem colSpan={4} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
-              <GlassCard className="h-full p-4" glow>
-                <ActivityTimeline maxHeight="280px" />
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
+            {/* Activity Timeline - Side Card */}
+            <BentoItem colSpan={4} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={7} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent" hoverEffect="subtle">
+                  <ActivityTimeline maxHeight="280px" />
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
 
-          {/* Bookings Management */}
-          <BentoItem colSpan={6} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
-              <GlassCard className="h-full p-4 bg-gradient-to-br from-gold-400/10 via-transparent to-accent/5" glow>
-                <BookingsCard />
-              </GlassCard>
-            </motion.div>
-          </BentoItem>
+            {/* Bookings Management */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={8} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.gold}`} glow="gold" hoverEffect="subtle">
+                  <BookingsCard />
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
 
-          {/* Version History */}
-          <BentoItem colSpan={6} rowSpan={1}>
-            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <VersionHistory maxItems={5} />
-            </motion.div>
-          </BentoItem>
+            {/* Version History */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={9} whileHover={hover3DSubtle}>
+                <VersionHistory maxItems={5} />
+              </motion.div>
+            </BentoItem>
 
-          {/* Room Scanner */}
-          <BentoItem colSpan={6} rowSpan={1}>
-            <RoomScannerCard locked={false} accentColor="gold-400" />
-          </BentoItem>
+            {/* Room Scanner */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={9}>
+                <RoomScannerCard locked={false} accentColor="gold-400" />
+              </motion.div>
+            </BentoItem>
 
-          {/* Analytics Dashboard - Full Width */}
-          <BentoItem colSpan={12} rowSpan={3}>
-            <AnalyticsDashboard />
-          </BentoItem>
-        </BentoGrid>
+            {/* Analytics Dashboard - Full Width */}
+            <BentoItem colSpan={12} rowSpan={3}>
+              <motion.div className="h-full" variants={cardVariants} custom={10}>
+                <AnalyticsDashboard />
+              </motion.div>
+            </BentoItem>
+          </BentoGrid>
+        </motion.div>
       </main>
 
       <PinChangeModal
