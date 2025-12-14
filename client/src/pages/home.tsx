@@ -73,8 +73,8 @@ export default function Home() {
         <BentoGrid>
           
           {/* 1. Hero Section - Main Headline */}
-          <BentoItem colSpan={8} rowSpan={2} mobileColSpan={4} mobileRowSpan={4} className="relative group">
-            <GlassCard className="p-3 md:p-12 flex flex-col justify-center items-start overflow-hidden border-border dark:border-white/20 h-full">
+          <BentoItem colSpan={8} rowSpan={2} mobileColSpan={4} mobileRowSpan={2} className="relative group">
+            <GlassCard className="p-3 py-4 md:p-12 flex flex-col justify-center items-start overflow-hidden border-border dark:border-white/20 h-full">
               <div 
                 className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
                 style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
