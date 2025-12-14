@@ -38,7 +38,7 @@ export function Navbar() {
         {/* Left: Hamburger Menu - offset from left */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[83px] -mt-[23px]",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[89px] -mt-[23px]",
             tenant.id === "demo" ? "p-1.5" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
@@ -61,7 +61,7 @@ export function Navbar() {
         {/* Center: Title - takes up most width */}
         <div 
           className={cn(
-            "flex-1 text-center tracking-wide mx-4 leading-tight -ml-[60px]",
+            "flex-1 text-center tracking-wide mx-4 leading-tight -ml-[80px]",
             tenant.id === "demo" 
               ? "text-white text-sm md:text-2xl lg:text-3xl"
               : "text-base md:text-3xl lg:text-4xl bg-gradient-to-r from-yellow-400 via-yellow-200 to-white bg-clip-text text-transparent"
@@ -78,7 +78,7 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0"
+          className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0 -ml-[6px]"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
