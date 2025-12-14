@@ -16,6 +16,7 @@ import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 // Domain to tenant mapping (server-side)
 const domainTenantMap: Record<string, string> = {
@@ -62,6 +63,21 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+
+  // ============ REPLIT AUTH ============
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
 
   // ============ PWA ROUTES (Dynamic per tenant) ============
 

@@ -25,12 +25,17 @@ import {
   type EstimateFollowup, type InsertEstimateFollowup, estimateFollowups,
   type DocumentAsset, type InsertDocumentAsset, documentAssets,
   type TenantAssetCounter, type InsertTenantAssetCounter, tenantAssetCounters,
+  type User, type UpsertUser, users,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
 
 export interface IStorage {
+  // User operations (for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
   getLeadById(id: string): Promise<Lead | undefined>;
@@ -211,6 +216,27 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // User operations (for Replit Auth)
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
   // Leads
   async createLead(lead: InsertLead): Promise<Lead> {
     const [result] = await db.insert(leads).values(lead).returning();
