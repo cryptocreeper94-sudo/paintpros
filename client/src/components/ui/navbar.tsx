@@ -35,10 +35,10 @@ export function Navbar() {
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="flex items-center px-1 md:px-2 py-1">
-        {/* Left: Hamburger Menu - offset 60px from left */}
+        {/* Left: Hamburger Menu - offset from left */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[85px] -mt-[20px]",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[75px] -mt-[20px]",
             tenant.id === "demo" ? "p-1.5" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
@@ -63,8 +63,8 @@ export function Navbar() {
           className={cn(
             "flex-1 text-center tracking-wide mx-4 leading-tight -ml-[60px]",
             tenant.id === "demo" 
-              ? "text-white text-xl md:text-2xl lg:text-3xl"
-              : "text-2xl md:text-3xl lg:text-4xl bg-gradient-to-r from-yellow-400 via-yellow-200 to-white bg-clip-text text-transparent"
+              ? "text-white text-sm md:text-2xl lg:text-3xl"
+              : "text-base md:text-3xl lg:text-4xl bg-gradient-to-r from-yellow-400 via-yellow-200 to-white bg-clip-text text-transparent"
           )}
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"

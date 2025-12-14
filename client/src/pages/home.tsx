@@ -571,9 +571,9 @@ export default function Home() {
                   
                   {/* Center: Title & Description */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-0.5 md:mb-1">
-                      <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold flex-shrink-0">CRYPTO ACCEPTED</span>
-                      <h3 className="text-sm md:text-lg font-display font-bold">
+                    <div className="flex flex-wrap items-center gap-1 md:gap-2 mb-0.5 md:mb-1">
+                      <span className="text-[7px] md:text-[10px] px-1 md:px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold flex-shrink-0">CRYPTO ACCEPTED</span>
+                      <h3 className="text-[10px] md:text-lg font-display font-bold">
                         The Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Payments</span>
                       </h3>
                     </div>
