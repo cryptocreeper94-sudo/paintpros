@@ -444,7 +444,7 @@ export default function Home() {
             >
               <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-card relative">
                 <div className="absolute top-2 left-0 right-0 md:top-4 z-10 text-center">
-                  <h3 className="text-xs md:text-sm font-display font-bold text-foreground">Color Samples</h3>
+                  <h3 className="text-xs md:text-sm font-display font-bold text-foreground">Color Palette</h3>
                 </div>
                 {/* Light mode: use color wheel with white bg, Dark mode: use fan deck */}
                 <img 
