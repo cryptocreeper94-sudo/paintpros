@@ -179,7 +179,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50" />
               
-              <GlassCard className="relative p-4 sm:p-6 md:p-8 border-accent/20 max-h-[95vh] overflow-y-auto" glow>
+              <GlassCard className="relative p-4 sm:p-6 md:p-8 border-accent/20 max-h-[calc(100dvh-2rem)] overflow-y-auto" glow>
                 <button
                   onClick={handleClose}
                   className="absolute top-3 right-3 sm:top-4 sm:right-4 w-11 h-11 min-h-[44px] min-w-[44px] rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 flex items-center justify-center transition-colors touch-manipulation"

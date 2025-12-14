@@ -313,7 +313,7 @@ export default function ProposalSign() {
               exit={{ scale: 0.9, opacity: 0 }}
               className="w-full max-w-lg"
             >
-              <GlassCard className="p-4 sm:p-8 relative max-h-[90vh] overflow-y-auto" glow>
+              <GlassCard className="p-4 sm:p-8 relative max-h-[calc(100dvh-2rem)] overflow-y-auto" glow>
                 <button
                   onClick={() => {
                     setShowSignatureModal(false);

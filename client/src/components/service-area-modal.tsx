@@ -52,7 +52,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25 }}
-          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[calc(100vh-5rem)] shadow-2xl"
+          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[calc(100dvh-2rem)] shadow-2xl"
         >
           <button
             onClick={onClose}
@@ -62,7 +62,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
             <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
-          <div className="overflow-y-auto max-h-[85vh] overscroll-contain touch-pan-y">
+          <div className="overflow-y-auto max-h-[calc(100dvh-4rem)] overscroll-contain touch-pan-y">
             {/* Landscape map header */}
             <div className="relative h-[35vw] min-h-[150px] max-h-[180px] md:h-48 overflow-hidden">
               <img 

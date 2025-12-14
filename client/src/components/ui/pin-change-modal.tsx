@@ -88,9 +88,9 @@ export function PinChangeModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="w-full max-w-md"
+          className="w-full max-w-md max-h-[calc(100dvh-2rem)]"
         >
-          <GlassCard className="p-8 border-accent/30" glow>
+          <GlassCard className="p-8 border-accent/30 overflow-y-auto" glow>
             <button
               onClick={onClose}
               className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"

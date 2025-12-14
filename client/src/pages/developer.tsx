@@ -2162,10 +2162,10 @@ export default function Developer() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="w-full max-w-lg"
+              className="w-full max-w-lg max-h-[calc(100dvh-2rem)]"
               onClick={(e) => e.stopPropagation()}
             >
-              <GlassCard className="p-6 md:p-8" glow>
+              <GlassCard className="p-6 md:p-8 overflow-y-auto" glow>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     {modalContents[activeModal].icon}
