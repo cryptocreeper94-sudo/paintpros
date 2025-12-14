@@ -61,10 +61,10 @@ export function Navbar() {
         {/* Center: Title - takes up most width */}
         <div 
           className={cn(
-            "flex-1 text-center tracking-wide mx-4 leading-tight -ml-[80px]",
+            "flex-1 text-center tracking-wide mx-4 leading-tight -ml-[80px] whitespace-nowrap",
             tenant.id === "demo" 
               ? "text-white text-sm md:text-2xl lg:text-3xl"
-              : "text-base md:text-3xl lg:text-4xl bg-gradient-to-r from-yellow-400 via-yellow-200 to-white bg-clip-text text-transparent"
+              : "text-sm md:text-3xl lg:text-4xl bg-gradient-to-r from-yellow-400 via-yellow-200 to-white bg-clip-text text-transparent"
           )}
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
