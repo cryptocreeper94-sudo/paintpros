@@ -725,3 +725,77 @@ export const insertEstimateFollowupSchema = createInsertSchema(estimateFollowups
 
 export type InsertEstimateFollowup = z.infer<typeof insertEstimateFollowupSchema>;
 export type EstimateFollowup = typeof estimateFollowups.$inferSelect;
+
+// ============ ONLINE BOOKING ============
+
+// Availability Windows - Business hours and time slots
+export const availabilityWindows = pgTable("availability_windows", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  dayOfWeek: integer("day_of_week").notNull(), // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime: text("start_time").notNull(), // "09:00" format
+  endTime: text("end_time").notNull(), // "17:00" format
+  slotDuration: integer("slot_duration").default(60).notNull(), // Minutes per slot
+  maxBookings: integer("max_bookings").default(1).notNull(), // Concurrent bookings allowed
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertAvailabilityWindowSchema = createInsertSchema(availabilityWindows).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertAvailabilityWindow = z.infer<typeof insertAvailabilityWindowSchema>;
+export type AvailabilityWindow = typeof availabilityWindows.$inferSelect;
+
+// Bookings - Customer appointments
+export const bookings = pgTable("bookings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  leadId: varchar("lead_id").references(() => leads.id),
+  
+  // Customer info
+  customerName: text("customer_name").notNull(),
+  customerEmail: text("customer_email").notNull(),
+  customerPhone: text("customer_phone"),
+  customerAddress: text("customer_address"),
+  
+  // Service details
+  serviceType: text("service_type").notNull(), // interior, exterior, commercial, residential, etc.
+  projectDescription: text("project_description"),
+  
+  // Scheduling
+  scheduledDate: timestamp("scheduled_date").notNull(),
+  scheduledTime: text("scheduled_time").notNull(), // "09:00" format
+  duration: integer("duration").default(60), // Minutes
+  
+  // Status tracking
+  status: text("status").notNull().default("pending"), // pending, confirmed, completed, cancelled, no_show
+  confirmedAt: timestamp("confirmed_at"),
+  completedAt: timestamp("completed_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  cancellationReason: text("cancellation_reason"),
+  
+  // Notes
+  internalNotes: text("internal_notes"),
+  customerNotes: text("customer_notes"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertBookingSchema = createInsertSchema(bookings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  status: true,
+  confirmedAt: true,
+  completedAt: true,
+  cancelledAt: true,
+});
+
+export type InsertBooking = z.infer<typeof insertBookingSchema>;
+export type Booking = typeof bookings.$inferSelect;
