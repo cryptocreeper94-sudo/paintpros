@@ -73,8 +73,8 @@ export default function Home() {
         <BentoGrid>
           
           {/* 1. Hero Section - Main Headline */}
-          <BentoItem colSpan={8} rowSpan={2} mobileColSpan={4} mobileRowSpan={4} className="relative group">
-            <GlassCard className="p-3 md:p-12 flex flex-col justify-center items-start overflow-hidden border-border dark:border-white/20 h-full">
+          <BentoItem colSpan={8} rowSpan={2} mobileColSpan={4} mobileRowSpan={3} className="relative group">
+            <GlassCard className="p-2 md:p-12 flex flex-col justify-start md:justify-center items-start overflow-hidden border-border dark:border-white/20 h-full">
               <div 
                 className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
                 style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
@@ -112,9 +112,9 @@ export default function Home() {
           </BentoItem>
 
           {/* 2. CTA Card - High Contrast */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
             <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
-              <GlassCard className="bg-accent/10 border-accent/20 relative p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
+              <GlassCard className="bg-accent/10 border-accent/20 relative p-2 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
                 <div className="relative z-10">
                   <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
                   <p className="text-[10px] md:text-xs text-muted-foreground pr-8">
@@ -136,19 +136,19 @@ export default function Home() {
           </BentoItem>
 
           {/* 3. Social Proof - Logo Flip Card */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
             <LogoFlipCard />
           </BentoItem>
 
           {/* Solana Verified Badge - FIRST IN INDUSTRY */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
             <button
               onClick={() => setSolanaVerifiedOpen(true)}
               className="w-full h-full text-left"
               data-testid="button-solana-verified"
             >
               <GlassCard 
-                className="p-3 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
+                className="p-2 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
                 hoverEffect
                 glow
               >
