@@ -1404,7 +1404,7 @@ export default function Estimate() {
                             <Switch
                               checked={blockchainOptIn}
                               onCheckedChange={setBlockchainOptIn}
-                              data-testid="switch-blockchain-optin"
+                              data-testid="switch-blockchain-opt-in"
                             />
                           </div>
                         </div>
