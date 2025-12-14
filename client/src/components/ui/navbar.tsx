@@ -34,12 +34,12 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="flex items-center justify-between px-2 md:px-4 py-1">
-        {/* Left: Hamburger Menu */}
+      <div className="flex items-center px-1 md:px-2 py-1">
+        {/* Left: Hamburger Menu - flush left */}
         <button 
           className={cn(
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
-            tenant.id === "demo" ? "p-2" : "p-0"
+            tenant.id === "demo" ? "p-1.5" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
@@ -58,9 +58,9 @@ export function Navbar() {
           )}
         </button>
         
-        {/* Center: Title */}
+        {/* Center: Title - takes up most width */}
         <div 
-          className="flex-1 text-center text-white tracking-wide text-xs md:text-sm lg:text-base px-2 leading-tight"
+          className="flex-1 text-center text-white tracking-wide text-sm md:text-base lg:text-lg mx-2 leading-tight"
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
@@ -73,7 +73,7 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0"
+          className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
