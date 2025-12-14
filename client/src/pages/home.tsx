@@ -314,9 +314,9 @@ export default function Home() {
                 <img 
                   src={mapImage} 
                   alt={`${cityName} Service Area`}
-                  className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-opacity duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
                 <div className="absolute bottom-2 md:bottom-6 left-2 md:left-6 right-2 md:right-6">
                   <div className="flex items-center gap-1 md:gap-2 mb-1 md:mb-2">
                     <MapPin className="w-3 h-3 md:w-5 md:h-5 text-accent" />
