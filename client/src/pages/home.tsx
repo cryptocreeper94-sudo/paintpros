@@ -16,6 +16,7 @@ import premiumMaterialsImage from "@assets/generated_images/premium_paint_materi
 import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png";
 import warrantyImage from "@assets/generated_images/warranty_shield_certificate_badge.png";
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
+import solanaLogo from "@assets/solana-logo-transparent.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
@@ -146,6 +147,12 @@ export default function Home() {
                 hoverEffect
                 glow
               >
+                {/* Solana logo background */}
+                <img 
+                  src={solanaLogo} 
+                  alt="" 
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-20 h-20 md:w-28 md:h-28 object-contain opacity-30"
+                />
                 {/* Animated gradient background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#9945FF]/20 via-transparent to-[#14F195]/20 animate-pulse opacity-50" />
                 
