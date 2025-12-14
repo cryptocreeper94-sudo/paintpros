@@ -42,7 +42,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+        className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 md:pt-8 overflow-y-auto"
         data-testid="modal-service-area"
       >
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
@@ -52,7 +52,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25 }}
-          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[85vh] shadow-2xl my-auto"
+          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[calc(100vh-5rem)] shadow-2xl"
         >
           <button
             onClick={onClose}

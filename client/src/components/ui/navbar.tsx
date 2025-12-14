@@ -33,12 +33,94 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="w-full px-0 md:px-4 py-0 md:py-1 flex items-center justify-between">
-        {/* Left: Hamburger Menu */}
+      {/* Desktop: Two-row layout */}
+      <div className="hidden md:block">
+        {/* Top row: Full-width title */}
+        {tenant.id === "demo" && (
+          <div 
+            className="w-full text-center py-2 text-white text-sm lg:text-base leading-tight border-b border-white/5"
+            style={{ fontFamily: 'Playfair Display, serif' }}
+            data-testid="text-header-title-desktop"
+          >
+            Welcome to PaintPros.io - Industry first Solana verified Commercial/Residential turnkey painting company software
+          </div>
+        )}
+        {/* Bottom row: Nav items */}
+        <div className="flex items-center justify-between px-4 py-1">
+          <button 
+            className="p-2 hover:bg-white/10 rounded-lg transition-all flex items-center"
+            onClick={() => setIsOpen(!isOpen)}
+            data-testid="button-hamburger-menu-desktop"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X size={24} className="text-white" /> : <Menu size={24} className="text-white" />}
+          </button>
+
+          {tenant.id !== "demo" && (
+            <div 
+              className="text-white tracking-wide text-lg"
+              style={{ fontFamily: 'Playfair Display, serif' }}
+              data-testid="text-header-title"
+            >
+              {tenant.name}
+            </div>
+          )}
+
+          <div className="flex items-center gap-4">
+            {location !== "/" && (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => window.history.back()}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                  aria-label="Go back"
+                  data-testid="button-back"
+                >
+                  <ArrowLeft className="w-5 h-5 text-white" />
+                </button>
+                <Link href="/">
+                  <button 
+                    className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                    aria-label="Go home"
+                    data-testid="button-home"
+                  >
+                    <Home className="w-5 h-5 text-white" />
+                  </button>
+                </Link>
+              </div>
+            )}
+
+            <div className="flex items-center gap-4">
+              {mainLinks.map((link) => (
+                <Link key={link.name} href={link.href}>
+                  <span className={cn(
+                    "text-sm font-medium transition-colors cursor-pointer hover:text-accent",
+                    link.highlight ? "text-accent font-bold" : "text-white/80",
+                    location === link.href && "text-accent"
+                  )}>
+                    {link.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            <button 
+              onClick={toggleTheme}
+              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+              aria-label="Toggle theme"
+              data-testid="button-theme-toggle-desktop"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4 text-accent" /> : <Moon className="w-4 h-4 text-white" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: Single row with hamburger, title, and theme toggle */}
+      <div className="md:hidden flex items-center justify-between px-2 py-1">
         <button 
           className={cn(
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
-            tenant.id === "demo" ? "p-2 md:p-3" : "p-0 -ml-[45px] -mt-[15px] md:ml-0 md:mt-0"
+            tenant.id === "demo" ? "p-2" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
@@ -52,81 +134,28 @@ export function Navbar() {
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-10 md:h-12 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           )}
         </button>
         
-        {/* Center: Title - hidden on desktop when nav links are shown for demo tenant */}
         <div 
-          className={cn(
-            "absolute left-1/2 -translate-x-1/2 text-white tracking-wide text-sm whitespace-nowrap pointer-events-none",
-            tenant.id === "demo" ? "md:hidden" : "md:text-lg"
-          )}
+          className="flex-1 text-center text-white tracking-wide text-sm px-2"
           style={{ fontFamily: 'Playfair Display, serif' }}
-          data-testid="text-header-title"
+          data-testid="text-header-title-mobile"
         >
-          {tenant.id === "demo" ? "PaintPros.io by Orbit" : tenant.name}
+          {tenant.id === "demo" ? "PaintPros.io" : tenant.name}
         </div>
 
-        {/* Right: Navigation + Desktop Nav Links + Theme Toggle */}
-        <div className="flex items-center gap-2 md:gap-4">
-          {/* Navigation Buttons - Hidden on mobile to avoid overlap with title */}
-          {location !== "/" && (
-            <div className="hidden md:flex items-center gap-2">
-              <button 
-                onClick={() => window.history.back()}
-                className="p-2 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center"
-                aria-label="Go back"
-                data-testid="button-back"
-                title="Go back"
-              >
-                <ArrowLeft className="w-5 h-5 text-white" />
-              </button>
-              <Link href="/">
-                <button 
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center"
-                  aria-label="Go home"
-                  data-testid="button-home"
-                  title="Go home"
-                >
-                  <Home className="w-5 h-5 text-white" />
-                </button>
-              </Link>
-            </div>
-          )}
-
-          {/* Desktop Nav Links (hidden on mobile) */}
-          <div className="hidden md:flex items-center gap-6">
-            {mainLinks.map((link) => (
-              <Link key={link.name} href={link.href}>
-                <span className={cn(
-                  "text-sm font-medium transition-colors cursor-pointer hover:text-accent",
-                  link.highlight ? "text-accent font-bold" : "text-white/80",
-                  location === link.href && "text-accent"
-                )}>
-                  {link.name}
-                </span>
-              </Link>
-            ))}
-          </div>
-
-          {/* Theme Toggle */}
-          <button 
-            onClick={toggleTheme}
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
-            aria-label="Toggle theme"
-            data-testid="button-theme-toggle"
-          >
-            {theme === "dark" ? (
-              <Sun className="w-4 h-4 text-accent" />
-            ) : (
-              <Moon className="w-4 h-4 text-white" />
-            )}
-          </button>
-        </div>
+        <button 
+          onClick={toggleTheme}
+          className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+          aria-label="Toggle theme"
+          data-testid="button-theme-toggle"
+        >
+          {theme === "dark" ? <Sun className="w-4 h-4 text-accent" /> : <Moon className="w-4 h-4 text-white" />}
+        </button>
       </div>
-
     </header>
 
       {/* Mobile Navigation - Fixed below header */}
