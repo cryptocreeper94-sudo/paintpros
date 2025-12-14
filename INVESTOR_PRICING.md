@@ -1,7 +1,9 @@
 # PaintPros.io - Investor Pricing Sheet
 
 **Prepared by:** Orbit Development Team  
-**Version:** 2.0 | December 2025
+**Version:** 2.1 | December 14, 2025
+
+**Beta Status:** v1.0.3 (Nashville Painting Professionals - Active)
 
 ---
 
@@ -99,11 +101,12 @@
 
 ### Key Differentiators
 - White-label branded website (competitors: none)
-- Customer-facing estimator (competitors: partial)
-- Blockchain verification (competitors: none)
-- Premium Bento Grid design (competitors: none)
-- SEO management tools (competitors: none)
-- Orbit ecosystem integration (competitors: none)
+- Customer-facing estimator with lead capture (competitors: partial)
+- Solana blockchain verification with opt-in hashing (competitors: none)
+- Premium Bento Grid design with glassmorphism (competitors: none)
+- SEO management tools with keyword tracking (competitors: none)
+- Document Asset system with unique hallmark IDs (competitors: none)
+- Orbit ecosystem integration (payroll, staffing, dev hub)
 - Custom development available (priced separately)
 
 ### True Cost Comparison

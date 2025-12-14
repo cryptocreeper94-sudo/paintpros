@@ -2,7 +2,8 @@
 
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
-**Last Updated:** December 13, 2025
+**Last Updated:** December 14, 2025
+**Beta Version:** v1.0.3
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
@@ -107,9 +108,14 @@ Use accordions to collapse secondary information:
 - `blockchain_stamps` - Solana blockchain document hashes
 - `page_views` - Analytics tracking for all page visits
 - `analytics_summary` - Cached analytics stats for fast retrieval
+- `document_assets` - Trackable assets with opt-in Solana hashing
+- `tenant_asset_counters` - Per-tenant sequential hallmark numbering
+- `release_versions` - App version tracking with blockchain stamps
+- `hallmarks` - ORBIT Hallmark System asset identifiers
 
 ## Business Documentation
-- **BUSINESS_PLAN.md** - Comprehensive business plan with executive summary, market analysis, pricing tiers, go-to-market strategy, and financial projections
+- **BUSINESS_PLAN.md** - Comprehensive business plan v1.1 with executive summary, market analysis, pricing tiers, go-to-market strategy, and financial projections
+- **INVESTOR_PRICING.md** - Investor pricing sheet v2.1 with licensing tiers, unit economics, and revenue projections
 - **VERSION_SEPARATION_STRATEGY.md** - Strategy for separating beta from commercial version, includes architecture options, implementation timeline, and migration path
 
 ## Branding Assets
@@ -141,6 +147,8 @@ Location: `server/solana.ts`
 - Falls back to public Solana RPC endpoints
 - Stamps document hashes to Solana memo program
 - Developer dashboard has full stamping UI (Wallet, Stamp, History, Verify tabs)
+- Document Asset system with opt-in blockchain hashing
+- Per-tenant hallmark numbering (e.g., NPP-000000000-02)
 
 ## Future Features
 - AI Voice Assistant (Twilio integration)
