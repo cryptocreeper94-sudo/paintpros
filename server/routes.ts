@@ -1603,7 +1603,7 @@ Do not include any text before or after the JSON.`
   // POST /api/analytics/track - Track a page view
   app.post("/api/analytics/track", async (req, res) => {
     try {
-      const { page, referrer, sessionId, duration } = req.body;
+      const { page, referrer, sessionId, duration, tenantId } = req.body;
       
       // Parse user agent for device type and browser
       const userAgent = req.headers["user-agent"] || "";
@@ -1629,7 +1629,8 @@ Do not include any text before or after the JSON.`
         sessionId: sessionId || null,
         deviceType,
         browser,
-        duration: duration || null
+        duration: duration || null,
+        tenantId: tenantId || "npp"
       });
       
       res.status(201).json({ success: true, id: pageView.id });
@@ -1639,11 +1640,32 @@ Do not include any text before or after the JSON.`
     }
   });
 
-  // GET /api/analytics/dashboard - Get full analytics dashboard data
+  // GET /api/analytics/tenants - Get available tenants for filtering
+  app.get("/api/analytics/tenants", async (req, res) => {
+    try {
+      const tenants = await storage.getAvailableTenants();
+      res.json({ tenants });
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+      res.status(500).json({ error: "Failed to fetch tenants" });
+    }
+  });
+
+  // GET /api/analytics/dashboard - Get full analytics dashboard data (optionally filtered by tenant)
   app.get("/api/analytics/dashboard", async (req, res) => {
     try {
-      const dashboard = await storage.getAnalyticsDashboard();
-      const liveCount = await storage.getLiveVisitorCount();
+      const { tenantId } = req.query;
+      let dashboard;
+      let liveCount;
+      
+      if (tenantId && typeof tenantId === "string") {
+        dashboard = await storage.getAnalyticsDashboardByTenant(tenantId);
+        liveCount = await storage.getLiveVisitorCountByTenant(tenantId);
+      } else {
+        dashboard = await storage.getAnalyticsDashboard();
+        liveCount = await storage.getLiveVisitorCount();
+      }
+      
       res.json({ ...dashboard, liveVisitors: liveCount });
     } catch (error) {
       console.error("Error fetching analytics dashboard:", error);
@@ -1651,10 +1673,18 @@ Do not include any text before or after the JSON.`
     }
   });
 
-  // GET /api/analytics/live - Get live visitor count
+  // GET /api/analytics/live - Get live visitor count (optionally filtered by tenant)
   app.get("/api/analytics/live", async (req, res) => {
     try {
-      const count = await storage.getLiveVisitorCount();
+      const { tenantId } = req.query;
+      let count;
+      
+      if (tenantId && typeof tenantId === "string") {
+        count = await storage.getLiveVisitorCountByTenant(tenantId);
+      } else {
+        count = await storage.getLiveVisitorCount();
+      }
+      
       res.json({ liveVisitors: count });
     } catch (error) {
       console.error("Error fetching live count:", error);

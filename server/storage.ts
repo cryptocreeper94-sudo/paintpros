@@ -161,6 +161,22 @@ export interface IStorage {
   getPageViewsByPage(page: string): Promise<PageView[]>;
   getLiveVisitorCount(): Promise<number>;
   
+  // Tenant-filtered analytics
+  getAnalyticsDashboardByTenant(tenantId: string): Promise<{
+    today: { views: number; visitors: number };
+    thisWeek: { views: number; visitors: number };
+    thisMonth: { views: number; visitors: number };
+    allTime: { views: number; visitors: number };
+    recentViews: PageView[];
+    topPages: { page: string; views: number }[];
+    topReferrers: { referrer: string; count: number }[];
+    deviceBreakdown: { desktop: number; mobile: number; tablet: number };
+    hourlyTraffic: { hour: number; views: number }[];
+    dailyTraffic: { date: string; views: number; visitors: number }[];
+  }>;
+  getLiveVisitorCountByTenant(tenantId: string): Promise<number>;
+  getAvailableTenants(): Promise<string[]>;
+  
   // Estimate Photos
   createEstimatePhoto(photo: InsertEstimatePhoto): Promise<EstimatePhoto>;
   getEstimatePhotos(estimateId: string): Promise<EstimatePhoto[]>;
@@ -876,6 +892,139 @@ export class DatabaseStorage implements IStorage {
       visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
     }).from(pageViews)
       .where(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`)
+      .groupBy(sql`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`)
+      .orderBy(sql`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`);
+
+    return {
+      today: todayStats[0] || { views: 0, visitors: 0 },
+      thisWeek: weekStats[0] || { views: 0, visitors: 0 },
+      thisMonth: monthStats[0] || { views: 0, visitors: 0 },
+      allTime: allTimeStats[0] || { views: 0, visitors: 0 },
+      recentViews,
+      topPages: topPagesResult,
+      topReferrers: topReferrersResult.map(r => ({ referrer: r.referrer || 'Direct', count: r.count })),
+      deviceBreakdown,
+      hourlyTraffic: hourlyResult,
+      dailyTraffic: dailyResult
+    };
+  }
+
+  // Tenant-filtered analytics
+  async getLiveVisitorCountByTenant(tenantId: string): Promise<number> {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const result = await db.select({ count: sql<number>`count(distinct ${pageViews.sessionId})::int` })
+      .from(pageViews)
+      .where(and(
+        sql`${pageViews.createdAt} >= ${fiveMinutesAgo}`,
+        eq(pageViews.tenantId, tenantId)
+      ));
+    return result[0]?.count || 0;
+  }
+
+  async getAvailableTenants(): Promise<string[]> {
+    const result = await db.selectDistinct({ tenantId: pageViews.tenantId })
+      .from(pageViews)
+      .where(sql`${pageViews.tenantId} is not null`);
+    return result.map(r => r.tenantId).filter((t): t is string => t !== null);
+  }
+
+  async getAnalyticsDashboardByTenant(tenantId: string): Promise<{
+    today: { views: number; visitors: number };
+    thisWeek: { views: number; visitors: number };
+    thisMonth: { views: number; visitors: number };
+    allTime: { views: number; visitors: number };
+    recentViews: PageView[];
+    topPages: { page: string; views: number }[];
+    topReferrers: { referrer: string; count: number }[];
+    deviceBreakdown: { desktop: number; mobile: number; tablet: number };
+    hourlyTraffic: { hour: number; views: number }[];
+    dailyTraffic: { date: string; views: number; visitors: number }[];
+  }> {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const tenantFilter = eq(pageViews.tenantId, tenantId);
+
+    const todayStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(and(sql`${pageViews.createdAt} >= ${startOfToday}`, tenantFilter));
+
+    const weekStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(and(sql`${pageViews.createdAt} >= ${startOfWeek}`, tenantFilter));
+
+    const monthStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(and(sql`${pageViews.createdAt} >= ${startOfMonth}`, tenantFilter));
+
+    const allTimeStats = await db.select({
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews).where(tenantFilter);
+
+    const recentViews = await db.select().from(pageViews)
+      .where(tenantFilter)
+      .orderBy(desc(pageViews.createdAt))
+      .limit(20);
+
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const topPagesResult = await db.select({
+      page: pageViews.page,
+      views: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`, tenantFilter))
+      .groupBy(pageViews.page)
+      .orderBy(sql`count(*) desc`)
+      .limit(10);
+
+    const topReferrersResult = await db.select({
+      referrer: pageViews.referrer,
+      count: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(
+        sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`,
+        sql`${pageViews.referrer} is not null`,
+        sql`${pageViews.referrer} != ''`,
+        tenantFilter
+      ))
+      .groupBy(pageViews.referrer)
+      .orderBy(sql`count(*) desc`)
+      .limit(10);
+
+    const deviceResult = await db.select({
+      deviceType: pageViews.deviceType,
+      count: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`, tenantFilter))
+      .groupBy(pageViews.deviceType);
+
+    const deviceBreakdown = { desktop: 0, mobile: 0, tablet: 0 };
+    deviceResult.forEach(d => {
+      if (d.deviceType === 'desktop') deviceBreakdown.desktop = d.count;
+      else if (d.deviceType === 'mobile') deviceBreakdown.mobile = d.count;
+      else if (d.deviceType === 'tablet') deviceBreakdown.tablet = d.count;
+    });
+
+    const hourlyResult = await db.select({
+      hour: sql<number>`extract(hour from ${pageViews.createdAt})::int`,
+      views: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(sql`${pageViews.createdAt} >= ${startOfToday}`, tenantFilter))
+      .groupBy(sql`extract(hour from ${pageViews.createdAt})`)
+      .orderBy(sql`extract(hour from ${pageViews.createdAt})`);
+
+    const dailyResult = await db.select({
+      date: sql<string>`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`,
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews)
+      .where(and(sql`${pageViews.createdAt} >= ${thirtyDaysAgo}`, tenantFilter))
       .groupBy(sql`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`)
       .orderBy(sql`to_char(${pageViews.createdAt}, 'YYYY-MM-DD')`);
 

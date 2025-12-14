@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "wouter";
+import { useTenant } from "@/context/TenantContext";
 
 function generateSessionId(): string {
   let sessionId = sessionStorage.getItem("analytics_session_id");
@@ -12,12 +13,14 @@ function generateSessionId(): string {
 
 export function useAnalytics() {
   const [location] = useLocation();
+  const tenant = useTenant();
   const lastPageRef = useRef<string | null>(null);
   const pageStartTimeRef = useRef<number>(Date.now());
 
   useEffect(() => {
     const sessionId = generateSessionId();
     const referrer = document.referrer || null;
+    const tenantId = tenant?.id || "npp";
 
     const trackPageView = async (page: string, duration?: number) => {
       try {
@@ -28,7 +31,8 @@ export function useAnalytics() {
             page,
             referrer: lastPageRef.current === null ? referrer : lastPageRef.current,
             sessionId,
-            duration: duration || null
+            duration: duration || null,
+            tenantId
           })
         });
       } catch (error) {
@@ -50,11 +54,12 @@ export function useAnalytics() {
       navigator.sendBeacon("/api/analytics/track", JSON.stringify({
         page: location,
         sessionId,
-        duration
+        duration,
+        tenantId
       }));
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [location]);
+  }, [location, tenant?.id]);
 }

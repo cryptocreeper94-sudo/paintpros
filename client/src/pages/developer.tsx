@@ -9,6 +9,7 @@ import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap,
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
+import { TenantAnalyticsDashboard } from "@/components/tenant-analytics-dashboard";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
 import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
@@ -1984,6 +1985,13 @@ export default function Developer() {
           {/* Analytics Dashboard - Full Width */}
           <BentoItem colSpan={12} rowSpan={4}>
             <AnalyticsDashboard />
+          </BentoItem>
+
+          {/* Tenant Analytics Dashboard - Per-Client Analytics */}
+          <BentoItem colSpan={12} rowSpan={4}>
+            <GlassCard className="h-full p-6" glow>
+              <TenantAnalyticsDashboard />
+            </GlassCard>
           </BentoItem>
         </BentoGrid>
       </main>
