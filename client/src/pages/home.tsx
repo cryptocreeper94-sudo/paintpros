@@ -26,7 +26,7 @@ import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { ContactModal } from "@/components/contact-modal";
 import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
-import bitcoinWatermark from "@assets/generated_images/golden_bitcoin_cryptocurrency_symbol.png";
+import bitcoinWatermark from "@assets/generated_images/bitcoin_symbol_transparent_background.png";
 
 export default function Home() {
   const tenant = useTenant();
@@ -549,7 +549,7 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-crypto-payment"
             >
-              <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
+              <GlassCard className="p-2 md:p-3 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
                 {/* Bitcoin Watermark Background - Right side */}
                 <img 
                   src={bitcoinWatermark} 
