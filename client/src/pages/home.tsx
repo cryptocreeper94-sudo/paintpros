@@ -24,7 +24,9 @@ import { ColorSelectorModal } from "@/components/color-selector-modal";
 import { SolanaVerifiedModal } from "@/components/solana-verified-modal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { ContactModal } from "@/components/contact-modal";
+import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
+import bitcoinWatermark from "@assets/generated_images/bitcoin_coin_symbol_icon.png";
 
 export default function Home() {
   const tenant = useTenant();
@@ -32,6 +34,7 @@ export default function Home() {
   const [colorSelectorOpen, setColorSelectorOpen] = useState(false);
   const [solanaVerifiedOpen, setSolanaVerifiedOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [cryptoModalOpen, setCryptoModalOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   
   const toggleCard = (cardId: string) => {
@@ -519,26 +522,69 @@ export default function Home() {
             </BentoItem>
           )}
 
-          {/* Crypto Payment Banner */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-            <a href="/estimate" className="block h-full" data-testid="link-crypto-payment">
-              <GlassCard className="p-3 md:p-6 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden" hoverEffect>
-                <div className="flex items-center gap-3 relative z-10">
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
-                      <SiBitcoin className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+          {/* Crypto Payment Banner - Extended */}
+          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={2} mobileRowSpan={3}>
+            <button
+              onClick={() => setCryptoModalOpen(true)}
+              className="w-full h-full text-left"
+              data-testid="button-crypto-payment"
+            >
+              <GlassCard className="p-3 md:p-6 bg-gradient-to-br from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
+                {/* Bitcoin Watermark Background */}
+                <img 
+                  src={bitcoinWatermark} 
+                  alt="" 
+                  className="absolute right-0 bottom-0 w-32 h-32 md:w-48 md:h-48 object-contain opacity-15 translate-x-1/4 translate-y-1/4"
+                />
+                
+                <div className="flex flex-col h-full relative z-10">
+                  {/* Header with icons */}
+                  <div className="flex items-center gap-2 mb-2 md:mb-3">
+                    <div className="flex -space-x-2">
+                      <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
+                        <SiBitcoin className="w-3.5 h-3.5 md:w-5 md:h-5 text-orange-400" />
+                      </div>
+                      <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
+                        <SiEthereum className="w-3.5 h-3.5 md:w-5 md:h-5 text-purple-400" />
+                      </div>
                     </div>
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
-                      <SiEthereum className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+                    <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold">CRYPTO ACCEPTED</span>
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-sm md:text-xl font-display font-bold mb-1 md:mb-2">
+                    The Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Payments</span>
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-[9px] md:text-xs text-muted-foreground leading-snug mb-2 md:mb-3 flex-1">
+                    We're proud to embrace the digital economy. Pay for your painting project with Bitcoin, Ethereum, and other cryptocurrencies.
+                  </p>
+                  
+                  {/* Features */}
+                  <div className="space-y-1 mb-2 md:mb-3">
+                    <div className="flex items-center gap-1.5 text-[8px] md:text-[10px] text-muted-foreground">
+                      <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 flex-shrink-0" />
+                      <span>Instant, secure transactions</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[8px] md:text-[10px] text-muted-foreground">
+                      <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 flex-shrink-0" />
+                      <span>No bank delays or fees</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[8px] md:text-[10px] text-muted-foreground">
+                      <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 flex-shrink-0" />
+                      <span>Tech-forward innovation</span>
                     </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm md:text-lg font-bold">We Accept Crypto!</h3>
-                    <p className="text-[10px] md:text-xs text-muted-foreground">Pay with Bitcoin, Ethereum & more</p>
+                  
+                  {/* CTA */}
+                  <div className="flex items-center gap-1 text-orange-400 text-[9px] md:text-xs font-medium">
+                    <span>Learn More</span>
+                    <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
               </GlassCard>
-            </a>
+            </button>
           </BentoItem>
 
           {/* 10. Fan Deck Visual - Opens Color Selector Modal */}
@@ -579,6 +625,10 @@ export default function Home() {
       <ContactModal
         isOpen={contactOpen}
         onClose={() => setContactOpen(false)}
+      />
+      <CryptoPaymentModal
+        isOpen={cryptoModalOpen}
+        onClose={() => setCryptoModalOpen(false)}
       />
       <PWAInstallPrompt />
     </PageLayout>
