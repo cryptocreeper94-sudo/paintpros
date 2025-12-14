@@ -123,6 +123,9 @@
   * {
     @apply border-border;
   }
+  html {
+    font-size: 18px; /* Increased base font size for better readability */
+  }
   body {
     @apply font-body antialiased bg-background text-foreground;
   }
@@ -133,7 +136,7 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl;
+    @apply bg-card/95 dark:bg-black/20 backdrop-blur-xl border border-border dark:border-white/10 shadow-xl;
   }
   
   .text-glow {
@@ -144,6 +147,15 @@
     @apply relative overflow-hidden bg-white/10 hover:bg-white/20 active:bg-white/30 
            backdrop-blur-md border border-white/20 transition-all duration-300
            shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-[0_0_25px_rgba(197,160,89,0.3)];
+  }
+
+  /* Theme-aware text - dark cyan in light mode, white in dark mode */
+  .text-theme-heading {
+    @apply text-cyan-700 dark:text-white;
+  }
+  
+  .text-theme-body {
+    @apply text-cyan-800 dark:text-gray-100;
   }
 
   /* Mobile scroll fixes */
