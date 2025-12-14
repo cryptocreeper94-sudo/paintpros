@@ -555,6 +555,7 @@ export type RoomScan = typeof roomScans.$inferSelect;
 // Page Views Table - Track all page visits
 export const pageViews = pgTable("page_views", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("npp"), // Tenant/client identifier (npp, demo, etc.)
   page: text("page").notNull(), // /home, /services, /estimate, etc.
   referrer: text("referrer"), // Where they came from
   userAgent: text("user_agent"),
