@@ -149,7 +149,7 @@ export default function Home() {
               data-testid="button-solana-verified"
             >
               <GlassCard 
-                className="p-2 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full max-h-[60px] md:max-h-none bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
+                className="p-2 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full max-h-[90px] md:max-h-none bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
                 hoverEffect
                 glow
               >
