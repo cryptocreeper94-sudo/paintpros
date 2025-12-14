@@ -16,9 +16,9 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 const LICENSING_TIERS = [
   { 
     tier: "Starter", 
-    price: "$249", 
+    price: "$349", 
     period: "/mo",
-    setup: "$3,500", 
+    setup: "$5,000", 
     target: "Solo contractors, 1 location",
     popular: false,
     features: [
@@ -27,13 +27,13 @@ const LICENSING_TIERS = [
       "Basic lead capture & CRM",
       "Email support (2 business day response)",
     ],
-    addons: ["Blockchain stamping available ($49/mo)"]
+    addons: ["Blockchain stamping available ($69/mo)"]
   },
   { 
     tier: "Professional", 
-    price: "$399", 
+    price: "$549", 
     period: "/mo",
-    setup: "$5,000", 
+    setup: "$7,000", 
     target: "Growing painters, 1-3 locations",
     popular: true,
     features: [
@@ -48,9 +48,9 @@ const LICENSING_TIERS = [
   },
   { 
     tier: "Franchise Core", 
-    price: "$599", 
-    period: "/mo + $75/loc",
-    setup: "$7,500", 
+    price: "$799", 
+    period: "/mo + $99/loc",
+    setup: "$10,000", 
     target: "Multi-location (5+ sites)",
     popular: false,
     features: [
@@ -65,9 +65,9 @@ const LICENSING_TIERS = [
   },
   { 
     tier: "Enterprise", 
-    price: "$999", 
+    price: "$1,399", 
     period: "/mo base",
-    setup: "$12,000", 
+    setup: "$15,000", 
     target: "Large franchises",
     popular: false,
     features: [

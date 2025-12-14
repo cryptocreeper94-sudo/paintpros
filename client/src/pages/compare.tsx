@@ -20,7 +20,7 @@ interface Competitor {
 const competitors: Competitor[] = [
   {
     name: "PaintPros.io",
-    pricing: "$299/mo",
+    pricing: "$349/mo",
     tagline: "Built for painters, by painters",
     features: {
       instantEstimates: true,
@@ -36,7 +36,7 @@ const competitors: Competitor[] = [
       customBranding: true,
       analyticsReports: true,
       franchiseReady: true,
-      setupFee: "$0",
+      setupFee: "$5,000",
       contractLength: "Month-to-month",
     },
   },

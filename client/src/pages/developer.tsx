@@ -852,30 +852,30 @@ LICENSING TIERS
 
 Tier                    Monthly         Setup Fee    Target Customer
 ──────────────────────────────────────────────────────────────────
-Starter                 $2,500/mo       $3,500       Solo contractors, 1 location
-Professional            $4,000/mo       $5,500       Growing painters, 1-3 locations
-Franchise Core          $6,500/mo + $750/loc  $10,000  Multi-location (5+ sites)
-Enterprise White-Label  $12,000/mo base $20,000      Large franchises
+Starter                 $349/mo         $5,000       Solo contractors, 1 location
+Professional            $549/mo         $7,000       Growing painters, 1-3 locations
+Franchise Core          $799/mo + $99/loc  $10,000   Multi-location (5+ sites)
+Enterprise White-Label  $1,399/mo base  $15,000      Large franchises
 
 FEATURE MATRIX
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-STARTER ($2,500/month)
+STARTER ($349/month)
 • White-label website with Bento Grid design
 • Interactive estimator tool
 • Basic lead capture & CRM
 • Email support (2 business day response)
-• Blockchain stamping add-on ($49/mo)
+• Blockchain stamping add-on ($69/mo)
 
-PROFESSIONAL ($4,000/month)
-• Everything in Essentials
+PROFESSIONAL ($549/month)
+• Everything in Starter
 • Full analytics dashboard
 • Role-based dashboards (Owner, Admin, Area Manager)
 • Phone support (24-hour response)
 • 2 strategy sessions per year
 • Blockchain stamping included
 
-FRANCHISE CORE ($6,500/month + $750/location)
+FRANCHISE CORE ($799/month + $99/location)
 • Everything in Professional
 • Multi-tenant management console
 • Shared asset libraries
@@ -883,13 +883,13 @@ FRANCHISE CORE ($6,500/month + $750/location)
 • Dedicated account manager
 • Compliance & audit trail
 
-ENTERPRISE WHITE-LABEL ($12,000/month base)
+ENTERPRISE WHITE-LABEL ($1,399/month base)
 • Full brand suppression
 • API priority access
 • Co-branded marketing assets
 • SLA guarantees (99.9% uptime)
 • Custom contract terms
-• Additional locations: $500/location
+• Additional locations: $99/location
 
 SUPPORT PACKAGES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -901,11 +901,11 @@ Enterprise SLA      $1,500/mo   4 hours critical   Dedicated CSM, monthly roadma
 CUSTOMIZATION MENU
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Branding Refresh            $1,800          2 weeks
-Custom Theme/Layout Pack    $2,500          2-3 weeks
-Feature Module Build        $3,500-$8,000   4-8 weeks
-Third-Party Integration     $185/hr         Varies
-Data Migration              $750/system     1-2 weeks
+Branding Refresh            $2,000          1 week
+Custom Theme/Layout Pack    $3,500          2 weeks
+Feature Module Build        $5,000-$10,000  3-6 weeks
+Third-Party Integration     $150/hr         Varies
+Data Migration              $1,000/system   1 week
 Franchise Rollout Workshop  $4,500          2-day onsite
 
 VOLUME DISCOUNTS
@@ -919,20 +919,20 @@ VOLUME DISCOUNTS
 UNIT ECONOMICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Gross Margin                65%
+Gross Margin                85%
 Infrastructure Cost         ~$45/tenant/month
-LTV:CAC Ratio              22:1
-ARPU                       $249/month
-3-Year Customer LTV        $8,964
+LTV:CAC Ratio              30:1
+ARPU                       $349/month + $5,000 setup
+3-Year Customer LTV        $17,564
 CAC (projected)            $400
 
 REVENUE PROJECTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Year    Customers    MRR      Annual Revenue    Net Profit
-2025    100          $25K     $300K             $120K
-2026    500          $125K    $1.5M             $900K
-2027    2,000        $500K    $6M               $3.6M
+2025    100          $35K     $920K             $350K
+2026    500          $175K    $4.6M             $2M
+2027    2,000        $700K    $14M              $7M
 
 MARKET OPPORTUNITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -973,10 +973,10 @@ Ecosystem: https://darkwavestudios.io`;
         </h3>
         <div className="grid gap-2">
           {[
-            { tier: "Starter", price: "$2,500/mo", setup: "$3,500", target: "Solo contractors" },
-            { tier: "Professional", price: "$4,000/mo", setup: "$5,500", target: "1-3 locations" },
-            { tier: "Franchise Core", price: "$6,500/mo + $750/loc", setup: "$10,000", target: "5+ sites" },
-            { tier: "Enterprise", price: "$12,000/mo base", setup: "$20,000", target: "Large franchises" },
+            { tier: "Starter", price: "$349/mo", setup: "$5,000", target: "Solo contractors" },
+            { tier: "Professional", price: "$549/mo", setup: "$7,000", target: "1-3 locations" },
+            { tier: "Franchise Core", price: "$799/mo + $99/loc", setup: "$10,000", target: "5+ sites" },
+            { tier: "Enterprise", price: "$1,399/mo base", setup: "$15,000", target: "Large franchises" },
           ].map((item) => (
             <div key={item.tier} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
               <div>
@@ -1001,19 +1001,19 @@ Ecosystem: https://darkwavestudios.io`;
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Gross Margin</span>
-              <span className="font-mono text-green-400">65%</span>
+              <span className="font-mono text-green-400">85%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">LTV:CAC</span>
-              <span className="font-mono text-blue-400">22:1</span>
+              <span className="font-mono text-blue-400">30:1</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">ARPU</span>
-              <span className="font-mono text-accent">$249/mo</span>
+              <span className="font-mono text-accent">$349/mo</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">3yr LTV</span>
-              <span className="font-mono text-purple-400">$8,964</span>
+              <span className="font-mono text-purple-400">$17,564</span>
             </div>
           </div>
         </div>

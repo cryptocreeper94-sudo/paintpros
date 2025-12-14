@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const PRICING_TIERS = [
-  { tier: "Starter", price: "$249/mo", setup: "$3,500", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
-  { tier: "Professional", price: "$399/mo", setup: "$5,000", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
-  { tier: "Franchise Core", price: "$599/mo + $75/loc", setup: "$7,500", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
-  { tier: "Enterprise", price: "$999/mo base", setup: "$12,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
+  { tier: "Starter", price: "$349/mo", setup: "$5,000", target: "Solo contractors", features: ["White-label website", "Interactive estimator", "Basic CRM", "Email support"] },
+  { tier: "Professional", price: "$549/mo", setup: "$7,000", target: "1-3 locations", features: ["Everything in Starter", "Full analytics", "Role-based dashboards", "Phone support", "Blockchain stamping"] },
+  { tier: "Franchise Core", price: "$799/mo + $99/loc", setup: "$10,000", target: "5+ sites", features: ["Everything in Pro", "Multi-tenant console", "Orbit integrations", "Dedicated manager"] },
+  { tier: "Enterprise", price: "$1,399/mo base", setup: "$15,000", target: "Large franchises", features: ["Full brand suppression", "API priority", "Custom SLAs", "White-glove onboarding"] },
 ];
 
 const PROJECTIONS = [
@@ -53,10 +53,10 @@ LICENSING TIERS
 
 Tier                    Monthly             Setup Fee    Target
 ─────────────────────────────────────────────────────────────
-Starter                 $249/mo             $3,500       Solo contractors
-Professional            $399/mo             $5,000       1-3 locations
-Franchise Core          $599/mo + $75/loc   $7,500       5+ sites
-Enterprise White-Label  $999/mo base        $12,000      Large franchises
+Starter                 $349/mo             $5,000       Solo contractors
+Professional            $549/mo             $7,000       1-3 locations
+Franchise Core          $799/mo + $99/loc   $10,000      5+ sites
+Enterprise White-Label  $1,399/mo base      $15,000      Large franchises
 
 * Custom development beyond base platform priced separately
 
@@ -65,17 +65,17 @@ UNIT ECONOMICS
 
 Gross Margin:           85% (low infrastructure cost)
 LTV:CAC Ratio:          30:1
-ARPU:                   $249/month + $3,500 setup
-3-Year Customer LTV:    $12,464 ($3,500 + 36 x $249)
+ARPU:                   $349/month + $5,000 setup
+3-Year Customer LTV:    $17,564 ($5,000 + 36 x $349)
 CAC (projected):        $400
 
 REVENUE PROJECTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Year    Customers    MRR        Revenue (MRR + Setup)    Net Profit
-2025    100          $25K       $650K                    $200K
-2026    500          $125K      $2.9M                    $1.2M
-2027    2,000        $500K      $10M                     $5M
+2025    100          $35K       $920K                    $350K
+2026    500          $175K      $4.6M                    $2M
+2027    2,000        $700K      $14M                     $7M
 
 MARKET OPPORTUNITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -94,7 +94,7 @@ Jobber            $29-$629/mo          Minimal      Per-user CRM
 ServiceTitan      $125-$400/user/mo    $5K-$30K     Enterprise FSM
 HouseCall Pro     $49-$169/mo          Minimal      Per-user scheduling
 PaintScout        $39-$199/mo          None         Estimating only
-PaintPros.io      $249/mo              $3,500       White-Label Platform
+PaintPros.io      $349/mo              $5,000       White-Label Platform
 
 KEY DIFFERENTIATORS
 • White-label branded website (competitors: none)
@@ -113,7 +113,7 @@ Traditional approach (Jobber + custom website + agency):
 • Ongoing development: $500-2K/mo
 • Total: ~$1,500-3,000/mo + coordination overhead
 
-PaintPros.io: $249/mo + $3,500 setup (all-inclusive platform)
+PaintPros.io: $349/mo + $5,000 setup (all-inclusive platform)
 
 DARKWAVE STUDIOS ECOSYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

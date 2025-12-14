@@ -97,28 +97,29 @@ Empower painting professionals with cutting-edge technology that streamlines ope
 ### Revenue Streams
 
 #### 1. SaaS Subscriptions
-| Tier | Monthly Price | Features |
-|------|---------------|----------|
-| **Starter** | $99/month | Website, basic estimator, email support |
-| **Professional** | $249/month | + CRM, analytics, phone support |
-| **Enterprise** | $499/month | + API access, blockchain, white-glove onboarding |
-| **Franchise** | Custom | Multi-location, volume pricing |
+| Tier | Monthly Price | Setup Fee | Features |
+|------|---------------|-----------|----------|
+| **Starter** | $349/month | $5,000 | Website, basic estimator, email support |
+| **Professional** | $549/month | $7,000 | + CRM, analytics, phone support, blockchain |
+| **Franchise Core** | $799/month + $99/loc | $10,000 | Multi-location, dedicated manager |
+| **Enterprise** | $1,399/month | $15,000 | Full brand suppression, custom SLAs |
 
 #### 2. Setup Fees
-- Standard Setup: $499 (one-time)
-- Premium Setup: $999 (includes branding consultation)
-- Enterprise Setup: $2,499 (full customization)
+- Starter Setup: $5,000 (one-time)
+- Professional Setup: $7,000 (includes full onboarding)
+- Enterprise Setup: $15,000 (full customization)
 
 #### 3. Add-On Services
 - Custom integrations: $150/hour
-- Training sessions: $199/session
-- Marketing consultation: $499/month
+- Training sessions: $299/session
+- Marketing consultation: $699/month
+- Blockchain stamping add-on: $69/month (Starter tier)
 
 ### Unit Economics
 - **Customer Acquisition Cost (CAC):** $400 (projected)
-- **Average Revenue Per User (ARPU):** $249/month
-- **Customer Lifetime Value (LTV):** $8,964 (3-year average)
-- **LTV:CAC Ratio:** 22:1
+- **Average Revenue Per User (ARPU):** $349/month + $5,000 setup
+- **Customer Lifetime Value (LTV):** $17,564 (3-year average)
+- **LTV:CAC Ratio:** 44:1
 
 ---
 

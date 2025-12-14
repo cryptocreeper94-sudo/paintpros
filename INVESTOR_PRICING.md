@@ -11,10 +11,10 @@
 
 | Tier | Monthly | Setup Fee | Target Customer |
 |------|---------|-----------|-----------------|
-| **Starter** | $249/mo | $3,500 | Solo contractors, 1 location |
-| **Professional** | $399/mo | $5,000 | Growing painters, 1-3 locations |
-| **Franchise Core** | $599/mo + $75/location | $7,500 | Multi-location (5+ sites) |
-| **Enterprise White-Label** | $999/mo base | $12,000 | Large franchises |
+| **Starter** | $349/mo | $5,000 | Solo contractors, 1 location |
+| **Professional** | $549/mo | $7,000 | Growing painters, 1-3 locations |
+| **Franchise Core** | $799/mo + $99/location | $10,000 | Multi-location (5+ sites) |
+| **Enterprise White-Label** | $1,399/mo base | $15,000 | Large franchises |
 
 *Custom development beyond base platform priced separately.*
 
@@ -22,14 +22,14 @@
 
 ## Feature Matrix by Tier
 
-### Starter ($249/month + $3,500 setup)
+### Starter ($349/month + $5,000 setup)
 - White-label website with Bento Grid design
 - Interactive estimator tool
 - Basic lead capture & CRM
 - Email support (2 business day response)
-- Blockchain stamping available as add-on ($49/mo)
+- Blockchain stamping available as add-on ($69/mo)
 
-### Professional ($399/month + $5,000 setup)
+### Professional ($549/month + $7,000 setup)
 - Everything in Starter
 - Full analytics dashboard with real-time tracking
 - Role-based dashboards (Owner, Admin, Area Manager)
@@ -37,7 +37,7 @@
 - 2 strategy sessions per year
 - Blockchain stamping included
 
-### Franchise Core ($599/month + $75/location + $7,500 setup)
+### Franchise Core ($799/month + $99/location + $10,000 setup)
 - Everything in Professional
 - Multi-tenant management console
 - Shared asset libraries across locations
@@ -45,7 +45,7 @@
 - Dedicated account manager
 - Compliance & audit trail
 
-### Enterprise White-Label ($999/month base + $12,000 setup)
+### Enterprise White-Label ($1,399/month base + $15,000 setup)
 - Full brand suppression (Orbit/PaintPros branding removed)
 - API priority access
 - Co-branded marketing assets
@@ -73,8 +73,8 @@
 | **Gross Margin** | 85% (low infrastructure cost) |
 | **Infrastructure Cost** | ~$45/tenant/month |
 | **LTV:CAC Ratio** | 30:1 |
-| **Average Revenue Per User (ARPU)** | $249/month + $3,500 setup |
-| **Customer Lifetime Value (3-year)** | $12,464 |
+| **Average Revenue Per User (ARPU)** | $349/month + $5,000 setup |
+| **Customer Lifetime Value (3-year)** | $17,564 |
 | **Customer Acquisition Cost** | $400 (projected) |
 
 ---
@@ -83,9 +83,9 @@
 
 | Year | Customers | MRR | Revenue (MRR + Setup) | Net Profit |
 |------|-----------|-----|-----------------------|------------|
-| 2025 | 100 | $25K | $650K | $200K |
-| 2026 | 500 | $125K | $2.9M | $1.2M |
-| 2027 | 2,000 | $500K | $10M | $5M |
+| 2025 | 100 | $35K | $920K | $350K |
+| 2026 | 500 | $175K | $4.6M | $2M |
+| 2027 | 2,000 | $700K | $14M | $7M |
 
 ---
 
@@ -97,7 +97,7 @@
 | ServiceTitan | $125-$400/user/mo | $5K-$30K | Enterprise FSM |
 | HouseCall Pro | $49-$169/mo | Minimal | Per-user scheduling |
 | PaintScout | $39-$199/mo | None | Estimating only |
-| **PaintPros.io** | **$249/mo** | **$3,500** | **White-Label Platform** |
+| **PaintPros.io** | **$349/mo** | **$5,000** | **White-Label Platform** |
 
 ### Key Differentiators
 - White-label branded website (competitors: none)
@@ -118,7 +118,7 @@ Traditional approach (Jobber + custom website + agency):
 - Ongoing development: $500-2K/mo
 - **Total: ~$1,500-3,000/mo + coordination overhead**
 
-**PaintPros.io: $249/mo + $3,500 setup (all-inclusive platform)**
+**PaintPros.io: $349/mo + $5,000 setup (all-inclusive platform)**
 
 ---
 
