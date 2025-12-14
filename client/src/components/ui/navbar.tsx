@@ -65,7 +65,7 @@ export function Navbar() {
           data-testid="text-header-title"
         >
           {tenant.id === "demo" 
-            ? "Welcome to PaintPros.io - Industry first Solana verified Commercial/Residential turnkey painting company software"
+            ? "PaintPros.io - Industry first Solana Verified Owner Software"
             : tenant.name
           }
         </div>
