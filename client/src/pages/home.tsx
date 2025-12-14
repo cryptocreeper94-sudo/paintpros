@@ -441,11 +441,11 @@ export default function Home() {
               className="block h-full w-full text-left"
               data-testid="button-color-selector"
             >
-              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full">
+              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full bg-white dark:bg-transparent">
                 <img 
                   src={fanDeck} 
                   alt="Color Selection - Click to explore paint colors" 
-                  className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
+                  className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3 mix-blend-multiply dark:mix-blend-normal"
                 />
                 <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-[10px] md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                   Colors
