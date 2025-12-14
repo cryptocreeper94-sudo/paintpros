@@ -13,14 +13,15 @@ export function PageLayout({ children }: PageLayoutProps) {
   
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
-      {/* Watermark background - paint roller */}
+      {/* Watermark background - paint roller (temporarily disabled, awaiting new image)
       <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center">
         <img 
           src={paintRollerWatermark} 
           alt="" 
-          className="w-[75vw] max-w-4xl h-auto opacity-30 dark:opacity-25"
+          className="w-[75vw] max-w-4xl h-auto opacity-15 dark:opacity-15"
         />
       </div>
+      */}
       <Navbar />
       {location !== "/" && (
         <div className="fixed top-16 left-4 z-30 hidden md:flex gap-2">
