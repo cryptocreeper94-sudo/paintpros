@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GlassCard } from "@/components/ui/glass-card";
+import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
 import { 
   BarChart3, Users, Eye, Globe, Smartphone, Monitor, Tablet,
-  TrendingUp, RefreshCw, Zap, Building2, ChevronDown
+  TrendingUp, RefreshCw, Zap, Building2, ChevronDown, Clock, ArrowUpRight
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 
@@ -169,129 +170,173 @@ function TenantDashboardContent({ tenantId, tenantInfo }: { tenantId: string; te
         </GlassCard>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <GlassCard className="p-4">
-          <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-400" />
-            Daily Traffic (30 Days)
-          </h3>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.dailyTraffic}>
-                <defs>
-                  <linearGradient id={`colorViews-${tenantId}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={tenantInfo.color} stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor={tenantInfo.color} stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} stroke="#666" />
-                <YAxis tick={{ fontSize: 10 }} stroke="#666" />
-                <Tooltip 
-                  contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                  labelStyle={{ color: '#fff' }}
-                />
-                <Area type="monotone" dataKey="views" stroke={tenantInfo.color} fillOpacity={1} fill={`url(#colorViews-${tenantId})`} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-4">
-          <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-gold-400" />
-            Hourly Traffic (Today)
-          </h3>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={hourlyData}>
-                <XAxis dataKey="hour" tick={{ fontSize: 9 }} tickFormatter={(v) => v.replace(':00', '')} stroke="#666" />
-                <YAxis tick={{ fontSize: 10 }} stroke="#666" />
-                <Tooltip 
-                  contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                />
-                <Bar dataKey="views" fill={tenantInfo.color} radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <GlassCard className="p-4">
-          <h3 className="text-sm font-medium mb-3">Top Pages</h3>
-          <div className="space-y-2">
-            {data.topPages.slice(0, 5).map((page, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate max-w-[150px]">{page.page}</span>
-                <span className="font-medium">{page.views}</span>
+      <BentoGrid className="gap-3">
+        <BentoItem colSpan={6} rowSpan={2}>
+          <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+            <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 via-transparent to-accent/5" glow>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-accent/20 flex items-center justify-center">
+                  <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
+                </div>
+                <h3 className="text-sm font-display font-bold">Daily Traffic (30 Days)</h3>
               </div>
-            ))}
-            {data.topPages.length === 0 && (
-              <div className="text-xs text-muted-foreground">No data yet</div>
-            )}
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-4">
-          <h3 className="text-sm font-medium mb-3">Top Referrers</h3>
-          <div className="space-y-2">
-            {data.topReferrers.slice(0, 5).map((ref, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground truncate max-w-[150px]">{ref.referrer}</span>
-                <span className="font-medium">{ref.count}</span>
-              </div>
-            ))}
-            {data.topReferrers.length === 0 && (
-              <div className="text-xs text-muted-foreground">No referrer data</div>
-            )}
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-4">
-          <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-            Device Breakdown
-          </h3>
-          {totalDevices > 0 ? (
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20">
+              <div className="h-44">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={deviceData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={20}
-                      outerRadius={35}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {deviceData.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
+                  <AreaChart data={data.dailyTraffic}>
+                    <defs>
+                      <linearGradient id={`colorViews-${tenantId}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={tenantInfo.color} stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor={tenantInfo.color} stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} stroke="#666" />
+                    <YAxis tick={{ fontSize: 10 }} stroke="#666" />
+                    <Tooltip 
+                      contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                      labelStyle={{ color: '#fff' }}
+                    />
+                    <Area type="monotone" dataKey="views" stroke={tenantInfo.color} fillOpacity={1} fill={`url(#colorViews-${tenantId})`} />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
-              <div className="space-y-1 text-xs">
-                <div className="flex items-center gap-2">
-                  <Monitor className="w-3 h-3 text-amber-500" />
-                  <span>Desktop: {data.deviceBreakdown.desktop}</span>
+            </GlassCard>
+          </motion.div>
+        </BentoItem>
+
+        <BentoItem colSpan={6} rowSpan={2}>
+          <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+            <GlassCard className="h-full p-4 bg-gradient-to-br from-gold-400/10 via-transparent to-orange-500/5" glow>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gold-400/20 to-orange-500/20 flex items-center justify-center">
+                  <Clock className="w-3.5 h-3.5 text-gold-400" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Smartphone className="w-3 h-3 text-blue-500" />
-                  <span>Mobile: {data.deviceBreakdown.mobile}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Tablet className="w-3 h-3 text-green-500" />
-                  <span>Tablet: {data.deviceBreakdown.tablet}</span>
-                </div>
+                <h3 className="text-sm font-display font-bold">Hourly Traffic (Today)</h3>
               </div>
-            </div>
-          ) : (
-            <div className="text-xs text-muted-foreground">No device data</div>
-          )}
-        </GlassCard>
-      </div>
+              <div className="h-44">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={hourlyData}>
+                    <XAxis dataKey="hour" tick={{ fontSize: 9 }} tickFormatter={(v) => v.replace(':00', '')} stroke="#666" />
+                    <YAxis tick={{ fontSize: 10 }} stroke="#666" />
+                    <Tooltip 
+                      contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                    />
+                    <Bar dataKey="views" fill={tenantInfo.color} radius={[2, 2, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </BentoItem>
+
+        <BentoItem colSpan={4} rowSpan={2}>
+          <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
+            <GlassCard className="h-full p-4 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/5" glow>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                  <Eye className="w-3.5 h-3.5 text-purple-400" />
+                </div>
+                <h3 className="text-sm font-display font-bold">Top Pages</h3>
+              </div>
+              <div className="space-y-2 max-h-[140px] overflow-y-auto custom-scrollbar">
+                {data.topPages.slice(0, 5).map((page, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs p-2 rounded-lg bg-white/5 border border-white/5">
+                    <span className="text-muted-foreground truncate max-w-[100px]">{page.page === "/" ? "Home" : page.page}</span>
+                    <span className="font-bold text-purple-400">{page.views}</span>
+                  </div>
+                ))}
+                {data.topPages.length === 0 && (
+                  <div className="text-xs text-muted-foreground text-center py-4">No data yet</div>
+                )}
+              </div>
+            </GlassCard>
+          </motion.div>
+        </BentoItem>
+
+        <BentoItem colSpan={4} rowSpan={2}>
+          <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
+            <GlassCard className="h-full p-4 bg-gradient-to-br from-green-500/10 via-transparent to-teal-500/5" glow>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 flex items-center justify-center">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-green-400" />
+                </div>
+                <h3 className="text-sm font-display font-bold">Top Referrers</h3>
+              </div>
+              <div className="space-y-2 max-h-[140px] overflow-y-auto custom-scrollbar">
+                {data.topReferrers.slice(0, 5).map((ref, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs p-2 rounded-lg bg-white/5 border border-white/5">
+                    <span className="text-muted-foreground truncate max-w-[100px]">{ref.referrer}</span>
+                    <span className="font-bold text-green-400">{ref.count}</span>
+                  </div>
+                ))}
+                {data.topReferrers.length === 0 && (
+                  <div className="text-xs text-muted-foreground text-center py-4">No referrer data</div>
+                )}
+              </div>
+            </GlassCard>
+          </motion.div>
+        </BentoItem>
+
+        <BentoItem colSpan={4} rowSpan={2}>
+          <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
+            <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/5" glow>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
+                  <Smartphone className="w-3.5 h-3.5 text-blue-400" />
+                </div>
+                <h3 className="text-sm font-display font-bold">Devices</h3>
+              </div>
+              {totalDevices > 0 ? (
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={deviceData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={20}
+                          outerRadius={35}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {deviceData.map((entry, i) => (
+                            <Cell key={i} fill={entry.color} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded bg-white/5">
+                      <div className="flex items-center gap-2">
+                        <Monitor className="w-3 h-3 text-amber-500" />
+                        <span>Desktop</span>
+                      </div>
+                      <span className="font-bold text-amber-500">{data.deviceBreakdown.desktop}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded bg-white/5">
+                      <div className="flex items-center gap-2">
+                        <Smartphone className="w-3 h-3 text-blue-500" />
+                        <span>Mobile</span>
+                      </div>
+                      <span className="font-bold text-blue-500">{data.deviceBreakdown.mobile}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded bg-white/5">
+                      <div className="flex items-center gap-2">
+                        <Tablet className="w-3 h-3 text-green-500" />
+                        <span>Tablet</span>
+                      </div>
+                      <span className="font-bold text-green-500">{data.deviceBreakdown.tablet}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground text-center py-4">No device data</div>
+              )}
+            </GlassCard>
+          </motion.div>
+        </BentoItem>
+      </BentoGrid>
     </div>
   );
 }
