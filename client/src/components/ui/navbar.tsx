@@ -38,7 +38,7 @@ export function Navbar() {
         {/* Left: Hamburger Menu - offset 60px from left */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[60px] -mt-[20px]",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[85px] -mt-[20px]",
             tenant.id === "demo" ? "p-1.5" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
@@ -60,7 +60,7 @@ export function Navbar() {
         
         {/* Center: Title - takes up most width */}
         <div 
-          className="flex-1 text-center text-white tracking-wide text-xl md:text-2xl lg:text-3xl mx-4 leading-tight"
+          className="flex-1 text-center text-white tracking-wide text-xl md:text-2xl lg:text-3xl mx-4 leading-tight -ml-[60px]"
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
