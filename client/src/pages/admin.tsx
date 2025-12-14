@@ -552,7 +552,7 @@ export default function Admin() {
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <RoomScannerCard locked={true} accentColor="accent" />
+            <RoomScannerCard locked={false} accentColor="accent" />
           </BentoItem>
         </BentoGrid>
       </main>

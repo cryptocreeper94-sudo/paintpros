@@ -94,8 +94,8 @@ export default function Estimate() {
   } | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
 
-  // Feature is locked for beta
-  const SCANNER_LOCKED = true;
+  // Feature is now enabled
+  const SCANNER_LOCKED = false;
 
   // Photo upload state
   interface UploadedPhoto {

@@ -585,7 +585,7 @@ export default function Owner() {
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <RoomScannerCard locked={true} accentColor="gold-400" />
+            <RoomScannerCard locked={false} accentColor="gold-400" />
           </BentoItem>
 
           <BentoItem colSpan={8} rowSpan={1}>

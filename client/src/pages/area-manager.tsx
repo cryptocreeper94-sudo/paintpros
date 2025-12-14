@@ -306,7 +306,7 @@ export default function AreaManager() {
             </BentoItem>
 
             <BentoItem colSpan={4} rowSpan={1}>
-              <RoomScannerCard locked={true} accentColor="teal-400" />
+              <RoomScannerCard locked={false} accentColor="teal-400" />
             </BentoItem>
           </BentoGrid>
         </div>

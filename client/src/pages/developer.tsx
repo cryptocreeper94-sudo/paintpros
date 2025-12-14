@@ -1920,7 +1920,7 @@ export default function Developer() {
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
-            <RoomScannerCard locked={true} accentColor="purple-400" />
+            <RoomScannerCard locked={false} accentColor="purple-400" />
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>
