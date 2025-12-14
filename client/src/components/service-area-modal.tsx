@@ -42,19 +42,17 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
         data-testid="modal-service-area"
       >
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
         
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25 }}
-          className="relative glass-panel rounded-2xl border border-accent/30 max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
+          className="relative glass-panel rounded-2xl border border-accent/30 max-w-4xl w-full max-h-[90vh] shadow-2xl my-auto"
         >
           <button
             onClick={onClose}
@@ -64,7 +62,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
             <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
-          <div className="overflow-y-auto max-h-[90vh]">
+          <div className="overflow-y-auto max-h-[90vh] overscroll-contain touch-pan-y">
             {/* Large landscape map on mobile */}
             <div className="relative h-[50vw] min-h-[200px] md:h-64 overflow-hidden">
               <img 

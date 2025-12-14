@@ -145,4 +145,10 @@
            backdrop-blur-md border border-white/20 transition-all duration-300
            shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-[0_0_25px_rgba(197,160,89,0.3)];
   }
+
+  /* Mobile scroll fixes */
+  .touch-pan-y {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
 }
