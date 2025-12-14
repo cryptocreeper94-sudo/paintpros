@@ -17,6 +17,7 @@ import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png"
 import warrantyImage from "@assets/generated_images/warranty_shield_certificate_badge.png";
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
+import googleRatingImage from "@assets/generated_images/five_star_google_rating.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
@@ -495,8 +496,13 @@ export default function Home() {
                 className="block h-full"
                 data-testid="link-google-reviews"
               >
-                <GlassCard className="p-2 md:p-8 bg-gradient-to-br from-accent/10 to-transparent border-accent/20 cursor-pointer hover:border-accent/40 transition-colors h-full" glow>
-                  <div className="flex items-center gap-2 md:gap-4 h-full">
+                <GlassCard className="p-2 md:p-8 bg-gradient-to-br from-accent/10 to-transparent border-accent/20 cursor-pointer hover:border-accent/40 transition-colors h-full relative overflow-hidden" glow>
+                  <img 
+                    src={googleRatingImage} 
+                    alt="Five star rating" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-20"
+                  />
+                  <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
                     <div className="flex gap-0.5">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`w-3 h-3 md:w-6 md:h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-accent text-accent" : "text-accent/30"}`} />
