@@ -169,7 +169,7 @@ function LicensingPricing() {
                       </ul>
                       
                       {tier.addons.length > 0 && (
-                        <div className="pt-3 border-t border-white/10">
+                        <div className="pt-3 border-t border-border dark:border-white/10">
                           {tier.addons.map((addon, i) => (
                             <p key={i} className="text-xs text-muted-foreground">+ {addon}</p>
                           ))}
@@ -179,7 +179,7 @@ function LicensingPricing() {
                     
                     <a href="/estimate" className="mt-4">
                       <FlipButton 
-                        className={`w-full ${tier.popular ? '' : 'bg-white/10 hover:bg-white/20'}`}
+                        className={`w-full ${tier.popular ? '' : 'bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20'}`}
                         data-testid={`button-select-${tier.tier.toLowerCase()}`}
                       >
                         Get Started <ArrowRight className="w-4 h-4 ml-2" />
@@ -532,10 +532,10 @@ function ServicePricing({ tenant }: { tenant: any }) {
                 Large commercial projects receive custom pricing based on scope, timeline, and specific requirements. Contact us for a tailored quote.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full bg-white/10 text-xs">Office Buildings</span>
-                <span className="px-3 py-1 rounded-full bg-white/10 text-xs">Retail Spaces</span>
-                <span className="px-3 py-1 rounded-full bg-white/10 text-xs">Warehouses</span>
-                <span className="px-3 py-1 rounded-full bg-white/10 text-xs">Multi-Unit Properties</span>
+                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Office Buildings</span>
+                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Retail Spaces</span>
+                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Warehouses</span>
+                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Multi-Unit Properties</span>
               </div>
             </GlassCard>
           </motion.div>

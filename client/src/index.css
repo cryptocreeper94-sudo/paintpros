@@ -144,18 +144,35 @@
   }
   
   .glass-btn {
-    @apply relative overflow-hidden bg-white/10 hover:bg-white/20 active:bg-white/30 
-           backdrop-blur-md border border-white/20 transition-all duration-300
+    @apply relative overflow-hidden bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 active:bg-black/30 dark:active:bg-white/30 
+           backdrop-blur-md border border-black/20 dark:border-white/20 transition-all duration-300
            shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-[0_0_25px_rgba(197,160,89,0.3)];
   }
 
-  /* Theme-aware text - dark cyan in light mode, white in dark mode */
+  /* Theme-aware text - dark in light mode, white in dark mode */
   .text-theme-heading {
-    @apply text-cyan-700 dark:text-white;
+    @apply text-foreground dark:text-white;
   }
   
   .text-theme-body {
-    @apply text-cyan-800 dark:text-gray-100;
+    @apply text-foreground dark:text-gray-100;
+  }
+
+  /* Theme-aware backgrounds - for replacing bg-white/10 */
+  .bg-theme-overlay {
+    @apply bg-black/5 dark:bg-white/10;
+  }
+  
+  .bg-theme-overlay-hover {
+    @apply hover:bg-black/10 dark:hover:bg-white/20;
+  }
+  
+  .bg-theme-subtle {
+    @apply bg-muted dark:bg-white/5;
+  }
+  
+  .border-theme {
+    @apply border-border dark:border-white/10;
   }
 
   /* Mobile scroll fixes */

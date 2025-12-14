@@ -136,7 +136,7 @@ export default function AreaManager() {
                     placeholder="Enter PIN"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
-                    className="bg-white/5 border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-teal-500/30"
+                    className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-teal-500/30"
                     maxLength={4}
                     data-testid="input-area-manager-pin"
                   />
@@ -193,7 +193,7 @@ export default function AreaManager() {
             {!isDemo && (
               <motion.button
                 onClick={() => setShowPinChangeModal(true)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 data-testid="button-settings"
               >
@@ -301,7 +301,7 @@ export default function AreaManager() {
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <motion.div 
-                      className="bg-white/5 rounded-xl p-3 text-center border border-white/10 cursor-pointer backdrop-blur-sm"
+                      className="bg-black/5 dark:bg-white/5 rounded-xl p-3 text-center border border-border dark:border-white/10 cursor-pointer backdrop-blur-sm"
                       whileHover={hover3DSubtle}
                       data-testid="button-quick-call"
                     >
@@ -312,7 +312,7 @@ export default function AreaManager() {
                       <p className="text-xs text-muted-foreground">Start conversation</p>
                     </motion.div>
                     <motion.div 
-                      className="bg-white/5 rounded-xl p-3 text-center border border-white/10 cursor-pointer backdrop-blur-sm"
+                      className="bg-black/5 dark:bg-white/5 rounded-xl p-3 text-center border border-border dark:border-white/10 cursor-pointer backdrop-blur-sm"
                       whileHover={hover3DSubtle}
                       data-testid="button-quick-email"
                     >
@@ -323,7 +323,7 @@ export default function AreaManager() {
                       <p className="text-xs text-muted-foreground">Follow up</p>
                     </motion.div>
                     <motion.div 
-                      className="bg-white/5 rounded-xl p-3 text-center border border-white/10 cursor-pointer backdrop-blur-sm"
+                      className="bg-black/5 dark:bg-white/5 rounded-xl p-3 text-center border border-border dark:border-white/10 cursor-pointer backdrop-blur-sm"
                       whileHover={hover3DSubtle}
                       data-testid="button-quick-schedule"
                     >

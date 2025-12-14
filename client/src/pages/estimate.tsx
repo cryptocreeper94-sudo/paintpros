@@ -390,7 +390,7 @@ export default function Estimate() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-accent/90 to-amber-500/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/20 pointer-events-auto"
+            className="bg-gradient-to-r from-accent/90 to-amber-500/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-border dark:border-white/20 pointer-events-auto"
           >
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-full bg-black/20">
@@ -435,7 +435,7 @@ export default function Estimate() {
                 <GlassCard className="relative p-5 md:p-8 border-accent/20 overflow-y-auto flex-1 min-h-0" glow>
                   <button
                     onClick={() => setShowEmailModal(false)}
-                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition-colors"
                     data-testid="button-close-email-modal"
                   >
                     <X className="w-5 h-5" />
@@ -457,7 +457,7 @@ export default function Estimate() {
                     </p>
                   </div>
 
-                  <div className="bg-gradient-to-r from-army-green-800/40 to-army-green-700/30 rounded-xl p-4 mb-6 border border-white/10 backdrop-blur-sm">
+                  <div className="bg-gradient-to-r from-army-green-800/40 to-army-green-700/30 rounded-xl p-4 mb-6 border border-border dark:border-white/10 backdrop-blur-sm">
                     <div className="flex items-start gap-3">
                       <Sparkles className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-muted-foreground leading-relaxed">
@@ -476,7 +476,7 @@ export default function Estimate() {
                           placeholder="John"
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
-                          className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                          className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
                           data-testid="input-first-name-capture"
                         />
                       </div>
@@ -488,7 +488,7 @@ export default function Estimate() {
                           placeholder="Smith"
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
-                          className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                          className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
                           data-testid="input-last-name-capture"
                         />
                       </div>
@@ -502,7 +502,7 @@ export default function Estimate() {
                         placeholder="your@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                        className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
                         data-testid="input-email-capture"
                       />
                     </div>
@@ -515,7 +515,7 @@ export default function Estimate() {
                         placeholder="(555) 123-4567"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="bg-white/5 border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                        className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
                         data-testid="input-phone-capture"
                       />
                     </div>
@@ -572,7 +572,7 @@ export default function Estimate() {
                 <GlassCard className="relative p-6 md:p-10 text-center border-green-500/20 overflow-y-auto flex-1 min-h-0" glow>
                   <button
                     onClick={() => setEstimateSubmitted(false)}
-                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition-colors"
                     data-testid="button-close-estimate-modal"
                   >
                     <X className="w-5 h-5" />
@@ -712,7 +712,7 @@ export default function Estimate() {
                     className={`relative min-h-[160px] rounded-2xl overflow-hidden cursor-pointer border-2 transition-all ${
                       jobSelections[service.key as keyof JobSelections]
                         ? 'border-accent shadow-lg shadow-accent/20' 
-                        : 'border-white/10 hover:border-white/30'
+                        : 'border-border dark:border-white/10 hover:border-white/30'
                     }`}
                     onClick={() => setJobSelections(prev => ({ ...prev, [service.key]: !prev[service.key as keyof JobSelections] }))}
                     data-testid={`checkbox-${service.key}`}
@@ -732,7 +732,7 @@ export default function Estimate() {
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
                         jobSelections[service.key as keyof JobSelections]
                           ? 'bg-accent border-2 border-white'
-                          : 'bg-white/10 border-2 border-white/30'
+                          : 'bg-black/5 dark:bg-white/10 border-2 border-white/30'
                       }`}>
                         {jobSelections[service.key as keyof JobSelections] && (
                           <Check className="w-5 h-5 text-white" />
@@ -747,7 +747,7 @@ export default function Estimate() {
                       </div>
                       
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-                        jobSelections[service.key as keyof JobSelections] ? 'bg-white/20' : 'bg-white/10'
+                        jobSelections[service.key as keyof JobSelections] ? 'bg-white/20' : 'bg-black/5 dark:bg-white/10'
                       }`}>
                         <service.icon className="w-6 h-6 text-white" />
                       </div>
@@ -769,7 +769,7 @@ export default function Estimate() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mt-8 pt-8 border-t border-white/10 space-y-8"
+                      className="mt-8 pt-8 border-t border-border dark:border-white/10 space-y-8"
                     >
                       {needsSquareFootage && (
                         <div>
@@ -788,7 +788,7 @@ export default function Estimate() {
                               placeholder="0"
                               value={squareFootage || ""}
                               onChange={(e) => setSquareFootage(parseInt(e.target.value) || 0)}
-                              className="bg-white/5 border-white/20 text-xl h-14 w-48 text-center rounded-xl focus:border-accent/50"
+                              className="bg-white/5 border-border dark:border-white/20 text-xl h-14 w-48 text-center rounded-xl focus:border-accent/50"
                               min={0}
                               data-testid="input-square-footage"
                             />
@@ -796,7 +796,7 @@ export default function Estimate() {
                             <div className="flex gap-2 ml-2">
                               <button
                                 onClick={() => setSquareFootage(0)}
-                                className="px-4 h-10 rounded-lg bg-white/10 hover:bg-white/20 text-sm font-medium transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                className="px-4 h-10 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-sm font-medium transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                                 data-testid="button-clear-sqft"
                               >
                                 <X className="w-4 h-4" />
@@ -843,7 +843,7 @@ export default function Estimate() {
                           <div className="flex items-center gap-4">
                             <button
                               onClick={() => setDoorCount(Math.max(1, doorCount - 1))}
-                              className="w-14 h-14 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
+                              className="w-14 h-14 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
                               data-testid="button-door-minus"
                             >
                               -
@@ -852,13 +852,13 @@ export default function Estimate() {
                               type="number"
                               value={doorCount}
                               onChange={(e) => setDoorCount(Math.max(1, parseInt(e.target.value) || 1))}
-                              className="bg-white/5 border-white/20 text-2xl h-14 w-24 text-center rounded-xl font-bold"
+                              className="bg-white/5 border-border dark:border-white/20 text-2xl h-14 w-24 text-center rounded-xl font-bold"
                               min={1}
                               data-testid="input-door-count"
                             />
                             <button
                               onClick={() => setDoorCount(doorCount + 1)}
-                              className="w-14 h-14 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
+                              className="w-14 h-14 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
                               data-testid="button-door-plus"
                             >
                               +
@@ -952,14 +952,14 @@ export default function Estimate() {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="pt-4 border-t border-white/10">
+                      <div className="pt-4 border-t border-border dark:border-white/10">
                         <div className="grid grid-cols-2 gap-3 mb-4">
                           <div>
                             <Label className="text-sm mb-2 block">Room Type</Label>
                             <select
                               value={photoRoomType}
                               onChange={(e) => setPhotoRoomType(e.target.value)}
-                              className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/20 text-sm"
+                              className="w-full h-10 px-3 rounded-lg bg-white/5 border border-border dark:border-white/20 text-sm"
                               data-testid="select-photo-room-type"
                             >
                               <option value="living_room">Living Room</option>
@@ -978,13 +978,13 @@ export default function Estimate() {
                               value={photoCaption}
                               onChange={(e) => setPhotoCaption(e.target.value)}
                               placeholder="e.g., North wall"
-                              className="bg-white/5 border-white/20 h-10"
+                              className="bg-white/5 border-border dark:border-white/20 h-10"
                               data-testid="input-photo-caption"
                             />
                           </div>
                         </div>
 
-                        <label className="block w-full h-24 rounded-xl border-2 border-dashed border-white/20 hover:border-accent/50 transition-colors cursor-pointer bg-white/5 mb-4">
+                        <label className="block w-full h-24 rounded-xl border-2 border-dashed border-border dark:border-white/20 hover:border-accent/50 transition-colors cursor-pointer bg-white/5 mb-4">
                           <div className="flex flex-col items-center justify-center h-full gap-2">
                             <Upload className="w-6 h-6 text-accent" />
                             <p className="text-sm text-muted-foreground">Click to upload photo</p>
@@ -1057,25 +1057,25 @@ export default function Estimate() {
                     ) : (
                       <div className="space-y-4">
                         {jobSelections.walls && (
-                          <div className="flex justify-between items-center py-3 border-b border-white/10">
+                          <div className="flex justify-between items-center py-3 border-b border-border dark:border-white/10">
                             <span className="text-muted-foreground">Walls</span>
                             <span className="font-bold text-lg">${estimate.wallsPrice.toFixed(2)}</span>
                           </div>
                         )}
                         {jobSelections.trim && (
-                          <div className="flex justify-between items-center py-3 border-b border-white/10">
+                          <div className="flex justify-between items-center py-3 border-b border-border dark:border-white/10">
                             <span className="text-muted-foreground">Trim</span>
                             <span className="font-bold text-lg">${estimate.trimPrice.toFixed(2)}</span>
                           </div>
                         )}
                         {jobSelections.ceilings && (
-                          <div className="flex justify-between items-center py-3 border-b border-white/10">
+                          <div className="flex justify-between items-center py-3 border-b border-border dark:border-white/10">
                             <span className="text-muted-foreground">Ceilings</span>
                             <span className="font-bold text-lg">${estimate.ceilingsPrice.toFixed(2)}</span>
                           </div>
                         )}
                         {jobSelections.doors && (
-                          <div className="flex justify-between items-center py-3 border-b border-white/10">
+                          <div className="flex justify-between items-center py-3 border-b border-border dark:border-white/10">
                             <span className="text-muted-foreground">Doors ({doorCount}x)</span>
                             <span className="font-bold text-lg">${estimate.doorsPrice.toFixed(2)}</span>
                           </div>
@@ -1100,7 +1100,7 @@ export default function Estimate() {
 
                         {/* Good/Better/Best Pricing Tier Selector - Horizontal Carousel */}
                         {estimate.baseTotal > 0 && (
-                          <div className="pt-6 mt-6 border-t border-white/10">
+                          <div className="pt-6 mt-6 border-t border-border dark:border-white/10">
                             <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                               <Award className="w-4 h-4 text-accent" />
                               Choose Your Package
@@ -1120,7 +1120,7 @@ export default function Estimate() {
                                           className={`relative w-full p-3 rounded-xl text-left transition-all border-2 ${
                                             isSelected 
                                               ? 'border-accent bg-accent/10 shadow-lg shadow-accent/20' 
-                                              : 'border-white/10 bg-white/5 hover:border-white/30'
+                                              : 'border-border dark:border-white/10 bg-white/5 hover:border-white/30'
                                           }`}
                                           whileHover={{ scale: 1.02 }}
                                           whileTap={{ scale: 0.98 }}
@@ -1207,7 +1207,7 @@ export default function Estimate() {
                         </div>
 
                         {/* Blockchain Verification Toggle */}
-                        <div className="pt-4 mt-4 border-t border-white/10">
+                        <div className="pt-4 mt-4 border-t border-border dark:border-white/10">
                           <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">

@@ -230,7 +230,7 @@ Ecosystem: https://darkwavestudios.io`;
                     className={`rounded-xl p-5 border ${
                       tier.tier === "Professional" 
                         ? "bg-accent/10 border-accent/30" 
-                        : "bg-white/5 border-white/10"
+                        : "bg-white/5 border-border dark:border-white/10"
                     }`}
                   >
                     {tier.tier === "Professional" && (
@@ -271,7 +271,7 @@ Ecosystem: https://darkwavestudios.io`;
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-white/10">
+                      <tr className="border-b border-border dark:border-white/10">
                         <th className="text-left py-3 px-4 font-medium text-muted-foreground">Platform</th>
                         <th className="text-left py-3 px-4 font-medium text-muted-foreground">Monthly</th>
                         <th className="text-left py-3 px-4 font-medium text-muted-foreground">Setup</th>
@@ -334,7 +334,7 @@ Ecosystem: https://darkwavestudios.io`;
                     <DollarSign className="w-5 h-5 text-green-400" />
                     True Cost Comparison
                   </h3>
-                  <div className="bg-white/5 rounded-xl p-5 border border-white/10">
+                  <div className="bg-white/5 rounded-xl p-5 border border-border dark:border-white/10">
                     <p className="text-sm text-muted-foreground mb-4">
                       A painting company using Jobber + custom website + marketing agency:
                     </p>
@@ -356,7 +356,7 @@ Ecosystem: https://darkwavestudios.io`;
                         <span className="font-mono">$500-2K/mo</span>
                       </div>
                     </div>
-                    <div className="border-t border-white/10 pt-4">
+                    <div className="border-t border-border dark:border-white/10 pt-4">
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Traditional Total</span>
                         <span className="font-mono text-red-400 font-bold">~$1,500-3,000/mo</span>
@@ -392,7 +392,7 @@ Ecosystem: https://darkwavestudios.io`;
                   <div
                     key={p.year}
                     className={`rounded-xl p-6 text-center ${
-                      i === 2 ? "bg-gradient-to-br from-purple-500/20 to-accent/10 border border-purple-500/30" : "bg-white/5 border border-white/10"
+                      i === 2 ? "bg-gradient-to-br from-purple-500/20 to-accent/10 border border-purple-500/30" : "bg-white/5 border border-border dark:border-white/10"
                     }`}
                   >
                     <p className="text-sm text-muted-foreground mb-2">{p.year}</p>
@@ -402,7 +402,7 @@ Ecosystem: https://darkwavestudios.io`;
                       {p.revenue}
                     </p>
                     <p className="text-sm text-muted-foreground">Annual Revenue</p>
-                    <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-2 text-xs">
+                    <div className="mt-4 pt-4 border-t border-border dark:border-white/10 grid grid-cols-2 gap-2 text-xs">
                       <div>
                         <p className="text-muted-foreground">Customers</p>
                         <p className="font-mono font-bold">{p.customers.toLocaleString()}</p>
@@ -495,17 +495,17 @@ Ecosystem: https://darkwavestudios.io`;
               </div>
 
               <div className="grid md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
                   <Globe className="w-6 h-6 text-blue-400 mb-2" />
                   <h4 className="font-bold">ORBIT Platform</h4>
                   <p className="text-xs text-muted-foreground">Enterprise development infrastructure with multi-tenant architecture</p>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
                   <Shield className="w-6 h-6 text-amber-400 mb-2" />
                   <h4 className="font-bold">Hallmark System</h4>
                   <p className="text-xs text-muted-foreground">Blockchain-based asset verification and document stamping</p>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div className="bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
                   <Layers className="w-6 h-6 text-purple-400 mb-2" />
                   <h4 className="font-bold">Dev Hub</h4>
                   <p className="text-xs text-muted-foreground">Shared code snippets, integrations, and development tools</p>
@@ -527,7 +527,7 @@ Ecosystem: https://darkwavestudios.io`;
                   rel="noopener noreferrer"
                   className="flex-1"
                 >
-                  <button className="w-full py-3 px-6 rounded-xl bg-white/5 border border-white/20 hover:bg-white/10 transition-colors font-medium">
+                  <button className="w-full py-3 px-6 rounded-xl bg-white/5 border border-border dark:border-white/20 hover:bg-black/5 dark:bg-white/10 transition-colors font-medium">
                     Visit Darkwave Studios
                   </button>
                 </a>

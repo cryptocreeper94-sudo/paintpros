@@ -185,7 +185,7 @@ export default function Pay() {
               <p className="text-muted-foreground mb-6">
                 Thank you for your payment. We'll be in touch soon to schedule your project.
               </p>
-              <div className="bg-white/5 rounded-xl p-4 mb-6 border border-white/10">
+              <div className="bg-white/5 rounded-xl p-4 mb-6 border border-border dark:border-white/10">
                 <p className="text-sm text-muted-foreground mb-1">Amount Paid</p>
                 <p className="text-2xl font-bold text-green-400">
                   ${parseFloat(estimate.totalEstimate).toLocaleString()}
@@ -251,7 +251,7 @@ export default function Pay() {
                       <span>${parseFloat(estimate.doorsPrice || "0").toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="border-t border-white/10 pt-3 flex justify-between font-bold">
+                  <div className="border-t border-border dark:border-white/10 pt-3 flex justify-between font-bold">
                     <span>Total</span>
                     <span className="text-accent">${parseFloat(estimate.totalEstimate).toLocaleString()}</span>
                   </div>
@@ -288,7 +288,7 @@ export default function Pay() {
                     </div>
 
                     <div className="space-y-4 mb-6">
-                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                      <div className="bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
                         <div className="flex items-center gap-2 mb-2">
                           <Clock className="w-4 h-4 text-muted-foreground" />
                           <span className="text-sm text-muted-foreground">Pricing Tier</span>
@@ -297,7 +297,7 @@ export default function Pay() {
                       </div>
 
                       {estimate.squareFootage && estimate.squareFootage > 0 && (
-                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <div className="bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
                           <div className="flex items-center gap-2 mb-2">
                             <Home className="w-4 h-4 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">Square Footage</span>
@@ -340,7 +340,7 @@ export default function Pay() {
                         className="w-full text-left group"
                         data-testid="button-pay-stripe"
                       >
-                        <div className="bg-white/5 rounded-xl p-5 border border-white/10 hover:border-accent/40 transition-all group-hover:bg-white/10">
+                        <div className="bg-white/5 rounded-xl p-5 border border-border dark:border-white/10 hover:border-accent/40 transition-all group-hover:bg-black/5 dark:bg-white/10">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">

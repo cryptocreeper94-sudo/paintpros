@@ -237,7 +237,7 @@ export default function Owner() {
                     placeholder="Enter PIN"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
-                    className="bg-white/5 border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-gold-400/30"
+                    className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-gold-400/30"
                     maxLength={4}
                     data-testid="input-owner-pin"
                   />
@@ -295,7 +295,7 @@ export default function Owner() {
             {!isDemo && (
               <motion.button
                 onClick={() => setShowPinChangeModal(true)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 data-testid="button-settings"
               >
@@ -432,7 +432,7 @@ export default function Owner() {
                       exit={{ opacity: 0, height: 0 }}
                       className="mb-3 overflow-hidden"
                     >
-                      <div className="bg-white/5 rounded-lg p-3 border border-white/10 space-y-3">
+                      <div className="bg-black/5 dark:bg-white/5 rounded-lg p-3 border border-border dark:border-white/10 space-y-3">
                         <div className="flex flex-wrap gap-1.5">
                           {TAG_TYPES.map((type) => (
                             <motion.button
@@ -442,7 +442,7 @@ export default function Owner() {
                               className={`px-2 py-1 rounded-md text-xs font-medium border transition-all ${
                                 newTagType === type.value 
                                   ? type.color + " ring-1 ring-white/20" 
-                                  : "bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10"
+                                  : "bg-black/5 dark:bg-white/5 text-muted-foreground border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10"
                               }`}
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
@@ -457,7 +457,7 @@ export default function Owner() {
                             placeholder={`Enter ${getTagTypeLabel(newTagType).toLowerCase()}...`}
                             value={newTagValue}
                             onChange={(e) => setNewTagValue(e.target.value)}
-                            className="flex-1 bg-white/5 border-white/20 rounded-lg h-8 text-sm"
+                            className="flex-1 bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-lg h-8 text-sm"
                             data-testid="input-seo-tag-value"
                           />
                           <motion.button
@@ -473,7 +473,7 @@ export default function Owner() {
                           <motion.button
                             type="button"
                             onClick={() => setShowAddForm(false)}
-                            className="px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm"
+                            className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/10 text-white text-sm"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
@@ -502,7 +502,7 @@ export default function Owner() {
                         transition={{ delay: index * 0.03 }}
                         className={`flex items-center justify-between gap-2 p-2 rounded-lg border transition-all ${
                           tag.isActive 
-                            ? "bg-white/5 border-white/10" 
+                            ? "bg-black/5 dark:bg-white/5 border-border dark:border-white/10" 
                             : "bg-white/2 border-white/5 opacity-60"
                         }`}
                       >
@@ -516,7 +516,7 @@ export default function Owner() {
                           <motion.button
                             onClick={() => toggleTagMutation.mutate({ id: tag.id, isActive: !tag.isActive })}
                             className={`p-1.5 rounded transition-colors ${
-                              tag.isActive ? "text-green-400 hover:bg-green-500/20" : "text-muted-foreground hover:bg-white/10"
+                              tag.isActive ? "text-green-400 hover:bg-green-500/20" : "text-muted-foreground hover:bg-black/5 dark:bg-white/10"
                             }`}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -539,7 +539,7 @@ export default function Owner() {
                   )}
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-4 gap-2">
+                <div className="mt-3 pt-3 border-t border-border dark:border-white/10 grid grid-cols-4 gap-2">
                   <div className="text-center">
                     <div className="text-lg font-bold text-blue-400">{seoTags.filter(t => t.tagType === "keyword").length}</div>
                     <div className="text-[10px] text-muted-foreground">Keywords</div>
@@ -586,7 +586,7 @@ export default function Owner() {
                     placeholder="Search emails..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 bg-white/5 border-white/20 rounded-lg h-8 text-sm"
+                    className="pl-9 bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-lg h-8 text-sm"
                     data-testid="input-search-leads-owner"
                   />
                 </div>
@@ -608,7 +608,7 @@ export default function Owner() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.02 }}
-                        className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10 transition-colors"
                       >
                         <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
                           <Mail className="w-3.5 h-3.5 text-accent" />

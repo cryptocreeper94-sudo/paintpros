@@ -160,7 +160,7 @@ export default function ProposalSign() {
             {/* Accordion Sections for Details */}
             <Accordion type="multiple" defaultValue={["info"]} className="space-y-2">
               {/* Customer Info Section */}
-              <AccordionItem value="info" className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+              <AccordionItem value="info" className="border border-border dark:border-white/10 rounded-xl overflow-hidden bg-white/5">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                   <span className="flex items-center gap-2 text-sm">
                     <Info className="w-4 h-4 text-accent" />
@@ -202,7 +202,7 @@ export default function ProposalSign() {
               </AccordionItem>
 
               {/* Pricing Section */}
-              <AccordionItem value="pricing" className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+              <AccordionItem value="pricing" className="border border-border dark:border-white/10 rounded-xl overflow-hidden bg-white/5">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                   <span className="flex items-center gap-2 text-sm">
                     <DollarSign className="w-4 h-4 text-accent" />
@@ -210,7 +210,7 @@ export default function ProposalSign() {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
-                  <div className="flex justify-between items-center py-3 border-b border-white/10">
+                  <div className="flex justify-between items-center py-3 border-b border-border dark:border-white/10">
                     <span className="text-sm text-muted-foreground">Subtotal</span>
                     <span className="text-sm font-medium">${Number(proposal.totalAmount || 0).toFixed(2)}</span>
                   </div>
@@ -223,7 +223,7 @@ export default function ProposalSign() {
 
               {/* Proposal Content Section */}
               {proposal.content && (
-                <AccordionItem value="content" className="border border-white/10 rounded-xl overflow-hidden bg-white/5">
+                <AccordionItem value="content" className="border border-border dark:border-white/10 rounded-xl overflow-hidden bg-white/5">
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <span className="flex items-center gap-2 text-sm">
                       <FileText className="w-4 h-4 text-accent" />
@@ -261,7 +261,7 @@ export default function ProposalSign() {
                     : "N/A"}
                 </p>
                 {existingSignature?.signatureData && (
-                  <div className="inline-block bg-white/10 rounded-xl p-4 border border-white/20">
+                  <div className="inline-block bg-black/5 dark:bg-white/10 rounded-xl p-4 border border-border dark:border-white/20">
                     <img 
                       src={existingSignature.signatureData} 
                       alt="Signature" 
@@ -319,7 +319,7 @@ export default function ProposalSign() {
                     setShowSignatureModal(false);
                     setSignError("");
                   }}
-                  className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center"
+                  className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center"
                   data-testid="button-close-signature-modal"
                 >
                   <X className="w-4 h-4" />
@@ -349,7 +349,7 @@ export default function ProposalSign() {
                       value={signerName}
                       onChange={(e) => setSignerName(e.target.value)}
                       placeholder="John Smith"
-                      className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/20 focus:border-accent/50 focus:outline-none"
+                      className="w-full h-12 px-4 rounded-xl bg-white/5 border border-border dark:border-white/20 focus:border-accent/50 focus:outline-none"
                       data-testid="input-signer-name"
                     />
                   </div>
@@ -360,7 +360,7 @@ export default function ProposalSign() {
                       value={signerEmail}
                       onChange={(e) => setSignerEmail(e.target.value)}
                       placeholder="john@example.com"
-                      className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/20 focus:border-accent/50 focus:outline-none"
+                      className="w-full h-12 px-4 rounded-xl bg-white/5 border border-border dark:border-white/20 focus:border-accent/50 focus:outline-none"
                       data-testid="input-signer-email"
                     />
                   </div>
@@ -399,7 +399,7 @@ export default function ProposalSign() {
                       setShowSignatureModal(false);
                       setSignError("");
                     }}
-                    className="flex-1 h-12 rounded-xl bg-white/10 hover:bg-white/20 font-medium transition-colors"
+                    className="flex-1 h-12 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 font-medium transition-colors"
                     data-testid="button-cancel-signature"
                   >
                     Cancel

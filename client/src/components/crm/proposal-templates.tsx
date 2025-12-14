@@ -234,7 +234,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-4">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Template Name</label>
@@ -242,7 +242,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g., Interior Full Repaint"
-                    className="bg-black/30 border-white/20"
+                    className="bg-black/30 border-border dark:border-white/20"
                     data-testid="input-template-name"
                   />
                 </div>
@@ -257,7 +257,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
                           formData.category === cat.value
                             ? cat.color + " ring-2 ring-white/20"
-                            : "bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10"
+                            : "bg-black/5 dark:bg-white/5 text-muted-foreground border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10"
                         }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -275,7 +275,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Enter template content with placeholders like {{customerName}}, {{totalAmount}}, etc."
-                  className="w-full h-48 bg-black/30 border border-white/20 rounded-lg p-3 text-sm font-mono resize-y"
+                  className="w-full h-48 bg-black/30 border border-border dark:border-white/20 rounded-lg p-3 text-sm font-mono resize-y"
                   data-testid="input-template-content"
                 />
               </div>
@@ -286,7 +286,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                     type="checkbox"
                     checked={formData.isDefault}
                     onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                    className="w-4 h-4 rounded border-white/20"
+                    className="w-4 h-4 rounded border-border dark:border-white/20"
                   />
                   <span className="text-sm">Set as default</span>
                 </label>
@@ -295,7 +295,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="w-4 h-4 rounded border-white/20"
+                    className="w-4 h-4 rounded border-border dark:border-white/20"
                   />
                   <span className="text-sm">Active</span>
                 </label>
@@ -316,7 +316,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                 <motion.button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 rounded-xl bg-white/10 text-white"
+                  className="px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 text-white"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -347,7 +347,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
               transition={{ delay: index * 0.05 }}
               className={`rounded-xl border transition-all ${
                 template.isActive
-                  ? "bg-white/5 border-white/10"
+                  ? "bg-black/5 dark:bg-white/5 border-border dark:border-white/10"
                   : "bg-white/2 border-white/5 opacity-60"
               }`}
             >
@@ -377,7 +377,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                 <div className="flex items-center gap-2 shrink-0">
                   <motion.button
                     onClick={() => handleDuplicate(template)}
-                    className="p-2 rounded-lg text-muted-foreground hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-lg text-muted-foreground hover:bg-black/5 dark:bg-white/10 transition-colors"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title="Duplicate"
@@ -414,7 +414,7 @@ export function ProposalTemplateManager({ compact = false, maxHeight = "400px" }
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden border-t border-white/10"
+                    className="overflow-hidden border-t border-border dark:border-white/10"
                   >
                     <div className="p-4 bg-black/20">
                       <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">

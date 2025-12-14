@@ -143,14 +143,14 @@ export function DealsPipeline({ accentColor = "accent" }: DealsPipelineProps) {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-4">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Input
                   type="text"
                   placeholder="Deal title..."
                   value={newDeal.title}
                   onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
-                  className="bg-white/5 border-white/20 rounded-xl"
+                  className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
                   data-testid="input-deal-title"
                 />
                 <Input
@@ -158,13 +158,13 @@ export function DealsPipeline({ accentColor = "accent" }: DealsPipelineProps) {
                   placeholder="Value ($)"
                   value={newDeal.value}
                   onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
-                  className="bg-white/5 border-white/20 rounded-xl"
+                  className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
                   data-testid="input-deal-value"
                 />
                 <select
                   value={newDeal.stage}
                   onChange={(e) => setNewDeal({ ...newDeal, stage: e.target.value })}
-                  className="bg-white/5 border border-white/20 rounded-xl px-4 py-2 text-foreground"
+                  className="bg-black/5 dark:bg-white/5 border border-border dark:border-white/20 rounded-xl px-4 py-2 text-foreground"
                   data-testid="select-deal-stage"
                 >
                   {STAGES.slice(0, 3).map(stage => (
@@ -178,7 +178,7 @@ export function DealsPipeline({ accentColor = "accent" }: DealsPipelineProps) {
                 <motion.button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 rounded-xl bg-white/10 text-white"
+                  className="px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 text-white"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -209,7 +209,7 @@ export function DealsPipeline({ accentColor = "accent" }: DealsPipelineProps) {
           return (
             <motion.div
               key={stage.id}
-              className={`p-3 rounded-xl bg-white/5 border border-white/10`}
+              className={`p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/10`}
               whileHover={{ scale: 1.02 }}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -243,7 +243,7 @@ export function DealsPipeline({ accentColor = "accent" }: DealsPipelineProps) {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.03 }}
-                className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                className="flex items-center justify-between gap-4 p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10 transition-colors"
                 data-testid={`deal-row-${deal.id}`}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -264,7 +264,7 @@ export function DealsPipeline({ accentColor = "accent" }: DealsPipelineProps) {
                   <select
                     value={deal.stage}
                     onChange={(e) => updateDealMutation.mutate({ id: deal.id, updates: { stage: e.target.value } })}
-                    className="bg-white/5 border border-white/20 rounded-lg px-2 py-1 text-xs"
+                    className="bg-black/5 dark:bg-white/5 border border-border dark:border-white/20 rounded-lg px-2 py-1 text-xs"
                     data-testid={`select-stage-${deal.id}`}
                   >
                     {STAGES.map(s => (

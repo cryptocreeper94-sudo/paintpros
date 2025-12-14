@@ -224,10 +224,10 @@ export function PaintBuddy() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-[54px] right-[18px] z-50 w-[380px] h-[500px] bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-[54px] right-[18px] z-50 w-[380px] h-[500px] bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-border dark:border-white/10 shadow-2xl flex flex-col overflow-hidden"
             data-testid="panel-paint-buddy-chat"
           >
-            <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-gradient-to-r from-accent/20 to-cyan-500/20">
+            <div className="p-4 border-b border-border dark:border-white/10 flex items-center gap-3 bg-gradient-to-r from-accent/20 to-cyan-500/20">
               <img
                 src={rollieMascot}
                 alt="Rollie"
@@ -242,7 +242,7 @@ export function PaintBuddy() {
               </div>
               <button
                 onClick={() => setVoiceEnabled(!voiceEnabled)}
-                className={`p-2 hover:bg-white/10 rounded-lg transition-colors ${isSpeaking ? "animate-pulse" : ""}`}
+                className={`p-2 hover:bg-black/5 dark:bg-white/10 rounded-lg transition-colors ${isSpeaking ? "animate-pulse" : ""}`}
                 data-testid="button-paint-buddy-voice"
                 title={voiceEnabled ? "Mute voice" : "Enable voice"}
               >
@@ -254,7 +254,7 @@ export function PaintBuddy() {
               </button>
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-black/5 dark:bg-white/10 rounded-lg transition-colors"
                 data-testid="button-paint-buddy-close"
               >
                 <X className="w-5 h-5 text-white/70" />
@@ -273,7 +273,7 @@ export function PaintBuddy() {
                     className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                       msg.role === "user"
                         ? "bg-accent text-black rounded-br-sm"
-                        : "bg-white/10 text-white rounded-bl-sm"
+                        : "bg-black/5 dark:bg-white/10 text-white rounded-bl-sm"
                     }`}
                   >
                     <p className="text-sm">{msg.content}</p>
@@ -286,7 +286,7 @@ export function PaintBuddy() {
                   animate={{ opacity: 1 }}
                   className="flex justify-start"
                 >
-                  <div className="bg-white/10 rounded-2xl rounded-bl-sm px-4 py-3">
+                  <div className="bg-black/5 dark:bg-white/10 rounded-2xl rounded-bl-sm px-4 py-3">
                     <Loader2 className="w-5 h-5 text-accent animate-spin" />
                   </div>
                 </motion.div>
@@ -294,7 +294,7 @@ export function PaintBuddy() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 border-t border-border dark:border-white/10">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -302,7 +302,7 @@ export function PaintBuddy() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Ask me anything..."
-                  className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-white placeholder:text-white/40 focus:outline-none focus:border-accent/50"
+                  className="flex-1 bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 rounded-xl px-4 py-2 text-white placeholder:text-white/40 focus:outline-none focus:border-accent/50"
                   data-testid="input-paint-buddy-message"
                 />
                 <button

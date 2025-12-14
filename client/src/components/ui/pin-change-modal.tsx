@@ -93,7 +93,7 @@ export function PinChangeModal({
           <GlassCard className="p-8 border-accent/30 overflow-y-auto" glow>
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition-colors"
               data-testid="button-close-pin-modal"
             >
               <X className="w-5 h-5" />
@@ -120,7 +120,7 @@ export function PinChangeModal({
                   placeholder="Enter new 4-digit PIN"
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  className="bg-white/5 border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl"
+                  className="bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl"
                   maxLength={4}
                   data-testid="input-new-pin"
                 />
@@ -133,7 +133,7 @@ export function PinChangeModal({
                   placeholder="Confirm new PIN"
                   value={confirmPin}
                   onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  className="bg-white/5 border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl"
+                  className="bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl"
                   maxLength={4}
                   data-testid="input-confirm-pin"
                 />

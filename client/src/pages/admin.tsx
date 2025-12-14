@@ -172,7 +172,7 @@ export default function Admin() {
                     placeholder="Enter PIN"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
-                    className="bg-white/5 border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-accent/30"
+                    className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-accent/30"
                     maxLength={4}
                     data-testid="input-admin-pin"
                   />
@@ -238,7 +238,7 @@ export default function Admin() {
             {!isDemo && (
               <motion.button
                 onClick={() => setShowPinChange(true)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 data-testid="button-settings"
               >
@@ -422,7 +422,7 @@ export default function Admin() {
                       placeholder="Search emails..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 bg-white/5 border-white/20 rounded-lg h-9 text-sm"
+                      className="pl-9 bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-lg h-9 text-sm"
                       data-testid="input-search-leads"
                     />
                   </div>
@@ -444,7 +444,7 @@ export default function Admin() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.02 }}
-                          className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                          className="flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10 transition-colors"
                           data-testid={`lead-row-${lead.id}`}
                         >
                           <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
@@ -508,7 +508,7 @@ export default function Admin() {
                                 transition={{ delay: index * 0.05 }}
                               >
                                 <GlassCard 
-                                  className="p-3 h-full border border-white/10"
+                                  className="p-3 h-full border border-border dark:border-white/10"
                                   glow="gold"
                                   hoverEffect="subtle"
                                   data-testid={`followup-card-${followup.id}`}
@@ -553,7 +553,7 @@ export default function Admin() {
                                     </motion.button>
                                   </div>
 
-                                  <Accordion type="single" collapsible className="border-t border-white/10">
+                                  <Accordion type="single" collapsible className="border-t border-border dark:border-white/10">
                                     <AccordionItem value="details" className="border-b-0">
                                       <AccordionTrigger className="text-[10px] py-1.5 hover:no-underline">Details</AccordionTrigger>
                                       <AccordionContent className="text-[10px]">

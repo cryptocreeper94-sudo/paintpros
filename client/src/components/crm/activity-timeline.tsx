@@ -117,7 +117,7 @@ export function ActivityTimeline({
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-3">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10 space-y-3">
               <div className="flex flex-wrap gap-2">
                 {ACTIVITY_TYPES.map((type) => {
                   const Icon = type.icon;
@@ -129,7 +129,7 @@ export function ActivityTimeline({
                       className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
                         newActivity.activityType === type.id 
                           ? type.color + " border-current ring-2 ring-white/20" 
-                          : "bg-white/5 text-muted-foreground border-white/10 hover:bg-white/10"
+                          : "bg-black/5 dark:bg-white/5 text-muted-foreground border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10"
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -147,7 +147,7 @@ export function ActivityTimeline({
                   placeholder="Activity title..."
                   value={newActivity.title}
                   onChange={(e) => setNewActivity({ ...newActivity, title: e.target.value })}
-                  className="bg-white/5 border-white/20 rounded-xl"
+                  className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
                   data-testid="input-activity-title"
                 />
                 <Input
@@ -155,7 +155,7 @@ export function ActivityTimeline({
                   placeholder="Deal/Lead ID..."
                   value={newActivity.entityId}
                   onChange={(e) => setNewActivity({ ...newActivity, entityId: e.target.value })}
-                  className="bg-white/5 border-white/20 rounded-xl"
+                  className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
                   data-testid="input-activity-entity-id"
                 />
               </div>
@@ -165,7 +165,7 @@ export function ActivityTimeline({
                 placeholder="Description (optional)..."
                 value={newActivity.description}
                 onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
-                className="bg-white/5 border-white/20 rounded-xl"
+                className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
                 data-testid="input-activity-description"
               />
               
@@ -173,7 +173,7 @@ export function ActivityTimeline({
                 <motion.button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 rounded-xl bg-white/10 text-white"
+                  className="px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 text-white"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -214,7 +214,7 @@ export function ActivityTimeline({
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.02 }}
-                className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10 transition-colors"
                 data-testid={`activity-row-${activity.id}`}
               >
                 <div className={`w-8 h-8 rounded-lg ${typeInfo.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>

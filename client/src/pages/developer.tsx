@@ -257,7 +257,7 @@ function SolanaModalContent() {
             className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
               activeTab === tab.id 
                 ? "bg-gold-400/20 text-gold-400 border border-gold-400/30" 
-                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:bg-white/5"
             }`}
             data-testid={`tab-solana-${tab.id}`}
           >
@@ -329,7 +329,7 @@ function SolanaModalContent() {
                   </div>
                   <button 
                     onClick={fetchWalletBalance}
-                    className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-lg hover:bg-black/5 dark:bg-white/10 transition-colors"
                     data-testid="button-refresh-balance"
                   >
                     <RefreshCw className={`w-5 h-5 text-muted-foreground ${loading.wallet ? "animate-spin" : ""}`} />
@@ -366,13 +366,13 @@ function SolanaModalContent() {
 
       {activeTab === "stamp" && (
         <div className="space-y-4">
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
             <p className="text-sm font-medium mb-3">Step 1: Generate Hash</p>
             <textarea
               value={hashInput}
               onChange={(e) => setHashInput(e.target.value)}
               placeholder="Enter data to hash (e.g., estimate JSON, contract text...)"
-              className="w-full h-20 bg-black/30 border border-white/20 rounded-lg p-3 text-sm resize-none"
+              className="w-full h-20 bg-black/30 border border-border dark:border-white/20 rounded-lg p-3 text-sm resize-none"
               data-testid="input-hash-data"
             />
             <motion.button
@@ -399,7 +399,7 @@ function SolanaModalContent() {
           </div>
 
           {generatedHash && (
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm font-medium mb-3">Step 2: Stamp to Blockchain</p>
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
@@ -407,7 +407,7 @@ function SolanaModalContent() {
                   <select
                     value={stampEntityType}
                     onChange={(e) => setStampEntityType(e.target.value)}
-                    className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm"
+                    className="w-full bg-black/30 border border-border dark:border-white/20 rounded-lg p-2 text-sm"
                     data-testid="select-entity-type"
                   >
                     <option value="test">Test</option>
@@ -422,7 +422,7 @@ function SolanaModalContent() {
                     value={stampEntityId}
                     onChange={(e) => setStampEntityId(e.target.value)}
                     placeholder="e.g., EST-001"
-                    className="bg-black/30 border-white/20 text-sm"
+                    className="bg-black/30 border-border dark:border-white/20 text-sm"
                     data-testid="input-entity-id"
                   />
                 </div>
@@ -457,7 +457,7 @@ function SolanaModalContent() {
             </div>
           ) : (
             stamps.map((stamp) => (
-              <div key={stamp.id} className="bg-white/5 rounded-xl p-4 border border-white/10">
+              <div key={stamp.id} className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-mono bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
                     {stamp.entityType}:{stamp.entityId}
@@ -497,13 +497,13 @@ function SolanaModalContent() {
 
       {activeTab === "verify" && (
         <div className="space-y-4">
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
             <p className="text-sm font-medium mb-3">Verify Transaction</p>
             <Input
               value={verifySignature}
               onChange={(e) => setVerifySignature(e.target.value)}
               placeholder="Enter transaction signature..."
-              className="bg-black/30 border-white/20 text-sm font-mono mb-3"
+              className="bg-black/30 border-border dark:border-white/20 text-sm font-mono mb-3"
               data-testid="input-verify-signature"
             />
             <motion.button
@@ -639,7 +639,7 @@ function HallmarkModalContent() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 p-1 bg-white/5 rounded-xl">
+      <div className="flex gap-2 p-1 bg-black/5 dark:bg-white/5 rounded-xl">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -674,7 +674,7 @@ function HallmarkModalContent() {
               return (
                 <div
                   key={hallmark.id}
-                  className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-amber-500/30 transition-colors"
+                  className="p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-border dark:border-white/10 hover:border-amber-500/30 transition-colors"
                   data-testid={`hallmark-item-${hallmark.id}`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -692,7 +692,7 @@ function HallmarkModalContent() {
                     <code className="text-xs font-mono">{hallmark.hallmarkNumber}</code>
                     <button
                       onClick={() => copyToClipboard(hallmark.hallmarkNumber)}
-                      className="p-1 hover:bg-white/10 rounded"
+                      className="p-1 hover:bg-black/5 dark:bg-white/10 rounded"
                       data-testid="button-copy-hallmark-id"
                     >
                       <Copy className="w-3 h-3 text-muted-foreground" />
@@ -723,7 +723,7 @@ function HallmarkModalContent() {
             <select
               value={newHallmark.assetType}
               onChange={(e) => setNewHallmark(prev => ({ ...prev, assetType: e.target.value }))}
-              className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm"
+              className="w-full bg-black/30 border border-border dark:border-white/20 rounded-lg p-2 text-sm"
               data-testid="select-hallmark-type"
             >
               <option value="document">Document</option>
@@ -741,7 +741,7 @@ function HallmarkModalContent() {
               value={newHallmark.recipientName}
               onChange={(e) => setNewHallmark(prev => ({ ...prev, recipientName: e.target.value }))}
               placeholder="Enter recipient name"
-              className="bg-black/30 border-white/20"
+              className="bg-black/30 border-border dark:border-white/20"
               data-testid="input-hallmark-recipient"
             />
           </div>
@@ -750,7 +750,7 @@ function HallmarkModalContent() {
             <select
               value={newHallmark.recipientRole}
               onChange={(e) => setNewHallmark(prev => ({ ...prev, recipientRole: e.target.value as any }))}
-              className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm"
+              className="w-full bg-black/30 border border-border dark:border-white/20 rounded-lg p-2 text-sm"
               data-testid="select-hallmark-role"
             >
               <option value="client">Client</option>
@@ -766,7 +766,7 @@ function HallmarkModalContent() {
               value={newHallmark.content}
               onChange={(e) => setNewHallmark(prev => ({ ...prev, content: e.target.value }))}
               placeholder="Enter content to be hashed..."
-              className="w-full bg-black/30 border border-white/20 rounded-lg p-2 text-sm h-20 resize-none"
+              className="w-full bg-black/30 border border-border dark:border-white/20 rounded-lg p-2 text-sm h-20 resize-none"
               data-testid="textarea-hallmark-content"
             />
           </div>
@@ -796,7 +796,7 @@ function HallmarkModalContent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by hallmark number, recipient, type..."
-              className="bg-black/30 border-white/20 pl-10"
+              className="bg-black/30 border-border dark:border-white/20 pl-10"
               data-testid="input-search-hallmark"
             />
           </div>
@@ -814,7 +814,7 @@ function HallmarkModalContent() {
                     href={`/verify/${hallmark.hallmarkNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-3 bg-white/5 rounded-lg border border-white/10 hover:border-amber-500/30 transition-colors"
+                    className="block p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-border dark:border-white/10 hover:border-amber-500/30 transition-colors"
                     data-testid={`search-result-${hallmark.id}`}
                   >
                     <div className="flex items-center justify-between">
@@ -835,7 +835,7 @@ function HallmarkModalContent() {
         </div>
       )}
 
-      <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+      <div className="pt-4 border-t border-border dark:border-white/10 flex items-center justify-between">
         <PoweredByOrbit size="sm" />
         <span className="text-xs text-muted-foreground">
           {hallmarks.length} total hallmarks
@@ -981,7 +981,7 @@ Ecosystem: https://darkwavestudios.io`;
             { tier: "Franchise Core", price: "$799/mo + $99/loc", setup: "$10,000", target: "5+ sites" },
             { tier: "Enterprise", price: "$1,399/mo base", setup: "$15,000", target: "Large franchises" },
           ].map((item) => (
-            <div key={item.tier} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
+            <div key={item.tier} className="flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-lg p-3 border border-border dark:border-white/10">
               <div>
                 <span className="font-bold text-sm">{item.tier}</span>
                 <span className="text-xs text-muted-foreground ml-2">({item.target})</span>
@@ -996,7 +996,7 @@ Ecosystem: https://darkwavestudios.io`;
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
           <h4 className="font-bold text-sm flex items-center gap-2 mb-3">
             <TrendingUp className="w-4 h-4 text-blue-400" />
             Unit Economics
@@ -1021,7 +1021,7 @@ Ecosystem: https://darkwavestudios.io`;
           </div>
         </div>
 
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
           <h4 className="font-bold text-sm flex items-center gap-2 mb-3">
             <Users className="w-4 h-4 text-purple-400" />
             Volume Discounts
@@ -1227,11 +1227,11 @@ export default function Developer() {
             <p className="text-sm text-muted-foreground">Neon-backed database with automatic scaling and instant branching</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-2xl font-bold text-accent">7</p>
               <p className="text-xs text-muted-foreground">Active Tables</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-2xl font-bold text-purple-400">Drizzle ORM</p>
               <p className="text-xs text-muted-foreground">Type-safe queries</p>
             </div>
@@ -1260,7 +1260,7 @@ export default function Developer() {
               { method: "CRUD", path: "/api/crm/activities", status: "active" },
               { method: "POST", path: "/api/auth/pin/*", status: "active" },
             ].map((endpoint, i) => (
-              <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg p-3 border border-white/10">
+              <div key={i} className="flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-lg p-3 border border-border dark:border-white/10">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono bg-accent/20 text-accent px-2 py-1 rounded">{endpoint.method}</span>
                   <span className="text-sm font-mono">{endpoint.path}</span>
@@ -1283,15 +1283,15 @@ export default function Developer() {
             <p className="text-sm text-muted-foreground">Optimized for the painting industry</p>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-center bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-3xl font-bold text-green-400">&lt;100ms</p>
               <p className="text-xs text-muted-foreground">API Response</p>
             </div>
-            <div className="text-center bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-center bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-3xl font-bold text-accent">99.9%</p>
               <p className="text-xs text-muted-foreground">Uptime</p>
             </div>
-            <div className="text-center bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="text-center bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-3xl font-bold text-purple-400">A+</p>
               <p className="text-xs text-muted-foreground">Lighthouse Score</p>
             </div>
@@ -1360,12 +1360,12 @@ export default function Developer() {
           )}
           
           {stampStatus && (
-            <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-border dark:border-white/10">
               <p className="text-sm text-center text-muted-foreground">{stampStatus}</p>
             </div>
           )}
           
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
             <p className="text-sm text-muted-foreground">
               <Clock className="w-4 h-4 inline mr-2" />
               Version bumps create hallmarks automatically
@@ -1401,12 +1401,12 @@ export default function Developer() {
             <p className="text-sm text-muted-foreground">Next-gen development ecosystem by Orbit</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10 text-center">
               <Globe className="w-6 h-6 mx-auto mb-2 text-blue-400" />
               <p className="text-sm font-bold">Multi-Tenant</p>
               <p className="text-xs text-muted-foreground">Infinite scaling</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10 text-center">
               <Zap className="w-6 h-6 mx-auto mb-2 text-gold-400" />
               <p className="text-sm font-bold">Real-time Sync</p>
               <p className="text-xs text-muted-foreground">Live updates</p>
@@ -1490,7 +1490,7 @@ export default function Developer() {
             ].map((color) => (
               <div key={color.name} className="text-center">
                 <div 
-                  className="w-full aspect-square rounded-xl border-2 border-white/20 mb-2"
+                  className="w-full aspect-square rounded-xl border-2 border-border dark:border-white/20 mb-2"
                   style={{ backgroundColor: color.hex }}
                 />
                 <p className="text-xs text-muted-foreground">{color.name}</p>
@@ -1556,19 +1556,19 @@ export default function Developer() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm text-muted-foreground mb-1">Environment</p>
               <p className="font-mono text-green-400">development</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm text-muted-foreground mb-1">Node Version</p>
               <p className="font-mono text-accent">v20.x</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm text-muted-foreground mb-1">React Version</p>
               <p className="font-mono text-blue-400">18.3.1</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm text-muted-foreground mb-1">TypeScript</p>
               <p className="font-mono text-purple-400">5.6.x</p>
             </div>
@@ -1598,7 +1598,7 @@ export default function Developer() {
             <p className="text-sm text-muted-foreground">Planned enhancements for analytics & tracking</p>
           </div>
           <div className="space-y-4">
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <BarChart3 className="w-4 h-4 text-orange-400" />
@@ -1628,7 +1628,7 @@ export default function Developer() {
                 </div>
               </div>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Globe className="w-4 h-4 text-blue-400" />
@@ -1644,7 +1644,7 @@ export default function Developer() {
                 </div>
               </div>
             </div>
-            <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Zap className="w-4 h-4 text-green-400" />
@@ -1700,7 +1700,7 @@ export default function Developer() {
                     placeholder="Enter PIN"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
-                    className="bg-white/5 border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl"
+                    className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl"
                     maxLength={4}
                     data-testid="input-developer-pin"
                   />
@@ -1979,7 +1979,7 @@ export default function Developer() {
                   </motion.div>
                   <h3 className="text-xl font-bold">Console</h3>
                 </div>
-                <div className="bg-black/50 rounded-xl p-4 font-mono text-sm h-32 overflow-auto border border-white/10">
+                <div className="bg-black/50 rounded-xl p-4 font-mono text-sm h-32 overflow-auto border border-border dark:border-white/10">
                   <p className="text-green-400">[System] Application initialized</p>
                   <p className="text-muted-foreground">[Info] Database connection established</p>
                   <p className="text-purple-400">[Darkwave] Connected to Dev Hub</p>
@@ -2186,7 +2186,7 @@ export default function Developer() {
                   </div>
                   <motion.button
                     onClick={closeModal}
-                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 transition-colors"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     data-testid="button-close-modal"

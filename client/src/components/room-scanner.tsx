@@ -182,7 +182,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
               <GlassCard className="relative p-4 sm:p-6 md:p-8 border-accent/20 max-h-[calc(100dvh-2rem)] overflow-y-auto" glow>
                 <button
                   onClick={handleClose}
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 w-11 h-11 min-h-[44px] min-w-[44px] rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 flex items-center justify-center transition-colors touch-manipulation"
+                  className="absolute top-3 right-3 sm:top-4 sm:right-4 w-11 h-11 min-h-[44px] min-w-[44px] rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 active:bg-white/30 flex items-center justify-center transition-colors touch-manipulation"
                   data-testid="button-close-scanner-modal"
                 >
                   <X className="w-5 h-5" />
@@ -230,7 +230,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                   <select
                     value={scannerRoomType}
                     onChange={(e) => setScannerRoomType(e.target.value)}
-                    className="w-full min-h-[48px] h-12 px-4 rounded-xl bg-white/5 border border-white/20 text-foreground text-base focus:border-accent/50 focus:outline-none touch-manipulation"
+                    className="w-full min-h-[48px] h-12 px-4 rounded-xl bg-white/5 border border-border dark:border-white/20 text-foreground text-base focus:border-accent/50 focus:outline-none touch-manipulation"
                     data-testid="select-scanner-room-type"
                   >
                     <option value="living_room">Living Room</option>
@@ -248,7 +248,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
 
                 <div className="mb-4 sm:mb-6">
                   {!scannerImage ? (
-                    <label className="block w-full min-h-[160px] sm:h-48 rounded-xl border-2 border-dashed border-white/20 hover:border-accent/50 active:border-accent/70 active:bg-accent/5 transition-colors cursor-pointer bg-white/5 touch-manipulation">
+                    <label className="block w-full min-h-[160px] sm:h-48 rounded-xl border-2 border-dashed border-border dark:border-white/20 hover:border-accent/50 active:border-accent/70 active:bg-accent/5 transition-colors cursor-pointer bg-white/5 touch-manipulation">
                       <div className="flex flex-col items-center justify-center h-full gap-2 sm:gap-3 py-6">
                         <div className="w-14 h-14 sm:w-12 sm:h-12 rounded-xl bg-accent/20 flex items-center justify-center">
                           <Camera className="w-7 h-7 sm:w-6 sm:h-6 text-accent" />
