@@ -542,65 +542,64 @@ export default function Home() {
             </button>
           </BentoItem>
 
-          {/* Crypto Payment Banner - Extended to match color wheel baseline */}
-          <BentoItem colSpan={4} rowSpan={3} mobileColSpan={2} mobileRowSpan={5}>
+          {/* Crypto Payment Banner - Full Width Horizontal at Bottom */}
+          <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
             <button
               onClick={() => setCryptoModalOpen(true)}
               className="w-full h-full text-left"
               data-testid="button-crypto-payment"
             >
-              <GlassCard className="p-3 md:p-6 bg-gradient-to-br from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
-                {/* Bitcoin Watermark Background - Centered & Large */}
+              <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
+                {/* Bitcoin Watermark Background - Right side */}
                 <img 
                   src={bitcoinWatermark} 
                   alt="" 
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 object-contain opacity-25"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 object-contain opacity-20"
                 />
                 
-                <div className="flex flex-col h-full relative z-10">
-                  {/* Header with icons */}
-                  <div className="flex items-center gap-2 mb-2 md:mb-3">
-                    <div className="flex -space-x-2">
-                      <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
-                        <SiBitcoin className="w-3.5 h-3.5 md:w-5 md:h-5 text-orange-400" />
-                      </div>
-                      <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
-                        <SiEthereum className="w-3.5 h-3.5 md:w-5 md:h-5 text-purple-400" />
-                      </div>
+                {/* Horizontal Layout */}
+                <div className="flex flex-row items-center gap-3 md:gap-6 h-full relative z-10">
+                  {/* Left: Icons */}
+                  <div className="flex -space-x-2 flex-shrink-0">
+                    <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-orange-500/30 flex items-center justify-center">
+                      <SiBitcoin className="w-4 h-4 md:w-6 md:h-6 text-orange-400" />
                     </div>
-                    <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold">CRYPTO ACCEPTED</span>
-                  </div>
-                  
-                  {/* Title */}
-                  <h3 className="text-sm md:text-xl font-display font-bold mb-1 md:mb-2">
-                    The Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Payments</span>
-                  </h3>
-                  
-                  {/* Description */}
-                  <p className="text-[9px] md:text-xs text-muted-foreground leading-snug mb-2 md:mb-3 flex-1">
-                    We're proud to embrace the digital economy. Pay for your painting project with Bitcoin, Ethereum, and other cryptocurrencies.
-                  </p>
-                  
-                  {/* Features */}
-                  <div className="space-y-1 mb-2 md:mb-3">
-                    <div className="flex items-center gap-1.5 text-[8px] md:text-[10px] text-muted-foreground">
-                      <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 flex-shrink-0" />
-                      <span>Instant, secure transactions</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[8px] md:text-[10px] text-muted-foreground">
-                      <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 flex-shrink-0" />
-                      <span>No bank delays or fees</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[8px] md:text-[10px] text-muted-foreground">
-                      <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 flex-shrink-0" />
-                      <span>Tech-forward innovation</span>
+                    <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-purple-500/30 flex items-center justify-center">
+                      <SiEthereum className="w-4 h-4 md:w-6 md:h-6 text-purple-400" />
                     </div>
                   </div>
                   
-                  {/* CTA */}
-                  <div className="flex items-center gap-1 text-orange-400 text-[9px] md:text-xs font-medium">
-                    <span>Learn More</span>
-                    <ArrowRight className="w-3 h-3" />
+                  {/* Center: Title & Description */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-0.5 md:mb-1">
+                      <span className="text-[8px] md:text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold flex-shrink-0">CRYPTO ACCEPTED</span>
+                      <h3 className="text-sm md:text-lg font-display font-bold">
+                        The Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Payments</span>
+                      </h3>
+                    </div>
+                    <p className="text-[9px] md:text-xs text-muted-foreground leading-snug hidden md:block">
+                      Pay for your painting project with Bitcoin, Ethereum, and other cryptocurrencies. Instant, secure, no bank delays.
+                    </p>
+                  </div>
+                  
+                  {/* Right: Features (desktop) & CTA */}
+                  <div className="flex items-center gap-4 md:gap-6 flex-shrink-0">
+                    {/* Features - hidden on mobile */}
+                    <div className="hidden lg:flex items-center gap-4 text-[10px] text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-green-400" />
+                        <span>Instant & Secure</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-green-400" />
+                        <span>No Bank Fees</span>
+                      </div>
+                    </div>
+                    
+                    {/* CTA Arrow */}
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-orange-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                      <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    </div>
                   </div>
                 </div>
               </GlassCard>
