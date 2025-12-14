@@ -75,7 +75,7 @@ export default function Home() {
                 </div>
                 <h1 className="text-2xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-2 md:mb-6 text-glow">
                   Extraordinary <br className="hidden md:block" />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-white">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-amber-700 dark:to-white">
                     Craftsmanship.
                   </span>
                 </h1>
