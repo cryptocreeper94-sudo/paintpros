@@ -93,6 +93,14 @@ const pwaConfigs: Record<string, {
     backgroundColor: "#b49050",
     themeColor: "#d4a853",
     iconPath: "/pwa/paintpros"
+  },
+  demo: {
+    name: "PaintPros.io",
+    shortName: "PaintPros",
+    description: "White-label painting business platform by Orbit",
+    backgroundColor: "#b49050",
+    themeColor: "#d4a853",
+    iconPath: "/pwa/paintpros"
   }
 };
 
