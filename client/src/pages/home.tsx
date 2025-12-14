@@ -12,6 +12,8 @@ import paintBrush from "@assets/generated_images/isolated_professional_paint_bru
 import fanDeck from "@assets/generated_images/isolated_paint_color_fan_deck.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
+import premiumMaterialsImage from "@assets/generated_images/premium_paint_materials_display.png";
+import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
@@ -185,8 +187,13 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-premium-materials"
             >
-              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all" hoverEffect>
-                <div className="flex items-center gap-2 md:gap-4">
+              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+                <img 
+                  src={premiumMaterialsImage} 
+                  alt="Premium paint materials" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                />
+                <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
                     <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
@@ -202,7 +209,7 @@ export default function Home() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
+                      className="overflow-hidden relative z-10"
                     >
                       <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
                         <p className="text-[10px] md:text-xs text-muted-foreground">We partner with industry-leading brands:</p>
@@ -228,8 +235,13 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-on-time"
             >
-              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all" hoverEffect>
-                <div className="flex items-center gap-2 md:gap-4">
+              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+                <img 
+                  src={onTimeImage} 
+                  alt="On-time service" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity"
+                />
+                <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
                     <Clock className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
@@ -245,7 +257,7 @@ export default function Home() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
+                      className="overflow-hidden relative z-10"
                     >
                       <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
                         <p className="text-[10px] md:text-xs text-muted-foreground">Our scheduling promise:</p>
