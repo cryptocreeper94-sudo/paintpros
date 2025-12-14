@@ -26,7 +26,7 @@ import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { ContactModal } from "@/components/contact-modal";
 import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
-import bitcoinWatermark from "@assets/generated_images/bitcoin_coin_symbol_icon.png";
+import bitcoinWatermark from "@assets/generated_images/golden_bitcoin_cryptocurrency_symbol.png";
 
 export default function Home() {
   const tenant = useTenant();
@@ -522,19 +522,39 @@ export default function Home() {
             </BentoItem>
           )}
 
-          {/* Crypto Payment Banner - Extended */}
-          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={2} mobileRowSpan={3}>
+          {/* 10. Fan Deck Visual - Opens Color Selector Modal - Bottom Left */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2} className="relative group">
+            <button 
+              onClick={() => setColorSelectorOpen(true)}
+              className="block h-full w-full text-left"
+              data-testid="button-color-selector"
+            >
+              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full">
+                <img 
+                  src={fanDeck} 
+                  alt="Color Selection - Click to explore paint colors" 
+                  className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
+                />
+                <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-[10px] md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                  Colors
+                </div>
+              </GlassCard>
+            </button>
+          </BentoItem>
+
+          {/* Crypto Payment Banner - Extended to match color wheel baseline */}
+          <BentoItem colSpan={4} rowSpan={3} mobileColSpan={2} mobileRowSpan={5}>
             <button
               onClick={() => setCryptoModalOpen(true)}
               className="w-full h-full text-left"
               data-testid="button-crypto-payment"
             >
               <GlassCard className="p-3 md:p-6 bg-gradient-to-br from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
-                {/* Bitcoin Watermark Background */}
+                {/* Bitcoin Watermark Background - Centered & Large */}
                 <img 
                   src={bitcoinWatermark} 
                   alt="" 
-                  className="absolute right-0 bottom-0 w-32 h-32 md:w-48 md:h-48 object-contain opacity-15 translate-x-1/4 translate-y-1/4"
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 object-contain opacity-25"
                 />
                 
                 <div className="flex flex-col h-full relative z-10">
@@ -582,26 +602,6 @@ export default function Home() {
                     <span>Learn More</span>
                     <ArrowRight className="w-3 h-3" />
                   </div>
-                </div>
-              </GlassCard>
-            </button>
-          </BentoItem>
-
-          {/* 10. Fan Deck Visual - Opens Color Selector Modal */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2} className="relative group">
-            <button 
-              onClick={() => setColorSelectorOpen(true)}
-              className="block h-full w-full text-left"
-              data-testid="button-color-selector"
-            >
-              <GlassCard className="overflow-hidden cursor-pointer hover:border-accent/40 transition-colors h-full">
-                <img 
-                  src={fanDeck} 
-                  alt="Color Selection - Click to explore paint colors" 
-                  className="w-full h-full object-contain p-2 md:p-8 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3"
-                />
-                <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 text-[10px] md:text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                  Colors
                 </div>
               </GlassCard>
             </button>
