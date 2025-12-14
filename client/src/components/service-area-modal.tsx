@@ -74,7 +74,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
               <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6">
                 <div className="flex items-center gap-1 md:gap-2 mb-1 md:mb-2">
                   <MapPin className="w-4 h-4 md:w-6 md:h-6 text-accent" />
-                  <span className="text-base md:text-sm font-bold text-accent uppercase tracking-wide">Proudly Serving</span>
+                  <span className="text-[10px] md:text-sm font-bold text-accent uppercase tracking-wide">Proudly Serving</span>
                 </div>
                 <h2 className="text-xl md:text-4xl font-display font-bold">Middle Tennessee & Southern Kentucky</h2>
               </div>
@@ -107,10 +107,10 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
                         key={area.name}
                         className="rounded-md px-2 py-1 border border-[#344e41]/20 bg-white/60 hover:border-[#344e41]/40 transition-colors"
                       >
-                        <span className="font-medium text-base md:text-xs text-gray-800">{area.name}</span>
+                        <span className="font-medium text-[10px] md:text-xs text-gray-800">{area.name}</span>
                       </div>
                     ))}
-                    <span className="text-base md:text-xs text-gray-500 px-1 py-1">+{middleTNAreas.length - 6} more</span>
+                    <span className="text-[10px] md:text-xs text-gray-500 px-1 py-1">+{middleTNAreas.length - 6} more</span>
                   </div>
                 </div>
 
@@ -127,7 +127,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
                         key={area.name}
                         className="rounded-md px-2 py-1 border border-[#344e41]/20 bg-white/60 hover:border-[#344e41]/40 transition-colors"
                       >
-                        <span className="font-medium text-base md:text-xs text-gray-800">{area.name}</span>
+                        <span className="font-medium text-[10px] md:text-xs text-gray-800">{area.name}</span>
                       </div>
                     ))}
                   </div>

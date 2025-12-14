@@ -72,7 +72,7 @@ export function CryptoPaymentModal({ isOpen, onClose }: CryptoPaymentModalProps)
                 </div>
                 <div>
                   <h4 className="font-semibold text-xs md:text-sm">{benefit.title}</h4>
-                  <p className="text-base md:text-xs text-muted-foreground leading-snug">{benefit.description}</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground leading-snug">{benefit.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -83,22 +83,22 @@ export function CryptoPaymentModal({ isOpen, onClose }: CryptoPaymentModalProps)
             <div className="flex flex-wrap gap-2">
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-orange-500/10 border border-orange-500/20">
                 <SiBitcoin className="w-3 h-3 text-orange-400" />
-                <span className="text-base md:text-xs font-medium">Bitcoin</span>
+                <span className="text-[10px] md:text-xs font-medium">Bitcoin</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-purple-500/10 border border-purple-500/20">
                 <SiEthereum className="w-3 h-3 text-purple-400" />
-                <span className="text-base md:text-xs font-medium">Ethereum</span>
+                <span className="text-[10px] md:text-xs font-medium">Ethereum</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
-                <span className="text-base md:text-xs font-medium">USDC</span>
+                <span className="text-[10px] md:text-xs font-medium">USDC</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20">
-                <span className="text-base md:text-xs font-medium">+ More</span>
+                <span className="text-[10px] md:text-xs font-medium">+ More</span>
               </div>
             </div>
           </div>
 
-          <p className="text-base md:text-xs text-muted-foreground text-center italic">
+          <p className="text-[10px] md:text-xs text-muted-foreground text-center italic">
             Powered by Coinbase Commerce for secure, reliable crypto transactions.
           </p>
 

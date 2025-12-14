@@ -82,7 +82,7 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20, compact 
             >
               <div className="flex items-center gap-2">
                 <span className="font-mono font-bold text-primary text-sm">v{release.version}</span>
-                <span className="text-base text-muted-foreground">#{release.buildNumber}</span>
+                <span className="text-[10px] text-muted-foreground">#{release.buildNumber}</span>
               </div>
               <div className="flex items-center gap-2">
                 {release.solanaTxStatus === "confirmed" ? (
@@ -90,7 +90,7 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20, compact 
                 ) : (
                   <Clock className="w-3 h-3 text-yellow-500" />
                 )}
-                <span className="text-base text-muted-foreground">
+                <span className="text-[10px] text-muted-foreground">
                   {format(new Date(release.createdAt), "MMM d")}
                 </span>
               </div>

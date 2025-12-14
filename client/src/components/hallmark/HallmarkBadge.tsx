@@ -27,7 +27,7 @@ export function HallmarkBadge({
   };
 
   const textSizes = {
-    sm: "text-sm",
+    sm: "text-[8px]",
     md: "text-xs",
     lg: "text-sm"
   };

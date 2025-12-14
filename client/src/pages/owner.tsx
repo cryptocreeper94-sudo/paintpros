@@ -507,7 +507,7 @@ export default function Owner() {
                         }`}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className={`px-1.5 py-0.5 rounded text-base font-medium border shrink-0 ${getTagTypeStyle(tag.tagType)}`}>
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium border shrink-0 ${getTagTypeStyle(tag.tagType)}`}>
                             {getTagTypeLabel(tag.tagType)}
                           </span>
                           <span className="truncate text-sm">{tag.value}</span>
@@ -542,19 +542,19 @@ export default function Owner() {
                 <div className="mt-3 pt-3 border-t border-border dark:border-white/10 grid grid-cols-4 gap-2">
                   <div className="text-center">
                     <div className="text-lg font-bold text-blue-400">{seoTags.filter(t => t.tagType === "keyword").length}</div>
-                    <div className="text-base text-muted-foreground">Keywords</div>
+                    <div className="text-[10px] text-muted-foreground">Keywords</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-purple-400">{seoTags.filter(t => t.tagType === "meta_description").length}</div>
-                    <div className="text-base text-muted-foreground">Meta</div>
+                    <div className="text-[10px] text-muted-foreground">Meta</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-gold-400">{seoTags.filter(t => t.tagType === "title").length}</div>
-                    <div className="text-base text-muted-foreground">Titles</div>
+                    <div className="text-[10px] text-muted-foreground">Titles</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-green-400">{seoTags.filter(t => t.tagType === "geo").length}</div>
-                    <div className="text-base text-muted-foreground">Locations</div>
+                    <div className="text-[10px] text-muted-foreground">Locations</div>
                   </div>
                 </div>
                 </GlassCard>
@@ -615,7 +615,7 @@ export default function Owner() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium truncate">{lead.email}</p>
-                          <p className="text-base text-muted-foreground">
+                          <p className="text-[10px] text-muted-foreground">
                             {format(new Date(lead.createdAt), "MMM d, h:mm a")}
                           </p>
                         </div>
