@@ -17,6 +17,7 @@ export function Navbar() {
   const mainLinks = [
     { name: "Services", href: "/services" },
     { name: "Portfolio", href: "/portfolio", enabled: tenant.features.portfolio },
+    { name: "Pricing", href: "/pricing" },
     { name: "About", href: "/about" },
     { name: "Reviews", href: "/reviews", enabled: tenant.features.reviews },
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },

@@ -22,6 +22,7 @@ import Pay from "@/pages/pay";
 import ProposalSign from "@/pages/proposal-sign";
 import Investors from "@/pages/investors";
 import Compare from "@/pages/compare";
+import Pricing from "@/pages/pricing";
 
 function AnalyticsTracker() {
   useAnalytics();
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/proposal/:id/sign" component={ProposalSign} />
       <Route path="/investors" component={Investors} />
       <Route path="/compare" component={Compare} />
+      <Route path="/pricing" component={Pricing} />
       <Route component={NotFound} />
     </Switch>
   );
