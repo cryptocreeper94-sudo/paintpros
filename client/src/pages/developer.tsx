@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/context/ThemeContext";
+import colorWheelLight from "@assets/generated_images/paint_color_wheel_transparent_background.png";
 import { 
   hover3D, 
   hover3DSubtle, 
@@ -1116,6 +1118,7 @@ export default function Developer() {
   const [lastReleaseId, setLastReleaseId] = useState<string | null>(null);
   const [isStamping, setIsStamping] = useState(false);
   const [stampStatus, setStampStatus] = useState<string | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     fetch('/api/releases/latest')
@@ -1457,14 +1460,24 @@ export default function Developer() {
       content: (
         <div className="space-y-6">
           <div className="text-center">
-            <motion.div
-              className="w-24 h-24 mx-auto mb-4 rounded-full"
-              style={{
-                background: "conic-gradient(from 0deg, #FF6B6B, #FFE66D, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7, #DDA0DD, #FF6B6B)"
-              }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            />
+            {theme === "light" ? (
+              <motion.img
+                src={colorWheelLight}
+                alt="Color Wheel"
+                className="w-24 h-24 mx-auto mb-4 object-contain"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              />
+            ) : (
+              <motion.div
+                className="w-24 h-24 mx-auto mb-4 rounded-full"
+                style={{
+                  background: "conic-gradient(from 0deg, #FF6B6B, #FFE66D, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7, #DDA0DD, #FF6B6B)"
+                }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              />
+            )}
             <h3 className="text-xl font-bold">Color Visualization</h3>
             <p className="text-sm text-muted-foreground">Powered by Sherwin-Williams ColorSnap</p>
           </div>
