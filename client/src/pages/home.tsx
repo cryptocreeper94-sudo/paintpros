@@ -71,7 +71,7 @@ export default function Home() {
           
           {/* 1. Hero Section - Main Headline */}
           <BentoItem colSpan={8} rowSpan={2} mobileColSpan={4} mobileRowSpan={4} className="relative group">
-            <GlassCard className="p-4 md:p-12 flex flex-col justify-center items-start overflow-hidden border-white/20 h-full">
+            <GlassCard className="p-3 md:p-12 flex flex-col justify-center items-start overflow-hidden border-white/20 h-full">
               <div 
                 className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
                 style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
@@ -79,17 +79,17 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
               
               <div className="relative z-10 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-white text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/20 border border-accent/30 text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md">
                   <Star className="w-3 h-3 fill-accent text-accent" />
                   {ratingBadge}
                 </div>
-                <h1 className="text-2xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-2 md:mb-6 text-glow">
+                <h1 className="text-lg md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
                   Extraordinary <br className="hidden md:block" />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-amber-700 dark:to-white">
                     Craftsmanship.
                   </span>
                 </h1>
-                <p className="text-xs md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-3 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
+                <p className="text-[10px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
                   {tenant.description || `Premium residential and commercial painting.`}
                 </p>
                 <a href="/portfolio" className="inline-block">
