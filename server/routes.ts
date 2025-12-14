@@ -6,8 +6,10 @@ import {
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
   insertBlockchainStampSchema, insertHallmarkSchema, insertProposalTemplateSchema, insertProposalSchema,
   insertPaymentSchema, insertRoomScanSchema, insertPageViewSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS,
-  insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema
+  insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema,
+  insertDocumentAssetSchema, TENANT_PREFIXES
 } from "@shared/schema";
+import * as crypto from "crypto";
 import OpenAI from "openai";
 import { z } from "zod";
 import * as solana from "./solana";
@@ -1988,6 +1990,186 @@ Use occasional paint-related puns or references to keep things fun!`;
     } catch (error) {
       console.error("Error in TTS:", error);
       res.status(500).json({ error: "Failed to generate speech" });
+    }
+  });
+
+  // ============ DOCUMENT ASSETS - Tenant-aware document hashing ============
+
+  // POST /api/document-assets - Create a document asset with hallmark number
+  app.post("/api/document-assets", async (req, res) => {
+    try {
+      const { tenantId, sourceType, sourceId, title, description, content, hashToSolana, createdBy, metadata } = req.body;
+      
+      if (!tenantId || !sourceType || !sourceId || !title || !content) {
+        res.status(400).json({ error: "tenantId, sourceType, sourceId, title, and content are required" });
+        return;
+      }
+      
+      // Generate SHA-256 hash of content
+      const sha256Hash = crypto.createHash('sha256').update(content).digest('hex');
+      
+      // Get next hallmark number for this tenant
+      const { ordinal, hallmarkNumber } = await storage.getNextTenantOrdinal(tenantId);
+      
+      const asset = await storage.createDocumentAsset({
+        tenantId,
+        sourceType,
+        sourceId,
+        hallmarkNumber,
+        ordinal,
+        sha256Hash,
+        title,
+        description,
+        hashToSolana: hashToSolana || false,
+        metadata: metadata || {},
+        createdBy
+      });
+      
+      // If user opted in for Solana hashing, queue it
+      if (hashToSolana) {
+        await storage.updateDocumentAssetSolanaStatus(asset.id, 'queued');
+        
+        // Immediately stamp to Solana if wallet is configured
+        const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+        if (privateKey) {
+          try {
+            const wallet = solana.getWalletFromPrivateKey(privateKey);
+            const result = await solana.stampHashToBlockchain(
+              sha256Hash, 
+              wallet, 
+              'mainnet-beta',
+              { entityType: sourceType, entityId: hallmarkNumber },
+              tenantId
+            );
+            
+            await storage.updateDocumentAssetSolanaStatus(
+              asset.id, 
+              'confirmed', 
+              result.signature, 
+              result.slot, 
+              result.blockTime
+            );
+            
+            res.status(201).json({
+              ...asset,
+              solanaStatus: 'confirmed',
+              solanaTxSignature: result.signature,
+              solscanUrl: `https://solscan.io/tx/${result.signature}`
+            });
+            return;
+          } catch (stampError: any) {
+            console.error("Failed to stamp document asset:", stampError);
+            await storage.updateDocumentAssetSolanaStatus(asset.id, 'failed');
+          }
+        }
+      }
+      
+      res.status(201).json(asset);
+    } catch (error) {
+      console.error("Error creating document asset:", error);
+      res.status(500).json({ error: "Failed to create document asset" });
+    }
+  });
+
+  // GET /api/document-assets - Get document assets by tenant
+  app.get("/api/document-assets", async (req, res) => {
+    try {
+      const tenantId = req.query.tenantId as string;
+      if (!tenantId) {
+        res.status(400).json({ error: "tenantId query parameter required" });
+        return;
+      }
+      const assets = await storage.getDocumentAssetsByTenant(tenantId);
+      res.json(assets);
+    } catch (error) {
+      console.error("Error fetching document assets:", error);
+      res.status(500).json({ error: "Failed to fetch document assets" });
+    }
+  });
+
+  // GET /api/document-assets/:id - Get single document asset
+  app.get("/api/document-assets/:id", async (req, res) => {
+    try {
+      const asset = await storage.getDocumentAssetById(req.params.id);
+      if (!asset) {
+        res.status(404).json({ error: "Document asset not found" });
+        return;
+      }
+      res.json(asset);
+    } catch (error) {
+      console.error("Error fetching document asset:", error);
+      res.status(500).json({ error: "Failed to fetch document asset" });
+    }
+  });
+
+  // POST /api/document-assets/:id/hash - Hash an existing document to Solana
+  app.post("/api/document-assets/:id/hash", async (req, res) => {
+    try {
+      const asset = await storage.getDocumentAssetById(req.params.id);
+      if (!asset) {
+        res.status(404).json({ error: "Document asset not found" });
+        return;
+      }
+      
+      if (asset.solanaStatus === 'confirmed') {
+        res.status(400).json({ 
+          error: "Already hashed to Solana", 
+          solscanUrl: `https://solscan.io/tx/${asset.solanaTxSignature}` 
+        });
+        return;
+      }
+      
+      const privateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+      if (!privateKey) {
+        res.status(500).json({ error: "Solana wallet not configured" });
+        return;
+      }
+      
+      await storage.updateDocumentAssetSolanaStatus(asset.id, 'pending');
+      
+      try {
+        const wallet = solana.getWalletFromPrivateKey(privateKey);
+        const result = await solana.stampHashToBlockchain(
+          asset.sha256Hash, 
+          wallet, 
+          'mainnet-beta',
+          { entityType: asset.sourceType, entityId: asset.hallmarkNumber },
+          asset.tenantId
+        );
+        
+        const updated = await storage.updateDocumentAssetSolanaStatus(
+          asset.id, 
+          'confirmed', 
+          result.signature, 
+          result.slot, 
+          result.blockTime
+        );
+        
+        res.json({
+          ...updated,
+          solscanUrl: `https://solscan.io/tx/${result.signature}`
+        });
+      } catch (stampError: any) {
+        await storage.updateDocumentAssetSolanaStatus(asset.id, 'failed');
+        res.status(500).json({ error: "Failed to stamp to Solana", details: stampError.message });
+      }
+    } catch (error) {
+      console.error("Error hashing document asset:", error);
+      res.status(500).json({ error: "Failed to hash document asset" });
+    }
+  });
+
+  // GET /api/tenant-counter/:tenantId - Get tenant's asset counter info
+  app.get("/api/tenant-counter/:tenantId", async (req, res) => {
+    try {
+      let counter = await storage.getTenantCounter(req.params.tenantId);
+      if (!counter) {
+        counter = await storage.initializeTenantCounter(req.params.tenantId);
+      }
+      res.json(counter);
+    } catch (error) {
+      console.error("Error fetching tenant counter:", error);
+      res.status(500).json({ error: "Failed to fetch tenant counter" });
     }
   });
 
