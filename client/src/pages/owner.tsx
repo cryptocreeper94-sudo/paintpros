@@ -9,6 +9,8 @@ import { Crown, DollarSign, TrendingUp, Users, Calendar, FileText, ArrowRight, P
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
+import { DealsPipeline } from "@/components/crm/deals-pipeline";
+import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
@@ -621,55 +623,38 @@ export default function Owner() {
               </GlassCard>
             </motion.div>
           </BentoItem>
-          {/* Sales Pipeline Summary */}
-          <BentoItem colSpan={4} rowSpan={2}>
-            <motion.div className="h-full" whileHover={{ scale: 1.005 }} transition={{ type: "spring", stiffness: 300 }}>
+          {/* CRM Deals Pipeline - Full Width */}
+          <BentoItem colSpan={12} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
               <GlassCard className="h-full p-6 bg-gradient-to-br from-teal-500/10 via-transparent to-accent/5" glow>
+                <DealsPipeline />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Activity Timeline */}
+          <BentoItem colSpan={8} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
+              <GlassCard className="h-full p-6">
+                <ActivityTimeline />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Pipeline Value Summary */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div className="h-full" whileHover={{ scale: 1.02 }}>
+              <GlassCard className="h-full p-6 bg-gradient-to-br from-gold-400/10 to-transparent" glow>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500/20 to-accent/20 flex items-center justify-center">
-                    <Target className="w-5 h-5 text-teal-400" />
+                  <div className="w-10 h-10 rounded-xl bg-gold-400/20 flex items-center justify-center">
+                    <Target className="w-5 h-5 text-gold-400" />
                   </div>
-                  <div>
-                    <h2 className="text-xl font-display font-bold">Sales Pipeline</h2>
-                    <p className="text-xs text-muted-foreground">{getTotalDeals()} total deals</p>
-                  </div>
+                  <h2 className="text-xl font-display font-bold">Pipeline Value</h2>
                 </div>
-
-                <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-gold-400/10 to-accent/5 border border-gold-400/20">
-                  <p className="text-xs text-muted-foreground mb-1">Pipeline Value</p>
-                  <p className="text-2xl font-bold text-gold-400">
-                    ${getTotalPipelineValue().toLocaleString()}
-                  </p>
+                <div className="text-3xl font-bold text-gold-400 mb-2">
+                  ${getTotalPipelineValue().toLocaleString()}
                 </div>
-
-                <div className="space-y-2">
-                  {PIPELINE_STAGES.map((stage) => {
-                    const stageData = pipelineSummary.find(s => s.stage === stage.id);
-                    const count = stageData?.count || 0;
-                    const value = parseFloat(stageData?.totalValue || "0");
-                    
-                    return (
-                      <motion.div
-                        key={stage.id}
-                        className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/10"
-                        whileHover={{ backgroundColor: "rgba(255,255,255,0.08)" }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${stage.color}`} />
-                          <span className="text-sm">{stage.label}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-sm font-medium">{count}</span>
-                          {value > 0 && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              ${value.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                <p className="text-sm text-muted-foreground">{getTotalDeals()} active deals</p>
               </GlassCard>
             </motion.div>
           </BentoItem>
