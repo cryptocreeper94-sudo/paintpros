@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History } from "lucide-react";
+import { BookingsCard } from "@/components/bookings-card";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
@@ -1975,10 +1976,19 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          {/* Version History - Full Width - All Tenants */}
-          <BentoItem colSpan={12} rowSpan={2}>
+          {/* Bookings Management */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-purple-500/10 via-transparent to-accent/5" glow>
+                <BookingsCard />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Version History - All Tenants */}
+          <BentoItem colSpan={6} rowSpan={2}>
             <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
-              <VersionHistory showAllTenants={true} maxItems={30} />
+              <VersionHistory showAllTenants={true} maxItems={10} />
             </motion.div>
           </BentoItem>
 

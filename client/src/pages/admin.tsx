@@ -4,6 +4,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { BookingsCard } from "@/components/bookings-card";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
@@ -485,8 +486,17 @@ export default function Admin() {
             </motion.div>
           </BentoItem>
 
+          {/* Bookings Management */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5" glow>
+                <BookingsCard />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           {/* Version History - Medium Card */}
-          <BentoItem colSpan={8} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1}>
             <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
               <GlassCard className="h-full p-4" glow>
                 <div className="flex items-center gap-2 mb-3">
@@ -499,7 +509,7 @@ export default function Admin() {
           </BentoItem>
 
           {/* Room Scanner */}
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1}>
             <RoomScannerCard locked={false} accentColor="accent" />
           </BentoItem>
         </BentoGrid>

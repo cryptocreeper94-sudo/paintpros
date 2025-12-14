@@ -9,6 +9,7 @@ import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X,
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { BookingsCard } from "@/components/bookings-card";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { VersionHistory } from "@/components/version-history";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -590,15 +591,24 @@ export default function Owner() {
             </motion.div>
           </BentoItem>
 
+          {/* Bookings Management */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div className="h-full" whileHover={{ scale: 1.005 }}>
+              <GlassCard className="h-full p-4 bg-gradient-to-br from-gold-400/10 via-transparent to-accent/5" glow>
+                <BookingsCard />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           {/* Version History */}
-          <BentoItem colSpan={8} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1}>
             <motion.div className="h-full" whileHover={{ scale: 1.002 }}>
               <VersionHistory maxItems={5} />
             </motion.div>
           </BentoItem>
 
           {/* Room Scanner */}
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1}>
             <RoomScannerCard locked={false} accentColor="gold-400" />
           </BentoItem>
 
