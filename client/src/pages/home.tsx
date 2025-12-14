@@ -373,6 +373,85 @@ export default function Home() {
             </button>
           </BentoItem>
 
+          {/* About/Contact Card - Demo: Configurable Platform, NPP: About Us */}
+          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={2} mobileRowSpan={3}>
+            <GlassCard className="p-4 md:p-6 flex flex-col justify-between h-full border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
+              {isDemo ? (
+                <>
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                        <ShieldCheck className="w-4 h-4 text-accent" />
+                      </div>
+                      <span className="text-[10px] md:text-xs font-bold text-accent uppercase tracking-wider">White-Label Solution</span>
+                    </div>
+                    <h3 className="text-sm md:text-xl font-display font-bold mb-2">Fully Configurable</h3>
+                    <p className="text-[10px] md:text-sm text-muted-foreground leading-relaxed mb-3">
+                      Everything you see is customizable — branding, colors, services, pricing, and features. Built to fit <span className="text-accent font-medium">your business</span>, not the other way around.
+                    </p>
+                    <ul className="space-y-1.5 text-[9px] md:text-xs text-muted-foreground">
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        Your logo, colors & branding
+                      </li>
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        Custom pricing & service areas
+                      </li>
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        Solana blockchain verification
+                      </li>
+                    </ul>
+                  </div>
+                  <a 
+                    href="mailto:contact@paintpros.io" 
+                    className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition-colors text-xs md:text-sm"
+                    data-testid="link-contact-demo"
+                  >
+                    Contact Us <ArrowRight className="w-3 h-3" />
+                  </a>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                        <Star className="w-4 h-4 text-accent fill-accent" />
+                      </div>
+                      <span className="text-[10px] md:text-xs font-bold text-accent uppercase tracking-wider">About Us</span>
+                    </div>
+                    <h3 className="text-sm md:text-xl font-display font-bold mb-2">{tenant.name}</h3>
+                    <p className="text-[10px] md:text-sm text-muted-foreground leading-relaxed mb-3">
+                      Family-owned and operated since 2015, we've been transforming homes and businesses across Middle Tennessee with premium craftsmanship and unmatched attention to detail.
+                    </p>
+                    <ul className="space-y-1.5 text-[9px] md:text-xs text-muted-foreground">
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        Licensed & Insured
+                      </li>
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        {tenant.credentials?.warrantyYears || 3}-Year Workmanship Warranty
+                      </li>
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        500+ Projects Completed
+                      </li>
+                    </ul>
+                  </div>
+                  <a 
+                    href="/about" 
+                    className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition-colors text-xs md:text-sm"
+                    data-testid="link-about-npp"
+                  >
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </a>
+                </>
+              )}
+            </GlassCard>
+          </BentoItem>
+
           {/* 9. Google Rating */}
           {tenant.credentials?.googleRating && (
             <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
