@@ -167,12 +167,12 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
                   <Award className="w-2.5 h-2.5" />
                   {tenantAsset.badge}
                 </div>
-                <h3 className="text-sm font-display font-bold text-white leading-tight">
-                  The <span className="text-[#14F195]">First</span> Solana-Verified <span className="text-[#14F195]">{solanaLabel}</span>
+                <h3 className="text-sm font-display font-bold text-foreground dark:text-white leading-tight">
+                  The <span className="text-cyan-700 dark:text-[#14F195]">First</span> Solana-Verified <span className="text-cyan-700 dark:text-[#14F195]">{solanaLabel}</span>
                 </h3>
                 <div className="flex items-center gap-1 mt-1">
                   <Hash className="w-3 h-3 text-muted-foreground" />
-                  <span className="font-mono text-sm font-bold text-[#14F195]">{displaySerial}</span>
+                  <span className="font-mono text-sm font-bold text-cyan-700 dark:text-[#14F195]">{displaySerial}</span>
                 </div>
                 {latestRelease?.version && (
                   <div className="flex items-center gap-1 mt-0.5">
@@ -187,7 +187,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
           </GlassCard>
 
           <p className="text-xs text-muted-foreground px-1">
-            <span className="text-[#14F195] font-medium">Blockchain verified</span> — Your documents are tamper-proof and permanently recorded.
+            <span className="text-cyan-700 dark:text-[#14F195] font-medium">Blockchain verified</span> — Your documents are tamper-proof and permanently recorded.
           </p>
 
           {/* Compact Features Grid */}
