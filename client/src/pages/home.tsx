@@ -82,7 +82,7 @@ export default function Home() {
                     Craftsmanship.
                   </span>
                 </h1>
-                <p className="text-xs md:text-xl text-cyan-700 dark:text-cyan-400 font-semibold mb-3 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
+                <p className="text-xs md:text-xl text-cyan-700 dark:text-cyan-600 font-semibold mb-3 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
                   {tenant.description || `Premium residential and commercial painting.`}
                 </p>
                 <a href="/portfolio" className="inline-block">
