@@ -142,14 +142,14 @@ export default function Home() {
           </BentoItem>
 
           {/* Solana Verified Badge - FIRST IN INDUSTRY */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
             <button
               onClick={() => setSolanaVerifiedOpen(true)}
               className="w-full h-full text-left"
               data-testid="button-solana-verified"
             >
               <GlassCard 
-                className="p-3 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
+                className="p-2 md:p-4 cursor-pointer hover:border-[#14F195]/40 transition-all h-full max-h-[60px] md:max-h-none bg-gradient-to-br from-[#9945FF]/10 via-[#14F195]/5 to-[#9945FF]/10 border-[#14F195]/30 relative overflow-hidden"
                 hoverEffect
                 glow
               >
