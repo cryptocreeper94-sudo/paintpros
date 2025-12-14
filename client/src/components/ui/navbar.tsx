@@ -57,9 +57,12 @@ export function Navbar() {
           )}
         </button>
         
-        {/* Center: Title */}
+        {/* Center: Title - hidden on desktop when nav links are shown for demo tenant */}
         <div 
-          className="absolute left-1/2 -translate-x-1/2 text-white tracking-wide text-sm md:text-lg whitespace-nowrap"
+          className={cn(
+            "absolute left-1/2 -translate-x-1/2 text-white tracking-wide text-sm whitespace-nowrap pointer-events-none",
+            tenant.id === "demo" ? "md:hidden" : "md:text-lg"
+          )}
           style={{ fontFamily: 'Playfair Display, serif' }}
           data-testid="text-header-title"
         >
