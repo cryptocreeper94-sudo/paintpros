@@ -41,7 +41,7 @@ export function Navbar() {
         {/* Left: Hamburger Menu - offset left and up */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[70px] -mt-[25px]",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[50px] md:-ml-[70px] -mt-[25px]",
             tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
@@ -64,12 +64,12 @@ export function Navbar() {
         {/* Center: Title - full text, smaller font on mobile */}
         <div 
           className={cn(
-            "flex-1 text-center whitespace-nowrap -translate-x-[43px]",
+            "flex-1 text-center whitespace-nowrap -translate-x-[25px] md:-translate-x-[43px] px-1",
             tenant.id === "demo" 
-              ? "text-white text-[12px] md:text-xl lg:text-2xl"
-              : "text-[12px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
+              ? "text-white text-[14px] md:text-xl lg:text-2xl"
+              : "text-[14px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
           )}
-          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}
+          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.03em' }}
           data-testid="text-header-title"
         >
           {tenant.id === "demo" 
@@ -81,11 +81,11 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[15px]"
+          className="p-1 md:p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[8px] md:-translate-x-[15px]"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
-          {theme === "dark" ? <Sun className="w-5 h-5 text-accent" /> : <Moon className="w-5 h-5 text-white" />}
+          {theme === "dark" ? <Sun className="w-4 h-4 md:w-5 md:h-5 text-accent" /> : <Moon className="w-4 h-4 md:w-5 md:h-5 text-white" />}
         </button>
       </div>
     </header>
