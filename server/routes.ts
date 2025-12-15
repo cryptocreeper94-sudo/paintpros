@@ -343,6 +343,20 @@ export async function registerRoutes(
     res.redirect(`${config.iconPath}/icon-192.png`);
   });
 
+  // ============ CONTRACTOR APPLICATIONS ============
+  
+  // POST /api/contractor-applications - Submit contractor application
+  app.post("/api/contractor-applications", async (req, res) => {
+    try {
+      const applicationData = req.body;
+      console.log("Contractor application received:", applicationData);
+      res.status(201).json({ success: true, message: "Application submitted successfully" });
+    } catch (error) {
+      console.error("Error processing contractor application:", error);
+      res.status(500).json({ success: false, error: "Failed to submit application" });
+    }
+  });
+
   // ============ CONTACT FORM (Resend) ============
   
   // POST /api/contact - Send contact form email via Resend
