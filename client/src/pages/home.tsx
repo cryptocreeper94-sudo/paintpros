@@ -15,7 +15,7 @@ import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_sur
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import premiumMaterialsImage from "@assets/generated_images/premium_paint_materials_display.png";
 import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png";
-import warrantyImage from "@assets/generated_images/warranty_shield_certificate_badge.png";
+import warrantyImage from "@assets/generated_images/clean_warranty_shield_badge.png";
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
 import googleRatingImage from "@assets/generated_images/five_star_google_rating.png";
@@ -257,15 +257,28 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-warranty"
             >
-              <GlassCard className="p-2 md:p-4 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden items-center justify-center" hoverEffect>
-                <img 
-                  src={warrantyImage} 
-                  alt="Warranty guarantee" 
-                  className="w-[85%] h-[85%] object-contain"
-                />
-                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
-                  <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
-                    <ArrowRight className="w-3 h-3 md:w-5 md:h-5" />
+              <GlassCard className="p-3 md:p-4 flex h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+                {/* Badge on left */}
+                <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
+                  <img 
+                    src={warrantyImage} 
+                    alt="Warranty guarantee" 
+                    className="w-full h-full object-contain drop-shadow-lg"
+                  />
+                </div>
+                {/* Content on right */}
+                <div className="flex-1 flex flex-col justify-center pl-3 md:pl-4">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <ShieldCheck className="w-4 h-4 text-accent" />
+                    <span className="text-[10px] md:text-xs font-bold text-accent uppercase tracking-wider">Peace of Mind</span>
+                  </div>
+                  <h3 className="font-display font-bold text-sm md:text-xl mb-1">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
+                  <p className="text-[10px] md:text-sm text-muted-foreground leading-snug">
+                    Full coverage on labor & materials. We stand behind every project.
+                  </p>
+                  <div className="flex items-center gap-1 mt-2 text-accent">
+                    <span className="text-[9px] md:text-xs font-medium">Learn More</span>
+                    <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
               </GlassCard>
