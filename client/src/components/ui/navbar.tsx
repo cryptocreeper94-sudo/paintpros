@@ -46,14 +46,14 @@ export function Navbar() {
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={24} className="text-white" />
+            <X size={36} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={24} className="text-white" />
+            <Menu size={36} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-9 md:h-12 w-auto object-contain"
+              className="h-14 md:h-16 w-auto object-contain"
             />
           )}
         </button>
