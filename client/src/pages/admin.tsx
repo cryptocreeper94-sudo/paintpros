@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, TrendingUp, DollarSign, Award, ListTodo, Heart } from "lucide-react";
+import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, TrendingUp, DollarSign, Award, ListTodo, Heart, Eye } from "lucide-react";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { hover3D, hover3DSubtle, cardVariants, staggerContainer, iconContainerStyles, cardBackgroundStyles } from "@/lib/theme-effects";
 import { VersionHistory } from "@/components/version-history";
