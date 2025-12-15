@@ -61,7 +61,7 @@ export function PaintBuddy() {
   // Read language from localStorage on mount and listen for changes
   useEffect(() => {
     const updateLanguage = () => {
-      const storedLang = localStorage.getItem("crew-lead-language");
+      const storedLang = localStorage.getItem("rollie-language");
       setLanguage(storedLang === "es" ? "es" : "en");
     };
     
@@ -305,6 +305,37 @@ export function PaintBuddy() {
               {/* Header with controls */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
+                  {/* Language Toggle */}
+                  <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-0.5">
+                    <button
+                      onClick={() => {
+                        setLanguage("en");
+                        localStorage.setItem("rollie-language", "en");
+                      }}
+                      className={`px-2 py-1 text-xs font-medium rounded-full transition-all ${
+                        language === "en"
+                          ? "bg-amber-500 text-white"
+                          : "text-gray-600 dark:text-gray-300"
+                      }`}
+                      data-testid="button-lang-en"
+                    >
+                      EN
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLanguage("es");
+                        localStorage.setItem("rollie-language", "es");
+                      }}
+                      className={`px-2 py-1 text-xs font-medium rounded-full transition-all ${
+                        language === "es"
+                          ? "bg-amber-500 text-white"
+                          : "text-gray-600 dark:text-gray-300"
+                      }`}
+                      data-testid="button-lang-es"
+                    >
+                      ES
+                    </button>
+                  </div>
                   {/* Voice Gender Toggle */}
                   <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-0.5">
                     <button
