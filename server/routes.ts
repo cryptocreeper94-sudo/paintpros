@@ -2991,5 +2991,188 @@ Use occasional paint-related puns or references to keep things fun!`;
     }
   });
 
+  // ============ WEATHER API (ORBIT Weather System) ============
+
+  // GET /api/weather/geocode/:zip - Convert ZIP code to coordinates
+  app.get("/api/weather/geocode/:zip", async (req, res) => {
+    try {
+      const zip = req.params.zip;
+      
+      // Use Open-Meteo geocoding API (free, no key required)
+      const response = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(zip)}&count=1&language=en&format=json`
+      );
+      
+      if (!response.ok) {
+        throw new Error("Geocoding API failed");
+      }
+      
+      const data = await response.json();
+      
+      if (!data.results || data.results.length === 0) {
+        // Try US ZIP code lookup via nominatim
+        const nominatimResponse = await fetch(
+          `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1`,
+          { headers: { 'User-Agent': 'PaintPros.io/1.0' } }
+        );
+        
+        if (nominatimResponse.ok) {
+          const nominatimData = await nominatimResponse.json();
+          if (nominatimData.length > 0) {
+            const result = nominatimData[0];
+            res.json({
+              lat: parseFloat(result.lat),
+              lon: parseFloat(result.lon),
+              name: result.display_name.split(',')[0],
+              state: result.display_name.split(',')[1]?.trim() || '',
+              country: 'US'
+            });
+            return;
+          }
+        }
+        
+        res.status(404).json({ error: "Location not found" });
+        return;
+      }
+      
+      const result = data.results[0];
+      res.json({
+        lat: result.latitude,
+        lon: result.longitude,
+        name: result.name,
+        state: result.admin1 || '',
+        country: result.country || ''
+      });
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      res.status(500).json({ error: "Failed to geocode location" });
+    }
+  });
+
+  // GET /api/weather - Fetch current weather by coordinates
+  app.get("/api/weather", async (req, res) => {
+    try {
+      const { lat, lon } = req.query;
+      
+      if (!lat || !lon) {
+        res.status(400).json({ error: "lat and lon query parameters are required" });
+        return;
+      }
+      
+      // Use Open-Meteo API (free, no key required)
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`
+      );
+      
+      if (!response.ok) {
+        throw new Error("Weather API failed");
+      }
+      
+      const data = await response.json();
+      const current = data.current;
+      
+      // Map WMO weather codes to conditions and icons
+      const weatherCode = current.weather_code;
+      const isDay = current.is_day === 1;
+      
+      const { condition, description, icon } = getWeatherFromCode(weatherCode, isDay);
+      
+      // Convert wind direction degrees to compass
+      const windDirection = getWindDirection(current.wind_direction_10m);
+      
+      res.json({
+        temp: Math.round(current.temperature_2m),
+        feelsLike: Math.round(current.apparent_temperature),
+        condition,
+        description,
+        humidity: current.relative_humidity_2m,
+        windSpeed: Math.round(current.wind_speed_10m),
+        windDirection,
+        precipitation: current.precipitation,
+        pressure: Math.round(current.pressure_msl),
+        isDay,
+        icon,
+        alerts: [] // Open-Meteo free tier doesn't include alerts
+      });
+    } catch (error) {
+      console.error("Weather fetch error:", error);
+      res.status(500).json({ error: "Failed to fetch weather" });
+    }
+  });
+
+  // GET /api/weather/radar - Get radar tile URLs from RainViewer
+  app.get("/api/weather/radar", async (req, res) => {
+    try {
+      const response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
+      
+      if (!response.ok) {
+        throw new Error("RainViewer API failed");
+      }
+      
+      const data = await response.json();
+      
+      res.json({
+        generated: data.generated,
+        host: data.host,
+        radar: data.radar,
+        satellite: data.satellite
+      });
+    } catch (error) {
+      console.error("Radar fetch error:", error);
+      res.status(500).json({ error: "Failed to fetch radar data" });
+    }
+  });
+
   return httpServer;
+}
+
+// Helper: Convert WMO weather code to condition/description/icon
+function getWeatherFromCode(code: number, isDay: boolean): { condition: string; description: string; icon: string } {
+  const dayIcons: Record<number, { condition: string; description: string; icon: string }> = {
+    0: { condition: "Clear", description: "Clear sky", icon: "sun" },
+    1: { condition: "Mostly Clear", description: "Mainly clear", icon: "sun" },
+    2: { condition: "Partly Cloudy", description: "Partly cloudy", icon: "cloud-sun" },
+    3: { condition: "Overcast", description: "Overcast", icon: "cloud" },
+    45: { condition: "Foggy", description: "Fog", icon: "cloud-fog" },
+    48: { condition: "Foggy", description: "Depositing rime fog", icon: "cloud-fog" },
+    51: { condition: "Drizzle", description: "Light drizzle", icon: "cloud-drizzle" },
+    53: { condition: "Drizzle", description: "Moderate drizzle", icon: "cloud-drizzle" },
+    55: { condition: "Drizzle", description: "Dense drizzle", icon: "cloud-drizzle" },
+    56: { condition: "Freezing Drizzle", description: "Light freezing drizzle", icon: "cloud-drizzle" },
+    57: { condition: "Freezing Drizzle", description: "Dense freezing drizzle", icon: "cloud-drizzle" },
+    61: { condition: "Rain", description: "Slight rain", icon: "cloud-rain" },
+    63: { condition: "Rain", description: "Moderate rain", icon: "cloud-rain" },
+    65: { condition: "Heavy Rain", description: "Heavy rain", icon: "cloud-rain" },
+    66: { condition: "Freezing Rain", description: "Light freezing rain", icon: "cloud-rain" },
+    67: { condition: "Freezing Rain", description: "Heavy freezing rain", icon: "cloud-rain" },
+    71: { condition: "Snow", description: "Slight snowfall", icon: "cloud-snow" },
+    73: { condition: "Snow", description: "Moderate snowfall", icon: "cloud-snow" },
+    75: { condition: "Heavy Snow", description: "Heavy snowfall", icon: "cloud-snow" },
+    77: { condition: "Snow Grains", description: "Snow grains", icon: "cloud-snow" },
+    80: { condition: "Rain Showers", description: "Slight rain showers", icon: "cloud-rain" },
+    81: { condition: "Rain Showers", description: "Moderate rain showers", icon: "cloud-rain" },
+    82: { condition: "Heavy Showers", description: "Violent rain showers", icon: "cloud-rain" },
+    85: { condition: "Snow Showers", description: "Slight snow showers", icon: "cloud-snow" },
+    86: { condition: "Snow Showers", description: "Heavy snow showers", icon: "cloud-snow" },
+    95: { condition: "Thunderstorm", description: "Thunderstorm", icon: "cloud-lightning" },
+    96: { condition: "Thunderstorm", description: "Thunderstorm with slight hail", icon: "cloud-lightning" },
+    99: { condition: "Thunderstorm", description: "Thunderstorm with heavy hail", icon: "cloud-lightning" }
+  };
+  
+  const result = dayIcons[code] || { condition: "Unknown", description: "Unknown conditions", icon: "cloud" };
+  
+  // Swap day icons for night icons
+  if (!isDay) {
+    if (result.icon === "sun") result.icon = "moon";
+    if (result.icon === "cloud-sun") result.icon = "cloud-moon";
+  }
+  
+  return result;
+}
+
+// Helper: Convert wind direction degrees to compass direction
+function getWindDirection(degrees: number): string {
+  const directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  const index = Math.round(degrees / 22.5) % 16;
+  return directions[index];
 }
