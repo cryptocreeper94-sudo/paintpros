@@ -3295,7 +3295,18 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(400).json({ error: "PIN is required" });
         return;
       }
-      const crewLead = await storage.getCrewLeadByPin(pin, tenantId || "npp");
+      
+      // Try the specified tenant first
+      let crewLead = await storage.getCrewLeadByPin(pin, tenantId || "demo");
+      
+      // If not found, try other common tenants
+      if (!crewLead && tenantId !== "demo") {
+        crewLead = await storage.getCrewLeadByPin(pin, "demo");
+      }
+      if (!crewLead && tenantId !== "npp") {
+        crewLead = await storage.getCrewLeadByPin(pin, "npp");
+      }
+      
       if (!crewLead) {
         res.status(401).json({ error: "Invalid PIN" });
         return;

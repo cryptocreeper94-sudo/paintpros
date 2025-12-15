@@ -13,7 +13,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, Eye, TrendingUp, DollarSign, Award, ListTodo, Heart } from "lucide-react";
+import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, TrendingUp, DollarSign, Award, ListTodo, Heart } from "lucide-react";
+import { DashboardPreview } from "@/components/dashboard-preview";
 import { hover3D, hover3DSubtle, cardVariants, staggerContainer, iconContainerStyles, cardBackgroundStyles } from "@/lib/theme-effects";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
@@ -385,16 +386,19 @@ export default function Admin() {
                 <p className="text-sm text-muted-foreground">Lead & Deal Management</p>
               </div>
             </div>
-            {!isDemo && (
-              <motion.button
-                onClick={() => setShowPinChange(true)}
-                className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                data-testid="button-settings"
-              >
-                <Settings className="w-4 h-4 text-muted-foreground" />
-              </motion.button>
-            )}
+            <div className="flex items-center gap-2">
+              <DashboardPreview currentRole="admin" />
+              {!isDemo && (
+                <motion.button
+                  onClick={() => setShowPinChange(true)}
+                  className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  data-testid="button-settings"
+                >
+                  <Settings className="w-4 h-4 text-muted-foreground" />
+                </motion.button>
+              )}
+            </div>
           </div>
         </div>
 

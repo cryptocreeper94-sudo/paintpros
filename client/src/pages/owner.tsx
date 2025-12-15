@@ -36,6 +36,7 @@ import { useAccess } from "@/context/AccessContext";
 import { Lock } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
+import { DashboardPreview } from "@/components/dashboard-preview";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -322,16 +323,19 @@ export default function Owner() {
                 <p className="text-sm text-muted-foreground">Business overview and financials</p>
               </div>
             </div>
-            {!isDemo && (
-              <motion.button
-                onClick={() => setShowPinChangeModal(true)}
-                className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                data-testid="button-settings"
-              >
-                <Settings className="w-4 h-4 text-muted-foreground" />
-              </motion.button>
-            )}
+            <div className="flex items-center gap-2">
+              <DashboardPreview currentRole="owner" />
+              {!isDemo && (
+                <motion.button
+                  onClick={() => setShowPinChangeModal(true)}
+                  className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  data-testid="button-settings"
+                >
+                  <Settings className="w-4 h-4 text-muted-foreground" />
+                </motion.button>
+              )}
+            </div>
           </div>
         </div>
 
