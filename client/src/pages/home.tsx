@@ -421,9 +421,29 @@ export default function Home() {
                   />
                   <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
                     <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-3 h-3 md:w-6 md:h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-yellow-400 text-yellow-400 dark:fill-yellow-300 dark:text-yellow-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.8)]" : "text-yellow-400/40 dark:text-yellow-300/50"}`} />
-                      ))}
+                      {[...Array(5)].map((_, i) => {
+                        const rating = tenant.credentials?.googleRating || 0;
+                        const fillPercent = Math.min(1, Math.max(0, rating - i));
+                        const isFull = fillPercent >= 1;
+                        const isPartial = fillPercent > 0 && fillPercent < 1;
+                        const isEmpty = fillPercent <= 0;
+                        
+                        return (
+                          <div key={i} className="relative w-3 h-3 md:w-6 md:h-6">
+                            {/* Background empty star */}
+                            <Star className="absolute inset-0 w-full h-full text-yellow-400/40 dark:text-yellow-300/50" />
+                            {/* Filled star with clip for partial */}
+                            {!isEmpty && (
+                              <div 
+                                className="absolute inset-0 overflow-hidden"
+                                style={{ width: `${fillPercent * 100}%` }}
+                              >
+                                <Star className="w-3 h-3 md:w-6 md:h-6 fill-yellow-400 text-yellow-400 dark:fill-yellow-300 dark:text-yellow-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.8)]" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                     <div>
                       <p className="text-lg md:text-3xl font-bold font-display text-yellow-600 dark:text-yellow-300 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]">{tenant.credentials.googleRating}</p>
