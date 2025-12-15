@@ -12,6 +12,41 @@ const httpServer = createServer(app);
 // Track if we've already processed auto-deploy for this instance
 let autoDeployProcessed = false;
 
+/**
+ * Ensure default crew leads exist for all registered tenants
+ * This runs on every server start to guarantee PIN 3333 always works
+ */
+async function ensureDefaultCrewLeads(): Promise<void> {
+  const DEFAULT_PIN = "3333";
+  const tenants = [
+    { id: 'npp', email: 'crewlead@paintpros.io' },
+    { id: 'demo', email: 'crewlead@demo.paintpros.io' },
+  ];
+  
+  for (const tenant of tenants) {
+    try {
+      // Check if a crew lead with PIN 3333 already exists for this tenant
+      const existing = await storage.getCrewLeadByPin(DEFAULT_PIN, tenant.id);
+      if (!existing) {
+        console.log(`[seed] Creating default crew lead for tenant: ${tenant.id}`);
+        await storage.createCrewLead({
+          tenantId: tenant.id,
+          firstName: "Default",
+          lastName: "Crew Lead",
+          email: tenant.email,
+          phone: "615-555-0100",
+          pin: DEFAULT_PIN,
+          assignedBy: "system",
+          isActive: true,
+        });
+        console.log(`[seed] Default crew lead created for ${tenant.id} with PIN ${DEFAULT_PIN}`);
+      }
+    } catch (error) {
+      console.error(`[seed] Error ensuring crew lead for ${tenant.id}:`, error);
+    }
+  }
+}
+
 // Registered tenants for auto-deploy versioning
 // Both NPP and Demo get AUTO versioning on every publish
 const DEPLOY_TENANTS = [
@@ -231,6 +266,9 @@ app.use((req, res, next) => {
     },
     async () => {
       log(`serving on port ${port}`);
+      
+      // Ensure default crew leads exist for all tenants
+      await ensureDefaultCrewLeads();
       
       // Run automatic version bump on production deployment
       // This happens after server is ready to ensure database connection is established
