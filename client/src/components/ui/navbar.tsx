@@ -86,11 +86,11 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-1 md:p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[8px] md:-translate-x-[15px]"
+          className="p-2 md:p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 mr-2"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
-          {theme === "dark" ? <Sun className="w-4 h-4 md:w-5 md:h-5 text-accent" /> : <Moon className="w-4 h-4 md:w-5 md:h-5 text-white" />}
+          {theme === "dark" ? <Sun className="w-5 h-5 md:w-5 md:h-5 text-accent" /> : <Moon className="w-5 h-5 md:w-5 md:h-5 text-white" />}
         </button>
       </div>
     </header>
