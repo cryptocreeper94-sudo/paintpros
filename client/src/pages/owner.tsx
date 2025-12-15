@@ -24,6 +24,7 @@ import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
 import { DocumentCenter } from "@/components/document-center";
 import { TeamManagementCard } from "@/components/team-management-card";
+import { CRMCalendar } from "@/components/crm-calendar";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { VersionHistory } from "@/components/version-history";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -801,6 +802,13 @@ export default function Owner() {
             <BentoItem colSpan={12} rowSpan={2}>
               <motion.div className="h-full" variants={cardVariants} custom={12} whileHover={hover3DSubtle}>
                 <DocumentCenter />
+              </motion.div>
+            </BentoItem>
+
+            {/* CRM Calendar */}
+            <BentoItem colSpan={12} rowSpan={3}>
+              <motion.div className="h-full" variants={cardVariants} custom={13} whileHover={hover3DSubtle}>
+                <CRMCalendar />
               </motion.div>
             </BentoItem>
 

@@ -4272,8 +4272,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const dbUser = req.dbUser;
       const tenantId = dbUser.tenantId || "npp";
       
-      const { title, description, eventType, startTime, endTime, isAllDay, location, 
-              color, colorPresetId, assignedTo, leadId, estimateId, recurringPattern, 
+      const { title, description, eventType, startTime, endTime, isAllDay, allDay, location, 
+              color, colorCode, assignedTo, leadId, estimateId, recurringPattern, 
               recurringEndDate, notes, reminders } = req.body;
       
       const validated = insertCalendarEventSchema.parse({
@@ -4282,15 +4282,14 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         description,
         eventType: eventType || 'appointment',
         startTime: new Date(startTime),
-        endTime: endTime ? new Date(endTime) : null,
-        isAllDay: isAllDay || false,
+        endTime: endTime ? new Date(endTime) : new Date(startTime),
+        allDay: allDay ?? isAllDay ?? false,
         location,
-        color,
-        colorPresetId,
+        colorCode: colorCode || color || '#3B82F6',
         assignedTo,
         createdBy: dbUser.id,
-        leadId,
-        estimateId,
+        relatedLeadId: leadId,
+        relatedEstimateId: estimateId,
         recurringPattern,
         recurringEndDate: recurringEndDate ? new Date(recurringEndDate) : null,
         notes,
@@ -4335,8 +4334,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         return;
       }
       
-      const { title, description, eventType, startTime, endTime, isAllDay, location, 
-              color, colorPresetId, assignedTo, status, leadId, estimateId, 
+      const { title, description, eventType, startTime, endTime, isAllDay, allDay, location, 
+              color, colorCode, assignedTo, status, leadId, estimateId, 
               recurringPattern, recurringEndDate, notes } = req.body;
       
       const updates: any = {};
@@ -4345,14 +4344,15 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       if (eventType !== undefined) updates.eventType = eventType;
       if (startTime !== undefined) updates.startTime = new Date(startTime);
       if (endTime !== undefined) updates.endTime = endTime ? new Date(endTime) : null;
-      if (isAllDay !== undefined) updates.isAllDay = isAllDay;
+      if (allDay !== undefined) updates.allDay = allDay;
+      else if (isAllDay !== undefined) updates.allDay = isAllDay;
       if (location !== undefined) updates.location = location;
-      if (color !== undefined) updates.color = color;
-      if (colorPresetId !== undefined) updates.colorPresetId = colorPresetId;
+      if (colorCode !== undefined) updates.colorCode = colorCode;
+      else if (color !== undefined) updates.colorCode = color;
       if (assignedTo !== undefined) updates.assignedTo = assignedTo;
       if (status !== undefined) updates.status = status;
-      if (leadId !== undefined) updates.leadId = leadId;
-      if (estimateId !== undefined) updates.estimateId = estimateId;
+      if (leadId !== undefined) updates.relatedLeadId = leadId;
+      if (estimateId !== undefined) updates.relatedEstimateId = estimateId;
       if (recurringPattern !== undefined) updates.recurringPattern = recurringPattern;
       if (recurringEndDate !== undefined) updates.recurringEndDate = recurringEndDate ? new Date(recurringEndDate) : null;
       if (notes !== undefined) updates.notes = notes;

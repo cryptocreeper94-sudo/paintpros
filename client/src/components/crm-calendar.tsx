@@ -63,7 +63,7 @@ interface EventFormData {
 }
 
 function EventCard({ event, onClick }: { event: CalendarEvent; onClick: () => void }) {
-  const eventColor = event.color || EVENT_TYPES.find(t => t.value === event.eventType)?.defaultColor || '#3b82f6';
+  const eventColor = event.colorCode || EVENT_TYPES.find(t => t.value === event.eventType)?.defaultColor || '#3b82f6';
   
   return (
     <div
@@ -72,7 +72,7 @@ function EventCard({ event, onClick }: { event: CalendarEvent; onClick: () => vo
       style={{ backgroundColor: eventColor }}
       data-testid={`calendar-event-${event.id}`}
     >
-      {!event.isAllDay && event.startTime && (
+      {!event.allDay && event.startTime && (
         <span className="font-medium mr-1">
           {format(new Date(event.startTime), 'h:mm a')}
         </span>
@@ -288,7 +288,7 @@ function DayView({
               >
                 <div className="space-y-1">
                   {hourEvents.map((event) => {
-                    const eventColor = event.color || EVENT_TYPES.find(t => t.value === event.eventType)?.defaultColor || '#3b82f6';
+                    const eventColor = event.colorCode || EVENT_TYPES.find(t => t.value === event.eventType)?.defaultColor || '#3b82f6';
                     return (
                       <div
                         key={event.id}
@@ -471,9 +471,9 @@ export function CRMCalendar() {
       startTime: format(eventStart, 'HH:mm'),
       endDate: format(eventEnd, 'yyyy-MM-dd'),
       endTime: format(eventEnd, 'HH:mm'),
-      isAllDay: event.isAllDay || false,
+      isAllDay: event.allDay || false,
       location: event.location || '',
-      color: event.color || '#3b82f6',
+      color: event.colorCode || '#3b82f6',
       assignedTo: event.assignedTo || '',
       notes: event.notes || '',
       reminderMinutes: 15,
