@@ -358,7 +358,7 @@ export default function Home() {
                 <img 
                   src={mapImage} 
                   alt={`${cityName} Service Area`}
-                  className="w-full h-full object-cover opacity-100 group-hover:opacity-100 transition-opacity duration-500"
+                  className="w-full h-full object-cover object-left opacity-100 group-hover:opacity-100 transition-opacity duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
                 <div className="absolute bottom-2 md:bottom-6 left-2 md:left-6 right-2 md:right-6">
