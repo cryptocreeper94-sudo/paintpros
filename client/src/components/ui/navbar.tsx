@@ -38,10 +38,10 @@ export function Navbar() {
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="flex items-center h-12 md:h-14 px-3 md:px-4">
-        {/* Left: Hamburger Menu */}
+        {/* Left: Hamburger Menu - shifted left 40px */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center -ml-10",
             tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
@@ -49,14 +49,14 @@ export function Navbar() {
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={28} className="text-white" />
+            <X size={31} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={28} className="text-white" />
+            <Menu size={31} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-10 md:h-12 w-auto object-contain"
+              className="h-11 md:h-[52px] w-auto object-contain"
             />
           )}
         </button>
