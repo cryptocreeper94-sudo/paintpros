@@ -6,6 +6,7 @@ import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
+import { DocumentCenter } from "@/components/document-center";
 import { TeamManagementCard } from "@/components/team-management-card";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -813,6 +814,19 @@ export default function Admin() {
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" hoverEffect={false}>
                   <TeamManagementCard />
                 </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            {/* Document Center */}
+            <BentoItem colSpan={12} rowSpan={2}>
+              <motion.div 
+                className="h-full" 
+                variants={cardVariants}
+                custom={12}
+                whileHover={hover3DSubtle}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <DocumentCenter />
               </motion.div>
             </BentoItem>
 

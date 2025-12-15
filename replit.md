@@ -26,9 +26,10 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 - **ORBIT Weather System:** Displays real-time weather in the footer and a full modal with animated radar. Uses ZIP code search and local storage for persistence.
 - **Crew Management System:** Provides a dashboard for crew leads with time tracking, job notes, and incident reporting. Integrated into Admin, Owner, and Developer dashboards.
 - **Internal Messaging System:** A real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges.
+- **PDF Document Center:** A comprehensive document management system with digital signature capabilities. Supports contracts, estimates, invoices, and proposals. Features include document creation, version tracking, and digital signature capture via react-signature-canvas. Integrated into Admin and Owner dashboards. API routes include role-based authentication and tenant scoping for multi-tenant isolation.
 
 ### System Design Choices
-- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`) and Internal Messaging (`conversations`, `conversation_participants`, `messages`).
+- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`), Internal Messaging (`conversations`, `conversation_participants`, `messages`), and Document Center (`documents`, `document_versions`, `document_signatures`).
 - **File Structure:** Organized with `client/src` for frontend components, pages, config, and context; `shared/schema.ts` for database models; and `server/` for data access and API routes.
 
 ## External Dependencies
@@ -50,7 +51,14 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.1.4** - Current Release
+- **v1.1.5** - Current Release
+  - PDF Document Center with digital signature capabilities
+  - Document management for contracts, estimates, invoices, and proposals
+  - Digital signature capture via react-signature-canvas
+  - Document versioning and status tracking (draft, pending, signed, archived)
+  - Role-based authentication with tenant scoping for all document endpoints
+  - Document Center integrated into Admin and Owner dashboards
+- **v1.1.4**
   - Added Spanish language support (i18n) for Crew Lead dashboard
   - AI Assistant (Rollie/PaintBuddy) now responds in Spanish when language is set to Spanish
   - Speech recognition supports both English (en-US) and Spanish (es-ES)

@@ -3972,9 +3972,18 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // GET /api/documents/:id - Get single document with versions and signatures
   app.get("/api/documents/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
     try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
       const doc = await storage.getDocumentById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      
+      // Verify tenant access
+      if (doc.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
         return;
       }
       
@@ -4024,11 +4033,21 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/documents/:id - Update document
   app.patch("/api/documents/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
     try {
-      const doc = await storage.updateDocument(req.params.id, req.body);
-      if (!doc) {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      // Verify document exists and belongs to tenant
+      const existing = await storage.getDocumentById(req.params.id);
+      if (!existing) {
         res.status(404).json({ error: "Document not found" });
         return;
       }
+      if (existing.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
+      const doc = await storage.updateDocument(req.params.id, req.body);
       res.json(doc);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -4039,6 +4058,20 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // DELETE /api/documents/:id - Delete document and all related data
   app.delete("/api/documents/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
     try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      // Verify document exists and belongs to tenant
+      const existing = await storage.getDocumentById(req.params.id);
+      if (!existing) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      if (existing.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
       await storage.deleteDocument(req.params.id);
       res.json({ success: true });
     } catch (error) {
@@ -4051,6 +4084,19 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   app.post("/api/documents/:id/versions", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
     try {
       const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      // Verify document exists and belongs to tenant
+      const doc = await storage.getDocumentById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      if (doc.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
       const existingVersions = await storage.getDocumentVersions(req.params.id);
       const nextVersionNumber = existingVersions.length > 0 
         ? Math.max(...existingVersions.map(v => v.versionNumber)) + 1 
@@ -4072,9 +4118,34 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   });
 
   // POST /api/documents/:id/signatures - Add signature to document
+  // Note: This endpoint is intentionally less restrictive to allow customers to sign documents via shared links
+  // However, we validate that the document exists and is in a signable state
   app.post("/api/documents/:id/signatures", async (req: any, res) => {
     try {
-      const { signerName, signerEmail, signatureData, signatureType, ipAddress } = req.body;
+      const { signerName, signerEmail, signatureData, signatureType } = req.body;
+      
+      // First verify the document exists and is pending signature
+      const doc = await storage.getDocumentById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      
+      if (doc.status === 'signed') {
+        res.status(400).json({ error: "Document has already been signed" });
+        return;
+      }
+      
+      if (doc.status === 'archived' || doc.status === 'expired') {
+        res.status(400).json({ error: "Document is no longer available for signing" });
+        return;
+      }
+      
+      // Validate required fields
+      if (!signerName || !signerEmail || !signatureData) {
+        res.status(400).json({ error: "Signer name, email, and signature are required" });
+        return;
+      }
       
       const validated = insertDocumentSignatureSchema.parse({
         documentId: req.params.id,
@@ -4082,16 +4153,13 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         signerEmail,
         signatureData,
         signatureType: signatureType || 'drawn',
-        ipAddress: ipAddress || req.ip,
+        ipAddress: req.ip || 'unknown',
       });
       
       const signature = await storage.createDocumentSignature(validated);
       
-      // Update document status to signed if this is the first signature
-      const doc = await storage.getDocumentById(req.params.id);
-      if (doc && doc.status === 'pending') {
-        await storage.updateDocument(req.params.id, { status: 'signed' });
-      }
+      // Update document status to signed
+      await storage.updateDocument(req.params.id, { status: 'signed' });
       
       res.status(201).json(signature);
     } catch (error) {
@@ -4100,9 +4168,23 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
-  // GET /api/documents/:id/signatures - Get all signatures for a document
-  app.get("/api/documents/:id/signatures", async (req: any, res) => {
+  // GET /api/documents/:id/signatures - Get all signatures for a document (authenticated)
+  app.get("/api/documents/:id/signatures", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
     try {
+      const doc = await storage.getDocumentById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      
+      // Verify tenant access
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      if (doc.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
       const signatures = await storage.getDocumentSignatures(req.params.id);
       res.json(signatures);
     } catch (error) {
