@@ -28,6 +28,8 @@ import type { SeoTag, Lead } from "@shared/schema";
 import { format } from "date-fns";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import { useTenant } from "@/context/TenantContext";
+import { useAccess } from "@/context/AccessContext";
+import { Lock } from "lucide-react";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -53,6 +55,7 @@ export default function Owner() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const queryClient = useQueryClient();
+  const { login, currentUser, canManageSEO } = useAccess();
 
   useEffect(() => {
     const initPin = async () => {
@@ -175,6 +178,7 @@ export default function Owner() {
       
       setCurrentPin(pin);
       setIsAuthenticated(true);
+      login("owner");
       
       if (data.mustChangePin) {
         setShowPinChangeModal(true);
@@ -271,6 +275,26 @@ export default function Owner() {
                 <div>
                   <p className="font-bold text-gold-400 text-sm">Demo Mode - Private Owner Control Panel</p>
                   <p className="text-xs text-muted-foreground">PIN-protected access for SEO, analytics, and business management. <span className="text-gold-400 font-medium">SEO tracking is live!</span></p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {!isDemo && currentUser.role === "owner" && !canManageSEO() && (
+          <motion.div 
+            className="max-w-7xl mx-auto mb-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-amber-500/20 border border-amber-500/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-amber-500/20">
+                  <Lock className="w-4 h-4 text-amber-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-amber-400 text-sm">View Only Mode - Welcome, {currentUser.userName}!</p>
+                  <p className="text-xs text-muted-foreground">You can view all data but editing is disabled until launch. Contact admin for full access.</p>
                 </div>
               </div>
             </div>
@@ -411,16 +435,18 @@ export default function Owner() {
                         <p className="text-xs text-muted-foreground">{seoTags.length} tags</p>
                       </div>
                     </div>
-                  <motion.button
-                    onClick={() => setShowAddForm(!showAddForm)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 transition-colors text-sm"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    data-testid="button-add-seo-tag"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Add</span>
-                  </motion.button>
+                  {canManageSEO() && (
+                    <motion.button
+                      onClick={() => setShowAddForm(!showAddForm)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 transition-colors text-sm"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      data-testid="button-add-seo-tag"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Add</span>
+                    </motion.button>
+                  )}
                 </div>
 
                 <AnimatePresence>

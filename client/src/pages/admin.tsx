@@ -22,6 +22,8 @@ import { format } from "date-fns";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { useTenant } from "@/context/TenantContext";
+import { useAccess } from "@/context/AccessContext";
+import { Zap } from "lucide-react";
 
 const DEFAULT_PIN = "4444";
 
@@ -35,6 +37,7 @@ export default function Admin() {
   const [showPinChange, setShowPinChange] = useState(false);
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
   const queryClient = useQueryClient();
+  const { login, currentUser, canEdit } = useAccess();
 
   useEffect(() => {
     const initPin = async () => {
@@ -128,6 +131,7 @@ export default function Admin() {
       
       setCurrentPin(pin);
       setIsAuthenticated(true);
+      login("admin");
       
       if (data.mustChangePin) {
         setShowPinChange(true);
@@ -215,6 +219,26 @@ export default function Admin() {
                 <div>
                   <p className="font-bold text-blue-400 text-sm">Demo Mode - Private Back-Office Control Panel</p>
                   <p className="text-xs text-muted-foreground">PIN-protected access for your operations team.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {!isDemo && canEdit() && currentUser.role === "admin" && (
+          <motion.div 
+            className="max-w-7xl mx-auto mb-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 via-teal-500/10 to-green-500/20 border border-green-500/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-green-500/20">
+                  <Zap className="w-4 h-4 text-green-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-green-400 text-sm">Live Access - Welcome, {currentUser.userName}!</p>
+                  <p className="text-xs text-muted-foreground">Full database access enabled. All changes sync in real-time.</p>
                 </div>
               </div>
             </div>
