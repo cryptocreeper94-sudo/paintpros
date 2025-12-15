@@ -37,7 +37,7 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="flex items-center justify-between py-1 gap-1 overflow-hidden">
+      <div className="flex items-center justify-between py-1 gap-1">
         {/* Left: Hamburger Menu - offset left and up */}
         <button 
           className={cn(
