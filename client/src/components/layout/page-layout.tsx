@@ -18,7 +18,7 @@ export function PageLayout({ children }: PageLayoutProps) {
         <img 
           src={paintRollerWatermark} 
           alt="" 
-          className="w-[150vw] max-w-none h-auto opacity-35 dark:opacity-35"
+          className="w-[150vw] max-w-none h-auto opacity-35 dark:opacity-20 dark:invert dark:brightness-50 dark:contrast-75"
         />
       </div>
       <Navbar />
