@@ -36,6 +36,9 @@ import {
   type Conversation, type InsertConversation, conversations,
   type ConversationParticipant, type InsertConversationParticipant, conversationParticipants,
   type Message, type InsertMessage, messages,
+  type Document, type InsertDocument, documents,
+  type DocumentVersion, type InsertDocumentVersion, documentVersions,
+  type DocumentSignature, type InsertDocumentSignature, documentSignatures,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -277,6 +280,22 @@ export interface IStorage {
   getMessages(conversationId: string, limit?: number): Promise<Message[]>;
   createMessage(data: InsertMessage): Promise<Message>;
   searchUsersByRole(tenantId: string): Promise<{id: string, displayName: string, role: string}[]>;
+  
+  // Document Center
+  createDocument(doc: InsertDocument): Promise<Document>;
+  getDocuments(tenantId: string): Promise<Document[]>;
+  getDocumentById(id: string): Promise<Document | undefined>;
+  getDocumentsByType(tenantId: string, documentType: string): Promise<Document[]>;
+  updateDocument(id: string, updates: Partial<InsertDocument>): Promise<Document | undefined>;
+  deleteDocument(id: string): Promise<void>;
+  
+  // Document Versions
+  createDocumentVersion(version: InsertDocumentVersion): Promise<DocumentVersion>;
+  getDocumentVersions(documentId: string): Promise<DocumentVersion[]>;
+  
+  // Document Signatures
+  createDocumentSignature(signature: InsertDocumentSignature): Promise<DocumentSignature>;
+  getDocumentSignatures(documentId: string): Promise<DocumentSignature[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1836,6 +1855,70 @@ export class DatabaseStorage implements IStorage {
     }
     
     return userList;
+  }
+
+  // Document Center
+  async createDocument(doc: InsertDocument): Promise<Document> {
+    const [result] = await db.insert(documents).values(doc).returning();
+    return result;
+  }
+
+  async getDocuments(tenantId: string): Promise<Document[]> {
+    return await db.select().from(documents)
+      .where(eq(documents.tenantId, tenantId))
+      .orderBy(desc(documents.createdAt));
+  }
+
+  async getDocumentById(id: string): Promise<Document | undefined> {
+    const [result] = await db.select().from(documents).where(eq(documents.id, id));
+    return result;
+  }
+
+  async getDocumentsByType(tenantId: string, documentType: string): Promise<Document[]> {
+    return await db.select().from(documents)
+      .where(and(
+        eq(documents.tenantId, tenantId),
+        eq(documents.documentType, documentType)
+      ))
+      .orderBy(desc(documents.createdAt));
+  }
+
+  async updateDocument(id: string, updates: Partial<InsertDocument>): Promise<Document | undefined> {
+    const [result] = await db.update(documents)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(documents.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteDocument(id: string): Promise<void> {
+    await db.delete(documentSignatures).where(eq(documentSignatures.documentId, id));
+    await db.delete(documentVersions).where(eq(documentVersions.documentId, id));
+    await db.delete(documents).where(eq(documents.id, id));
+  }
+
+  // Document Versions
+  async createDocumentVersion(version: InsertDocumentVersion): Promise<DocumentVersion> {
+    const [result] = await db.insert(documentVersions).values(version).returning();
+    return result;
+  }
+
+  async getDocumentVersions(documentId: string): Promise<DocumentVersion[]> {
+    return await db.select().from(documentVersions)
+      .where(eq(documentVersions.documentId, documentId))
+      .orderBy(desc(documentVersions.versionNumber));
+  }
+
+  // Document Signatures
+  async createDocumentSignature(signature: InsertDocumentSignature): Promise<DocumentSignature> {
+    const [result] = await db.insert(documentSignatures).values(signature).returning();
+    return result;
+  }
+
+  async getDocumentSignatures(documentId: string): Promise<DocumentSignature[]> {
+    return await db.select().from(documentSignatures)
+      .where(eq(documentSignatures.documentId, documentId))
+      .orderBy(desc(documentSignatures.signedAt));
   }
 }
 
