@@ -173,7 +173,15 @@ Location: `server/solana.ts`
 - Document Asset system with opt-in blockchain hashing
 - Per-tenant hallmark numbering (e.g., NPP-000000000-02)
 
-## Recent Updates (v1.0.6)
+## Recent Updates (v1.1.4)
+- Pre-publish sweep: Full system verification completed
+- Role-based access control refinement for Owner and Area Manager dashboards
+- AccessContext with canViewSalesData property for sales feature placeholders
+- Clean LSP diagnostics and console logs
+- All 4 dashboards verified working (Admin, Owner, Area Manager, Developer)
+- Authentication flows verified (PIN-based access)
+
+### Previous (v1.1.x)
 - Live Visitors tracking card on Admin, Owner, and Developer dashboards
 - Clickable analytics metric cards with explanation modals
 - Enhanced real-time visitor monitoring via page views API
