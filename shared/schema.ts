@@ -125,17 +125,27 @@ export type SeoTag = typeof seoTags.$inferSelect;
 
 // ============ CRM TABLES ============
 
-// CRM Deals - Sales pipeline
+// CRM Deals - Sales pipeline and Jobs pipeline
 export const crmDeals = pgTable("crm_deals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
   value: decimal("value", { precision: 10, scale: 2 }).default("0"),
-  stage: text("stage").notNull().default("new_lead"), // new_lead, quoted, negotiating, won, lost
+  stage: text("stage").notNull().default("new_lead"), // Sales: new_lead, quoted, negotiating, won, lost | Jobs: project_accepted, scheduled, in_progress, touch_ups, complete
   leadId: varchar("lead_id").references(() => leads.id),
   probability: integer("probability").default(50),
   expectedCloseDate: timestamp("expected_close_date"),
   ownerId: text("owner_id"),
   notes: text("notes"),
+  // Pipeline type: sales or jobs
+  pipelineType: text("pipeline_type").default("sales"), // "sales" or "jobs"
+  // Job-specific fields (used when pipelineType = "jobs")
+  crewLeadId: varchar("crew_lead_id"),
+  crewLeadName: text("crew_lead_name"),
+  jobStartDate: timestamp("job_start_date"),
+  jobEndDate: timestamp("job_end_date"),
+  invoiceNumber: text("invoice_number"),
+  jobAddress: text("job_address"),
+  convertedFromDealId: varchar("converted_from_deal_id"), // Reference to original sales deal
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

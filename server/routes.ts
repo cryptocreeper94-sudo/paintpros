@@ -723,6 +723,48 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/crm/deals/:id/convert-to-job - Convert a won deal to a job
+  app.post("/api/crm/deals/:id/convert-to-job", async (req, res) => {
+    try {
+      const existingDeal = await storage.getCrmDealById(req.params.id);
+      if (!existingDeal) {
+        res.status(404).json({ error: "Deal not found" });
+        return;
+      }
+      
+      const { crewLeadId, crewLeadName, jobStartDate, jobEndDate, invoiceNumber, jobAddress } = req.body;
+      
+      // Create a new job entry based on the won deal
+      const jobData = {
+        title: existingDeal.title,
+        value: existingDeal.value,
+        stage: "project_accepted",
+        pipelineType: "jobs",
+        crewLeadId: crewLeadId || null,
+        crewLeadName: crewLeadName || null,
+        jobStartDate: jobStartDate ? new Date(jobStartDate) : null,
+        jobEndDate: jobEndDate ? new Date(jobEndDate) : null,
+        invoiceNumber: invoiceNumber || null,
+        jobAddress: jobAddress || null,
+        convertedFromDealId: existingDeal.id,
+        leadId: existingDeal.leadId,
+        notes: existingDeal.notes,
+      };
+      
+      const newJob = await storage.createCrmDeal(jobData);
+      
+      // Mark the original deal as converted (optional: keep it in won state or update notes)
+      await storage.updateCrmDeal(existingDeal.id, { 
+        notes: `${existingDeal.notes || ""}\n[Converted to Job: ${newJob.id}]`.trim()
+      });
+      
+      res.status(201).json(newJob);
+    } catch (error) {
+      console.error("Error converting deal to job:", error);
+      res.status(500).json({ error: "Failed to convert deal to job" });
+    }
+  });
+
   // ============ CRM ACTIVITIES ============
   
   // GET /api/crm/activities - Get all activities

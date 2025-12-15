@@ -3,13 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CrmDeal } from "@shared/schema";
+import type { CrmDeal, CrewLead } from "@shared/schema";
 import { format } from "date-fns";
 import { 
   DollarSign, Plus, ChevronRight, Edit2, Trash2, X, Check,
   TrendingUp, AlertCircle, Clock, Trophy, XCircle, Briefcase,
-  CalendarCheck, Play, Wrench, CheckCircle2, Users, FileText
+  CalendarCheck, Play, Wrench, CheckCircle2, Users, FileText,
+  ArrowRightCircle, Calendar, MapPin, Receipt, User
 } from "lucide-react";
 
 const SALES_STAGES = [
@@ -30,6 +32,15 @@ const JOBS_STAGES = [
 
 type PipelineMode = "sales" | "jobs";
 
+interface JobDetails {
+  crewLeadId: string;
+  crewLeadName: string;
+  jobStartDate: string;
+  jobEndDate: string;
+  invoiceNumber: string;
+  jobAddress: string;
+}
+
 interface DealsPipelineProps {
   accentColor?: string;
   defaultMode?: PipelineMode;
@@ -44,6 +55,16 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingDeal, setEditingDeal] = useState<CrmDeal | null>(null);
   const [newDeal, setNewDeal] = useState({ title: "", value: "", stage: "" });
+  const [convertingDeal, setConvertingDeal] = useState<CrmDeal | null>(null);
+  const [jobDetails, setJobDetails] = useState<JobDetails>({
+    crewLeadId: "",
+    crewLeadName: "",
+    jobStartDate: "",
+    jobEndDate: "",
+    invoiceNumber: "",
+    jobAddress: "",
+  });
+  const [viewingJob, setViewingJob] = useState<CrmDeal | null>(null);
   
   const queryClient = useQueryClient();
 
@@ -63,6 +84,15 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
     },
   });
 
+  const { data: crewLeads = [] } = useQuery<CrewLead[]>({
+    queryKey: ["/api/crew/leads"],
+    queryFn: async () => {
+      const res = await fetch("/api/crew/leads");
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
   const { data: pipelineSummary = [] } = useQuery<{ stage: string; count: number; totalValue: string }[]>({
     queryKey: ["/api/crm/deals/pipeline/summary"],
     queryFn: async () => {
@@ -73,11 +103,11 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
   });
 
   const createDealMutation = useMutation({
-    mutationFn: async (deal: { title: string; value: string; stage: string }) => {
+    mutationFn: async (deal: { title: string; value: string; stage: string; pipelineType?: string }) => {
       const res = await fetch("/api/crm/deals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(deal),
+        body: JSON.stringify({ ...deal, pipelineType: pipelineMode }),
       });
       if (!res.ok) throw new Error("Failed to create deal");
       return res.json();
@@ -104,6 +134,7 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
       queryClient.invalidateQueries({ queryKey: ["/api/crm/deals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/deals/pipeline/summary"] });
       setEditingDeal(null);
+      setViewingJob(null);
     },
   });
 
@@ -118,6 +149,32 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
     },
   });
 
+  const convertToJobMutation = useMutation({
+    mutationFn: async ({ dealId, jobData }: { dealId: string; jobData: JobDetails }) => {
+      const res = await fetch(`/api/crm/deals/${dealId}/convert-to-job`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(jobData),
+      });
+      if (!res.ok) throw new Error("Failed to convert deal to job");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/deals"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crm/deals/pipeline/summary"] });
+      setConvertingDeal(null);
+      setJobDetails({
+        crewLeadId: "",
+        crewLeadName: "",
+        jobStartDate: "",
+        jobEndDate: "",
+        invoiceNumber: "",
+        jobAddress: "",
+      });
+      setPipelineMode("jobs");
+    },
+  });
+
   const handleAddDeal = (e: React.FormEvent) => {
     e.preventDefault();
     if (newDeal.title.trim()) {
@@ -128,14 +185,38 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
     }
   };
 
-  const getStageInfo = (stageId: string) => {
-    return STAGES.find(s => s.id === stageId) || STAGES[0];
+  const handleConvertToJob = () => {
+    if (convertingDeal) {
+      const selectedCrewLead = crewLeads.find(c => c.id === jobDetails.crewLeadId);
+      convertToJobMutation.mutate({
+        dealId: convertingDeal.id,
+        jobData: {
+          ...jobDetails,
+          crewLeadName: selectedCrewLead?.name || jobDetails.crewLeadName,
+        },
+      });
+    }
   };
 
+  const getStageInfo = (stageId: string) => {
+    const allStages = [...SALES_STAGES, ...JOBS_STAGES];
+    return allStages.find(s => s.id === stageId) || STAGES[0];
+  };
+
+  const salesStageIds = SALES_STAGES.map(s => s.id);
+  const jobsStageIds = JOBS_STAGES.map(s => s.id);
+
   const filteredDeals = deals.filter(d => {
-    const stageIds = STAGES.map(s => s.id);
-    return stageIds.includes(d.stage);
+    if (pipelineMode === "sales") {
+      return salesStageIds.includes(d.stage) && (!d.pipelineType || d.pipelineType === "sales");
+    } else {
+      return jobsStageIds.includes(d.stage) || d.pipelineType === "jobs";
+    }
   });
+
+  const wonDealsReadyToConvert = deals.filter(
+    d => d.stage === "won" && (!d.pipelineType || d.pipelineType === "sales")
+  );
 
   const dealsByStage = STAGES.reduce((acc, stage) => {
     acc[stage.id] = filteredDeals.filter(d => d.stage === stage.id);
@@ -310,7 +391,9 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
             <p className="text-sm text-muted-foreground/70 mt-1">
               {pipelineMode === "sales" 
                 ? "Create your first deal to track your sales pipeline"
-                : "Add a job to track project progress"
+                : wonDealsReadyToConvert.length > 0
+                  ? `${wonDealsReadyToConvert.length} won deal(s) ready to convert`
+                  : "Win a deal in Sales Pipeline to create jobs"
               }
             </p>
           </div>
@@ -318,6 +401,8 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
           filteredDeals.map((deal, index) => {
             const stageInfo = getStageInfo(deal.stage);
             const Icon = stageInfo.icon;
+            const isJob = pipelineMode === "jobs";
+            const isWonDeal = deal.stage === "won" && pipelineMode === "sales";
             
             return (
               <motion.div
@@ -325,62 +410,297 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.03 }}
-                className="flex items-center justify-between gap-2 sm:gap-4 p-3 sm:p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                className="flex flex-col gap-2 p-3 sm:p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                 data-testid={`deal-row-${deal.id}`}
               >
-                <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${stageInfo.color}/20 flex items-center justify-center flex-shrink-0`}>
-                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stageInfo.textColor}`} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate text-sm sm:text-base">{deal.title}</p>
-                    <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
-                      <span className={`px-1.5 sm:px-2 py-0.5 rounded-full ${stageInfo.color}/20 ${stageInfo.textColor}`}>
-                        {'shortLabel' in stageInfo ? stageInfo.shortLabel : stageInfo.label}
-                      </span>
-                      <span>${parseFloat(deal.value || "0").toLocaleString()}</span>
+                <div className="flex items-center justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${stageInfo.color}/20 flex items-center justify-center flex-shrink-0`}>
+                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stageInfo.textColor}`} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate text-sm sm:text-base">{deal.title}</p>
+                      <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
+                        <span className={`px-1.5 sm:px-2 py-0.5 rounded-full ${stageInfo.color}/20 ${stageInfo.textColor}`}>
+                          {'shortLabel' in stageInfo ? stageInfo.shortLabel : stageInfo.label}
+                        </span>
+                        <span>${parseFloat(deal.value || "0").toLocaleString()}</span>
+                        {isJob && deal.invoiceNumber && (
+                          <span className="flex items-center gap-1">
+                            <Receipt className="w-3 h-3" />
+                            {deal.invoiceNumber}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    {isWonDeal && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setConvertingDeal(deal)}
+                        className="text-green-400 border-green-500/30 hover:bg-green-500/10"
+                        data-testid={`button-convert-${deal.id}`}
+                      >
+                        <ArrowRightCircle className="w-4 h-4 mr-1" />
+                        <span className="hidden sm:inline">Convert to Job</span>
+                        <span className="sm:hidden">Job</span>
+                      </Button>
+                    )}
+                    {isJob && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setViewingJob(deal)}
+                        data-testid={`button-view-job-${deal.id}`}
+                      >
+                        <FileText className="w-4 h-4" />
+                      </Button>
+                    )}
+                    <select
+                      value={deal.stage}
+                      onChange={(e) => updateDealMutation.mutate({ id: deal.id, updates: { stage: e.target.value } })}
+                      className="bg-black/5 dark:bg-white/5 border border-border dark:border-white/20 rounded-lg px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs max-w-[80px] sm:max-w-none"
+                      data-testid={`select-stage-${deal.id}`}
+                    >
+                      {STAGES.map(s => (
+                        <option key={s.id} value={s.id} className="bg-background">
+                          {'shortLabel' in s ? s.shortLabel : s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteDealMutation.mutate(deal.id)}
+                      className="text-red-400 hover:text-red-500 hover:bg-red-500/20"
+                      data-testid={`button-delete-deal-${deal.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <select
-                    value={deal.stage}
-                    onChange={(e) => updateDealMutation.mutate({ id: deal.id, updates: { stage: e.target.value } })}
-                    className="bg-black/5 dark:bg-white/5 border border-border dark:border-white/20 rounded-lg px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs max-w-[80px] sm:max-w-none"
-                    data-testid={`select-stage-${deal.id}`}
-                  >
-                    {STAGES.map(s => (
-                      <option key={s.id} value={s.id} className="bg-background">
-                        {'shortLabel' in s ? s.shortLabel : s.label}
-                      </option>
-                    ))}
-                  </select>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteDealMutation.mutate(deal.id)}
-                    className="text-red-400 hover:text-red-500 hover:bg-red-500/20"
-                    data-testid={`button-delete-deal-${deal.id}`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
+                
+                {isJob && (deal.crewLeadName || deal.jobStartDate || deal.jobAddress) && (
+                  <div className="flex flex-wrap gap-2 text-[10px] sm:text-xs text-muted-foreground pl-10 sm:pl-13">
+                    {deal.crewLeadName && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 rounded-full text-blue-400">
+                        <User className="w-3 h-3" />
+                        {deal.crewLeadName}
+                      </span>
+                    )}
+                    {deal.jobStartDate && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-purple-500/10 rounded-full text-purple-400">
+                        <Calendar className="w-3 h-3" />
+                        {format(new Date(deal.jobStartDate), "MMM d")}
+                        {deal.jobEndDate && ` - ${format(new Date(deal.jobEndDate), "MMM d")}`}
+                      </span>
+                    )}
+                    {deal.jobAddress && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 rounded-full text-green-400">
+                        <MapPin className="w-3 h-3" />
+                        <span className="truncate max-w-[150px]">{deal.jobAddress}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
               </motion.div>
             );
           })
         )}
       </div>
       
-      {pipelineMode === "jobs" && deals.filter(d => d.stage === "won").length > 0 && (
-        <div className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+      {pipelineMode === "sales" && wonDealsReadyToConvert.length > 0 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20"
+        >
           <p className="text-xs text-green-400 flex items-center gap-2">
             <Trophy className="w-4 h-4" />
             <span>
-              {deals.filter(d => d.stage === "won").length} won deal(s) in Sales Pipeline ready to convert to jobs
+              {wonDealsReadyToConvert.length} won deal(s) ready to convert to jobs
             </span>
           </p>
-        </div>
+        </motion.div>
       )}
+
+      <Dialog open={!!convertingDeal} onOpenChange={(open) => !open && setConvertingDeal(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowRightCircle className="w-5 h-5 text-green-400" />
+              Convert to Job
+            </DialogTitle>
+          </DialogHeader>
+          
+          {convertingDeal && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+                <p className="font-medium">{convertingDeal.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  Value: ${parseFloat(convertingDeal.value || "0").toLocaleString()}
+                </p>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Crew Lead</label>
+                  <select
+                    value={jobDetails.crewLeadId}
+                    onChange={(e) => setJobDetails({ ...jobDetails, crewLeadId: e.target.value })}
+                    className="w-full bg-black/5 dark:bg-white/5 border border-border dark:border-white/20 rounded-xl px-4 py-2 text-foreground"
+                    data-testid="select-crew-lead"
+                  >
+                    <option value="" className="bg-background">Select crew lead...</option>
+                    {crewLeads.map(lead => (
+                      <option key={lead.id} value={lead.id} className="bg-background">
+                        {lead.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Start Date</label>
+                    <Input
+                      type="date"
+                      value={jobDetails.jobStartDate}
+                      onChange={(e) => setJobDetails({ ...jobDetails, jobStartDate: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
+                      data-testid="input-start-date"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">End Date</label>
+                    <Input
+                      type="date"
+                      value={jobDetails.jobEndDate}
+                      onChange={(e) => setJobDetails({ ...jobDetails, jobEndDate: e.target.value })}
+                      className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
+                      data-testid="input-end-date"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Invoice Number</label>
+                  <Input
+                    type="text"
+                    placeholder="INV-001"
+                    value={jobDetails.invoiceNumber}
+                    onChange={(e) => setJobDetails({ ...jobDetails, invoiceNumber: e.target.value })}
+                    className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
+                    data-testid="input-invoice"
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Job Address</label>
+                  <Input
+                    type="text"
+                    placeholder="123 Main St, Nashville TN"
+                    value={jobDetails.jobAddress}
+                    onChange={(e) => setJobDetails({ ...jobDetails, jobAddress: e.target.value })}
+                    className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-xl"
+                    data-testid="input-address"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" onClick={() => setConvertingDeal(null)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleConvertToJob}
+              disabled={convertToJobMutation.isPending}
+              className="gap-2"
+              data-testid="button-confirm-convert"
+            >
+              {convertToJobMutation.isPending ? (
+                "Converting..."
+              ) : (
+                <>
+                  <ArrowRightCircle className="w-4 h-4" />
+                  Convert to Job
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!viewingJob} onOpenChange={(open) => !open && setViewingJob(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-primary" />
+              Job Details
+            </DialogTitle>
+          </DialogHeader>
+          
+          {viewingJob && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+                <p className="font-medium text-lg">{viewingJob.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  Value: ${parseFloat(viewingJob.value || "0").toLocaleString()}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <User className="w-4 h-4" /> Crew Lead
+                  </p>
+                  <p className="font-medium">{viewingJob.crewLeadName || "Not assigned"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <Receipt className="w-4 h-4" /> Invoice
+                  </p>
+                  <p className="font-medium">{viewingJob.invoiceNumber || "Not set"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <Calendar className="w-4 h-4" /> Dates
+                  </p>
+                  <p className="font-medium">
+                    {viewingJob.jobStartDate 
+                      ? format(new Date(viewingJob.jobStartDate), "MMM d, yyyy")
+                      : "Not scheduled"}
+                    {viewingJob.jobEndDate && ` - ${format(new Date(viewingJob.jobEndDate), "MMM d, yyyy")}`}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-4 h-4" /> Address
+                  </p>
+                  <p className="font-medium">{viewingJob.jobAddress || "Not set"}</p>
+                </div>
+              </div>
+              
+              {viewingJob.notes && (
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Notes</p>
+                  <p className="text-sm p-3 bg-black/5 dark:bg-white/5 rounded-xl">{viewingJob.notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setViewingJob(null)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
