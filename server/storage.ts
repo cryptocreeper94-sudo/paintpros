@@ -39,6 +39,9 @@ import {
   type Document, type InsertDocument, documents,
   type DocumentVersion, type InsertDocumentVersion, documentVersions,
   type DocumentSignature, type InsertDocumentSignature, documentSignatures,
+  type CalendarEvent, type InsertCalendarEvent, calendarEvents,
+  type CalendarReminder, type InsertCalendarReminder, calendarReminders,
+  type EventColorPreset, type InsertEventColorPreset, eventColorPresets,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -296,6 +299,30 @@ export interface IStorage {
   // Document Signatures
   createDocumentSignature(signature: InsertDocumentSignature): Promise<DocumentSignature>;
   getDocumentSignatures(documentId: string): Promise<DocumentSignature[]>;
+  
+  // Calendar Events
+  createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
+  getCalendarEvents(tenantId: string, startDate?: Date, endDate?: Date): Promise<CalendarEvent[]>;
+  getCalendarEventById(id: string): Promise<CalendarEvent | undefined>;
+  getCalendarEventsByDate(tenantId: string, date: Date): Promise<CalendarEvent[]>;
+  getCalendarEventsByAssignee(tenantId: string, assignedTo: string): Promise<CalendarEvent[]>;
+  updateCalendarEvent(id: string, updates: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined>;
+  updateCalendarEventStatus(id: string, status: string): Promise<CalendarEvent | undefined>;
+  deleteCalendarEvent(id: string): Promise<void>;
+  
+  // Calendar Reminders
+  createCalendarReminder(reminder: InsertCalendarReminder): Promise<CalendarReminder>;
+  getCalendarReminders(eventId: string): Promise<CalendarReminder[]>;
+  getPendingReminders(beforeTime: Date): Promise<CalendarReminder[]>;
+  updateReminderStatus(id: string, status: string, errorMessage?: string): Promise<CalendarReminder | undefined>;
+  markReminderSent(id: string): Promise<CalendarReminder | undefined>;
+  deleteCalendarReminder(id: string): Promise<void>;
+  
+  // Event Color Presets
+  createEventColorPreset(preset: InsertEventColorPreset): Promise<EventColorPreset>;
+  getEventColorPresets(tenantId: string): Promise<EventColorPreset[]>;
+  updateEventColorPreset(id: string, updates: Partial<InsertEventColorPreset>): Promise<EventColorPreset | undefined>;
+  deleteEventColorPreset(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1919,6 +1946,142 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(documentSignatures)
       .where(eq(documentSignatures.documentId, documentId))
       .orderBy(desc(documentSignatures.signedAt));
+  }
+
+  // Calendar Events
+  async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
+    const [result] = await db.insert(calendarEvents).values(event).returning();
+    return result;
+  }
+
+  async getCalendarEvents(tenantId: string, startDate?: Date, endDate?: Date): Promise<CalendarEvent[]> {
+    if (startDate && endDate) {
+      return await db.select().from(calendarEvents)
+        .where(and(
+          eq(calendarEvents.tenantId, tenantId),
+          sql`${calendarEvents.startTime} >= ${startDate}`,
+          sql`${calendarEvents.startTime} <= ${endDate}`
+        ))
+        .orderBy(calendarEvents.startTime);
+    }
+    return await db.select().from(calendarEvents)
+      .where(eq(calendarEvents.tenantId, tenantId))
+      .orderBy(calendarEvents.startTime);
+  }
+
+  async getCalendarEventById(id: string): Promise<CalendarEvent | undefined> {
+    const [result] = await db.select().from(calendarEvents).where(eq(calendarEvents.id, id));
+    return result;
+  }
+
+  async getCalendarEventsByDate(tenantId: string, date: Date): Promise<CalendarEvent[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    return await db.select().from(calendarEvents)
+      .where(and(
+        eq(calendarEvents.tenantId, tenantId),
+        sql`${calendarEvents.startTime} >= ${startOfDay}`,
+        sql`${calendarEvents.startTime} <= ${endOfDay}`
+      ))
+      .orderBy(calendarEvents.startTime);
+  }
+
+  async getCalendarEventsByAssignee(tenantId: string, assignedTo: string): Promise<CalendarEvent[]> {
+    return await db.select().from(calendarEvents)
+      .where(and(
+        eq(calendarEvents.tenantId, tenantId),
+        eq(calendarEvents.assignedTo, assignedTo)
+      ))
+      .orderBy(calendarEvents.startTime);
+  }
+
+  async updateCalendarEvent(id: string, updates: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined> {
+    const [result] = await db.update(calendarEvents)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(calendarEvents.id, id))
+      .returning();
+    return result;
+  }
+
+  async updateCalendarEventStatus(id: string, status: string): Promise<CalendarEvent | undefined> {
+    const [result] = await db.update(calendarEvents)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(calendarEvents.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteCalendarEvent(id: string): Promise<void> {
+    await db.delete(calendarReminders).where(eq(calendarReminders.eventId, id));
+    await db.delete(calendarEvents).where(eq(calendarEvents.id, id));
+  }
+
+  // Calendar Reminders
+  async createCalendarReminder(reminder: InsertCalendarReminder): Promise<CalendarReminder> {
+    const [result] = await db.insert(calendarReminders).values(reminder).returning();
+    return result;
+  }
+
+  async getCalendarReminders(eventId: string): Promise<CalendarReminder[]> {
+    return await db.select().from(calendarReminders)
+      .where(eq(calendarReminders.eventId, eventId))
+      .orderBy(calendarReminders.reminderTime);
+  }
+
+  async getPendingReminders(beforeTime: Date): Promise<CalendarReminder[]> {
+    return await db.select().from(calendarReminders)
+      .where(and(
+        eq(calendarReminders.status, 'pending'),
+        sql`${calendarReminders.reminderTime} <= ${beforeTime}`
+      ))
+      .orderBy(calendarReminders.reminderTime);
+  }
+
+  async updateReminderStatus(id: string, status: string, errorMessage?: string): Promise<CalendarReminder | undefined> {
+    const [result] = await db.update(calendarReminders)
+      .set({ status, errorMessage })
+      .where(eq(calendarReminders.id, id))
+      .returning();
+    return result;
+  }
+
+  async markReminderSent(id: string): Promise<CalendarReminder | undefined> {
+    const [result] = await db.update(calendarReminders)
+      .set({ status: 'sent', sentAt: new Date() })
+      .where(eq(calendarReminders.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteCalendarReminder(id: string): Promise<void> {
+    await db.delete(calendarReminders).where(eq(calendarReminders.id, id));
+  }
+
+  // Event Color Presets
+  async createEventColorPreset(preset: InsertEventColorPreset): Promise<EventColorPreset> {
+    const [result] = await db.insert(eventColorPresets).values(preset).returning();
+    return result;
+  }
+
+  async getEventColorPresets(tenantId: string): Promise<EventColorPreset[]> {
+    return await db.select().from(eventColorPresets)
+      .where(eq(eventColorPresets.tenantId, tenantId))
+      .orderBy(eventColorPresets.name);
+  }
+
+  async updateEventColorPreset(id: string, updates: Partial<InsertEventColorPreset>): Promise<EventColorPreset | undefined> {
+    const [result] = await db.update(eventColorPresets)
+      .set(updates)
+      .where(eq(eventColorPresets.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteEventColorPreset(id: string): Promise<void> {
+    await db.delete(eventColorPresets).where(eq(eventColorPresets.id, id));
   }
 }
 

@@ -1093,3 +1093,92 @@ export const insertDocumentSignatureSchema = createInsertSchema(documentSignatur
 
 export type InsertDocumentSignature = z.infer<typeof insertDocumentSignatureSchema>;
 export type DocumentSignature = typeof documentSignatures.$inferSelect;
+
+// Calendar Events - Comprehensive scheduling system
+export const calendarEvents = pgTable("calendar_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  eventType: text("event_type").notNull(), // 'appointment', 'estimate', 'job', 'meeting', 'reminder', 'blocked'
+  status: text("status").default("scheduled").notNull(), // 'scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show'
+  colorCode: text("color_code").default("#3B82F6"), // Hex color for visual display
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time").notNull(),
+  allDay: boolean("all_day").default(false).notNull(),
+  location: text("location"),
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"),
+  customerAddress: text("customer_address"),
+  assignedTo: text("assigned_to"), // Crew lead or team member ID
+  assignedToName: text("assigned_to_name"),
+  relatedLeadId: varchar("related_lead_id"),
+  relatedEstimateId: varchar("related_estimate_id"),
+  relatedBookingId: varchar("related_booking_id"),
+  notes: text("notes"),
+  isRecurring: boolean("is_recurring").default(false).notNull(),
+  recurringPattern: text("recurring_pattern"), // 'daily', 'weekly', 'monthly', 'custom'
+  recurringEndDate: timestamp("recurring_end_date"),
+  parentEventId: varchar("parent_event_id"), // For recurring event instances
+  createdBy: text("created_by").notNull(),
+  createdByName: text("created_by_name"),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCalendarEventSchema = createInsertSchema(calendarEvents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
+export type CalendarEvent = typeof calendarEvents.$inferSelect;
+
+// Calendar Reminders - Reminder notifications for events
+export const calendarReminders = pgTable("calendar_reminders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventId: varchar("event_id").references(() => calendarEvents.id).notNull(),
+  tenantId: text("tenant_id").notNull(),
+  reminderType: text("reminder_type").notNull(), // 'email', 'sms', 'push', 'in_app'
+  reminderTime: timestamp("reminder_time").notNull(), // When to send the reminder
+  offsetMinutes: integer("offset_minutes").notNull(), // Minutes before event (15, 30, 60, 1440 for 1 day)
+  recipientEmail: text("recipient_email"),
+  recipientPhone: text("recipient_phone"),
+  recipientRole: text("recipient_role"), // 'customer', 'admin', 'owner', 'crew_lead', 'assigned'
+  message: text("message"),
+  status: text("status").default("pending").notNull(), // 'pending', 'sent', 'failed', 'cancelled'
+  sentAt: timestamp("sent_at"),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCalendarReminderSchema = createInsertSchema(calendarReminders).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+});
+
+export type InsertCalendarReminder = z.infer<typeof insertCalendarReminderSchema>;
+export type CalendarReminder = typeof calendarReminders.$inferSelect;
+
+// Event Color Presets - Configurable color coding
+export const eventColorPresets = pgTable("event_color_presets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  name: text("name").notNull(), // 'Estimate Visit', 'Paint Job', 'Meeting', etc.
+  colorCode: text("color_code").notNull(), // Hex color
+  eventType: text("event_type"), // Optional: auto-apply to specific event types
+  isDefault: boolean("is_default").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEventColorPresetSchema = createInsertSchema(eventColorPresets).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertEventColorPreset = z.infer<typeof insertEventColorPresetSchema>;
+export type EventColorPreset = typeof eventColorPresets.$inferSelect;
