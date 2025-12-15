@@ -67,7 +67,7 @@ export function Navbar() {
             "flex-1 text-center whitespace-nowrap -translate-x-[25px] md:-translate-x-[43px] px-1",
             tenant.id === "demo" 
               ? "text-white text-[14px] md:text-xl lg:text-2xl"
-              : "text-[14px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
+              : "text-[14px] md:text-xl lg:text-2xl text-[#6B5344] dark:text-[#8B7355]"
           )}
           style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.03em' }}
           data-testid="text-header-title"
