@@ -385,14 +385,49 @@ export default function Home() {
                       <span className="text-[9px] md:text-xs font-bold text-accent uppercase tracking-wider">About Us</span>
                     </div>
                     <h3 className="text-xs md:text-xl font-display font-bold mb-1 md:mb-2">{tenant.name}</h3>
-                    <p className="text-[9px] md:text-sm text-muted-foreground leading-snug line-clamp-2 md:line-clamp-3">
-                      Family-owned since 2015, transforming homes across Middle Tennessee.
+                    <p className="text-[9px] md:text-sm text-muted-foreground leading-snug mb-3 md:mb-4">
+                      Family-owned since 2015, transforming homes across Middle Tennessee with exceptional craftsmanship and attention to detail.
                     </p>
+                    
+                    {/* Stats row - desktop only */}
+                    <div className="hidden md:grid grid-cols-3 gap-3 mb-4">
+                      <div className="text-center p-2 rounded-lg bg-accent/10">
+                        <p className="text-lg font-bold text-accent">10+</p>
+                        <p className="text-[10px] text-muted-foreground">Years Experience</p>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-accent/10">
+                        <p className="text-lg font-bold text-accent">500+</p>
+                        <p className="text-[10px] text-muted-foreground">Homes Painted</p>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-accent/10">
+                        <p className="text-lg font-bold text-accent">100%</p>
+                        <p className="text-[10px] text-muted-foreground">Satisfaction</p>
+                      </div>
+                    </div>
+                    
+                    {/* Credentials list - desktop */}
+                    <ul className="hidden md:block space-y-1.5 text-xs text-muted-foreground">
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        Licensed & Insured
+                      </li>
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        {tenant.credentials?.warrantyYears || 5}-Year Warranty on All Work
+                      </li>
+                      <li className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
+                        Premium Sherwin-Williams Paints
+                      </li>
+                    </ul>
                   </div>
                   <div className="flex items-center justify-between mt-2 md:mt-4">
-                    <div className="flex items-center gap-1 text-[8px] md:text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 text-[8px] md:text-xs text-muted-foreground md:hidden">
                       <CheckCircle2 className="w-3 h-3 text-green-400" />
                       <span>Licensed & Insured</span>
+                    </div>
+                    <div className="hidden md:block text-xs text-accent font-medium">
+                      Learn More
                     </div>
                     <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-accent flex items-center justify-center">
                       <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-primary" />
