@@ -123,11 +123,12 @@ export function Footer() {
       {/* Hallmark Verification Modal */}
       {showModal && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          style={{ paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)', paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)' }}
           onClick={() => setShowModal(false)}
         >
           <div 
-            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl"
+            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-5 max-w-sm w-full shadow-2xl max-h-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-4">
@@ -217,11 +218,12 @@ export function Footer() {
       {/* Version Info Modal */}
       {showVersionModal && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          style={{ paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)', paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)' }}
           onClick={() => setShowVersionModal(false)}
         >
           <div 
-            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto"
+            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-5 max-w-md w-full shadow-2xl max-h-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-4">
