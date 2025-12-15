@@ -448,7 +448,7 @@ export default function Home() {
 
           {/* Crypto Payment Card - Below About Us on desktop */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-            {tenantId === 'npp' ? (
+            {tenant.id === 'npp' ? (
               <div
                 className="w-full h-full text-left relative"
                 data-testid="card-crypto-payment"
