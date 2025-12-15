@@ -257,11 +257,11 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-warranty"
             >
-              <GlassCard className="p-0 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+              <GlassCard className="p-2 md:p-4 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden items-center justify-center" hoverEffect>
                 <img 
                   src={warrantyImage} 
                   alt="Warranty guarantee" 
-                  className="w-full h-full object-cover"
+                  className="w-[85%] h-[85%] object-contain"
                 />
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
                   <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
