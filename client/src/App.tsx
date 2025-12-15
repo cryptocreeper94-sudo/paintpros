@@ -24,6 +24,7 @@ import ProposalSign from "@/pages/proposal-sign";
 import Investors from "@/pages/investors";
 import Compare from "@/pages/compare";
 import Pricing from "@/pages/pricing";
+import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
   useAnalytics();
@@ -64,6 +65,7 @@ function App() {
               <AnalyticsTracker />
               <Toaster />
               <Router />
+              <PaintBuddy />
             </TooltipProvider>
           </AccessProvider>
         </TenantProvider>
