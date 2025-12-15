@@ -61,7 +61,7 @@ export function Navbar() {
         {/* Center: Title - full text, smaller font on mobile */}
         <div 
           className={cn(
-            "flex-1 text-center whitespace-nowrap -translate-x-[35px] overflow-hidden text-ellipsis",
+            "flex-1 text-center whitespace-nowrap -translate-x-[35px]",
             tenant.id === "demo" 
               ? "text-white text-[12px] md:text-xl lg:text-2xl"
               : "text-[12px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
