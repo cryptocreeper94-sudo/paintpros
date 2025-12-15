@@ -115,18 +115,18 @@ export default function Home() {
           {/* 2. CTA Card - High Contrast */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
             <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
-              <GlassCard className="bg-accent/10 border-accent/20 relative p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
+              <GlassCard className="bg-accent/10 border-accent/20 relative p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden flex flex-col justify-end" glow>
+                <img 
+                  src={estimateImage} 
+                  alt="Professional estimate consultation" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 dark:opacity-70 dark:group-hover:opacity-80 transition-opacity"
+                />
                 <div className="relative z-10">
                   <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1 text-gray-800 dark:text-white">Free Estimates</h3>
                   <p className="text-[10px] md:text-xs text-gray-700 dark:text-gray-200 pr-8 font-bold">
                     Use our instant calculator to get a custom quote for your painting project in seconds.
                   </p>
                 </div>
-                <img 
-                  src={estimateImage} 
-                  alt="Professional estimate consultation" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 dark:opacity-70 dark:group-hover:opacity-80 transition-opacity"
-                />
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
                   <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
                     <ArrowRight className="w-3 h-3 md:w-5 md:h-5" />
