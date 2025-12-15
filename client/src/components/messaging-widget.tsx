@@ -319,7 +319,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setView("list")}
-            className="fixed bottom-[54px] left-[18px] z-50 group"
+            className="fixed bottom-[54px] left-[18px] z-[60] group"
             data-testid="button-messaging-open"
           >
             <div className="relative">
@@ -349,7 +349,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-[54px] left-[18px] z-50 w-[360px] max-w-[calc(100vw-36px)] h-[500px] max-h-[calc(100vh-100px)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 flex flex-col overflow-hidden"
+            className="fixed bottom-[54px] left-[18px] z-[60] w-[360px] max-w-[calc(100vw-36px)] h-[500px] max-h-[calc(100vh-100px)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 flex flex-col overflow-hidden"
             data-testid="panel-messaging"
           >
             {view === "list" && (
