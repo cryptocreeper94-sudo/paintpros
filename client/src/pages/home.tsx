@@ -237,7 +237,7 @@ export default function Home() {
                   alt="On-time service" 
                   className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
                 />
-                <div className="flex flex-col items-center text-center gap-1 relative z-10" style={{ marginTop: '-35px' }}>
+                <div className="flex flex-col items-center text-center gap-1 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl">
                     <Clock className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
