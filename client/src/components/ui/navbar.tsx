@@ -86,7 +86,7 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[65px] bg-white/10 rounded-full"
+          className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[59px]"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
