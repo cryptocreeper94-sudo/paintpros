@@ -65,7 +65,7 @@ export default function TermsWarranty() {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/30 to-green-500/20 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-accent/20">
               <Scale className="w-8 h-8 text-accent" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+            <h1 className="text-3xl md:text-5xl font-display font-bold mb-4 whitespace-nowrap">
               Terms & Warranty
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
