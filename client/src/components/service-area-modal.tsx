@@ -62,7 +62,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
             <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
-          <div className="overflow-y-auto max-h-[calc(100dvh-4rem)] overscroll-contain touch-pan-y">
+          <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100dvh-4rem)] overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
             {/* Landscape map header */}
             <div className="relative h-[35vw] min-h-[150px] max-h-[180px] md:h-48 overflow-hidden">
               <img 
