@@ -28,6 +28,11 @@ import {
   type User, type UpsertUser, users,
   type Booking, type InsertBooking, bookings,
   type AvailabilityWindow, type InsertAvailabilityWindow, availabilityWindows,
+  type CrewLead, type InsertCrewLead, crewLeads,
+  type CrewMember, type InsertCrewMember, crewMembers,
+  type TimeEntry, type InsertTimeEntry, timeEntries,
+  type JobNote, type InsertJobNote, jobNotes,
+  type IncidentReport, type InsertIncidentReport, incidentReports,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -218,6 +223,45 @@ export interface IStorage {
   getNextTenantOrdinal(tenantId: string): Promise<{ ordinal: number; hallmarkNumber: string }>;
   initializeTenantCounter(tenantId: string): Promise<TenantAssetCounter>;
   getTenantCounter(tenantId: string): Promise<TenantAssetCounter | undefined>;
+  
+  // Crew Leads
+  createCrewLead(lead: InsertCrewLead): Promise<CrewLead>;
+  getCrewLeads(tenantId?: string): Promise<CrewLead[]>;
+  getCrewLeadById(id: string): Promise<CrewLead | undefined>;
+  getCrewLeadByPin(pin: string, tenantId: string): Promise<CrewLead | undefined>;
+  updateCrewLead(id: string, updates: Partial<InsertCrewLead>): Promise<CrewLead | undefined>;
+  deactivateCrewLead(id: string): Promise<CrewLead | undefined>;
+  
+  // Crew Members
+  createCrewMember(member: InsertCrewMember): Promise<CrewMember>;
+  getCrewMembers(leadId: string): Promise<CrewMember[]>;
+  getCrewMemberById(id: string): Promise<CrewMember | undefined>;
+  updateCrewMember(id: string, updates: Partial<InsertCrewMember>): Promise<CrewMember | undefined>;
+  deactivateCrewMember(id: string): Promise<CrewMember | undefined>;
+  
+  // Time Entries
+  createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry>;
+  getTimeEntries(leadId: string): Promise<TimeEntry[]>;
+  getTimeEntriesByMember(crewMemberId: string): Promise<TimeEntry[]>;
+  getTimeEntriesByDateRange(leadId: string, startDate: Date, endDate: Date): Promise<TimeEntry[]>;
+  updateTimeEntry(id: string, updates: Partial<InsertTimeEntry>): Promise<TimeEntry | undefined>;
+  approveTimeEntry(id: string, approvedBy: string): Promise<TimeEntry | undefined>;
+  submitTimeEntriesToPayroll(ids: string[]): Promise<TimeEntry[]>;
+  
+  // Job Notes
+  createJobNote(note: InsertJobNote): Promise<JobNote>;
+  getJobNotes(leadId: string): Promise<JobNote[]>;
+  getJobNoteById(id: string): Promise<JobNote | undefined>;
+  updateJobNote(id: string, updates: Partial<InsertJobNote>): Promise<JobNote | undefined>;
+  markJobNoteSent(id: string, sentToOwner: boolean, sentToAdmin: boolean): Promise<JobNote | undefined>;
+  
+  // Incident Reports
+  createIncidentReport(report: InsertIncidentReport): Promise<IncidentReport>;
+  getIncidentReports(tenantId?: string): Promise<IncidentReport[]>;
+  getIncidentReportsByLead(leadId: string): Promise<IncidentReport[]>;
+  getIncidentReportById(id: string): Promise<IncidentReport | undefined>;
+  updateIncidentReport(id: string, updates: Partial<InsertIncidentReport>): Promise<IncidentReport | undefined>;
+  resolveIncidentReport(id: string, resolution: string, resolvedBy: string): Promise<IncidentReport | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1446,6 +1490,217 @@ export class DatabaseStorage implements IStorage {
     }
     
     return availableSlots;
+  }
+
+  // ============ CREW LEADS ============
+  
+  async createCrewLead(lead: InsertCrewLead): Promise<CrewLead> {
+    const [result] = await db.insert(crewLeads).values(lead).returning();
+    return result;
+  }
+
+  async getCrewLeads(tenantId?: string): Promise<CrewLead[]> {
+    if (tenantId) {
+      return await db.select().from(crewLeads)
+        .where(eq(crewLeads.tenantId, tenantId))
+        .orderBy(desc(crewLeads.createdAt));
+    }
+    return await db.select().from(crewLeads).orderBy(desc(crewLeads.createdAt));
+  }
+
+  async getCrewLeadById(id: string): Promise<CrewLead | undefined> {
+    const [result] = await db.select().from(crewLeads).where(eq(crewLeads.id, id));
+    return result;
+  }
+
+  async getCrewLeadByPin(pin: string, tenantId: string): Promise<CrewLead | undefined> {
+    const [result] = await db.select().from(crewLeads)
+      .where(and(eq(crewLeads.pin, pin), eq(crewLeads.tenantId, tenantId), eq(crewLeads.isActive, true)));
+    return result;
+  }
+
+  async updateCrewLead(id: string, updates: Partial<InsertCrewLead>): Promise<CrewLead | undefined> {
+    const [result] = await db.update(crewLeads)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(crewLeads.id, id))
+      .returning();
+    return result;
+  }
+
+  async deactivateCrewLead(id: string): Promise<CrewLead | undefined> {
+    const [result] = await db.update(crewLeads)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(crewLeads.id, id))
+      .returning();
+    return result;
+  }
+
+  // ============ CREW MEMBERS ============
+  
+  async createCrewMember(member: InsertCrewMember): Promise<CrewMember> {
+    const [result] = await db.insert(crewMembers).values(member).returning();
+    return result;
+  }
+
+  async getCrewMembers(leadId: string): Promise<CrewMember[]> {
+    return await db.select().from(crewMembers)
+      .where(eq(crewMembers.leadId, leadId))
+      .orderBy(desc(crewMembers.createdAt));
+  }
+
+  async getCrewMemberById(id: string): Promise<CrewMember | undefined> {
+    const [result] = await db.select().from(crewMembers).where(eq(crewMembers.id, id));
+    return result;
+  }
+
+  async updateCrewMember(id: string, updates: Partial<InsertCrewMember>): Promise<CrewMember | undefined> {
+    const [result] = await db.update(crewMembers)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(crewMembers.id, id))
+      .returning();
+    return result;
+  }
+
+  async deactivateCrewMember(id: string): Promise<CrewMember | undefined> {
+    const [result] = await db.update(crewMembers)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(crewMembers.id, id))
+      .returning();
+    return result;
+  }
+
+  // ============ TIME ENTRIES ============
+  
+  async createTimeEntry(entry: InsertTimeEntry): Promise<TimeEntry> {
+    const [result] = await db.insert(timeEntries).values(entry).returning();
+    return result;
+  }
+
+  async getTimeEntries(leadId: string): Promise<TimeEntry[]> {
+    return await db.select().from(timeEntries)
+      .where(eq(timeEntries.leadId, leadId))
+      .orderBy(desc(timeEntries.date));
+  }
+
+  async getTimeEntriesByMember(crewMemberId: string): Promise<TimeEntry[]> {
+    return await db.select().from(timeEntries)
+      .where(eq(timeEntries.crewMemberId, crewMemberId))
+      .orderBy(desc(timeEntries.date));
+  }
+
+  async getTimeEntriesByDateRange(leadId: string, startDate: Date, endDate: Date): Promise<TimeEntry[]> {
+    return await db.select().from(timeEntries)
+      .where(and(
+        eq(timeEntries.leadId, leadId),
+        sql`${timeEntries.date} >= ${startDate}`,
+        sql`${timeEntries.date} <= ${endDate}`
+      ))
+      .orderBy(desc(timeEntries.date));
+  }
+
+  async updateTimeEntry(id: string, updates: Partial<InsertTimeEntry>): Promise<TimeEntry | undefined> {
+    const [result] = await db.update(timeEntries)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(timeEntries.id, id))
+      .returning();
+    return result;
+  }
+
+  async approveTimeEntry(id: string, approvedBy: string): Promise<TimeEntry | undefined> {
+    const [result] = await db.update(timeEntries)
+      .set({ status: 'approved', approvedAt: new Date(), approvedBy, updatedAt: new Date() })
+      .where(eq(timeEntries.id, id))
+      .returning();
+    return result;
+  }
+
+  async submitTimeEntriesToPayroll(ids: string[]): Promise<TimeEntry[]> {
+    const results: TimeEntry[] = [];
+    for (const id of ids) {
+      const [result] = await db.update(timeEntries)
+        .set({ status: 'submitted_to_payroll', submittedAt: new Date(), updatedAt: new Date() })
+        .where(eq(timeEntries.id, id))
+        .returning();
+      if (result) results.push(result);
+    }
+    return results;
+  }
+
+  // ============ JOB NOTES ============
+  
+  async createJobNote(note: InsertJobNote): Promise<JobNote> {
+    const [result] = await db.insert(jobNotes).values(note).returning();
+    return result;
+  }
+
+  async getJobNotes(leadId: string): Promise<JobNote[]> {
+    return await db.select().from(jobNotes)
+      .where(eq(jobNotes.leadId, leadId))
+      .orderBy(desc(jobNotes.createdAt));
+  }
+
+  async getJobNoteById(id: string): Promise<JobNote | undefined> {
+    const [result] = await db.select().from(jobNotes).where(eq(jobNotes.id, id));
+    return result;
+  }
+
+  async updateJobNote(id: string, updates: Partial<InsertJobNote>): Promise<JobNote | undefined> {
+    const [result] = await db.update(jobNotes)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(jobNotes.id, id))
+      .returning();
+    return result;
+  }
+
+  async markJobNoteSent(id: string, sentToOwner: boolean, sentToAdmin: boolean): Promise<JobNote | undefined> {
+    const [result] = await db.update(jobNotes)
+      .set({ sentToOwner, sentToAdmin, sentAt: new Date(), updatedAt: new Date() })
+      .where(eq(jobNotes.id, id))
+      .returning();
+    return result;
+  }
+
+  // ============ INCIDENT REPORTS ============
+  
+  async createIncidentReport(report: InsertIncidentReport): Promise<IncidentReport> {
+    const [result] = await db.insert(incidentReports).values(report).returning();
+    return result;
+  }
+
+  async getIncidentReports(tenantId?: string): Promise<IncidentReport[]> {
+    if (tenantId) {
+      return await db.select().from(incidentReports)
+        .where(eq(incidentReports.tenantId, tenantId))
+        .orderBy(desc(incidentReports.createdAt));
+    }
+    return await db.select().from(incidentReports).orderBy(desc(incidentReports.createdAt));
+  }
+
+  async getIncidentReportsByLead(leadId: string): Promise<IncidentReport[]> {
+    return await db.select().from(incidentReports)
+      .where(eq(incidentReports.leadId, leadId))
+      .orderBy(desc(incidentReports.createdAt));
+  }
+
+  async getIncidentReportById(id: string): Promise<IncidentReport | undefined> {
+    const [result] = await db.select().from(incidentReports).where(eq(incidentReports.id, id));
+    return result;
+  }
+
+  async updateIncidentReport(id: string, updates: Partial<InsertIncidentReport>): Promise<IncidentReport | undefined> {
+    const [result] = await db.update(incidentReports)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(incidentReports.id, id))
+      .returning();
+    return result;
+  }
+
+  async resolveIncidentReport(id: string, resolution: string, resolvedBy: string): Promise<IncidentReport | undefined> {
+    const [result] = await db.update(incidentReports)
+      .set({ status: 'resolved', resolution, resolvedBy, resolvedAt: new Date(), updatedAt: new Date() })
+      .where(eq(incidentReports.id, id))
+      .returning();
+    return result;
   }
 }
 
