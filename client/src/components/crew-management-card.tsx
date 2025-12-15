@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Users, HardHat, Clock, AlertTriangle, Loader2, ExternalLink } from "lucide-react";
-import type { CrewLead, CrewMember, TimeEntry, IncidentReport } from "@shared/schema";
+import { Users, HardHat, Clock, AlertTriangle, Loader2, ExternalLink, AlertCircle } from "lucide-react";
+import type { CrewLead } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,16 +10,17 @@ import { Link } from "wouter";
 export function CrewManagementCard() {
   const tenant = useTenant();
 
-  const { data: crewLeads = [], isLoading: leadsLoading } = useQuery<CrewLead[]>({
+  const { data: crewLeads = [], isLoading: leadsLoading, isError: leadsError } = useQuery<CrewLead[]>({
     queryKey: ["/api/crew/leads", tenant.id],
     queryFn: async () => {
       const res = await fetch(`/api/crew/leads?tenantId=${tenant.id}`);
       if (!res.ok) throw new Error("Failed to fetch crew leads");
       return res.json();
     },
+    retry: 1,
   });
 
-  const { data: stats, isLoading: statsLoading } = useQuery<{
+  const { data: stats, isLoading: statsLoading, isError: statsError } = useQuery<{
     totalMembers: number;
     pendingTimeEntries: number;
     openIncidents: number;
@@ -33,9 +33,11 @@ export function CrewManagementCard() {
       }
       return res.json();
     },
+    retry: 1,
   });
 
   const isLoading = leadsLoading || statsLoading;
+  const hasError = leadsError || statsError;
   const activeLeads = crewLeads.filter(lead => lead.isActive);
 
   return (
@@ -80,6 +82,12 @@ export function CrewManagementCard() {
         {isLoading ? (
           <div className="flex items-center justify-center py-8 text-muted-foreground">
             <Loader2 className="w-6 h-6 animate-spin" />
+          </div>
+        ) : hasError ? (
+          <div className="text-center py-8">
+            <AlertCircle className="w-10 h-10 mx-auto mb-3 text-red-400/50" />
+            <p className="text-sm text-muted-foreground">Unable to load crew data</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">Please try again later</p>
           </div>
         ) : activeLeads.length === 0 ? (
           <div className="text-center py-8">

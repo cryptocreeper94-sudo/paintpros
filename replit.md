@@ -3,7 +3,7 @@
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
 **Last Updated:** December 15, 2025
-**Beta Version:** v1.1.6
+**Beta Version:** v1.1.7
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
@@ -201,7 +201,48 @@ Location: Footer + Modal
 ### Default Location
 Nashville, TN (36.1627, -86.7816)
 
-## Recent Updates (v1.1.6)
+## Crew Management System
+Location: `client/src/pages/crew-lead.tsx`, `client/src/components/crew-management-card.tsx`
+
+### Features
+- **Crew Lead Dashboard** (`/crew-lead`) - Full dashboard for crew leads with PIN 3333
+- **Time Tracking** - Log daily hours for crew members with status (pending/approved/rejected)
+- **Job Notes** - Create notes that can be sent to Owner or Admin
+- **Incident Reports** - Log workplace incidents with severity levels
+- **Dashboard Integration** - CrewManagementCard on Admin, Owner, Developer dashboards
+
+### Database Tables
+- `crew_leads` - Crew lead profiles (name, email, phone, PIN, tenant)
+- `crew_members` - Individual crew members assigned to leads
+- `time_entries` - Daily time logs per crew member
+- `job_notes` - Notes from job sites
+- `incident_reports` - Safety/incident logging
+
+### API Endpoints
+- `GET /api/crew/leads?tenantId=xxx` - Get all crew leads
+- `POST /api/crew/leads` - Create crew lead
+- `GET /api/crew/members?leadId=xxx` - Get crew members
+- `POST /api/crew/members` - Create crew member
+- `GET /api/crew/time-entries?leadId=xxx` - Get time entries
+- `POST /api/crew/time-entries` - Create time entry
+- `PATCH /api/crew/time-entries/:id` - Update entry status
+- `GET /api/crew/job-notes?leadId=xxx` - Get job notes
+- `POST /api/crew/job-notes` - Create job note
+- `GET /api/crew/incidents?leadId=xxx` - Get incident reports
+- `POST /api/crew/incidents` - Create incident report
+- `GET /api/crew/stats?tenantId=xxx` - Get crew statistics summary
+
+### PIN Codes
+- Crew Lead: 3333 (default)
+
+## Recent Updates (v1.1.7)
+- Crew Management System:
+  - Full crew lead dashboard with time tracking, job notes, incident reports
+  - CrewManagementCard integrated into Admin, Owner, and Developer dashboards
+  - 5 new database tables for crew data management
+  - Complete API endpoints for CRUD operations
+
+### Previous (v1.1.6)
 - ORBIT Weather System in footer:
   - Small weather widget showing icon + temperature
   - Click opens full modal with weather details + animated radar
@@ -262,6 +303,7 @@ client/src/
 │   ├── admin.tsx          # Admin dashboard
 │   ├── owner.tsx          # Owner dashboard + SEO tracker
 │   ├── area-manager.tsx   # Sales rep dashboard
+│   ├── crew-lead.tsx      # Crew lead dashboard
 │   └── developer.tsx      # Dev console
 └── components/
     ├── ui/navbar.tsx      # Tenant-aware navigation

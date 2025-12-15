@@ -21,6 +21,7 @@ import { LiveVisitorsCard } from "@/components/live-visitors-card";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { BookingsCard } from "@/components/bookings-card";
+import { CrewManagementCard } from "@/components/crew-management-card";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { VersionHistory } from "@/components/version-history";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -764,6 +765,15 @@ export default function Owner() {
             <BentoItem colSpan={6} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={9}>
                 <RoomScannerCard locked={false} accentColor="gold-400" />
+              </motion.div>
+            </BentoItem>
+
+            {/* Crew Management */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={10} whileHover={hover3DSubtle}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.gold}`} glow="gold" hoverEffect="subtle">
+                  <CrewManagementCard />
+                </GlassCard>
               </motion.div>
             </BentoItem>
 

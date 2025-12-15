@@ -5,6 +5,7 @@ import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { BookingsCard } from "@/components/bookings-card";
+import { CrewManagementCard } from "@/components/crew-management-card";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
@@ -646,6 +647,21 @@ export default function Admin() {
                 custom={10}
               >
                 <RoomScannerCard locked={false} accentColor="accent" />
+              </motion.div>
+            </BentoItem>
+
+            {/* Crew Management */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <motion.div 
+                className="h-full" 
+                variants={cardVariants}
+                custom={11}
+                whileHover={hover3DSubtle}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent" hoverEffect={false}>
+                  <CrewManagementCard />
+                </GlassCard>
               </motion.div>
             </BentoItem>
 

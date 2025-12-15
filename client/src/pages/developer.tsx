@@ -19,6 +19,7 @@ import {
 } from "@/lib/theme-effects";
 import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History } from "lucide-react";
 import { BookingsCard } from "@/components/bookings-card";
+import { CrewManagementCard } from "@/components/crew-management-card";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
@@ -2128,6 +2129,20 @@ export default function Developer() {
             >
               <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" animatedBorder>
                 <BookingsCard />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Crew Management */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div 
+              className="h-full" 
+              variants={cardVariants}
+              whileHover={hover3DSubtle}
+              whileTap={tapEffect}
+            >
+              <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent" animatedBorder>
+                <CrewManagementCard />
               </GlassCard>
             </motion.div>
           </BentoItem>
