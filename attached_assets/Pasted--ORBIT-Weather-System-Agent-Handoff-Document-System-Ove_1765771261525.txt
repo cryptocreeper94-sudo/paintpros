@@ -1,0 +1,66 @@
+# ORBIT Weather System - Agent Handoff Document
+
+## System Overview
+Weather system provides real-time weather data and animated radar display for ORBIT Staffing OS. Uses free public APIs (no keys required).
+
+## Architecture
+
+### Component Files
+- `client/src/components/WeatherRadarModal.tsx` - Full weather radar modal (520 lines)
+- `client/src/components/FooterWeatherWidget.tsx` - Footer temperature display (250 lines)
+- `client/src/components/MainFooter.tsx` - Footer wrapper, passes onOpenRadar prop
+- `client/src/App.tsx` - State management for isRadarOpen, renders WeatherRadarModal
+
+### API Routes (server/routes.ts)
+- `GET /api/weather/geocode/:zip` - Convert ZIP code to lat/lon coordinates
+- `GET /api/weather?lat=X&lon=Y` - Fetch current weather by coordinates
+
+### External APIs (No Keys Required)
+1. **Open-Meteo** - Weather data: `https://api.open-meteo.com/v1/forecast`
+2. **RainViewer** - Radar tiles: `https://api.rainviewer.com/public/weather-maps.json`
+3. **OpenStreetMap** - Map tiles: `https://tile.openstreetmap.org/{z}/{x}/{y}.png`
+
+## Data Flow
+1. User enters ZIP → stored in localStorage as `orbit-weather-zip`
+2. ZIP geocoded via `/api/weather/geocode/:zip` → coords stored as `orbit-weather-coords`
+3. Weather fetched via `/api/weather?lat=X&lon=Y`
+4. Click temperature in footer → opens WeatherRadarModal
+5. Modal fetches RainViewer frames for animated radar overlay
+
+## localStorage Keys
+- `orbit-weather-zip` - User's 5-digit ZIP code
+- `orbit-weather-coords` - { lat, lon } JSON object
+- `orbit-weather-location` - "City, State" string
+
+## WeatherRadarModal Features
+- Side-by-side layout: weather panel (left 40%) + radar map (right 60%)
+- Animated radar with play/pause controls
+- Timeline scrubber showing past + nowcast frames
+- Zoom controls (4x-10x)
+- Map layer toggles (Radar, Satellite, Temperature)
+- Weather alerts (thunderstorm, high wind, freezing, extreme heat)
+- Body scroll lock when open
+
+## Key Interfaces
+```typescript
+interface WeatherData {
+  temp: number;           // Fahrenheit
+  feelsLike: number;      // Fahrenheit
+  condition: string;      // "Clear", "Rain", etc.
+  description: string;    // Detailed description
+  humidity: number;       // Percentage
+  windSpeed: number;      // MPH
+  windDirection: string;  // "N", "NE", etc.
+  precipitation: number;  // Probability %
+  pressure: number;       // inHg
+  alerts: string[];       // Array of alert strings
+  icon: string;           // Emoji
+}
+
+interface LocationData {
+  lat: number;
+  lon: number;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+}

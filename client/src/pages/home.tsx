@@ -305,7 +305,7 @@ export default function Home() {
           </BentoItem>
 
           {/* 8. Service Area Map - Clickable */}
-          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={2} mobileRowSpan={3}>
+          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={2} mobileRowSpan={4}>
             <button 
               onClick={() => setServiceAreaOpen(true)}
               className="w-full h-full text-left"
