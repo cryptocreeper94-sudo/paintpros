@@ -211,7 +211,7 @@ export function PaintBuddy() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center px-3 py-4"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center px-4 py-4"
             onClick={handleClose}
             data-testid="panel-paint-buddy-overlay"
           >
@@ -222,7 +222,7 @@ export function PaintBuddy() {
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               transition={{ delay: 0.1 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-[400px] max-h-[50vh] md:max-h-[400px] flex flex-col overflow-hidden"
+              className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-[calc(100%-32px)] max-w-[360px] md:max-w-[400px] max-h-[50vh] md:max-h-[400px] flex flex-col overflow-hidden mx-auto"
               style={{
                 borderRadius: "24px",
               }}
