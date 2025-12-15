@@ -17,7 +17,7 @@ import Estimate from "@/pages/estimate";
 import Admin from "@/pages/admin";
 import Owner from "@/pages/owner";
 import Developer from "@/pages/developer";
-import AreaManager from "@/pages/area-manager";
+import ProjectManager from "@/pages/project-manager";
 import Verify from "@/pages/verify";
 import Pay from "@/pages/pay";
 import ProposalSign from "@/pages/proposal-sign";
@@ -43,7 +43,7 @@ function Router() {
       <Route path="/estimate" component={Estimate} />
       <Route path="/admin" component={Admin} />
       <Route path="/owner" component={Owner} />
-      <Route path="/area-manager" component={AreaManager} />
+      <Route path="/project-manager" component={ProjectManager} />
       <Route path="/developer" component={Developer} />
       <Route path="/verify/:hallmarkNumber" component={Verify} />
       <Route path="/pay/:estimateId" component={Pay} />

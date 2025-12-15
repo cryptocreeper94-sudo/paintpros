@@ -39,7 +39,7 @@ const LICENSING_TIERS = [
     features: [
       "Everything in Starter",
       "Full analytics dashboard",
-      "Role-based dashboards (Owner, Admin, Area Manager)",
+      "Role-based dashboards (Owner, Admin, Project Manager)",
       "Phone support (24-hour response)",
       "2 strategy sessions per year",
       "Blockchain stamping included",

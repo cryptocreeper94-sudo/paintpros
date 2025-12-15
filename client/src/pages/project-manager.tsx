@@ -16,15 +16,15 @@ import type { Lead } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 
-const DEFAULT_AREA_MANAGER_PIN = "2222";
+const DEFAULT_PROJECT_MANAGER_PIN = "2222";
 
-export default function AreaManager() {
+export default function ProjectManager() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
   const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
-  const [currentPin, setCurrentPin] = useState(DEFAULT_AREA_MANAGER_PIN);
+  const [currentPin, setCurrentPin] = useState(DEFAULT_PROJECT_MANAGER_PIN);
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
   const { login, currentUser, canViewSalesData } = useAccess();
 
@@ -34,7 +34,7 @@ export default function AreaManager() {
         await fetch("/api/auth/pin/init", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ role: "area_manager", defaultPin: DEFAULT_AREA_MANAGER_PIN }),
+          body: JSON.stringify({ role: "project_manager", defaultPin: DEFAULT_PROJECT_MANAGER_PIN }),
         });
       } catch (err) {
         console.error("Failed to init PIN:", err);
@@ -71,7 +71,7 @@ export default function AreaManager() {
       const res = await fetch("/api/auth/pin/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: "area_manager", pin }),
+        body: JSON.stringify({ role: "project_manager", pin }),
       });
       
       if (!res.ok) {
@@ -85,7 +85,7 @@ export default function AreaManager() {
       
       setCurrentPin(pin);
       setIsAuthenticated(true);
-      login("area_manager");
+      login("project_manager");
       
       if (data.mustChangePin) {
         setShowPinChangeModal(true);
@@ -129,7 +129,7 @@ export default function AreaManager() {
                   >
                     <MapPin className="w-10 h-10 text-teal-400" />
                   </motion.div>
-                  <h1 className="text-3xl font-display font-bold mb-2">Area Manager</h1>
+                  <h1 className="text-3xl font-display font-bold mb-2">Project Manager</h1>
                   <p className="text-muted-foreground">Enter your PIN to continue</p>
                 </div>
 
@@ -141,10 +141,10 @@ export default function AreaManager() {
                     onChange={(e) => setPin(e.target.value)}
                     className="bg-black/5 dark:bg-white/5 border-border dark:border-white/20 text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-teal-500/30"
                     maxLength={4}
-                    data-testid="input-area-manager-pin"
+                    data-testid="input-project-manager-pin"
                   />
                   {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm text-center">{error}</motion.p>}
-                  <FlipButton className="w-full h-14" data-testid="button-area-manager-login">
+                  <FlipButton className="w-full h-14" data-testid="button-project-manager-login">
                     Access Dashboard <ArrowRight className="w-5 h-5" />
                   </FlipButton>
                 </form>
@@ -171,7 +171,7 @@ export default function AreaManager() {
                   <Eye className="w-4 h-4 text-teal-400" />
                 </div>
                 <div>
-                  <p className="font-bold text-teal-400 text-sm">Demo Mode - Private Area Manager Control Panel</p>
+                  <p className="font-bold text-teal-400 text-sm">Demo Mode - Private Project Manager Control Panel</p>
                   <p className="text-xs text-muted-foreground">PIN-protected access for territory and sales management.</p>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function AreaManager() {
           </motion.div>
         )}
 
-        {!isDemo && currentUser.role === "area_manager" && !canViewSalesData() && (
+        {!isDemo && currentUser.role === "project_manager" && !canViewSalesData() && (
           <motion.div 
             className="max-w-7xl mx-auto mb-4"
             initial={{ opacity: 0, y: -10 }}
@@ -209,7 +209,7 @@ export default function AreaManager() {
                 <MapPin className="w-6 h-6 text-teal-400" />
               </motion.div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">Area Manager Dashboard</h1>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">Project Manager Dashboard</h1>
                 <p className="text-sm text-muted-foreground">Sales & territory management</p>
               </div>
             </div>
@@ -457,8 +457,8 @@ export default function AreaManager() {
 
       <PinChangeModal
         isOpen={showPinChangeModal}
-        role="area_manager"
-        roleLabel="Area Manager"
+        role="project_manager"
+        roleLabel="Project Manager"
         currentPin={currentPin}
         onSuccess={handlePinChangeSuccess}
         onClose={() => setShowPinChangeModal(false)}
