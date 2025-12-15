@@ -3,7 +3,7 @@
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
 **Last Updated:** December 15, 2025
-**Beta Version:** v1.1.5
+**Beta Version:** v1.1.6
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
@@ -173,7 +173,42 @@ Location: `server/solana.ts`
 - Document Asset system with opt-in blockchain hashing
 - Per-tenant hallmark numbering (e.g., NPP-000000000-02)
 
-## Recent Updates (v1.1.5)
+## ORBIT Weather System
+Location: Footer + Modal
+
+### Components
+- `client/src/components/FooterWeatherWidget.tsx` - Small weather icon + temperature in footer
+- `client/src/components/WeatherRadarModal.tsx` - Full weather modal with radar map
+
+### Features
+- Real-time weather data via Open-Meteo API (free, no key required)
+- Animated radar overlay via RainViewer API
+- ZIP code location search with localStorage persistence
+- Weather details: temperature, feels-like, humidity, wind, precipitation, pressure
+- OpenStreetMap tiles for base map with grayscale styling
+- Play/pause animation and zoom controls for radar
+
+### API Endpoints (server/routes.ts)
+- `GET /api/weather/geocode/:zip` - Convert ZIP to coordinates (Open-Meteo + Nominatim fallback)
+- `GET /api/weather?lat=X&lon=Y` - Current weather by coordinates
+- `GET /api/weather/radar` - RainViewer radar tile URLs
+
+### localStorage Keys
+- `orbit-weather-zip` - User's ZIP code
+- `orbit-weather-coords` - { lat, lon } JSON
+- `orbit-weather-location` - "City, State" string
+
+### Default Location
+Nashville, TN (36.1627, -86.7816)
+
+## Recent Updates (v1.1.6)
+- ORBIT Weather System in footer:
+  - Small weather widget showing icon + temperature
+  - Click opens full modal with weather details + animated radar
+  - ZIP code search for location changes
+  - Free APIs: Open-Meteo, RainViewer, OpenStreetMap
+
+### Previous (v1.1.5)
 - Paint Buddy (Rollie) AI assistant redesign:
   - Small Rollie icon near footer (minimized state)
   - Click to open: Large Rollie centered with comic-style speech bubble
