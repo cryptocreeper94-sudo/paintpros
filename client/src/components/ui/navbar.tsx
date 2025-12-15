@@ -34,39 +34,39 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="flex items-center justify-between px-2 py-1 gap-2 overflow-hidden">
-        {/* Left: Hamburger Menu */}
+      <div className="flex items-center justify-between py-1 gap-1 overflow-hidden">
+        {/* Left: Hamburger Menu - flush left */}
         <button 
           className={cn(
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
-            tenant.id === "demo" ? "p-1.5" : "p-0"
+            tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={28} className="text-white" />
+            <X size={24} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={28} className="text-white" />
+            <Menu size={24} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-10 md:h-14 w-auto object-contain"
+              className="h-9 md:h-12 w-auto object-contain"
             />
           )}
         </button>
         
-        {/* Center: Title - truncate on mobile */}
+        {/* Center: Title - full text, smaller font on mobile */}
         <div 
           className={cn(
-            "flex-1 text-center min-w-0 truncate px-1",
+            "flex-1 text-center whitespace-nowrap",
             tenant.id === "demo" 
-              ? "text-white text-xs md:text-xl lg:text-2xl"
-              : "text-xs md:text-2xl lg:text-3xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
+              ? "text-white text-[10px] md:text-xl lg:text-2xl"
+              : "text-[10px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
           )}
-          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.08em' }}
+          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}
           data-testid="text-header-title"
         >
           {tenant.id === "demo" 
@@ -78,7 +78,7 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
+          className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
