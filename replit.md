@@ -51,7 +51,13 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.1.7** - Current Release
+- **v1.1.8** - Current Release
+  - Convert Won Deal to Job: Seamlessly transition won sales deals to the Jobs Pipeline
+  - Job-specific details: Crew lead assignment, start/end dates, invoice numbers, job addresses
+  - Job details display: Visual badges showing crew, dates, and location in Jobs Pipeline
+  - Dashboard Preview: Admin/Owner can view all role dashboards from a single modal
+  - Crew Lead PIN fix: Authentication now works across all tenants with fallback
+- **v1.1.7**
   - Dual Pipeline Mode: Toggle between Sales Pipeline and Jobs Pipeline views
   - Sales Pipeline stages: New Lead, Quoted, Negotiating, Won, Lost
   - Jobs Pipeline stages (DripJobs-style): Project Accepted, Scheduled, In Progress, Touch-ups, Complete
