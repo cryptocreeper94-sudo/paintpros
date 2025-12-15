@@ -359,7 +359,7 @@ export default function Home() {
                   src={mapImage} 
                   alt={`${cityName} Service Area`}
                   className="w-full h-full object-cover opacity-100 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ objectPosition: 'calc(100% - 80px) center' }}
+                  style={{ objectPosition: 'calc(100% + 180px) center' }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
                 <div className="absolute bottom-2 md:bottom-6 left-2 md:left-6 right-2 md:right-6">
