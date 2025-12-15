@@ -601,54 +601,64 @@ export default function Owner() {
                     </motion.div>
                   <div>
                     <h2 className="text-lg font-display font-bold">Email Database</h2>
-                    <p className="text-xs text-muted-foreground">{leads.length} leads</p>
+                    <p className="text-xs text-muted-foreground">{canViewSalesData() ? `${leads.length} leads` : "Coming soon"}</p>
                   </div>
                 </div>
 
-                <div className="relative mb-3">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search emails..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-lg h-8 text-sm"
-                    data-testid="input-search-leads-owner"
-                  />
-                </div>
-
-                <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
-                  {leadsLoading ? (
-                    <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
-                  ) : leads.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Mail className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-                      <p className="text-sm text-muted-foreground">
-                        {searchQuery ? "No matches" : "No leads yet"}
-                      </p>
+                {canViewSalesData() ? (
+                  <>
+                    <div className="relative mb-3">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        type="text"
+                        placeholder="Search emails..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 bg-black/5 dark:bg-white/5 border-border dark:border-white/20 rounded-lg h-8 text-sm"
+                        data-testid="input-search-leads-owner"
+                      />
                     </div>
-                  ) : (
-                    leads.slice(0, 6).map((lead, index) => (
-                      <motion.div
-                        key={lead.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.02 }}
-                        className="flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10 transition-colors"
-                      >
-                        <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                          <Mail className="w-3.5 h-3.5 text-accent" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium truncate">{lead.email}</p>
-                          <p className="text-[10px] text-muted-foreground">
-                            {format(new Date(lead.createdAt), "MMM d, h:mm a")}
+
+                    <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
+                      {leadsLoading ? (
+                        <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
+                      ) : leads.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Mail className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
+                          <p className="text-sm text-muted-foreground">
+                            {searchQuery ? "No matches" : "No leads yet"}
                           </p>
                         </div>
-                      </motion.div>
-                    ))
-                  )}
-                </div>
+                      ) : (
+                        leads.slice(0, 6).map((lead, index) => (
+                          <motion.div
+                            key={lead.id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.02 }}
+                            className="flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/5 dark:bg-white/10 transition-colors"
+                          >
+                            <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                              <Mail className="w-3.5 h-3.5 text-accent" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium truncate">{lead.email}</p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {format(new Date(lead.createdAt), "MMM d, h:mm a")}
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full py-8">
+                    <Sparkles className="w-8 h-8 text-purple-400 mb-3" />
+                    <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                    <p className="text-xs text-muted-foreground/70">Being configured</p>
+                  </div>
+                )}
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -657,7 +667,28 @@ export default function Owner() {
             <BentoItem colSpan={8} rowSpan={2}>
               <motion.div className="h-full" variants={cardVariants} custom={6} whileHover={hover3DSubtle}>
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" hoverEffect="subtle">
-                  <DealsPipeline />
+                  {canViewSalesData() ? (
+                    <DealsPipeline />
+                  ) : (
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <motion.div 
+                          className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.purple} ${iconContainerStyles.base}`}
+                        >
+                          <Target className="w-4 h-4 text-purple-400" />
+                        </motion.div>
+                        <div>
+                          <h2 className="text-lg font-display font-bold">Deal Pipeline</h2>
+                          <p className="text-xs text-muted-foreground">Coming soon</p>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center py-8">
+                        <Sparkles className="w-8 h-8 text-purple-400 mb-3" />
+                        <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                        <p className="text-xs text-muted-foreground/70">Being configured</p>
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -666,7 +697,28 @@ export default function Owner() {
             <BentoItem colSpan={4} rowSpan={2}>
               <motion.div className="h-full" variants={cardVariants} custom={7} whileHover={hover3DSubtle}>
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent" hoverEffect="subtle">
-                  <ActivityTimeline maxHeight="280px" />
+                  {canViewSalesData() ? (
+                    <ActivityTimeline maxHeight="280px" />
+                  ) : (
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <motion.div 
+                          className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.accent} ${iconContainerStyles.base}`}
+                        >
+                          <TrendingUp className="w-4 h-4 text-accent" />
+                        </motion.div>
+                        <div>
+                          <h2 className="text-lg font-display font-bold">Activity</h2>
+                          <p className="text-xs text-muted-foreground">Coming soon</p>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center py-8">
+                        <Sparkles className="w-8 h-8 text-purple-400 mb-3" />
+                        <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                        <p className="text-xs text-muted-foreground/70">Being configured</p>
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -675,7 +727,28 @@ export default function Owner() {
             <BentoItem colSpan={6} rowSpan={2}>
               <motion.div className="h-full" variants={cardVariants} custom={8} whileHover={hover3DSubtle}>
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.gold}`} glow="gold" hoverEffect="subtle">
-                  <BookingsCard />
+                  {canViewSalesData() ? (
+                    <BookingsCard />
+                  ) : (
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <motion.div 
+                          className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.gold} ${iconContainerStyles.base}`}
+                        >
+                          <Users className="w-4 h-4 text-gold-400" />
+                        </motion.div>
+                        <div>
+                          <h2 className="text-lg font-display font-bold">Bookings</h2>
+                          <p className="text-xs text-muted-foreground">Coming soon</p>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center py-8">
+                        <Sparkles className="w-8 h-8 text-purple-400 mb-3" />
+                        <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                        <p className="text-xs text-muted-foreground/70">Being configured</p>
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               </motion.div>
             </BentoItem>
