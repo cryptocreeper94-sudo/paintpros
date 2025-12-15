@@ -38,10 +38,10 @@ export function Navbar() {
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
       <div className="flex items-center h-12 md:h-14 px-3 md:px-4">
-        {/* Left: Hamburger Menu - shifted left 40px */}
+        {/* Left: Hamburger Menu - shifted left 25px, up 10px */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center -ml-10",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center -ml-6 -mt-2.5",
             tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
