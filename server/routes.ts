@@ -7,7 +7,8 @@ import {
   insertBlockchainStampSchema, insertHallmarkSchema, insertProposalTemplateSchema, insertProposalSchema,
   insertPaymentSchema, insertRoomScanSchema, insertPageViewSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS,
   insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema,
-  insertDocumentAssetSchema, TENANT_PREFIXES
+  insertDocumentAssetSchema, TENANT_PREFIXES,
+  insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -3120,6 +3121,460 @@ Use occasional paint-related puns or references to keep things fun!`;
     } catch (error) {
       console.error("Radar fetch error:", error);
       res.status(500).json({ error: "Failed to fetch radar data" });
+    }
+  });
+
+  // ============ CREW LEAD MANAGEMENT ============
+
+  // POST /api/crew/auth - Authenticate crew lead by PIN
+  app.post("/api/crew/auth", async (req, res) => {
+    try {
+      const { pin, tenantId } = req.body;
+      if (!pin || typeof pin !== "string") {
+        res.status(400).json({ error: "PIN is required" });
+        return;
+      }
+      const crewLead = await storage.getCrewLeadByPin(pin, tenantId || "npp");
+      if (!crewLead) {
+        res.status(401).json({ error: "Invalid PIN" });
+        return;
+      }
+      if (!crewLead.isActive) {
+        res.status(403).json({ error: "Account is deactivated" });
+        return;
+      }
+      res.json(crewLead);
+    } catch (error) {
+      console.error("Error authenticating crew lead:", error);
+      res.status(500).json({ error: "Failed to authenticate" });
+    }
+  });
+
+  // GET /api/crew/stats - Get crew statistics for dashboard
+  app.get("/api/crew/stats", async (req, res) => {
+    try {
+      const { tenantId } = req.query;
+      const tid = tenantId as string || "npp";
+      const leads = await storage.getCrewLeads(tid);
+      let totalMembers = 0;
+      let pendingTimeEntries = 0;
+      let openIncidents = 0;
+      
+      for (const lead of leads) {
+        const members = await storage.getCrewMembersByLeadId(lead.id);
+        totalMembers += members.filter(m => m.isActive).length;
+        const entries = await storage.getTimeEntriesByLeadId(lead.id);
+        pendingTimeEntries += entries.filter(e => e.status === "pending").length;
+        const incidents = await storage.getIncidentReportsByLeadId(lead.id);
+        openIncidents += incidents.filter(i => i.status === "open" || i.status === "investigating").length;
+      }
+      
+      res.json({ totalMembers, pendingTimeEntries, openIncidents });
+    } catch (error) {
+      console.error("Error fetching crew stats:", error);
+      res.json({ totalMembers: 0, pendingTimeEntries: 0, openIncidents: 0 });
+    }
+  });
+
+  // GET /api/crew/leads - Get all crew leads
+  app.get("/api/crew/leads", async (req, res) => {
+    try {
+      const { tenantId } = req.query;
+      const leads = await storage.getCrewLeads(tenantId as string || "npp");
+      res.json(leads);
+    } catch (error) {
+      console.error("Error fetching crew leads:", error);
+      res.status(500).json({ error: "Failed to fetch crew leads" });
+    }
+  });
+
+  // GET /api/crew/leads/:id - Get a specific crew lead
+  app.get("/api/crew/leads/:id", async (req, res) => {
+    try {
+      const crewLead = await storage.getCrewLeadById(req.params.id);
+      if (!crewLead) {
+        res.status(404).json({ error: "Crew lead not found" });
+        return;
+      }
+      res.json(crewLead);
+    } catch (error) {
+      console.error("Error fetching crew lead:", error);
+      res.status(500).json({ error: "Failed to fetch crew lead" });
+    }
+  });
+
+  // POST /api/crew/leads - Create a new crew lead
+  app.post("/api/crew/leads", async (req, res) => {
+    try {
+      const validatedData = insertCrewLeadSchema.parse(req.body);
+      const crewLead = await storage.createCrewLead(validatedData);
+      res.status(201).json(crewLead);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid crew lead data", details: error.errors });
+      } else {
+        console.error("Error creating crew lead:", error);
+        res.status(500).json({ error: "Failed to create crew lead" });
+      }
+    }
+  });
+
+  // PATCH /api/crew/leads/:id - Update a crew lead
+  app.patch("/api/crew/leads/:id", async (req, res) => {
+    try {
+      const crewLead = await storage.updateCrewLead(req.params.id, req.body);
+      if (!crewLead) {
+        res.status(404).json({ error: "Crew lead not found" });
+        return;
+      }
+      res.json(crewLead);
+    } catch (error) {
+      console.error("Error updating crew lead:", error);
+      res.status(500).json({ error: "Failed to update crew lead" });
+    }
+  });
+
+  // PATCH /api/crew/leads/:id/deactivate - Deactivate a crew lead
+  app.patch("/api/crew/leads/:id/deactivate", async (req, res) => {
+    try {
+      const crewLead = await storage.deactivateCrewLead(req.params.id);
+      if (!crewLead) {
+        res.status(404).json({ error: "Crew lead not found" });
+        return;
+      }
+      res.json(crewLead);
+    } catch (error) {
+      console.error("Error deactivating crew lead:", error);
+      res.status(500).json({ error: "Failed to deactivate crew lead" });
+    }
+  });
+
+  // ============ CREW MEMBERS ============
+
+  // GET /api/crew/leads/:leadId/members - Get members for a crew lead
+  app.get("/api/crew/leads/:leadId/members", async (req, res) => {
+    try {
+      const members = await storage.getCrewMembersByLead(req.params.leadId);
+      res.json(members);
+    } catch (error) {
+      console.error("Error fetching crew members:", error);
+      res.status(500).json({ error: "Failed to fetch crew members" });
+    }
+  });
+
+  // GET /api/crew/members/:id - Get a specific crew member
+  app.get("/api/crew/members/:id", async (req, res) => {
+    try {
+      const member = await storage.getCrewMemberById(req.params.id);
+      if (!member) {
+        res.status(404).json({ error: "Crew member not found" });
+        return;
+      }
+      res.json(member);
+    } catch (error) {
+      console.error("Error fetching crew member:", error);
+      res.status(500).json({ error: "Failed to fetch crew member" });
+    }
+  });
+
+  // POST /api/crew/members - Create a new crew member
+  app.post("/api/crew/members", async (req, res) => {
+    try {
+      const validatedData = insertCrewMemberSchema.parse(req.body);
+      const member = await storage.createCrewMember(validatedData);
+      res.status(201).json(member);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid crew member data", details: error.errors });
+      } else {
+        console.error("Error creating crew member:", error);
+        res.status(500).json({ error: "Failed to create crew member" });
+      }
+    }
+  });
+
+  // PATCH /api/crew/members/:id - Update a crew member
+  app.patch("/api/crew/members/:id", async (req, res) => {
+    try {
+      const member = await storage.updateCrewMember(req.params.id, req.body);
+      if (!member) {
+        res.status(404).json({ error: "Crew member not found" });
+        return;
+      }
+      res.json(member);
+    } catch (error) {
+      console.error("Error updating crew member:", error);
+      res.status(500).json({ error: "Failed to update crew member" });
+    }
+  });
+
+  // PATCH /api/crew/members/:id/deactivate - Deactivate a crew member
+  app.patch("/api/crew/members/:id/deactivate", async (req, res) => {
+    try {
+      const member = await storage.deactivateCrewMember(req.params.id);
+      if (!member) {
+        res.status(404).json({ error: "Crew member not found" });
+        return;
+      }
+      res.json(member);
+    } catch (error) {
+      console.error("Error deactivating crew member:", error);
+      res.status(500).json({ error: "Failed to deactivate crew member" });
+    }
+  });
+
+  // ============ TIME ENTRIES ============
+
+  // GET /api/crew/time-entries - Get time entries with optional filters
+  app.get("/api/crew/time-entries", async (req, res) => {
+    try {
+      const { crewLeadId, crewMemberId, startDate, endDate } = req.query;
+      let entries;
+      
+      if (startDate && endDate) {
+        entries = await storage.getTimeEntriesByDateRange(
+          new Date(startDate as string),
+          new Date(endDate as string),
+          crewLeadId as string | undefined
+        );
+      } else if (crewMemberId) {
+        entries = await storage.getTimeEntriesByMember(crewMemberId as string);
+      } else if (crewLeadId) {
+        entries = await storage.getTimeEntriesByLead(crewLeadId as string);
+      } else {
+        res.status(400).json({ error: "Must provide crewLeadId, crewMemberId, or date range" });
+        return;
+      }
+      res.json(entries);
+    } catch (error) {
+      console.error("Error fetching time entries:", error);
+      res.status(500).json({ error: "Failed to fetch time entries" });
+    }
+  });
+
+  // POST /api/crew/time-entries - Create a new time entry
+  app.post("/api/crew/time-entries", async (req, res) => {
+    try {
+      const validatedData = insertTimeEntrySchema.parse(req.body);
+      const entry = await storage.createTimeEntry(validatedData);
+      res.status(201).json(entry);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid time entry data", details: error.errors });
+      } else {
+        console.error("Error creating time entry:", error);
+        res.status(500).json({ error: "Failed to create time entry" });
+      }
+    }
+  });
+
+  // PATCH /api/crew/time-entries/:id - Update a time entry
+  app.patch("/api/crew/time-entries/:id", async (req, res) => {
+    try {
+      const entry = await storage.updateTimeEntry(req.params.id, req.body);
+      if (!entry) {
+        res.status(404).json({ error: "Time entry not found" });
+        return;
+      }
+      res.json(entry);
+    } catch (error) {
+      console.error("Error updating time entry:", error);
+      res.status(500).json({ error: "Failed to update time entry" });
+    }
+  });
+
+  // PATCH /api/crew/time-entries/:id/approve - Approve a time entry
+  app.patch("/api/crew/time-entries/:id/approve", async (req, res) => {
+    try {
+      const { approvedBy } = req.body;
+      const entry = await storage.approveTimeEntry(req.params.id, approvedBy);
+      if (!entry) {
+        res.status(404).json({ error: "Time entry not found" });
+        return;
+      }
+      res.json(entry);
+    } catch (error) {
+      console.error("Error approving time entry:", error);
+      res.status(500).json({ error: "Failed to approve time entry" });
+    }
+  });
+
+  // PATCH /api/crew/time-entries/:id/submit-payroll - Submit to payroll
+  app.patch("/api/crew/time-entries/:id/submit-payroll", async (req, res) => {
+    try {
+      const entry = await storage.submitTimeEntryToPayroll(req.params.id);
+      if (!entry) {
+        res.status(404).json({ error: "Time entry not found" });
+        return;
+      }
+      res.json(entry);
+    } catch (error) {
+      console.error("Error submitting to payroll:", error);
+      res.status(500).json({ error: "Failed to submit to payroll" });
+    }
+  });
+
+  // ============ JOB NOTES ============
+
+  // GET /api/crew/job-notes - Get job notes for a crew lead
+  app.get("/api/crew/job-notes", async (req, res) => {
+    try {
+      const { crewLeadId } = req.query;
+      if (!crewLeadId) {
+        res.status(400).json({ error: "crewLeadId is required" });
+        return;
+      }
+      const notes = await storage.getJobNotesByLead(crewLeadId as string);
+      res.json(notes);
+    } catch (error) {
+      console.error("Error fetching job notes:", error);
+      res.status(500).json({ error: "Failed to fetch job notes" });
+    }
+  });
+
+  // GET /api/crew/job-notes/:id - Get a specific job note
+  app.get("/api/crew/job-notes/:id", async (req, res) => {
+    try {
+      const note = await storage.getJobNoteById(req.params.id);
+      if (!note) {
+        res.status(404).json({ error: "Job note not found" });
+        return;
+      }
+      res.json(note);
+    } catch (error) {
+      console.error("Error fetching job note:", error);
+      res.status(500).json({ error: "Failed to fetch job note" });
+    }
+  });
+
+  // POST /api/crew/job-notes - Create a new job note
+  app.post("/api/crew/job-notes", async (req, res) => {
+    try {
+      const validatedData = insertJobNoteSchema.parse(req.body);
+      const note = await storage.createJobNote(validatedData);
+      res.status(201).json(note);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid job note data", details: error.errors });
+      } else {
+        console.error("Error creating job note:", error);
+        res.status(500).json({ error: "Failed to create job note" });
+      }
+    }
+  });
+
+  // PATCH /api/crew/job-notes/:id - Update a job note
+  app.patch("/api/crew/job-notes/:id", async (req, res) => {
+    try {
+      const note = await storage.updateJobNote(req.params.id, req.body);
+      if (!note) {
+        res.status(404).json({ error: "Job note not found" });
+        return;
+      }
+      res.json(note);
+    } catch (error) {
+      console.error("Error updating job note:", error);
+      res.status(500).json({ error: "Failed to update job note" });
+    }
+  });
+
+  // PATCH /api/crew/job-notes/:id/mark-sent - Mark job note as sent
+  app.patch("/api/crew/job-notes/:id/mark-sent", async (req, res) => {
+    try {
+      const note = await storage.markJobNoteSent(req.params.id);
+      if (!note) {
+        res.status(404).json({ error: "Job note not found" });
+        return;
+      }
+      res.json(note);
+    } catch (error) {
+      console.error("Error marking job note as sent:", error);
+      res.status(500).json({ error: "Failed to mark job note as sent" });
+    }
+  });
+
+  // ============ INCIDENT REPORTS ============
+
+  // GET /api/crew/incident-reports - Get all incident reports
+  app.get("/api/crew/incident-reports", async (req, res) => {
+    try {
+      const { crewLeadId, tenantId } = req.query;
+      let reports;
+      if (crewLeadId) {
+        reports = await storage.getIncidentReportsByLead(crewLeadId as string);
+      } else {
+        reports = await storage.getIncidentReports(tenantId as string || "npp");
+      }
+      res.json(reports);
+    } catch (error) {
+      console.error("Error fetching incident reports:", error);
+      res.status(500).json({ error: "Failed to fetch incident reports" });
+    }
+  });
+
+  // GET /api/crew/incident-reports/:id - Get a specific incident report
+  app.get("/api/crew/incident-reports/:id", async (req, res) => {
+    try {
+      const report = await storage.getIncidentReportById(req.params.id);
+      if (!report) {
+        res.status(404).json({ error: "Incident report not found" });
+        return;
+      }
+      res.json(report);
+    } catch (error) {
+      console.error("Error fetching incident report:", error);
+      res.status(500).json({ error: "Failed to fetch incident report" });
+    }
+  });
+
+  // POST /api/crew/incident-reports - Create a new incident report
+  app.post("/api/crew/incident-reports", async (req, res) => {
+    try {
+      const validatedData = insertIncidentReportSchema.parse(req.body);
+      const report = await storage.createIncidentReport(validatedData);
+      res.status(201).json(report);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid incident report data", details: error.errors });
+      } else {
+        console.error("Error creating incident report:", error);
+        res.status(500).json({ error: "Failed to create incident report" });
+      }
+    }
+  });
+
+  // PATCH /api/crew/incident-reports/:id - Update an incident report
+  app.patch("/api/crew/incident-reports/:id", async (req, res) => {
+    try {
+      const report = await storage.updateIncidentReport(req.params.id, req.body);
+      if (!report) {
+        res.status(404).json({ error: "Incident report not found" });
+        return;
+      }
+      res.json(report);
+    } catch (error) {
+      console.error("Error updating incident report:", error);
+      res.status(500).json({ error: "Failed to update incident report" });
+    }
+  });
+
+  // PATCH /api/crew/incident-reports/:id/resolve - Resolve an incident report
+  app.patch("/api/crew/incident-reports/:id/resolve", async (req, res) => {
+    try {
+      const { resolution, resolvedBy } = req.body;
+      if (!resolution || !resolvedBy) {
+        res.status(400).json({ error: "resolution and resolvedBy are required" });
+        return;
+      }
+      const report = await storage.resolveIncidentReport(req.params.id, resolution, resolvedBy);
+      if (!report) {
+        res.status(404).json({ error: "Incident report not found" });
+        return;
+      }
+      res.json(report);
+    } catch (error) {
+      console.error("Error resolving incident report:", error);
+      res.status(500).json({ error: "Failed to resolve incident report" });
     }
   });
 

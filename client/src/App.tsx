@@ -24,6 +24,7 @@ import ProposalSign from "@/pages/proposal-sign";
 import Investors from "@/pages/investors";
 import Compare from "@/pages/compare";
 import Pricing from "@/pages/pricing";
+import CrewLead from "@/pages/crew-lead";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -50,6 +51,7 @@ function Router() {
       <Route path="/investors" component={Investors} />
       <Route path="/compare" component={Compare} />
       <Route path="/pricing" component={Pricing} />
+      <Route path="/crew-lead" component={CrewLead} />
       <Route component={NotFound} />
     </Switch>
   );
