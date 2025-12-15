@@ -138,7 +138,7 @@ html {
 
 @layer utilities {
   .glass-panel {
-    @apply bg-card/10 dark:bg-black/10 backdrop-blur-[3px] border border-border dark:border-white/10 shadow-xl;
+    @apply bg-card/20 dark:bg-black/25 backdrop-blur-[5px] border border-border dark:border-white/10 shadow-xl;
   }
   
   .text-glow {
