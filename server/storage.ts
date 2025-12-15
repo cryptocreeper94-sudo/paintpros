@@ -33,6 +33,9 @@ import {
   type TimeEntry, type InsertTimeEntry, timeEntries,
   type JobNote, type InsertJobNote, jobNotes,
   type IncidentReport, type InsertIncidentReport, incidentReports,
+  type Conversation, type InsertConversation, conversations,
+  type ConversationParticipant, type InsertConversationParticipant, conversationParticipants,
+  type Message, type InsertMessage, messages,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -262,6 +265,18 @@ export interface IStorage {
   getIncidentReportById(id: string): Promise<IncidentReport | undefined>;
   updateIncidentReport(id: string, updates: Partial<InsertIncidentReport>): Promise<IncidentReport | undefined>;
   resolveIncidentReport(id: string, resolution: string, resolvedBy: string): Promise<IncidentReport | undefined>;
+  
+  // Internal Messaging
+  getConversations(tenantId: string): Promise<Conversation[]>;
+  getConversationById(id: string): Promise<Conversation | undefined>;
+  getConversationsByParticipant(role: string, tenantId: string): Promise<Conversation[]>;
+  createConversation(data: InsertConversation): Promise<Conversation>;
+  getConversationParticipants(conversationId: string): Promise<ConversationParticipant[]>;
+  addConversationParticipant(data: InsertConversationParticipant): Promise<ConversationParticipant>;
+  updateParticipantLastRead(participantId: string): Promise<ConversationParticipant | undefined>;
+  getMessages(conversationId: string, limit?: number): Promise<Message[]>;
+  createMessage(data: InsertMessage): Promise<Message>;
+  searchUsersByRole(tenantId: string): Promise<{displayName: string, role: string}[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1701,6 +1716,90 @@ export class DatabaseStorage implements IStorage {
       .where(eq(incidentReports.id, id))
       .returning();
     return result;
+  }
+
+  // ============ INTERNAL MESSAGING ============
+  
+  async getConversations(tenantId: string): Promise<Conversation[]> {
+    return await db.select().from(conversations)
+      .where(eq(conversations.tenantId, tenantId))
+      .orderBy(desc(conversations.updatedAt));
+  }
+
+  async getConversationById(id: string): Promise<Conversation | undefined> {
+    const [result] = await db.select().from(conversations).where(eq(conversations.id, id));
+    return result;
+  }
+
+  async getConversationsByParticipant(role: string, tenantId: string): Promise<Conversation[]> {
+    const participantConvos = await db.select({ conversationId: conversationParticipants.conversationId })
+      .from(conversationParticipants)
+      .where(eq(conversationParticipants.role, role));
+    
+    if (participantConvos.length === 0) {
+      return [];
+    }
+    
+    const convoIds = participantConvos.map(p => p.conversationId);
+    const result = await db.select().from(conversations)
+      .where(and(
+        eq(conversations.tenantId, tenantId),
+        sql`${conversations.id} = ANY(${convoIds})`
+      ))
+      .orderBy(desc(conversations.updatedAt));
+    
+    return result;
+  }
+
+  async createConversation(data: InsertConversation): Promise<Conversation> {
+    const [result] = await db.insert(conversations).values(data).returning();
+    return result;
+  }
+
+  async getConversationParticipants(conversationId: string): Promise<ConversationParticipant[]> {
+    return await db.select().from(conversationParticipants)
+      .where(eq(conversationParticipants.conversationId, conversationId))
+      .orderBy(conversationParticipants.joinedAt);
+  }
+
+  async addConversationParticipant(data: InsertConversationParticipant): Promise<ConversationParticipant> {
+    const [result] = await db.insert(conversationParticipants).values(data).returning();
+    return result;
+  }
+
+  async updateParticipantLastRead(participantId: string): Promise<ConversationParticipant | undefined> {
+    const [result] = await db.update(conversationParticipants)
+      .set({ lastReadAt: new Date() })
+      .where(eq(conversationParticipants.id, participantId))
+      .returning();
+    return result;
+  }
+
+  async getMessages(conversationId: string, limit?: number): Promise<Message[]> {
+    const query = db.select().from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(desc(messages.createdAt));
+    
+    if (limit) {
+      return await query.limit(limit);
+    }
+    return await query;
+  }
+
+  async createMessage(data: InsertMessage): Promise<Message> {
+    const [result] = await db.insert(messages).values(data).returning();
+    await db.update(conversations)
+      .set({ updatedAt: new Date() })
+      .where(eq(conversations.id, data.conversationId));
+    return result;
+  }
+
+  async searchUsersByRole(tenantId: string): Promise<{displayName: string, role: string}[]> {
+    const roles = ['owner', 'admin', 'project_manager', 'crew_lead', 'developer'];
+    return roles.map(role => ({
+      displayName: role.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      role
+    }));
   }
 }
 
