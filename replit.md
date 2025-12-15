@@ -51,7 +51,13 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.1.6** - Current Release
+- **v1.1.7** - Current Release
+  - Mobile-responsive CRM Calendar (compact views for phone screens)
+  - QuickBooks Online integration setup added to Developer portal
+  - Week view shows 3 days on mobile, full 7 on desktop
+  - Touch-friendly calendar controls with abbreviated labels
+  - DripJobs.com competitor analysis - Jobs Pipeline reference (Project Accepted, Scheduled, In Progress, Touch-ups, Complete)
+- **v1.1.6**
   - CRM Calendar System with comprehensive scheduling capabilities
   - Month, Week, and Day views with smooth navigation
   - Color-coded event types (appointment, meeting, deadline, task, reminder, follow-up, estimate, job)
