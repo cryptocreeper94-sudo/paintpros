@@ -1010,3 +1010,86 @@ export const insertMessageSchema = createInsertSchema(messages).omit({
 
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Message = typeof messages.$inferSelect;
+
+// ==========================================
+// DOCUMENT CENTER - PDF Management & Signatures
+// ==========================================
+
+// Documents - Main document storage for contracts, estimates, invoices, proposals
+export const documents = pgTable("documents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  documentType: text("document_type").notNull(), // 'contract', 'estimate', 'invoice', 'proposal', 'other'
+  title: text("title").notNull(),
+  description: text("description"),
+  fileName: text("file_name").notNull(),
+  fileSize: integer("file_size"), // bytes
+  mimeType: text("mime_type").default("application/pdf"),
+  fileData: text("file_data"), // Base64 encoded PDF content (for smaller files)
+  filePath: text("file_path"), // For larger files stored on disk
+  status: text("status").default("draft").notNull(), // 'draft', 'pending_signature', 'signed', 'archived'
+  version: integer("version").default(1).notNull(),
+  relatedLeadId: varchar("related_lead_id"),
+  relatedEstimateId: varchar("related_estimate_id"),
+  relatedBookingId: varchar("related_booking_id"),
+  createdBy: text("created_by").notNull(), // role: 'admin', 'owner'
+  createdByName: text("created_by_name"),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertDocumentSchema = createInsertSchema(documents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type Document = typeof documents.$inferSelect;
+
+// Document Versions - Track edit history
+export const documentVersions = pgTable("document_versions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  documentId: varchar("document_id").references(() => documents.id).notNull(),
+  versionNumber: integer("version_number").notNull(),
+  fileName: text("file_name").notNull(),
+  fileData: text("file_data"),
+  filePath: text("file_path"),
+  changeNote: text("change_note"),
+  createdBy: text("created_by").notNull(),
+  createdByName: text("created_by_name"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertDocumentVersionSchema = createInsertSchema(documentVersions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertDocumentVersion = z.infer<typeof insertDocumentVersionSchema>;
+export type DocumentVersion = typeof documentVersions.$inferSelect;
+
+// Document Signatures - Digital signature capture
+export const documentSignatures = pgTable("document_signatures", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  documentId: varchar("document_id").references(() => documents.id).notNull(),
+  signatureType: text("signature_type").notNull(), // 'client', 'company', 'witness'
+  signerName: text("signer_name").notNull(),
+  signerEmail: text("signer_email"),
+  signerPhone: text("signer_phone"),
+  signerRole: text("signer_role"), // 'customer', 'admin', 'owner', 'contractor'
+  signatureData: text("signature_data").notNull(), // Base64 encoded signature image
+  signedAt: timestamp("signed_at").defaultNow().notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  metadata: jsonb("metadata").default({}),
+});
+
+export const insertDocumentSignatureSchema = createInsertSchema(documentSignatures).omit({
+  id: true,
+  signedAt: true,
+});
+
+export type InsertDocumentSignature = z.infer<typeof insertDocumentSignatureSchema>;
+export type DocumentSignature = typeof documentSignatures.$inferSelect;
