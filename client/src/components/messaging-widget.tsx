@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Send, Loader2, Mic, MicOff, MessageSquare, Plus, ArrowLeft, 
-  Users, Search, Paperclip, Check, CheckCheck
+  Users, Search, Paperclip, Check, CheckCheck, Image, Video, FileText, Trash2
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -12,6 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface PendingAttachment {
+  id: string;
+  file: File;
+  preview: string;
+  type: 'image' | 'video' | 'file';
+}
 
 interface Message {
   id: string;
@@ -80,6 +87,8 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
   const recognitionRef = useRef<any>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
 
   const { data: conversations = [], isLoading: loadingConvos } = useQuery<Conversation[]>({
     queryKey: ["/api/messages/conversations", { tenantId: tenant.id, role: currentUserRole }],
@@ -284,10 +293,61 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
     }
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const maxFileSize = 5 * 1024 * 1024; // 5MB limit
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm'];
+
+    Array.from(files).forEach((file) => {
+      if (file.size > maxFileSize) {
+        alert(`File ${file.name} is too large. Max size is 5MB.`);
+        return;
+      }
+      if (!allowedTypes.includes(file.type)) {
+        alert(`File type ${file.type} is not supported.`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const type: 'image' | 'video' | 'file' = file.type.startsWith('image/') 
+          ? 'image' 
+          : file.type.startsWith('video/') 
+            ? 'video' 
+            : 'file';
+        
+        setPendingAttachments(prev => [...prev, {
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          file,
+          preview: reader.result as string,
+          type
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAttachment = (id: string) => {
+    setPendingAttachments(prev => prev.filter(a => a.id !== id));
+  };
+
   const handleSend = async () => {
-    if (!input.trim() || !activeConversation) return;
+    if ((!input.trim() && pendingAttachments.length === 0) || !activeConversation) return;
     const content = input.trim();
+    const attachmentUrls = pendingAttachments.map(a => a.preview);
     setInput("");
+    setPendingAttachments([]);
+
+    const messageType = attachmentUrls.length > 0 
+      ? (pendingAttachments[0]?.type === 'video' ? 'video' : 'image')
+      : 'text';
 
     if (socket) {
       socket.emit("send-message", {
@@ -295,11 +355,20 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
         senderId: currentUserId,
         senderRole: currentUserRole,
         senderName: currentUserName,
-        content,
-        messageType: "text"
+        content: content || (attachmentUrls.length > 0 ? 'Sent an attachment' : ''),
+        messageType,
+        attachments: attachmentUrls
       });
     } else {
-      await sendMessageMutation.mutateAsync(content);
+      await apiRequest("POST", `/api/messages/conversations/${activeConversation.id}/messages`, {
+        senderId: currentUserId,
+        senderRole: currentUserRole,
+        senderName: currentUserName,
+        content: content || (attachmentUrls.length > 0 ? 'Sent an attachment' : ''),
+        messageType,
+        attachments: attachmentUrls
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/messages/conversations", activeConversation?.id, "messages"] });
     }
   };
 
@@ -604,6 +673,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                     <div className="space-y-3">
                       {messages.map((msg) => {
                         const isOwn = msg.senderId === currentUserId || msg.senderRole === currentUserRole;
+                        const hasAttachments = msg.attachments && msg.attachments.length > 0;
                         return (
                           <motion.div
                             key={msg.id}
@@ -623,7 +693,42 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                                   {msg.senderName}
                                 </p>
                               )}
-                              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                              {hasAttachments && (
+                                <div className="mb-2 space-y-2">
+                                  {msg.attachments.map((attachment, idx) => {
+                                    const isImage = attachment.startsWith('data:image/');
+                                    const isVideo = attachment.startsWith('data:video/');
+                                    return (
+                                      <div key={idx} className="rounded-lg overflow-hidden">
+                                        {isImage ? (
+                                          <img 
+                                            src={attachment} 
+                                            alt="Attachment" 
+                                            className="max-w-full rounded-lg cursor-pointer"
+                                            onClick={() => window.open(attachment, '_blank')}
+                                            data-testid={`img-attachment-${msg.id}-${idx}`}
+                                          />
+                                        ) : isVideo ? (
+                                          <video 
+                                            src={attachment} 
+                                            controls 
+                                            className="max-w-full rounded-lg"
+                                            data-testid={`video-attachment-${msg.id}-${idx}`}
+                                          />
+                                        ) : (
+                                          <div className="flex items-center gap-2 p-2 bg-white/10 rounded-lg">
+                                            <FileText className="w-5 h-5" />
+                                            <span className="text-sm">Attachment</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                              {msg.content && msg.content !== 'Sent an attachment' && (
+                                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                              )}
                               <div className={`flex items-center justify-end gap-1 mt-1 ${isOwn ? "text-white/70" : "text-gray-400"}`}>
                                 <span className="text-[10px]">{formatTime(msg.createdAt)}</span>
                                 {isOwn && (
@@ -639,34 +744,85 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                   )}
                 </ScrollArea>
 
-                <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex gap-2">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={toggleListening}
-                      className={isListening ? "bg-red-500 text-white hover:bg-red-600" : ""}
-                      data-testid="button-mic"
-                    >
-                      {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                    </Button>
-                    <Input
-                      ref={inputRef}
-                      value={input}
-                      onChange={handleInputChange}
-                      onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                      placeholder={isListening ? "Listening..." : "Type a message..."}
-                      className="flex-1"
-                      data-testid="input-message"
-                    />
-                    <Button
-                      size="icon"
-                      onClick={handleSend}
-                      disabled={!input.trim()}
-                      data-testid="button-send"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
+                <div className="border-t border-gray-200 dark:border-gray-700">
+                  {pendingAttachments.length > 0 && (
+                    <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                      <div className="flex gap-2 overflow-x-auto pb-1">
+                        {pendingAttachments.map((attachment) => (
+                          <div key={attachment.id} className="relative shrink-0 group">
+                            {attachment.type === 'image' ? (
+                              <img 
+                                src={attachment.preview} 
+                                alt="Preview" 
+                                className="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                              />
+                            ) : attachment.type === 'video' ? (
+                              <div className="w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                <Video className="w-6 h-6 text-gray-500" />
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-gray-500" />
+                              </div>
+                            )}
+                            <button
+                              onClick={() => removeAttachment(attachment.id)}
+                              className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              data-testid={`button-remove-attachment-${attachment.id}`}
+                            >
+                              <X className="w-3 h-3 text-white" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-3">
+                    <div className="flex gap-2">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*,video/mp4,video/webm"
+                        multiple
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        data-testid="input-file"
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => fileInputRef.current?.click()}
+                        data-testid="button-attach"
+                      >
+                        <Paperclip className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={toggleListening}
+                        className={isListening ? "bg-red-500 text-white" : ""}
+                        data-testid="button-mic"
+                      >
+                        {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                      </Button>
+                      <Input
+                        ref={inputRef}
+                        value={input}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                        placeholder={isListening ? "Listening..." : "Type a message..."}
+                        className="flex-1"
+                        data-testid="input-message"
+                      />
+                      <Button
+                        size="icon"
+                        onClick={handleSend}
+                        disabled={!input.trim() && pendingAttachments.length === 0}
+                        data-testid="button-send"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </>
