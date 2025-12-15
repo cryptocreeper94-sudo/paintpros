@@ -3,7 +3,7 @@
 ## Metadata
 **Tags:** #multi-tenant, #painting-industry, #saas
 **Last Updated:** December 15, 2025
-**Beta Version:** v1.1.4
+**Beta Version:** v1.1.5
 
 ## Product Overview
 **PaintPros.io** is a multi-tenant SaaS platform for the painting and home services industry. Built by Orbit, it provides white-label websites for painting companies with:
@@ -173,7 +173,16 @@ Location: `server/solana.ts`
 - Document Asset system with opt-in blockchain hashing
 - Per-tenant hallmark numbering (e.g., NPP-000000000-02)
 
-## Recent Updates (v1.1.4)
+## Recent Updates (v1.1.5)
+- Paint Buddy (Rollie) AI assistant redesign:
+  - Small Rollie icon near footer (minimized state)
+  - Click to open: Large Rollie centered with comic-style speech bubble
+  - Male/Female voice toggle (OpenAI onyx/nova voices)
+  - Speech-to-text via microphone button (Web Speech API)
+  - Clear chat button
+  - Responsive design for mobile and desktop
+
+### Previous (v1.1.4)
 - Pre-publish sweep: Full system verification completed
 - Role-based access control refinement for Owner and Area Manager dashboards
 - AccessContext with canViewSalesData property for sales feature placeholders
