@@ -526,7 +526,7 @@ export default function Home() {
                                 className="absolute inset-0 overflow-hidden"
                                 style={{ width: `${fillPercent * 100}%` }}
                               >
-                                <Star className="w-3 h-3 md:w-6 md:h-6 fill-yellow-400 text-yellow-400 dark:fill-yellow-300 dark:text-yellow-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.8)]" />
+                                <Star className="w-3 h-3 md:w-6 md:h-6 fill-orange-500 text-orange-500 dark:fill-orange-400 dark:text-orange-400 drop-shadow-[0_0_4px_rgba(249,115,22,0.8)]" />
                               </div>
                             )}
                           </div>
@@ -534,7 +534,7 @@ export default function Home() {
                       })}
                     </div>
                     <div>
-                      <p className="text-lg md:text-3xl font-bold font-display text-yellow-600 dark:text-yellow-300 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]">{tenant.credentials.googleRating}</p>
+                      <p className="text-lg md:text-3xl font-bold font-display text-orange-600 dark:text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]">{tenant.credentials.googleRating}</p>
                       <p className="text-[10px] md:text-xs text-foreground dark:text-white font-medium">Google</p>
                     </div>
                   </div>
