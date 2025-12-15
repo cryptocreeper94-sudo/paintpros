@@ -30,6 +30,7 @@ import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallm
 import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
 import { getAssetBadge, formatDate } from "@/lib/hallmark";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { MessagingWidget } from "@/components/messaging-widget";
 
 const DEVELOPER_PIN = "0424";
 
@@ -2215,6 +2216,12 @@ export default function Developer() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <MessagingWidget 
+        currentUserId="developer"
+        currentUserRole="developer"
+        currentUserName="Developer"
+      />
     </PageLayout>
   );
 }

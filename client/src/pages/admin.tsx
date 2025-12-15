@@ -25,6 +25,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { Zap } from "lucide-react";
+import { MessagingWidget } from "@/components/messaging-widget";
 
 const DEFAULT_PIN = "4444";
 
@@ -682,6 +683,12 @@ export default function Admin() {
           </BentoGrid>
         </motion.div>
       </main>
+      
+      <MessagingWidget 
+        currentUserId="admin"
+        currentUserRole="admin"
+        currentUserName="Admin"
+      />
     </PageLayout>
   );
 }

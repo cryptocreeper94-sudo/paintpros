@@ -31,6 +31,7 @@ import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { Lock } from "lucide-react";
+import { MessagingWidget } from "@/components/messaging-widget";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -795,6 +796,12 @@ export default function Owner() {
         onSuccess={handlePinChangeSuccess}
         onClose={() => setShowPinChangeModal(false)}
         accentColor="gold-400"
+      />
+      
+      <MessagingWidget 
+        currentUserId="owner"
+        currentUserRole="owner"
+        currentUserName="Owner"
       />
     </PageLayout>
   );

@@ -276,7 +276,7 @@ export interface IStorage {
   updateParticipantLastRead(participantId: string): Promise<ConversationParticipant | undefined>;
   getMessages(conversationId: string, limit?: number): Promise<Message[]>;
   createMessage(data: InsertMessage): Promise<Message>;
-  searchUsersByRole(tenantId: string): Promise<{displayName: string, role: string}[]>;
+  searchUsersByRole(tenantId: string): Promise<{id: string, displayName: string, role: string}[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1794,10 +1794,11 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async searchUsersByRole(tenantId: string): Promise<{displayName: string, role: string}[]> {
-    const roles = ['owner', 'admin', 'project_manager', 'crew_lead', 'developer'];
+  async searchUsersByRole(tenantId: string): Promise<{id: string, displayName: string, role: string}[]> {
+    const roles = ['owner', 'admin', 'project-manager', 'crew-lead', 'developer'];
     return roles.map(role => ({
-      displayName: role.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      id: `${tenantId}-${role}`,
+      displayName: role.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
       role
     }));
   }

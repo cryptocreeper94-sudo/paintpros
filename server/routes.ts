@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { Server as SocketServer } from "socket.io";
 import { storage } from "./storage";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
@@ -19,6 +20,10 @@ import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import type { RequestHandler } from "express";
+
+// Global Socket.IO instance for real-time messaging
+let io: SocketServer | null = null;
+export function getSocketIO() { return io; }
 
 // Helper function to format time ago
 function formatTimeAgo(ms: number): string {
@@ -143,6 +148,72 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+
+  // ============ SOCKET.IO REAL-TIME MESSAGING ============
+  io = new SocketServer(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    },
+    path: "/socket.io"
+  });
+
+  io.on("connection", (socket) => {
+    console.log("[Socket.IO] User connected:", socket.id);
+
+    socket.on("join-conversation", (conversationId: string) => {
+      socket.join(`conversation:${conversationId}`);
+      console.log(`[Socket.IO] ${socket.id} joined conversation:${conversationId}`);
+    });
+
+    socket.on("leave-conversation", (conversationId: string) => {
+      socket.leave(`conversation:${conversationId}`);
+    });
+
+    socket.on("send-message", async (data: {
+      conversationId: string;
+      senderId: string;
+      senderRole: string;
+      senderName: string;
+      content: string;
+      messageType?: string;
+      attachments?: string[];
+    }) => {
+      try {
+        const message = await storage.createMessage({
+          conversationId: data.conversationId,
+          senderId: data.senderId,
+          senderRole: data.senderRole,
+          senderName: data.senderName,
+          content: data.content,
+          messageType: data.messageType || "text",
+          attachments: data.attachments || [],
+          isSystemMessage: false
+        });
+        io?.to(`conversation:${data.conversationId}`).emit("new-message", message);
+      } catch (error) {
+        console.error("[Socket.IO] Error sending message:", error);
+        socket.emit("message-error", { error: "Failed to send message" });
+      }
+    });
+
+    socket.on("typing", (data: { conversationId: string; userId: string; userName: string }) => {
+      socket.to(`conversation:${data.conversationId}`).emit("user-typing", {
+        userId: data.userId,
+        userName: data.userName
+      });
+    });
+
+    socket.on("stop-typing", (data: { conversationId: string; userId: string }) => {
+      socket.to(`conversation:${data.conversationId}`).emit("user-stop-typing", {
+        userId: data.userId
+      });
+    });
+
+    socket.on("disconnect", () => {
+      console.log("[Socket.IO] User disconnected:", socket.id);
+    });
+  });
 
   // ============ REPLIT AUTH ============
   await setupAuth(app);

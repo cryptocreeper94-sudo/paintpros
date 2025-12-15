@@ -15,6 +15,7 @@ import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import type { Lead } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
+import { MessagingWidget } from "@/components/messaging-widget";
 
 const DEFAULT_PROJECT_MANAGER_PIN = "2222";
 
@@ -463,6 +464,12 @@ export default function ProjectManager() {
         onSuccess={handlePinChangeSuccess}
         onClose={() => setShowPinChangeModal(false)}
         accentColor="teal-400"
+      />
+      
+      <MessagingWidget 
+        currentUserId="project-manager"
+        currentUserRole="project-manager"
+        currentUserName="Project Manager"
       />
     </PageLayout>
   );

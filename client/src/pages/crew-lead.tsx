@@ -16,6 +16,7 @@ import type { CrewLead, CrewMember, TimeEntry, JobNote, IncidentReport } from "@
 import { format } from "date-fns";
 import { useTenant } from "@/context/TenantContext";
 import { Textarea } from "@/components/ui/textarea";
+import { MessagingWidget } from "@/components/messaging-widget";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
@@ -401,6 +402,12 @@ export default function CrewLeadDashboard() {
           )}
         </motion.div>
       </main>
+      
+      <MessagingWidget 
+        currentUserId={currentLead?.id || "crew-lead"}
+        currentUserRole="crew-lead"
+        currentUserName={currentLead?.name || "Crew Lead"}
+      />
     </PageLayout>
   );
 }
