@@ -231,21 +231,19 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-on-time"
             >
-              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+              <GlassCard className="p-2 md:p-6 flex flex-col justify-center items-center h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
                 <img 
                   src={onTimeImage} 
                   alt="On-time service" 
                   className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
                 />
-                <div className="flex items-center gap-2 md:gap-4 relative z-10">
-                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
+                <div className="flex flex-col items-center text-center gap-1 relative z-10">
+                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl">
                     <Clock className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg text-black">On-Time</h3>
-                    <p className="text-[10px] md:text-sm text-black/80 hidden md:block font-bold">We value your time.</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-accent" />
+                  <h3 className="font-bold text-xs md:text-lg text-black">On-Time</h3>
+                  <p className="text-[10px] md:text-sm text-black/80 font-bold">We value your time.</p>
+                  <ArrowRight className="w-4 h-4 text-accent mt-1" />
                 </div>
               </GlassCard>
             </button>
