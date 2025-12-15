@@ -267,8 +267,8 @@ export default function Home() {
                     <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block font-bold">Full coverage on our workmanship.</p>
+                    <h3 className="font-bold text-xs md:text-lg text-white">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
+                    <p className="text-[10px] md:text-sm text-white/80 hidden md:block font-bold">Full coverage on our workmanship.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
