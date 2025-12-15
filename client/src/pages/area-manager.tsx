@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
-import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Eye, Settings } from "lucide-react";
+import { MapPin, Users, Target, Calendar, Phone, Mail, ClipboardList, ArrowRight, Eye, Settings, Sparkles, TrendingUp } from "lucide-react";
 import { hover3D, hover3DSubtle, cardVariants, staggerContainer, iconContainerStyles, cardBackgroundStyles } from "@/lib/theme-effects";
 import { RoomScannerCard } from "@/components/room-scanner";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +14,7 @@ import { ActivityTimeline } from "@/components/crm/activity-timeline";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import type { Lead } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
+import { useAccess } from "@/context/AccessContext";
 
 const DEFAULT_AREA_MANAGER_PIN = "2222";
 
@@ -25,6 +26,7 @@ export default function AreaManager() {
   const [error, setError] = useState("");
   const [currentPin, setCurrentPin] = useState(DEFAULT_AREA_MANAGER_PIN);
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
+  const { login, currentUser, canViewSalesData } = useAccess();
 
   useEffect(() => {
     const initPin = async () => {
@@ -83,6 +85,7 @@ export default function AreaManager() {
       
       setCurrentPin(pin);
       setIsAuthenticated(true);
+      login("area_manager");
       
       if (data.mustChangePin) {
         setShowPinChangeModal(true);
@@ -176,6 +179,26 @@ export default function AreaManager() {
           </motion.div>
         )}
 
+        {!isDemo && currentUser.role === "area_manager" && !canViewSalesData() && (
+          <motion.div 
+            className="max-w-7xl mx-auto mb-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500/20 via-blue-500/10 to-purple-500/20 border border-purple-500/30 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-500/20">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-purple-400 text-sm">Welcome! Your system is being set up.</p>
+                  <p className="text-xs text-muted-foreground">Sales features are being configured. Territory tools are fully available!</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div className="max-w-7xl mx-auto mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -220,8 +243,8 @@ export default function AreaManager() {
                     </motion.div>
                     <span className="text-sm font-medium">My Leads</span>
                   </div>
-                  <div className="text-3xl font-bold text-teal-400">{leads.length}</div>
-                  <p className="text-xs text-muted-foreground mt-1">In territory</p>
+                  <div className="text-3xl font-bold text-teal-400">{canViewSalesData() ? leads.length : "--"}</div>
+                  <p className="text-xs text-muted-foreground mt-1">{canViewSalesData() ? "In territory" : "Coming soon"}</p>
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -235,8 +258,8 @@ export default function AreaManager() {
                     </motion.div>
                     <span className="text-sm font-medium">Active Deals</span>
                   </div>
-                  <div className="text-3xl font-bold text-accent">{getTotalDeals()}</div>
-                  <p className="text-xs text-muted-foreground mt-1">In pipeline</p>
+                  <div className="text-3xl font-bold text-accent">{canViewSalesData() ? getTotalDeals() : "--"}</div>
+                  <p className="text-xs text-muted-foreground mt-1">{canViewSalesData() ? "In pipeline" : "Coming soon"}</p>
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -275,7 +298,26 @@ export default function AreaManager() {
             <BentoItem colSpan={8} rowSpan={2}>
               <motion.div className="h-full" variants={cardVariants} custom={4} whileHover={hover3DSubtle}>
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" hoverEffect={false} animatedBorder>
-                  <DealsPipeline />
+                  {canViewSalesData() ? (
+                    <DealsPipeline />
+                  ) : (
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <motion.div className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.purple} ${iconContainerStyles.base}`}>
+                          <Target className="w-4 h-4 text-purple-400" />
+                        </motion.div>
+                        <div>
+                          <h2 className="text-lg font-display font-bold">Deal Pipeline</h2>
+                          <p className="text-xs text-muted-foreground">Coming soon</p>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center py-8">
+                        <Sparkles className="w-8 h-8 text-purple-400 mb-3" />
+                        <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                        <p className="text-xs text-muted-foreground/70">Being configured</p>
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -284,7 +326,26 @@ export default function AreaManager() {
             <BentoItem colSpan={4} rowSpan={2}>
               <motion.div className="h-full" variants={cardVariants} custom={5} whileHover={hover3DSubtle}>
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.blue}`} glow="blue" hoverEffect={false}>
-                  <ActivityTimeline maxHeight="280px" />
+                  {canViewSalesData() ? (
+                    <ActivityTimeline maxHeight="280px" />
+                  ) : (
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <motion.div className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.blue} ${iconContainerStyles.base}`}>
+                          <TrendingUp className="w-4 h-4 text-teal-400" />
+                        </motion.div>
+                        <div>
+                          <h2 className="text-lg font-display font-bold">Activity</h2>
+                          <p className="text-xs text-muted-foreground">Coming soon</p>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex flex-col items-center justify-center py-8">
+                        <Sparkles className="w-8 h-8 text-purple-400 mb-3" />
+                        <p className="text-sm font-medium text-muted-foreground">Coming Soon</p>
+                        <p className="text-xs text-muted-foreground/70">Being configured</p>
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               </motion.div>
             </BentoItem>
@@ -356,12 +417,12 @@ export default function AreaManager() {
                       </motion.div>
                       <div>
                         <h2 className="text-lg font-display font-bold">My Pipeline Value</h2>
-                        <p className="text-xs text-muted-foreground">{getTotalDeals()} active deals</p>
+                        <p className="text-xs text-muted-foreground">{canViewSalesData() ? `${getTotalDeals()} active deals` : "Coming soon"}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-3xl font-bold text-teal-400">${getTotalPipelineValue().toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground">Total potential</p>
+                      <div className="text-3xl font-bold text-teal-400">{canViewSalesData() ? `$${getTotalPipelineValue().toLocaleString()}` : "$--"}</div>
+                      <p className="text-xs text-muted-foreground">{canViewSalesData() ? "Total potential" : "Being configured"}</p>
                     </div>
                   </div>
                 </GlassCard>
