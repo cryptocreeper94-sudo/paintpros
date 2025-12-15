@@ -526,8 +526,8 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                   ) : (
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
                       {filteredUsers.map((user) => {
-                        const onlineData = onlineUsers.find(u => u.userId === user.id || u.role === user.role);
-                        const isOnline = onlineData?.alwaysAvailable || onlineUserIds.has(user.id) || onlineUserIds.has(user.role);
+                        const onlineData = onlineUsers.find(u => u.userId === user.id);
+                        const isOnline = onlineData?.alwaysAvailable || onlineUserIds.has(user.id);
                         return (
                           <motion.button
                             key={user.role}
