@@ -27,6 +27,7 @@ import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { Zap } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 
 const DEFAULT_PIN = "4444";
 
@@ -649,6 +650,19 @@ export default function Admin() {
                 custom={10}
               >
                 <RoomScannerCard locked={false} accentColor="accent" />
+              </motion.div>
+            </BentoItem>
+
+            {/* Default PINs Reference */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div 
+                className="h-full" 
+                variants={cardVariants}
+                custom={11}
+                whileHover={hover3DSubtle}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <PinReferenceAccordion className="h-full" />
               </motion.div>
             </BentoItem>
 

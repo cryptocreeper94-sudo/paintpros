@@ -31,6 +31,7 @@ import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
 import { getAssetBadge, formatDate } from "@/lib/hallmark";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 
 const DEVELOPER_PIN = "0424";
 
@@ -2045,6 +2046,12 @@ export default function Developer() {
 
           <BentoItem colSpan={4} rowSpan={1}>
             <RoomScannerCard locked={false} accentColor="purple-400" />
+          </BentoItem>
+
+          <BentoItem colSpan={4} rowSpan={1}>
+            <motion.div className="h-full" variants={cardVariants} whileHover={hover3DSubtle}>
+              <PinReferenceAccordion className="h-full" />
+            </motion.div>
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1}>

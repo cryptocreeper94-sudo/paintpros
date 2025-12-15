@@ -33,6 +33,7 @@ import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { Lock } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -767,6 +768,13 @@ export default function Owner() {
             <BentoItem colSpan={6} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={9}>
                 <RoomScannerCard locked={false} accentColor="gold-400" />
+              </motion.div>
+            </BentoItem>
+
+            {/* Default PINs Reference */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={10} whileHover={hover3DSubtle}>
+                <PinReferenceAccordion className="h-full" />
               </motion.div>
             </BentoItem>
 
