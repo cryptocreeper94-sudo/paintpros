@@ -61,7 +61,7 @@ export function Navbar() {
         {/* Center: Title - full text, smaller font on mobile */}
         <div 
           className={cn(
-            "flex-1 text-center whitespace-nowrap -translate-x-[35px]",
+            "flex-1 text-center whitespace-nowrap -translate-x-[43px]",
             tenant.id === "demo" 
               ? "text-white text-[12px] md:text-xl lg:text-2xl"
               : "text-[12px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
@@ -78,7 +78,7 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
+          className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[15px]"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
