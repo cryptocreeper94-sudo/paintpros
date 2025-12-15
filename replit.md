@@ -29,7 +29,7 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 - **PDF Document Center:** A comprehensive document management system with digital signature capabilities. Supports contracts, estimates, invoices, and proposals. Features include document creation, version tracking, and digital signature capture via react-signature-canvas. Integrated into Admin and Owner dashboards. API routes include role-based authentication and tenant scoping for multi-tenant isolation.
 
 ### System Design Choices
-- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`), Internal Messaging (`conversations`, `conversation_participants`, `messages`), and Document Center (`documents`, `document_versions`, `document_signatures`).
+- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`), Internal Messaging (`conversations`, `conversation_participants`, `messages`), Document Center (`documents`, `document_versions`, `document_signatures`), and CRM Calendar (`calendar_events`, `calendar_reminders`, `calendar_attendees`).
 - **File Structure:** Organized with `client/src` for frontend components, pages, config, and context; `shared/schema.ts` for database models; and `server/` for data access and API routes.
 
 ## External Dependencies
@@ -51,7 +51,16 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.1.5** - Current Release
+- **v1.1.6** - Current Release
+  - CRM Calendar System with comprehensive scheduling capabilities
+  - Month, Week, and Day views with smooth navigation
+  - Color-coded event types (appointment, meeting, deadline, task, reminder, follow-up, estimate, job)
+  - Event reminders with configurable timing (15 min to 1 week before)
+  - Support for recurring events (daily, weekly, monthly, yearly)
+  - Lead and estimate linking for CRM integration
+  - Calendar integrated into Admin and Owner dashboards
+  - Tenant-scoped events with role-based access control
+- **v1.1.5**
   - PDF Document Center with digital signature capabilities
   - Document management for contracts, estimates, invoices, and proposals
   - Digital signature capture via react-signature-canvas
