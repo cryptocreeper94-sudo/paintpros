@@ -98,7 +98,7 @@ export function FooterWeatherWidget() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="flex items-center gap-1.5 transition-all hover:scale-105 group"
+        className="flex items-center gap-1.5 transition-colors group hover-elevate"
         data-testid="button-weather-widget"
         title={weather ? `${weather.condition} - ${weather.description}` : "Loading weather..."}
       >
