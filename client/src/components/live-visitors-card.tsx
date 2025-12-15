@@ -48,7 +48,7 @@ export function LiveVisitorsCard() {
 
   if (isLoading || !data) {
     return (
-      <GlassCard className="p-5 relative overflow-hidden animate-pulse" glow>
+      <GlassCard className="h-full p-4 relative overflow-hidden animate-pulse" glow>
         <div className="h-4 bg-white/10 rounded w-20 mb-2" />
         <div className="h-8 bg-white/10 rounded w-16" />
       </GlassCard>
@@ -67,10 +67,10 @@ export function LiveVisitorsCard() {
         whileHover={{ scale: 1.02 }} 
         transition={{ type: "spring", stiffness: 300 }}
         onClick={() => setShowDetails(true)}
-        className="cursor-pointer"
+        className="h-full cursor-pointer"
         data-testid="card-live-visitors"
       >
-        <GlassCard className="p-4 min-h-[120px] relative overflow-hidden group" glow>
+        <GlassCard className="h-full p-4 relative overflow-hidden group" glow>
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
           
           {/* Pulse animation for live indicator */}
@@ -87,52 +87,17 @@ export function LiveVisitorsCard() {
           </div>
           
           <div className="relative">
-            <div className="flex items-center gap-2 text-sm text-green-400 mb-1">
-              <Activity className="w-4 h-4" />
-              Live Visitors
+            <div className="flex items-center gap-2 mb-2">
+              <Activity className="w-4 h-4 text-green-400" />
+              <span className="text-sm font-medium">Live Visitors</span>
             </div>
             
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-green-400" data-testid="text-live-count">
-                {data.realVisitors}
-              </span>
-              {data.bots > 0 && (
-                <span className="text-xs text-muted-foreground">
-                  (+{data.bots} bots)
-                </span>
-              )}
+            <div className="text-3xl font-bold text-green-400" data-testid="text-live-count">
+              {data.realVisitors}
             </div>
-            
-            {/* Device breakdown mini bar */}
-            {data.realVisitors > 0 && (
-              <div className="mt-3 flex items-center gap-3 text-xs">
-                {data.byDevice.desktop > 0 && (
-                  <div className="flex items-center gap-1 text-gold-400">
-                    <Monitor className="w-3 h-3" />
-                    <span>{data.byDevice.desktop}</span>
-                  </div>
-                )}
-                {data.byDevice.mobile > 0 && (
-                  <div className="flex items-center gap-1 text-blue-400">
-                    <Smartphone className="w-3 h-3" />
-                    <span>{data.byDevice.mobile}</span>
-                  </div>
-                )}
-                {data.byDevice.tablet > 0 && (
-                  <div className="flex items-center gap-1 text-purple-400">
-                    <Tablet className="w-3 h-3" />
-                    <span>{data.byDevice.tablet}</span>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {/* Top pages preview */}
-            {data.byPage.length > 0 && (
-              <div className="mt-2 text-xs text-muted-foreground truncate">
-                Top: {data.byPage.slice(0, 2).map(p => p.page === "/" ? "Home" : p.page).join(", ")}
-              </div>
-            )}
+            <p className="text-xs text-muted-foreground mt-1">
+              {data.bots > 0 ? `+${data.bots} bots` : "Real-time"}
+            </p>
           </div>
         </GlassCard>
       </motion.div>
