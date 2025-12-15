@@ -4,6 +4,7 @@ import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
+import { FooterWeatherWidget } from "@/components/FooterWeatherWidget";
 
 interface ReleaseInfo {
   version: string;
@@ -74,6 +75,9 @@ export function Footer() {
               {displayHallmark}
             </span>
           </button>
+
+          {/* Weather Widget */}
+          <FooterWeatherWidget />
           
           {/* Version - Clickable */}
           <button
