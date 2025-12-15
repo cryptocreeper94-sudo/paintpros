@@ -64,7 +64,7 @@ export function Navbar() {
         {/* Center: Title - full text, smaller font on mobile */}
         <div 
           className={cn(
-            "flex-1 text-center whitespace-nowrap -translate-x-[25px] md:-translate-x-[43px] px-1",
+            "flex-1 text-center whitespace-nowrap -translate-x-[60px] md:-translate-x-[43px] px-1",
             tenant.id === "demo" 
               ? "text-white text-[14px] md:text-xl lg:text-2xl"
               : "text-[14px] md:text-xl lg:text-2xl bg-clip-text text-transparent"
@@ -73,7 +73,7 @@ export function Navbar() {
             fontFamily: 'Orbitron, Rajdhani, sans-serif', 
             fontWeight: 400, 
             letterSpacing: '0.03em',
-            backgroundImage: tenant.id !== "demo" ? 'linear-gradient(to right, #5C4033, #8B7355, #F5F5DC, #8B7355, #5C4033)' : undefined
+            backgroundImage: tenant.id !== "demo" ? 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)' : undefined
           }}
           data-testid="text-header-title"
         >
