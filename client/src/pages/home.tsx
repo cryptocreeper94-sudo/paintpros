@@ -288,9 +288,24 @@ export default function Home() {
                 slides={testimonials.map((t, i) => (
                   <div key={i} className="p-3 md:p-8 flex flex-col justify-between h-full min-w-[200px] md:min-w-[320px] relative z-10">
                     <div className="flex gap-0.5 md:gap-1 mb-2 md:mb-4">
-                      {[...Array(5)].map((_, idx) => (
-                        <Star key={idx} className={`w-3 h-3 md:w-4 md:h-4 ${idx < Math.floor(t.rating) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
-                      ))}
+                      {[...Array(5)].map((_, idx) => {
+                        const fillPercent = Math.min(1, Math.max(0, t.rating - idx));
+                        const isFull = fillPercent >= 1;
+                        const isPartial = fillPercent > 0 && fillPercent < 1;
+                        return (
+                          <div key={idx} className="relative w-3 h-3 md:w-4 md:h-4">
+                            <Star className="absolute inset-0 w-full h-full text-muted-foreground/30" />
+                            {(isFull || isPartial) && (
+                              <div 
+                                className="absolute inset-0 overflow-hidden"
+                                style={{ width: `${fillPercent * 100}%` }}
+                              >
+                                <Star className="w-3 h-3 md:w-4 md:h-4 fill-accent text-accent" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                       <span className="ml-1 md:ml-2 text-[10px] md:text-sm text-muted-foreground">{t.rating}</span>
                     </div>
                     <p className="text-xs md:text-base text-foreground leading-snug md:leading-relaxed mb-2 md:mb-4 line-clamp-3 md:line-clamp-none font-bold">"{t.text}"</p>
