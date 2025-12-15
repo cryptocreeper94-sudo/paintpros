@@ -332,12 +332,12 @@ export function PaintBuddy() {
               </div>
 
               {/* Input Area */}
-              <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex gap-2">
+              <div className="p-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex gap-1.5 w-full">
                   {/* Microphone Button */}
                   <button
                     onClick={toggleListening}
-                    className={`p-2.5 rounded-xl transition-all ${
+                    className={`p-2 rounded-xl transition-all flex-shrink-0 ${
                       isListening
                         ? "bg-red-500 text-white animate-pulse"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -346,9 +346,9 @@ export function PaintBuddy() {
                     data-testid="button-microphone"
                   >
                     {isListening ? (
-                      <MicOff className="w-5 h-5" />
+                      <MicOff className="w-4 h-4" />
                     ) : (
-                      <Mic className="w-5 h-5" />
+                      <Mic className="w-4 h-4" />
                     )}
                   </button>
 
@@ -359,7 +359,7 @@ export function PaintBuddy() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder={isListening ? "Listening..." : "Type or speak..."}
-                    className="flex-1 bg-gray-100 dark:bg-gray-700 border-0 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                    className="flex-1 min-w-0 bg-gray-100 dark:bg-gray-700 border-0 rounded-xl px-3 py-2 text-sm text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                     data-testid="input-paint-buddy-message"
                   />
 
@@ -367,10 +367,10 @@ export function PaintBuddy() {
                   <button
                     onClick={handleSend}
                     disabled={isLoading || !input.trim()}
-                    className="p-2.5 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                     data-testid="button-paint-buddy-send"
                   >
-                    <Send className="w-5 h-5" />
+                    <Send className="w-4 h-4" />
                   </button>
                 </div>
               </div>
