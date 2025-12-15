@@ -38,7 +38,7 @@ export function Navbar() {
         {/* Left: Hamburger Menu - offset left and up */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[30px] -mt-[25px]",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[55px] -mt-[25px]",
             tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
