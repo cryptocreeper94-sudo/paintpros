@@ -11,6 +11,7 @@ import {
   insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema,
   insertDocumentAssetSchema, TENANT_PREFIXES,
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
+  insertDocumentSchema, insertDocumentVersionSchema, insertDocumentSignatureSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -3941,6 +3942,172 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error updating user role:", error);
       res.status(500).json({ error: "Failed to update user role" });
+    }
+  });
+
+  // ============================================
+  // DOCUMENT CENTER ROUTES
+  // ============================================
+
+  // GET /api/documents - Get all documents for tenant
+  app.get("/api/documents", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      const { type } = req.query;
+      
+      let docs;
+      if (type && typeof type === 'string') {
+        docs = await storage.getDocumentsByType(tenantId, type);
+      } else {
+        docs = await storage.getDocuments(tenantId);
+      }
+      res.json(docs);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ error: "Failed to fetch documents" });
+    }
+  });
+
+  // GET /api/documents/:id - Get single document with versions and signatures
+  app.get("/api/documents/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const doc = await storage.getDocumentById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      
+      const versions = await storage.getDocumentVersions(doc.id);
+      const signatures = await storage.getDocumentSignatures(doc.id);
+      
+      res.json({ ...doc, versions, signatures });
+    } catch (error) {
+      console.error("Error fetching document:", error);
+      res.status(500).json({ error: "Failed to fetch document" });
+    }
+  });
+
+  // POST /api/documents - Create a new document
+  app.post("/api/documents", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      const validated = insertDocumentSchema.parse({
+        ...req.body,
+        tenantId,
+        createdBy: dbUser.id,
+      });
+      
+      const doc = await storage.createDocument(validated);
+      
+      // Create initial version if file content provided
+      if (req.body.fileContent) {
+        await storage.createDocumentVersion({
+          documentId: doc.id,
+          versionNumber: 1,
+          fileUrl: req.body.fileUrl || '',
+          fileSize: req.body.fileSize || 0,
+          changeNotes: 'Initial version',
+          createdBy: dbUser.id,
+        });
+      }
+      
+      res.status(201).json(doc);
+    } catch (error) {
+      console.error("Error creating document:", error);
+      res.status(500).json({ error: "Failed to create document" });
+    }
+  });
+
+  // PATCH /api/documents/:id - Update document
+  app.patch("/api/documents/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      const doc = await storage.updateDocument(req.params.id, req.body);
+      if (!doc) {
+        res.status(404).json({ error: "Document not found" });
+        return;
+      }
+      res.json(doc);
+    } catch (error) {
+      console.error("Error updating document:", error);
+      res.status(500).json({ error: "Failed to update document" });
+    }
+  });
+
+  // DELETE /api/documents/:id - Delete document and all related data
+  app.delete("/api/documents/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      await storage.deleteDocument(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ error: "Failed to delete document" });
+    }
+  });
+
+  // POST /api/documents/:id/versions - Add new version
+  app.post("/api/documents/:id/versions", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const existingVersions = await storage.getDocumentVersions(req.params.id);
+      const nextVersionNumber = existingVersions.length > 0 
+        ? Math.max(...existingVersions.map(v => v.versionNumber)) + 1 
+        : 1;
+      
+      const validated = insertDocumentVersionSchema.parse({
+        ...req.body,
+        documentId: req.params.id,
+        versionNumber: nextVersionNumber,
+        createdBy: dbUser.id,
+      });
+      
+      const version = await storage.createDocumentVersion(validated);
+      res.status(201).json(version);
+    } catch (error) {
+      console.error("Error creating document version:", error);
+      res.status(500).json({ error: "Failed to create document version" });
+    }
+  });
+
+  // POST /api/documents/:id/signatures - Add signature to document
+  app.post("/api/documents/:id/signatures", async (req: any, res) => {
+    try {
+      const { signerName, signerEmail, signatureData, signatureType, ipAddress } = req.body;
+      
+      const validated = insertDocumentSignatureSchema.parse({
+        documentId: req.params.id,
+        signerName,
+        signerEmail,
+        signatureData,
+        signatureType: signatureType || 'drawn',
+        ipAddress: ipAddress || req.ip,
+      });
+      
+      const signature = await storage.createDocumentSignature(validated);
+      
+      // Update document status to signed if this is the first signature
+      const doc = await storage.getDocumentById(req.params.id);
+      if (doc && doc.status === 'pending') {
+        await storage.updateDocument(req.params.id, { status: 'signed' });
+      }
+      
+      res.status(201).json(signature);
+    } catch (error) {
+      console.error("Error adding signature:", error);
+      res.status(500).json({ error: "Failed to add signature" });
+    }
+  });
+
+  // GET /api/documents/:id/signatures - Get all signatures for a document
+  app.get("/api/documents/:id/signatures", async (req: any, res) => {
+    try {
+      const signatures = await storage.getDocumentSignatures(req.params.id);
+      res.json(signatures);
+    } catch (error) {
+      console.error("Error fetching signatures:", error);
+      res.status(500).json({ error: "Failed to fetch signatures" });
     }
   });
 
