@@ -3847,23 +3847,31 @@ Use occasional paint-related puns or references to keep things fun!`;
 
   // ============ TEAM MANAGEMENT ============
 
-  // GET /api/team/users - Get all users for team management
-  app.get("/api/team/users", async (req, res) => {
+  // GET /api/team/users - Get users for team management (authenticated, tenant-scoped)
+  app.get("/api/team/users", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
     try {
-      const tenantId = (req.query.tenantId as string) || "npp";
-      // Get all users, not just those with messaging roles
-      const allUsers = await db.select().from(usersTable);
-      res.json(allUsers);
+      const dbUser = req.dbUser;
+      // Use the authenticated user's tenant for isolation - don't trust client input
+      const tenantId = dbUser.tenantId || "npp";
+      
+      // Filter users by the authenticated user's tenant
+      const tenantUsers = await storage.getUsersByTenant(tenantId);
+      res.json(tenantUsers);
     } catch (error) {
       console.error("Error fetching team users:", error);
       res.status(500).json({ error: "Failed to fetch users" });
     }
   });
 
-  // PATCH /api/team/users/:id/role - Update user role
-  app.patch("/api/team/users/:id/role", async (req, res) => {
+  // PATCH /api/team/users/:id/role - Update user role (authenticated, tenant-scoped)
+  app.patch("/api/team/users/:id/role", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
     try {
-      const { role, tenantId } = req.body;
+      const dbUser = req.dbUser;
+      const { role } = req.body;
+      
+      // Use authenticated user's tenant - don't trust client-supplied tenantId
+      const requestingTenantId = dbUser.tenantId || "npp";
+      
       const validRoles = ['owner', 'admin', 'project-manager', 'area-manager', 'crew-lead', 'developer', null];
       
       if (role !== null && !validRoles.includes(role)) {
@@ -3871,7 +3879,20 @@ Use occasional paint-related puns or references to keep things fun!`;
         return;
       }
       
-      const user = await storage.updateUserRole(req.params.id, role, tenantId);
+      // Verify the target user belongs to the same tenant as the requesting user
+      const existingUser = await storage.getUser(req.params.id);
+      if (!existingUser) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      
+      // Only allow updating users within the same tenant
+      if (existingUser.tenantId && existingUser.tenantId !== requestingTenantId) {
+        res.status(403).json({ error: "Cannot modify users from other tenants" });
+        return;
+      }
+      
+      const user = await storage.updateUserRole(req.params.id, role, requestingTenantId);
       if (!user) {
         res.status(404).json({ error: "User not found" });
         return;

@@ -43,10 +43,7 @@ export function TeamManagementCard() {
 
   const updateRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: string | null }) => {
-      return apiRequest("PATCH", `/api/team/users/${userId}/role`, {
-        role,
-        tenantId: tenant.id,
-      });
+      return apiRequest("PATCH", `/api/team/users/${userId}/role`, { role });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/team/users"] });
