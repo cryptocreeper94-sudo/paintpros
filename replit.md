@@ -57,6 +57,9 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
   - Job details display: Visual badges showing crew, dates, and location in Jobs Pipeline
   - Dashboard Preview: Admin/Owner can view all role dashboards from a single modal
   - Crew Lead PIN fix: Authentication now works across all tenants with fallback
+  - Terms & Warranty page (/terms): Full legal documentation with warranty, payment terms, liability, disputes, and termination sections
+  - Enhanced warranty modal: Detailed coverage info with exclusions and link to full terms
+  - Footer updated with "Terms & Warranty" link
 - **v1.1.7**
   - Dual Pipeline Mode: Toggle between Sales Pipeline and Jobs Pipeline views
   - Sales Pipeline stages: New Lead, Quoted, Negotiating, Won, Lost
