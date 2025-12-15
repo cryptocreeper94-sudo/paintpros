@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { 
   HardHat, Users, Clock, FileText, AlertTriangle, Camera, CheckCircle, 
-  Plus, Calendar, ArrowRight, Send, Trash2, Edit, User
+  Plus, Calendar, ArrowRight, Send, Trash2, Edit, User, Languages
 } from "lucide-react";
 import { hover3D, hover3DSubtle, cardVariants, staggerContainer, iconContainerStyles, cardBackgroundStyles } from "@/lib/theme-effects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,11 +19,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { LanguageProvider, useTranslation } from "@/context/LanguageContext";
 
 const DEFAULT_PIN = "3333";
 
 export default function CrewLeadDashboard() {
+  return (
+    <LanguageProvider>
+      <CrewLeadDashboardContent />
+    </LanguageProvider>
+  );
+}
+
+function CrewLeadDashboardContent() {
   const tenant = useTenant();
+  const { t, language, setLanguage } = useTranslation();
   const isDemo = tenant.id === "demo";
   const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
   const [currentLead, setCurrentLead] = useState<CrewLead | null>(null);
@@ -45,7 +55,7 @@ export default function CrewLeadDashboard() {
       
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || "Invalid PIN");
+        setError(data.error || t("login.error.invalid"));
         setPin("");
         return;
       }
@@ -54,7 +64,7 @@ export default function CrewLeadDashboard() {
       setCurrentLead(crewLead);
       setIsAuthenticated(true);
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError(t("login.error.failed"));
       setPin("");
     }
   };
@@ -126,6 +136,18 @@ export default function CrewLeadDashboard() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-accent/30 to-orange-500/20 blur-3xl opacity-40" />
               <GlassCard className="relative p-10 border-accent/20" glow>
+                <div className="absolute top-4 right-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setLanguage(language === "en" ? "es" : "en")}
+                    data-testid="button-language-toggle"
+                    className="gap-2"
+                  >
+                    <Languages className="w-4 h-4" />
+                    <span>{language === "en" ? "ES" : "EN"}</span>
+                  </Button>
+                </div>
                 <div className="text-center mb-8">
                   <motion.div 
                     className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent/30 to-orange-500/20 flex items-center justify-center border border-accent/30 shadow-lg shadow-accent/20"
@@ -134,8 +156,8 @@ export default function CrewLeadDashboard() {
                   >
                     <HardHat className="w-10 h-10 text-accent" />
                   </motion.div>
-                  <h1 className="text-3xl font-display font-bold mb-2">Crew Lead Portal</h1>
-                  <p className="text-muted-foreground">Enter your PIN to access your dashboard</p>
+                  <h1 className="text-3xl font-display font-bold mb-2">{t("login.title")}</h1>
+                  <p className="text-muted-foreground">{t("login.subtitle")}</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-6">
@@ -144,7 +166,7 @@ export default function CrewLeadDashboard() {
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={4}
-                    placeholder="Enter 4-digit PIN"
+                    placeholder={t("login.placeholder")}
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     className="text-center text-2xl tracking-widest bg-white/5 border-white/20 focus:border-accent/50"
@@ -160,7 +182,7 @@ export default function CrewLeadDashboard() {
                     data-testid="button-crew-login"
                     disabled={pin.length !== 4}
                   >
-                    Access Dashboard
+                    {t("login.button")}
                   </Button>
                 </form>
               </GlassCard>
@@ -184,22 +206,33 @@ export default function CrewLeadDashboard() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">
-                  Welcome, {currentLead?.firstName || "Crew Lead"}
+                  {t("header.welcome")}, {currentLead?.firstName || t("common.crewLead")}
                 </h1>
                 <p className="text-muted-foreground">
-                  Manage your crew, track time, and report job progress
+                  {t("header.subtitle")}
                 </p>
               </div>
-              <div className="flex gap-2">
-                {["overview", "time", "notes", "incidents"].map((tab) => (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLanguage(language === "en" ? "es" : "en")}
+                  data-testid="button-language-toggle-header"
+                  className="gap-2"
+                >
+                  <Languages className="w-4 h-4" />
+                  <span>{language === "en" ? "ES" : "EN"}</span>
+                </Button>
+                <div className="h-6 w-px bg-border" />
+                {(["overview", "time", "notes", "incidents"] as const).map((tab) => (
                   <Button
                     key={tab}
                     variant={activeTab === tab ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setActiveTab(tab as typeof activeTab)}
+                    onClick={() => setActiveTab(tab)}
                     data-testid={`button-tab-${tab}`}
                   >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {t(`tab.${tab}`)}
                   </Button>
                 ))}
               </div>
@@ -216,12 +249,12 @@ export default function CrewLeadDashboard() {
                         <Users className="w-6 h-6 text-accent" />
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        {activeMembers.length} Active
+                        {activeMembers.length} {t("overview.active")}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-1">My Crew</h3>
+                    <h3 className="text-lg font-semibold mb-1">{t("overview.myCrew")}</h3>
                     <p className="text-3xl font-bold text-accent">{crewMembers.length}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Team members</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t("overview.teamMembers")}</p>
                   </GlassCard>
                 </motion.div>
               </BentoItem>
@@ -234,12 +267,12 @@ export default function CrewLeadDashboard() {
                         <Clock className="w-6 h-6 text-blue-400" />
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        Today
+                        {t("overview.today")}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-1">Hours Today</h3>
+                    <h3 className="text-lg font-semibold mb-1">{t("overview.hoursToday")}</h3>
                     <p className="text-3xl font-bold text-blue-400">{todayHours.toFixed(1)}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Logged hours</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t("overview.loggedHours")}</p>
                   </GlassCard>
                 </motion.div>
               </BentoItem>
@@ -252,12 +285,12 @@ export default function CrewLeadDashboard() {
                         <FileText className="w-6 h-6 text-green-400" />
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        Pending
+                        {t("overview.pending")}
                       </Badge>
                     </div>
-                    <h3 className="text-lg font-semibold mb-1">Time Entries</h3>
+                    <h3 className="text-lg font-semibold mb-1">{t("overview.timeEntries")}</h3>
                     <p className="text-3xl font-bold text-green-400">{pendingTimeEntries.length}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Awaiting approval</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t("overview.awaitingApproval")}</p>
                   </GlassCard>
                 </motion.div>
               </BentoItem>
@@ -271,13 +304,13 @@ export default function CrewLeadDashboard() {
                       </div>
                       {unresolvedIncidents.length > 0 && (
                         <Badge variant="destructive" className="text-xs">
-                          Action Needed
+                          {t("overview.actionNeeded")}
                         </Badge>
                       )}
                     </div>
-                    <h3 className="text-lg font-semibold mb-1">Incidents</h3>
+                    <h3 className="text-lg font-semibold mb-1">{t("overview.incidents")}</h3>
                     <p className="text-3xl font-bold text-yellow-400">{unresolvedIncidents.length}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Open reports</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t("overview.openReports")}</p>
                   </GlassCard>
                 </motion.div>
               </BentoItem>
@@ -286,17 +319,17 @@ export default function CrewLeadDashboard() {
                 <motion.div variants={cardVariants} custom={5} whileHover={hover3DSubtle}>
                   <GlassCard className="h-full p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold">Crew Members</h3>
+                      <h3 className="text-xl font-semibold">{t("crew.title")}</h3>
                       <Button size="sm" variant="outline" data-testid="button-add-member">
                         <Plus className="w-4 h-4 mr-2" />
-                        Add Member
+                        {t("crew.addMember")}
                       </Button>
                     </div>
                     <div className="space-y-3">
                       {membersLoading ? (
-                        <p className="text-muted-foreground">Loading...</p>
+                        <p className="text-muted-foreground">{t("crew.loading")}</p>
                       ) : activeMembers.length === 0 ? (
-                        <p className="text-muted-foreground">No crew members yet</p>
+                        <p className="text-muted-foreground">{t("crew.noMembers")}</p>
                       ) : (
                         activeMembers.map((member) => (
                           <div
@@ -309,11 +342,11 @@ export default function CrewLeadDashboard() {
                               </div>
                               <div>
                                 <p className="font-medium">{member.firstName} {member.lastName}</p>
-                                <p className="text-sm text-muted-foreground">{member.role || "Crew Member"}</p>
+                                <p className="text-sm text-muted-foreground">{member.role || t("crew.crewMember")}</p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-medium">${member.hourlyRate || "0.00"}/hr</p>
+                              <p className="text-sm font-medium">${member.hourlyRate || "0.00"}{t("crew.perHour")}</p>
                               {member.phone && (
                                 <p className="text-xs text-muted-foreground">{member.phone}</p>
                               )}
@@ -330,7 +363,7 @@ export default function CrewLeadDashboard() {
                 <motion.div variants={cardVariants} custom={6} whileHover={hover3DSubtle}>
                   <GlassCard className="h-full p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold">Quick Actions</h3>
+                      <h3 className="text-xl font-semibold">{t("quickActions.title")}</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <Button 
@@ -340,7 +373,7 @@ export default function CrewLeadDashboard() {
                         data-testid="button-quick-time"
                       >
                         <Clock className="w-6 h-6 text-blue-400" />
-                        <span>Log Time</span>
+                        <span>{t("quickActions.logTime")}</span>
                       </Button>
                       <Button 
                         variant="outline" 
@@ -349,7 +382,7 @@ export default function CrewLeadDashboard() {
                         data-testid="button-quick-note"
                       >
                         <FileText className="w-6 h-6 text-green-400" />
-                        <span>Add Note</span>
+                        <span>{t("quickActions.addNote")}</span>
                       </Button>
                       <Button 
                         variant="outline" 
@@ -358,7 +391,7 @@ export default function CrewLeadDashboard() {
                         data-testid="button-quick-incident"
                       >
                         <AlertTriangle className="w-6 h-6 text-yellow-400" />
-                        <span>Report Incident</span>
+                        <span>{t("quickActions.reportIncident")}</span>
                       </Button>
                       <Button 
                         variant="outline" 
@@ -366,7 +399,7 @@ export default function CrewLeadDashboard() {
                         data-testid="button-quick-photo"
                       >
                         <Camera className="w-6 h-6 text-purple-400" />
-                        <span>Take Photo</span>
+                        <span>{t("quickActions.takePhoto")}</span>
                       </Button>
                     </div>
                   </GlassCard>
@@ -406,7 +439,7 @@ export default function CrewLeadDashboard() {
       <MessagingWidget 
         currentUserId={currentLead?.id || "crew-lead"}
         currentUserRole="crew-lead"
-        currentUserName={currentLead?.name || "Crew Lead"}
+        currentUserName={currentLead?.name || t("common.crewLead")}
       />
     </PageLayout>
   );
@@ -423,6 +456,7 @@ function TimeEntriesPanel({
   timeEntries: TimeEntry[];
   isLoading: boolean;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedMember, setSelectedMember] = useState("");
   const [workDate, setWorkDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -455,17 +489,23 @@ function TimeEntriesPanel({
     });
   };
 
+  const getStatusLabel = (status: string) => {
+    if (status === "approved") return t("time.approved");
+    if (status === "submitted") return t("time.submitted");
+    return status;
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <motion.div variants={cardVariants} custom={1}>
         <GlassCard className="p-6">
-          <h3 className="text-xl font-semibold mb-4">Log Time Entry</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("time.logEntry")}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Team Member</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{t("time.teamMember")}</label>
               <Select value={selectedMember} onValueChange={setSelectedMember}>
                 <SelectTrigger data-testid="select-member">
-                  <SelectValue placeholder="Select team member" />
+                  <SelectValue placeholder={t("time.selectMember")} />
                 </SelectTrigger>
                 <SelectContent>
                   {crewMembers.filter(m => m.isActive).map((member) => (
@@ -478,7 +518,7 @@ function TimeEntriesPanel({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-muted-foreground mb-1 block">Date</label>
+                <label className="text-sm text-muted-foreground mb-1 block">{t("time.date")}</label>
                 <Input
                   type="date"
                   value={workDate}
@@ -487,7 +527,7 @@ function TimeEntriesPanel({
                 />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground mb-1 block">Hours</label>
+                <label className="text-sm text-muted-foreground mb-1 block">{t("time.hours")}</label>
                 <Input
                   type="number"
                   step="0.5"
@@ -501,9 +541,9 @@ function TimeEntriesPanel({
               </div>
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Description</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{t("time.description")}</label>
               <Textarea
-                placeholder="Work description..."
+                placeholder={t("time.workDescription")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 data-testid="input-time-description"
@@ -515,7 +555,7 @@ function TimeEntriesPanel({
               disabled={!selectedMember || !hoursWorked || createEntryMutation.isPending}
               data-testid="button-submit-time"
             >
-              {createEntryMutation.isPending ? "Saving..." : "Log Time Entry"}
+              {createEntryMutation.isPending ? t("time.saving") : t("time.submitButton")}
             </Button>
           </form>
         </GlassCard>
@@ -523,12 +563,12 @@ function TimeEntriesPanel({
 
       <motion.div variants={cardVariants} custom={2}>
         <GlassCard className="p-6">
-          <h3 className="text-xl font-semibold mb-4">Recent Entries</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("time.recentEntries")}</h3>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {isLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="text-muted-foreground">{t("common.loading")}</p>
             ) : timeEntries.length === 0 ? (
-              <p className="text-muted-foreground">No time entries yet</p>
+              <p className="text-muted-foreground">{t("time.noEntries")}</p>
             ) : (
               timeEntries.slice(0, 10).map((entry) => {
                 const member = crewMembers.find(m => m.id === entry.crewMemberId);
@@ -539,7 +579,7 @@ function TimeEntriesPanel({
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">
-                        {member ? `${member.firstName} ${member.lastName}` : "Unknown"}
+                        {member ? `${member.firstName} ${member.lastName}` : t("time.unknown")}
                       </span>
                       <Badge 
                         variant={
@@ -547,12 +587,12 @@ function TimeEntriesPanel({
                           entry.status === "submitted" ? "secondary" : "outline"
                         }
                       >
-                        {entry.status}
+                        {getStatusLabel(entry.status || "pending")}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span>{format(new Date(entry.date), "MMM d, yyyy")}</span>
-                      <span className="font-semibold text-foreground">{entry.hoursWorked}h</span>
+                      <span className="font-semibold text-foreground">{entry.hoursWorked} {t("time.hoursLabel")}</span>
                     </div>
                     {entry.notes && (
                       <p className="text-sm text-muted-foreground mt-2">{entry.notes}</p>
@@ -577,6 +617,7 @@ function JobNotesPanel({
   jobNotes: JobNote[];
   isLoading: boolean;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -608,21 +649,21 @@ function JobNotesPanel({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <motion.div variants={cardVariants} custom={1}>
         <GlassCard className="p-6">
-          <h3 className="text-xl font-semibold mb-4">Add Job Note</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("notes.addNote")}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Title</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{t("notes.jobAddress")}</label>
               <Input
-                placeholder="Note title..."
+                placeholder={t("notes.enterAddress")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 data-testid="input-note-title"
               />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Details</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{t("notes.note")}</label>
               <Textarea
-                placeholder="Describe the update..."
+                placeholder={t("notes.enterDetails")}
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -635,7 +676,7 @@ function JobNotesPanel({
               disabled={!title || !content || createNoteMutation.isPending}
               data-testid="button-submit-note"
             >
-              {createNoteMutation.isPending ? "Saving..." : "Save Note"}
+              {createNoteMutation.isPending ? t("notes.saving") : t("notes.submitButton")}
             </Button>
           </form>
         </GlassCard>
@@ -643,12 +684,12 @@ function JobNotesPanel({
 
       <motion.div variants={cardVariants} custom={2}>
         <GlassCard className="p-6">
-          <h3 className="text-xl font-semibold mb-4">Recent Notes</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("notes.recentNotes")}</h3>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {isLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="text-muted-foreground">{t("common.loading")}</p>
             ) : jobNotes.length === 0 ? (
-              <p className="text-muted-foreground">No job notes yet</p>
+              <p className="text-muted-foreground">{t("notes.noNotes")}</p>
             ) : (
               jobNotes.slice(0, 10).map((note) => (
                 <div
@@ -664,7 +705,7 @@ function JobNotesPanel({
                     {(note.sentToOwner || note.sentToAdmin) && (
                       <Badge variant="secondary" className="text-xs">
                         <Send className="w-3 h-3 mr-1" />
-                        Sent
+                        {t("common.sent")}
                       </Badge>
                     )}
                   </div>
@@ -689,6 +730,7 @@ function IncidentsPanel({
   incidents: IncidentReport[];
   isLoading: boolean;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [incidentType, setIncidentType] = useState("safety");
   const [severity, setSeverity] = useState("low");
@@ -731,56 +773,63 @@ function IncidentsPanel({
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    if (status === "open") return t("incidents.open");
+    if (status === "investigating") return t("incidents.investigating");
+    if (status === "resolved") return t("incidents.resolved");
+    return status;
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <motion.div variants={cardVariants} custom={1}>
         <GlassCard className="p-6">
-          <h3 className="text-xl font-semibold mb-4">Report Incident</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("incidents.title")}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-muted-foreground mb-1 block">Type</label>
+                <label className="text-sm text-muted-foreground mb-1 block">{t("incidents.type")}</label>
                 <Select value={incidentType} onValueChange={setIncidentType}>
                   <SelectTrigger data-testid="select-incident-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="safety">Safety</SelectItem>
-                    <SelectItem value="damage">Property Damage</SelectItem>
-                    <SelectItem value="injury">Injury</SelectItem>
-                    <SelectItem value="equipment">Equipment Issue</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="safety">{t("incidents.type.other")}</SelectItem>
+                    <SelectItem value="damage">{t("incidents.type.propertyDamage")}</SelectItem>
+                    <SelectItem value="injury">{t("incidents.type.injury")}</SelectItem>
+                    <SelectItem value="equipment">{t("incidents.type.equipmentFailure")}</SelectItem>
+                    <SelectItem value="other">{t("incidents.type.other")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <label className="text-sm text-muted-foreground mb-1 block">Severity</label>
+                <label className="text-sm text-muted-foreground mb-1 block">{t("incidents.severity")}</label>
                 <Select value={severity} onValueChange={setSeverity}>
                   <SelectTrigger data-testid="select-severity">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
+                    <SelectItem value="low">{t("incidents.severity.low")}</SelectItem>
+                    <SelectItem value="medium">{t("incidents.severity.medium")}</SelectItem>
+                    <SelectItem value="high">{t("incidents.severity.high")}</SelectItem>
+                    <SelectItem value="critical">{t("incidents.severity.critical")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Job Address</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{t("incidents.location")}</label>
               <Input
-                placeholder="Where did it happen?"
+                placeholder={t("incidents.enterLocation")}
                 value={jobAddress}
                 onChange={(e) => setJobAddress(e.target.value)}
                 data-testid="input-incident-location"
               />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Description</label>
+              <label className="text-sm text-muted-foreground mb-1 block">{t("incidents.description")}</label>
               <Textarea
-                placeholder="Describe what happened..."
+                placeholder={t("incidents.enterDescription")}
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -794,7 +843,7 @@ function IncidentsPanel({
               disabled={!description || createIncidentMutation.isPending}
               data-testid="button-submit-incident"
             >
-              {createIncidentMutation.isPending ? "Submitting..." : "Submit Incident Report"}
+              {createIncidentMutation.isPending ? t("incidents.saving") : t("incidents.submitButton")}
             </Button>
           </form>
         </GlassCard>
@@ -802,12 +851,12 @@ function IncidentsPanel({
 
       <motion.div variants={cardVariants} custom={2}>
         <GlassCard className="p-6">
-          <h3 className="text-xl font-semibold mb-4">Incident History</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("incidents.recentReports")}</h3>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {isLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="text-muted-foreground">{t("common.loading")}</p>
             ) : incidents.length === 0 ? (
-              <p className="text-muted-foreground">No incident reports</p>
+              <p className="text-muted-foreground">{t("incidents.noReports")}</p>
             ) : (
               incidents.map((incident) => (
                 <div
@@ -822,12 +871,12 @@ function IncidentsPanel({
                     <Badge 
                       variant={incident.status === "resolved" ? "default" : "destructive"}
                     >
-                      {incident.status}
+                      {getStatusLabel(incident.status || "open")}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2">{incident.description}</p>
                   {incident.jobAddress && (
-                    <p className="text-xs text-muted-foreground mt-1">Location: {incident.jobAddress}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("incidents.location")}: {incident.jobAddress}</p>
                   )}
                   <div className="text-xs text-muted-foreground mt-2">
                     {format(new Date(incident.incidentDate), "MMM d, yyyy h:mm a")}
