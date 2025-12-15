@@ -144,6 +144,9 @@ function getTenantFromHostname(hostname: string): string {
   return "npp";
 }
 
+// Track online users: Map<socketId, { userId, role, displayName }>
+const onlineUsers = new Map<string, { userId: string; role: string; displayName: string }>();
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -160,6 +163,14 @@ export async function registerRoutes(
 
   io.on("connection", (socket) => {
     console.log("[Socket.IO] User connected:", socket.id);
+
+    // Track user going online
+    socket.on("user-online", (data: { userId: string; role: string; displayName: string }) => {
+      onlineUsers.set(socket.id, { userId: data.userId, role: data.role, displayName: data.displayName });
+      console.log(`[Socket.IO] User online: ${data.displayName} (${data.role})`);
+      // Broadcast to all that user is online
+      io?.emit("user-status-change", { userId: data.userId, role: data.role, displayName: data.displayName, online: true });
+    });
 
     socket.on("join-conversation", (conversationId: string) => {
       socket.join(`conversation:${conversationId}`);
@@ -211,8 +222,43 @@ export async function registerRoutes(
     });
 
     socket.on("disconnect", () => {
+      const user = onlineUsers.get(socket.id);
+      if (user) {
+        console.log(`[Socket.IO] User offline: ${user.displayName} (${user.role})`);
+        io?.emit("user-status-change", { userId: user.userId, role: user.role, displayName: user.displayName, online: false });
+        onlineUsers.delete(socket.id);
+      }
       console.log("[Socket.IO] User disconnected:", socket.id);
     });
+  });
+
+  // GET /api/messages/online-users - Get currently online users
+  app.get("/api/messages/online-users", (req, res) => {
+    // Get unique online users (dedupe by userId)
+    const uniqueUsers = new Map<string, { userId: string; role: string; displayName: string }>();
+    onlineUsers.forEach((user) => {
+      uniqueUsers.set(user.userId, user);
+    });
+    
+    // Developer is always available
+    const developerAlwaysOnline = {
+      userId: "developer",
+      role: "developer", 
+      displayName: "Ryan (Developer)",
+      alwaysAvailable: true
+    };
+    
+    const users: Array<{ userId: string; role: string; displayName: string; alwaysAvailable: boolean }> = [];
+    uniqueUsers.forEach((u) => {
+      users.push({ ...u, alwaysAvailable: false });
+    });
+    
+    // Add developer if not already in list
+    if (!users.some(u => u.role === "developer")) {
+      users.push(developerAlwaysOnline);
+    }
+    
+    res.json(users);
   });
 
   // ============ REPLIT AUTH ============

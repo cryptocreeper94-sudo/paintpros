@@ -51,6 +51,13 @@ interface AvailableUser {
   displayName: string;
 }
 
+interface OnlineUser {
+  userId: string;
+  role: string;
+  displayName: string;
+  alwaysAvailable: boolean;
+}
+
 type WidgetView = "minimized" | "list" | "chat" | "new";
 
 interface MessagingWidgetProps {
@@ -68,6 +75,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
   const [searchQuery, setSearchQuery] = useState("");
   const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -86,6 +94,12 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
   const { data: availableUsers = [] } = useQuery<AvailableUser[]>({
     queryKey: ["/api/messages/users", { tenantId: tenant.id }],
     enabled: view === "new"
+  });
+
+  const { data: onlineUsers = [] } = useQuery<OnlineUser[]>({
+    queryKey: ["/api/messages/online-users"],
+    enabled: view !== "minimized",
+    refetchInterval: 10000
   });
 
   const sendMessageMutation = useMutation({
@@ -107,7 +121,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
   const createConversationMutation = useMutation({
     mutationFn: async (participant: AvailableUser) => {
       const name = `${currentUserName} & ${participant.displayName}`;
-      return apiRequest("POST", "/api/messages/conversations", {
+      const response = await apiRequest("POST", "/api/messages/conversations", {
         tenantId: tenant.id,
         name,
         type: "direct",
@@ -117,10 +131,24 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
           { userId: participant.id, role: participant.role, displayName: participant.displayName }
         ]
       });
+      return { response, participant };
     },
-    onSuccess: async (res) => {
-      const newConvo = await res.json();
+    onSuccess: async ({ response, participant }) => {
+      const newConvo = await response.json();
       queryClient.invalidateQueries({ queryKey: ["/api/messages/conversations"] });
+      
+      // Send auto-message when starting conversation with developer
+      if (participant.role === "developer") {
+        await apiRequest("POST", `/api/messages/conversations/${newConvo.id}/messages`, {
+          senderId: "system",
+          senderRole: "system",
+          senderName: "System",
+          content: "Ryan (Developer) typically responds within 24-48 hours during business days. For urgent matters, please include 'URGENT' in your message.",
+          messageType: "system"
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/messages/conversations", newConvo.id, "messages"] });
+      }
+      
       setActiveConversation(newConvo);
       setView("chat");
     }
@@ -134,6 +162,15 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
           transports: ["websocket", "polling"]
         });
         setSocket(newSocket);
+
+        // Emit user online status when connected
+        newSocket.on("connect", () => {
+          newSocket.emit("user-online", {
+            userId: currentUserId,
+            role: currentUserRole,
+            displayName: currentUserName
+          });
+        });
 
         newSocket.on("new-message", (message: Message) => {
           queryClient.invalidateQueries({ queryKey: ["/api/messages/conversations"] });
@@ -150,6 +187,20 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
             return next;
           });
         });
+
+        // Listen for user status changes
+        newSocket.on("user-status-change", ({ userId, online }: { userId: string; online: boolean }) => {
+          setOnlineUserIds((prev) => {
+            const next = new Set(prev);
+            if (online) {
+              next.add(userId);
+            } else {
+              next.delete(userId);
+            }
+            return next;
+          });
+          queryClient.invalidateQueries({ queryKey: ["/api/messages/online-users"] });
+        });
       }
     } else {
       if (socket) {
@@ -162,7 +213,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
         setTypingUsers(new Map());
       }
     }
-  }, [view]);
+  }, [view, currentUserId, currentUserRole, currentUserName]);
 
   useEffect(() => {
     return () => {
@@ -474,28 +525,42 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                      {filteredUsers.map((user) => (
-                        <motion.button
-                          key={user.role}
-                          whileHover={{ backgroundColor: "rgba(0,0,0,0.02)" }}
-                          onClick={() => createConversationMutation.mutate(user)}
-                          disabled={createConversationMutation.isPending}
-                          className="w-full p-3 text-left hover-elevate flex items-center gap-3"
-                          data-testid={`user-${user.role}`}
-                        >
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-medium text-sm">
-                            {user.displayName[0].toUpperCase()}
-                          </div>
-                          <div className="flex-1">
-                            <span className="font-medium text-gray-900 dark:text-white">
-                              {user.displayName}
-                            </span>
-                            <Badge variant="outline" className={`ml-2 text-[10px] px-1.5 py-0 ${getRoleBadgeColor(user.role)}`}>
-                              {user.role}
-                            </Badge>
-                          </div>
-                        </motion.button>
-                      ))}
+                      {filteredUsers.map((user) => {
+                        const onlineData = onlineUsers.find(u => u.userId === user.id || u.role === user.role);
+                        const isOnline = onlineData?.alwaysAvailable || onlineUserIds.has(user.id) || onlineUserIds.has(user.role);
+                        return (
+                          <motion.button
+                            key={user.role}
+                            whileHover={{ backgroundColor: "rgba(0,0,0,0.02)" }}
+                            onClick={() => createConversationMutation.mutate(user)}
+                            disabled={createConversationMutation.isPending}
+                            className="w-full p-3 text-left hover-elevate flex items-center gap-3"
+                            data-testid={`user-${user.role}`}
+                          >
+                            <div className="relative">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-medium text-sm">
+                                {user.displayName[0].toUpperCase()}
+                              </div>
+                              {isOnline && (
+                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-900 dark:text-white">
+                                  {user.displayName}
+                                </span>
+                                <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${getRoleBadgeColor(user.role)}`}>
+                                  {user.role}
+                                </Badge>
+                              </div>
+                              {isOnline && (
+                                <span className="text-xs text-green-500">Available</span>
+                              )}
+                            </div>
+                          </motion.button>
+                        );
+                      })}
                     </div>
                   )}
                 </ScrollArea>
