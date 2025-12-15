@@ -125,7 +125,7 @@ export default function Home() {
                 <img 
                   src={estimateImage} 
                   alt="Professional estimate consultation" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 dark:opacity-70 dark:group-hover:opacity-80 transition-opacity"
                 />
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
                   <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
@@ -206,7 +206,7 @@ export default function Home() {
                 <img 
                   src={premiumMaterialsImage} 
                   alt="Premium paint materials" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -233,7 +233,7 @@ export default function Home() {
                 <img 
                   src={onTimeImage} 
                   alt="On-time service" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -260,7 +260,7 @@ export default function Home() {
                 <img 
                   src={warrantyImage} 
                   alt="Warranty guarantee" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
                 />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
                   <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
@@ -282,7 +282,7 @@ export default function Home() {
               <img 
                 src={testimonialImage} 
                 alt="Beautiful painted home" 
-                className="absolute inset-0 w-full h-full object-cover opacity-25 transition-opacity"
+                className="absolute inset-0 w-full h-full object-cover opacity-25 dark:opacity-55 transition-opacity"
               />
               <CarouselView 
                 slides={testimonials.map((t, i) => (
@@ -417,7 +417,7 @@ export default function Home() {
                   <img 
                     src={googleRatingImage} 
                     alt="Five star rating" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-30"
+                    className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60"
                   />
                   <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
                     <div className="flex gap-0.5">
