@@ -46,3 +46,17 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 - **Embla Carousel:** For horizontal carousels.
 - **Radix UI:** For accessible UI components like accordions.
 - **Drizzle:** For database schema definition.
+
+## Recent Changes (Changelog)
+
+### December 2025
+- **v1.1.4** - Current Release
+  - Added Spanish language support (i18n) for Crew Lead dashboard
+  - AI Assistant (Rollie/PaintBuddy) now responds in Spanish when language is set to Spanish
+  - Speech recognition supports both English (en-US) and Spanish (es-ES)
+  - Language toggle persisted to localStorage for consistent experience
+  - All crew lead dashboard UI strings translated to Spanish
+  - Blockchain hallmark system confirmed working with Solana integration
+  - Real-time weather system with animated radar modal
+  - Internal messaging system with Socket.IO for real-time communication
+  - Comprehensive role-based dashboards (Admin, Owner, Developer, Crew Lead, Project Manager)
