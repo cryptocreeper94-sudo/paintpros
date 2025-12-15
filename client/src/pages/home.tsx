@@ -422,12 +422,12 @@ export default function Home() {
                   <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
                     <div className="flex gap-0.5">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-3 h-3 md:w-6 md:h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-accent text-accent" : "text-accent/30"}`} />
+                        <Star key={i} className={`w-3 h-3 md:w-6 md:h-6 ${i < Math.floor(tenant.credentials?.googleRating || 0) ? "fill-yellow-400 text-yellow-400 dark:fill-yellow-300 dark:text-yellow-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.8)]" : "text-yellow-400/40 dark:text-yellow-300/50"}`} />
                       ))}
                     </div>
                     <div>
-                      <p className="text-lg md:text-3xl font-bold font-display text-accent">{tenant.credentials.googleRating}</p>
-                      <p className="text-[10px] md:text-xs text-muted-foreground">Google</p>
+                      <p className="text-lg md:text-3xl font-bold font-display text-yellow-600 dark:text-yellow-300 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]">{tenant.credentials.googleRating}</p>
+                      <p className="text-[10px] md:text-xs text-foreground dark:text-white font-medium">Google</p>
                     </div>
                   </div>
                 </GlassCard>
