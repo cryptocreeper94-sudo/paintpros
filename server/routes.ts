@@ -3578,6 +3578,154 @@ Use occasional paint-related puns or references to keep things fun!`;
     }
   });
 
+  // ============ INTERNAL MESSAGING ============
+
+  // GET /api/messages/conversations - List conversations for a tenant
+  app.get("/api/messages/conversations", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "npp";
+      const role = req.query.role as string;
+      
+      let convos;
+      if (role) {
+        convos = await storage.getConversationsByParticipant(role, tenantId);
+      } else {
+        convos = await storage.getConversations(tenantId);
+      }
+      
+      const result = await Promise.all(convos.map(async (convo) => {
+        const participants = await storage.getConversationParticipants(convo.id);
+        const recentMessages = await storage.getMessages(convo.id, 1);
+        return {
+          ...convo,
+          participants,
+          lastMessage: recentMessages[0] || null
+        };
+      }));
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      res.status(500).json({ error: "Failed to fetch conversations" });
+    }
+  });
+
+  // POST /api/messages/conversations - Create a new conversation
+  app.post("/api/messages/conversations", async (req, res) => {
+    try {
+      const { tenantId, name, type, createdBy, participants } = req.body;
+      
+      const conversation = await storage.createConversation({
+        tenantId: tenantId || "npp",
+        name,
+        type: type || "direct",
+        createdBy
+      });
+      
+      if (participants && Array.isArray(participants)) {
+        for (const p of participants) {
+          await storage.addConversationParticipant({
+            conversationId: conversation.id,
+            userId: p.userId,
+            role: p.role,
+            displayName: p.displayName,
+            phone: p.phone
+          });
+        }
+      }
+      
+      const fullParticipants = await storage.getConversationParticipants(conversation.id);
+      res.status(201).json({ ...conversation, participants: fullParticipants });
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      res.status(500).json({ error: "Failed to create conversation" });
+    }
+  });
+
+  // GET /api/messages/conversations/:id - Get a single conversation
+  app.get("/api/messages/conversations/:id", async (req, res) => {
+    try {
+      const conversation = await storage.getConversationById(req.params.id);
+      if (!conversation) {
+        res.status(404).json({ error: "Conversation not found" });
+        return;
+      }
+      const participants = await storage.getConversationParticipants(conversation.id);
+      res.json({ ...conversation, participants });
+    } catch (error) {
+      console.error("Error fetching conversation:", error);
+      res.status(500).json({ error: "Failed to fetch conversation" });
+    }
+  });
+
+  // GET /api/messages/conversations/:id/messages - Get messages in a conversation
+  app.get("/api/messages/conversations/:id/messages", async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const msgs = await storage.getMessages(req.params.id, limit);
+      res.json(msgs.reverse());
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  // POST /api/messages/conversations/:id/messages - Send a message
+  app.post("/api/messages/conversations/:id/messages", async (req, res) => {
+    try {
+      const { senderId, senderRole, senderName, content, messageType, attachments, replyToId } = req.body;
+      
+      if (!content) {
+        res.status(400).json({ error: "content is required" });
+        return;
+      }
+      
+      const message = await storage.createMessage({
+        conversationId: req.params.id,
+        senderId,
+        senderRole,
+        senderName,
+        content,
+        messageType: messageType || "text",
+        attachments: attachments || [],
+        replyToId,
+        isSystemMessage: false
+      });
+      
+      res.status(201).json(message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  // PATCH /api/messages/read/:participantId - Mark messages as read
+  app.patch("/api/messages/read/:participantId", async (req, res) => {
+    try {
+      const participant = await storage.updateParticipantLastRead(req.params.participantId);
+      if (!participant) {
+        res.status(404).json({ error: "Participant not found" });
+        return;
+      }
+      res.json(participant);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+      res.status(500).json({ error: "Failed to mark messages as read" });
+    }
+  });
+
+  // GET /api/messages/users - Get available users/roles for messaging
+  app.get("/api/messages/users", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "npp";
+      const users = await storage.searchUsersByRole(tenantId);
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
   return httpServer;
 }
 
