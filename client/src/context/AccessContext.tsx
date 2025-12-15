@@ -8,6 +8,7 @@ export interface UserAccess {
   userName: string | null;
   accessMode: AccessMode;
   isAuthenticated: boolean;
+  canViewSalesData: boolean;
 }
 
 interface AccessContextType {
@@ -19,13 +20,14 @@ interface AccessContextType {
   canManageLeads: () => boolean;
   canManageSEO: () => boolean;
   canAccessDevTools: () => boolean;
+  canViewSalesData: () => boolean;
 }
 
-const ACCESS_CONFIG: Record<Exclude<UserRole, null>, { accessMode: AccessMode; userName: string }> = {
-  admin: { accessMode: "live", userName: "Sidonie" },
-  owner: { accessMode: "view_only", userName: "Ryan" },
-  area_manager: { accessMode: "view_only", userName: "Area Manager" },
-  developer: { accessMode: "live", userName: "Developer" },
+const ACCESS_CONFIG: Record<Exclude<UserRole, null>, { accessMode: AccessMode; userName: string; canViewSalesData: boolean }> = {
+  admin: { accessMode: "live", userName: "Sidonie", canViewSalesData: true },
+  owner: { accessMode: "live", userName: "Ryan", canViewSalesData: false },
+  area_manager: { accessMode: "view_only", userName: "Area Manager", canViewSalesData: false },
+  developer: { accessMode: "live", userName: "Developer", canViewSalesData: true },
 };
 
 const defaultUser: UserAccess = {
@@ -33,6 +35,7 @@ const defaultUser: UserAccess = {
   userName: null,
   accessMode: "view_only",
   isAuthenticated: false,
+  canViewSalesData: false,
 };
 
 const AccessContext = createContext<AccessContextType | null>(null);
@@ -56,6 +59,7 @@ export function AccessProvider({ children }: AccessProviderProps) {
       userName: userName || config.userName,
       accessMode: config.accessMode,
       isAuthenticated: true,
+      canViewSalesData: config.canViewSalesData,
     });
   }, []);
 
@@ -86,6 +90,10 @@ export function AccessProvider({ children }: AccessProviderProps) {
     return currentUser.isAuthenticated && currentUser.role === "developer";
   }, [currentUser]);
 
+  const canViewSalesData = useCallback(() => {
+    return currentUser.isAuthenticated && currentUser.canViewSalesData;
+  }, [currentUser]);
+
   return (
     <AccessContext.Provider value={{
       currentUser,
@@ -96,6 +104,7 @@ export function AccessProvider({ children }: AccessProviderProps) {
       canManageLeads,
       canManageSEO,
       canAccessDevTools,
+      canViewSalesData,
     }}>
       {children}
     </AccessContext.Provider>

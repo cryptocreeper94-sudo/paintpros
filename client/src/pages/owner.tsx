@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings, Sparkles } from "lucide-react";
 import { 
   hover3D, 
   hover3DSubtle, 
@@ -55,7 +55,7 @@ export default function Owner() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const queryClient = useQueryClient();
-  const { login, currentUser, canManageSEO } = useAccess();
+  const { login, currentUser, canManageSEO, canViewSalesData } = useAccess();
 
   useEffect(() => {
     const initPin = async () => {
@@ -281,20 +281,20 @@ export default function Owner() {
           </motion.div>
         )}
 
-        {!isDemo && currentUser.role === "owner" && !canManageSEO() && (
+        {!isDemo && currentUser.role === "owner" && !canViewSalesData() && (
           <motion.div 
             className="max-w-7xl mx-auto mb-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-amber-500/20 border border-amber-500/30 backdrop-blur-sm">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500/20 via-blue-500/10 to-purple-500/20 border border-purple-500/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-500/20">
-                  <Lock className="w-4 h-4 text-amber-400" />
+                <div className="p-2 rounded-lg bg-purple-500/20">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
                 </div>
                 <div>
-                  <p className="font-bold text-amber-400 text-sm">View Only Mode - Welcome, {currentUser.userName}!</p>
-                  <p className="text-xs text-muted-foreground">You can view all data but editing is disabled until launch. Contact admin for full access.</p>
+                  <p className="font-bold text-purple-400 text-sm">Welcome, {currentUser.userName}! Your system is being set up.</p>
+                  <p className="text-xs text-muted-foreground">Sales features are being configured behind the scenes. Your analytics and SEO tools are fully live!</p>
                 </div>
               </div>
             </div>
