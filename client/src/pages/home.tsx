@@ -213,8 +213,8 @@ export default function Home() {
                     <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg">Premium Materials</h3>
-                    <p className="text-[10px] md:text-sm text-muted-foreground hidden md:block font-bold">Top-tier paints and finishes only.</p>
+                    <h3 className="font-bold text-xs md:text-lg text-white">Premium Materials</h3>
+                    <p className="text-[10px] md:text-sm text-white/80 hidden md:block font-bold">Top-tier paints and finishes only.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
