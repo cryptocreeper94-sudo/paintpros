@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink, Send } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
-import { motion, AnimatePresence } from "framer-motion";
-import rollieMascot from "@assets/generated_images/rollie_transparent.png";
 
 interface ReleaseInfo {
   version: string;
@@ -25,9 +23,7 @@ export function Footer() {
   const tenant = useTenant();
   const [showModal, setShowModal] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
-  const [showAiChat, setShowAiChat] = useState(false);
-  const [aiMessage, setAiMessage] = useState("");
-  
+    
   const { data: releaseInfo } = useQuery<ReleaseInfo>({
     queryKey: ['/api/releases/latest', tenant.id],
     queryFn: async () => {
@@ -115,93 +111,11 @@ export function Footer() {
             <a href="#" className="hover:text-accent transition-colors">Terms & Conditions</a>
           </div>
 
-          {/* AI Assistant - Rollie */}
-          {tenant.features.aiAssistant && (
-            <button
-              onClick={() => setShowAiChat(!showAiChat)}
-              className="relative hover:scale-110 transition-transform"
-              data-testid="button-ai-assistant"
-            >
-              <img
-                src={rollieMascot}
-                alt="Rollie - AI Assistant"
-                className="w-8 h-8 md:w-10 md:h-10 object-contain"
-              />
-            </button>
-          )}
-
+          
         </div>
       </footer>
 
-      {/* AI Chat Panel - Expands from footer */}
-      <AnimatePresence>
-        {showAiChat && tenant.features.aiAssistant && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-[40px] right-2 md:right-4 z-40 w-[calc(100%-1rem)] md:w-96 bg-background/95 backdrop-blur-xl border border-white/10 rounded-t-2xl shadow-2xl overflow-hidden"
-            data-testid="panel-ai-chat"
-          >
-            <div className="p-3 md:p-4 border-b border-white/10 bg-gradient-to-r from-accent/10 to-transparent flex items-center justify-between">
-              <div className="flex items-center gap-2 md:gap-3">
-                <img
-                  src={rollieMascot}
-                  alt="Rollie"
-                  className="w-8 h-8 md:w-10 md:h-10 object-contain"
-                />
-                <div>
-                  <h3 className="font-bold text-sm">Rollie</h3>
-                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Your painting assistant</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowAiChat(false)}
-                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                data-testid="button-close-ai"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-3 md:p-4 h-40 md:h-48 overflow-y-auto">
-              <div className="bg-accent/10 rounded-lg p-3 text-sm">
-                <p className="text-muted-foreground text-xs md:text-sm">
-                  Hi! I'm Rollie, your Paint Pro assistant. I can help with:
-                </p>
-                <ul className="mt-2 space-y-1 text-[10px] md:text-xs text-muted-foreground/80">
-                  <li>• Estimating your painting project</li>
-                  <li>• Choosing the right colors</li>
-                  <li>• Understanding our services</li>
-                  <li>• Scheduling an appointment</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="p-2 md:p-3 border-t border-white/10">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={aiMessage}
-                  onChange={(e) => setAiMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && aiMessage.trim() && setAiMessage("")}
-                  placeholder="Ask me anything..."
-                  className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent/50"
-                  data-testid="input-ai-message"
-                />
-                <button
-                  onClick={() => aiMessage.trim() && setAiMessage("")}
-                  className="p-2 bg-accent text-primary rounded-lg hover:bg-accent/90 transition-colors"
-                  data-testid="button-send-ai"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      
       {/* Hallmark Verification Modal */}
       {showModal && (
         <div 
