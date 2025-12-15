@@ -256,21 +256,16 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-warranty"
             >
-              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+              <GlassCard className="p-0 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
                 <img 
                   src={warrantyImage} 
                   alt="Warranty guarantee" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
+                  className="w-full h-full object-cover"
                 />
-                <div className="flex items-center gap-2 md:gap-4 relative z-10">
-                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
-                    <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
+                  <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(197,160,89,0.5)]">
+                    <ArrowRight className="w-3 h-3 md:w-5 md:h-5" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg text-white">{tenant.credentials?.warrantyYears || 3}-Year Warranty</h3>
-                    <p className="text-[10px] md:text-sm text-white/80 hidden md:block font-bold">Full coverage on our workmanship.</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
               </GlassCard>
             </button>
