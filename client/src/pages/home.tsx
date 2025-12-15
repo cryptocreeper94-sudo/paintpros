@@ -29,6 +29,7 @@ import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
 import { AboutUsModal } from "@/components/about-us-modal";
 import { FeatureModal } from "@/components/feature-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
+import { MessagingWidget } from "@/components/messaging-widget";
 
 export default function Home() {
   const tenant = useTenant();
@@ -250,7 +251,7 @@ export default function Home() {
           </BentoItem>
 
           {/* 6. Key Feature 3 - Warranty (Modal) */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
             <button 
               onClick={() => setWarrantyModalOpen(true)} 
               className="w-full h-full text-left"
@@ -579,6 +580,11 @@ export default function Home() {
         warrantyYears={tenant.credentials?.warrantyYears || 3}
       />
       <PWAInstallPrompt />
+      <MessagingWidget 
+        currentUserId="visitor"
+        currentUserRole="visitor"
+        currentUserName="Visitor"
+      />
     </PageLayout>
   );
 }
