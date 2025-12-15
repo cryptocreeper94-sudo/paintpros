@@ -454,7 +454,7 @@ export default function Home() {
             >
               <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 transition-all h-full relative overflow-hidden" glow>
                 {/* Coming Soon Overlay */}
-                <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-lg">
+                <div className="absolute inset-0 z-20 bg-background/50 backdrop-blur-[1px] flex items-center justify-center rounded-lg">
                   <div className="text-center">
                     <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-wider">Coming Soon</span>
                   </div>
