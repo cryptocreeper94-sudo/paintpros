@@ -114,9 +114,10 @@ function MonthView({
   return (
     <div className="flex flex-col h-full">
       <div className="grid grid-cols-7 border-b">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName) => (
-          <div key={dayName} className="p-2 text-center text-sm font-medium text-muted-foreground border-r last:border-r-0">
-            {dayName}
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName, idx) => (
+          <div key={dayName} className="p-1 md:p-2 text-center text-xs md:text-sm font-medium text-muted-foreground border-r last:border-r-0">
+            <span className="hidden sm:inline">{dayName}</span>
+            <span className="sm:hidden">{dayName.charAt(0)}</span>
           </div>
         ))}
       </div>
@@ -133,18 +134,18 @@ function MonthView({
               return (
                 <div
                   key={dayIndex}
-                  className={`min-h-[80px] md:min-h-[100px] p-1 border-r last:border-r-0 cursor-pointer hover-elevate transition-colors ${
+                  className={`min-h-[60px] sm:min-h-[80px] md:min-h-[100px] p-0.5 sm:p-1 border-r last:border-r-0 cursor-pointer hover-elevate transition-colors ${
                     !isCurrentMonth ? 'bg-muted/30' : ''
                   } ${isCurrentDay ? 'bg-primary/5' : ''}`}
                   onClick={() => onDateClick(dayDate)}
                   data-testid={`calendar-day-${format(dayDate, 'yyyy-MM-dd')}`}
                 >
-                  <div className={`text-sm font-medium mb-1 ${
+                  <div className={`text-xs sm:text-sm font-medium mb-0.5 sm:mb-1 ${
                     isCurrentDay ? 'text-primary' : !isCurrentMonth ? 'text-muted-foreground' : ''
                   }`}>
                     {format(dayDate, 'd')}
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 hidden sm:block">
                     {dayEvents.slice(0, 3).map((event) => (
                       <EventCard 
                         key={event.id} 
@@ -160,6 +161,11 @@ function MonthView({
                       </div>
                     )}
                   </div>
+                  {dayEvents.length > 0 && (
+                    <div className="sm:hidden flex justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -187,17 +193,30 @@ function WeekView({
   
   return (
     <div className="flex flex-col h-full overflow-auto">
-      <div className="grid grid-cols-8 border-b sticky top-0 bg-background z-10">
-        <div className="p-2 border-r" />
-        {days.map((day) => (
+      <div className="grid grid-cols-4 sm:grid-cols-8 border-b sticky top-0 bg-background z-10">
+        <div className="p-1 sm:p-2 border-r text-xs text-muted-foreground">Time</div>
+        {days.slice(0, 3).map((day) => (
           <div 
             key={day.toISOString()} 
-            className={`p-2 text-center border-r last:border-r-0 ${
+            className={`p-1 sm:p-2 text-center border-r last:border-r-0 sm:hidden ${
               isToday(day) ? 'bg-primary/5' : ''
             }`}
           >
-            <div className="text-sm font-medium">{format(day, 'EEE')}</div>
-            <div className={`text-lg ${isToday(day) ? 'text-primary font-bold' : ''}`}>
+            <div className="text-xs font-medium">{format(day, 'EEE')}</div>
+            <div className={`text-sm ${isToday(day) ? 'text-primary font-bold' : ''}`}>
+              {format(day, 'd')}
+            </div>
+          </div>
+        ))}
+        {days.map((day) => (
+          <div 
+            key={day.toISOString()} 
+            className={`p-1 sm:p-2 text-center border-r last:border-r-0 hidden sm:block ${
+              isToday(day) ? 'bg-primary/5' : ''
+            }`}
+          >
+            <div className="text-xs sm:text-sm font-medium">{format(day, 'EEE')}</div>
+            <div className={`text-sm sm:text-lg ${isToday(day) ? 'text-primary font-bold' : ''}`}>
               {format(day, 'd')}
             </div>
           </div>
@@ -205,13 +224,12 @@ function WeekView({
       </div>
       <div className="flex-1">
         {hours.map((hour) => (
-          <div key={hour} className="grid grid-cols-8 border-b min-h-[60px]">
-            <div className="p-1 text-xs text-muted-foreground text-right border-r">
+          <div key={hour} className="grid grid-cols-4 sm:grid-cols-8 border-b min-h-[40px] sm:min-h-[60px]">
+            <div className="p-1 text-[10px] sm:text-xs text-muted-foreground text-right border-r">
               {format(setHours(new Date(), hour), 'h a')}
             </div>
-            {days.map((day) => {
+            {days.slice(0, 3).map((day, idx) => {
               const hourStart = setMinutes(setHours(day, hour), 0);
-              const hourEnd = setMinutes(setHours(day, hour), 59);
               const hourEvents = events.filter(e => {
                 if (!e.startTime) return false;
                 const eventStart = new Date(e.startTime);
@@ -222,7 +240,31 @@ function WeekView({
               return (
                 <div
                   key={day.toISOString()}
-                  className="p-0.5 border-r last:border-r-0 cursor-pointer hover:bg-muted/50 transition-colors relative"
+                  className="p-0.5 border-r last:border-r-0 cursor-pointer hover:bg-muted/50 transition-colors relative sm:hidden"
+                  onClick={() => onTimeClick(hourStart)}
+                  data-testid={`calendar-hour-mobile-${format(day, 'yyyy-MM-dd')}-${hour}`}
+                >
+                  {hourEvents.length > 0 && (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {days.map((day) => {
+              const hourStart = setMinutes(setHours(day, hour), 0);
+              const hourEvents = events.filter(e => {
+                if (!e.startTime) return false;
+                const eventStart = new Date(e.startTime);
+                return isSameDay(eventStart, day) && 
+                       eventStart.getHours() === hour;
+              });
+              
+              return (
+                <div
+                  key={day.toISOString()}
+                  className="p-0.5 border-r last:border-r-0 cursor-pointer hover:bg-muted/50 transition-colors relative hidden sm:block"
                   onClick={() => onTimeClick(hourStart)}
                   data-testid={`calendar-hour-${format(day, 'yyyy-MM-dd')}-${hour}`}
                 >
@@ -261,9 +303,9 @@ function DayView({
   
   return (
     <div className="flex flex-col h-full overflow-auto">
-      <div className="p-4 border-b sticky top-0 bg-background z-10">
-        <div className="text-xl font-semibold">{format(currentDate, 'EEEE, MMMM d, yyyy')}</div>
-        <div className="text-sm text-muted-foreground mt-1">
+      <div className="p-2 sm:p-4 border-b sticky top-0 bg-background z-10">
+        <div className="text-base sm:text-xl font-semibold">{format(currentDate, 'EEE, MMM d')}<span className="hidden sm:inline">, {format(currentDate, 'yyyy')}</span></div>
+        <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
           {dayEvents.length} event{dayEvents.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -277,9 +319,9 @@ function DayView({
           });
           
           return (
-            <div key={hour} className="flex border-b min-h-[70px]">
-              <div className="w-20 p-2 text-sm text-muted-foreground text-right border-r flex-shrink-0">
-                {format(setHours(new Date(), hour), 'h:mm a')}
+            <div key={hour} className="flex border-b min-h-[50px] sm:min-h-[70px]">
+              <div className="w-14 sm:w-20 p-1 sm:p-2 text-xs sm:text-sm text-muted-foreground text-right border-r flex-shrink-0">
+                {format(setHours(new Date(), hour), 'h a')}
               </div>
               <div
                 className="flex-1 p-1 cursor-pointer hover:bg-muted/50 transition-colors"
@@ -560,11 +602,12 @@ export function CRMCalendar() {
             <CardTitle>CRM Calendar</CardTitle>
           </div>
           
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={goToToday}
+              className="text-xs sm:text-sm"
               data-testid="button-calendar-today"
             >
               Today
@@ -578,7 +621,7 @@ export function CRMCalendar() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="min-w-[180px] text-center font-medium">
+              <span className="min-w-[100px] sm:min-w-[180px] text-center text-xs sm:text-base font-medium">
                 {getHeaderTitle()}
               </span>
               <Button 
@@ -592,16 +635,25 @@ export function CRMCalendar() {
             </div>
             
             <Tabs value={view} onValueChange={(v) => setView(v as any)}>
-              <TabsList>
-                <TabsTrigger value="month" data-testid="button-view-month">Month</TabsTrigger>
-                <TabsTrigger value="week" data-testid="button-view-week">Week</TabsTrigger>
-                <TabsTrigger value="day" data-testid="button-view-day">Day</TabsTrigger>
+              <TabsList className="h-8">
+                <TabsTrigger value="month" className="text-xs px-2 sm:px-3" data-testid="button-view-month">
+                  <span className="hidden sm:inline">Month</span>
+                  <span className="sm:hidden">M</span>
+                </TabsTrigger>
+                <TabsTrigger value="week" className="text-xs px-2 sm:px-3" data-testid="button-view-week">
+                  <span className="hidden sm:inline">Week</span>
+                  <span className="sm:hidden">W</span>
+                </TabsTrigger>
+                <TabsTrigger value="day" className="text-xs px-2 sm:px-3" data-testid="button-view-day">
+                  <span className="hidden sm:inline">Day</span>
+                  <span className="sm:hidden">D</span>
+                </TabsTrigger>
               </TabsList>
             </Tabs>
             
-            <Button onClick={() => openNewEventModal()} data-testid="button-new-event">
-              <Plus className="w-4 h-4 mr-1" />
-              New Event
+            <Button size="sm" onClick={() => openNewEventModal()} data-testid="button-new-event">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1">New Event</span>
             </Button>
           </div>
         </div>

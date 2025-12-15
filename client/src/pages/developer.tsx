@@ -1747,10 +1747,69 @@ export default function Developer() {
         <div className="space-y-6">
           <div className="text-center mb-4">
             <ListTodo className="w-12 h-12 mx-auto text-blue-400 mb-3" />
-            <h3 className="text-xl font-bold">Future Integrations</h3>
-            <p className="text-sm text-muted-foreground">Planned enhancements for analytics & tracking</p>
+            <h3 className="text-xl font-bold">Integrations</h3>
+            <p className="text-sm text-muted-foreground">Connect to external services for enhanced functionality</p>
           </div>
           <div className="space-y-4">
+            <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/30">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <DollarSign className="w-4 h-4 text-green-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h4 className="font-bold text-green-400">QuickBooks Online</h4>
+                    <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400">Action Required</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Sync invoices, estimates, and customer data with your QuickBooks Online account
+                  </p>
+                  <div className="mt-3 space-y-2 text-xs">
+                    <div className="font-medium text-foreground">Setup Instructions:</div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">1</span>
+                      <span>Go to <a href="https://developer.intuit.com" target="_blank" rel="noopener noreferrer" className="text-green-400 underline hover:text-green-300">developer.intuit.com</a> and create a developer account</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">2</span>
+                      <span>Create a new app and select "QuickBooks Online and Payments"</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">3</span>
+                      <span>Copy your <strong>Client ID</strong> and <strong>Client Secret</strong> from Keys & OAuth tab</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">4</span>
+                      <span>Set Redirect URI to: <code className="bg-black/20 px-1 rounded">https://your-domain.com/api/quickbooks/callback</code></span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">5</span>
+                      <span>Add secrets: QUICKBOOKS_CLIENT_ID, QUICKBOOKS_CLIENT_SECRET</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <a 
+                      href="https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      OAuth 2.0 Docs
+                    </a>
+                    <a 
+                      href="https://developer.intuit.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Get API Keys
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1759,7 +1818,7 @@ export default function Developer() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <h4 className="font-bold text-orange-400">Google Analytics 4</h4>
-                    <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400">Planned</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">Planned</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     Connect GA4 for advanced audience insights, conversion tracking, and cross-platform analytics
