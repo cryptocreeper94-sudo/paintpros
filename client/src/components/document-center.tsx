@@ -14,10 +14,11 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { format } from "date-fns";
 import SignatureCanvas from "react-signature-canvas";
+import { PDFAnnotationEditor } from "./pdf-annotation-editor";
 import { 
   FileText, Upload, Download, Pen, Eye, Trash2, Plus, Search, 
   Filter, Clock, CheckCircle, AlertCircle, FileSignature, 
-  File, FileSpreadsheet, Receipt, ClipboardList 
+  File, FileSpreadsheet, Receipt, ClipboardList, Edit3
 } from "lucide-react";
 import type { Document as DocType, DocumentSignature } from "@shared/schema";
 
@@ -56,8 +57,11 @@ export function DocumentCenter({ tenantId = "npp" }: DocumentCenterProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isSignOpen, setIsSignOpen] = useState(false);
+  const [isAnnotateOpen, setIsAnnotateOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<ExtendedDocument | null>(null);
+  const [uploadedPdfData, setUploadedPdfData] = useState<ArrayBuffer | null>(null);
   const signatureRef = useRef<SignatureCanvas>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [newDoc, setNewDoc] = useState({
     title: "",
@@ -164,6 +168,31 @@ export function DocumentCenter({ tenantId = "npp" }: DocumentCenterProps) {
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (file.type !== "application/pdf") {
+      toast({ title: "Error", description: "Please upload a PDF file.", variant: "destructive" });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      setUploadedPdfData(arrayBuffer);
+      setIsAnnotateOpen(true);
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const handleAnnotationSave = (annotatedPdf: Uint8Array, annotations: any[]) => {
+    toast({ 
+      title: "PDF Annotated", 
+      description: `Saved ${annotations.length} annotations to PDF.` 
+    });
+  };
+
   return (
     <GlassCard className="p-4">
       <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
@@ -182,6 +211,23 @@ export function DocumentCenter({ tenantId = "npp" }: DocumentCenterProps) {
               data-testid="input-document-search"
             />
           </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".pdf"
+            onChange={handleFileUpload}
+            className="hidden"
+            data-testid="input-upload-pdf"
+          />
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+            data-testid="button-upload-pdf"
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            Annotate PDF
+          </Button>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button size="sm" data-testid="button-create-document">
@@ -406,6 +452,28 @@ export function DocumentCenter({ tenantId = "npp" }: DocumentCenterProps) {
               {signMutation.isPending ? "Signing..." : "Sign Document"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAnnotateOpen} onOpenChange={(open) => {
+        setIsAnnotateOpen(open);
+        if (!open) {
+          setUploadedPdfData(null);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+      }}>
+        <DialogContent className="max-w-5xl h-[85vh] p-0">
+          <DialogHeader className="sr-only">
+            <DialogTitle>PDF Annotation Editor</DialogTitle>
+            <DialogDescription>Add annotations to your PDF document</DialogDescription>
+          </DialogHeader>
+          {uploadedPdfData && (
+            <PDFAnnotationEditor
+              pdfData={uploadedPdfData}
+              onSave={handleAnnotationSave}
+              onClose={() => setIsAnnotateOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </GlassCard>
