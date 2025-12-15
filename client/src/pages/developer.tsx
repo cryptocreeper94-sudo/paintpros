@@ -1111,6 +1111,156 @@ Ecosystem: https://darkwavestudios.io`;
   );
 }
 
+function BusinessRoadmapContent() {
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem('paintpros_roadmap_progress');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const toggleItem = (id: string) => {
+    const updated = { ...checkedItems, [id]: !checkedItems[id] };
+    setCheckedItems(updated);
+    localStorage.setItem('paintpros_roadmap_progress', JSON.stringify(updated));
+  };
+
+  const roadmapSections = [
+    {
+      title: "Infrastructure (30 days)",
+      color: "green",
+      items: [
+        { id: "stripe_billing", label: "Finalize Stripe billing for self-serve signups", done: true },
+        { id: "coinbase_billing", label: "Finalize Coinbase Commerce for crypto payments", done: true },
+        { id: "prod_database", label: "Production database migration (Postgres ready)", done: true },
+        { id: "tenant_provisioning", label: "Tenant provisioning automation" },
+        { id: "gtm_collateral", label: "Go-to-market collateral (competitor matrix, ROI calc)" },
+      ]
+    },
+    {
+      title: "Short-term (60-90 days)",
+      color: "blue",
+      items: [
+        { id: "quickbooks", label: "QuickBooks Online integration" },
+        { id: "scheduling", label: "Scheduling with route optimization" },
+        { id: "customer_portal", label: "Customer/homeowner portal" },
+        { id: "offline_mobile", label: "Offline-capable crew mobile app" },
+      ]
+    },
+    {
+      title: "Future Upgrades",
+      color: "purple",
+      items: [
+        { id: "marketing_automation", label: "Marketing automation (email, review requests)" },
+        { id: "lead_marketplace", label: "Lead generation marketplace" },
+        { id: "insurance_certs", label: "Insurance certificate management" },
+        { id: "drone_estimates", label: "Drone/photo estimate integration" },
+        { id: "enterprise_tier", label: "ServiceTitan-style enterprise tier" },
+        { id: "full_i18n", label: "Full app-wide Spanish translation (i18n)" },
+      ]
+    }
+  ];
+
+  const totalItems = roadmapSections.reduce((acc, s) => acc + s.items.length, 0);
+  const completedItems = roadmapSections.reduce((acc, s) => 
+    acc + s.items.filter(i => checkedItems[i.id] || i.done).length, 0);
+  const progressPercent = Math.round((completedItems / totalItems) * 100);
+
+  return (
+    <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/30">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-green-400" />
+            Progress: {completedItems}/{totalItems}
+          </h3>
+          <span className="text-2xl font-bold text-green-400">{progressPercent}%</span>
+        </div>
+        <div className="w-full bg-black/30 rounded-full h-3">
+          <div 
+            className="bg-gradient-to-r from-green-400 to-blue-400 h-3 rounded-full transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-accent/10 to-purple-500/10 rounded-xl p-4 border border-accent/30">
+        <h3 className="font-bold text-sm flex items-center gap-2 mb-3">
+          <DollarSign className="w-4 h-4 text-accent" />
+          Valuation Projections
+        </h3>
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="bg-black/20 rounded-lg p-3">
+            <p className="text-xs text-muted-foreground">250 tenants</p>
+            <p className="font-bold text-lg text-green-400">$7.5M-$12M</p>
+            <p className="text-xs text-muted-foreground">~$1.5M ARR</p>
+          </div>
+          <div className="bg-black/20 rounded-lg p-3">
+            <p className="text-xs text-muted-foreground">500 tenants</p>
+            <p className="font-bold text-lg text-blue-400">$15M-$24M</p>
+            <p className="text-xs text-muted-foreground">~$3M ARR</p>
+          </div>
+          <div className="bg-black/20 rounded-lg p-3">
+            <p className="text-xs text-muted-foreground">2,000 tenants</p>
+            <p className="font-bold text-lg text-purple-400">$50M+</p>
+            <p className="text-xs text-muted-foreground">~$10M ARR</p>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2 text-center">SaaS comps trade at 5-8x ARR</p>
+      </div>
+
+      {roadmapSections.map((section) => (
+        <div key={section.title} className={`bg-${section.color}-500/5 rounded-xl p-4 border border-${section.color}-500/20`}>
+          <h4 className={`font-bold text-sm flex items-center gap-2 mb-3 text-${section.color}-400`}>
+            <ListTodo className="w-4 h-4" />
+            {section.title}
+          </h4>
+          <div className="space-y-2">
+            {section.items.map((item) => {
+              const isChecked = checkedItems[item.id] || item.done;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => !item.done && toggleItem(item.id)}
+                  className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
+                    isChecked 
+                      ? 'bg-green-500/10 border border-green-500/30' 
+                      : 'bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10'
+                  }`}
+                  data-testid={`checkbox-${item.id}`}
+                >
+                  <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                    isChecked ? 'bg-green-500' : 'border-2 border-muted-foreground'
+                  }`}>
+                    {isChecked && <CheckCircle className="w-4 h-4 text-white" />}
+                  </div>
+                  <span className={`text-sm ${isChecked ? 'line-through text-muted-foreground' : ''}`}>
+                    {item.label}
+                  </span>
+                  {item.done && (
+                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">Built-in</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
+        <h4 className="font-bold text-sm flex items-center gap-2 mb-2">
+          <Award className="w-4 h-4 text-accent" />
+          Competitive Edge
+        </h4>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> Blockchain verification</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> White-label multi-tenant</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> Bilingual AI assistant</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> Premium Bento UI</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Developer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
@@ -1673,6 +1823,11 @@ export default function Developer() {
         </div>
       ),
     },
+    businessRoadmap: {
+      title: "Business Roadmap & Valuation",
+      icon: <TrendingUp className="w-8 h-8 text-green-400" />,
+      content: <BusinessRoadmapContent />,
+    },
   };
 
   const closeModal = () => setActiveModal(null);
@@ -2123,6 +2278,30 @@ export default function Developer() {
                   <h3 className="text-xl font-bold">Integrations Roadmap</h3>
                 </div>
                 <p className="text-sm text-muted-foreground">Google Analytics, Facebook Pixel & more</p>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          <BentoItem colSpan={6} rowSpan={1}>
+            <motion.div 
+              className="h-full cursor-pointer" 
+              variants={cardVariants}
+              whileHover={hover3D}
+              whileTap={tapEffect}
+              onClick={() => setActiveModal("businessRoadmap")}
+              data-testid="card-business-roadmap"
+            >
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.green}`} glow="green" animatedBorder>
+                <div className="flex items-center gap-3 mb-4">
+                  <motion.div 
+                    className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
+                    whileHover={{ rotate: 10 }}
+                  >
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold">Business Roadmap</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Checklist, valuation & projections</p>
               </GlassCard>
             </motion.div>
           </BentoItem>
