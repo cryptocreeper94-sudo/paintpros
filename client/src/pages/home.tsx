@@ -117,8 +117,8 @@ export default function Home() {
             <a href="/estimate" className="block h-full" data-testid="link-free-estimate-card">
               <GlassCard className="bg-accent/10 border-accent/20 relative p-3 md:p-8 group h-full cursor-pointer hover:border-accent/40 transition-colors overflow-hidden" glow>
                 <div className="relative z-10">
-                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1">Free Estimates</h3>
-                  <p className="text-[10px] md:text-xs text-muted-foreground pr-8 font-bold">
+                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1 text-gray-800 dark:text-white">Free Estimates</h3>
+                  <p className="text-[10px] md:text-xs text-gray-700 dark:text-gray-200 pr-8 font-bold">
                     Use our instant calculator to get a custom quote for your painting project in seconds.
                   </p>
                 </div>
