@@ -800,3 +800,143 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Booking = typeof bookings.$inferSelect;
+
+// ============ CREW MANAGEMENT ============
+
+// Crew Leads - Crew supervisors/leads
+export const crewLeads = pgTable("crew_leads", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  pin: text("pin").notNull().default("3333"),
+  assignedBy: text("assigned_by"), // admin, owner, developer who created them
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrewLeadSchema = createInsertSchema(crewLeads).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCrewLead = z.infer<typeof insertCrewLeadSchema>;
+export type CrewLead = typeof crewLeads.$inferSelect;
+
+// Crew Members - Workers under each crew lead
+export const crewMembers = pgTable("crew_members", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  leadId: varchar("lead_id").references(() => crewLeads.id).notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  role: text("role").default("painter"), // painter, apprentice, helper
+  phone: text("phone"),
+  email: text("email"),
+  hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrewMemberSchema = createInsertSchema(crewMembers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCrewMember = z.infer<typeof insertCrewMemberSchema>;
+export type CrewMember = typeof crewMembers.$inferSelect;
+
+// Time Entries - Hours worked per crew member
+export const timeEntries = pgTable("time_entries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  crewMemberId: varchar("crew_member_id").references(() => crewMembers.id).notNull(),
+  leadId: varchar("lead_id").references(() => crewLeads.id).notNull(),
+  date: timestamp("date").notNull(),
+  hoursWorked: decimal("hours_worked", { precision: 5, scale: 2 }).notNull(),
+  overtimeHours: decimal("overtime_hours", { precision: 5, scale: 2 }).default("0"),
+  jobAddress: text("job_address"),
+  notes: text("notes"),
+  status: text("status").default("pending").notNull(), // pending, approved, submitted_to_payroll
+  submittedAt: timestamp("submitted_at"),
+  approvedAt: timestamp("approved_at"),
+  approvedBy: text("approved_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertTimeEntrySchema = createInsertSchema(timeEntries).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  status: true,
+  submittedAt: true,
+  approvedAt: true,
+});
+
+export type InsertTimeEntry = z.infer<typeof insertTimeEntrySchema>;
+export type TimeEntry = typeof timeEntries.$inferSelect;
+
+// Job Notes - Notes from crew leads about jobs
+export const jobNotes = pgTable("job_notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  leadId: varchar("lead_id").references(() => crewLeads.id).notNull(),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  jobAddress: text("job_address"),
+  customerName: text("customer_name"),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  photos: jsonb("photos").default([]), // Array of base64 or URLs
+  sentToOwner: boolean("sent_to_owner").default(false),
+  sentToAdmin: boolean("sent_to_admin").default(false),
+  sentAt: timestamp("sent_at"),
+  pdfUrl: text("pdf_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertJobNoteSchema = createInsertSchema(jobNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  sentAt: true,
+});
+
+export type InsertJobNote = z.infer<typeof insertJobNoteSchema>;
+export type JobNote = typeof jobNotes.$inferSelect;
+
+// Incident Reports - On-site incidents
+export const incidentReports = pgTable("incident_reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  leadId: varchar("lead_id").references(() => crewLeads.id).notNull(),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  jobAddress: text("job_address"),
+  incidentDate: timestamp("incident_date").notNull(),
+  incidentType: text("incident_type").notNull(), // injury, property_damage, customer_complaint, equipment, weather, other
+  severity: text("severity").default("low"), // low, medium, high, critical
+  description: text("description").notNull(),
+  witnesses: text("witnesses"),
+  photos: jsonb("photos").default([]), // Array of base64 or URLs
+  actionTaken: text("action_taken"),
+  status: text("status").default("open").notNull(), // open, investigating, resolved, closed
+  resolvedAt: timestamp("resolved_at"),
+  resolvedBy: text("resolved_by"),
+  resolution: text("resolution"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertIncidentReportSchema = createInsertSchema(incidentReports).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  status: true,
+  resolvedAt: true,
+});
+
+export type InsertIncidentReport = z.infer<typeof insertIncidentReportSchema>;
+export type IncidentReport = typeof incidentReports.$inferSelect;
