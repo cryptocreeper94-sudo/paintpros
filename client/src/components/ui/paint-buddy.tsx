@@ -127,14 +127,28 @@ export function PaintBuddy() {
     }
   };
 
+  const stripEmojisAndSymbols = (text: string): string => {
+    const emojiPattern = /(?:[\u2700-\u27BF]|(?:\uD83C[\uDDE6-\uDDFF]){2}|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u0023-\u0039]\uFE0F?\u20E3|\u3299|\u3297|\u303D|\u3030|\u24C2|\uD83C[\uDD70-\uDD71]|\uD83C[\uDD7E-\uDD7F]|\uD83C\uDD8E|\uD83C[\uDD91-\uDD9A]|\uD83C[\uDDE6-\uDDFF]|\uD83C[\uDE01-\uDE02]|\uD83C\uDE1A|\uD83C\uDE2F|\uD83C[\uDE32-\uDE3A]|\uD83C[\uDE50-\uDE51]|\u203C|\u2049|[\u25AA-\u25AB]|\u25B6|\u25C0|[\u25FB-\u25FE]|\u00A9|\u00AE|\u2122|\u2139|\uD83C\uDC04|[\u2600-\u26FF]|\u2B05|\u2B06|\u2B07|\u2B1B|\u2B1C|\u2B50|\u2B55|\u231A|\u231B|\u2328|\u23CF|[\u23E9-\u23F3]|[\u23F8-\u23FA]|\uD83C\uDCCF|\u2934|\u2935|[\u2190-\u21FF])+/g;
+    return text
+      .replace(emojiPattern, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  };
+
   const speakText = async (text: string) => {
+    const cleanText = stripEmojisAndSymbols(text);
+    if (!cleanText) {
+      setIsSpeaking(false);
+      return;
+    }
+    
     try {
       setIsSpeaking(true);
       const response = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          text,
+          text: cleanText,
           voice: voiceGender === "male" ? "onyx" : "nova"
         }),
       });
@@ -157,22 +171,43 @@ export function PaintBuddy() {
       audio.onerror = () => {
         setIsSpeaking(false);
         URL.revokeObjectURL(audioUrl);
-        fallbackSpeak(text);
+        fallbackSpeak(cleanText);
       };
       await audio.play();
     } catch (error) {
       console.error("TTS error:", error);
-      fallbackSpeak(text);
+      fallbackSpeak(cleanText);
     }
   };
 
   const fallbackSpeak = (text: string) => {
+    const cleanText = stripEmojisAndSymbols(text);
+    if (!cleanText) {
+      setIsSpeaking(false);
+      return;
+    }
+    
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
+      const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = language === "es" ? "es-ES" : "en-US";
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
+      utterance.rate = 0.95;
+      utterance.pitch = 1.1;
+      
+      const voices = window.speechSynthesis.getVoices();
+      const targetLang = language === "es" ? "es" : "en";
+      const preferredVoice = voices.find(v => 
+        v.lang.startsWith(targetLang) && 
+        (v.name.toLowerCase().includes("samantha") || 
+         v.name.toLowerCase().includes("google") ||
+         v.name.toLowerCase().includes("natural") ||
+         v.name.toLowerCase().includes("premium"))
+      ) || voices.find(v => v.lang.startsWith(targetLang));
+      
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+      
       utterance.onend = () => setIsSpeaking(false);
       utterance.onerror = () => setIsSpeaking(false);
       window.speechSynthesis.speak(utterance);
