@@ -27,6 +27,7 @@ import Pricing from "@/pages/pricing";
 import CrewLead from "@/pages/crew-lead";
 import ContractorApplication from "@/pages/contractor-application";
 import Blog from "@/pages/blog";
+import TermsWarranty from "@/pages/terms-warranty";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/crew-lead" component={CrewLead} />
       <Route path="/contractor-application" component={ContractorApplication} />
       <Route path="/blog" component={Blog} />
+      <Route path="/terms" component={TermsWarranty} />
       <Route component={NotFound} />
     </Switch>
   );
