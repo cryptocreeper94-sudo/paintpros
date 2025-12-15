@@ -1,16 +1,13 @@
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Key, Crown, Shield, MapPin, HardHat, Code, Users } from "lucide-react";
+import { Key, MapPin, HardHat, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { cardBackgroundStyles, iconContainerStyles, springTransition } from "@/lib/theme-effects";
 
 const PIN_ROLES = [
-  { role: "Owner", pin: "1111", icon: Crown, color: "text-gold-400", bgColor: "bg-gold-400/20" },
-  { role: "Admin", pin: "4444", icon: Shield, color: "text-blue-400", bgColor: "bg-blue-400/20" },
   { role: "Project Manager", pin: "2222", icon: MapPin, color: "text-teal-400", bgColor: "bg-teal-400/20" },
   { role: "Crew Lead", pin: "3333", icon: HardHat, color: "text-orange-400", bgColor: "bg-orange-400/20" },
   { role: "Area Manager", pin: "5555", icon: Users, color: "text-pink-400", bgColor: "bg-pink-400/20" },
-  { role: "Developer", pin: "0424", icon: Code, color: "text-purple-400", bgColor: "bg-purple-400/20" },
 ];
 
 interface PinReferenceAccordionProps {
