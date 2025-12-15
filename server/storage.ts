@@ -39,7 +39,7 @@ import {
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
-import { desc, eq, ilike, or, and, sql, max } from "drizzle-orm";
+import { desc, eq, ilike, or, and, sql, max, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (for Replit Auth)
@@ -1795,12 +1795,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchUsersByRole(tenantId: string): Promise<{id: string, displayName: string, role: string}[]> {
-    const roles = ['owner', 'admin', 'project-manager', 'crew-lead', 'developer'];
-    return roles.map(role => ({
-      id: `${tenantId}-${role}`,
-      displayName: role.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-      role
+    const messagingRoles = ['owner', 'admin', 'project-manager', 'area-manager', 'crew-lead', 'developer'];
+    
+    // Query actual registered users with these roles
+    const registeredUsers = await db.select({
+      id: users.id,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+      role: users.role,
+    })
+    .from(users)
+    .where(
+      and(
+        inArray(users.role, messagingRoles),
+        or(
+          eq(users.tenantId, tenantId),
+          sql`${users.tenantId} IS NULL`
+        )
+      )
+    );
+    
+    // Map to display format
+    const userList = registeredUsers.map(user => ({
+      id: user.id,
+      displayName: user.firstName && user.lastName 
+        ? `${user.firstName} ${user.lastName}`
+        : user.email || user.role || 'Unknown User',
+      role: user.role || 'user'
     }));
+    
+    // Always include developer as a fallback contact
+    const hasDeveloper = userList.some(u => u.role === 'developer');
+    if (!hasDeveloper) {
+      userList.push({
+        id: 'developer',
+        displayName: 'Ryan (Developer)',
+        role: 'developer'
+      });
+    }
+    
+    return userList;
   }
 }
 
