@@ -10,6 +10,36 @@ interface Message {
 }
 
 type VoiceGender = "male" | "female";
+type Language = "en" | "es";
+
+const translations = {
+  en: {
+    greeting: "Hey there! I'm Rollie, your painting assistant! How can I help you today?",
+    errorMessage: "Sorry, I'm having trouble connecting right now. Please try again!",
+    askRollie: "Ask Rollie!",
+    female: "Female",
+    male: "Male",
+    clearChat: "Clear chat",
+    stopListening: "Stop listening",
+    speakToRollie: "Speak to Rollie",
+    listening: "Listening...",
+    typeOrSpeak: "Type or speak...",
+    speechNotSupported: "Speech recognition is not supported in your browser.",
+  },
+  es: {
+    greeting: "¡Hola! ¡Soy Rollie, tu asistente de pintura! ¿En qué puedo ayudarte hoy?",
+    errorMessage: "Lo siento, tengo problemas para conectarme ahora. ¡Por favor, intenta de nuevo!",
+    askRollie: "¡Pregunta a Rollie!",
+    female: "Femenino",
+    male: "Masculino",
+    clearChat: "Limpiar chat",
+    stopListening: "Dejar de escuchar",
+    speakToRollie: "Habla con Rollie",
+    listening: "Escuchando...",
+    typeOrSpeak: "Escribe o habla...",
+    speechNotSupported: "El reconocimiento de voz no está disponible en tu navegador.",
+  },
+};
 
 export function PaintBuddy() {
   const tenant = useTenant();
@@ -20,15 +50,40 @@ export function PaintBuddy() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [voiceGender, setVoiceGender] = useState<VoiceGender>("female");
+  const [language, setLanguage] = useState<Language>("en");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
+
+  // Get current translations
+  const t = translations[language];
+
+  // Read language from localStorage on mount and listen for changes
+  useEffect(() => {
+    const updateLanguage = () => {
+      const storedLang = localStorage.getItem("crew-lead-language");
+      setLanguage(storedLang === "es" ? "es" : "en");
+    };
+    
+    updateLanguage();
+    
+    // Listen for storage changes (from other tabs or components)
+    window.addEventListener("storage", updateLanguage);
+    
+    // Custom event for same-tab updates
+    window.addEventListener("language-change", updateLanguage);
+    
+    return () => {
+      window.removeEventListener("storage", updateLanguage);
+      window.removeEventListener("language-change", updateLanguage);
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Initialize speech recognition
+  // Initialize speech recognition - recreate when language changes
   useEffect(() => {
     if (typeof window !== "undefined") {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -36,7 +91,7 @@ export function PaintBuddy() {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = "en-US";
+        recognition.lang = language === "es" ? "es-ES" : "en-US";
 
         recognition.onresult = (event: any) => {
           const transcript = event.results[0][0].transcript;
@@ -55,11 +110,11 @@ export function PaintBuddy() {
         recognitionRef.current = recognition;
       }
     }
-  }, []);
+  }, [language]);
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
-      alert("Speech recognition is not supported in your browser.");
+      alert(t.speechNotSupported);
       return;
     }
 
@@ -113,7 +168,7 @@ export function PaintBuddy() {
   const handleOpen = () => {
     setIsOpen(true);
     if (messages.length === 0) {
-      const greeting = `Hey there! I'm Rollie, your painting assistant! How can I help you today?`;
+      const greeting = t.greeting;
       setMessages([{ role: "assistant", content: greeting }]);
       speakText(greeting);
     }
@@ -153,6 +208,7 @@ export function PaintBuddy() {
         body: JSON.stringify({
           messages: [...messages, { role: "user", content: userMessage }],
           tenantName: tenant.name,
+          language: language,
         }),
       });
 
@@ -165,7 +221,7 @@ export function PaintBuddy() {
       ]);
       speakText(data.message);
     } catch (error) {
-      const errorMsg = "Sorry, I'm having trouble connecting right now. Please try again!";
+      const errorMsg = t.errorMessage;
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: errorMsg },
@@ -198,7 +254,7 @@ export function PaintBuddy() {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
             <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Ask Rollie!
+              {t.askRollie}
             </span>
           </motion.button>
         )}
@@ -260,7 +316,7 @@ export function PaintBuddy() {
                       }`}
                       data-testid="button-voice-female"
                     >
-                      Female
+                      {t.female}
                     </button>
                     <button
                       onClick={() => setVoiceGender("male")}
@@ -271,7 +327,7 @@ export function PaintBuddy() {
                       }`}
                       data-testid="button-voice-male"
                     >
-                      Male
+                      {t.male}
                     </button>
                   </div>
                 </div>
@@ -281,7 +337,7 @@ export function PaintBuddy() {
                   <button
                     onClick={handleClear}
                     className="p-2 text-gray-500 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                    title="Clear chat"
+                    title={t.clearChat}
                     data-testid="button-clear-chat"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -342,7 +398,7 @@ export function PaintBuddy() {
                         ? "bg-red-500 text-white animate-pulse"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
-                    title={isListening ? "Stop listening" : "Speak to Rollie"}
+                    title={isListening ? t.stopListening : t.speakToRollie}
                     data-testid="button-microphone"
                   >
                     {isListening ? (
@@ -358,7 +414,7 @@ export function PaintBuddy() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    placeholder={isListening ? "Listening..." : "Type or speak..."}
+                    placeholder={isListening ? t.listening : t.typeOrSpeak}
                     className="flex-1 min-w-0 bg-gray-100 dark:bg-gray-700 border-0 rounded-xl px-3 py-2 text-sm text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                     data-testid="input-paint-buddy-message"
                   />
