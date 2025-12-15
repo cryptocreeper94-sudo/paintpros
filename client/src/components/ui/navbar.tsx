@@ -41,7 +41,7 @@ export function Navbar() {
         {/* Left: Hamburger Menu - shifted left 25px more, up 10px */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center -ml-[84px] -mt-4",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center -ml-[84px] -mt-[26px]",
             tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
