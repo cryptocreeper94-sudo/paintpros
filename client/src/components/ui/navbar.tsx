@@ -34,11 +34,11 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="flex items-center px-1 md:px-2 py-1">
-        {/* Left: Hamburger Menu - offset from left */}
+      <div className="flex items-center justify-between px-2 py-1 gap-2 overflow-hidden">
+        {/* Left: Hamburger Menu */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[87px] -mt-[31px]",
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center",
             tenant.id === "demo" ? "p-1.5" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
@@ -46,31 +46,31 @@ export function Navbar() {
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={36} className="text-white" />
+            <X size={28} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={52} className="text-white" />
+            <Menu size={28} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-[70px] md:h-16 w-auto object-contain"
+              className="h-10 md:h-14 w-auto object-contain"
             />
           )}
         </button>
         
-        {/* Center: Title - takes up most width */}
+        {/* Center: Title - truncate on mobile */}
         <div 
           className={cn(
-            "flex-1 text-center mx-4 leading-normal -ml-[80px] whitespace-nowrap",
+            "flex-1 text-center min-w-0 truncate px-1",
             tenant.id === "demo" 
-              ? "text-white text-sm md:text-2xl lg:text-3xl"
-              : "text-sm md:text-3xl lg:text-4xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
+              ? "text-white text-xs md:text-xl lg:text-2xl"
+              : "text-xs md:text-2xl lg:text-3xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
           )}
-          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.15em' }}
+          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.08em' }}
           data-testid="text-header-title"
         >
           {tenant.id === "demo" 
-            ? "PaintPros.io - Industry first Solana Verified Owner Software"
+            ? "PaintPros.io"
             : tenant.name
           }
         </div>
@@ -78,11 +78,11 @@ export function Navbar() {
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-2 flex items-center justify-center transition-all flex-shrink-0 -ml-[16px] hover:opacity-80"
+          className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
-          {theme === "dark" ? <Sun className="w-6 h-6 text-accent" /> : <Moon className="w-6 h-6 text-white" />}
+          {theme === "dark" ? <Sun className="w-5 h-5 text-accent" /> : <Moon className="w-5 h-5 text-white" />}
         </button>
       </div>
     </header>
