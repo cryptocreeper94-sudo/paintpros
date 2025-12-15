@@ -211,7 +211,7 @@ export function PaintBuddy() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-end md:justify-center pb-4 md:pb-0"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center px-3 py-4"
             onClick={handleClose}
             data-testid="panel-paint-buddy-overlay"
           >
@@ -222,7 +222,7 @@ export function PaintBuddy() {
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               transition={{ delay: 0.1 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-[92%] md:w-[400px] max-h-[60vh] md:max-h-[450px] flex flex-col overflow-hidden"
+              className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-[400px] max-h-[50vh] md:max-h-[400px] flex flex-col overflow-hidden"
               style={{
                 borderRadius: "24px",
               }}
@@ -381,16 +381,16 @@ export function PaintBuddy() {
               initial={{ opacity: 0, scale: 0.5, y: 50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.5, y: 50 }}
-              className="mt-2 md:mt-4"
+              className="mt-1 flex-shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               <motion.img
                 src={rollieMascot}
                 alt="Rollie"
-                className={`w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-2xl ${
+                className={`w-24 h-24 md:w-40 md:h-40 object-contain drop-shadow-2xl ${
                   isSpeaking ? "animate-bounce" : ""
                 }`}
-                animate={isSpeaking ? { scale: [1, 1.05, 1] } : { y: [0, -8, 0] }}
+                animate={isSpeaking ? { scale: [1, 1.05, 1] } : { y: [0, -6, 0] }}
                 transition={{ duration: isSpeaking ? 0.5 : 3, repeat: Infinity, ease: "easeInOut" }}
                 data-testid="img-rollie-large"
               />
