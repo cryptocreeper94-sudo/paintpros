@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketServer } from "socket.io";
 import { storage } from "./storage";
+import { db } from "./db";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -9,7 +10,8 @@ import {
   insertPaymentSchema, insertRoomScanSchema, insertPageViewSchema, ANCHORABLE_TYPES, FOUNDING_ASSETS,
   insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema,
   insertDocumentAssetSchema, TENANT_PREFIXES,
-  insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema
+  insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
+  users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -3840,6 +3842,44 @@ Use occasional paint-related puns or references to keep things fun!`;
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  // ============ TEAM MANAGEMENT ============
+
+  // GET /api/team/users - Get all users for team management
+  app.get("/api/team/users", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "npp";
+      // Get all users, not just those with messaging roles
+      const allUsers = await db.select().from(usersTable);
+      res.json(allUsers);
+    } catch (error) {
+      console.error("Error fetching team users:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  // PATCH /api/team/users/:id/role - Update user role
+  app.patch("/api/team/users/:id/role", async (req, res) => {
+    try {
+      const { role, tenantId } = req.body;
+      const validRoles = ['owner', 'admin', 'project-manager', 'area-manager', 'crew-lead', 'developer', null];
+      
+      if (role !== null && !validRoles.includes(role)) {
+        res.status(400).json({ error: "Invalid role" });
+        return;
+      }
+      
+      const user = await storage.updateUserRole(req.params.id, role, tenantId);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      res.status(500).json({ error: "Failed to update user role" });
     }
   });
 
