@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -28,6 +28,7 @@ export function Navbar() {
     { name: "Owner", href: "/owner", icon: Crown, color: "text-gold-400" },
     { name: "Admin", href: "/admin", icon: Shield, color: "text-blue-400" },
     { name: "Project Manager", href: "/project-manager", icon: MapPin, color: "text-teal-400" },
+    { name: "Crew Lead", href: "/crew-lead", icon: HardHat, color: "text-orange-400" },
     { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
   ];
 
