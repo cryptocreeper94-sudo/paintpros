@@ -333,7 +333,7 @@ export default function Home() {
           </BentoItem>
 
           {/* About/Contact Card - Demo: Configurable Platform, NPP: About Us */}
-          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={2} mobileRowSpan={3}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
             {isDemo ? (
               <GlassCard className="p-4 md:p-6 flex flex-col justify-between h-full border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
                 <div>
@@ -376,57 +376,21 @@ export default function Home() {
                 className="w-full h-full text-left"
                 data-testid="button-about-us"
               >
-                <GlassCard className="p-3 md:p-6 flex flex-col justify-between h-full border-accent/20 bg-gradient-to-br from-accent/5 to-transparent cursor-pointer hover:border-accent/40 transition-colors">
+                <GlassCard className="p-3 md:p-4 flex flex-col justify-between h-full border-accent/20 bg-gradient-to-br from-accent/5 to-transparent cursor-pointer hover:border-accent/40 transition-colors">
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-1 md:mb-2">
                       <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
                         <Star className="w-3 h-3 md:w-4 md:h-4 text-accent fill-accent" />
                       </div>
                       <span className="text-[9px] md:text-xs font-bold text-accent uppercase tracking-wider">About Us</span>
                     </div>
-                    <h3 className="text-xs md:text-xl font-display font-bold mb-1 md:mb-2">{tenant.name}</h3>
-                    <p className="text-[9px] md:text-sm text-muted-foreground leading-snug mb-3 md:mb-4">
-                      Family-owned since 2015, transforming homes across Middle Tennessee with exceptional craftsmanship and attention to detail.
+                    <h3 className="text-xs md:text-lg font-display font-bold mb-1">{tenant.name}</h3>
+                    <p className="text-[9px] md:text-xs text-muted-foreground leading-snug">
+                      Family-owned since 2015. Licensed & Insured with {tenant.credentials?.warrantyYears || 5}-year warranty.
                     </p>
-                    
-                    {/* Stats row - desktop only */}
-                    <div className="hidden md:grid grid-cols-3 gap-3 mb-4">
-                      <div className="text-center p-2 rounded-lg bg-accent/10">
-                        <p className="text-lg font-bold text-accent">10+</p>
-                        <p className="text-[10px] text-muted-foreground">Years Experience</p>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-accent/10">
-                        <p className="text-lg font-bold text-accent">500+</p>
-                        <p className="text-[10px] text-muted-foreground">Homes Painted</p>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-accent/10">
-                        <p className="text-lg font-bold text-accent">100%</p>
-                        <p className="text-[10px] text-muted-foreground">Satisfaction</p>
-                      </div>
-                    </div>
-                    
-                    {/* Credentials list - desktop */}
-                    <ul className="hidden md:block space-y-1.5 text-xs text-muted-foreground">
-                      <li className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                        Licensed & Insured
-                      </li>
-                      <li className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                        {tenant.credentials?.warrantyYears || 5}-Year Warranty on All Work
-                      </li>
-                      <li className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                        Premium Sherwin-Williams Paints
-                      </li>
-                    </ul>
                   </div>
-                  <div className="flex items-center justify-between mt-2 md:mt-4">
-                    <div className="flex items-center gap-1 text-[8px] md:text-xs text-muted-foreground md:hidden">
-                      <CheckCircle2 className="w-3 h-3 text-green-400" />
-                      <span>Licensed & Insured</span>
-                    </div>
-                    <div className="hidden md:block text-xs text-accent font-medium">
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="text-[8px] md:text-xs text-accent font-medium">
                       Learn More
                     </div>
                     <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-accent flex items-center justify-center">
@@ -436,6 +400,48 @@ export default function Home() {
                 </GlassCard>
               </button>
             )}
+          </BentoItem>
+
+          {/* Crypto Payment Card - Below About Us on desktop */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
+            <button
+              onClick={() => setCryptoModalOpen(true)}
+              className="w-full h-full text-left"
+              data-testid="button-crypto-payment"
+            >
+              <GlassCard className="p-2 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
+                {/* Bitcoin Watermark Background */}
+                <SiBitcoin className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 md:w-20 md:h-20 text-orange-400/20" />
+                
+                <div className="flex flex-row md:flex-col items-center md:items-start gap-3 md:gap-2 h-full relative z-10">
+                  {/* Icons */}
+                  <div className="flex -space-x-2 flex-shrink-0">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
+                      <SiBitcoin className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+                    </div>
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
+                      <SiEthereum className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+                    </div>
+                  </div>
+                  
+                  {/* Title & Description */}
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[7px] md:text-[9px] px-1 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold inline-block mb-1">CRYPTO ACCEPTED</span>
+                    <h3 className="text-[10px] md:text-sm font-display font-bold leading-tight">
+                      Pay with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Crypto</span>
+                    </h3>
+                    <p className="text-[9px] md:text-[10px] text-muted-foreground leading-snug hidden md:block mt-1">
+                      Bitcoin, Ethereum & more
+                    </p>
+                  </div>
+                  
+                  {/* CTA Arrow */}
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-purple-500 flex items-center justify-center flex-shrink-0 md:self-end">
+                    <ArrowRight className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+              </GlassCard>
+            </button>
           </BentoItem>
 
           {/* 9. Google Rating */}
@@ -514,49 +520,6 @@ export default function Home() {
                 />
                 <div className="absolute bottom-2 left-0 right-0 md:bottom-4 z-10 text-center">
                   <p className="text-[10px] md:text-xs text-muted-foreground italic">Any Color You Like</p>
-                </div>
-              </GlassCard>
-            </button>
-          </BentoItem>
-
-          {/* Crypto Payment Banner - Compact on desktop, full on mobile */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
-            <button
-              onClick={() => setCryptoModalOpen(true)}
-              className="w-full h-full text-left"
-              data-testid="button-crypto-payment"
-            >
-              <GlassCard className="p-2 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
-                {/* Bitcoin Watermark Background */}
-                <SiBitcoin className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 md:w-20 md:h-20 text-orange-400/20" />
-                
-                {/* Compact vertical layout for desktop, horizontal for mobile */}
-                <div className="flex flex-row md:flex-col items-center md:items-start gap-3 md:gap-2 h-full relative z-10">
-                  {/* Icons */}
-                  <div className="flex -space-x-2 flex-shrink-0">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
-                      <SiBitcoin className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
-                    </div>
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
-                      <SiEthereum className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
-                    </div>
-                  </div>
-                  
-                  {/* Title & Description */}
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[7px] md:text-[9px] px-1 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold inline-block mb-1">CRYPTO ACCEPTED</span>
-                    <h3 className="text-[10px] md:text-sm font-display font-bold leading-tight">
-                      Pay with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Crypto</span>
-                    </h3>
-                    <p className="text-[9px] md:text-[10px] text-muted-foreground leading-snug hidden md:block mt-1">
-                      Bitcoin, Ethereum & more
-                    </p>
-                  </div>
-                  
-                  {/* CTA Arrow */}
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-purple-500 flex items-center justify-center flex-shrink-0 md:self-end">
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </div>
                 </div>
               </GlassCard>
             </button>
