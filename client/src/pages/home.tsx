@@ -203,19 +203,20 @@ export default function Home() {
               className="w-full h-full text-left"
               data-testid="button-premium-materials"
             >
-              <GlassCard className="p-2 md:p-6 flex flex-col h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
+              <GlassCard className="p-2 md:p-6 flex flex-col justify-end h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
                 <img 
                   src={premiumMaterialsImage} 
                   alt="Premium paint materials" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 dark:opacity-60 transition-opacity"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-gray-900 dark:via-gray-900/80 dark:to-transparent z-[1]" />
                 <div className="flex items-center gap-2 md:gap-4 relative z-10">
-                  <div className="bg-accent/10 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
+                  <div className="bg-accent/20 p-1.5 md:p-3 rounded-lg md:rounded-xl flex-shrink-0">
                     <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs md:text-lg text-black">Premium Materials</h3>
-                    <p className="text-[10px] md:text-sm text-black/80 hidden md:block font-bold">Top-tier paints and finishes only.</p>
+                    <h3 className="font-bold text-xs md:text-lg text-black dark:text-white">Premium Materials</h3>
+                    <p className="text-[10px] md:text-sm text-black/80 dark:text-white/80 hidden md:block font-bold">Top-tier paints and finishes only.</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent" />
                 </div>
