@@ -258,12 +258,34 @@ export default function Home() {
               data-testid="button-warranty"
             >
               <GlassCard className="p-3 md:p-4 h-full cursor-pointer hover:border-accent/40 transition-all relative overflow-hidden" hoverEffect>
-                {/* Badge - floating behind text, full height */}
-                <img 
-                  src={warrantyImage} 
-                  alt="Warranty guarantee" 
-                  className="absolute right-0 top-1/2 -translate-y-1/2 h-[90%] w-auto object-contain opacity-40 dark:opacity-50 z-0"
-                />
+                {/* SVG Badge - floating behind text, full height, NO background */}
+                <svg 
+                  viewBox="0 0 100 120" 
+                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 h-[85%] w-auto z-0 opacity-30 dark:opacity-40"
+                  fill="none"
+                >
+                  <defs>
+                    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="hsl(var(--accent))" />
+                      <stop offset="100%" stopColor="hsl(45, 80%, 45%)" />
+                    </linearGradient>
+                  </defs>
+                  <path 
+                    d="M50 5 L95 20 L95 55 C95 80 75 100 50 115 C25 100 5 80 5 55 L5 20 Z" 
+                    fill="url(#shieldGradient)"
+                    stroke="hsl(var(--accent))"
+                    strokeWidth="2"
+                  />
+                  <path 
+                    d="M50 25 L70 35 L70 55 C70 70 62 80 50 88 C38 80 30 70 30 55 L30 35 Z" 
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    opacity="0.6"
+                  />
+                  <text x="50" y="52" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">{tenant.credentials?.warrantyYears || 3}</text>
+                  <text x="50" y="66" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold">YEAR</text>
+                </svg>
                 {/* Content on top */}
                 <div className="relative z-10 flex flex-col justify-center h-full">
                   <div className="flex items-center gap-1.5 mb-1">
