@@ -61,12 +61,12 @@ export function Navbar() {
         {/* Center: Title - takes up most width */}
         <div 
           className={cn(
-            "flex-1 text-center tracking-wide mx-4 leading-normal -ml-[80px] whitespace-nowrap",
+            "flex-1 text-center mx-4 leading-normal -ml-[80px] whitespace-nowrap",
             tenant.id === "demo" 
               ? "text-white text-sm md:text-2xl lg:text-3xl"
               : "text-sm md:text-3xl lg:text-4xl bg-gradient-to-r from-cyan-400 via-cyan-200 to-white bg-clip-text text-transparent"
           )}
-          style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 600, letterSpacing: '-0.02em' }}
+          style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.15em' }}
           data-testid="text-header-title"
         >
           {tenant.id === "demo" 
