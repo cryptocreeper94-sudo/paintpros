@@ -15,7 +15,7 @@ import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_sur
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import premiumMaterialsImage from "@assets/generated_images/premium_paint_materials_display.png";
 import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png";
-import warrantyImage from "@assets/generated_images/clean_warranty_shield_badge.png";
+import warrantyImage from "@assets/generated_images/warranty_shield_transparent_background.png";
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
 import googleRatingImage from "@assets/generated_images/five_star_google_rating.png";
