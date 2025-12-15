@@ -132,6 +132,7 @@ const translations: Record<Language, Record<string, string>> = {
     "language.english": "English",
     "language.spanish": "Spanish",
     "language.toggle": "Language",
+    "language.switchTo": "ES",
   },
   es: {
     // Login
@@ -256,6 +257,7 @@ const translations: Record<Language, Record<string, string>> = {
     "language.english": "Ingles",
     "language.spanish": "Espanol",
     "language.toggle": "Idioma",
+    "language.switchTo": "EN",
   },
 };
 

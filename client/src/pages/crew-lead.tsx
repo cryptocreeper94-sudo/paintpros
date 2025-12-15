@@ -145,7 +145,7 @@ function CrewLeadDashboardContent() {
                     className="gap-2"
                   >
                     <Languages className="w-4 h-4" />
-                    <span>{language === "en" ? "ES" : "EN"}</span>
+                    <span>{t("language.switchTo")}</span>
                   </Button>
                 </div>
                 <div className="text-center mb-8">
@@ -221,7 +221,7 @@ function CrewLeadDashboardContent() {
                   className="gap-2"
                 >
                   <Languages className="w-4 h-4" />
-                  <span>{language === "en" ? "ES" : "EN"}</span>
+                  <span>{t("language.switchTo")}</span>
                 </Button>
                 <div className="h-6 w-px bg-border" />
                 {(["overview", "time", "notes", "incidents"] as const).map((tab) => (
