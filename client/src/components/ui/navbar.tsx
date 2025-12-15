@@ -63,8 +63,8 @@ export function Navbar() {
           className={cn(
             "flex-1 text-center whitespace-nowrap -translate-x-[50px]",
             tenant.id === "demo" 
-              ? "text-white text-[10px] md:text-xl lg:text-2xl"
-              : "text-[10px] md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
+              ? "text-white text-sm md:text-xl lg:text-2xl"
+              : "text-sm md:text-xl lg:text-2xl bg-gradient-to-r from-[#8B7355] via-[#FAF0E6] to-[#8B7355] bg-clip-text text-transparent"
           )}
           style={{ fontFamily: 'Orbitron, Rajdhani, sans-serif', fontWeight: 400, letterSpacing: '0.05em' }}
           data-testid="text-header-title"
