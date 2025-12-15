@@ -157,10 +157,26 @@ export function PaintBuddy() {
       audio.onerror = () => {
         setIsSpeaking(false);
         URL.revokeObjectURL(audioUrl);
+        fallbackSpeak(text);
       };
       await audio.play();
     } catch (error) {
       console.error("TTS error:", error);
+      fallbackSpeak(text);
+    }
+  };
+
+  const fallbackSpeak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === "es" ? "es-ES" : "en-US";
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    } else {
       setIsSpeaking(false);
     }
   };
