@@ -24,10 +24,11 @@ export function PaintBuddy() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const hasVisited = localStorage.getItem("paintbuddy_visited");
-    if (!hasVisited) {
+    // Use sessionStorage so greeting shows every new session (after browser close)
+    const hasGreetedThisSession = sessionStorage.getItem("paintbuddy_greeted");
+    if (!hasGreetedThisSession) {
       setIsFirstVisit(true);
-      localStorage.setItem("paintbuddy_visited", "true");
+      sessionStorage.setItem("paintbuddy_greeted", "true");
       setTimeout(() => {
         setShowGreeting(true);
       }, 1500);
@@ -39,7 +40,7 @@ export function PaintBuddy() {
       const timer = setTimeout(() => {
         setShowGreeting(false);
         setIsMinimized(true);
-      }, 5000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [showGreeting]);
@@ -160,11 +161,10 @@ export function PaintBuddy() {
               className="bg-white dark:bg-gray-800 rounded-2xl rounded-br-sm p-4 shadow-2xl max-w-xs border border-accent/30"
             >
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Hey there! 👋 I'm <span className="text-accent">Rollie</span>,
-                your painting assistant!
+                Hey! Don't forget I'm down here if you need help!
               </p>
               <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Click on me anytime if you need help!
+                - <span className="text-accent">Rollie</span>, your painting assistant
               </p>
             </motion.div>
 
