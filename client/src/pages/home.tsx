@@ -448,17 +448,18 @@ export default function Home() {
 
           {/* Crypto Payment Card - Below About Us on desktop */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-            <div
-              className="w-full h-full text-left relative"
-              data-testid="card-crypto-payment"
-            >
-              <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 transition-all h-full relative overflow-hidden" glow>
-                {/* Coming Soon Overlay */}
-                <div className="absolute inset-0 z-20 bg-background/50 backdrop-blur-[1px] flex items-center justify-center rounded-lg">
-                  <div className="text-center">
-                    <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-wider">Coming Soon</span>
+            {tenantId === 'npp' ? (
+              <div
+                className="w-full h-full text-left relative"
+                data-testid="card-crypto-payment"
+              >
+                <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 transition-all h-full relative overflow-hidden" glow>
+                  {/* Coming Soon Overlay - Only for NPP/beta */}
+                  <div className="absolute inset-0 z-20 bg-background/50 backdrop-blur-[1px] flex items-center justify-center rounded-lg">
+                    <div className="text-center">
+                      <span className="text-xs md:text-sm font-bold text-muted-foreground uppercase tracking-wider">Coming Soon</span>
+                    </div>
                   </div>
-                </div>
                 {/* Bitcoin Watermark Background - Large & Centered */}
                 <SiBitcoin className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-28 md:h-28 text-orange-400/25" />
                 
@@ -494,7 +495,51 @@ export default function Home() {
                   </div>
                 </div>
               </GlassCard>
-            </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setCryptoModalOpen(true)}
+                className="w-full h-full text-left"
+                data-testid="button-crypto-payment"
+              >
+                <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
+                  {/* Bitcoin Watermark Background - Large & Centered */}
+                  <SiBitcoin className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-28 md:h-28 text-orange-400/25" />
+                  
+                  <div className="flex flex-col justify-between h-full relative z-10">
+                    {/* Top: Icons + Badge */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="flex -space-x-2 flex-shrink-0">
+                          <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-orange-500/30 flex items-center justify-center">
+                            <SiBitcoin className="w-3.5 h-3.5 md:w-5 md:h-5 text-orange-400" />
+                          </div>
+                          <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
+                            <SiEthereum className="w-3.5 h-3.5 md:w-5 md:h-5 text-purple-400" />
+                          </div>
+                        </div>
+                        <span className="text-[7px] md:text-[9px] px-1.5 py-0.5 bg-gradient-to-r from-orange-500 to-purple-500 rounded text-white font-bold">CRYPTO ACCEPTED</span>
+                      </div>
+                      
+                      {/* Title & Description */}
+                      <h3 className="text-xs md:text-sm font-display font-bold leading-tight mb-0.5">
+                        Pay with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400">Crypto</span>
+                      </h3>
+                      <p className="text-[9px] md:text-[10px] text-muted-foreground leading-snug">
+                        Bitcoin, Ethereum & more
+                      </p>
+                    </div>
+                    
+                    {/* Bottom: CTA Arrow */}
+                    <div className="flex justify-end mt-2">
+                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-r from-orange-500 to-purple-500 flex items-center justify-center">
+                        <ArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                </GlassCard>
+              </button>
+            )}
           </BentoItem>
 
           {/* 9. Google Rating */}
