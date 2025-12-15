@@ -454,8 +454,8 @@ export default function Home() {
               data-testid="button-crypto-payment"
             >
               <GlassCard className="p-3 md:p-4 bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-orange-500/10 border-orange-500/20 hover:border-orange-500/40 transition-all h-full relative overflow-hidden cursor-pointer" hoverEffect glow>
-                {/* Bitcoin Watermark Background */}
-                <SiBitcoin className="absolute right-2 top-1/2 -translate-y-1/2 w-14 h-14 md:w-20 md:h-20 text-orange-400/20" />
+                {/* Bitcoin Watermark Background - Large & Centered */}
+                <SiBitcoin className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-28 md:h-28 text-orange-400/25" />
                 
                 <div className="flex flex-col justify-between h-full relative z-10">
                   {/* Top: Icons + Badge */}
