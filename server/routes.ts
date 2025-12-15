@@ -12,6 +12,7 @@ import {
   insertDocumentAssetSchema, TENANT_PREFIXES,
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
   insertDocumentSchema, insertDocumentVersionSchema, insertDocumentSignatureSchema,
+  insertCalendarEventSchema, insertCalendarReminderSchema, insertEventColorPresetSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -4190,6 +4191,320 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error fetching signatures:", error);
       res.status(500).json({ error: "Failed to fetch signatures" });
+    }
+  });
+
+  // ===== CRM Calendar Routes =====
+  
+  // GET /api/calendar/events - Get calendar events for tenant
+  app.get("/api/calendar/events", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      const { startDate, endDate, assignedTo } = req.query;
+      
+      let events;
+      if (assignedTo) {
+        events = await storage.getCalendarEventsByAssignee(tenantId, assignedTo as string);
+      } else if (startDate && endDate) {
+        events = await storage.getCalendarEvents(
+          tenantId, 
+          new Date(startDate as string), 
+          new Date(endDate as string)
+        );
+      } else {
+        events = await storage.getCalendarEvents(tenantId);
+      }
+      
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching calendar events:", error);
+      res.status(500).json({ error: "Failed to fetch calendar events" });
+    }
+  });
+  
+  // GET /api/calendar/events/:id - Get single event
+  app.get("/api/calendar/events/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const event = await storage.getCalendarEventById(req.params.id);
+      if (!event) {
+        res.status(404).json({ error: "Event not found" });
+        return;
+      }
+      
+      // Verify tenant access
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      if (event.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
+      // Get reminders for this event
+      const reminders = await storage.getCalendarReminders(req.params.id);
+      
+      res.json({ ...event, reminders });
+    } catch (error) {
+      console.error("Error fetching calendar event:", error);
+      res.status(500).json({ error: "Failed to fetch calendar event" });
+    }
+  });
+  
+  // GET /api/calendar/events/date/:date - Get events for a specific date
+  app.get("/api/calendar/events/date/:date", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      const date = new Date(req.params.date);
+      
+      const events = await storage.getCalendarEventsByDate(tenantId, date);
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching events by date:", error);
+      res.status(500).json({ error: "Failed to fetch events" });
+    }
+  });
+  
+  // POST /api/calendar/events - Create new event
+  app.post("/api/calendar/events", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      const { title, description, eventType, startTime, endTime, isAllDay, location, 
+              color, colorPresetId, assignedTo, leadId, estimateId, recurringPattern, 
+              recurringEndDate, notes, reminders } = req.body;
+      
+      const validated = insertCalendarEventSchema.parse({
+        tenantId,
+        title,
+        description,
+        eventType: eventType || 'appointment',
+        startTime: new Date(startTime),
+        endTime: endTime ? new Date(endTime) : null,
+        isAllDay: isAllDay || false,
+        location,
+        color,
+        colorPresetId,
+        assignedTo,
+        createdBy: dbUser.id,
+        leadId,
+        estimateId,
+        recurringPattern,
+        recurringEndDate: recurringEndDate ? new Date(recurringEndDate) : null,
+        notes,
+      });
+      
+      const event = await storage.createCalendarEvent(validated);
+      
+      // Create reminders if provided
+      if (reminders && Array.isArray(reminders)) {
+        for (const reminder of reminders) {
+          const reminderValidated = insertCalendarReminderSchema.parse({
+            eventId: event.id,
+            reminderTime: new Date(reminder.reminderTime),
+            reminderType: reminder.reminderType || 'notification',
+            reminderMinutes: reminder.reminderMinutes || 15,
+          });
+          await storage.createCalendarReminder(reminderValidated);
+        }
+      }
+      
+      res.status(201).json(event);
+    } catch (error) {
+      console.error("Error creating calendar event:", error);
+      res.status(500).json({ error: "Failed to create calendar event" });
+    }
+  });
+  
+  // PATCH /api/calendar/events/:id - Update event
+  app.patch("/api/calendar/events/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const event = await storage.getCalendarEventById(req.params.id);
+      if (!event) {
+        res.status(404).json({ error: "Event not found" });
+        return;
+      }
+      
+      // Verify tenant access
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      if (event.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
+      const { title, description, eventType, startTime, endTime, isAllDay, location, 
+              color, colorPresetId, assignedTo, status, leadId, estimateId, 
+              recurringPattern, recurringEndDate, notes } = req.body;
+      
+      const updates: any = {};
+      if (title !== undefined) updates.title = title;
+      if (description !== undefined) updates.description = description;
+      if (eventType !== undefined) updates.eventType = eventType;
+      if (startTime !== undefined) updates.startTime = new Date(startTime);
+      if (endTime !== undefined) updates.endTime = endTime ? new Date(endTime) : null;
+      if (isAllDay !== undefined) updates.isAllDay = isAllDay;
+      if (location !== undefined) updates.location = location;
+      if (color !== undefined) updates.color = color;
+      if (colorPresetId !== undefined) updates.colorPresetId = colorPresetId;
+      if (assignedTo !== undefined) updates.assignedTo = assignedTo;
+      if (status !== undefined) updates.status = status;
+      if (leadId !== undefined) updates.leadId = leadId;
+      if (estimateId !== undefined) updates.estimateId = estimateId;
+      if (recurringPattern !== undefined) updates.recurringPattern = recurringPattern;
+      if (recurringEndDate !== undefined) updates.recurringEndDate = recurringEndDate ? new Date(recurringEndDate) : null;
+      if (notes !== undefined) updates.notes = notes;
+      
+      const updated = await storage.updateCalendarEvent(req.params.id, updates);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating calendar event:", error);
+      res.status(500).json({ error: "Failed to update calendar event" });
+    }
+  });
+  
+  // DELETE /api/calendar/events/:id - Delete event
+  app.delete("/api/calendar/events/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      const event = await storage.getCalendarEventById(req.params.id);
+      if (!event) {
+        res.status(404).json({ error: "Event not found" });
+        return;
+      }
+      
+      // Verify tenant access
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      if (event.tenantId !== tenantId) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+      
+      await storage.deleteCalendarEvent(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting calendar event:", error);
+      res.status(500).json({ error: "Failed to delete calendar event" });
+    }
+  });
+  
+  // ===== Calendar Reminders =====
+  
+  // GET /api/calendar/events/:id/reminders - Get reminders for event
+  app.get("/api/calendar/events/:id/reminders", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const event = await storage.getCalendarEventById(req.params.id);
+      if (!event) {
+        res.status(404).json({ error: "Event not found" });
+        return;
+      }
+      
+      const reminders = await storage.getCalendarReminders(req.params.id);
+      res.json(reminders);
+    } catch (error) {
+      console.error("Error fetching reminders:", error);
+      res.status(500).json({ error: "Failed to fetch reminders" });
+    }
+  });
+  
+  // POST /api/calendar/events/:id/reminders - Add reminder to event
+  app.post("/api/calendar/events/:id/reminders", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const event = await storage.getCalendarEventById(req.params.id);
+      if (!event) {
+        res.status(404).json({ error: "Event not found" });
+        return;
+      }
+      
+      const { reminderTime, reminderType, reminderMinutes } = req.body;
+      
+      const validated = insertCalendarReminderSchema.parse({
+        eventId: req.params.id,
+        reminderTime: new Date(reminderTime),
+        reminderType: reminderType || 'notification',
+        reminderMinutes: reminderMinutes || 15,
+      });
+      
+      const reminder = await storage.createCalendarReminder(validated);
+      res.status(201).json(reminder);
+    } catch (error) {
+      console.error("Error creating reminder:", error);
+      res.status(500).json({ error: "Failed to create reminder" });
+    }
+  });
+  
+  // DELETE /api/calendar/reminders/:id - Delete reminder
+  app.delete("/api/calendar/reminders/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      await storage.deleteCalendarReminder(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+      res.status(500).json({ error: "Failed to delete reminder" });
+    }
+  });
+  
+  // ===== Color Presets =====
+  
+  // GET /api/calendar/color-presets - Get color presets for tenant
+  app.get("/api/calendar/color-presets", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      const presets = await storage.getEventColorPresets(tenantId);
+      res.json(presets);
+    } catch (error) {
+      console.error("Error fetching color presets:", error);
+      res.status(500).json({ error: "Failed to fetch color presets" });
+    }
+  });
+  
+  // POST /api/calendar/color-presets - Create color preset
+  app.post("/api/calendar/color-presets", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      const dbUser = req.dbUser;
+      const tenantId = dbUser.tenantId || "npp";
+      
+      const { name, color, eventType } = req.body;
+      
+      const validated = insertEventColorPresetSchema.parse({
+        tenantId,
+        name,
+        color,
+        eventType,
+      });
+      
+      const preset = await storage.createEventColorPreset(validated);
+      res.status(201).json(preset);
+    } catch (error) {
+      console.error("Error creating color preset:", error);
+      res.status(500).json({ error: "Failed to create color preset" });
+    }
+  });
+  
+  // DELETE /api/calendar/color-presets/:id - Delete color preset
+  app.delete("/api/calendar/color-presets/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      await storage.deleteEventColorPreset(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting color preset:", error);
+      res.status(500).json({ error: "Failed to delete color preset" });
+    }
+  });
+  
+  // GET /api/calendar/pending-reminders - Get pending reminders (for background processing)
+  app.get("/api/calendar/pending-reminders", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
+    try {
+      const now = new Date();
+      const reminders = await storage.getPendingReminders(now);
+      res.json(reminders);
+    } catch (error) {
+      console.error("Error fetching pending reminders:", error);
+      res.status(500).json({ error: "Failed to fetch pending reminders" });
     }
   });
 
