@@ -940,3 +940,73 @@ export const insertIncidentReportSchema = createInsertSchema(incidentReports).om
 
 export type InsertIncidentReport = z.infer<typeof insertIncidentReportSchema>;
 export type IncidentReport = typeof incidentReports.$inferSelect;
+
+// ============ INTERNAL MESSAGING SYSTEM ============
+
+// Conversations - Direct or group chats
+export const conversations = pgTable("conversations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  name: text("name"), // Optional name for group chats
+  type: text("type").default("direct").notNull(), // 'direct' or 'group'
+  createdBy: varchar("created_by"), // User ID who created the conversation
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertConversationSchema = createInsertSchema(conversations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertConversation = z.infer<typeof insertConversationSchema>;
+export type Conversation = typeof conversations.$inferSelect;
+
+// Conversation Participants - Who is in each conversation
+export const conversationParticipants = pgTable("conversation_participants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  conversationId: varchar("conversation_id").references(() => conversations.id).notNull(),
+  userId: varchar("user_id"), // Can be null for role-based participants
+  role: text("role"), // 'owner', 'admin', 'project_manager', 'crew_lead', 'developer'
+  displayName: text("display_name"), // Name to show in chat
+  phone: text("phone"), // Phone number for lookup
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  leftAt: timestamp("left_at"),
+  lastReadAt: timestamp("last_read_at"),
+});
+
+export const insertConversationParticipantSchema = createInsertSchema(conversationParticipants).omit({
+  id: true,
+  joinedAt: true,
+});
+
+export type InsertConversationParticipant = z.infer<typeof insertConversationParticipantSchema>;
+export type ConversationParticipant = typeof conversationParticipants.$inferSelect;
+
+// Messages - Individual messages in conversations
+export const messages = pgTable("messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  conversationId: varchar("conversation_id").references(() => conversations.id).notNull(),
+  senderId: varchar("sender_id"), // User ID or participant ID
+  senderRole: text("sender_role"), // Role of sender for display
+  senderName: text("sender_name"), // Display name at time of send
+  content: text("content").notNull(),
+  messageType: text("message_type").default("text").notNull(), // 'text', 'file', 'image', 'voice'
+  attachments: jsonb("attachments").default([]), // Array of { name, url, type, size }
+  isSystemMessage: boolean("is_system_message").default(false),
+  replyToId: varchar("reply_to_id"), // For threaded replies
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  editedAt: timestamp("edited_at"),
+  deletedAt: timestamp("deleted_at"),
+});
+
+export const insertMessageSchema = createInsertSchema(messages).omit({
+  id: true,
+  createdAt: true,
+  editedAt: true,
+  deletedAt: true,
+});
+
+export type InsertMessage = z.infer<typeof insertMessageSchema>;
+export type Message = typeof messages.$inferSelect;
