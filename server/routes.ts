@@ -2305,12 +2305,16 @@ Use occasional paint-related puns or references to keep things fun!`;
   // POST /api/tts - Convert text to speech using OpenAI TTS
   app.post("/api/tts", async (req, res) => {
     try {
-      const { text } = req.body;
+      const { text, voice } = req.body;
       
       if (!text || typeof text !== "string") {
         res.status(400).json({ error: "Text is required" });
         return;
       }
+
+      // Valid OpenAI voices: alloy, echo, fable, onyx, nova, shimmer
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+      const selectedVoice = validVoices.includes(voice) ? voice : "nova";
 
       const openai = new OpenAI({
         baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
@@ -2319,7 +2323,7 @@ Use occasional paint-related puns or references to keep things fun!`;
 
       const mp3Response = await openai.audio.speech.create({
         model: "tts-1",
-        voice: "nova",
+        voice: selectedVoice,
         input: text.slice(0, 4096),
       });
 

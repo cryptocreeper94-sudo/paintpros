@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Loader2, Volume2, VolumeX } from "lucide-react";
+import { X, Send, Loader2, Mic, MicOff, Trash2 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import rollieMascot from "@assets/generated_images/rollie_transparent.png";
 
@@ -9,55 +9,79 @@ interface Message {
   content: string;
 }
 
+type VoiceGender = "male" | "female";
+
 export function PaintBuddy() {
   const tenant = useTenant();
-  const [isFirstVisit, setIsFirstVisit] = useState(false);
-  const [showGreeting, setShowGreeting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceGender, setVoiceGender] = useState<VoiceGender>("female");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    // Use sessionStorage so greeting shows every new session (after browser close)
-    const hasGreetedThisSession = sessionStorage.getItem("paintbuddy_greeted");
-    if (!hasGreetedThisSession) {
-      setIsFirstVisit(true);
-      sessionStorage.setItem("paintbuddy_greeted", "true");
-      setTimeout(() => {
-        setShowGreeting(true);
-      }, 1500);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (showGreeting) {
-      const timer = setTimeout(() => {
-        setShowGreeting(false);
-        setIsMinimized(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [showGreeting]);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setInput(transcript);
+          setIsListening(false);
+        };
+
+        recognition.onerror = () => {
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported in your browser.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
   const speakText = async (text: string) => {
-    if (!voiceEnabled) return;
-    
     try {
       setIsSpeaking(true);
       const response = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ 
+          text,
+          voice: voiceGender === "male" ? "onyx" : "nova"
+        }),
       });
 
       if (!response.ok) throw new Error("TTS failed");
@@ -88,20 +112,30 @@ export function PaintBuddy() {
 
   const handleOpen = () => {
     setIsOpen(true);
-    setIsMinimized(false);
     if (messages.length === 0) {
-      setMessages([
-        {
-          role: "assistant",
-          content: `Hey there! I'm Rollie, your painting assistant! I can help you with estimates, answer questions about our services, or guide you through the site. What can I help you with today?`,
-        },
-      ]);
+      const greeting = `Hey there! I'm Rollie, your painting assistant! How can I help you today?`;
+      setMessages([{ role: "assistant", content: greeting }]);
+      speakText(greeting);
     }
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    setIsMinimized(true);
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+
+  const handleClear = () => {
+    setMessages([]);
+    setInput("");
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
   };
 
   const handleSend = async () => {
@@ -131,13 +165,10 @@ export function PaintBuddy() {
       ]);
       speakText(data.message);
     } catch (error) {
+      const errorMsg = "Sorry, I'm having trouble connecting right now. Please try again!";
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content:
-            "Sorry, I'm having trouble connecting right now. Please try again in a moment!",
-        },
+        { role: "assistant", content: errorMsg },
       ]);
     } finally {
       setIsLoading(false);
@@ -146,47 +177,9 @@ export function PaintBuddy() {
 
   return (
     <>
+      {/* Minimized Rollie - Bottom Right */}
       <AnimatePresence>
-        {showGreeting && isFirstVisit && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5, y: 100 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 100 }}
-            className="fixed bottom-24 right-8 z-50 flex items-end gap-4"
-          >
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl rounded-br-sm p-4 shadow-2xl max-w-xs border border-accent/30"
-            >
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Hey! Don't forget I'm down here if you need help!
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                - <span className="text-accent">Rollie</span>, your painting assistant
-              </p>
-            </motion.div>
-
-            <motion.img
-              src={rollieMascot}
-              alt="Paint Buddy"
-              className="w-32 h-32 object-contain drop-shadow-2xl"
-              animate={{
-                y: [0, -10, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isMinimized && !showGreeting && (
+        {!isOpen && (
           <motion.button
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -201,16 +194,9 @@ export function PaintBuddy() {
               src={rollieMascot}
               alt="Paint Buddy"
               className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
-              animate={{
-                y: [0, -4, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
-            
             <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Ask Rollie!
             </span>
@@ -218,103 +204,197 @@ export function PaintBuddy() {
         )}
       </AnimatePresence>
 
+      {/* Expanded Rollie - Centered with Comic Bubble */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-[54px] right-[18px] z-50 w-[380px] h-[500px] bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-border dark:border-white/10 shadow-2xl flex flex-col overflow-hidden"
-            data-testid="panel-paint-buddy-chat"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-end md:justify-center pb-4 md:pb-0"
+            onClick={handleClose}
+            data-testid="panel-paint-buddy-overlay"
           >
-            <div className="p-4 border-b border-border dark:border-white/10 flex items-center gap-3 bg-gradient-to-r from-accent/20 to-cyan-500/20">
-              <img
+            {/* Speech Bubble */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              transition={{ delay: 0.1 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-[92%] md:w-[400px] max-h-[60vh] md:max-h-[450px] flex flex-col overflow-hidden"
+              style={{
+                borderRadius: "24px",
+              }}
+              data-testid="panel-paint-buddy-bubble"
+            >
+              {/* Bubble tail/pointer */}
+              <div 
+                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-0 h-0"
+                style={{
+                  borderLeft: "20px solid transparent",
+                  borderRight: "20px solid transparent",
+                  borderTop: "20px solid white",
+                }}
+              />
+              <div 
+                className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-0 h-0 dark:block hidden"
+                style={{
+                  borderLeft: "20px solid transparent",
+                  borderRight: "20px solid transparent",
+                  borderTop: "20px solid rgb(31, 41, 55)",
+                }}
+              />
+
+              {/* Header with controls */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2">
+                  {/* Voice Gender Toggle */}
+                  <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-0.5">
+                    <button
+                      onClick={() => setVoiceGender("female")}
+                      className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                        voiceGender === "female"
+                          ? "bg-pink-500 text-white"
+                          : "text-gray-600 dark:text-gray-300"
+                      }`}
+                      data-testid="button-voice-female"
+                    >
+                      Female
+                    </button>
+                    <button
+                      onClick={() => setVoiceGender("male")}
+                      className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                        voiceGender === "male"
+                          ? "bg-blue-500 text-white"
+                          : "text-gray-600 dark:text-gray-300"
+                      }`}
+                      data-testid="button-voice-male"
+                    >
+                      Male
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {/* Clear Button */}
+                  <button
+                    onClick={handleClear}
+                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    title="Clear chat"
+                    data-testid="button-clear-chat"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                  {/* Close Button */}
+                  <button
+                    onClick={handleClose}
+                    className="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    data-testid="button-paint-buddy-close"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[150px]">
+                {messages.map((msg, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                        msg.role === "user"
+                          ? "bg-amber-500 text-white rounded-br-sm"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-sm"
+                      }`}
+                    >
+                      <p className="text-sm">{msg.content}</p>
+                    </div>
+                  </motion.div>
+                ))}
+                {isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex justify-start"
+                  >
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-sm px-4 py-3">
+                      <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+                    </div>
+                  </motion.div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input Area */}
+              <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex gap-2">
+                  {/* Microphone Button */}
+                  <button
+                    onClick={toggleListening}
+                    className={`p-2.5 rounded-xl transition-all ${
+                      isListening
+                        ? "bg-red-500 text-white animate-pulse"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    }`}
+                    title={isListening ? "Stop listening" : "Speak to Rollie"}
+                    data-testid="button-microphone"
+                  >
+                    {isListening ? (
+                      <MicOff className="w-5 h-5" />
+                    ) : (
+                      <Mic className="w-5 h-5" />
+                    )}
+                  </button>
+
+                  {/* Text Input */}
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    placeholder={isListening ? "Listening..." : "Type or speak..."}
+                    className="flex-1 bg-gray-100 dark:bg-gray-700 border-0 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                    data-testid="input-paint-buddy-message"
+                  />
+
+                  {/* Send Button */}
+                  <button
+                    onClick={handleSend}
+                    disabled={isLoading || !input.trim()}
+                    className="p-2.5 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid="button-paint-buddy-send"
+                  >
+                    <Send className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Large Rollie Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.5, y: 50 }}
+              className="mt-2 md:mt-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <motion.img
                 src={rollieMascot}
                 alt="Rollie"
-                className="w-12 h-12 object-contain drop-shadow-lg"
+                className={`w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-2xl ${
+                  isSpeaking ? "animate-bounce" : ""
+                }`}
+                animate={isSpeaking ? { scale: [1, 1.05, 1] } : { y: [0, -8, 0] }}
+                transition={{ duration: isSpeaking ? 0.5 : 3, repeat: Infinity, ease: "easeInOut" }}
+                data-testid="img-rollie-large"
               />
-              <div className="flex-1">
-                <h3 className="font-bold text-white">Rollie</h3>
-                <p className="text-xs text-green-400 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  Online - Ready to help!
-                </p>
-              </div>
-              <button
-                onClick={() => setVoiceEnabled(!voiceEnabled)}
-                className={`p-2 hover:bg-black/5 dark:bg-white/10 rounded-lg transition-colors ${isSpeaking ? "animate-pulse" : ""}`}
-                data-testid="button-paint-buddy-voice"
-                title={voiceEnabled ? "Mute voice" : "Enable voice"}
-              >
-                {voiceEnabled ? (
-                  <Volume2 className="w-5 h-5 text-accent" />
-                ) : (
-                  <VolumeX className="w-5 h-5 text-white/50" />
-                )}
-              </button>
-              <button
-                onClick={handleClose}
-                className="p-2 hover:bg-black/5 dark:bg-white/10 rounded-lg transition-colors"
-                data-testid="button-paint-buddy-close"
-              >
-                <X className="w-5 h-5 text-white/70" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((msg, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                      msg.role === "user"
-                        ? "bg-accent text-black rounded-br-sm"
-                        : "bg-black/5 dark:bg-white/10 text-white rounded-bl-sm"
-                    }`}
-                  >
-                    <p className="text-sm">{msg.content}</p>
-                  </div>
-                </motion.div>
-              ))}
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex justify-start"
-                >
-                  <div className="bg-black/5 dark:bg-white/10 rounded-2xl rounded-bl-sm px-4 py-3">
-                    <Loader2 className="w-5 h-5 text-accent animate-spin" />
-                  </div>
-                </motion.div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            <div className="p-4 border-t border-border dark:border-white/10">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Ask me anything..."
-                  className="flex-1 bg-black/5 dark:bg-white/10 border border-border dark:border-white/10 rounded-xl px-4 py-2 text-white placeholder:text-white/40 focus:outline-none focus:border-accent/50"
-                  data-testid="input-paint-buddy-message"
-                />
-                <button
-                  onClick={handleSend}
-                  disabled={isLoading || !input.trim()}
-                  className="p-2 bg-accent text-black rounded-xl hover:bg-accent/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="button-paint-buddy-send"
-                >
-                  <Send className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
