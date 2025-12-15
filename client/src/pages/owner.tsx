@@ -345,7 +345,7 @@ export default function Owner() {
             {/* Stats Row - 4 small cards */}
             <BentoItem colSpan={3} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={0} whileHover={hover3DSubtle}>
-                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.gold}`} glow="gold" hoverEffect="3d">
+                <GlassCard className={`h-full min-h-[120px] p-4 ${cardBackgroundStyles.gold}`} glow="gold" hoverEffect="3d">
                   <div className="flex items-center gap-2 mb-2">
                     <motion.div 
                       className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.gold} ${iconContainerStyles.base}`}
@@ -364,7 +364,7 @@ export default function Owner() {
 
             <BentoItem colSpan={3} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={1} whileHover={hover3DSubtle}>
-                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect="3d">
+                <GlassCard className={`h-full min-h-[120px] p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect="3d">
                   <div className="flex items-center gap-2 mb-2">
                     <motion.div 
                       className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.green} ${iconContainerStyles.base}`}
@@ -383,7 +383,7 @@ export default function Owner() {
 
             <BentoItem colSpan={3} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={2} whileHover={hover3DSubtle}>
-                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.blue}`} glow="blue" hoverEffect="3d">
+                <GlassCard className={`h-full min-h-[120px] p-4 ${cardBackgroundStyles.blue}`} glow="blue" hoverEffect="3d">
                   <div className="flex items-center gap-2 mb-2">
                     <motion.div 
                       className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.blue} ${iconContainerStyles.base}`}
@@ -402,7 +402,7 @@ export default function Owner() {
 
             <BentoItem colSpan={3} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={3} whileHover={hover3DSubtle}>
-                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect="3d">
+                <GlassCard className={`h-full min-h-[120px] p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect="3d">
                   <div className="flex items-center gap-2 mb-2">
                     <motion.div 
                       className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.green} ${iconContainerStyles.base}`}

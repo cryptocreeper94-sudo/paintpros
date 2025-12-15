@@ -70,7 +70,7 @@ export function LiveVisitorsCard() {
         className="cursor-pointer"
         data-testid="card-live-visitors"
       >
-        <GlassCard className="p-5 relative overflow-hidden group" glow>
+        <GlassCard className="p-4 min-h-[120px] relative overflow-hidden group" glow>
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
           
           {/* Pulse animation for live indicator */}
