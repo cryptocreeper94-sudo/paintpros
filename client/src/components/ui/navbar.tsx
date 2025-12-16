@@ -71,22 +71,24 @@ export function Navbar() {
           {tenant.id === "demo" ? (
             <div className="flex flex-col items-center pointer-events-auto">
               <div 
-                className="text-white text-lg md:text-2xl lg:text-3xl whitespace-nowrap"
+                className="text-lg md:text-2xl lg:text-3xl whitespace-nowrap bg-clip-text text-transparent"
                 style={{ 
                   fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                   fontWeight: 500, 
-                  letterSpacing: '0.03em'
+                  letterSpacing: '0.03em',
+                  backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
                 }}
                 data-testid="text-header-title"
               >
                 PaintPros.io
               </div>
               <div 
-                className="text-white/70 text-[10px] md:text-xs lg:text-sm whitespace-nowrap"
+                className="text-[10px] md:text-xs lg:text-sm whitespace-nowrap bg-clip-text text-transparent"
                 style={{ 
                   fontFamily: 'Rajdhani, sans-serif', 
                   fontWeight: 400, 
-                  letterSpacing: '-0.02em'
+                  letterSpacing: '-0.02em',
+                  backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
                 }}
                 data-testid="text-header-tagline"
               >
