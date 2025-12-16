@@ -33,6 +33,7 @@ import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
 import { getTenantFromHostname } from "./tenant";
 import type { RequestHandler } from "express";
 import * as quickbooks from "./quickbooks";
+import xss from "xss";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -112,6 +113,29 @@ function formatTimeAgo(ms: number): string {
   if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
   return `${hours}h ago`;
+}
+
+// XSS sanitization for user-provided text fields using the 'xss' library
+const xssOptions = {
+  whiteList: {}, // Strip all HTML tags for plain text fields
+  stripIgnoreTag: true,
+  stripIgnoreTagBody: ['script', 'style', 'iframe', 'object', 'embed']
+};
+
+function sanitizeText(input: string | null | undefined): string | null {
+  if (!input) return input as null;
+  return xss(input, xssOptions);
+}
+
+// Sanitize object fields for XSS protection
+function sanitizeObject<T extends Record<string, any>>(obj: T, fields: string[]): T {
+  const result = { ...obj };
+  for (const field of fields) {
+    if (typeof result[field] === 'string') {
+      (result as any)[field] = sanitizeText(result[field]);
+    }
+  }
+  return result;
 }
 
 // Role-based access middleware
@@ -978,7 +1002,13 @@ export async function registerRoutes(
   app.post("/api/seo/pages", async (req, res) => {
     try {
       const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const validatedData = insertSeoPageSchema.parse({ ...req.body, tenantId });
+      const rawData = { ...req.body, tenantId };
+      
+      // Sanitize text fields that could contain HTML/XSS
+      const seoTextFields = ['metaTitle', 'metaDescription', 'metaKeywords', 'ogTitle', 'ogDescription', 'twitterTitle', 'twitterDescription', 'pageTitle'];
+      const sanitizedData = sanitizeObject(rawData, seoTextFields);
+      
+      const validatedData = insertSeoPageSchema.parse(sanitizedData);
       
       // Calculate SEO score
       const { score, missingFields } = calculateSeoScore(validatedData);
@@ -4564,12 +4594,15 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { senderId, senderRole, senderName, content, messageType, attachments, replyToId } = req.body;
       
+      // Sanitize message content to prevent XSS
+      const sanitizedContent = sanitizeText(content);
+      
       const validated = insertMessageSchema.parse({
         conversationId: req.params.id,
         senderId,
         senderRole,
         senderName,
-        content,
+        content: sanitizedContent,
         messageType: messageType || "text",
         attachments: attachments || [],
         replyToId,
