@@ -52,6 +52,12 @@ const sections = [
 export default function TermsWarranty() {
   const tenant = useTenant();
   const warrantyYears = tenant.credentials?.warrantyYears || 3;
+  const isDemo = tenant.id === "demo";
+  
+  // Demo shows generic template language, real tenants show their specific terms
+  const companyName = isDemo ? "[Your Company Name]" : tenant.name;
+  const stateName = isDemo ? "[Your State]" : "Tennessee";
+  const countyName = isDemo ? "[Your County]" : "the applicable County";
 
   return (
     <PageLayout>
@@ -163,7 +169,7 @@ export default function TermsWarranty() {
                   </p>
                   <p>
                     The remaining <strong className="text-blue-400">75%</strong> (including any approved change orders) is due upon 
-                    <strong> full completion</strong> of the agreed scope of work and upon receipt of a Final Invoice from {tenant.name}.
+                    <strong> full completion</strong> of the agreed scope of work and upon receipt of a Final Invoice from {companyName}.
                   </p>
 
                   <div className="grid md:grid-cols-2 gap-4 my-6">
@@ -282,11 +288,11 @@ export default function TermsWarranty() {
                 <div className="space-y-4 text-sm leading-relaxed">
                   <p>
                     <strong>Governing Law:</strong> This Agreement shall be governed by and construed in accordance 
-                    with the laws of the <strong className="text-red-400">State of Tennessee</strong>.
+                    with the laws of the <strong className="text-red-400">State of {stateName}</strong>.
                   </p>
                   <p>
                     <strong>Dispute Resolution:</strong> All disputes shall be resolved by binding arbitration in 
-                    the applicable County, Tennessee, under the Commercial Rules of the American Arbitration Association (AAA).
+                    {countyName}, {stateName}, under the Commercial Rules of the American Arbitration Association (AAA).
                   </p>
                   <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
                     <li>Arbitration may be initiated by providing written notice</li>
@@ -353,9 +359,14 @@ export default function TermsWarranty() {
             >
               <p className="text-sm text-muted-foreground mb-4">
                 This Painting Services Agreement is made and entered into by and between 
-                <strong className="text-foreground"> {tenant.name}, LLC</strong> (the "Contractor") 
+                <strong className="text-foreground"> {companyName}{isDemo ? "" : ", LLC"}</strong> (the "Contractor") 
                 and the Client.
               </p>
+              {isDemo && (
+                <p className="text-xs text-accent mb-4">
+                  This is a sample Terms & Warranty template. Your actual terms will be customized for your business.
+                </p>
+              )}
               <p className="text-xs text-muted-foreground/60">
                 Last updated: December 2025
               </p>
