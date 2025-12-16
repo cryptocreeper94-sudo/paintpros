@@ -1192,3 +1192,176 @@ export const insertEventColorPresetSchema = createInsertSchema(eventColorPresets
 
 export type InsertEventColorPreset = z.infer<typeof insertEventColorPresetSchema>;
 export type EventColorPreset = typeof eventColorPresets.$inferSelect;
+
+// ==========================================
+// FRANCHISE MANAGEMENT SYSTEM
+// ==========================================
+
+// Franchises Table - Multi-tenant franchise management
+export const franchises = pgTable("franchises", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  franchiseId: varchar("franchise_id", { length: 20 }).notNull().unique(),
+  
+  // Owner Information
+  ownerId: varchar("owner_id"),
+  ownerEmail: varchar("owner_email", { length: 255 }),
+  ownerName: varchar("owner_name", { length: 100 }),
+  ownerCompany: varchar("owner_company", { length: 100 }),
+  ownerPhone: varchar("owner_phone", { length: 20 }),
+  ownershipMode: varchar("ownership_mode", { length: 50 }).default("subscriber_managed"),
+  
+  // Territory
+  territoryName: varchar("territory_name", { length: 100 }).notNull(),
+  territoryRegion: varchar("territory_region", { length: 50 }),
+  territoryExclusive: boolean("territory_exclusive").default(false),
+  territoryNotes: text("territory_notes"),
+  
+  // Franchise Tier & Pricing
+  franchiseTier: varchar("franchise_tier", { length: 20 }).default("standard"),
+  franchiseFee: decimal("franchise_fee", { precision: 10, scale: 2 }),
+  royaltyType: varchar("royalty_type", { length: 20 }).default("percentage"),
+  royaltyPercent: decimal("royalty_percent", { precision: 5, scale: 2 }),
+  royaltyAmount: decimal("royalty_amount", { precision: 10, scale: 2 }),
+  platformFeeMonthly: decimal("platform_fee_monthly", { precision: 10, scale: 2 }),
+  hallmarkRevenueShare: decimal("hallmark_revenue_share", { precision: 5, scale: 2 }),
+  
+  // Support
+  supportTier: varchar("support_tier", { length: 20 }).default("standard"),
+  supportResponseHours: integer("support_response_hours").default(48),
+  
+  // Status
+  status: varchar("status", { length: 20 }).default("pending"),
+  
+  // Hallmark/Blockchain
+  hallmarkPrefix: varchar("hallmark_prefix", { length: 10 }),
+  canMintHallmarks: boolean("can_mint_hallmarks").default(false),
+  hallmarksMintedTotal: integer("hallmarks_minted_total").default(0),
+  
+  // Custody
+  custodyOwner: varchar("custody_owner", { length: 50 }).default("paintpros"),
+  custodyTransferDate: timestamp("custody_transfer_date"),
+  previousCustodyOwner: varchar("previous_custody_owner", { length: 50 }),
+  
+  // Metrics
+  totalOrders: integer("total_orders").default(0),
+  totalRevenue: decimal("total_revenue", { precision: 12, scale: 2 }).default("0.00"),
+  activeVendors: integer("active_vendors").default(0),
+  
+  // Dates
+  franchiseStartDate: timestamp("franchise_start_date"),
+  franchiseRenewalDate: timestamp("franchise_renewal_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFranchiseSchema = createInsertSchema(franchises).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertFranchise = z.infer<typeof insertFranchiseSchema>;
+export type Franchise = typeof franchises.$inferSelect;
+
+// Partner API Credentials Table
+export const partnerApiCredentials = pgTable("partner_api_credentials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  franchiseId: varchar("franchise_id").notNull().references(() => franchises.id),
+  name: varchar("name", { length: 100 }).notNull(),
+  apiKey: varchar("api_key", { length: 64 }).notNull().unique(),
+  apiSecret: text("api_secret").notNull(),
+  environment: varchar("environment", { length: 20 }).default("production"),
+  scopes: text("scopes").array().default(sql`ARRAY['orders:read']::text[]`),
+  rateLimitPerMinute: integer("rate_limit_per_minute").default(60),
+  rateLimitPerDay: integer("rate_limit_per_day").default(10000),
+  requestCount: integer("request_count").default(0),
+  lastUsedAt: timestamp("last_used_at"),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  createdBy: varchar("created_by", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPartnerApiCredentialSchema = createInsertSchema(partnerApiCredentials).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  requestCount: true,
+  lastUsedAt: true,
+});
+
+export type InsertPartnerApiCredential = z.infer<typeof insertPartnerApiCredentialSchema>;
+export type PartnerApiCredential = typeof partnerApiCredentials.$inferSelect;
+
+// Partner API Logs Table
+export const partnerApiLogs = pgTable("partner_api_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  credentialId: varchar("credential_id").notNull().references(() => partnerApiCredentials.id),
+  franchiseId: varchar("franchise_id").notNull().references(() => franchises.id),
+  method: varchar("method", { length: 10 }).notNull(),
+  endpoint: varchar("endpoint", { length: 255 }).notNull(),
+  statusCode: integer("status_code"),
+  responseTimeMs: integer("response_time_ms"),
+  errorCode: varchar("error_code", { length: 50 }),
+  errorMessage: text("error_message"),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPartnerApiLogSchema = createInsertSchema(partnerApiLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPartnerApiLog = z.infer<typeof insertPartnerApiLogSchema>;
+export type PartnerApiLog = typeof partnerApiLogs.$inferSelect;
+
+// Franchise Locations Table
+export const franchiseLocations = pgTable("franchise_locations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  franchiseId: varchar("franchise_id").notNull().references(() => franchises.id),
+  name: varchar("name", { length: 100 }).notNull(),
+  locationCode: varchar("location_code", { length: 20 }).notNull(),
+  addressLine1: varchar("address_line1", { length: 255 }).notNull(),
+  addressLine2: varchar("address_line2", { length: 255 }),
+  city: varchar("city", { length: 100 }).notNull(),
+  state: varchar("state", { length: 50 }).notNull(),
+  zipCode: varchar("zip_code", { length: 10 }).notNull(),
+  phone: varchar("phone", { length: 20 }),
+  email: varchar("email", { length: 255 }),
+  managerName: varchar("manager_name", { length: 100 }),
+  isActive: boolean("is_active").default(true),
+  operatingHours: jsonb("operating_hours"),
+  serviceRadius: integer("service_radius").default(25),
+  totalJobs: integer("total_jobs").default(0),
+  totalRevenue: decimal("total_revenue", { precision: 12, scale: 2 }).default("0"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFranchiseLocationSchema = createInsertSchema(franchiseLocations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  totalJobs: true,
+  totalRevenue: true,
+});
+
+export type InsertFranchiseLocation = z.infer<typeof insertFranchiseLocationSchema>;
+export type FranchiseLocation = typeof franchiseLocations.$inferSelect;
+
+// Partner API Scopes
+export const PARTNER_API_SCOPES = [
+  'estimates:read', 'estimates:write',
+  'leads:read', 'leads:write',
+  'jobs:read', 'jobs:write',
+  'locations:read', 'locations:write',
+  'billing:read', 'analytics:read',
+  'customers:read', 'customers:write',
+  'crew:read', 'crew:write',
+  'documents:read', 'documents:write',
+] as const;
+
+export type PartnerApiScope = typeof PARTNER_API_SCOPES[number];
