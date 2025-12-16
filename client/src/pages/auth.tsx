@@ -38,7 +38,7 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { tenant } = useTenant();
+  const tenant = useTenant();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

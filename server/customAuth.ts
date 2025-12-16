@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { getTenantFromHostname } from "./tenant";
 
 const pgStore = connectPg(session);
 
@@ -49,6 +50,7 @@ export async function setupCustomAuth(app: Express) {
   app.post("/api/auth/register", async (req, res) => {
     try {
       const validated = registerSchema.parse(req.body);
+      const tenantId = getTenantFromHostname(req.hostname);
       
       const existingUser = await storage.getUserByEmail(validated.email);
       if (existingUser) {
@@ -66,6 +68,7 @@ export async function setupCustomAuth(app: Express) {
         phone: validated.phone || null,
         authProvider: "email",
         emailVerified: false,
+        tenantId,
       });
 
       (req.session as any).userId = user.id;

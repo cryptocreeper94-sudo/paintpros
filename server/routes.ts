@@ -26,6 +26,7 @@ import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } from "./resend";
 import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
+import { getTenantFromHostname } from "./tenant";
 import type { RequestHandler } from "express";
 
 // Global Socket.IO instance for real-time messaging
@@ -71,25 +72,6 @@ const hasRole = (allowedRoles: string[]): RequestHandler => {
   };
 };
 
-// Domain to tenant mapping (server-side)
-// Full custom domains map directly
-const domainTenantMap: Record<string, string> = {
-  "paintpros.io": "demo",
-  "www.paintpros.io": "demo",
-  "nashpaintpros.io": "npp",
-  "www.nashpaintpros.io": "npp",
-  "nashvillepaintingprofessionals.com": "npp",
-  "www.nashvillepaintingprofessionals.com": "npp",
-  "localhost": "npp",
-};
-
-// Subdomain to tenant mapping for *.paintpros.io
-const subdomainTenantMap: Record<string, string> = {
-  "nashpaintpros": "npp",
-  "npp": "npp",
-  "demo": "demo",
-  "www": "demo",
-};
 
 // PWA manifest configurations per tenant
 const pwaConfigs: Record<string, {
@@ -126,34 +108,6 @@ const pwaConfigs: Record<string, {
   }
 };
 
-function getTenantFromHostname(hostname: string): string {
-  const host = hostname.toLowerCase().split(':')[0]; // Remove port if present
-  
-  // Check full domain mapping first (custom domains)
-  if (domainTenantMap[host]) {
-    return domainTenantMap[host];
-  }
-  
-  // Check for subdomain pattern: subdomain.paintpros.io
-  const parts = host.split('.');
-  if (parts.length >= 3) {
-    const subdomain = parts[0];
-    const baseDomain = parts.slice(-2).join('.');
-    
-    // Only parse subdomains for paintpros.io
-    if (baseDomain === 'paintpros.io' && subdomainTenantMap[subdomain]) {
-      return subdomainTenantMap[subdomain];
-    }
-  }
-  
-  // In development, check environment variable
-  if (process.env.NODE_ENV !== 'production' && process.env.VITE_TENANT_ID) {
-    return process.env.VITE_TENANT_ID;
-  }
-  
-  // Default fallback
-  return "npp";
-}
 
 // Track online users: Map<socketId, { userId, role, displayName }>
 const onlineUsers = new Map<string, { userId: string; role: string; displayName: string }>();
