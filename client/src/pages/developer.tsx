@@ -34,6 +34,7 @@ import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { FranchiseManagement } from "@/components/franchise-management";
 import { SystemHealthCard } from "@/components/system-health-card";
+import { SeoTracker } from "@/components/seo/SeoTracker";
 
 const DEVELOPER_PIN = "0424";
 
@@ -1969,6 +1970,11 @@ export default function Developer() {
           {/* System Health */}
           <BentoItem colSpan={4} rowSpan={1}>
             <SystemHealthCard />
+          </BentoItem>
+
+          {/* SEO Tracker */}
+          <BentoItem colSpan={4} rowSpan={2}>
+            <SeoTracker />
           </BentoItem>
 
           {/* Live Visitors Card */}

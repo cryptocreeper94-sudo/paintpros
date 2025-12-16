@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { Server as SocketServer } from "socket.io";
 import { storage } from "./storage";
 import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -15,8 +16,9 @@ import {
   insertCalendarEventSchema, insertCalendarReminderSchema, insertEventColorPresetSchema,
   insertFranchiseSchema, insertPartnerApiCredentialSchema, insertFranchiseLocationSchema,
   PARTNER_API_SCOPES,
+  insertSeoPageSchema, seoPages, seoAudits,
   users as usersTable,
-  type Lead, type Estimate
+  type Lead, type Estimate, type SeoPage, type InsertSeoPage
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -812,6 +814,277 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting SEO tag:", error);
       res.status(500).json({ error: "Failed to delete SEO tag" });
+    }
+  });
+
+  // ============ SEO PAGES (Comprehensive SEO Management) ============
+  
+  // Helper function to calculate SEO score
+  function calculateSeoScore(page: Partial<SeoPage>): { score: number; missingFields: string[] } {
+    const missingFields: string[] = [];
+    let score = 0;
+    const maxScore = 100;
+    
+    // Required fields (10 points each)
+    if (page.metaTitle && page.metaTitle.length >= 30 && page.metaTitle.length <= 60) score += 10;
+    else missingFields.push("metaTitle (30-60 chars)");
+    
+    if (page.metaDescription && page.metaDescription.length >= 120 && page.metaDescription.length <= 160) score += 10;
+    else missingFields.push("metaDescription (120-160 chars)");
+    
+    if (page.metaKeywords && page.metaKeywords.length > 0) score += 5;
+    else missingFields.push("metaKeywords");
+    
+    if (page.canonicalUrl) score += 5;
+    else missingFields.push("canonicalUrl");
+    
+    // Open Graph (5 points each)
+    if (page.ogTitle) score += 5; else missingFields.push("ogTitle");
+    if (page.ogDescription) score += 5; else missingFields.push("ogDescription");
+    if (page.ogImage) score += 10; else missingFields.push("ogImage");
+    if (page.ogType) score += 5;
+    
+    // Twitter Card (5 points each)
+    if (page.twitterTitle) score += 5; else missingFields.push("twitterTitle");
+    if (page.twitterDescription) score += 5; else missingFields.push("twitterDescription");
+    if (page.twitterImage) score += 10; else missingFields.push("twitterImage");
+    if (page.twitterCard) score += 5;
+    
+    // Structured Data (20 points)
+    if (page.structuredData && page.structuredDataType) score += 20;
+    else missingFields.push("structuredData (JSON-LD)");
+    
+    return { score: Math.min(score, maxScore), missingFields };
+  }
+  
+  // GET /api/seo/pages - Get all SEO pages for a tenant
+  app.get("/api/seo/pages", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const pages = await db.select().from(seoPages).where(eq(seoPages.tenantId, tenantId));
+      res.json(pages);
+    } catch (error) {
+      console.error("Error fetching SEO pages:", error);
+      res.status(500).json({ error: "Failed to fetch SEO pages" });
+    }
+  });
+  
+  // GET /api/seo/pages/:id - Get a specific SEO page
+  app.get("/api/seo/pages/:id", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const [page] = await db.select().from(seoPages)
+        .where(and(eq(seoPages.id, req.params.id), eq(seoPages.tenantId, tenantId)));
+      if (!page) {
+        res.status(404).json({ error: "SEO page not found" });
+        return;
+      }
+      res.json(page);
+    } catch (error) {
+      console.error("Error fetching SEO page:", error);
+      res.status(500).json({ error: "Failed to fetch SEO page" });
+    }
+  });
+  
+  // GET /api/seo/pages/path/:path - Get SEO page by path
+  app.get("/api/seo/pages/path/*", async (req, res) => {
+    try {
+      const path = "/" + ((req.params as any)[0] || "");
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const [page] = await db.select().from(seoPages)
+        .where(and(eq(seoPages.pagePath, path), eq(seoPages.tenantId, tenantId)));
+      
+      if (!page) {
+        res.status(404).json({ error: "SEO page not found" });
+        return;
+      }
+      res.json(page);
+    } catch (error) {
+      console.error("Error fetching SEO page by path:", error);
+      res.status(500).json({ error: "Failed to fetch SEO page" });
+    }
+  });
+  
+  // POST /api/seo/pages - Create a new SEO page
+  app.post("/api/seo/pages", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const validatedData = insertSeoPageSchema.parse({ ...req.body, tenantId });
+      
+      // Calculate SEO score
+      const { score, missingFields } = calculateSeoScore(validatedData);
+      
+      const [page] = await db.insert(seoPages).values({
+        ...validatedData,
+        seoScore: score,
+        missingFields,
+        lastAuditAt: new Date(),
+      }).returning();
+      
+      res.status(201).json(page);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid SEO page data", details: error.errors });
+      } else {
+        console.error("Error creating SEO page:", error);
+        res.status(500).json({ error: "Failed to create SEO page" });
+      }
+    }
+  });
+  
+  // PATCH /api/seo/pages/:id - Update an SEO page
+  app.patch("/api/seo/pages/:id", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const [existing] = await db.select().from(seoPages)
+        .where(and(eq(seoPages.id, req.params.id), eq(seoPages.tenantId, tenantId)));
+      if (!existing) {
+        res.status(404).json({ error: "SEO page not found" });
+        return;
+      }
+      
+      const updatedData = { ...existing, ...req.body };
+      const { score, missingFields } = calculateSeoScore(updatedData);
+      
+      // Track changes for audit
+      const changes: Record<string, { old: any; new: any }> = {};
+      for (const key of Object.keys(req.body)) {
+        if ((existing as any)[key] !== req.body[key]) {
+          changes[key] = { old: (existing as any)[key], new: req.body[key] };
+        }
+      }
+      
+      const [page] = await db.update(seoPages)
+        .set({
+          ...req.body,
+          seoScore: score,
+          missingFields,
+          lastAuditAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(seoPages.id, req.params.id))
+        .returning();
+      
+      // Create audit log
+      if (Object.keys(changes).length > 0) {
+        await db.insert(seoAudits).values({
+          seoPageId: req.params.id,
+          tenantId: existing.tenantId,
+          auditType: "edit",
+          previousScore: existing.seoScore,
+          newScore: score,
+          changes,
+          performedBy: (req.session as any)?.user?.email || "system",
+        });
+      }
+      
+      res.json(page);
+    } catch (error) {
+      console.error("Error updating SEO page:", error);
+      res.status(500).json({ error: "Failed to update SEO page" });
+    }
+  });
+  
+  // DELETE /api/seo/pages/:id - Delete an SEO page
+  app.delete("/api/seo/pages/:id", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      await db.delete(seoPages).where(and(eq(seoPages.id, req.params.id), eq(seoPages.tenantId, tenantId)));
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting SEO page:", error);
+      res.status(500).json({ error: "Failed to delete SEO page" });
+    }
+  });
+  
+  // POST /api/seo/pages/initialize - Initialize SEO pages with defaults for all routes
+  app.post("/api/seo/pages/initialize", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      
+      // Default pages to initialize
+      const defaultPages = [
+        { pagePath: "/", pageTitle: "Home" },
+        { pagePath: "/services", pageTitle: "Services" },
+        { pagePath: "/estimator", pageTitle: "Free Estimate" },
+        { pagePath: "/portfolio", pageTitle: "Portfolio" },
+        { pagePath: "/about", pageTitle: "About Us" },
+        { pagePath: "/contact", pageTitle: "Contact" },
+        { pagePath: "/book", pageTitle: "Book Appointment" },
+        { pagePath: "/faq", pageTitle: "FAQ" },
+        { pagePath: "/help", pageTitle: "Help Center" },
+        { pagePath: "/account", pageTitle: "My Account" },
+        { pagePath: "/auth", pageTitle: "Sign In" },
+      ];
+      
+      const created: SeoPage[] = [];
+      
+      for (const page of defaultPages) {
+        // Check if page already exists
+        const [existing] = await db.select().from(seoPages)
+          .where(and(eq(seoPages.pagePath, page.pagePath), eq(seoPages.tenantId, tenantId)));
+        
+        if (!existing) {
+          const [newPage] = await db.insert(seoPages).values({
+            tenantId,
+            pagePath: page.pagePath,
+            pageTitle: page.pageTitle,
+            seoScore: 0,
+            missingFields: ["metaTitle (30-60 chars)", "metaDescription (120-160 chars)", "metaKeywords", "canonicalUrl", "ogTitle", "ogDescription", "ogImage", "twitterTitle", "twitterDescription", "twitterImage", "structuredData (JSON-LD)"],
+          }).returning();
+          created.push(newPage);
+        }
+      }
+      
+      res.json({ message: `Initialized ${created.length} SEO pages`, pages: created });
+    } catch (error) {
+      console.error("Error initializing SEO pages:", error);
+      res.status(500).json({ error: "Failed to initialize SEO pages" });
+    }
+  });
+  
+  // GET /api/seo/audits - Get SEO audit history
+  app.get("/api/seo/audits", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const audits = await db.select().from(seoAudits)
+        .where(eq(seoAudits.tenantId, tenantId))
+        .orderBy(desc(seoAudits.createdAt))
+        .limit(100);
+      res.json(audits);
+    } catch (error) {
+      console.error("Error fetching SEO audits:", error);
+      res.status(500).json({ error: "Failed to fetch SEO audits" });
+    }
+  });
+  
+  // GET /api/seo/summary - Get SEO summary stats
+  app.get("/api/seo/summary", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const pages = await db.select().from(seoPages).where(eq(seoPages.tenantId, tenantId));
+      
+      const totalPages = pages.length;
+      const averageScore = totalPages > 0 ? Math.round(pages.reduce((acc, p) => acc + (p.seoScore || 0), 0) / totalPages) : 0;
+      const pagesWithFullSeo = pages.filter(p => (p.seoScore || 0) >= 80).length;
+      const pagesNeedingWork = pages.filter(p => (p.seoScore || 0) < 50).length;
+      
+      res.json({
+        totalPages,
+        averageScore,
+        pagesWithFullSeo,
+        pagesNeedingWork,
+        pages: pages.map(p => ({
+          id: p.id,
+          pagePath: p.pagePath,
+          pageTitle: p.pageTitle,
+          seoScore: p.seoScore,
+          missingFields: p.missingFields,
+        })),
+      });
+    } catch (error) {
+      console.error("Error fetching SEO summary:", error);
+      res.status(500).json({ error: "Failed to fetch SEO summary" });
     }
   });
 

@@ -38,6 +38,7 @@ import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
+import { SeoTracker } from "@/components/seo/SeoTracker";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -349,6 +350,11 @@ export default function Owner() {
             {/* System Health */}
             <BentoItem colSpan={3} rowSpan={1}>
               <SystemHealthCard />
+            </BentoItem>
+
+            {/* SEO Tracker */}
+            <BentoItem colSpan={3} rowSpan={2}>
+              <SeoTracker />
             </BentoItem>
 
             {/* Live Visitors Card */}
