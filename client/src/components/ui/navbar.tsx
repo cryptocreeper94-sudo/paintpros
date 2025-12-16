@@ -45,7 +45,7 @@ export function Navbar() {
         <button 
           className={cn(
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center",
-            tenant.id === "demo" ? "p-1" : "-ml-[84px] -mt-[23px] p-0"
+            tenant.id === "demo" ? "p-1 -ml-[16px]" : "-ml-[84px] -mt-[23px] p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
