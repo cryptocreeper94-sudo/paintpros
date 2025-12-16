@@ -117,8 +117,8 @@ export function Navbar() {
         {/* Spacer to push icons to the right */}
         <div className="flex-1" />
 
-        {/* Right: Help & Theme Toggle */}
-        <div className="flex items-center gap-0 -mr-0.5 relative z-10">
+        {/* Right: Help & Theme Toggle - pushed to right edge */}
+        <div className="flex items-center gap-0 relative z-10" style={{ marginRight: '-8px' }}>
           <Link href="/help" className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5" aria-label="Help & Tour" data-testid="button-help">
             <HelpCircle className="w-7 h-7 md:w-8 md:h-8 text-white" />
           </Link>
