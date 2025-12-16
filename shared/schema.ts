@@ -32,7 +32,10 @@ export const users = pgTable("users", {
   passwordResetExpires: timestamp("password_reset_expires"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_users_tenant_id").on(table.tenantId),
+  index("idx_users_role").on(table.role),
+]);
 
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -185,7 +188,11 @@ export const seoPages = pgTable("seo_pages", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   createdBy: text("created_by"),
   updatedBy: text("updated_by"),
-});
+}, (table) => [
+  index("idx_seo_pages_tenant_id").on(table.tenantId),
+  index("idx_seo_pages_page_path").on(table.pagePath),
+  index("idx_seo_pages_tenant_path").on(table.tenantId, table.pagePath),
+]);
 
 export const insertSeoPageSchema = createInsertSchema(seoPages).omit({
   id: true,
@@ -895,7 +902,13 @@ export const bookings = pgTable("bookings", {
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_bookings_tenant_id").on(table.tenantId),
+  index("idx_bookings_user_id").on(table.userId),
+  index("idx_bookings_scheduled_date").on(table.scheduledDate),
+  index("idx_bookings_status").on(table.status),
+  index("idx_bookings_customer_email").on(table.customerEmail),
+]);
 
 export const insertBookingSchema = createInsertSchema(bookings).omit({
   id: true,

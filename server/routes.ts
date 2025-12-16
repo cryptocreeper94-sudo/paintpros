@@ -36,6 +36,54 @@ import * as quickbooks from "./quickbooks";
 let io: SocketServer | null = null;
 export function getSocketIO() { return io; }
 
+// Rate limiting for PIN authentication
+const pinAttempts = new Map<string, { count: number; lastAttempt: number; lockedUntil?: number }>();
+const PIN_MAX_ATTEMPTS = 5;
+const PIN_LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+const PIN_ATTEMPT_WINDOW = 5 * 60 * 1000; // 5 minutes
+
+function checkPinRateLimit(ip: string, role: string): { allowed: boolean; retryAfter?: number } {
+  const key = `${ip}:${role}`;
+  const now = Date.now();
+  const record = pinAttempts.get(key);
+
+  if (record?.lockedUntil && now < record.lockedUntil) {
+    return { allowed: false, retryAfter: Math.ceil((record.lockedUntil - now) / 1000) };
+  }
+
+  if (record?.lockedUntil && now >= record.lockedUntil) {
+    pinAttempts.delete(key);
+  }
+
+  return { allowed: true };
+}
+
+function recordPinAttempt(ip: string, role: string, success: boolean): void {
+  const key = `${ip}:${role}`;
+  const now = Date.now();
+
+  if (success) {
+    pinAttempts.delete(key);
+    return;
+  }
+
+  const record = pinAttempts.get(key) || { count: 0, lastAttempt: now };
+
+  if (now - record.lastAttempt > PIN_ATTEMPT_WINDOW) {
+    record.count = 1;
+  } else {
+    record.count++;
+  }
+
+  record.lastAttempt = now;
+
+  if (record.count >= PIN_MAX_ATTEMPTS) {
+    record.lockedUntil = now + PIN_LOCKOUT_DURATION;
+  }
+
+  pinAttempts.set(key, record);
+}
+
 // Helper function to format time ago
 function formatTimeAgo(ms: number): string {
   const seconds = Math.floor(ms / 1000);
@@ -1335,7 +1383,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/auth/pin/verify - Verify PIN
+  // POST /api/auth/pin/verify - Verify PIN (with rate limiting)
   app.post("/api/auth/pin/verify", async (req, res) => {
     try {
       const { role, pin } = req.body;
@@ -1343,12 +1391,28 @@ export async function registerRoutes(
         res.status(400).json({ error: "Role and PIN required" });
         return;
       }
+
+      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
+      const rateLimit = checkPinRateLimit(clientIp, role);
+      
+      if (!rateLimit.allowed) {
+        res.status(429).json({ 
+          error: "Too many failed attempts. Please try again later.",
+          retryAfter: rateLimit.retryAfter 
+        });
+        return;
+      }
+
       const userPin = await storage.getUserPinByRole(role);
       if (!userPin) {
+        recordPinAttempt(clientIp, role, false);
         res.json({ valid: false, mustChangePin: false });
         return;
       }
+      
       const valid = userPin.pin === pin;
+      recordPinAttempt(clientIp, role, valid);
+      
       res.json({ valid, mustChangePin: valid ? userPin.mustChangePin : false });
     } catch (error) {
       console.error("Error verifying PIN:", error);
@@ -1356,7 +1420,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/auth/pin/change - Change PIN
+  // POST /api/auth/pin/change - Change PIN (with rate limiting)
   app.post("/api/auth/pin/change", async (req, res) => {
     try {
       const { role, currentPin, newPin } = req.body;
@@ -1364,11 +1428,26 @@ export async function registerRoutes(
         res.status(400).json({ error: "Role, current PIN, and new PIN required" });
         return;
       }
+
+      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
+      const rateLimit = checkPinRateLimit(clientIp, `change:${role}`);
+      
+      if (!rateLimit.allowed) {
+        res.status(429).json({ 
+          error: "Too many failed attempts. Please try again later.",
+          retryAfter: rateLimit.retryAfter 
+        });
+        return;
+      }
+
       const userPin = await storage.getUserPinByRole(role);
       if (!userPin || userPin.pin !== currentPin) {
+        recordPinAttempt(clientIp, `change:${role}`, false);
         res.status(401).json({ error: "Invalid current PIN" });
         return;
       }
+      
+      recordPinAttempt(clientIp, `change:${role}`, true);
       const updated = await storage.updateUserPin(role, newPin, false);
       res.json({ success: true, updated });
     } catch (error) {
@@ -3882,12 +3961,23 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
 
   // ============ CREW LEAD MANAGEMENT ============
 
-  // POST /api/crew/auth - Authenticate crew lead by PIN
+  // POST /api/crew/auth - Authenticate crew lead by PIN (with rate limiting)
   app.post("/api/crew/auth", async (req, res) => {
     try {
       const { pin, tenantId } = req.body;
       if (!pin || typeof pin !== "string") {
         res.status(400).json({ error: "PIN is required" });
+        return;
+      }
+
+      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
+      const rateLimit = checkPinRateLimit(clientIp, "crew");
+      
+      if (!rateLimit.allowed) {
+        res.status(429).json({ 
+          error: "Too many failed attempts. Please try again later.",
+          retryAfter: rateLimit.retryAfter 
+        });
         return;
       }
       
@@ -3903,6 +3993,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       }
       
       if (!crewLead) {
+        recordPinAttempt(clientIp, "crew", false);
         res.status(401).json({ error: "Invalid PIN" });
         return;
       }
@@ -3910,6 +4001,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(403).json({ error: "Account is deactivated" });
         return;
       }
+      
+      recordPinAttempt(clientIp, "crew", true);
       res.json(crewLead);
     } catch (error) {
       console.error("Error authenticating crew lead:", error);
