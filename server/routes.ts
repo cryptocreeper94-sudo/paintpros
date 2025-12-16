@@ -5033,6 +5033,127 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     });
   });
 
+  // ============ SYSTEM HEALTH ============
+
+  // GET /api/system/health - Comprehensive system health check for dashboards
+  app.get("/api/system/health", async (req, res) => {
+    const startTime = Date.now();
+    const checks: {
+      name: string;
+      status: "healthy" | "degraded" | "error";
+      message: string;
+      responseTime?: number;
+      lastError?: string;
+    }[] = [];
+
+    // 1. Database Health Check
+    const dbStart = Date.now();
+    try {
+      await storage.getLeads();
+      checks.push({
+        name: "database",
+        status: "healthy",
+        message: "PostgreSQL connection active",
+        responseTime: Date.now() - dbStart
+      });
+    } catch (error) {
+      checks.push({
+        name: "database",
+        status: "error",
+        message: "Database connection failed",
+        responseTime: Date.now() - dbStart,
+        lastError: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+
+    // 2. Payment Processor (Stripe) Health Check
+    const stripeConfigured = !!process.env.STRIPE_SECRET_KEY;
+    if (stripeConfigured) {
+      try {
+        const Stripe = require("stripe");
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        const stripeStart = Date.now();
+        await stripe.paymentIntents.list({ limit: 1 });
+        checks.push({
+          name: "payments",
+          status: "healthy",
+          message: "Stripe API responding",
+          responseTime: Date.now() - stripeStart
+        });
+      } catch (error) {
+        checks.push({
+          name: "payments",
+          status: "error",
+          message: "Stripe connection failed",
+          lastError: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    } else {
+      checks.push({
+        name: "payments",
+        status: "degraded",
+        message: "Stripe not configured"
+      });
+    }
+
+    // 3. Email Service (Resend) Health Check
+    const resendConfigured = !!process.env.RESEND_API_KEY;
+    checks.push({
+      name: "email",
+      status: resendConfigured ? "healthy" : "degraded",
+      message: resendConfigured ? "Resend API configured" : "Email service not configured"
+    });
+
+    // 4. Blockchain (Solana) Health Check
+    const solanaConfigured = !!(process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY);
+    if (solanaConfigured) {
+      try {
+        const solanaStart = Date.now();
+        const walletInfo = await solana.getWalletBalance();
+        checks.push({
+          name: "blockchain",
+          status: walletInfo ? "healthy" : "degraded",
+          message: walletInfo ? `Solana wallet active (${walletInfo.balance.toFixed(4)} SOL)` : "Wallet balance check failed",
+          responseTime: Date.now() - solanaStart
+        });
+      } catch (error) {
+        checks.push({
+          name: "blockchain",
+          status: "degraded",
+          message: "Blockchain service unavailable",
+          lastError: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    } else {
+      checks.push({
+        name: "blockchain",
+        status: "degraded",
+        message: "Blockchain not configured"
+      });
+    }
+
+    // 5. AI Service (OpenAI) Health Check
+    const openaiConfigured = !!process.env.OPENAI_API_KEY;
+    checks.push({
+      name: "ai",
+      status: openaiConfigured ? "healthy" : "degraded",
+      message: openaiConfigured ? "OpenAI API configured" : "AI service not configured"
+    });
+
+    // Calculate overall status
+    const hasError = checks.some(c => c.status === "error");
+    const hasDegraded = checks.some(c => c.status === "degraded");
+    const overallStatus = hasError ? "error" : hasDegraded ? "degraded" : "healthy";
+
+    res.json({
+      status: overallStatus,
+      version: "1.2.5",
+      timestamp: new Date().toISOString(),
+      responseTime: Date.now() - startTime,
+      checks
+    });
+  });
+
   // GET /api/partner/v1/scopes - List available scopes
   app.get("/api/partner/v1/scopes", (req, res) => {
     res.json({ scopes: PARTNER_API_SCOPES });
