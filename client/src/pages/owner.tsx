@@ -37,6 +37,7 @@ import { Lock } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
+import { SystemHealthCard } from "@/components/system-health-card";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -345,6 +346,11 @@ export default function Owner() {
           animate="visible"
         >
           <BentoGrid className="max-w-7xl mx-auto">
+            {/* System Health */}
+            <BentoItem colSpan={3} rowSpan={1}>
+              <SystemHealthCard />
+            </BentoItem>
+
             {/* Live Visitors Card */}
             <BentoItem colSpan={3} rowSpan={1}>
               <LiveVisitorsCard />

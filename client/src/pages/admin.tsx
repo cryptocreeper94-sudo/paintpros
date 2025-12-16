@@ -31,6 +31,7 @@ import { useAccess } from "@/context/AccessContext";
 import { Zap } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
+import { SystemHealthCard } from "@/components/system-health-card";
 
 const DEFAULT_PIN = "4444";
 
@@ -408,6 +409,11 @@ export default function Admin() {
           animate="visible"
         >
           <BentoGrid className="max-w-7xl mx-auto">
+            {/* System Health */}
+            <BentoItem colSpan={3} rowSpan={1}>
+              <SystemHealthCard />
+            </BentoItem>
+
             {/* Live Visitors Card */}
             <BentoItem colSpan={3} rowSpan={1}>
               <LiveVisitorsCard />

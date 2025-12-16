@@ -33,6 +33,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { FranchiseManagement } from "@/components/franchise-management";
+import { SystemHealthCard } from "@/components/system-health-card";
 
 const DEVELOPER_PIN = "0424";
 
@@ -1965,6 +1966,11 @@ export default function Developer() {
           animate="visible"
         >
         <BentoGrid>
+          {/* System Health */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <SystemHealthCard />
+          </BentoItem>
+
           {/* Live Visitors Card */}
           <BentoItem colSpan={4} rowSpan={1}>
             <LiveVisitorsCard />

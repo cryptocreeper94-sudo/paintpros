@@ -55,13 +55,13 @@ const statusLabels: Record<string, string> = {
 export function SystemHealthCard() {
   const [expanded, setExpanded] = useState(false);
 
-  const { data: health, isLoading, refetch, isFetching } = useQuery<SystemHealthResponse>({
+  const { data: health, isLoading, isError, error, refetch, isFetching } = useQuery<SystemHealthResponse>({
     queryKey: ["/api/system/health"],
     refetchInterval: 60000,
     staleTime: 30000
   });
 
-  const overallStatus = health?.status || "healthy";
+  const overallStatus = isError ? "error" : (health?.status || "healthy");
   const OverallIcon = Activity;
 
   return (
@@ -95,6 +95,23 @@ export function SystemHealthCard() {
       {isLoading ? (
         <div className="flex items-center justify-center py-4">
           <RefreshCw className="w-5 h-5 animate-spin text-muted-foreground" />
+        </div>
+      ) : isError ? (
+        <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20">
+          <p className="text-xs font-medium text-red-400 mb-1">Health Check Failed</p>
+          <p className="text-xs text-red-300 mb-2">
+            {error instanceof Error ? error.message : "Unable to reach health endpoint"}
+          </p>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={() => refetch()}
+            className="text-xs"
+            data-testid="button-retry-health"
+          >
+            <RefreshCw className="w-3 h-3 mr-1" />
+            Retry
+          </Button>
         </div>
       ) : health ? (
         <>
