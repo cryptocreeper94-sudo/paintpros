@@ -1411,3 +1411,56 @@ export const insertCustomerPreferencesSchema = createInsertSchema(customerPrefer
 
 export type InsertCustomerPreferences = z.infer<typeof insertCustomerPreferencesSchema>;
 export type CustomerPreferences = typeof customerPreferences.$inferSelect;
+
+// ============ PUSH NOTIFICATIONS ============
+
+// Push Subscriptions - Browser push notification subscriptions
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  
+  // Push subscription details
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(), // Public key
+  auth: text("auth").notNull(), // Auth secret
+  
+  // User agent info
+  userAgent: text("user_agent"),
+  
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPushSubscriptionSchema = createInsertSchema(pushSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertPushSubscription = z.infer<typeof insertPushSubscriptionSchema>;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+
+// Appointment Reminders - Track sent reminders to prevent duplicates
+export const appointmentReminders = pgTable("appointment_reminders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bookingId: varchar("booking_id").references(() => bookings.id).notNull(),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  
+  reminderType: text("reminder_type").notNull(), // 'email_24h', 'email_1h', 'push_24h', 'push_1h'
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  status: text("status").notNull().default("sent"), // 'sent', 'failed', 'delivered'
+  errorMessage: text("error_message"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAppointmentReminderSchema = createInsertSchema(appointmentReminders).omit({
+  id: true,
+  createdAt: true,
+  sentAt: true,
+});
+
+export type InsertAppointmentReminder = z.infer<typeof insertAppointmentReminderSchema>;
+export type AppointmentReminder = typeof appointmentReminders.$inferSelect;

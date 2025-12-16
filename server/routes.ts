@@ -388,6 +388,69 @@ export async function registerRoutes(
     }
   });
 
+  // ============ PUSH NOTIFICATIONS API ============
+
+  // GET /api/push/vapid-key - Get public VAPID key for push subscriptions
+  app.get('/api/push/vapid-key', (req, res) => {
+    const vapidKey = process.env.VAPID_PUBLIC_KEY || '';
+    res.json({ publicKey: vapidKey });
+  });
+
+  // POST /api/push/subscribe - Register a push subscription (requires authentication)
+  app.post('/api/push/subscribe', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const { endpoint, p256dh, auth, userAgent } = req.body;
+      
+      if (!endpoint || !p256dh || !auth) {
+        return res.status(400).json({ message: "Missing subscription data" });
+      }
+
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const tenantId = getTenantFromHostname(req.hostname);
+      const subscription = await storage.createPushSubscription({
+        endpoint,
+        p256dh,
+        auth,
+        userId,
+        tenantId,
+        userAgent,
+        isActive: true
+      });
+
+      res.json({ success: true, id: subscription.id });
+    } catch (error) {
+      console.error("Error creating push subscription:", error);
+      res.status(500).json({ message: "Failed to create subscription" });
+    }
+  });
+
+  // POST /api/push/unsubscribe - Remove a push subscription (requires authentication)
+  app.post('/api/push/unsubscribe', isAuthenticated, async (req: any, res) => {
+    try {
+      const { endpoint } = req.body;
+      
+      if (!endpoint) {
+        return res.status(400).json({ message: "Missing endpoint" });
+      }
+
+      // Verify the subscription belongs to the authenticated user
+      const subscription = await storage.getPushSubscriptionByEndpoint(endpoint);
+      if (subscription && subscription.userId !== req.user?.claims?.sub) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      await storage.deletePushSubscription(endpoint);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing push subscription:", error);
+      res.status(500).json({ message: "Failed to remove subscription" });
+    }
+  });
+
   // ============ TENANT API ============
   
   // GET /api/tenant - Get tenant ID based on hostname

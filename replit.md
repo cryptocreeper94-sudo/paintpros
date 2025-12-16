@@ -66,7 +66,15 @@ The `docs/` folder contains reusable architecture documentation for agents:
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.2.2** - Current Release
+- **v1.2.3** - Current Release
+  - Push Notifications: Browser push notifications for appointment reminders (24h and 1h before)
+  - Email Reminders: Automatic email reminders sent 24h and 1h before confirmed appointments
+  - Notification Settings: User-configurable notification preferences in customer account portal
+  - Reminder Scheduler: Background job checks for upcoming appointments every 5 minutes
+  - Desktop Title Enhancement: Larger PaintPros.io title and subtitle on desktop screens
+  - New database tables: push_subscriptions, appointment_reminders
+  - Tenant-aware notifications: Reminders respect multi-tenant isolation
+- **v1.2.2**
   - Email Notifications: Automatic email confirmations when customers accept estimates (to both customer and business)
   - Estimate History Filtering: Filter estimates by status (pending, sent, accepted, scheduled, in progress, completed)
   - Estimate History Sorting: Sort estimates by date or amount, ascending or descending

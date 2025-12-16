@@ -47,6 +47,8 @@ import {
   type PartnerApiLog, type InsertPartnerApiLog, partnerApiLogs,
   type FranchiseLocation, type InsertFranchiseLocation, franchiseLocations,
   type CustomerPreferences, type InsertCustomerPreferences, customerPreferences,
+  type PushSubscription as PushSub, type InsertPushSubscription, pushSubscriptions,
+  type AppointmentReminder, type InsertAppointmentReminder, appointmentReminders,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -362,6 +364,21 @@ export interface IStorage {
   
   // Lead-User Linking
   updateLeadUserId(leadId: string, userId: string): Promise<Lead | undefined>;
+  
+  // Push Subscriptions
+  createPushSubscription(subscription: InsertPushSubscription): Promise<PushSub>;
+  getPushSubscriptionsByUser(userId: string): Promise<PushSub[]>;
+  getPushSubscriptionByEndpoint(endpoint: string): Promise<PushSub | undefined>;
+  deletePushSubscription(endpoint: string): Promise<void>;
+  getActivePushSubscriptions(): Promise<PushSub[]>;
+  getPushSubscriptionsByUserAndTenant(userId: string, tenantId: string): Promise<PushSub[]>;
+  
+  // Appointment Reminders
+  createAppointmentReminder(reminder: InsertAppointmentReminder): Promise<AppointmentReminder>;
+  getAppointmentRemindersByBooking(bookingId: string): Promise<AppointmentReminder[]>;
+  hasReminderBeenSent(bookingId: string, reminderType: string): Promise<boolean>;
+  getUpcomingBookingsForReminders(hoursAhead: number, maxHoursAhead: number, tenantId?: string): Promise<Booking[]>;
+  getUserByBookingEmail(email: string, tenantId: string): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2280,6 +2297,96 @@ export class DatabaseStorage implements IStorage {
       .where(eq(leads.id, leadId))
       .returning();
     return result;
+  }
+
+  // Push Subscriptions
+  async createPushSubscription(subscription: InsertPushSubscription): Promise<PushSub> {
+    const existing = await this.getPushSubscriptionByEndpoint(subscription.endpoint);
+    if (existing) {
+      const [result] = await db.update(pushSubscriptions)
+        .set({ ...subscription, isActive: true, updatedAt: new Date() })
+        .where(eq(pushSubscriptions.endpoint, subscription.endpoint))
+        .returning();
+      return result;
+    }
+    const [result] = await db.insert(pushSubscriptions).values(subscription).returning();
+    return result;
+  }
+
+  async getPushSubscriptionsByUser(userId: string): Promise<PushSub[]> {
+    return await db.select().from(pushSubscriptions)
+      .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.isActive, true)));
+  }
+
+  async getPushSubscriptionByEndpoint(endpoint: string): Promise<PushSub | undefined> {
+    const [result] = await db.select().from(pushSubscriptions)
+      .where(eq(pushSubscriptions.endpoint, endpoint));
+    return result;
+  }
+
+  async deletePushSubscription(endpoint: string): Promise<void> {
+    await db.update(pushSubscriptions)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(pushSubscriptions.endpoint, endpoint));
+  }
+
+  async getActivePushSubscriptions(): Promise<PushSub[]> {
+    return await db.select().from(pushSubscriptions)
+      .where(eq(pushSubscriptions.isActive, true));
+  }
+
+  async getPushSubscriptionsByUserAndTenant(userId: string, tenantId: string): Promise<PushSub[]> {
+    return await db.select().from(pushSubscriptions)
+      .where(and(
+        eq(pushSubscriptions.userId, userId),
+        eq(pushSubscriptions.tenantId, tenantId),
+        eq(pushSubscriptions.isActive, true)
+      ));
+  }
+
+  // Appointment Reminders
+  async createAppointmentReminder(reminder: InsertAppointmentReminder): Promise<AppointmentReminder> {
+    const [result] = await db.insert(appointmentReminders).values(reminder).returning();
+    return result;
+  }
+
+  async getAppointmentRemindersByBooking(bookingId: string): Promise<AppointmentReminder[]> {
+    return await db.select().from(appointmentReminders)
+      .where(eq(appointmentReminders.bookingId, bookingId));
+  }
+
+  async hasReminderBeenSent(bookingId: string, reminderType: string): Promise<boolean> {
+    const [result] = await db.select().from(appointmentReminders)
+      .where(and(
+        eq(appointmentReminders.bookingId, bookingId),
+        eq(appointmentReminders.reminderType, reminderType)
+      ));
+    return !!result;
+  }
+
+  async getUpcomingBookingsForReminders(hoursAhead: number, maxHoursAhead: number, tenantId?: string): Promise<Booking[]> {
+    const now = new Date();
+    const minTime = new Date(now.getTime() + hoursAhead * 60 * 60 * 1000);
+    const maxTime = new Date(now.getTime() + maxHoursAhead * 60 * 60 * 1000);
+    
+    const conditions = [
+      eq(bookings.status, 'confirmed'),
+      sql`${bookings.scheduledDate} >= ${minTime}`,
+      sql`${bookings.scheduledDate} <= ${maxTime}`
+    ];
+    
+    if (tenantId) {
+      conditions.push(eq(bookings.tenantId, tenantId));
+    }
+    
+    return await db.select().from(bookings)
+      .where(and(...conditions));
+  }
+  
+  async getUserByBookingEmail(email: string, tenantId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users)
+      .where(and(eq(users.email, email), eq(users.tenantId, tenantId)));
+    return user;
   }
 }
 

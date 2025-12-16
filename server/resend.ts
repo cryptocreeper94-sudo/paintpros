@@ -157,3 +157,56 @@ export async function sendEstimateAcceptedEmail(data: EstimateAcceptedData): Pro
     return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
   }
 }
+
+export interface AppointmentReminderData {
+  customerEmail: string;
+  customerName: string;
+  appointmentDate: Date;
+  appointmentTime: string;
+  serviceType: string;
+  tenantName: string;
+  timeFrame: string;
+}
+
+export async function sendAppointmentReminderEmail(data: AppointmentReminderData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { client, fromEmail } = await getResendClient();
+    
+    const sender = fromEmail || 'PaintPros.io <onboarding@resend.dev>';
+    const formattedDate = new Date(data.appointmentDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    await client.emails.send({
+      from: sender,
+      to: [data.customerEmail],
+      subject: `Appointment Reminder - ${data.timeFrame}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1a1a1a;">Appointment Reminder</h2>
+          <p>Hi ${data.customerName},</p>
+          <p>This is a friendly reminder that your ${data.serviceType} appointment is scheduled ${data.timeFrame}.</p>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1a1a1a;">Appointment Details</h3>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time:</strong> ${data.appointmentTime}</p>
+            <p><strong>Service:</strong> ${data.serviceType}</p>
+          </div>
+          
+          <p>If you need to reschedule or have any questions, please reply to this email or contact us directly.</p>
+          <p>We look forward to seeing you!</p>
+          <p>Best regards,<br/>${data.tenantName}</p>
+        </div>
+      `
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send appointment reminder email:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
+  }
+}

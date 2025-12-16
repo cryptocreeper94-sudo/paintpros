@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { storage } from "./storage";
 import * as solana from "./solana";
 import * as hallmarkService from "./hallmarkService";
+import { startReminderScheduler } from "./reminder-scheduler";
 
 const app = express();
 const httpServer = createServer(app);
@@ -273,6 +274,9 @@ app.use((req, res, next) => {
       // Run automatic version bump on production deployment
       // This happens after server is ready to ensure database connection is established
       await autoDeployVersionBump();
+      
+      // Start the appointment reminder scheduler
+      startReminderScheduler();
     },
   );
 })();

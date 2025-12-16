@@ -6,6 +6,7 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
+import { NotificationSettings } from "@/components/notification-settings";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -786,6 +787,11 @@ export default function AccountPage() {
                   </div>
                 </div>
               </GlassCard>
+            </BentoItem>
+
+            {/* Notification Preferences */}
+            <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
+              <NotificationSettings userId={user?.id} />
             </BentoItem>
           </BentoGrid>
         </div>
