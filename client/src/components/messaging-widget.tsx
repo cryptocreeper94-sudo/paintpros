@@ -470,11 +470,11 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-[54px] left-[18px] z-[60] w-[360px] max-w-[calc(100vw-36px)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 flex flex-col overflow-hidden"
+            className="fixed bottom-[54px] left-[18px] z-[60] w-[360px] max-w-[calc(100vw-36px)] max-h-[calc(100vh-120px)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 flex flex-col"
             data-testid="panel-messaging-demo"
           >
-            {/* Demo Info Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500/10 to-indigo-500/10">
+            {/* Demo Info Header - Sticky */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                   <MessageSquare className="w-5 h-5 text-white" />
@@ -494,8 +494,8 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
               </Button>
             </div>
 
-            {/* Demo Info Content */}
-            <div className="p-5 space-y-4">
+            {/* Demo Info Content - Scrollable */}
+            <div className="p-5 space-y-4 overflow-y-auto flex-1">
               <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 The <span className="font-semibold text-gray-900 dark:text-white">Internal Messaging System</span> is 
                 a real-time communication tool built into your PaintPros.io platform.
