@@ -124,7 +124,7 @@ export function Navbar() {
           </Link>
           <button 
             onClick={toggleTheme}
-            className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5"
+            className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5 ml-2.5"
             aria-label="Toggle theme"
             data-testid="button-theme-toggle"
           >
