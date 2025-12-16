@@ -99,7 +99,7 @@ export function Navbar() {
             </div>
           ) : (
             <div 
-              className="whitespace-nowrap px-1 pointer-events-auto text-sm md:text-xl lg:text-2xl bg-clip-text text-transparent"
+              className="whitespace-nowrap px-1 pointer-events-auto text-xs md:text-base lg:text-lg bg-clip-text text-transparent"
               style={{ 
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                 fontWeight: 400, 
