@@ -24,7 +24,8 @@ import {
   Gift,
   Palette,
   Clock,
-  CheckCircle
+  CheckCircle,
+  X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
@@ -346,7 +347,20 @@ export default function Help() {
 
   return (
     <PageLayout>
-      <main className="pt-16 md:pt-24 px-4 md:px-8 pb-12">
+      <main className="pt-16 md:pt-24 px-4 md:px-8 pb-12 relative">
+        {/* Close button */}
+        <Link href="/">
+          <Button 
+            size="icon" 
+            variant="outline" 
+            className="fixed top-20 right-4 z-40 bg-background/80 backdrop-blur-sm"
+            aria-label="Close Help Center"
+            data-testid="button-close-help"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </Link>
+        
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-8">
             <Badge variant="secondary" className="mb-4">
