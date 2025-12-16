@@ -69,7 +69,7 @@ export function Navbar() {
             className={cn(
               "whitespace-nowrap px-1 pointer-events-auto",
               tenant.id === "demo" 
-                ? "text-white text-sm md:text-xl lg:text-2xl"
+                ? "text-white text-[10px] md:text-base lg:text-xl"
                 : "text-sm md:text-xl lg:text-2xl bg-clip-text text-transparent"
             )}
             style={{ 
@@ -81,7 +81,7 @@ export function Navbar() {
             data-testid="text-header-title"
           >
             {tenant.id === "demo" 
-              ? "PaintPros.io"
+              ? "PaintPros.io | White-Label Websites for Painting Contractors"
               : tenant.name
             }
           </div>
