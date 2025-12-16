@@ -86,7 +86,7 @@ export function Navbar() {
                 style={{ 
                   fontFamily: 'Rajdhani, sans-serif', 
                   fontWeight: 400, 
-                  letterSpacing: '0.05em'
+                  letterSpacing: '-0.02em'
                 }}
                 data-testid="text-header-tagline"
               >
@@ -119,7 +119,7 @@ export function Navbar() {
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
-          {theme === "dark" ? <Sun className="w-5 h-5 text-accent" /> : <Moon className="w-5 h-5 text-white" />}
+          {theme === "dark" ? <Sun className="w-8 h-8 text-accent" /> : <Moon className="w-8 h-8 text-white" />}
         </button>
       </div>
     </header>
