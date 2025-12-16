@@ -1235,7 +1235,10 @@ export async function registerRoutes(
   // POST /api/crm/deals - Create a new deal
   app.post("/api/crm/deals", async (req, res) => {
     try {
-      const validatedData = insertCrmDealSchema.parse(req.body);
+      // Sanitize text fields that could contain XSS
+      const textFields = ['title', 'notes', 'jobAddress'];
+      const sanitizedBody = sanitizeObject(req.body, textFields);
+      const validatedData = insertCrmDealSchema.parse(sanitizedBody);
       const deal = await storage.createCrmDeal(validatedData);
       res.status(201).json(deal);
     } catch (error) {
@@ -1251,13 +1254,25 @@ export async function registerRoutes(
   // PATCH /api/crm/deals/:id - Update a deal
   app.patch("/api/crm/deals/:id", async (req, res) => {
     try {
-      const deal = await storage.updateCrmDeal(req.params.id, req.body);
+      // Validate partial update using partial schema
+      const partialSchema = insertCrmDealSchema.partial();
+      const validatedData = partialSchema.parse(req.body);
+      
+      // Sanitize text fields that could contain XSS
+      const textFields = ['title', 'notes', 'jobAddress'];
+      const sanitizedData = sanitizeObject(validatedData, textFields);
+      
+      const deal = await storage.updateCrmDeal(req.params.id, sanitizedData);
       if (!deal) {
         res.status(404).json({ error: "Deal not found" });
         return;
       }
       res.json(deal);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid deal data", details: error.errors });
+        return;
+      }
       console.error("Error updating deal:", error);
       res.status(500).json({ error: "Failed to update deal" });
     }
@@ -1372,7 +1387,12 @@ export async function registerRoutes(
   // POST /api/crm/notes - Create a new note
   app.post("/api/crm/notes", async (req, res) => {
     try {
-      const validatedData = insertCrmNoteSchema.parse(req.body);
+      // Sanitize content field for XSS
+      const sanitizedBody = {
+        ...req.body,
+        content: req.body.content ? sanitizeText(req.body.content) : req.body.content
+      };
+      const validatedData = insertCrmNoteSchema.parse(sanitizedBody);
       const note = await storage.createCrmNote(validatedData);
       res.status(201).json(note);
     } catch (error) {
@@ -1393,7 +1413,9 @@ export async function registerRoutes(
         res.status(400).json({ error: "Invalid content" });
         return;
       }
-      const note = await storage.updateCrmNote(req.params.id, content);
+      // Sanitize content for XSS (content is validated as string above, so sanitizeText won't return null)
+      const sanitizedContent = sanitizeText(content) as string;
+      const note = await storage.updateCrmNote(req.params.id, sanitizedContent);
       if (!note) {
         res.status(404).json({ error: "Note not found" });
         return;
@@ -4766,8 +4788,12 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const dbUser = req.dbUser;
       const tenantId = dbUser.tenantId || "npp";
       
+      // Sanitize text fields for XSS
+      const textFields = ['title', 'description'];
+      const sanitizedBody = sanitizeObject(req.body, textFields);
+      
       const validated = insertDocumentSchema.parse({
-        ...req.body,
+        ...sanitizedBody,
         tenantId,
         createdBy: dbUser.id,
       });
@@ -5038,15 +5064,21 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
               color, colorCode, assignedTo, leadId, estimateId, recurringPattern, 
               recurringEndDate, notes, reminders } = req.body;
       
+      // Sanitize text fields for XSS
+      const sanitizedTitle = title ? sanitizeText(title) : title;
+      const sanitizedDescription = description ? sanitizeText(description) : description;
+      const sanitizedLocation = location ? sanitizeText(location) : location;
+      const sanitizedNotes = notes ? sanitizeText(notes) : notes;
+      
       const validated = insertCalendarEventSchema.parse({
         tenantId,
-        title,
-        description,
+        title: sanitizedTitle,
+        description: sanitizedDescription,
         eventType: eventType || 'appointment',
         startTime: new Date(startTime),
         endTime: endTime ? new Date(endTime) : new Date(startTime),
         allDay: allDay ?? isAllDay ?? false,
-        location,
+        location: sanitizedLocation,
         colorCode: colorCode || color || '#3B82F6',
         assignedTo,
         createdBy: dbUser.id,
@@ -5054,7 +5086,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         relatedEstimateId: estimateId,
         recurringPattern,
         recurringEndDate: recurringEndDate ? new Date(recurringEndDate) : null,
-        notes,
+        notes: sanitizedNotes,
       });
       
       const event = await storage.createCalendarEvent(validated);
@@ -5101,14 +5133,15 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
               recurringPattern, recurringEndDate, notes } = req.body;
       
       const updates: any = {};
-      if (title !== undefined) updates.title = title;
-      if (description !== undefined) updates.description = description;
+      // Sanitize text fields for XSS
+      if (title !== undefined) updates.title = sanitizeText(title);
+      if (description !== undefined) updates.description = sanitizeText(description);
       if (eventType !== undefined) updates.eventType = eventType;
       if (startTime !== undefined) updates.startTime = new Date(startTime);
       if (endTime !== undefined) updates.endTime = endTime ? new Date(endTime) : null;
       if (allDay !== undefined) updates.allDay = allDay;
       else if (isAllDay !== undefined) updates.allDay = isAllDay;
-      if (location !== undefined) updates.location = location;
+      if (location !== undefined) updates.location = sanitizeText(location);
       if (colorCode !== undefined) updates.colorCode = colorCode;
       else if (color !== undefined) updates.colorCode = color;
       if (assignedTo !== undefined) updates.assignedTo = assignedTo;
@@ -5117,7 +5150,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       if (estimateId !== undefined) updates.relatedEstimateId = estimateId;
       if (recurringPattern !== undefined) updates.recurringPattern = recurringPattern;
       if (recurringEndDate !== undefined) updates.recurringEndDate = recurringEndDate ? new Date(recurringEndDate) : null;
-      if (notes !== undefined) updates.notes = notes;
+      if (notes !== undefined) updates.notes = sanitizeText(notes);
       
       const updated = await storage.updateCalendarEvent(req.params.id, updates);
       res.json(updated);
