@@ -647,8 +647,8 @@ export async function registerRoutes(
 
       // Send email notifications (async, don't block response)
       const lead = userLeads.find((l: Lead) => l.id === estimate.leadId);
-      const customerName = lead?.name || user.firstName || user.email?.split("@")[0] || "Customer";
-      const tenantName = updatedEstimate.tenantId === "nashville" ? "Nashville Painting Professionals" : "PaintPros.io";
+      const customerName = lead?.firstName || user.firstName || user.email?.split("@")[0] || "Customer";
+      const tenantName = "PaintPros.io"; // Default tenant name for emails
       
       sendEstimateAcceptedEmail({
         customerName,
