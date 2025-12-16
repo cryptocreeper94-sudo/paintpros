@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/hooks/use-auth";
 import nppEmblem from "@assets/npp_emblem_full.png";
 import nppText from "@assets/npp_text_full.png";
 
@@ -13,6 +14,7 @@ export function Navbar() {
   const [location] = useLocation();
   const tenant = useTenant();
   const { theme, toggleTheme } = useTheme();
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
 
   const mainLinks = [
     { name: "Services", href: "/services" },
@@ -211,9 +213,60 @@ export function Navbar() {
                 {/* Divider */}
                 <div className="border-t border-white/10 my-4" />
 
-                {/* Admin Links */}
+                {/* User Account Section */}
+                <div className="space-y-1 mb-4">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Account</p>
+                  {authLoading ? (
+                    <div className="py-3 px-4 text-muted-foreground">Loading...</div>
+                  ) : isAuthenticated && user ? (
+                    <>
+                      <div className="flex items-center gap-3 py-3 px-4 rounded-xl bg-accent/10">
+                        {user.profileImageUrl ? (
+                          <img src={user.profileImageUrl} alt="" className="w-8 h-8 rounded-full" />
+                        ) : (
+                          <User className="w-5 h-5 text-accent" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-foreground truncate">
+                            {user.firstName || user.email || "User"}
+                          </div>
+                          {user.email && user.firstName && (
+                            <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                          )}
+                        </div>
+                      </div>
+                      <a 
+                        href="/api/logout"
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <LogOut className="w-5 h-5 text-red-400" />
+                        <span className="text-lg font-medium text-foreground">Log Out</span>
+                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                      </a>
+                    </>
+                  ) : (
+                    <a 
+                      href="/api/login"
+                      className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 bg-accent/10"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <LogIn className="w-5 h-5 text-accent" />
+                      <span className="text-lg font-medium text-foreground">Login / Sign Up</span>
+                      <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                    </a>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-white/10 my-4" />
+
+                {/* Staff Access Links (PIN-based) */}
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2 flex items-center gap-2">
+                    <KeyRound className="w-3 h-3" />
+                    Staff Access
+                  </p>
                   {adminLinks.map((link, index) => (
                     <motion.div
                       key={link.name}
