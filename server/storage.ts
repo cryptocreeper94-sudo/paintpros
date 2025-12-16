@@ -46,6 +46,7 @@ import {
   type PartnerApiCredential, type InsertPartnerApiCredential, partnerApiCredentials,
   type PartnerApiLog, type InsertPartnerApiLog, partnerApiLogs,
   type FranchiseLocation, type InsertFranchiseLocation, franchiseLocations,
+  type CustomerPreferences, type InsertCustomerPreferences, customerPreferences,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -353,6 +354,13 @@ export interface IStorage {
   // Partner API Logs
   createPartnerApiLog(log: InsertPartnerApiLog): Promise<PartnerApiLog>;
   getPartnerApiLogs(franchiseId: string, limit?: number): Promise<PartnerApiLog[]>;
+  
+  // Customer Preferences
+  getCustomerPreferences(userId: string): Promise<CustomerPreferences | undefined>;
+  upsertCustomerPreferences(preferences: InsertCustomerPreferences): Promise<CustomerPreferences>;
+  
+  // Lead-User Linking
+  updateLeadUserId(leadId: string, userId: string): Promise<Lead | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2232,6 +2240,36 @@ export class DatabaseStorage implements IStorage {
       .where(eq(partnerApiLogs.franchiseId, franchiseId))
       .orderBy(desc(partnerApiLogs.createdAt))
       .limit(limit);
+  }
+
+  // Customer Preferences
+  async getCustomerPreferences(userId: string): Promise<CustomerPreferences | undefined> {
+    const [result] = await db.select().from(customerPreferences)
+      .where(eq(customerPreferences.userId, userId));
+    return result;
+  }
+
+  async upsertCustomerPreferences(data: InsertCustomerPreferences): Promise<CustomerPreferences> {
+    const [result] = await db.insert(customerPreferences)
+      .values(data)
+      .onConflictDoUpdate({
+        target: customerPreferences.userId,
+        set: {
+          ...data,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return result;
+  }
+
+  // Lead-User Linking
+  async updateLeadUserId(leadId: string, userId: string): Promise<Lead | undefined> {
+    const [result] = await db.update(leads)
+      .set({ userId })
+      .where(eq(leads.id, leadId))
+      .returning();
+    return result;
   }
 }
 

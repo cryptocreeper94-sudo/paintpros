@@ -287,6 +287,106 @@ export async function registerRoutes(
     }
   });
 
+  // ============ CUSTOMER PORTAL API ============
+
+  // GET /api/customer/dashboard - Get all customer data
+  app.get('/api/customer/dashboard', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const tenantId = getTenantFromHostname(req.hostname);
+      const user = await storage.getUser(userId);
+      if (!user || !user.email) {
+        return res.json({ estimates: [], bookings: [], documents: [], preferences: null });
+      }
+
+      // Find leads by user email
+      const allLeads = await storage.getLeads();
+      const userLeads = allLeads.filter(l => l.email === user.email || l.userId === userId);
+      const leadIds = userLeads.map(l => l.id);
+
+      // Get estimates for user's leads
+      const allEstimates = await storage.getEstimates();
+      const userEstimates = allEstimates.filter(e => leadIds.includes(e.leadId));
+
+      // Get bookings for user
+      const allBookings = await storage.getBookings(tenantId);
+      const userBookings = allBookings.filter(b => 
+        b.customerEmail === user.email || b.userId === userId || leadIds.includes(b.leadId || '')
+      );
+
+      // Get documents for user
+      const allDocs = await storage.getDocuments(tenantId);
+      const userDocuments = allDocs.filter(d => 
+        leadIds.includes(d.relatedLeadId || '') || 
+        userEstimates.some(e => e.id === d.relatedEstimateId)
+      );
+
+      // Get preferences
+      const preferences = await storage.getCustomerPreferences(userId);
+
+      res.json({
+        estimates: userEstimates,
+        bookings: userBookings,
+        documents: userDocuments,
+        preferences,
+        leads: userLeads
+      });
+    } catch (error) {
+      console.error("Error fetching customer dashboard:", error);
+      res.status(500).json({ message: "Failed to fetch customer data" });
+    }
+  });
+
+  // GET /api/customer/preferences - Get customer preferences
+  app.get('/api/customer/preferences', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const preferences = await storage.getCustomerPreferences(userId);
+      res.json(preferences || {});
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+      res.status(500).json({ message: "Failed to fetch preferences" });
+    }
+  });
+
+  // POST /api/customer/preferences - Create/update customer preferences
+  app.post('/api/customer/preferences', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const tenantId = getTenantFromHostname(req.hostname);
+      const data = { ...req.body, userId, tenantId };
+      const preferences = await storage.upsertCustomerPreferences(data);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error saving preferences:", error);
+      res.status(500).json({ message: "Failed to save preferences" });
+    }
+  });
+
+  // POST /api/customer/link-lead - Link an existing lead to user account
+  app.post('/api/customer/link-lead', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user || !user.email) {
+        return res.status(400).json({ message: "User email not found" });
+      }
+
+      // Find and update leads matching user's email
+      const leads = await storage.getLeads();
+      const matchingLeads = leads.filter(l => l.email === user.email && !l.userId);
+      
+      for (const lead of matchingLeads) {
+        await storage.updateLeadUserId(lead.id, userId);
+      }
+
+      res.json({ linked: matchingLeads.length });
+    } catch (error) {
+      console.error("Error linking leads:", error);
+      res.status(500).json({ message: "Failed to link leads" });
+    }
+  });
+
   // ============ TENANT API ============
   
   // GET /api/tenant - Get tenant ID based on hostname
