@@ -117,7 +117,7 @@ export function Navbar() {
         <div className="flex-1" />
 
         {/* Right: Help & Theme Toggle */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 -mr-1.5">
           <Link href="/help">
             <button 
               className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5"
@@ -129,7 +129,7 @@ export function Navbar() {
           </Link>
           <button 
             onClick={toggleTheme}
-            className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
+            className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5"
             aria-label="Toggle theme"
             data-testid="button-theme-toggle"
           >
