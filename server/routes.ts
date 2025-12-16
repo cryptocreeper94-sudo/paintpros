@@ -13,6 +13,8 @@ import {
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
   insertDocumentSchema, insertDocumentVersionSchema, insertDocumentSignatureSchema,
   insertCalendarEventSchema, insertCalendarReminderSchema, insertEventColorPresetSchema,
+  insertFranchiseSchema, insertPartnerApiCredentialSchema, insertFranchiseLocationSchema,
+  PARTNER_API_SCOPES,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -4563,6 +4565,417 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error fetching pending reminders:", error);
       res.status(500).json({ error: "Failed to fetch pending reminders" });
+    }
+  });
+
+  // ==========================================
+  // FRANCHISE MANAGEMENT API ROUTES
+  // ==========================================
+
+  // Helper functions for API key generation
+  function generateApiKey(): string {
+    return `pp_live_${crypto.randomBytes(24).toString("hex")}`;
+  }
+  
+  function generateApiSecret(): string {
+    return crypto.randomBytes(32).toString("hex");
+  }
+
+  // GET /api/franchises - Get all franchises
+  app.get("/api/franchises", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const franchises = await storage.getFranchises();
+      res.json(franchises);
+    } catch (error) {
+      console.error("Error fetching franchises:", error);
+      res.status(500).json({ error: "Failed to fetch franchises" });
+    }
+  });
+
+  // POST /api/franchises - Create a new franchise
+  app.post("/api/franchises", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const validated = insertFranchiseSchema.parse(req.body);
+      const franchise = await storage.createFranchise(validated);
+      res.status(201).json(franchise);
+    } catch (error) {
+      console.error("Error creating franchise:", error);
+      res.status(500).json({ error: "Failed to create franchise" });
+    }
+  });
+
+  // GET /api/franchises/:id - Get franchise by ID
+  app.get("/api/franchises/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const franchise = await storage.getFranchiseById(req.params.id);
+      if (!franchise) {
+        return res.status(404).json({ error: "Franchise not found" });
+      }
+      res.json(franchise);
+    } catch (error) {
+      console.error("Error fetching franchise:", error);
+      res.status(500).json({ error: "Failed to fetch franchise" });
+    }
+  });
+
+  // PUT /api/franchises/:id - Update franchise
+  app.put("/api/franchises/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const franchise = await storage.updateFranchise(req.params.id, req.body);
+      if (!franchise) {
+        return res.status(404).json({ error: "Franchise not found" });
+      }
+      res.json(franchise);
+    } catch (error) {
+      console.error("Error updating franchise:", error);
+      res.status(500).json({ error: "Failed to update franchise" });
+    }
+  });
+
+  // DELETE /api/franchises/:id - Delete franchise
+  app.delete("/api/franchises/:id", hasRole(['developer']), async (req: any, res) => {
+    try {
+      await storage.deleteFranchise(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting franchise:", error);
+      res.status(500).json({ error: "Failed to delete franchise" });
+    }
+  });
+
+  // Franchise Locations
+  app.get("/api/franchises/:franchiseId/locations", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const locations = await storage.getFranchiseLocations(req.params.franchiseId);
+      res.json(locations);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      res.status(500).json({ error: "Failed to fetch locations" });
+    }
+  });
+
+  app.post("/api/franchises/:franchiseId/locations", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const validated = insertFranchiseLocationSchema.parse({
+        ...req.body,
+        franchiseId: req.params.franchiseId
+      });
+      const location = await storage.createFranchiseLocation(validated);
+      res.status(201).json(location);
+    } catch (error) {
+      console.error("Error creating location:", error);
+      res.status(500).json({ error: "Failed to create location" });
+    }
+  });
+
+  app.put("/api/franchises/:franchiseId/locations/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const location = await storage.updateFranchiseLocation(req.params.id, req.body);
+      if (!location) {
+        return res.status(404).json({ error: "Location not found" });
+      }
+      res.json(location);
+    } catch (error) {
+      console.error("Error updating location:", error);
+      res.status(500).json({ error: "Failed to update location" });
+    }
+  });
+
+  app.delete("/api/franchises/:franchiseId/locations/:id", hasRole(['developer']), async (req: any, res) => {
+    try {
+      await storage.deleteFranchiseLocation(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting location:", error);
+      res.status(500).json({ error: "Failed to delete location" });
+    }
+  });
+
+  // Partner API Credentials Management
+  app.get("/api/franchises/:franchiseId/credentials", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const credentials = await storage.getPartnerApiCredentials(req.params.franchiseId);
+      // Mask secrets for display
+      const masked = credentials.map(c => ({ ...c, apiSecret: "••••••••" }));
+      res.json(masked);
+    } catch (error) {
+      console.error("Error fetching credentials:", error);
+      res.status(500).json({ error: "Failed to fetch credentials" });
+    }
+  });
+
+  app.post("/api/franchises/:franchiseId/credentials", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const { name, environment, scopes } = req.body;
+      const apiKey = generateApiKey();
+      const apiSecret = generateApiSecret();
+      
+      const credential = await storage.createPartnerApiCredential({
+        franchiseId: req.params.franchiseId,
+        name,
+        apiKey,
+        apiSecret,
+        environment: environment || "production",
+        scopes: scopes || ["estimates:read"],
+        isActive: true,
+        createdBy: req.dbUser?.email || "admin"
+      });
+      
+      // Return the secret only once - must be saved by the user
+      res.status(201).json({
+        ...credential,
+        apiSecret,
+        message: "Save this API secret - it will never be shown again!"
+      });
+    } catch (error) {
+      console.error("Error creating credential:", error);
+      res.status(500).json({ error: "Failed to create credential" });
+    }
+  });
+
+  app.put("/api/franchises/:franchiseId/credentials/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const { name, isActive, scopes, rateLimitPerMinute, rateLimitPerDay } = req.body;
+      const credential = await storage.updatePartnerApiCredential(req.params.id, {
+        name,
+        isActive,
+        scopes,
+        rateLimitPerMinute,
+        rateLimitPerDay
+      });
+      if (!credential) {
+        return res.status(404).json({ error: "Credential not found" });
+      }
+      res.json({ ...credential, apiSecret: "••••••••" });
+    } catch (error) {
+      console.error("Error updating credential:", error);
+      res.status(500).json({ error: "Failed to update credential" });
+    }
+  });
+
+  app.delete("/api/franchises/:franchiseId/credentials/:id", hasRole(['developer']), async (req: any, res) => {
+    try {
+      await storage.deletePartnerApiCredential(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting credential:", error);
+      res.status(500).json({ error: "Failed to delete credential" });
+    }
+  });
+
+  // API Logs
+  app.get("/api/franchises/:franchiseId/api-logs", hasRole(['developer', 'owner']), async (req: any, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const logs = await storage.getPartnerApiLogs(req.params.franchiseId, limit);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching API logs:", error);
+      res.status(500).json({ error: "Failed to fetch API logs" });
+    }
+  });
+
+  // ==========================================
+  // PARTNER API v1 ENDPOINTS (External Access)
+  // ==========================================
+
+  // Partner API Authentication Middleware
+  const partnerApiAuth: RequestHandler = async (req, res, next) => {
+    const startTime = Date.now();
+    const apiKey = req.headers["x-api-key"] as string;
+    
+    if (!apiKey) {
+      return res.status(401).json({ error: "Missing API key", code: "MISSING_API_KEY" });
+    }
+    
+    const credential = await storage.getPartnerApiCredentialByApiKey(apiKey);
+    if (!credential) {
+      return res.status(401).json({ error: "Invalid API key", code: "INVALID_API_KEY" });
+    }
+    
+    if (!credential.isActive) {
+      return res.status(403).json({ error: "API key is disabled", code: "KEY_DISABLED" });
+    }
+    
+    const franchise = await storage.getFranchiseById(credential.franchiseId);
+    if (!franchise || franchise.status !== "active") {
+      return res.status(403).json({ error: "Franchise is not active", code: "FRANCHISE_INACTIVE" });
+    }
+    
+    // Increment request count
+    await storage.incrementPartnerApiRequestCount(credential.id);
+    
+    // Attach franchise and credential info to request
+    (req as any).franchise = {
+      id: franchise.id,
+      franchiseId: franchise.franchiseId,
+      name: franchise.territoryName
+    };
+    (req as any).credential = {
+      id: credential.id,
+      scopes: credential.scopes || []
+    };
+    
+    // Log API request on response finish
+    res.on("finish", async () => {
+      try {
+        await storage.createPartnerApiLog({
+          credentialId: credential.id,
+          franchiseId: franchise.id,
+          method: req.method,
+          endpoint: req.originalUrl,
+          statusCode: res.statusCode,
+          responseTimeMs: Date.now() - startTime,
+          ipAddress: req.ip || req.socket?.remoteAddress || null,
+          userAgent: req.headers["user-agent"] || null
+        });
+      } catch (e) {
+        console.error("Failed to log API request:", e);
+      }
+    });
+    
+    return next();
+  };
+
+  // Scope check middleware factory
+  const requireScope = (scope: string): RequestHandler => {
+    return (req, res, next) => {
+      const scopes = (req as any).credential?.scopes || [];
+      if (!scopes.includes(scope)) {
+        return res.status(403).json({
+          error: `Missing required scope: ${scope}`,
+          code: "INSUFFICIENT_SCOPE"
+        });
+      }
+      return next();
+    };
+  };
+
+  // GET /api/partner/v1/health - Health check (no auth required)
+  app.get("/api/partner/v1/health", (req, res) => {
+    res.json({
+      status: "healthy",
+      version: "1.0.0",
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  // GET /api/partner/v1/scopes - List available scopes
+  app.get("/api/partner/v1/scopes", (req, res) => {
+    res.json({ scopes: PARTNER_API_SCOPES });
+  });
+
+  // GET /api/partner/v1/me - Get current franchise info
+  app.get("/api/partner/v1/me", partnerApiAuth, (req: any, res) => {
+    res.json({
+      franchise: req.franchise,
+      scopes: req.credential?.scopes
+    });
+  });
+
+  // GET /api/partner/v1/estimates - Get estimates for franchise
+  app.get("/api/partner/v1/estimates", partnerApiAuth, requireScope("estimates:read"), async (req: any, res) => {
+    try {
+      const estimates = await storage.getEstimates();
+      res.json({
+        data: estimates,
+        meta: {
+          total: estimates.length,
+          franchiseId: req.franchise.franchiseId
+        }
+      });
+    } catch (error) {
+      console.error("Partner API error:", error);
+      res.status(500).json({ error: "Failed to fetch estimates" });
+    }
+  });
+
+  // GET /api/partner/v1/leads - Get leads for franchise
+  app.get("/api/partner/v1/leads", partnerApiAuth, requireScope("leads:read"), async (req: any, res) => {
+    try {
+      const leads = await storage.getLeads();
+      res.json({
+        data: leads,
+        meta: {
+          total: leads.length,
+          franchiseId: req.franchise.franchiseId
+        }
+      });
+    } catch (error) {
+      console.error("Partner API error:", error);
+      res.status(500).json({ error: "Failed to fetch leads" });
+    }
+  });
+
+  // GET /api/partner/v1/locations - Get franchise locations
+  app.get("/api/partner/v1/locations", partnerApiAuth, requireScope("locations:read"), async (req: any, res) => {
+    try {
+      const locations = await storage.getFranchiseLocations(req.franchise.id);
+      res.json({
+        data: locations,
+        meta: { total: locations.length }
+      });
+    } catch (error) {
+      console.error("Partner API error:", error);
+      res.status(500).json({ error: "Failed to fetch locations" });
+    }
+  });
+
+  // POST /api/partner/v1/locations - Create franchise location
+  app.post("/api/partner/v1/locations", partnerApiAuth, requireScope("locations:write"), async (req: any, res) => {
+    try {
+      const location = await storage.createFranchiseLocation({
+        ...req.body,
+        franchiseId: req.franchise.id
+      });
+      res.status(201).json({ data: location });
+    } catch (error) {
+      console.error("Partner API error:", error);
+      res.status(500).json({ error: "Failed to create location" });
+    }
+  });
+
+  // GET /api/partner/v1/billing - Get billing info for franchise
+  app.get("/api/partner/v1/billing", partnerApiAuth, requireScope("billing:read"), async (req: any, res) => {
+    try {
+      const franchise = await storage.getFranchiseById(req.franchise.id);
+      res.json({
+        data: {
+          franchiseTier: franchise?.franchiseTier,
+          platformFeeMonthly: franchise?.platformFeeMonthly,
+          royaltyPercent: franchise?.royaltyPercent,
+          royaltyType: franchise?.royaltyType,
+          totalRevenue: franchise?.totalRevenue,
+          totalOrders: franchise?.totalOrders
+        }
+      });
+    } catch (error) {
+      console.error("Partner API error:", error);
+      res.status(500).json({ error: "Failed to fetch billing info" });
+    }
+  });
+
+  // GET /api/partner/v1/analytics - Get analytics for franchise
+  app.get("/api/partner/v1/analytics", partnerApiAuth, requireScope("analytics:read"), async (req: any, res) => {
+    try {
+      const franchise = await storage.getFranchiseById(req.franchise.id);
+      const locations = await storage.getFranchiseLocations(req.franchise.id);
+      
+      res.json({
+        data: {
+          totalRevenue: franchise?.totalRevenue || "0.00",
+          totalOrders: franchise?.totalOrders || 0,
+          activeLocations: locations.filter(l => l.isActive).length,
+          hallmarksMinted: franchise?.hallmarksMintedTotal || 0
+        },
+        meta: {
+          range: req.query.range || "30days",
+          franchiseId: req.franchise.franchiseId
+        }
+      });
+    } catch (error) {
+      console.error("Partner API error:", error);
+      res.status(500).json({ error: "Failed to fetch analytics" });
     }
   });
 
