@@ -51,5 +51,5 @@ expertMode = true
 [userenv]
 
 [userenv.shared]
-VITE_TENANT_ID = "npp"
+VITE_TENANT_ID = "demo"
 CONTACT_EMAIL = "Cryptocreeper94@gmail.com"
