@@ -28,6 +28,7 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **Internal Messaging System:** Real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges.
 - **PDF Document Center:** Document management with digital signatures for contracts, estimates, invoices, and proposals. Includes creation, version tracking, and signature capture via `react-signature-canvas`. API routes have role-based authentication and tenant scoping.
 - **Franchise Management System:** Multi-location franchise support with territory licensing, tiered pricing, and Partner API integration. Includes franchise CRUD, location management, API credential generation with scoped permissions, and usage tracking with rate limiting.
+- **System Health Monitoring:** Real-time health dashboard visible on Admin (4444), Owner (1111), and Developer (0424) dashboards. Monitors database, payments (Stripe), email (Resend), blockchain (Solana), and AI (OpenAI) services with color-coded status indicators and expandable details.
 
 ### System Design Choices
 - **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management, Internal Messaging, Document Center, CRM Calendar, and Franchise Management.
