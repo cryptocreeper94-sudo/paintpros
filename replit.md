@@ -36,6 +36,13 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **File Structure:** `client/src` for frontend, `shared/schema.ts` for database models, and `server/` for data access and API routes.
 - **Authentication System:** Hybrid architecture with custom email/password for customers and PIN-based access for staff. Key files: `server/customAuth.ts`, `client/src/pages/auth.tsx`, `client/src/hooks/use-auth.ts`, `client/src/components/ui/navbar.tsx`.
 
+### Security Measures
+- **PIN Rate Limiting:** 5 attempts within 15-minute window, exponential backoff lockout (2^n minutes), lockout counter persists across attempts for escalation, successful login clears history. Implemented in `/api/auth/pin/verify` and `/api/auth/pin/change` endpoints.
+- **Database Indexes:** Performance and security indexes on users (tenantId, role), bookings (tenantId, userId, scheduledDate, status, customerEmail), seoPages (tenantId, pagePath composite).
+- **Input Validation:** Zod schema validation on messaging endpoints (conversations, messages) and booking endpoints with proper 400 error responses.
+- **XSS Sanitization:** Using the `xss` library to sanitize SEO page fields (metaTitle, metaDescription, metaKeywords, ogTitle, ogDescription, twitterTitle, twitterDescription, pageTitle) and message content.
+- **Tenant Isolation:** Tables with tenantId columns (bookings, documents, conversations, seoPages, etc.) have tenant-filtered storage methods. Note: leads, estimates, and crmDeals tables currently lack tenantId columns (future schema migration needed).
+
 ## External Dependencies
 
 - **Solana/Helius:** For blockchain stamping of document hashes.
