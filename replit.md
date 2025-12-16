@@ -66,7 +66,13 @@ The `docs/` folder contains reusable architecture documentation for agents:
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.2.3** - Current Release
+- **v1.2.4** - Current Release
+  - Help Center & Feature Tour: Interactive slideshow at /help showcasing all platform features
+  - Customer Guide: 6 slides covering estimates, booking, account portal, notifications, and referrals
+  - Staff Guide: 7 slides (PIN-protected) covering dashboards, CRM, calendar, documents, crew management, messaging, and franchises
+  - AI-generated images: Professional visuals throughout the help slideshow
+  - Header navigation: Help icon added next to theme toggle for easy access
+- **v1.2.3**
   - Push Notifications: Browser push notifications for appointment reminders (24h and 1h before)
   - Email Reminders: Automatic email reminders sent 24h and 1h before confirmed appointments
   - Notification Settings: User-configurable notification preferences in customer account portal
