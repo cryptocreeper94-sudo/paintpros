@@ -40,7 +40,7 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **PIN Rate Limiting:** 5 attempts within 15-minute window, exponential backoff lockout (2^n minutes), lockout counter persists across attempts for escalation, successful login clears history. Implemented in `/api/auth/pin/verify` and `/api/auth/pin/change` endpoints.
 - **Database Indexes:** Performance and security indexes on users (tenantId, role), bookings (tenantId, userId, scheduledDate, status, customerEmail), seoPages (tenantId, pagePath composite).
 - **Input Validation:** Zod schema validation on messaging endpoints (conversations, messages) and booking endpoints with proper 400 error responses.
-- **XSS Sanitization:** Using the `xss` library to sanitize SEO page fields (metaTitle, metaDescription, metaKeywords, ogTitle, ogDescription, twitterTitle, twitterDescription, pageTitle) and message content.
+- **XSS Sanitization:** Using the `xss` library to sanitize user-controlled fields across the platform: SEO pages (metaTitle, metaDescription, metaKeywords, ogTitle, ogDescription, twitterTitle, twitterDescription, pageTitle), messages (content), CRM deals (title, notes, jobAddress), CRM notes (content), calendar events (title, description, location, notes), and documents (title, description).
 - **Tenant Isolation:** Tables with tenantId columns (bookings, documents, conversations, seoPages, etc.) have tenant-filtered storage methods. Note: leads, estimates, and crmDeals tables currently lack tenantId columns (future schema migration needed).
 
 ## External Dependencies
