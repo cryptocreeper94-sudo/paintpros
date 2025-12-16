@@ -37,7 +37,10 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
-      <div className="flex items-center h-12 md:h-14 px-3 md:px-4">
+      <div className={cn(
+        "flex items-center px-3 md:px-4",
+        tenant.id === "demo" ? "h-16 md:h-20" : "h-12 md:h-14"
+      )}>
         {/* Left: Hamburger Menu - NPP has custom positioning for emblem, demo uses normal positioning */}
         <button 
           className={cn(
@@ -65,28 +68,45 @@ export function Navbar() {
         <div 
           className="absolute left-0 right-0 flex justify-center pointer-events-none"
         >
-          <div 
-            className={cn(
-              "whitespace-nowrap px-1 pointer-events-auto",
-              tenant.id === "demo" 
-                ? "text-white text-base md:text-base lg:text-xl"
-                : "text-sm md:text-xl lg:text-2xl bg-clip-text text-transparent"
-            )}
-            style={{ 
-              fontFamily: 'Orbitron, Rajdhani, sans-serif', 
-              fontWeight: 400, 
-              letterSpacing: '0.03em',
-              backgroundImage: tenant.id !== "demo" ? 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)' : undefined
-            }}
-            data-testid="text-header-title"
-          >
-            {tenant.id === "demo" ? (
-              <>
-                <span className="md:hidden">PaintPros.io</span>
-                <span className="hidden md:inline">PaintPros.io | White-Label Websites for Painting Contractors</span>
-              </>
-            ) : tenant.name}
-          </div>
+          {tenant.id === "demo" ? (
+            <div className="flex flex-col items-center pointer-events-auto">
+              <div 
+                className="text-white text-lg md:text-2xl lg:text-3xl whitespace-nowrap"
+                style={{ 
+                  fontFamily: 'Orbitron, Rajdhani, sans-serif', 
+                  fontWeight: 500, 
+                  letterSpacing: '0.03em'
+                }}
+                data-testid="text-header-title"
+              >
+                PaintPros.io
+              </div>
+              <div 
+                className="text-white/70 text-[10px] md:text-xs lg:text-sm whitespace-nowrap"
+                style={{ 
+                  fontFamily: 'Rajdhani, sans-serif', 
+                  fontWeight: 400, 
+                  letterSpacing: '0.05em'
+                }}
+                data-testid="text-header-tagline"
+              >
+                White-Label Websites for Painting Contractors
+              </div>
+            </div>
+          ) : (
+            <div 
+              className="whitespace-nowrap px-1 pointer-events-auto text-sm md:text-xl lg:text-2xl bg-clip-text text-transparent"
+              style={{ 
+                fontFamily: 'Orbitron, Rajdhani, sans-serif', 
+                fontWeight: 400, 
+                letterSpacing: '0.03em',
+                backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
+              }}
+              data-testid="text-header-title"
+            >
+              {tenant.name}
+            </div>
+          )}
         </div>
 
         {/* Spacer to push toggle to the right */}
