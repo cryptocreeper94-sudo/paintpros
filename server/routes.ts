@@ -144,6 +144,11 @@ function getTenantFromHostname(hostname: string): string {
     }
   }
   
+  // In development, check environment variable
+  if (process.env.NODE_ENV !== 'production' && process.env.VITE_TENANT_ID) {
+    return process.env.VITE_TENANT_ID;
+  }
+  
   // Default fallback
   return "npp";
 }
