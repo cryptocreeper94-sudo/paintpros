@@ -52,13 +52,16 @@ export type User = typeof users.$inferSelect;
 // Leads Table - Email capture
 export const leads = pgTable("leads", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"), // Multi-tenant isolation
   email: text("email").notNull(),
   userId: varchar("user_id").references(() => users.id), // Link to customer account (optional)
   firstName: text("first_name"),
   lastName: text("last_name"),
   phone: text("phone"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_leads_tenant_id").on(table.tenantId),
+]);
 
 export const insertLeadSchema = createInsertSchema(leads).omit({
   id: true,
@@ -71,6 +74,7 @@ export type Lead = typeof leads.$inferSelect;
 // Estimates Table - Detailed quote storage
 export const estimates = pgTable("estimates", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"), // Multi-tenant isolation
   leadId: varchar("lead_id").references(() => leads.id).notNull(),
   
   // Job selections
@@ -94,7 +98,9 @@ export const estimates = pgTable("estimates", {
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   status: text("status").notNull().default("pending"), // pending, contacted, converted
-});
+}, (table) => [
+  index("idx_estimates_tenant_id").on(table.tenantId),
+]);
 
 export const insertEstimateSchema = createInsertSchema(estimates).omit({
   id: true,
@@ -233,6 +239,7 @@ export type SeoAudit = typeof seoAudits.$inferSelect;
 // CRM Deals - Sales pipeline and Jobs pipeline
 export const crmDeals = pgTable("crm_deals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"), // Multi-tenant isolation
   title: text("title").notNull(),
   value: decimal("value", { precision: 10, scale: 2 }).default("0"),
   stage: text("stage").notNull().default("new_lead"), // Sales: new_lead, quoted, negotiating, won, lost | Jobs: project_accepted, scheduled, in_progress, touch_ups, complete
@@ -253,7 +260,10 @@ export const crmDeals = pgTable("crm_deals", {
   convertedFromDealId: varchar("converted_from_deal_id"), // Reference to original sales deal
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_crm_deals_tenant_id").on(table.tenantId),
+  index("idx_crm_deals_tenant_stage").on(table.tenantId, table.stage),
+]);
 
 export const insertCrmDealSchema = createInsertSchema(crmDeals).omit({
   id: true,
