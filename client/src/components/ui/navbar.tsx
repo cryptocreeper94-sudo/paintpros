@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -113,18 +113,29 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Spacer to push toggle to the right */}
+        {/* Spacer to push icons to the right */}
         <div className="flex-1" />
 
-        {/* Right: Theme Toggle */}
-        <button 
-          onClick={toggleTheme}
-          className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
-          aria-label="Toggle theme"
-          data-testid="button-theme-toggle"
-        >
-          {theme === "dark" ? <Sun className="w-8 h-8 text-accent" /> : <Moon className="w-8 h-8 text-white" />}
-        </button>
+        {/* Right: Help & Theme Toggle */}
+        <div className="flex items-center gap-1">
+          <Link href="/help">
+            <button 
+              className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
+              aria-label="Help & Tour"
+              data-testid="button-help"
+            >
+              <HelpCircle className="w-7 h-7 md:w-8 md:h-8 text-white" />
+            </button>
+          </Link>
+          <button 
+            onClick={toggleTheme}
+            className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
+            aria-label="Toggle theme"
+            data-testid="button-theme-toggle"
+          >
+            {theme === "dark" ? <Sun className="w-8 h-8 text-accent" /> : <Moon className="w-8 h-8 text-white" />}
+          </button>
+        </div>
       </div>
     </header>
 
