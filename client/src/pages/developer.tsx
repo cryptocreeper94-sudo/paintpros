@@ -32,6 +32,7 @@ import { getAssetBadge, formatDate } from "@/lib/hallmark";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
+import { FranchiseManagement } from "@/components/franchise-management";
 
 const DEVELOPER_PIN = "0424";
 
@@ -2415,6 +2416,15 @@ export default function Developer() {
             <motion.div variants={cardVariants} className="h-full">
               <GlassCard className={`h-full p-6 ${cardBackgroundStyles.mixed}`} glow="purple" animatedBorder>
                 <TenantAnalyticsDashboard />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Franchise Management System */}
+          <BentoItem colSpan={12} rowSpan={4}>
+            <motion.div variants={cardVariants} className="h-full">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.accent}`} glow="accent" animatedBorder>
+                <FranchiseManagement />
               </GlassCard>
             </motion.div>
           </BentoItem>
