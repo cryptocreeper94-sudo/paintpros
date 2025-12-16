@@ -1643,7 +1643,7 @@ export async function registerRoutes(
           ? FOUNDING_ASSETS.NPP_GENESIS 
           : FOUNDING_ASSETS.PAINTPROS_PLATFORM;
         res.json({ 
-          version: "1.0.0", 
+          version: "1.2.5", 
           buildNumber: 0,
           tenantId: tenantId || 'orbit',
           hallmarkNumber: genesisAsset.number,
@@ -1692,7 +1692,7 @@ export async function registerRoutes(
       
       // Get tenant-specific latest release
       const latestRelease = await storage.getLatestRelease(tenantId);
-      let currentVersion = latestRelease?.version || "1.0.0";
+      let currentVersion = latestRelease?.version || "1.2.5";
       let buildNumber = (latestRelease?.buildNumber || 0) + 1;
       
       const [major, minor, patch] = currentVersion.split('.').map(Number);
@@ -5028,7 +5028,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   app.get("/api/partner/v1/health", (req, res) => {
     res.json({
       status: "healthy",
-      version: "1.0.0",
+      version: "1.2.5",
       timestamp: new Date().toISOString()
     });
   });

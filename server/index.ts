@@ -95,7 +95,7 @@ async function autoDeployVersionBump(): Promise<void> {
       }
       
       // Calculate new version for this tenant
-      let currentVersion = latestRelease?.version || "1.0.0";
+      let currentVersion = latestRelease?.version || "1.2.5";
       let buildNumber = (latestRelease?.buildNumber || 0) + 1;
       
       const [major, minor, patch] = currentVersion.split('.').map(Number);
