@@ -69,7 +69,7 @@ export function Navbar() {
             className={cn(
               "whitespace-nowrap px-1 pointer-events-auto",
               tenant.id === "demo" 
-                ? "text-white text-[10px] md:text-base lg:text-xl"
+                ? "text-white text-base md:text-base lg:text-xl"
                 : "text-sm md:text-xl lg:text-2xl bg-clip-text text-transparent"
             )}
             style={{ 
@@ -80,10 +80,12 @@ export function Navbar() {
             }}
             data-testid="text-header-title"
           >
-            {tenant.id === "demo" 
-              ? "PaintPros.io | White-Label Websites for Painting Contractors"
-              : tenant.name
-            }
+            {tenant.id === "demo" ? (
+              <>
+                <span className="md:hidden">PaintPros.io</span>
+                <span className="hidden md:inline">PaintPros.io | White-Label Websites for Painting Contractors</span>
+              </>
+            ) : tenant.name}
           </div>
         </div>
 
