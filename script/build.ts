@@ -36,7 +36,12 @@ const allowlist = [
 ];
 
 async function buildAll() {
-  await preBuildStamp();
+  // Skip pre-build stamp during Replit deployments (DB/Solana not available in build sandbox)
+  if (process.env.REPLIT_DEPLOYMENT || process.env.REPLIT_CI) {
+    console.log("⚠️  Skipping pre-build stamp (deployment build)");
+  } else {
+    await preBuildStamp();
+  }
   
   await rm("dist", { recursive: true, force: true });
 
