@@ -71,7 +71,7 @@ export function Navbar() {
           className="absolute left-0 right-0 flex justify-center pointer-events-none"
         >
           {tenant.id === "demo" ? (
-            <div className="flex flex-col items-center pointer-events-auto">
+            <div className="flex flex-col items-start pointer-events-auto">
               <div 
                 className="text-lg md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
                 style={{ 
