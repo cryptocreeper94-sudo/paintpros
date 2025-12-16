@@ -36,6 +36,10 @@ export type User = typeof users.$inferSelect;
 export const leads = pgTable("leads", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull(),
+  userId: varchar("user_id").references(() => users.id), // Link to customer account (optional)
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  phone: text("phone"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -767,6 +771,7 @@ export const bookings = pgTable("bookings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   tenantId: text("tenant_id").default("npp").notNull(),
   leadId: varchar("lead_id").references(() => leads.id),
+  userId: varchar("user_id").references(() => users.id), // Link to customer account (optional)
   
   // Customer info
   customerName: text("customer_name").notNull(),
@@ -1365,3 +1370,44 @@ export const PARTNER_API_SCOPES = [
 ] as const;
 
 export type PartnerApiScope = typeof PARTNER_API_SCOPES[number];
+
+// ============ CUSTOMER ACCOUNTS ============
+
+// Customer Preferences - Saved preferences for logged-in customers
+export const customerPreferences = pgTable("customer_preferences", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull().unique(),
+  tenantId: text("tenant_id").default("npp").notNull(),
+  
+  // Contact preferences
+  preferredContactMethod: text("preferred_contact_method").default("email"), // email, phone, text
+  preferredContactTime: text("preferred_contact_time"), // morning, afternoon, evening
+  marketingOptIn: boolean("marketing_opt_in").default(true),
+  smsOptIn: boolean("sms_opt_in").default(false),
+  
+  // Project preferences
+  preferredColors: jsonb("preferred_colors").default([]), // Array of color names/codes
+  preferredFinish: text("preferred_finish"), // matte, eggshell, satin, semi-gloss, gloss
+  preferredBrands: jsonb("preferred_brands").default([]), // Array of paint brand names
+  
+  // Property info
+  propertyType: text("property_type"), // house, apartment, condo, commercial
+  propertySize: text("property_size"), // small, medium, large
+  lastServiceDate: timestamp("last_service_date"),
+  
+  // Notes
+  specialInstructions: text("special_instructions"),
+  accessNotes: text("access_notes"), // gate codes, parking, etc.
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCustomerPreferencesSchema = createInsertSchema(customerPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCustomerPreferences = z.infer<typeof insertCustomerPreferencesSchema>;
+export type CustomerPreferences = typeof customerPreferences.$inferSelect;
