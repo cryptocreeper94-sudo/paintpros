@@ -52,6 +52,8 @@ expertMode = true
 
 [userenv.shared]
 CONTACT_EMAIL = "Cryptocreeper94@gmail.com"
+VAPID_PUBLIC_KEY = "BDZaak-efN4_Ra-s9wNRAXZotXWi61WFtFYBRrqOBAXw4_apIWTKk8rMEtw8rrqzQGeoCYkvVQw4ibb0lLOjNJE"
+VAPID_PRIVATE_KEY = "R6paziBx3x0ju8YJZAEZje3UvuNarol3C0-8unnMJNk"
 
 [userenv.development]
 VITE_TENANT_ID = "npp"
