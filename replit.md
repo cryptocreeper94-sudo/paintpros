@@ -48,6 +48,20 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 - **Embla Carousel:** For horizontal carousels.
 - **Radix UI:** For accessible UI components like accordions.
 - **Drizzle:** For database schema definition.
+- **Replit Auth:** For social/OAuth login (Google, GitHub, Apple, X, email/password).
+
+## Darkwave Dev Hub Documentation
+
+The `docs/` folder contains reusable architecture documentation for agents:
+
+| Document | Description |
+|----------|-------------|
+| `docs/AUTHORIZATION_SYSTEM.md` | **Hybrid Authentication Architecture** - Combines Replit Auth (social login) for customers with PIN-based access for staff. Includes full implementation guide, code examples, and branding customization instructions. |
+
+### Authentication System Summary
+- **Customer Login:** Replit Auth via `/api/login` (Google, GitHub, Apple, X, email)
+- **Staff Access:** PIN-based dashboard access (Admin: 4444, Owner: 1111, Developer: 0424, etc.)
+- **Key Files:** `server/replit_integrations/auth/`, `client/src/hooks/use-auth.ts`, `client/src/components/ui/navbar.tsx`
 
 ## Recent Changes (Changelog)
 
