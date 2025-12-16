@@ -235,6 +235,17 @@ export function Navbar() {
                           )}
                         </div>
                       </div>
+                      <Link href="/account">
+                        <span 
+                          className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                          onClick={() => setIsOpen(false)}
+                          data-testid="link-my-account"
+                        >
+                          <User className="w-5 h-5 text-accent" />
+                          <span className="text-lg font-medium text-foreground">My Account</span>
+                          <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                        </span>
+                      </Link>
                       <a 
                         href="/api/logout"
                         className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
