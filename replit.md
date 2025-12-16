@@ -66,7 +66,18 @@ The `docs/` folder contains reusable architecture documentation for agents:
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.2.0** - Current Release
+- **v1.2.1** - Current Release
+  - Customer Portal (/account): Complete customer account management with bento grid layout
+  - Estimate History: View all past estimates with accordion detail expansion
+  - Job Tracking: Status cards for active and completed painting jobs
+  - Appointment Booking: View and manage scheduled service appointments
+  - Document Access: Access contracts, invoices, and proposals with accordion expansion
+  - Customer Preferences: Save preferred contact method, colors, communication preferences
+  - Referral Program: Quick access to referral link with clipboard copy
+  - Messaging: Quick link to customer support messaging
+  - Auth gating: Portal content protected with Replit Auth, sign-in prompt for unauthenticated users
+  - Navbar enhancement: "My Account" link added for logged-in users
+- **v1.2.0**
   - Franchise Management System: Complete multi-location franchise support with territory licensing
   - Partner API: Programmatic access with scoped permissions (estimates, leads, analytics, billing)
   - API credential management: Key generation, secret reveal, scope configuration
