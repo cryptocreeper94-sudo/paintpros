@@ -141,6 +141,86 @@ export const insertSeoTagSchema = createInsertSchema(seoTags).omit({
 export type InsertSeoTag = z.infer<typeof insertSeoTagSchema>;
 export type SeoTag = typeof seoTags.$inferSelect;
 
+// SEO Page Metadata - Comprehensive per-page SEO settings
+export const seoPages = pgTable("seo_pages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").default("demo"),
+  pagePath: text("page_path").notNull(), // e.g., '/', '/services', '/contact'
+  pageTitle: text("page_title").notNull(),
+  
+  // Basic Meta Tags
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
+  metaKeywords: text("meta_keywords"), // comma-separated
+  metaRobots: text("meta_robots").default("index, follow"),
+  canonicalUrl: text("canonical_url"),
+  
+  // Open Graph
+  ogTitle: text("og_title"),
+  ogDescription: text("og_description"),
+  ogImage: text("og_image"),
+  ogType: text("og_type").default("website"),
+  ogSiteName: text("og_site_name"),
+  ogLocale: text("og_locale").default("en_US"),
+  
+  // Twitter Card
+  twitterCard: text("twitter_card").default("summary_large_image"),
+  twitterTitle: text("twitter_title"),
+  twitterDescription: text("twitter_description"),
+  twitterImage: text("twitter_image"),
+  twitterSite: text("twitter_site"), // @handle
+  
+  // JSON-LD Structured Data
+  structuredDataType: text("structured_data_type"), // 'LocalBusiness', 'Service', 'Organization', 'FAQPage', 'BreadcrumbList'
+  structuredData: jsonb("structured_data"), // Full JSON-LD object
+  
+  // Audit Fields
+  seoScore: integer("seo_score").default(0), // 0-100 score
+  missingFields: text("missing_fields").array(), // List of missing recommended fields
+  lastAuditAt: timestamp("last_audit_at"),
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdBy: text("created_by"),
+  updatedBy: text("updated_by"),
+});
+
+export const insertSeoPageSchema = createInsertSchema(seoPages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  seoScore: true,
+  missingFields: true,
+  lastAuditAt: true,
+});
+
+export type InsertSeoPage = z.infer<typeof insertSeoPageSchema>;
+export type SeoPage = typeof seoPages.$inferSelect;
+
+// SEO Audit Log - Track changes and audit history
+export const seoAudits = pgTable("seo_audits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  seoPageId: varchar("seo_page_id").references(() => seoPages.id),
+  tenantId: text("tenant_id").default("demo"),
+  auditType: text("audit_type").notNull(), // 'automated', 'manual', 'edit'
+  previousScore: integer("previous_score"),
+  newScore: integer("new_score"),
+  changes: jsonb("changes"), // {field: {old: '', new: ''}}
+  recommendations: text("recommendations").array(),
+  performedBy: text("performed_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSeoAuditSchema = createInsertSchema(seoAudits).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertSeoAudit = z.infer<typeof insertSeoAuditSchema>;
+export type SeoAudit = typeof seoAudits.$inferSelect;
+
 // ============ CRM TABLES ============
 
 // CRM Deals - Sales pipeline and Jobs pipeline
