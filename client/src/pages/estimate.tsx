@@ -2,7 +2,7 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
-import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award, Shield, CalendarCheck } from "lucide-react";
+import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award, Shield, CalendarCheck, PaintBucket } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,7 @@ interface JobSelections {
   trim: boolean;
   ceilings: boolean;
   doors: boolean;
+  cabinets: boolean;
 }
 
 export default function Estimate() {
@@ -58,7 +59,7 @@ export default function Estimate() {
   useEffect(() => {
     if (isDemo) {
       // For demo mode, set hardcoded example values
-      setJobSelections({ walls: true, trim: true, ceilings: false, doors: true });
+      setJobSelections({ walls: true, trim: true, ceilings: false, doors: true, cabinets: false });
       setSquareFootage(2500);
       setDoorCount(8);
       return;
@@ -87,6 +88,7 @@ export default function Estimate() {
     trim: false,
     ceilings: false,
     doors: false,
+    cabinets: false,
   });
   const [squareFootage, setSquareFootage] = useState<number>(0);
   const [doorCount, setDoorCount] = useState<number>(1);
@@ -631,7 +633,7 @@ export default function Estimate() {
                   <FlipButton 
                     onClick={() => {
                       setEstimateSubmitted(false);
-                      setJobSelections({ walls: false, trim: false, ceilings: false, doors: false });
+                      setJobSelections({ walls: false, trim: false, ceilings: false, doors: false, cabinets: false });
                       setSquareFootage(0);
                       setDoorCount(1);
                       setUploadedPhotos([]);
@@ -704,6 +706,7 @@ export default function Estimate() {
                   { key: 'trim', label: 'Trim', desc: 'Baseboards, crown molding, window frames', icon: Layers, image: trimImg },
                   { key: 'ceilings', label: 'Ceilings', desc: 'Ceiling painting and touch-ups', icon: Square, image: ceilingsImg },
                   { key: 'doors', label: 'Doors', desc: `$${PRICING.DOOR_PRICE} per door`, icon: DoorOpen, image: doorsImg },
+                  ...(tenant.services.cabinetPainting ? [{ key: 'cabinets', label: 'Cabinets', desc: 'Kitchen & bathroom cabinet refinishing', icon: PaintBucket, image: trimImg }] : []),
                 ].map((service) => (
                   <motion.div 
                     key={service.key}

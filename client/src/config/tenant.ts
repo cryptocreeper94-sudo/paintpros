@@ -139,7 +139,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     ceilings: true,
     doors: true,
     drywallRepair: true,
-    cabinetPainting: false,
+    cabinetPainting: true,
     deckStaining: false,
     pressureWashing: false,
   },
