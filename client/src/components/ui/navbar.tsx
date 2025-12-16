@@ -120,7 +120,7 @@ export function Navbar() {
         <div className="flex items-center gap-1">
           <Link href="/help">
             <button 
-              className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80"
+              className="p-2 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5"
               aria-label="Help & Tour"
               data-testid="button-help"
             >
