@@ -66,7 +66,13 @@ The `docs/` folder contains reusable architecture documentation for agents:
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.2.1** - Current Release
+- **v1.2.2** - Current Release
+  - Email Notifications: Automatic email confirmations when customers accept estimates (to both customer and business)
+  - Estimate History Filtering: Filter estimates by status (pending, sent, accepted, scheduled, in progress, completed)
+  - Estimate History Sorting: Sort estimates by date or amount, ascending or descending
+  - Accept Estimate Feature: Customers can accept pending estimates directly from their portal
+  - Error Handling: Retry functionality and user-friendly error states for dashboard loading failures
+- **v1.2.1**
   - Customer Portal (/account): Complete customer account management with bento grid layout
   - Estimate History: View all past estimates with accordion detail expansion
   - Job Tracking: Status cards for active and completed painting jobs
