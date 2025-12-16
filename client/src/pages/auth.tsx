@@ -141,6 +141,7 @@ export default function AuthPage() {
                             type="email"
                             placeholder="you@example.com"
                             className="pl-10"
+                            autoComplete="email"
                             data-testid="input-login-email"
                           />
                         </div>
@@ -164,6 +165,7 @@ export default function AuthPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter your password"
                             className="pl-10 pr-10"
+                            autoComplete="current-password"
                             data-testid="input-login-password"
                           />
                           <Button
@@ -210,6 +212,7 @@ export default function AuthPage() {
                               {...field}
                               placeholder="John"
                               className="pl-10"
+                              autoComplete="given-name"
                               data-testid="input-register-firstname"
                             />
                           </div>
@@ -229,6 +232,7 @@ export default function AuthPage() {
                           <Input
                             {...field}
                             placeholder="Doe"
+                            autoComplete="family-name"
                             data-testid="input-register-lastname"
                           />
                         </FormControl>
@@ -252,6 +256,7 @@ export default function AuthPage() {
                             type="email"
                             placeholder="you@example.com"
                             className="pl-10"
+                            autoComplete="email"
                             data-testid="input-register-email"
                           />
                         </div>
@@ -275,6 +280,7 @@ export default function AuthPage() {
                             type="tel"
                             placeholder="(555) 123-4567"
                             className="pl-10"
+                            autoComplete="tel"
                             data-testid="input-register-phone"
                           />
                         </div>
@@ -298,6 +304,7 @@ export default function AuthPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="At least 8 characters"
                             className="pl-10 pr-10"
+                            autoComplete="new-password"
                             data-testid="input-register-password"
                           />
                           <Button
@@ -331,6 +338,7 @@ export default function AuthPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Confirm your password"
                             className="pl-10"
+                            autoComplete="new-password"
                             data-testid="input-register-confirm-password"
                           />
                         </div>
