@@ -80,3 +80,80 @@ export async function sendContactEmail(data: ContactFormData): Promise<{ success
     return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
   }
 }
+
+export interface EstimateAcceptedData {
+  customerName: string;
+  customerEmail: string;
+  estimateId: string;
+  estimateTotal: number;
+  jobType: string;
+  squareFootage?: number;
+  tenantName: string;
+}
+
+export async function sendEstimateAcceptedEmail(data: EstimateAcceptedData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { client, fromEmail } = await getResendClient();
+    const businessEmail = process.env.CONTACT_EMAIL || 'contact@paintpros.io';
+    const sender = fromEmail || `${data.tenantName} <onboarding@resend.dev>`;
+
+    // Send confirmation to customer
+    await client.emails.send({
+      from: sender,
+      to: [data.customerEmail],
+      subject: `Estimate Accepted - ${data.tenantName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1a1a1a;">Thank You for Accepting Your Estimate!</h2>
+          <p>Hi ${data.customerName},</p>
+          <p>We're excited to confirm that you've accepted your painting estimate. Our team will be in touch shortly to schedule your project.</p>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1a1a1a;">Estimate Details</h3>
+            <p><strong>Estimate ID:</strong> ${data.estimateId.slice(0, 8).toUpperCase()}</p>
+            <p><strong>Job Type:</strong> ${data.jobType}</p>
+            ${data.squareFootage ? `<p><strong>Square Footage:</strong> ${data.squareFootage} sq ft</p>` : ''}
+            <p style="font-size: 24px; color: #22c55e; font-weight: bold;">Total: $${data.estimateTotal.toLocaleString()}</p>
+          </div>
+          
+          <p>If you have any questions, feel free to reply to this email or contact us directly.</p>
+          <p>Thank you for choosing ${data.tenantName}!</p>
+        </div>
+      `
+    });
+
+    // Send notification to business
+    await client.emails.send({
+      from: sender,
+      to: [businessEmail],
+      subject: `New Estimate Accepted - $${data.estimateTotal.toLocaleString()}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #22c55e;">Estimate Accepted!</h2>
+          <p>A customer has accepted their painting estimate.</p>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Customer Details</h3>
+            <p><strong>Name:</strong> ${data.customerName}</p>
+            <p><strong>Email:</strong> ${data.customerEmail}</p>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Estimate Details</h3>
+            <p><strong>Estimate ID:</strong> ${data.estimateId}</p>
+            <p><strong>Job Type:</strong> ${data.jobType}</p>
+            ${data.squareFootage ? `<p><strong>Square Footage:</strong> ${data.squareFootage} sq ft</p>` : ''}
+            <p style="font-size: 24px; color: #22c55e; font-weight: bold;">Total: $${data.estimateTotal.toLocaleString()}</p>
+          </div>
+          
+          <p>Please reach out to schedule the project.</p>
+        </div>
+      `
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send estimate accepted email:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
+  }
+}

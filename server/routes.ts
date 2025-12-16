@@ -24,7 +24,7 @@ import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
-import { sendContactEmail, type ContactFormData } from "./resend";
+import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } from "./resend";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import type { RequestHandler } from "express";
 
@@ -644,6 +644,23 @@ export async function registerRoutes(
         res.status(404).json({ error: "Failed to update estimate" });
         return;
       }
+
+      // Send email notifications (async, don't block response)
+      const lead = userLeads.find((l: Lead) => l.id === estimate.leadId);
+      const customerName = lead?.name || user.firstName || user.email?.split("@")[0] || "Customer";
+      const tenantName = updatedEstimate.tenantId === "nashville" ? "Nashville Painting Professionals" : "PaintPros.io";
+      
+      sendEstimateAcceptedEmail({
+        customerName,
+        customerEmail: user.email,
+        estimateId: updatedEstimate.id,
+        estimateTotal: Number(updatedEstimate.totalEstimate) || 0,
+        jobType: updatedEstimate.pricingTier === "full_job" ? "Full Interior" : 
+                 updatedEstimate.pricingTier === "walls_only" ? "Walls Only" : 
+                 updatedEstimate.pricingTier === "doors_only" ? "Doors Only" : "Custom Job",
+        squareFootage: updatedEstimate.squareFootage || undefined,
+        tenantName
+      }).catch(err => console.error("Failed to send estimate accepted email:", err));
       
       res.json(updatedEstimate);
     } catch (error) {

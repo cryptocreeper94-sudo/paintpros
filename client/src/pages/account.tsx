@@ -43,9 +43,13 @@ import {
   MapPin,
   RefreshCw,
   LogIn,
-  AlertCircle
+  AlertCircle,
+  Filter,
+  SortAsc,
+  SortDesc
 } from "lucide-react";
 import { format } from "date-fns";
+import { useState, useMemo } from "react";
 import type { 
   Lead, 
   Estimate, 
@@ -200,6 +204,36 @@ export default function AccountPage() {
   const documents = dashboard?.documents || [];
   const preferences = dashboard?.preferences;
 
+  // Filtering and sorting state
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"date" | "amount">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // Filtered and sorted estimates
+  const filteredEstimates = useMemo(() => {
+    let result = [...estimates];
+    
+    // Apply status filter
+    if (statusFilter !== "all") {
+      result = result.filter(e => e.status === statusFilter);
+    }
+    
+    // Apply sorting
+    result.sort((a, b) => {
+      if (sortBy === "date") {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+      } else {
+        const amountA = Number(a.totalEstimate) || 0;
+        const amountB = Number(b.totalEstimate) || 0;
+        return sortOrder === "desc" ? amountB - amountA : amountA - amountB;
+      }
+    });
+    
+    return result;
+  }, [estimates, statusFilter, sortBy, sortOrder]);
+
   const activeJobs = estimates.filter(e => 
     e.status === "accepted" || e.status === "in_progress" || e.status === "scheduled"
   );
@@ -296,6 +330,53 @@ export default function AccountPage() {
                   </Link>
                 </div>
 
+                {/* Filter and Sort Controls */}
+                {estimates.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <Filter className="w-4 h-4 text-muted-foreground" />
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="w-[130px]" data-testid="select-status-filter">
+                          <SelectValue placeholder="All Statuses" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="sent">Sent</SelectItem>
+                          <SelectItem value="accepted">Accepted</SelectItem>
+                          <SelectItem value="scheduled">Scheduled</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Select value={sortBy} onValueChange={(v) => setSortBy(v as "date" | "amount")}>
+                        <SelectTrigger className="w-[110px]" data-testid="select-sort-by">
+                          <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="date">Date</SelectItem>
+                          <SelectItem value="amount">Amount</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                        data-testid="button-toggle-sort-order"
+                      >
+                        {sortOrder === "desc" ? <SortDesc className="w-4 h-4" /> : <SortAsc className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                    {statusFilter !== "all" && estimates.length > 0 && (
+                      <Badge variant="secondary" className="text-xs" data-testid="badge-filter-count">
+                        {filteredEstimates.length} of {estimates.length} shown
+                      </Badge>
+                    )}
+                  </div>
+                )}
+
                 {estimates.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <ClipboardList className="w-12 h-12 text-muted-foreground mb-4" />
@@ -306,10 +387,23 @@ export default function AccountPage() {
                       </Button>
                     </Link>
                   </div>
+                ) : filteredEstimates.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center" data-testid="container-no-filter-results">
+                    <Filter className="w-10 h-10 text-muted-foreground mb-3" />
+                    <p className="text-muted-foreground mb-2" data-testid="text-no-filter-results">No estimates match your filters</p>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setStatusFilter("all")}
+                      data-testid="button-clear-filters"
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
                 ) : (
                   <div className="overflow-y-auto max-h-[300px] md:max-h-[400px] pr-2">
                     <Accordion type="single" collapsible className="space-y-2">
-                      {estimates.map((estimate) => (
+                      {filteredEstimates.map((estimate) => (
                           <AccordionItem 
                             key={estimate.id} 
                             value={estimate.id}
