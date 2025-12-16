@@ -25,7 +25,7 @@ import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } from "./resend";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
 import type { RequestHandler } from "express";
 
 // Global Socket.IO instance for real-time messaging
@@ -45,15 +45,14 @@ function formatTimeAgo(ms: number): string {
 // Role-based access middleware
 const hasRole = (allowedRoles: string[]): RequestHandler => {
   return async (req, res, next) => {
-    const user = req.user as any;
+    const sessionUser = (req.session as any)?.user;
     
-    if (!req.isAuthenticated() || !user?.claims?.sub) {
+    if (!sessionUser?.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
     try {
-      const userId = user.claims.sub;
-      const dbUser = await storage.getUser(userId);
+      const dbUser = await storage.getUser(sessionUser.id);
       
       if (!dbUser) {
         return res.status(401).json({ message: "User not found" });
@@ -273,27 +272,15 @@ export async function registerRoutes(
     res.json(users);
   });
 
-  // ============ REPLIT AUTH ============
-  await setupAuth(app);
-
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // ============ CUSTOM AUTH ============
+  await setupCustomAuth(app);
 
   // ============ CUSTOMER PORTAL API ============
 
   // GET /api/customer/dashboard - Get all customer data
-  app.get('/api/customer/dashboard', isAuthenticated, async (req: any, res) => {
+  app.get('/api/customer/dashboard', isCustomAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any).user?.id;
       const tenantId = getTenantFromHostname(req.hostname);
       const user = await storage.getUser(userId);
       if (!user || !user.email) {
@@ -339,9 +326,9 @@ export async function registerRoutes(
   });
 
   // GET /api/customer/preferences - Get customer preferences
-  app.get('/api/customer/preferences', isAuthenticated, async (req: any, res) => {
+  app.get('/api/customer/preferences', isCustomAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any).user?.id;
       const preferences = await storage.getCustomerPreferences(userId);
       res.json(preferences || {});
     } catch (error) {
@@ -351,9 +338,9 @@ export async function registerRoutes(
   });
 
   // POST /api/customer/preferences - Create/update customer preferences
-  app.post('/api/customer/preferences', isAuthenticated, async (req: any, res) => {
+  app.post('/api/customer/preferences', isCustomAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any).user?.id;
       const tenantId = getTenantFromHostname(req.hostname);
       const data = { ...req.body, userId, tenantId };
       const preferences = await storage.upsertCustomerPreferences(data);
@@ -365,9 +352,9 @@ export async function registerRoutes(
   });
 
   // POST /api/customer/link-lead - Link an existing lead to user account
-  app.post('/api/customer/link-lead', isAuthenticated, async (req: any, res) => {
+  app.post('/api/customer/link-lead', isCustomAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = (req.session as any).user?.id;
       const user = await storage.getUser(userId);
       if (!user || !user.email) {
         return res.status(400).json({ message: "User email not found" });
@@ -397,9 +384,9 @@ export async function registerRoutes(
   });
 
   // POST /api/push/subscribe - Register a push subscription (requires authentication)
-  app.post('/api/push/subscribe', isAuthenticated, async (req: any, res) => {
+  app.post('/api/push/subscribe', isCustomAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub;
+      const userId = (req.session as any).user?.id;
       const { endpoint, p256dh, auth, userAgent } = req.body;
       
       if (!endpoint || !p256dh || !auth) {
@@ -429,7 +416,7 @@ export async function registerRoutes(
   });
 
   // POST /api/push/unsubscribe - Remove a push subscription (requires authentication)
-  app.post('/api/push/unsubscribe', isAuthenticated, async (req: any, res) => {
+  app.post('/api/push/unsubscribe', isCustomAuthenticated, async (req: any, res) => {
     try {
       const { endpoint } = req.body;
       
@@ -439,7 +426,7 @@ export async function registerRoutes(
 
       // Verify the subscription belongs to the authenticated user
       const subscription = await storage.getPushSubscriptionByEndpoint(endpoint);
-      if (subscription && subscription.userId !== req.user?.claims?.sub) {
+      if (subscription && subscription.userId !== (req.session as any).user?.id) {
         return res.status(403).json({ message: "Unauthorized" });
       }
 
@@ -666,7 +653,7 @@ export async function registerRoutes(
   });
 
   // POST /api/estimates/:id/accept - Accept an estimate (customer)
-  app.post("/api/estimates/:id/accept", isAuthenticated, async (req: any, res) => {
+  app.post("/api/estimates/:id/accept", isCustomAuthenticated, async (req: any, res) => {
     try {
       const estimate = await storage.getEstimateById(req.params.id);
       if (!estimate) {
@@ -675,7 +662,7 @@ export async function registerRoutes(
       }
       
       // Verify the authenticated user owns this estimate via their lead/email
-      const userId = req.user?.claims?.sub;
+      const userId = (req.session as any).user?.id;
       if (!userId) {
         res.status(401).json({ error: "Not authenticated" });
         return;

@@ -15,20 +15,34 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table (for Replit Auth)
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+// User storage table - supports both email/password and Replit Auth
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: varchar("email").unique(),
+  passwordHash: text("password_hash"),
+  authProvider: text("auth_provider").default("email"), // 'email' or 'replit'
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
+  phone: text("phone"),
   profileImageUrl: varchar("profile_image_url"),
   role: text("role"), // 'developer', 'ops_manager', 'owner', 'area_manager'
   tenantId: text("tenant_id"), // optional, for multi-tenant support
+  emailVerified: boolean("email_verified").default(false),
+  passwordResetToken: text("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  passwordResetToken: true,
+  passwordResetExpires: true,
+});
+
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 

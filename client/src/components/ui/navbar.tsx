@@ -257,26 +257,34 @@ export function Navbar() {
                           <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
                         </span>
                       </Link>
-                      <a 
-                        href="/api/logout"
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
-                        onClick={() => setIsOpen(false)}
+                      <button 
+                        onClick={async () => {
+                          setIsOpen(false);
+                          try {
+                            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                            window.location.href = '/';
+                          } catch (e) {
+                            console.error('Logout failed', e);
+                          }
+                        }}
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 w-full text-left"
                       >
                         <LogOut className="w-5 h-5 text-red-400" />
                         <span className="text-lg font-medium text-foreground">Log Out</span>
                         <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                      </a>
+                      </button>
                     </>
                   ) : (
-                    <a 
-                      href="/api/login"
-                      className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 bg-accent/10"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <LogIn className="w-5 h-5 text-accent" />
-                      <span className="text-lg font-medium text-foreground">Login / Sign Up</span>
-                      <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                    </a>
+                    <Link href="/auth">
+                      <span 
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 bg-accent/10"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <LogIn className="w-5 h-5 text-accent" />
+                        <span className="text-lg font-medium text-foreground">Login / Sign Up</span>
+                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                      </span>
+                    </Link>
                   )}
                 </div>
 

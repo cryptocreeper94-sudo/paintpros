@@ -55,9 +55,10 @@ import {
 import { desc, eq, ilike, or, and, sql, max, inArray } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (for Replit Auth)
+  // User operations
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  createUser(user: Partial<UpsertUser>): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
   updateUserRole(id: string, role: string, tenantId?: string): Promise<User | undefined>;
   getUsersByTenant(tenantId: string): Promise<User[]>;
@@ -405,6 +406,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: Partial<UpsertUser>): Promise<User> {
+    const [user] = await db.insert(users).values(userData as UpsertUser).returning();
     return user;
   }
 
