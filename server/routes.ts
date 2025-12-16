@@ -1643,7 +1643,7 @@ export async function registerRoutes(
           ? FOUNDING_ASSETS.NPP_GENESIS 
           : FOUNDING_ASSETS.PAINTPROS_PLATFORM;
         res.json({ 
-          version: "1.2.5", 
+          version: "1.2.6", 
           buildNumber: 0,
           tenantId: tenantId || 'orbit',
           hallmarkNumber: genesisAsset.number,
@@ -1692,7 +1692,7 @@ export async function registerRoutes(
       
       // Get tenant-specific latest release
       const latestRelease = await storage.getLatestRelease(tenantId);
-      let currentVersion = latestRelease?.version || "1.2.5";
+      let currentVersion = latestRelease?.version || "1.2.6";
       let buildNumber = (latestRelease?.buildNumber || 0) + 1;
       
       const [major, minor, patch] = currentVersion.split('.').map(Number);
@@ -5028,7 +5028,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   app.get("/api/partner/v1/health", (req, res) => {
     res.json({
       status: "healthy",
-      version: "1.2.5",
+      version: "1.2.6",
       timestamp: new Date().toISOString()
     });
   });
@@ -5105,15 +5105,16 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     });
 
     // 4. Blockchain (Solana) Health Check
-    const solanaConfigured = !!(process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY);
-    if (solanaConfigured) {
+    const solanaPrivateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+    if (solanaPrivateKey) {
       try {
         const solanaStart = Date.now();
-        const walletInfo = await solana.getWalletBalance();
+        const wallet = solana.getWalletFromPrivateKey(solanaPrivateKey);
+        const balance = await solana.getWalletBalance(wallet.publicKey.toBase58(), 'mainnet-beta');
         checks.push({
           name: "blockchain",
-          status: walletInfo ? "healthy" : "degraded",
-          message: walletInfo ? `Solana wallet active (${walletInfo.balance.toFixed(4)} SOL)` : "Wallet balance check failed",
+          status: "healthy",
+          message: `Solana wallet active (${balance.toFixed(4)} SOL)`,
           responseTime: Date.now() - solanaStart
         });
       } catch (error) {
@@ -5147,7 +5148,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
 
     res.json({
       status: overallStatus,
-      version: "1.2.5",
+      version: "1.2.6",
       timestamp: new Date().toISOString(),
       responseTime: Date.now() - startTime,
       checks
