@@ -66,15 +66,15 @@ export interface IStorage {
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
   getLeadById(id: string): Promise<Lead | undefined>;
-  getLeadByEmail(email: string): Promise<Lead | undefined>;
-  getLeads(): Promise<Lead[]>;
-  searchLeads(query: string): Promise<Lead[]>;
+  getLeadByEmail(email: string, tenantId?: string): Promise<Lead | undefined>;
+  getLeads(tenantId?: string): Promise<Lead[]>;
+  searchLeads(query: string, tenantId?: string): Promise<Lead[]>;
   
   // Estimates (new tool)
   createEstimate(estimate: InsertEstimate): Promise<Estimate>;
   getEstimateById(id: string): Promise<Estimate | undefined>;
-  getEstimatesByLeadId(leadId: string): Promise<Estimate[]>;
-  getEstimates(): Promise<Estimate[]>;
+  getEstimatesByLeadId(leadId: string, tenantId?: string): Promise<Estimate[]>;
+  getEstimates(tenantId?: string): Promise<Estimate[]>;
   updateEstimate(id: string, updates: { status?: string }): Promise<Estimate | undefined>;
   
   // Legacy estimate requests
@@ -92,12 +92,12 @@ export interface IStorage {
   
   // CRM Deals
   createCrmDeal(deal: InsertCrmDeal): Promise<CrmDeal>;
-  getCrmDeals(): Promise<CrmDeal[]>;
+  getCrmDeals(tenantId?: string): Promise<CrmDeal[]>;
   getCrmDealById(id: string): Promise<CrmDeal | undefined>;
-  getCrmDealsByStage(stage: string): Promise<CrmDeal[]>;
+  getCrmDealsByStage(stage: string, tenantId?: string): Promise<CrmDeal[]>;
   updateCrmDeal(id: string, updates: Partial<InsertCrmDeal>): Promise<CrmDeal | undefined>;
   deleteCrmDeal(id: string): Promise<void>;
-  getCrmPipelineSummary(): Promise<{ stage: string; count: number; totalValue: string }[]>;
+  getCrmPipelineSummary(tenantId?: string): Promise<{ stage: string; count: number; totalValue: string }[]>;
   
   // CRM Activities
   createCrmActivity(activity: InsertCrmActivity): Promise<CrmActivity>;
@@ -438,16 +438,28 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getLeadByEmail(email: string): Promise<Lead | undefined> {
+  async getLeadByEmail(email: string, tenantId?: string): Promise<Lead | undefined> {
+    if (tenantId) {
+      const [result] = await db.select().from(leads).where(and(eq(leads.email, email), eq(leads.tenantId, tenantId)));
+      return result;
+    }
     const [result] = await db.select().from(leads).where(eq(leads.email, email));
     return result;
   }
 
-  async getLeads(): Promise<Lead[]> {
+  async getLeads(tenantId?: string): Promise<Lead[]> {
+    if (tenantId) {
+      return await db.select().from(leads).where(eq(leads.tenantId, tenantId)).orderBy(desc(leads.createdAt));
+    }
     return await db.select().from(leads).orderBy(desc(leads.createdAt));
   }
 
-  async searchLeads(query: string): Promise<Lead[]> {
+  async searchLeads(query: string, tenantId?: string): Promise<Lead[]> {
+    if (tenantId) {
+      return await db.select().from(leads)
+        .where(and(ilike(leads.email, `%${query}%`), eq(leads.tenantId, tenantId)))
+        .orderBy(desc(leads.createdAt));
+    }
     return await db.select().from(leads)
       .where(ilike(leads.email, `%${query}%`))
       .orderBy(desc(leads.createdAt));
@@ -464,11 +476,17 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getEstimatesByLeadId(leadId: string): Promise<Estimate[]> {
+  async getEstimatesByLeadId(leadId: string, tenantId?: string): Promise<Estimate[]> {
+    if (tenantId) {
+      return await db.select().from(estimates).where(and(eq(estimates.leadId, leadId), eq(estimates.tenantId, tenantId))).orderBy(desc(estimates.createdAt));
+    }
     return await db.select().from(estimates).where(eq(estimates.leadId, leadId)).orderBy(desc(estimates.createdAt));
   }
 
-  async getEstimates(): Promise<Estimate[]> {
+  async getEstimates(tenantId?: string): Promise<Estimate[]> {
+    if (tenantId) {
+      return await db.select().from(estimates).where(eq(estimates.tenantId, tenantId)).orderBy(desc(estimates.createdAt));
+    }
     return await db.select().from(estimates).orderBy(desc(estimates.createdAt));
   }
 
@@ -538,7 +556,10 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getCrmDeals(): Promise<CrmDeal[]> {
+  async getCrmDeals(tenantId?: string): Promise<CrmDeal[]> {
+    if (tenantId) {
+      return await db.select().from(crmDeals).where(eq(crmDeals.tenantId, tenantId)).orderBy(desc(crmDeals.createdAt));
+    }
     return await db.select().from(crmDeals).orderBy(desc(crmDeals.createdAt));
   }
 
@@ -547,7 +568,10 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getCrmDealsByStage(stage: string): Promise<CrmDeal[]> {
+  async getCrmDealsByStage(stage: string, tenantId?: string): Promise<CrmDeal[]> {
+    if (tenantId) {
+      return await db.select().from(crmDeals).where(and(eq(crmDeals.stage, stage), eq(crmDeals.tenantId, tenantId))).orderBy(desc(crmDeals.createdAt));
+    }
     return await db.select().from(crmDeals).where(eq(crmDeals.stage, stage)).orderBy(desc(crmDeals.createdAt));
   }
 
@@ -564,7 +588,19 @@ export class DatabaseStorage implements IStorage {
     await db.delete(crmDeals).where(eq(crmDeals.id, id));
   }
 
-  async getCrmPipelineSummary(): Promise<{ stage: string; count: number; totalValue: string }[]> {
+  async getCrmPipelineSummary(tenantId?: string): Promise<{ stage: string; count: number; totalValue: string }[]> {
+    if (tenantId) {
+      const result = await db
+        .select({
+          stage: crmDeals.stage,
+          count: sql<number>`count(*)::int`,
+          totalValue: sql<string>`coalesce(sum(${crmDeals.value}), 0)::text`
+        })
+        .from(crmDeals)
+        .where(eq(crmDeals.tenantId, tenantId))
+        .groupBy(crmDeals.stage);
+      return result;
+    }
     const result = await db
       .select({
         stage: crmDeals.stage,
