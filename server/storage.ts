@@ -42,6 +42,10 @@ import {
   type CalendarEvent, type InsertCalendarEvent, calendarEvents,
   type CalendarReminder, type InsertCalendarReminder, calendarReminders,
   type EventColorPreset, type InsertEventColorPreset, eventColorPresets,
+  type Franchise, type InsertFranchise, franchises,
+  type PartnerApiCredential, type InsertPartnerApiCredential, partnerApiCredentials,
+  type PartnerApiLog, type InsertPartnerApiLog, partnerApiLogs,
+  type FranchiseLocation, type InsertFranchiseLocation, franchiseLocations,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -323,6 +327,32 @@ export interface IStorage {
   getEventColorPresets(tenantId: string): Promise<EventColorPreset[]>;
   updateEventColorPreset(id: string, updates: Partial<InsertEventColorPreset>): Promise<EventColorPreset | undefined>;
   deleteEventColorPreset(id: string): Promise<void>;
+  
+  // Franchise Management
+  createFranchise(franchise: InsertFranchise): Promise<Franchise>;
+  getFranchises(): Promise<Franchise[]>;
+  getFranchiseById(id: string): Promise<Franchise | undefined>;
+  getFranchiseByFranchiseId(franchiseId: string): Promise<Franchise | undefined>;
+  updateFranchise(id: string, updates: Partial<InsertFranchise>): Promise<Franchise | undefined>;
+  deleteFranchise(id: string): Promise<void>;
+  
+  // Franchise Locations
+  createFranchiseLocation(location: InsertFranchiseLocation): Promise<FranchiseLocation>;
+  getFranchiseLocations(franchiseId: string): Promise<FranchiseLocation[]>;
+  updateFranchiseLocation(id: string, updates: Partial<InsertFranchiseLocation>): Promise<FranchiseLocation | undefined>;
+  deleteFranchiseLocation(id: string): Promise<void>;
+  
+  // Partner API Credentials
+  createPartnerApiCredential(credential: InsertPartnerApiCredential): Promise<PartnerApiCredential>;
+  getPartnerApiCredentials(franchiseId: string): Promise<PartnerApiCredential[]>;
+  getPartnerApiCredentialByApiKey(apiKey: string): Promise<PartnerApiCredential | undefined>;
+  updatePartnerApiCredential(id: string, updates: Partial<InsertPartnerApiCredential>): Promise<PartnerApiCredential | undefined>;
+  incrementPartnerApiRequestCount(id: string): Promise<void>;
+  deletePartnerApiCredential(id: string): Promise<void>;
+  
+  // Partner API Logs
+  createPartnerApiLog(log: InsertPartnerApiLog): Promise<PartnerApiLog>;
+  getPartnerApiLogs(franchiseId: string, limit?: number): Promise<PartnerApiLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2082,6 +2112,126 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEventColorPreset(id: string): Promise<void> {
     await db.delete(eventColorPresets).where(eq(eventColorPresets.id, id));
+  }
+
+  // ==========================================
+  // FRANCHISE MANAGEMENT
+  // ==========================================
+
+  async createFranchise(franchise: InsertFranchise): Promise<Franchise> {
+    const [result] = await db.insert(franchises).values(franchise).returning();
+    return result;
+  }
+
+  async getFranchises(): Promise<Franchise[]> {
+    return await db.select().from(franchises).orderBy(desc(franchises.createdAt));
+  }
+
+  async getFranchiseById(id: string): Promise<Franchise | undefined> {
+    const [result] = await db.select().from(franchises).where(eq(franchises.id, id));
+    return result;
+  }
+
+  async getFranchiseByFranchiseId(franchiseId: string): Promise<Franchise | undefined> {
+    const [result] = await db.select().from(franchises).where(eq(franchises.franchiseId, franchiseId));
+    return result;
+  }
+
+  async updateFranchise(id: string, updates: Partial<InsertFranchise>): Promise<Franchise | undefined> {
+    const [result] = await db.update(franchises)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(franchises.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteFranchise(id: string): Promise<void> {
+    // Delete related data first
+    await db.delete(franchiseLocations).where(eq(franchiseLocations.franchiseId, id));
+    // Delete API credentials and logs
+    const credentials = await db.select().from(partnerApiCredentials).where(eq(partnerApiCredentials.franchiseId, id));
+    for (const cred of credentials) {
+      await db.delete(partnerApiLogs).where(eq(partnerApiLogs.credentialId, cred.id));
+    }
+    await db.delete(partnerApiCredentials).where(eq(partnerApiCredentials.franchiseId, id));
+    await db.delete(franchises).where(eq(franchises.id, id));
+  }
+
+  // Franchise Locations
+  async createFranchiseLocation(location: InsertFranchiseLocation): Promise<FranchiseLocation> {
+    const [result] = await db.insert(franchiseLocations).values(location).returning();
+    return result;
+  }
+
+  async getFranchiseLocations(franchiseId: string): Promise<FranchiseLocation[]> {
+    return await db.select().from(franchiseLocations)
+      .where(eq(franchiseLocations.franchiseId, franchiseId))
+      .orderBy(franchiseLocations.name);
+  }
+
+  async updateFranchiseLocation(id: string, updates: Partial<InsertFranchiseLocation>): Promise<FranchiseLocation | undefined> {
+    const [result] = await db.update(franchiseLocations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(franchiseLocations.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteFranchiseLocation(id: string): Promise<void> {
+    await db.delete(franchiseLocations).where(eq(franchiseLocations.id, id));
+  }
+
+  // Partner API Credentials
+  async createPartnerApiCredential(credential: InsertPartnerApiCredential): Promise<PartnerApiCredential> {
+    const [result] = await db.insert(partnerApiCredentials).values(credential).returning();
+    return result;
+  }
+
+  async getPartnerApiCredentials(franchiseId: string): Promise<PartnerApiCredential[]> {
+    return await db.select().from(partnerApiCredentials)
+      .where(eq(partnerApiCredentials.franchiseId, franchiseId))
+      .orderBy(desc(partnerApiCredentials.createdAt));
+  }
+
+  async getPartnerApiCredentialByApiKey(apiKey: string): Promise<PartnerApiCredential | undefined> {
+    const [result] = await db.select().from(partnerApiCredentials)
+      .where(eq(partnerApiCredentials.apiKey, apiKey));
+    return result;
+  }
+
+  async updatePartnerApiCredential(id: string, updates: Partial<InsertPartnerApiCredential>): Promise<PartnerApiCredential | undefined> {
+    const [result] = await db.update(partnerApiCredentials)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(partnerApiCredentials.id, id))
+      .returning();
+    return result;
+  }
+
+  async incrementPartnerApiRequestCount(id: string): Promise<void> {
+    await db.update(partnerApiCredentials)
+      .set({ 
+        requestCount: sql`${partnerApiCredentials.requestCount} + 1`,
+        lastUsedAt: new Date()
+      })
+      .where(eq(partnerApiCredentials.id, id));
+  }
+
+  async deletePartnerApiCredential(id: string): Promise<void> {
+    await db.delete(partnerApiLogs).where(eq(partnerApiLogs.credentialId, id));
+    await db.delete(partnerApiCredentials).where(eq(partnerApiCredentials.id, id));
+  }
+
+  // Partner API Logs
+  async createPartnerApiLog(log: InsertPartnerApiLog): Promise<PartnerApiLog> {
+    const [result] = await db.insert(partnerApiLogs).values(log).returning();
+    return result;
+  }
+
+  async getPartnerApiLogs(franchiseId: string, limit: number = 50): Promise<PartnerApiLog[]> {
+    return await db.select().from(partnerApiLogs)
+      .where(eq(partnerApiLogs.franchiseId, franchiseId))
+      .orderBy(desc(partnerApiLogs.createdAt))
+      .limit(limit);
   }
 }
 
