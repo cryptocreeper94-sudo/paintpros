@@ -36,23 +36,36 @@ import * as quickbooks from "./quickbooks";
 let io: SocketServer | null = null;
 export function getSocketIO() { return io; }
 
-// Rate limiting for PIN authentication
-const pinAttempts = new Map<string, { count: number; lastAttempt: number; lockedUntil?: number }>();
+// Rate limiting for PIN authentication with exponential backoff
+const pinAttempts = new Map<string, { count: number; firstAttempt: number; lockoutCount: number; lockedUntil?: number }>();
 const PIN_MAX_ATTEMPTS = 5;
-const PIN_LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
-const PIN_ATTEMPT_WINDOW = 5 * 60 * 1000; // 5 minutes
+const PIN_ATTEMPT_WINDOW = 15 * 60 * 1000; // 15 minutes window for attempts
+
+function getExponentialLockoutDuration(lockoutCount: number): number {
+  // 2^lockoutCount minutes (in milliseconds): 2min, 4min, 8min, 16min, etc.
+  return Math.pow(2, lockoutCount) * 60 * 1000;
+}
 
 function checkPinRateLimit(ip: string, role: string): { allowed: boolean; retryAfter?: number } {
   const key = `${ip}:${role}`;
   const now = Date.now();
   const record = pinAttempts.get(key);
 
-  if (record?.lockedUntil && now < record.lockedUntil) {
+  if (!record) {
+    return { allowed: true };
+  }
+
+  // Check if currently locked out
+  if (record.lockedUntil && now < record.lockedUntil) {
     return { allowed: false, retryAfter: Math.ceil((record.lockedUntil - now) / 1000) };
   }
 
-  if (record?.lockedUntil && now >= record.lockedUntil) {
-    pinAttempts.delete(key);
+  // If lockout expired, reset count but keep lockoutCount for escalation
+  if (record.lockedUntil && now >= record.lockedUntil) {
+    record.count = 0;
+    record.firstAttempt = now;
+    record.lockedUntil = undefined;
+    pinAttempts.set(key, record);
   }
 
   return { allowed: true };
@@ -63,22 +76,27 @@ function recordPinAttempt(ip: string, role: string, success: boolean): void {
   const now = Date.now();
 
   if (success) {
+    // Successful login clears all history
     pinAttempts.delete(key);
     return;
   }
 
-  const record = pinAttempts.get(key) || { count: 0, lastAttempt: now };
+  const record = pinAttempts.get(key) || { count: 0, firstAttempt: now, lockoutCount: 0 };
 
-  if (now - record.lastAttempt > PIN_ATTEMPT_WINDOW) {
+  // If the attempt window has passed without reaching limit, reset the count
+  if (now - record.firstAttempt > PIN_ATTEMPT_WINDOW && !record.lockedUntil) {
     record.count = 1;
+    record.firstAttempt = now;
   } else {
     record.count++;
   }
 
-  record.lastAttempt = now;
-
+  // Check if we've reached the limit within the window
   if (record.count >= PIN_MAX_ATTEMPTS) {
-    record.lockedUntil = now + PIN_LOCKOUT_DURATION;
+    record.lockoutCount++;
+    const lockoutDuration = getExponentialLockoutDuration(record.lockoutCount);
+    record.lockedUntil = now + lockoutDuration;
+    console.log(`[PIN Rate Limit] ${key} locked out for ${lockoutDuration / 60000} minutes (attempt #${record.lockoutCount})`);
   }
 
   pinAttempts.set(key, record);
