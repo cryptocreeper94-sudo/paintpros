@@ -42,7 +42,8 @@ import {
   Phone,
   MapPin,
   RefreshCw,
-  LogIn
+  LogIn,
+  AlertCircle
 } from "lucide-react";
 import { format } from "date-fns";
 import type { 
@@ -52,7 +53,7 @@ import type {
   Document, 
   CustomerPreferences 
 } from "@shared/schema";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 interface DashboardData {
   estimates: Estimate[];
@@ -85,9 +86,12 @@ export default function AccountPage() {
   const tenant = useTenant();
   const { toast } = useToast();
 
-  const { data: dashboard, isLoading } = useQuery<DashboardData>({
+  const [, navigate] = useLocation();
+
+  const { data: dashboard, isLoading, isError, refetch } = useQuery<DashboardData>({
     queryKey: ["/api/customer/dashboard"],
     enabled: !!user,
+    retry: 2,
   });
 
   const updatePreferencesMutation = useMutation({
@@ -101,6 +105,19 @@ export default function AccountPage() {
     },
     onError: () => {
       toast({ title: "Failed to save preferences", variant: "destructive" });
+    },
+  });
+
+  const acceptEstimateMutation = useMutation({
+    mutationFn: async (estimateId: string) => {
+      return apiRequest(`/api/estimates/${estimateId}/accept`, "POST");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customer/dashboard"] });
+      toast({ title: "Estimate accepted!", description: "We'll be in touch soon to schedule your project." });
+    },
+    onError: () => {
+      toast({ title: "Failed to accept estimate", description: "Please try again or contact us.", variant: "destructive" });
     },
   });
 
@@ -142,6 +159,34 @@ export default function AccountPage() {
                     Sign In
                   </Button>
                 </Link>
+              </div>
+            </GlassCard>
+          </div>
+        </main>
+      </PageLayout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <PageLayout>
+        <main className="pt-24 pb-12 px-4">
+          <div className="max-w-2xl mx-auto text-center" data-testid="container-error-state">
+            <GlassCard className="p-8 md:p-12" glow="accent">
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <AlertCircle className="w-10 h-10 text-red-500" />
+                </div>
+                <h1 className="text-2xl md:text-4xl font-display font-bold" data-testid="text-error-title">
+                  Something went wrong
+                </h1>
+                <p className="text-muted-foreground max-w-md" data-testid="text-error-message">
+                  We couldn't load your account information. Please try again or contact support if the problem persists.
+                </p>
+                <Button size="lg" className="gap-2" onClick={() => refetch()} data-testid="button-retry-load">
+                  <RefreshCw className="w-4 h-4" />
+                  Try Again
+                </Button>
               </div>
             </GlassCard>
           </div>
@@ -322,12 +367,25 @@ export default function AccountPage() {
                                 </div>
                               </div>
                               <div className="flex gap-2 mt-4 flex-wrap">
-                                <Button variant="outline" size="sm" className="gap-2" data-testid={`button-view-proposal-${estimate.id}`}>
-                                  <FileText className="w-3 h-3" /> View Proposal
-                                </Button>
-                                {(estimate.status === "pending" || estimate.status === "contacted") && (
-                                  <Button size="sm" className="gap-2" data-testid={`button-accept-estimate-${estimate.id}`}>
-                                    <CheckCircle2 className="w-3 h-3" /> Accept Estimate
+                                <Link href={`/proposal/${estimate.id}`}>
+                                  <Button variant="outline" size="sm" className="gap-2" data-testid={`button-view-proposal-${estimate.id}`}>
+                                    <FileText className="w-3 h-3" /> View Proposal
+                                  </Button>
+                                </Link>
+                                {(estimate.status === "pending" || estimate.status === "contacted" || estimate.status === "sent") && (
+                                  <Button 
+                                    size="sm" 
+                                    className="gap-2" 
+                                    onClick={() => acceptEstimateMutation.mutate(estimate.id)}
+                                    disabled={acceptEstimateMutation.isPending}
+                                    data-testid={`button-accept-estimate-${estimate.id}`}
+                                  >
+                                    {acceptEstimateMutation.isPending ? (
+                                      <RefreshCw className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      <CheckCircle2 className="w-3 h-3" />
+                                    )}
+                                    Accept Estimate
                                   </Button>
                                 )}
                               </div>

@@ -15,7 +15,8 @@ import {
   insertCalendarEventSchema, insertCalendarReminderSchema, insertEventColorPresetSchema,
   insertFranchiseSchema, insertPartnerApiCredentialSchema, insertFranchiseLocationSchema,
   PARTNER_API_SCOPES,
-  users as usersTable
+  users as usersTable,
+  type Lead, type Estimate
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -598,6 +599,56 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching estimate:", error);
       res.status(500).json({ error: "Failed to fetch estimate" });
+    }
+  });
+
+  // POST /api/estimates/:id/accept - Accept an estimate (customer)
+  app.post("/api/estimates/:id/accept", isAuthenticated, async (req: any, res) => {
+    try {
+      const estimate = await storage.getEstimateById(req.params.id);
+      if (!estimate) {
+        res.status(404).json({ error: "Estimate not found" });
+        return;
+      }
+      
+      // Verify the authenticated user owns this estimate via their lead/email
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
+
+      // Get user to check email
+      const user = await storage.getUser(userId);
+      if (!user || !user.email) {
+        res.status(401).json({ error: "User not found" });
+        return;
+      }
+
+      // Get user's leads to verify ownership
+      const allLeads = await storage.getLeads();
+      const userLeads = allLeads.filter((l: Lead) => l.email === user.email || l.userId === userId);
+      const leadIds = userLeads.map((l: Lead) => l.id);
+      
+      if (estimate.leadId && !leadIds.includes(estimate.leadId)) {
+        res.status(403).json({ error: "You do not have permission to accept this estimate" });
+        return;
+      }
+
+      // Update estimate status to accepted using storage layer
+      const updatedEstimate = await storage.updateEstimate(req.params.id, { 
+        status: "accepted" 
+      });
+      
+      if (!updatedEstimate) {
+        res.status(404).json({ error: "Failed to update estimate" });
+        return;
+      }
+      
+      res.json(updatedEstimate);
+    } catch (error) {
+      console.error("Error accepting estimate:", error);
+      res.status(500).json({ error: "Failed to accept estimate" });
     }
   });
 

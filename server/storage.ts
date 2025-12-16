@@ -72,6 +72,7 @@ export interface IStorage {
   getEstimateById(id: string): Promise<Estimate | undefined>;
   getEstimatesByLeadId(leadId: string): Promise<Estimate[]>;
   getEstimates(): Promise<Estimate[]>;
+  updateEstimate(id: string, updates: Partial<InsertEstimate>): Promise<Estimate | undefined>;
   
   // Legacy estimate requests
   createEstimateRequest(request: InsertEstimateRequest): Promise<EstimateRequest>;
@@ -446,6 +447,15 @@ export class DatabaseStorage implements IStorage {
 
   async getEstimates(): Promise<Estimate[]> {
     return await db.select().from(estimates).orderBy(desc(estimates.createdAt));
+  }
+
+  async updateEstimate(id: string, updates: Partial<InsertEstimate>): Promise<Estimate | undefined> {
+    const [result] = await db
+      .update(estimates)
+      .set(updates)
+      .where(eq(estimates.id, id))
+      .returning();
+    return result;
   }
 
   // Legacy estimate requests
