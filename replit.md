@@ -27,9 +27,10 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 - **Crew Management System:** Provides a dashboard for crew leads with time tracking, job notes, and incident reporting. Integrated into Admin, Owner, and Developer dashboards.
 - **Internal Messaging System:** A real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges.
 - **PDF Document Center:** A comprehensive document management system with digital signature capabilities. Supports contracts, estimates, invoices, and proposals. Features include document creation, version tracking, and digital signature capture via react-signature-canvas. Integrated into Admin and Owner dashboards. API routes include role-based authentication and tenant scoping for multi-tenant isolation.
+- **Franchise Management System:** Complete multi-location franchise support with territory licensing, tiered pricing (franchise fees, royalty percentages, platform fees), and Partner API integration. Features include franchise CRUD operations, location management, API credential generation with scoped permissions (estimates, leads, analytics, billing), and usage tracking with rate limiting (60/min, 10,000/day default). Integrated into Developer dashboard.
 
 ### System Design Choices
-- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`), Internal Messaging (`conversations`, `conversation_participants`, `messages`), Document Center (`documents`, `document_versions`, `document_signatures`), and CRM Calendar (`calendar_events`, `calendar_reminders`, `calendar_attendees`).
+- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`), Internal Messaging (`conversations`, `conversation_participants`, `messages`), Document Center (`documents`, `document_versions`, `document_signatures`), CRM Calendar (`calendar_events`, `calendar_reminders`, `calendar_attendees`), and Franchise Management (`franchises`, `franchise_locations`, `partner_api_credentials`, `partner_api_logs`).
 - **File Structure:** Organized with `client/src` for frontend components, pages, config, and context; `shared/schema.ts` for database models; and `server/` for data access and API routes.
 
 ## External Dependencies
@@ -51,7 +52,15 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.1.9** - Current Release
+- **v1.2.0** - Current Release
+  - Franchise Management System: Complete multi-location franchise support with territory licensing
+  - Partner API: Programmatic access with scoped permissions (estimates, leads, analytics, billing)
+  - API credential management: Key generation, secret reveal, scope configuration
+  - Rate limiting: Configurable requests per minute/day with usage tracking
+  - Franchise tiers: Standard, Premium, Enterprise with configurable fees
+  - Multi-location support: Manage multiple offices per franchise
+  - Developer dashboard integration: Full CRUD for franchises, credentials, and usage logs
+- **v1.1.9**
   - Terms & Warranty page (/terms): Full legal documentation with warranty, payment terms, liability, disputes, and termination sections
   - Enhanced warranty modal: Detailed coverage info with exclusions and link to full terms
   - Footer updated with "Terms & Warranty" link
