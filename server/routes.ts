@@ -17,6 +17,8 @@ import {
   insertFranchiseSchema, insertPartnerApiCredentialSchema, insertFranchiseLocationSchema,
   PARTNER_API_SCOPES,
   insertSeoPageSchema, seoPages, seoAudits,
+  insertConversationSchema, insertMessageSchema, insertConversationParticipantSchema,
+  insertBookingSchema,
   users as usersTable,
   type Lead, type Estimate, type SeoPage, type InsertSeoPage
 } from "@shared/schema";
@@ -3323,12 +3325,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { customerName, customerEmail, customerPhone, customerAddress, serviceType, projectDescription, scheduledDate, scheduledTime, customerNotes, tenantId } = req.body;
       
-      if (!customerName || !customerEmail || !serviceType || !scheduledDate || !scheduledTime) {
-        res.status(400).json({ error: "Missing required fields: customerName, customerEmail, serviceType, scheduledDate, scheduledTime" });
-        return;
-      }
-
-      const booking = await storage.createBooking({
+      const validated = insertBookingSchema.parse({
         tenantId: tenantId || "npp",
         customerName,
         customerEmail,
@@ -3341,8 +3338,14 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         customerNotes
       });
 
+      const booking = await storage.createBooking(validated);
+
       res.status(201).json(booking);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid request data", details: error.errors });
+        return;
+      }
       console.error("Error creating booking:", error);
       res.status(500).json({ error: "Failed to create booking" });
     }
@@ -4494,28 +4497,35 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { tenantId, name, type, createdBy, participants } = req.body;
       
-      const conversation = await storage.createConversation({
+      const validated = insertConversationSchema.parse({
         tenantId: tenantId || "npp",
         name,
         type: type || "direct",
         createdBy
       });
       
+      const conversation = await storage.createConversation(validated);
+      
       if (participants && Array.isArray(participants)) {
         for (const p of participants) {
-          await storage.addConversationParticipant({
+          const participantValidated = insertConversationParticipantSchema.parse({
             conversationId: conversation.id,
             userId: p.userId,
             role: p.role,
             displayName: p.displayName,
             phone: p.phone
           });
+          await storage.addConversationParticipant(participantValidated);
         }
       }
       
       const fullParticipants = await storage.getConversationParticipants(conversation.id);
       res.status(201).json({ ...conversation, participants: fullParticipants });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid request data", details: error.errors });
+        return;
+      }
       console.error("Error creating conversation:", error);
       res.status(500).json({ error: "Failed to create conversation" });
     }
@@ -4554,12 +4564,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { senderId, senderRole, senderName, content, messageType, attachments, replyToId } = req.body;
       
-      if (!content) {
-        res.status(400).json({ error: "content is required" });
-        return;
-      }
-      
-      const message = await storage.createMessage({
+      const validated = insertMessageSchema.parse({
         conversationId: req.params.id,
         senderId,
         senderRole,
@@ -4571,8 +4576,14 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         isSystemMessage: false
       });
       
+      const message = await storage.createMessage(validated);
+      
       res.status(201).json(message);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid request data", details: error.errors });
+        return;
+      }
       console.error("Error sending message:", error);
       res.status(500).json({ error: "Failed to send message" });
     }
