@@ -3613,12 +3613,12 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       let openIncidents = 0;
       
       for (const lead of leads) {
-        const members = await storage.getCrewMembersByLeadId(lead.id);
+        const members = await storage.getCrewMembers(lead.id);
         totalMembers += members.filter(m => m.isActive).length;
-        const entries = await storage.getTimeEntriesByLeadId(lead.id);
-        pendingTimeEntries += entries.filter(e => e.status === "pending").length;
-        const incidents = await storage.getIncidentReportsByLeadId(lead.id);
-        openIncidents += incidents.filter(i => i.status === "open" || i.status === "investigating").length;
+        const entries = await storage.getTimeEntries(lead.id);
+        pendingTimeEntries += entries.filter((e: { status: string }) => e.status === "pending").length;
+        const incidents = await storage.getIncidentReportsByLead(lead.id);
+        openIncidents += incidents.filter((i: { status: string }) => i.status === "open" || i.status === "investigating").length;
       }
       
       res.json({ totalMembers, pendingTimeEntries, openIncidents });
@@ -3706,7 +3706,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // GET /api/crew/leads/:leadId/members - Get members for a crew lead
   app.get("/api/crew/leads/:leadId/members", async (req, res) => {
     try {
-      const members = await storage.getCrewMembersByLead(req.params.leadId);
+      const members = await storage.getCrewMembers(req.params.leadId);
       res.json(members);
     } catch (error) {
       console.error("Error fetching crew members:", error);
@@ -3783,16 +3783,16 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const { crewLeadId, crewMemberId, startDate, endDate } = req.query;
       let entries;
       
-      if (startDate && endDate) {
+      if (startDate && endDate && crewLeadId) {
         entries = await storage.getTimeEntriesByDateRange(
+          crewLeadId as string,
           new Date(startDate as string),
-          new Date(endDate as string),
-          crewLeadId as string | undefined
+          new Date(endDate as string)
         );
       } else if (crewMemberId) {
         entries = await storage.getTimeEntriesByMember(crewMemberId as string);
       } else if (crewLeadId) {
-        entries = await storage.getTimeEntriesByLead(crewLeadId as string);
+        entries = await storage.getTimeEntries(crewLeadId as string);
       } else {
         res.status(400).json({ error: "Must provide crewLeadId, crewMemberId, or date range" });
         return;
@@ -3854,7 +3854,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/crew/time-entries/:id/submit-payroll - Submit to payroll
   app.patch("/api/crew/time-entries/:id/submit-payroll", async (req, res) => {
     try {
-      const entry = await storage.submitTimeEntryToPayroll(req.params.id);
+      const [entry] = await storage.submitTimeEntriesToPayroll([req.params.id]);
       if (!entry) {
         res.status(404).json({ error: "Time entry not found" });
         return;
@@ -3876,7 +3876,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(400).json({ error: "crewLeadId is required" });
         return;
       }
-      const notes = await storage.getJobNotesByLead(crewLeadId as string);
+      const notes = await storage.getJobNotes(crewLeadId as string);
       res.json(notes);
     } catch (error) {
       console.error("Error fetching job notes:", error);
@@ -3933,7 +3933,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/crew/job-notes/:id/mark-sent - Mark job note as sent
   app.patch("/api/crew/job-notes/:id/mark-sent", async (req, res) => {
     try {
-      const note = await storage.markJobNoteSent(req.params.id);
+      const { sentToOwner = true, sentToAdmin = true } = req.body;
+      const note = await storage.markJobNoteSent(req.params.id, sentToOwner, sentToAdmin);
       if (!note) {
         res.status(404).json({ error: "Job note not found" });
         return;
@@ -4308,9 +4309,9 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         await storage.createDocumentVersion({
           documentId: doc.id,
           versionNumber: 1,
-          fileUrl: req.body.fileUrl || '',
-          fileSize: req.body.fileSize || 0,
-          changeNotes: 'Initial version',
+          fileName: req.body.fileName || 'document',
+          fileData: req.body.fileContent || '',
+          changeNote: 'Initial version',
           createdBy: dbUser.id,
         });
       }
