@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Send, Loader2, Mic, MicOff, MessageSquare, Plus, ArrowLeft, 
-  Users, Search, Paperclip, Check, CheckCheck, Image, Video, FileText, Trash2
+  Users, Search, Paperclip, Check, CheckCheck, Image, Video, FileText, Trash2,
+  Shield, Zap, Bell, Lock
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -464,7 +465,96 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
       </AnimatePresence>
 
       <AnimatePresence>
-        {view !== "minimized" && (
+        {view !== "minimized" && tenant.id === "demo" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-[54px] left-[18px] z-[60] w-[360px] max-w-[calc(100vw-36px)] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 flex flex-col overflow-hidden"
+            data-testid="panel-messaging-demo"
+          >
+            {/* Demo Info Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500/10 to-indigo-500/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Team Messaging</h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Demo Preview</p>
+                </div>
+              </div>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setView("minimized")}
+                data-testid="button-messaging-demo-close"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Demo Info Content */}
+            <div className="p-5 space-y-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                The <span className="font-semibold text-gray-900 dark:text-white">Internal Messaging System</span> is 
+                a real-time communication tool built into your PaintPros.io platform.
+              </p>
+
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
+                  <Users className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Team Communication</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                      Connect owners, admins, project managers, and crew leads in one place.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/30">
+                  <Zap className="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Real-Time Updates</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                      Instant message delivery with typing indicators and read receipts.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30">
+                  <Bell className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Unread Notifications</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                      Badge counts keep you informed of new messages at a glance.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30">
+                  <Lock className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Role-Based Access</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                      Configure who can message whom based on your business needs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  This is a demo preview. In your live platform, this connects your entire team.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {view !== "minimized" && tenant.id !== "demo" && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
