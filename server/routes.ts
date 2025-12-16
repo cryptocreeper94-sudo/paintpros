@@ -336,13 +336,13 @@ export async function registerRoutes(
         return res.json({ estimates: [], bookings: [], documents: [], preferences: null });
       }
 
-      // Find leads by user email
-      const allLeads = await storage.getLeads();
+      // Find leads by user email (filtered by tenant)
+      const allLeads = await storage.getLeads(tenantId);
       const userLeads = allLeads.filter(l => l.email === user.email || l.userId === userId);
       const leadIds = userLeads.map(l => l.id);
 
-      // Get estimates for user's leads
-      const allEstimates = await storage.getEstimates();
+      // Get estimates for user's leads (filtered by tenant)
+      const allEstimates = await storage.getEstimates(tenantId);
       const userEstimates = allEstimates.filter(e => leadIds.includes(e.leadId));
 
       // Get bookings for user
@@ -409,8 +409,9 @@ export async function registerRoutes(
         return res.status(400).json({ message: "User email not found" });
       }
 
-      // Find and update leads matching user's email
-      const leads = await storage.getLeads();
+      // Find and update leads matching user's email (filtered by tenant)
+      const tenantId = getTenantFromHostname(req.hostname);
+      const leads = await storage.getLeads(tenantId);
       const matchingLeads = leads.filter(l => l.email === user.email && !l.userId);
       
       for (const lead of matchingLeads) {
@@ -601,10 +602,11 @@ export async function registerRoutes(
   // POST /api/leads - Create or get existing lead
   app.post("/api/leads", async (req, res) => {
     try {
-      const validatedData = insertLeadSchema.parse(req.body);
+      const tenantId = getTenantFromHostname(req.hostname);
+      const validatedData = insertLeadSchema.parse({ ...req.body, tenantId });
       
-      // Check if lead already exists
-      let lead = await storage.getLeadByEmail(validatedData.email);
+      // Check if lead already exists (within tenant)
+      let lead = await storage.getLeadByEmail(validatedData.email, tenantId);
       
       if (!lead) {
         lead = await storage.createLead(validatedData);
@@ -624,12 +626,13 @@ export async function registerRoutes(
   // GET /api/leads - Get all leads (admin/owner)
   app.get("/api/leads", async (req, res) => {
     try {
+      const tenantId = getTenantFromHostname(req.hostname);
       const { search } = req.query;
       let leadsList;
       if (search && typeof search === "string") {
-        leadsList = await storage.searchLeads(search);
+        leadsList = await storage.searchLeads(search, tenantId);
       } else {
-        leadsList = await storage.getLeads();
+        leadsList = await storage.getLeads(tenantId);
       }
       res.json(leadsList);
     } catch (error) {
@@ -658,7 +661,8 @@ export async function registerRoutes(
   // POST /api/estimates - Create a new estimate
   app.post("/api/estimates", async (req, res) => {
     try {
-      const validatedData = insertEstimateSchema.parse(req.body);
+      const tenantId = getTenantFromHostname(req.hostname);
+      const validatedData = insertEstimateSchema.parse({ ...req.body, tenantId });
       const estimate = await storage.createEstimate(validatedData);
       
       // TODO: Send email notification to NPP when business email is provided
@@ -678,7 +682,8 @@ export async function registerRoutes(
   // GET /api/estimates - Get all estimates (admin)
   app.get("/api/estimates", async (req, res) => {
     try {
-      const estimates = await storage.getEstimates();
+      const tenantId = getTenantFromHostname(req.hostname);
+      const estimates = await storage.getEstimates(tenantId);
       res.json(estimates);
     } catch (error) {
       console.error("Error fetching estimates:", error);
@@ -724,8 +729,9 @@ export async function registerRoutes(
         return;
       }
 
-      // Get user's leads to verify ownership
-      const allLeads = await storage.getLeads();
+      // Get user's leads to verify ownership (filtered by tenant)
+      const tenantId = getTenantFromHostname(req.hostname);
+      const allLeads = await storage.getLeads(tenantId);
       const userLeads = allLeads.filter((l: Lead) => l.email === user.email || l.userId === userId);
       const leadIds = userLeads.map((l: Lead) => l.id);
       
@@ -1192,12 +1198,13 @@ export async function registerRoutes(
   // GET /api/crm/deals - Get all deals
   app.get("/api/crm/deals", async (req, res) => {
     try {
+      const tenantId = getTenantFromHostname(req.hostname);
       const { stage } = req.query;
       let deals;
       if (stage && typeof stage === "string") {
-        deals = await storage.getCrmDealsByStage(stage);
+        deals = await storage.getCrmDealsByStage(stage, tenantId);
       } else {
-        deals = await storage.getCrmDeals();
+        deals = await storage.getCrmDeals(tenantId);
       }
       res.json(deals);
     } catch (error) {
@@ -1209,7 +1216,8 @@ export async function registerRoutes(
   // GET /api/crm/deals/pipeline/summary - Get pipeline summary
   app.get("/api/crm/deals/pipeline/summary", async (req, res) => {
     try {
-      const summary = await storage.getCrmPipelineSummary();
+      const tenantId = getTenantFromHostname(req.hostname);
+      const summary = await storage.getCrmPipelineSummary(tenantId);
       res.json(summary);
     } catch (error) {
       console.error("Error fetching pipeline summary:", error);
@@ -1235,9 +1243,10 @@ export async function registerRoutes(
   // POST /api/crm/deals - Create a new deal
   app.post("/api/crm/deals", async (req, res) => {
     try {
+      const tenantId = getTenantFromHostname(req.hostname);
       // Sanitize text fields that could contain XSS
       const textFields = ['title', 'notes', 'jobAddress'];
-      const sanitizedBody = sanitizeObject(req.body, textFields);
+      const sanitizedBody = sanitizeObject({ ...req.body, tenantId }, textFields);
       const validatedData = insertCrmDealSchema.parse(sanitizedBody);
       const deal = await storage.createCrmDeal(validatedData);
       res.status(201).json(deal);
@@ -5733,7 +5742,9 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // GET /api/partner/v1/estimates - Get estimates for franchise
   app.get("/api/partner/v1/estimates", partnerApiAuth, requireScope("estimates:read"), async (req: any, res) => {
     try {
-      const estimates = await storage.getEstimates();
+      // Filter estimates by franchise's tenant (franchise.tenantId or fall back to hostname)
+      const tenantId = req.franchise.tenantId || getTenantFromHostname(req.hostname);
+      const estimates = await storage.getEstimates(tenantId);
       res.json({
         data: estimates,
         meta: {
@@ -5750,7 +5761,9 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // GET /api/partner/v1/leads - Get leads for franchise
   app.get("/api/partner/v1/leads", partnerApiAuth, requireScope("leads:read"), async (req: any, res) => {
     try {
-      const leads = await storage.getLeads();
+      // Filter leads by franchise's tenant (franchise.tenantId or fall back to hostname)
+      const tenantId = req.franchise.tenantId || getTenantFromHostname(req.hostname);
+      const leads = await storage.getLeads(tenantId);
       res.json({
         data: leads,
         meta: {
