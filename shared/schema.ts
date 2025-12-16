@@ -1558,3 +1558,91 @@ export const insertAppointmentReminderSchema = createInsertSchema(appointmentRem
 
 export type InsertAppointmentReminder = z.infer<typeof insertAppointmentReminderSchema>;
 export type AppointmentReminder = typeof appointmentReminders.$inferSelect;
+
+// ============ EMAIL VERIFICATION ============
+
+// Email Verification Tokens
+export const emailVerificationTokens = pgTable("email_verification_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEmailVerificationTokenSchema = createInsertSchema(emailVerificationTokens).omit({
+  id: true,
+  createdAt: true,
+  usedAt: true,
+});
+
+export type InsertEmailVerificationToken = z.infer<typeof insertEmailVerificationTokenSchema>;
+export type EmailVerificationToken = typeof emailVerificationTokens.$inferSelect;
+
+// ============ QUICKBOOKS INTEGRATION ============
+
+// QuickBooks OAuth Tokens - Store tenant OAuth tokens for QuickBooks
+export const quickbooksTokens = pgTable("quickbooks_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().unique(),
+  
+  // OAuth tokens
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  tokenType: text("token_type").default("Bearer"),
+  expiresAt: timestamp("expires_at").notNull(),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  
+  // QuickBooks company info
+  realmId: text("realm_id").notNull(), // QuickBooks company ID
+  companyName: text("company_name"),
+  
+  // Status
+  isActive: boolean("is_active").default(true).notNull(),
+  lastSyncAt: timestamp("last_sync_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertQuickbooksTokenSchema = createInsertSchema(quickbooksTokens).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastSyncAt: true,
+});
+
+export type InsertQuickbooksToken = z.infer<typeof insertQuickbooksTokenSchema>;
+export type QuickbooksToken = typeof quickbooksTokens.$inferSelect;
+
+// QuickBooks Sync Log - Track synced entities
+export const quickbooksSyncLog = pgTable("quickbooks_sync_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Entity info
+  entityType: text("entity_type").notNull(), // 'invoice', 'payment', 'customer', 'estimate'
+  localId: varchar("local_id").notNull(), // Our system's ID
+  quickbooksId: text("quickbooks_id"), // QuickBooks entity ID
+  
+  // Sync status
+  syncDirection: text("sync_direction").notNull(), // 'to_quickbooks', 'from_quickbooks'
+  syncStatus: text("sync_status").notNull().default("pending"), // 'pending', 'synced', 'failed', 'skipped'
+  errorMessage: text("error_message"),
+  
+  // Sync metadata
+  syncData: jsonb("sync_data"), // Store the synced data for reference
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertQuickbooksSyncLogSchema = createInsertSchema(quickbooksSyncLog).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertQuickbooksSyncLog = z.infer<typeof insertQuickbooksSyncLogSchema>;
+export type QuickbooksSyncLog = typeof quickbooksSyncLog.$inferSelect;

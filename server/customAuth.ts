@@ -5,6 +5,12 @@ import { z } from "zod";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { getTenantFromHostname } from "./tenant";
+import { createVerificationToken, sendVerificationEmail, verifyEmailToken, resendVerificationEmail, isEmailConfigured } from "./email-verification";
+
+const TENANT_NAMES: Record<string, string> = {
+  npp: "Nashville Painting Professionals",
+  demo: "PaintPros.io Demo",
+};
 
 const pgStore = connectPg(session);
 
@@ -80,7 +86,25 @@ export async function setupCustomAuth(app: Express) {
         profileImageUrl: user.profileImageUrl,
         role: user.role,
         tenantId: user.tenantId,
+        emailVerified: user.emailVerified,
       };
+
+      if (isEmailConfigured() && user.email) {
+        try {
+          const token = await createVerificationToken(user.id);
+          const tenantName = TENANT_NAMES[tenantId] || "PaintPros.io";
+          const baseUrl = `https://${req.get("host")}`;
+          await sendVerificationEmail(
+            user.email,
+            user.firstName || "Customer",
+            token,
+            tenantName,
+            baseUrl
+          );
+        } catch (emailError) {
+          console.error("Failed to send verification email:", emailError);
+        }
+      }
 
       res.status(201).json({
         id: user.id,
@@ -88,6 +112,8 @@ export async function setupCustomAuth(app: Express) {
         firstName: user.firstName,
         lastName: user.lastName,
         profileImageUrl: user.profileImageUrl,
+        emailVerified: user.emailVerified,
+        verificationEmailSent: isEmailConfigured(),
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -176,6 +202,62 @@ export async function setupCustomAuth(app: Express) {
       return;
     }
     res.json(sessionUser);
+  });
+
+  app.post("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token } = req.body;
+      if (!token) {
+        res.status(400).json({ error: "Verification token is required" });
+        return;
+      }
+
+      const result = await verifyEmailToken(token);
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
+
+      if ((req.session as any).user?.id === result.userId) {
+        (req.session as any).user.emailVerified = true;
+      }
+
+      res.json({ success: true, message: "Email verified successfully" });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ error: "Verification failed. Please try again." });
+    }
+  });
+
+  app.post("/api/auth/resend-verification", async (req, res) => {
+    try {
+      const sessionUser = (req.session as any).user;
+      if (!sessionUser) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
+
+      if (!isEmailConfigured()) {
+        res.status(500).json({ error: "Email service not configured" });
+        return;
+      }
+
+      const tenantId = sessionUser.tenantId || getTenantFromHostname(req.hostname);
+      const tenantName = TENANT_NAMES[tenantId] || "PaintPros.io";
+      const baseUrl = `https://${req.get("host")}`;
+
+      const result = await resendVerificationEmail(sessionUser.id, tenantName, baseUrl);
+      
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
+
+      res.json({ success: true, message: "Verification email sent" });
+    } catch (error) {
+      console.error("Resend verification error:", error);
+      res.status(500).json({ error: "Failed to resend verification email" });
+    }
   });
 }
 

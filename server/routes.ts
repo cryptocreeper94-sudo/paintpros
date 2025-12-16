@@ -30,6 +30,7 @@ import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } fro
 import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
 import { getTenantFromHostname } from "./tenant";
 import type { RequestHandler } from "express";
+import * as quickbooks from "./quickbooks";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -3644,6 +3645,106 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error: any) {
       console.error("Error processing Coinbase webhook:", error);
       res.status(500).json({ error: error.message || "Webhook processing failed" });
+    }
+  });
+
+  // ============ QUICKBOOKS INTEGRATION ============
+
+  // GET /api/quickbooks/status - Check QuickBooks connection status
+  app.get("/api/quickbooks/status", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const status = await quickbooks.getQBConnectionStatus(tenantId);
+      res.json(status);
+    } catch (error: any) {
+      console.error("QuickBooks status error:", error);
+      res.status(500).json({ error: error.message || "Failed to check QuickBooks status" });
+    }
+  });
+
+  // GET /api/quickbooks/auth - Get QuickBooks OAuth authorization URL
+  app.get("/api/quickbooks/auth", async (req, res) => {
+    try {
+      if (!quickbooks.isQuickBooksConfigured()) {
+        res.status(501).json({ 
+          error: "QuickBooks not configured",
+          message: "Please configure QUICKBOOKS_CLIENT_ID, QUICKBOOKS_CLIENT_SECRET, and QUICKBOOKS_REDIRECT_URI environment variables"
+        });
+        return;
+      }
+
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const state = crypto.randomBytes(16).toString("hex");
+      
+      (req.session as any).qbState = state;
+      (req.session as any).qbTenantId = tenantId;
+      
+      const authUrl = quickbooks.getAuthorizationUrl(state);
+      res.json({ authUrl });
+    } catch (error: any) {
+      console.error("QuickBooks auth error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate auth URL" });
+    }
+  });
+
+  // GET /api/quickbooks/callback - Handle OAuth callback from QuickBooks
+  app.get("/api/quickbooks/callback", async (req, res) => {
+    try {
+      const { code, state, realmId, error: qbError } = req.query;
+
+      if (qbError) {
+        res.redirect("/admin?qb_error=" + encodeURIComponent(qbError as string));
+        return;
+      }
+
+      const sessionState = (req.session as any).qbState;
+      const tenantId = (req.session as any).qbTenantId;
+
+      if (!sessionState || state !== sessionState) {
+        res.redirect("/admin?qb_error=invalid_state");
+        return;
+      }
+
+      if (!code || !realmId) {
+        res.redirect("/admin?qb_error=missing_params");
+        return;
+      }
+
+      await quickbooks.exchangeCodeForTokens(code as string, realmId as string, tenantId);
+      
+      delete (req.session as any).qbState;
+      delete (req.session as any).qbTenantId;
+
+      res.redirect("/admin?qb_connected=true");
+    } catch (error: any) {
+      console.error("QuickBooks callback error:", error);
+      res.redirect("/admin?qb_error=" + encodeURIComponent(error.message));
+    }
+  });
+
+  // POST /api/quickbooks/disconnect - Disconnect QuickBooks
+  app.post("/api/quickbooks/disconnect", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      await quickbooks.disconnectQB(tenantId);
+      res.json({ success: true, message: "QuickBooks disconnected" });
+    } catch (error: any) {
+      console.error("QuickBooks disconnect error:", error);
+      res.status(500).json({ error: error.message || "Failed to disconnect QuickBooks" });
+    }
+  });
+
+  // POST /api/quickbooks/sync/estimate/:id - Sync an estimate to QuickBooks
+  app.post("/api/quickbooks/sync/estimate/:id", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname || "localhost");
+      const estimateId = req.params.id;
+      
+      const result = await quickbooks.syncEstimateToQB(tenantId, estimateId);
+      res.json(result);
+    } catch (error: any) {
+      console.error("QuickBooks sync error:", error);
+      res.status(500).json({ error: error.message || "Failed to sync estimate" });
     }
   });
 
