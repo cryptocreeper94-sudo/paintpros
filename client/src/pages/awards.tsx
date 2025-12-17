@@ -5,7 +5,7 @@ import { useTenant } from "@/context/TenantContext";
 import { Award, Star, CheckCircle, Calendar, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import nppEmblem from "@assets/npp_emblem_full.png";
-import awardImage from "@assets/Screenshot_20251216_191645_Chrome_1765934746460.jpg";
+import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
 
 export default function Awards() {
   const tenant = useTenant();
