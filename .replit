@@ -56,4 +56,4 @@ VAPID_PUBLIC_KEY = "BDZaak-efN4_Ra-s9wNRAXZotXWi61WFtFYBRrqOBAXw4_apIWTKk8rMEtw8
 VAPID_PRIVATE_KEY = "R6paziBx3x0ju8YJZAEZje3UvuNarol3C0-8unnMJNk"
 
 [userenv.development]
-VITE_TENANT_ID = "npp"
+VITE_TENANT_ID = "demo"
