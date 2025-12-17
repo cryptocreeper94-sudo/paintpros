@@ -37,22 +37,18 @@ export function Navbar() {
         <button 
           className={cn(
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center",
-            tenant.id === "demo" ? "p-1 -ml-[16px]" : "-ml-[128px] -mt-[38px] p-0"
+            tenant.id === "demo" ? "p-1 ml-2" : "ml-2 p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={50} className="text-white" />
+            <X size={tenant.id === "demo" ? 32 : 28} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={50} className="text-white" />
+            <Menu size={32} className="text-white" />
           ) : (
-            <img 
-              src={nppEmblem} 
-              alt="Menu"
-              className="h-[70px] md:h-[85px] w-auto object-contain"
-            />
+            <Menu size={28} className="text-white" />
           )}
         </button>
         
@@ -96,7 +92,7 @@ export function Navbar() {
                 fontWeight: 500, 
                 letterSpacing: '0.03em',
                 backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)',
-                marginLeft: '-15px'
+                marginLeft: '20px'
               }}
               data-testid="text-header-title"
             >
