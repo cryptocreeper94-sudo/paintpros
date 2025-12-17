@@ -320,16 +320,16 @@ export function HeroSlideshow() {
                   
                   {/* Feature bullets */}
                   <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 mb-4 md:mb-5 text-xs md:text-sm">
-                    <div className="flex items-center gap-1.5 text-accent">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
                       <span className="text-foreground">Easy online booking</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-accent">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
                       <span className="text-foreground">Transparent pricing</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-accent">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
                       <span className="text-foreground">Quality guarantee</span>
                     </div>
                   </div>
