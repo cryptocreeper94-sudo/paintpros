@@ -47,7 +47,7 @@ export function Footer() {
   return (
     <>
       <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[#344e41] border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[40px] max-h-[40px] flex items-center">
-        <div className="w-full px-3 md:px-4 flex justify-evenly md:justify-between items-center">
+        <div className="w-full px-1 md:px-4 flex justify-between items-center">
           
           {/* Copyright */}
           <div className="whitespace-nowrap text-[9px] md:text-[10px]">
