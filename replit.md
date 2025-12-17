@@ -19,7 +19,21 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **Effects:** Glassmorphism, glow effects, and 3D hover animations.
 - **Components:** Custom components include `GlassCard`, `FlipButton`, auto-scroll marquees, and Embla-based carousels. Radix-based accordions are used for collapsible content.
 - **Mobile Pattern:** Carousels are used for horizontal scrolling on mobile, often containing `GlassCard` and `Accordion`.
-- **Homepage Structure:** Full-width HeroSlideshow at top (Slide 1: "Extraordinary Craftsmanship" intro, Slides 2-7: Customer/Staff help tutorials with PIN for Staff mode). Below the hero: Award card (NPP only, links to /awards) + Portfolio card side-by-side symmetrically. Key component: `client/src/components/ui/hero-slideshow.tsx`.
+- **Homepage Structure (NPP):** Comprehensive vertical scrolling layout inspired by Craftwork.com but with NPP's unique content:
+  1. **Hero Section** - "Paint Your Home The Right Way" with painter image and CTA buttons
+  2. **Trust & Awards** - Award card (Best Painter 2025) + Solana Blockchain Verification card
+  3. **How We Deliver Excellence** - Feature image + 3 cards (Meticulous Preparation, Full-Time Painters, Perfection in Details)
+  4. **Our Services** - Interior/Exterior cards with images
+  5. **Dive Into Color** - Color library preview with horizontal scroll carousels by brand (Sherwin-Williams, Benjamin Moore)
+  6. **What to Expect** - Process timeline (Prep, Painting, Drying, Walkthrough)
+  7. **Colors & Sheens Guide** - Educational content about paint finishes
+  8. **Service Area** - Nashville metro area coverage with map
+  9. **End-to-End Communication** - Daily updates feature highlight
+  10. **Customer Testimonials** - 5-star reviews with customer quotes
+  11. **Resources Hub** - Links to Color Library, Warranty, FAQs, Services
+  12. **Final CTA** - "Get Your Free Estimate"
+  Key component: `client/src/pages/home-npp.tsx`
+- **Default Theme:** Light mode is now the default (client preference for better readability). Stored in `client/src/context/ThemeContext.tsx`.
 
 ### Feature Specifications
 - **Service Descriptions:** Clearly define Interior/Exterior, Commercial/Residential painting services, including Walls, Ceilings, Trim, Doors, and Drywall REPAIR only.
