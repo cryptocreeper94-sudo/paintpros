@@ -28,7 +28,7 @@ export function Navbar() {
 
   return (
     <>
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: 'transparent' }}>
       <div className={cn(
         "flex items-center px-3 md:px-4",
         tenant.id === "demo" ? "h-16 md:h-20" : "h-12 md:h-14"
