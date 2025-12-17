@@ -105,7 +105,8 @@ export function Navbar() {
                 fontWeight: 400, 
                 letterSpacing: '0.03em',
                 backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)',
-                marginLeft: '-25px'
+                marginLeft: '-25px',
+                marginRight: '80px'
               }}
               data-testid="text-header-title"
             >
@@ -119,7 +120,7 @@ export function Navbar() {
 
         {/* Right: Help & Theme Toggle - pushed to right edge */}
         <div className="flex items-center gap-2 relative z-10" style={{ marginRight: '-10px' }}>
-          <Link href="/help" className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5" style={{ marginLeft: '4px' }} aria-label="Help & Tour" data-testid="button-help">
+          <Link href="/help" className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5" style={{ marginLeft: '12px' }} aria-label="Help & Tour" data-testid="button-help">
             <HelpCircle className="w-7 h-7 md:w-8 md:h-8 text-white" />
           </Link>
           <button 
