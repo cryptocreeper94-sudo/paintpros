@@ -314,58 +314,44 @@ export function HeroSlideshow() {
           transition={{ duration: 0.3 }}
           className="h-full"
         >
-          {currentSlide.isHero ? (
-            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative">
-              <div 
-                className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
-                style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
-              
-              <div className="relative z-10 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
-                  <Star className="w-3 h-3 fill-accent text-accent" />
-                  {ratingBadge}
-                </div>
-                <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
-                  {currentSlide.title} <br className="hidden md:block" />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344] dark:from-accent dark:to-[#8B7355]">
-                    {currentSlide.subtitle}
-                  </span>
-                </h1>
-                <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
-                  {currentSlide.description}
-                </p>
-                <p className="text-[10px] md:text-sm text-muted-foreground italic">
-                  Swipe to see how we can help you
-                </p>
-              </div>
-
-              <img 
-                src={paintBrush} 
-                alt="Brush" 
-                className="hidden md:block absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-[5] opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
-              />
-            </div>
-          ) : (
-            <div className="p-4 pt-10 pb-16 md:p-12 md:pt-12 md:pb-20 flex flex-col justify-center h-full relative">
-              <img 
-                src={currentSlide.image} 
-                alt={currentSlide.title}
-                className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-30"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
-              
-              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
-                <div className="p-3 md:p-5 rounded-2xl bg-accent/20 backdrop-blur-sm border border-accent/30 shadow-lg">
-                  <Icon className="w-8 h-8 md:w-12 md:h-12 text-accent" />
-                </div>
-                
-                <div className="flex-1">
-                  <h2 className="text-lg md:text-3xl font-display font-bold text-foreground dark:text-white mb-2">
+          <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative">
+            {/* Background image - same treatment for all slides */}
+            <div 
+              className="absolute inset-0 bg-center bg-cover z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
+              style={{ backgroundImage: `url(${currentSlide.image})`, backgroundSize: currentSlide.isHero ? '300%' : 'cover' }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
+            
+            <div className="relative z-10 max-w-2xl">
+              {currentSlide.isHero ? (
+                <>
+                  <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
+                    <Star className="w-3 h-3 fill-accent text-accent" />
+                    {ratingBadge}
+                  </div>
+                  <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
+                    {currentSlide.title} <br className="hidden md:block" />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344] dark:from-accent dark:to-[#8B7355]">
+                      {currentSlide.subtitle}
+                    </span>
+                  </h1>
+                  <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
+                    {currentSlide.description}
+                  </p>
+                  <p className="text-[10px] md:text-sm text-muted-foreground italic">
+                    Swipe to see how we can help you
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-4 backdrop-blur-md shadow-sm">
+                    <Icon className="w-3 h-3 text-accent" />
+                    {mode === "customer" ? "How-To Guide" : "Staff Feature"}
+                  </div>
+                  <h1 className="text-xl md:text-5xl lg:text-6xl font-display font-bold leading-tight mb-1 md:mb-4 text-glow">
                     {currentSlide.title}
-                  </h2>
-                  <p className="text-sm md:text-lg text-muted-foreground leading-relaxed mb-4 max-w-xl">
+                  </h1>
+                  <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-3 md:mb-6 max-w-lg leading-snug md:leading-relaxed drop-shadow-lg">
                     {currentSlide.description}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
@@ -379,17 +365,26 @@ export function HeroSlideshow() {
                     )}
                     {mode === "customer" && (
                       <a href="/estimate">
-                        <Button variant="outline" className="gap-2" data-testid={`button-slide-estimate-${currentSlide.id}`}>
+                        <Button variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm" data-testid={`button-slide-estimate-${currentSlide.id}`}>
                           <Calculator className="w-4 h-4" />
                           Estimate
                         </Button>
                       </a>
                     )}
                   </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
-          )}
+
+            {/* Decorative paintbrush - hero slide only */}
+            {currentSlide.isHero && (
+              <img 
+                src={paintBrush} 
+                alt="Brush" 
+                className="hidden md:block absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-[5] opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
+              />
+            )}
+          </div>
         </motion.div>
       </AnimatePresence>
 
