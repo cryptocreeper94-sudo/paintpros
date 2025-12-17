@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Home, Calculator, Calendar, Users, Bell, Gift, BarChart3, FileText, MessageSquare, Lock, Settings, Shield, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Calculator, Calendar, Users, Bell, Gift, BarChart3, FileText, MessageSquare, Lock, Settings, Shield, Star, CheckCircle2 } from "lucide-react";
 import { GlassCard } from "./glass-card";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -314,77 +314,112 @@ export function HeroSlideshow() {
           transition={{ duration: 0.3 }}
           className="h-full"
         >
-          <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative">
-            {/* Background image - same treatment for all slides */}
-            <div 
-              className="absolute inset-0 bg-center bg-cover z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
-              style={{ backgroundImage: `url(${currentSlide.image})`, backgroundSize: currentSlide.isHero ? '300%' : 'cover' }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
-            
-            <div className="relative z-10 max-w-2xl">
-              {currentSlide.isHero ? (
-                <>
-                  <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
-                    <Star className="w-3 h-3 fill-accent text-accent" />
-                    {ratingBadge}
-                  </div>
-                  <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
-                    {currentSlide.title} <br className="hidden md:block" />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344] dark:from-accent dark:to-[#8B7355]">
-                      {currentSlide.subtitle}
-                    </span>
-                  </h1>
-                  <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
-                    {currentSlide.description}
-                  </p>
-                  <p className="text-[10px] md:text-sm text-muted-foreground italic">
-                    Swipe to see how we can help you
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-4 backdrop-blur-md shadow-sm">
-                    <Icon className="w-3 h-3 text-accent" />
-                    {mode === "customer" ? "How-To Guide" : "Staff Feature"}
-                  </div>
-                  <h1 className="text-xl md:text-5xl lg:text-6xl font-display font-bold leading-tight mb-1 md:mb-4 text-glow">
-                    {currentSlide.title}
-                  </h1>
-                  <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-3 md:mb-6 max-w-lg leading-snug md:leading-relaxed drop-shadow-lg">
-                    {currentSlide.description}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {currentSlide.link && (
-                      <a href={currentSlide.link}>
-                        <Button variant="default" className="gap-2" data-testid={`button-slide-${currentSlide.id}`}>
-                          {currentSlide.linkText}
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                      </a>
-                    )}
-                    {mode === "customer" && (
-                      <a href="/estimate">
-                        <Button variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm" data-testid={`button-slide-estimate-${currentSlide.id}`}>
-                          <Calculator className="w-4 h-4" />
-                          Estimate
-                        </Button>
-                      </a>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+          {currentSlide.isHero ? (
+            /* Hero slide - full background with text overlay */
+            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative">
+              <div 
+                className="absolute inset-0 bg-center bg-cover z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
+                style={{ backgroundImage: `url(${currentSlide.image})`, backgroundSize: '300%' }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
+              
+              <div className="relative z-10 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
+                  <Star className="w-3 h-3 fill-accent text-accent" />
+                  {ratingBadge}
+                </div>
+                <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
+                  {currentSlide.title} <br className="hidden md:block" />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344] dark:from-accent dark:to-[#8B7355]">
+                    {currentSlide.subtitle}
+                  </span>
+                </h1>
+                <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
+                  {currentSlide.description}
+                </p>
+                <p className="text-[10px] md:text-sm text-muted-foreground italic">
+                  Swipe to see how we can help you
+                </p>
+              </div>
 
-            {/* Decorative paintbrush - hero slide only */}
-            {currentSlide.isHero && (
               <img 
                 src={paintBrush} 
                 alt="Brush" 
                 className="hidden md:block absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-[5] opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
               />
-            )}
-          </div>
+            </div>
+          ) : (
+            /* Tutorial slides - split screen: image left, content right */
+            <div className="flex h-full">
+              {/* Left side - Image */}
+              <div className="hidden md:block w-[45%] relative overflow-hidden">
+                <img 
+                  src={currentSlide.image} 
+                  alt={currentSlide.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
+              </div>
+              
+              {/* Right side - Content */}
+              <div className="flex-1 flex flex-col justify-center p-4 pt-10 pb-6 md:p-8 md:pt-10 relative bg-background">
+                {/* Mobile background image */}
+                <div 
+                  className="md:hidden absolute inset-0 bg-center bg-cover z-0 opacity-20"
+                  style={{ backgroundImage: `url(${currentSlide.image})` }}
+                />
+                <div className="md:hidden absolute inset-0 bg-background/80 z-0" />
+                
+                <div className="relative z-10 text-center md:text-left">
+                  {/* Icon */}
+                  <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl bg-accent/20 border border-accent/30 mb-3 md:mb-4">
+                    <Icon className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                  </div>
+                  
+                  <h2 className="text-lg md:text-2xl lg:text-3xl font-display font-bold text-foreground mb-2 md:mb-3">
+                    {currentSlide.title}
+                  </h2>
+                  
+                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed mb-4 md:mb-5 max-w-md mx-auto md:mx-0">
+                    {currentSlide.description}
+                  </p>
+                  
+                  {/* Feature bullets */}
+                  <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 mb-4 md:mb-5 text-xs md:text-sm">
+                    <div className="flex items-center gap-1.5 text-accent">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span className="text-foreground">Easy online booking</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-accent">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span className="text-foreground">Transparent pricing</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-accent">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span className="text-foreground">Quality guarantee</span>
+                    </div>
+                  </div>
+                  
+                  {/* CTA Button */}
+                  {currentSlide.link && (
+                    <a href={currentSlide.link}>
+                      <Button variant="outline" className="gap-2" data-testid={`button-slide-${currentSlide.id}`}>
+                        {currentSlide.linkText}
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </a>
+                  )}
+                </div>
+                
+                {/* Decorative paintbrush */}
+                <img 
+                  src={paintBrush} 
+                  alt="" 
+                  className="hidden md:block absolute -right-6 -bottom-16 w-[180px] h-auto object-contain z-[5] opacity-70 drop-shadow-xl rotate-[-15deg] pointer-events-none"
+                />
+              </div>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
 

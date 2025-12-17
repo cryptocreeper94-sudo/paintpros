@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound, HelpCircle, Award } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -119,14 +119,11 @@ export function Navbar() {
         {/* Spacer to push icons to the right */}
         <div className="flex-1" />
 
-        {/* Right: Help & Theme Toggle - pushed to right edge */}
+        {/* Right: Theme Toggle - pushed to right edge */}
         <div className="flex items-center gap-2 relative z-10" style={{ marginRight: '-10px' }}>
-          <Link href="/help" className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5" style={{ marginLeft: '12px' }} aria-label="Help & Tour" data-testid="button-help">
-            <HelpCircle className="w-7 h-7 md:w-8 md:h-8 text-white" />
-          </Link>
           <button 
             onClick={toggleTheme}
-            className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5" style={{ marginLeft: '-10px' }}
+            className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5"
             aria-label="Toggle theme"
             data-testid="button-theme-toggle"
           >
