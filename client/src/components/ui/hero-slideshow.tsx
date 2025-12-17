@@ -289,20 +289,20 @@ export function HeroSlideshow() {
 
       <button
         onClick={goPrev}
-        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 rounded-full bg-background/70 backdrop-blur-md border border-white/30 hover:bg-background/90 transition-all shadow-lg hover:scale-105"
+        className="absolute left-2 md:left-3 top-2 md:top-3 z-20 p-1.5 md:p-2 rounded-full bg-background/70 backdrop-blur-md border border-white/30 hover:bg-background/90 transition-all shadow-lg hover:scale-105"
         aria-label="Previous slide"
         data-testid="button-hero-prev"
       >
-        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
+        <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-foreground" />
       </button>
 
       <button
         onClick={goToNext}
-        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 rounded-full bg-background/70 backdrop-blur-md border border-white/30 hover:bg-background/90 transition-all shadow-lg hover:scale-105"
+        className="absolute right-2 md:right-3 top-2 md:top-3 z-20 p-1.5 md:p-2 rounded-full bg-background/70 backdrop-blur-md border border-white/30 hover:bg-background/90 transition-all shadow-lg hover:scale-105"
         aria-label="Next slide"
         data-testid="button-hero-next"
       >
-        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
+        <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-foreground" />
       </button>
 
       <AnimatePresence mode="wait">
