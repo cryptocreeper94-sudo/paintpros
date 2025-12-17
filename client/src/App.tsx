@@ -31,6 +31,7 @@ import TermsWarranty from "@/pages/terms-warranty";
 import Account from "@/pages/account";
 import Help from "@/pages/help";
 import AuthPage from "@/pages/auth";
+import Awards from "@/pages/awards";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -64,6 +65,7 @@ function Router() {
       <Route path="/account" component={Account} />
       <Route path="/help" component={Help} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/awards" component={Awards} />
       <Route component={NotFound} />
     </Switch>
   );

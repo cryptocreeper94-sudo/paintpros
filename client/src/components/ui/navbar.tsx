@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound, HelpCircle } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound, HelpCircle, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -33,6 +33,7 @@ export function Navbar() {
     { name: "Crew Lead", href: "/crew-lead", icon: HardHat, color: "text-orange-400" },
     { name: "Contractor Application", href: "/contractor-application", icon: Briefcase, color: "text-green-400" },
     { name: "Blog", href: "/blog", icon: BookOpen, color: "text-pink-400" },
+    { name: "Awards", href: "/awards", icon: Award, color: "text-gold-400", nppOnly: true },
     { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
   ];
 
@@ -293,7 +294,9 @@ export function Navbar() {
                     <KeyRound className="w-3 h-3" />
                     Staff Access
                   </p>
-                  {adminLinks.map((link, index) => (
+                  {adminLinks
+                    .filter(link => !link.nppOnly || tenant.id !== "demo")
+                    .map((link, index) => (
                     <motion.div
                       key={link.name}
                       initial={{ opacity: 0, x: -20 }}
