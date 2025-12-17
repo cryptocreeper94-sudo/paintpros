@@ -383,6 +383,20 @@ export function HeroSlideshow() {
         </motion.div>
       </AnimatePresence>
 
+      {/* Free Estimate Button - Customer mode only */}
+      {mode === "customer" && (
+        <a 
+          href="/estimate" 
+          className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-20"
+          data-testid="link-hero-free-estimate"
+        >
+          <Button size="sm" className="shadow-lg gap-1.5 text-xs md:text-sm">
+            <Calculator className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            Get Free Estimate
+          </Button>
+        </a>
+      )}
+
       <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
         {slides.map((slide, idx) => (
           <button
