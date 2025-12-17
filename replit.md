@@ -6,6 +6,8 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit for the painting and home 
 ## User Preferences
 I prefer simple language and detailed explanations. I want iterative development and for you to ask before making major changes. Do not make changes to the `assets/branding/` folder.
 
+**Light Theme Preference:** The client strongly prefers light themes over dark themes for better text visibility. The estimate page now uses a light color scheme with white backgrounds and dark gray text for maximum readability. All form inputs use gray-50 backgrounds with gray-900 text.
+
 ## System Architecture
 
 ### Multi-Tenant Architecture

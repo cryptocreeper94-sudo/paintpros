@@ -435,13 +435,13 @@ export default function Estimate() {
                 {/* Glow effect behind card */}
                 <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50 pointer-events-none" />
                 
-                <GlassCard className="relative p-5 md:p-8 border-accent/20 overflow-y-auto flex-1 min-h-0" glow>
+                <GlassCard className="relative p-5 md:p-8 border-accent/20 overflow-y-auto flex-1 min-h-0" glow style={{ backgroundColor: 'white' }}>
                   <button
                     onClick={() => setShowEmailModal(false)}
-                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition-colors"
+                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                     data-testid="button-close-email-modal"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-5 h-5 text-gray-600" />
                   </button>
                   <div className="text-center mb-6">
                     <motion.div 
@@ -451,19 +451,19 @@ export default function Estimate() {
                     >
                       <Calculator className="w-8 h-8 text-accent" />
                     </motion.div>
-                    <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
+                    <h2 className="text-2xl md:text-3xl font-display font-bold mb-2" style={{ color: '#1f2937' }}>
                       Instant Quote Calculator
                     </h2>
-                    <p className="text-muted-foreground text-base">
+                    <p className="text-gray-600 text-base">
                       Thank you for choosing{" "}
-                      <span className="text-accent font-semibold">{tenant.name}</span>
+                      <span className="text-[#344e41] font-semibold">{tenant.name}</span>
                     </p>
                   </div>
 
-                  <div className="bg-gradient-to-r from-army-green-800/40 to-army-green-700/30 rounded-xl p-4 mb-6 border border-border dark:border-white/10 backdrop-blur-sm">
+                  <div className="bg-gradient-to-r from-[#344e41]/10 to-[#588157]/10 rounded-xl p-4 mb-6 border border-[#344e41]/20">
                     <div className="flex items-start gap-3">
-                      <Sparkles className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <Sparkles className="w-5 h-5 text-[#344e41] mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-gray-600 leading-relaxed">
                         To provide you with a personalized quote, please enter your details below.
                       </p>
                     </div>
@@ -472,53 +472,53 @@ export default function Estimate() {
                   <form onSubmit={handleEmailSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label htmlFor="firstName" className="text-xs text-muted-foreground mb-1 block">First Name *</Label>
+                        <Label htmlFor="firstName" className="text-xs text-gray-600 mb-1 block">First Name *</Label>
                         <Input
                           id="firstName"
                           type="text"
                           placeholder="John"
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
-                          className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                          className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400 h-12 rounded-xl focus:border-[#344e41] focus:ring-2 focus:ring-[#344e41]/20 transition-all"
                           data-testid="input-first-name-capture"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="lastName" className="text-xs text-muted-foreground mb-1 block">Last Name *</Label>
+                        <Label htmlFor="lastName" className="text-xs text-gray-600 mb-1 block">Last Name *</Label>
                         <Input
                           id="lastName"
                           type="text"
                           placeholder="Smith"
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
-                          className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                          className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400 h-12 rounded-xl focus:border-[#344e41] focus:ring-2 focus:ring-[#344e41]/20 transition-all"
                           data-testid="input-last-name-capture"
                         />
                       </div>
                     </div>
                     
                     <div>
-                      <Label htmlFor="emailCapture" className="text-xs text-muted-foreground mb-1 block">Email *</Label>
+                      <Label htmlFor="emailCapture" className="text-xs text-gray-600 mb-1 block">Email *</Label>
                       <Input
                         id="emailCapture"
                         type="email"
                         placeholder="your@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                        className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400 h-12 rounded-xl focus:border-[#344e41] focus:ring-2 focus:ring-[#344e41]/20 transition-all"
                         data-testid="input-email-capture"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="phoneCapture" className="text-xs text-muted-foreground mb-1 block">Phone <span className="text-muted-foreground/60">(optional, for text updates)</span></Label>
+                      <Label htmlFor="phoneCapture" className="text-xs text-gray-600 mb-1 block">Phone <span className="text-gray-400">(optional, for text updates)</span></Label>
                       <Input
                         id="phoneCapture"
                         type="tel"
                         placeholder="(555) 123-4567"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="bg-white/5 border-border dark:border-white/20 h-12 rounded-xl focus:border-accent/50 focus:ring-2 focus:ring-accent/20 transition-all"
+                        className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400 h-12 rounded-xl focus:border-[#344e41] focus:ring-2 focus:ring-[#344e41]/20 transition-all"
                         data-testid="input-phone-capture"
                       />
                     </div>
@@ -662,7 +662,7 @@ export default function Estimate() {
         onScanComplete={(sqft) => setSquareFootage(sqft)}
       />
 
-      <main className="pt-24 px-4 md:px-8 pb-24">
+      <main className="pt-24 px-4 md:px-8 pb-24 bg-gradient-to-b from-gray-50 to-white min-h-screen">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <motion.div 
@@ -674,10 +674,10 @@ export default function Estimate() {
               <Zap className="w-4 h-4" />
               Instant Pricing Calculator
             </div>
-            <h1 className="text-5xl md:text-7xl font-display font-bold text-foreground mb-6 leading-tight">
-              Get Your <span className="text-accent">Free Quote</span>
+            <h1 className="text-5xl md:text-7xl font-display font-bold text-gray-800 mb-6 leading-tight">
+              Get Your <span className="text-[#344e41]">Free Quote</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Select your services below and see your estimate update in real-time. No waiting, no hassle.
             </p>
           </motion.div>
@@ -691,16 +691,16 @@ export default function Estimate() {
               transition={{ delay: 0.1 }}
             >
               <div className="mb-8">
-                <h2 className="text-2xl font-display font-bold mb-2 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                    <Paintbrush className="w-5 h-5 text-accent" />
+                <h2 className="text-2xl font-display font-bold mb-2 flex items-center gap-3 text-gray-800">
+                  <div className="w-10 h-10 rounded-xl bg-[#344e41]/10 flex items-center justify-center">
+                    <Paintbrush className="w-5 h-5 text-[#344e41]" />
                   </div>
                   Select Your Services
                 </h2>
-                <p className="text-muted-foreground text-sm ml-[52px]">Click any card to add it to your estimate</p>
+                <p className="text-gray-600 text-sm ml-[52px]">Click any card to add it to your estimate</p>
               </div>
 
-              <GlassCard className="p-6">
+              <GlassCard className="p-6 border-gray-200" style={{ backgroundColor: 'white' }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { key: 'walls', label: 'Walls', desc: 'Interior wall painting', icon: Square, image: wallsImg },
@@ -715,8 +715,8 @@ export default function Estimate() {
                     whileTap={{ scale: 0.98 }}
                     className={`relative min-h-[160px] rounded-2xl overflow-hidden cursor-pointer border-2 transition-all ${
                       jobSelections[service.key as keyof JobSelections]
-                        ? 'border-accent shadow-lg shadow-accent/20' 
-                        : 'border-border dark:border-white/10 hover:border-white/30'
+                        ? 'border-[#344e41] shadow-lg shadow-[#344e41]/20' 
+                        : 'border-gray-200 hover:border-gray-400'
                     }`}
                     onClick={() => setJobSelections(prev => ({ ...prev, [service.key]: !prev[service.key as keyof JobSelections] }))}
                     data-testid={`checkbox-${service.key}`}
@@ -735,8 +735,8 @@ export default function Estimate() {
                     <div className="absolute inset-0 p-5 flex items-center gap-4">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
                         jobSelections[service.key as keyof JobSelections]
-                          ? 'bg-accent border-2 border-white'
-                          : 'bg-black/5 dark:bg-white/10 border-2 border-white/30'
+                          ? 'bg-[#344e41] border-2 border-white'
+                          : 'bg-white/20 border-2 border-white/50'
                       }`}>
                         {jobSelections[service.key as keyof JobSelections] && (
                           <Check className="w-5 h-5 text-white" />
@@ -777,13 +777,13 @@ export default function Estimate() {
                     >
                       {needsSquareFootage && (
                         <div>
-                          <Label className="text-xl font-bold mb-4 block flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                              <Square className="w-4 h-4 text-accent" />
+                          <Label className="text-xl font-bold mb-4 block flex items-center gap-2 text-gray-800">
+                            <div className="w-8 h-8 rounded-lg bg-[#344e41]/10 flex items-center justify-center">
+                              <Square className="w-4 h-4 text-[#344e41]" />
                             </div>
                             Square Footage
                           </Label>
-                          <p className="text-sm text-muted-foreground mb-4">
+                          <p className="text-sm text-gray-600 mb-4">
                             Enter the total square footage of the area to be painted.
                           </p>
                           <div className="flex items-center gap-3 flex-wrap">
@@ -792,15 +792,15 @@ export default function Estimate() {
                               placeholder="0"
                               value={squareFootage || ""}
                               onChange={(e) => setSquareFootage(parseInt(e.target.value) || 0)}
-                              className="bg-white/5 border-border dark:border-white/20 text-xl h-14 w-48 text-center rounded-xl focus:border-accent/50"
+                              className="bg-gray-50 border-gray-300 text-gray-900 text-xl h-14 w-48 text-center rounded-xl focus:border-[#344e41]"
                               min={0}
                               data-testid="input-square-footage"
                             />
-                            <span className="text-lg text-muted-foreground font-medium">sq ft</span>
+                            <span className="text-lg text-gray-600 font-medium">sq ft</span>
                             <div className="flex gap-2 ml-2">
                               <button
                                 onClick={() => setSquareFootage(0)}
-                                className="px-4 h-10 rounded-lg bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-sm font-medium transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                className="px-4 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                                 data-testid="button-clear-sqft"
                               >
                                 <X className="w-4 h-4" />
@@ -824,7 +824,7 @@ export default function Estimate() {
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                             >
-                              <p className="text-sm text-muted-foreground mb-2">See your estimate below</p>
+                              <p className="text-sm text-gray-600 mb-2">See your estimate below</p>
                               <motion.div
                                 animate={{ y: [0, 8, 0] }}
                                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -838,16 +838,16 @@ export default function Estimate() {
 
                       {jobSelections.doors && (
                         <div>
-                          <Label className="text-xl font-bold mb-4 block flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                              <DoorOpen className="w-4 h-4 text-accent" />
+                          <Label className="text-xl font-bold mb-4 block flex items-center gap-2 text-gray-800">
+                            <div className="w-8 h-8 rounded-lg bg-[#344e41]/10 flex items-center justify-center">
+                              <DoorOpen className="w-4 h-4 text-[#344e41]" />
                             </div>
                             Number of Doors
                           </Label>
                           <div className="flex items-center gap-4">
                             <button
                               onClick={() => setDoorCount(Math.max(1, doorCount - 1))}
-                              className="w-14 h-14 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
+                              className="w-14 h-14 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
                               data-testid="button-door-minus"
                             >
                               -
@@ -856,13 +856,13 @@ export default function Estimate() {
                               type="number"
                               value={doorCount}
                               onChange={(e) => setDoorCount(Math.max(1, parseInt(e.target.value) || 1))}
-                              className="bg-white/5 border-border dark:border-white/20 text-2xl h-14 w-24 text-center rounded-xl font-bold"
+                              className="bg-gray-50 border-gray-300 text-gray-900 text-2xl h-14 w-24 text-center rounded-xl font-bold"
                               min={1}
                               data-testid="input-door-count"
                             />
                             <button
                               onClick={() => setDoorCount(doorCount + 1)}
-                              className="w-14 h-14 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
+                              className="w-14 h-14 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center text-2xl font-bold transition-all hover:scale-105 active:scale-95"
                               data-testid="button-door-plus"
                             >
                               +
