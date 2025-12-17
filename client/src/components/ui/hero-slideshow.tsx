@@ -315,7 +315,7 @@ export function HeroSlideshow() {
           className="h-full"
         >
           {currentSlide.isHero ? (
-            <div className="p-4 pt-12 pb-6 md:p-12 md:pt-14 flex flex-col justify-center items-start h-full relative">
+            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative">
               <div 
                 className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
                 style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
@@ -348,7 +348,7 @@ export function HeroSlideshow() {
               />
             </div>
           ) : (
-            <div className="p-4 pt-12 pb-6 md:p-12 md:pt-14 flex flex-col justify-center h-full relative">
+            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center h-full relative">
               <img 
                 src={currentSlide.image} 
                 alt={currentSlide.title}
