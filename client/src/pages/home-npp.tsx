@@ -14,6 +14,8 @@ export default function HomeNPP() {
   const handleGetEstimate = () => {
     if (zipCode.length === 5) {
       window.location.href = `/estimate?zip=${zipCode}`;
+    } else {
+      window.location.href = `/estimate`;
     }
   };
 
