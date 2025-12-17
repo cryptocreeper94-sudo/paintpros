@@ -36,9 +36,10 @@ export function Navbar() {
         {/* Left: Hamburger Menu - NPP uses emblem, demo uses standard menu icon */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center",
-            tenant.id === "demo" ? "p-1 ml-2" : "ml-1 p-0"
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
+            tenant.id === "demo" ? "p-1 ml-2" : "p-1"
           )}
+          style={tenant.id !== "demo" ? { marginLeft: '-40px' } : undefined}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
@@ -51,7 +52,7 @@ export function Navbar() {
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-[40px] md:h-[50px] w-auto object-contain"
+              className="h-[40px] md:h-[50px] w-auto object-contain pointer-events-none"
             />
           )}
         </button>
