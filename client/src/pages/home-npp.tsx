@@ -12,9 +12,13 @@ export default function HomeNPP() {
   const [zipCode, setZipCode] = useState("");
 
   const handleGetEstimate = () => {
-    if (zipCode.length === 5) {
-      window.location.href = `/estimate?zip=${zipCode}`;
+    // NPP goes directly to estimate, demo requires ZIP
+    if (tenant.id === "demo") {
+      if (zipCode.length === 5) {
+        window.location.href = `/estimate?zip=${zipCode}`;
+      }
     } else {
+      // NPP - go directly to estimate
       window.location.href = `/estimate`;
     }
   };
@@ -52,7 +56,7 @@ export default function HomeNPP() {
               <Button 
                 size="lg" 
                 onClick={handleGetEstimate}
-                disabled={zipCode.length !== 5}
+                disabled={tenant.id === "demo" && zipCode.length !== 5}
                 className="w-full sm:w-auto gap-2"
                 data-testid="button-get-estimate"
               >
