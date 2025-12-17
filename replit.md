@@ -17,6 +17,7 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **Effects:** Glassmorphism, glow effects, and 3D hover animations.
 - **Components:** Custom components include `GlassCard`, `FlipButton`, auto-scroll marquees, and Embla-based carousels. Radix-based accordions are used for collapsible content.
 - **Mobile Pattern:** Carousels are used for horizontal scrolling on mobile, often containing `GlassCard` and `Accordion`.
+- **Homepage Structure:** Full-width HeroSlideshow at top (Slide 1: "Extraordinary Craftsmanship" intro, Slides 2-7: Customer/Staff help tutorials with PIN for Staff mode). Below the hero: Award card (NPP only, links to /awards) + Portfolio card side-by-side symmetrically. Key component: `client/src/components/ui/hero-slideshow.tsx`.
 
 ### Feature Specifications
 - **Service Descriptions:** Clearly define Interior/Exterior, Commercial/Residential painting services, including Walls, Ceilings, Trim, Doors, and Drywall REPAIR only.

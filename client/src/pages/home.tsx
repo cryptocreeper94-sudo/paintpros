@@ -5,7 +5,10 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { LogoFlipCard } from "@/components/ui/logo-flip-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
-import { NavigationCarousel } from "@/components/ui/navigation-carousel";
+import { HeroSlideshow } from "@/components/ui/hero-slideshow";
+import { Award } from "lucide-react";
+import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
+import portfolioImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, BadgeCheck } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
@@ -74,48 +77,59 @@ export default function Home() {
       <main className="pt-8 md:pt-4 px-2 md:px-8">
         <BentoGrid>
           
-          {/* 1. Hero Section - Main Headline */}
-          <BentoItem colSpan={8} rowSpan={2} mobileColSpan={4} mobileRowSpan={2} className="relative group">
-            <GlassCard className="p-3 pt-10 pb-4 md:p-12 flex flex-col justify-center items-start overflow-hidden border-border dark:border-white/20 h-full">
-              <div 
-                className="absolute inset-0 bg-center z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
-                style={{ backgroundImage: `url(${heroBg})`, backgroundSize: '300%' }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
-              
-              <div className="relative z-10 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
-                  <Star className="w-3 h-3 fill-accent text-accent" />
-                  {ratingBadge}
-                </div>
-                <h1 className="text-lg md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
-                  Extraordinary <br className="hidden md:block" />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344] dark:from-accent dark:to-[#8B7355]">
-                    Craftsmanship.
-                  </span>
-                </h1>
-                <p className="text-[10px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
-                  {tenant.description || `Premium residential and commercial painting.`}
-                </p>
-                <a href="/portfolio" className="inline-block mb-1">
-                  <FlipButton>
-                    View Portfolio <ArrowRight className="w-4 h-4" />
-                  </FlipButton>
-                </a>
-              </div>
-
-              {/* Floating Element 1 - Hidden on mobile to avoid text overlap */}
-              <img 
-                src={paintBrush} 
-                alt="Brush" 
-                className="hidden md:block absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-[5] opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
-              />
-            </GlassCard>
+          {/* 1. Hero Slideshow - Main Card with Tutorial (FULL WIDTH) */}
+          <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4} mobileRowSpan={3} className="relative">
+            <HeroSlideshow />
           </BentoItem>
 
-          {/* Navigation Carousel - Quick Access Guide */}
-          <BentoItem colSpan={8} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
-            <NavigationCarousel />
+          {/* Award Card - Best Painter 2025 (NPP only) */}
+          {tenant.id === "npp" && (
+            <BentoItem colSpan={6} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
+              <a href="/awards" className="block h-full" data-testid="link-award-card">
+                <GlassCard className="p-0 overflow-hidden relative group cursor-pointer hover:border-accent/40 transition-colors h-full" hoverEffect glow>
+                  <img 
+                    src={awardImage} 
+                    alt="Best Painter in Nashville 2025 Award" 
+                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent" />
+                  <div className="absolute bottom-2 left-2 right-2 md:bottom-4 md:left-4 md:right-4">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Award className="w-4 h-4 text-accent" />
+                      <span className="text-[9px] md:text-xs font-bold text-accent uppercase tracking-wider">2025 Award</span>
+                    </div>
+                    <h3 className="text-xs md:text-lg font-display font-bold text-white">Best Painter in Nashville</h3>
+                  </div>
+                </GlassCard>
+              </a>
+            </BentoItem>
+          )}
+
+          {/* Portfolio Card */}
+          <BentoItem colSpan={tenant.id === "npp" ? 6 : 12} rowSpan={1} mobileColSpan={tenant.id === "npp" ? 2 : 4} mobileRowSpan={2}>
+            <a href="/portfolio" className="block h-full" data-testid="link-portfolio-card">
+              <GlassCard className="p-0 overflow-hidden relative group cursor-pointer hover:border-accent/40 transition-colors h-full" hoverEffect glow>
+                <img 
+                  src={portfolioImage} 
+                  alt="View our portfolio of completed projects" 
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2 md:bottom-4 md:left-4 md:right-4">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Brush className="w-4 h-4 text-accent" />
+                    <span className="text-[9px] md:text-xs font-bold text-accent uppercase tracking-wider">Our Work</span>
+                  </div>
+                  <h3 className="text-xs md:text-lg font-display font-bold text-white">View Portfolio</h3>
+                  <p className="text-[9px] md:text-xs text-gray-200 hidden md:block">Browse our gallery of transformations</p>
+                </div>
+                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-accent text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+                  </div>
+                </div>
+              </GlassCard>
+            </a>
           </BentoItem>
 
           {/* 2. CTA Card - High Contrast */}
