@@ -73,9 +73,9 @@ export function Navbar() {
           style={{ right: '90px' }}
         >
           {tenant.id === "demo" ? (
-            <div className="flex flex-col items-start pointer-events-auto">
+            <div className="flex flex-col items-start pointer-events-auto" style={{ marginLeft: '50px' }}>
               <div 
-                className="text-lg md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
+                className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
                 style={{ 
                   fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                   fontWeight: 500, 
@@ -87,7 +87,7 @@ export function Navbar() {
                 PaintPros.io
               </div>
               <div 
-                className="text-[10px] md:text-sm lg:text-base xl:text-lg whitespace-nowrap bg-clip-text text-transparent"
+                className="text-xs md:text-sm lg:text-base xl:text-lg whitespace-nowrap bg-clip-text text-transparent"
                 style={{ 
                   fontFamily: 'Rajdhani, sans-serif', 
                   fontWeight: 400, 
