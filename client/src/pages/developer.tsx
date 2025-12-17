@@ -1,6 +1,7 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
@@ -17,7 +18,7 @@ import {
   glowGradients,
   tapEffect 
 } from "@/lib/theme-effects";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History, LayoutGrid, Rows } from "lucide-react";
 import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
 import { VersionHistory } from "@/components/version-history";
@@ -1980,6 +1981,64 @@ export default function Developer() {
           {/* Live Visitors Card */}
           <BentoItem colSpan={4} rowSpan={1}>
             <LiveVisitorsCard />
+          </BentoItem>
+
+          {/* Layout Switcher Card */}
+          <BentoItem colSpan={4} rowSpan={1}>
+            <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent">
+              <div className="flex items-center gap-3 mb-3">
+                <motion.div 
+                  className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.accent}`}
+                  whileHover={{ rotate: 10 }}
+                >
+                  <LayoutGrid className="w-4 h-4 text-accent" />
+                </motion.div>
+                <h3 className="text-lg font-bold">Layout Switcher</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">Override homepage layout for demos</p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={typeof window !== 'undefined' && localStorage.getItem('dev_layout_override') === 'bento' ? 'default' : 'outline'}
+                  onClick={() => {
+                    localStorage.setItem('dev_layout_override', 'bento');
+                    toast.success('Layout set to Bento Grid');
+                    window.location.href = '/';
+                  }}
+                  className="flex-1 gap-1"
+                  data-testid="button-layout-bento"
+                >
+                  <LayoutGrid className="w-3 h-3" />
+                  Bento
+                </Button>
+                <Button
+                  size="sm"
+                  variant={typeof window !== 'undefined' && localStorage.getItem('dev_layout_override') === 'minimalist' ? 'default' : 'outline'}
+                  onClick={() => {
+                    localStorage.setItem('dev_layout_override', 'minimalist');
+                    toast.success('Layout set to Minimalist');
+                    window.location.href = '/';
+                  }}
+                  className="flex-1 gap-1"
+                  data-testid="button-layout-minimalist"
+                >
+                  <Rows className="w-3 h-3" />
+                  Simple
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    localStorage.removeItem('dev_layout_override');
+                    toast.success('Using tenant default');
+                    window.location.href = '/';
+                  }}
+                  data-testid="button-layout-reset"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            </GlassCard>
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={2}>
