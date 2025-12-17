@@ -33,11 +33,11 @@ export function Navbar() {
         "flex items-center px-3 md:px-4",
         tenant.id === "demo" ? "h-16 md:h-20" : "h-12 md:h-14"
       )}>
-        {/* Left: Hamburger Menu - NPP has custom positioning for emblem, demo uses normal positioning */}
+        {/* Left: Hamburger Menu - NPP uses emblem, demo uses standard menu icon */}
         <button 
           className={cn(
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center",
-            tenant.id === "demo" ? "p-1 ml-2" : "ml-2 p-0"
+            tenant.id === "demo" ? "p-1 ml-2" : "ml-1 p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
@@ -48,7 +48,11 @@ export function Navbar() {
           ) : tenant.id === "demo" ? (
             <Menu size={32} className="text-white" />
           ) : (
-            <Menu size={28} className="text-white" />
+            <img 
+              src={nppEmblem} 
+              alt="Menu"
+              className="h-[40px] md:h-[50px] w-auto object-contain"
+            />
           )}
         </button>
         
