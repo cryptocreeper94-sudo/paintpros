@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { LogoFlipCard } from "@/components/ui/logo-flip-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
+import { NavigationCarousel } from "@/components/ui/navigation-carousel";
 import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, BadgeCheck } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
@@ -111,6 +112,11 @@ export default function Home() {
                 className="hidden md:block absolute -right-10 -bottom-20 w-[400px] h-auto object-contain z-[5] opacity-90 drop-shadow-2xl rotate-[-15deg] transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:translate-x-2 pointer-events-none"
               />
             </GlassCard>
+          </BentoItem>
+
+          {/* Navigation Carousel - Quick Access Guide */}
+          <BentoItem colSpan={8} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
+            <NavigationCarousel />
           </BentoItem>
 
           {/* 2. CTA Card - High Contrast */}
@@ -376,77 +382,7 @@ export default function Home() {
             </button>
           </BentoItem>
 
-          {/* About/Contact Card - Demo: Configurable Platform, NPP: About Us */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-            {isDemo ? (
-              <GlassCard className="p-4 md:p-6 flex flex-col justify-between h-full border-accent/20 bg-gradient-to-br from-accent/5 to-transparent">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <ShieldCheck className="w-4 h-4 text-accent" />
-                    </div>
-                    <span className="text-[10px] md:text-xs font-bold text-accent uppercase tracking-wider">White-Label Solution</span>
-                  </div>
-                  <h3 className="text-sm md:text-xl font-display font-bold mb-2">Fully Configurable</h3>
-                  <p className="text-[10px] md:text-sm text-muted-foreground leading-relaxed mb-3">
-                    Everything you see is customizable — branding, colors, services, pricing, and features. Built to fit <span className="text-accent font-medium">your business</span>, not the other way around.
-                  </p>
-                  <ul className="space-y-1.5 text-[9px] md:text-xs text-muted-foreground">
-                    <li className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                      Your logo, colors & branding
-                    </li>
-                    <li className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                      Custom pricing & service areas
-                    </li>
-                    <li className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3 h-3 text-green-400 flex-shrink-0" />
-                      Solana blockchain verification
-                    </li>
-                  </ul>
-                </div>
-                <button 
-                  onClick={() => setContactOpen(true)}
-                  className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-accent text-primary font-bold rounded-lg hover:bg-accent/90 transition-colors text-xs md:text-sm"
-                  data-testid="button-contact-demo"
-                >
-                  Contact Us <ArrowRight className="w-3 h-3" />
-                </button>
-              </GlassCard>
-            ) : (
-              <button
-                onClick={() => setAboutUsOpen(true)}
-                className="w-full h-full text-left"
-                data-testid="button-about-us"
-              >
-                <GlassCard className="p-3 md:p-4 flex flex-col justify-between h-full border-accent/20 bg-gradient-to-br from-accent/5 to-transparent cursor-pointer hover:border-accent/40 transition-colors">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1 md:mb-2">
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                        <Star className="w-3 h-3 md:w-4 md:h-4 text-accent fill-accent" />
-                      </div>
-                      <span className="text-[9px] md:text-xs font-bold text-accent uppercase tracking-wider">About Us</span>
-                    </div>
-                    <h3 className="text-xs md:text-lg font-display font-bold mb-1">{tenant.name}</h3>
-                    <p className="text-[9px] md:text-xs text-muted-foreground leading-snug">
-                      Family-owned since 2015. Licensed & Insured with {tenant.credentials?.warrantyYears || 5}-year warranty.
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="text-[8px] md:text-xs text-accent font-medium">
-                      Learn More
-                    </div>
-                    <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-accent flex items-center justify-center">
-                      <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-primary" />
-                    </div>
-                  </div>
-                </GlassCard>
-              </button>
-            )}
-          </BentoItem>
-
-          {/* Crypto Payment Card - Below About Us on desktop */}
+          {/* Crypto Payment Card */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
             {tenant.id === 'npp' ? (
               <div
