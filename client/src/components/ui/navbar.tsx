@@ -39,7 +39,7 @@ export function Navbar() {
             "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
             tenant.id === "demo" ? "p-1 ml-2" : "p-1"
           )}
-          style={tenant.id !== "demo" ? { marginLeft: '-70px' } : undefined}
+          style={tenant.id !== "demo" ? { marginLeft: '-70px', marginTop: '-25px' } : undefined}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
