@@ -2,7 +2,8 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
-import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award, Shield, CalendarCheck, PaintBucket } from "lucide-react";
+import { ArrowRight, ArrowDown, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, Sparkles, Zap, X, Lock, Upload, AlertTriangle, Loader2, CheckCircle, Crown, Star, Award, Shield, CalendarCheck, PaintBucket, Palette, ExternalLink } from "lucide-react";
+import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
@@ -1192,6 +1193,27 @@ export default function Estimate() {
                                 </AccordionContent>
                               </AccordionItem>
                             </Accordion>
+
+                            {/* Browse Colors Link */}
+                            <Link href="/colors">
+                              <motion.div 
+                                className="mt-4 p-3 rounded-xl bg-gradient-to-r from-accent/5 to-purple-500/5 border border-accent/20 flex items-center justify-between cursor-pointer"
+                                whileHover={{ scale: 1.01, borderColor: "rgba(var(--accent), 0.4)" }}
+                                whileTap={{ scale: 0.99 }}
+                                data-testid="link-browse-colors"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                                    <Palette className="w-4 h-4 text-accent" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium">Browse Our Color Library</p>
+                                    <p className="text-xs text-muted-foreground">Sherwin-Williams and Benjamin Moore colors</p>
+                                  </div>
+                                </div>
+                                <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                              </motion.div>
+                            </Link>
                           </div>
                         )}
 

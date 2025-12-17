@@ -33,6 +33,7 @@ import Help from "@/pages/help";
 import AuthPage from "@/pages/auth";
 import Awards from "@/pages/awards";
 import Team from "@/pages/team";
+import ColorLibrary from "@/pages/color-library";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -68,6 +69,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/awards" component={Awards} />
       <Route path="/team" component={Team} />
+      <Route path="/colors" component={ColorLibrary} />
       <Route component={NotFound} />
     </Switch>
   );
