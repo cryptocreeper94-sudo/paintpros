@@ -74,7 +74,7 @@ export default function HomeDemo() {
 
   return (
     <PageLayout>
-      <main className="pt-8 md:pt-4 px-2 md:px-8">
+      <main className="pt-6 md:pt-8 pb-8 md:pb-12 px-3 md:px-10">
         <BentoGrid>
           
           {/* 1. Hero Slideshow - Main Card with Tutorial (FULL WIDTH) */}
