@@ -117,7 +117,7 @@ export function Navbar() {
             aria-label="Toggle theme"
             data-testid="button-theme-toggle"
           >
-            {theme === "dark" ? <Sun className="w-8 h-8 text-accent" /> : <Moon className="w-8 h-8 text-white" />}
+            {theme === "dark" ? <Sun className="w-8 h-8 text-accent" /> : <Moon className="w-8 h-8 text-gray-700" />}
           </button>
         </div>
       </div>
