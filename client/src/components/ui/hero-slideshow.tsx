@@ -348,7 +348,7 @@ export function HeroSlideshow() {
               />
             </div>
           ) : (
-            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center h-full relative">
+            <div className="p-4 pt-10 pb-16 md:p-12 md:pt-12 md:pb-20 flex flex-col justify-center h-full relative">
               <img 
                 src={currentSlide.image} 
                 alt={currentSlide.title}
