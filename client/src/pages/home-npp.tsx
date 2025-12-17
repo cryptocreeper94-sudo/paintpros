@@ -28,7 +28,6 @@ import {
   Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { MessagingWidget } from "@/components/messaging-widget";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 // Import images
@@ -808,11 +807,6 @@ export default function HomeNPP() {
       </main>
       
       <PWAInstallPrompt />
-      <MessagingWidget 
-        currentUserId="visitor"
-        currentUserRole="visitor"
-        currentUserName="Visitor"
-      />
     </PageLayout>
   );
 }
