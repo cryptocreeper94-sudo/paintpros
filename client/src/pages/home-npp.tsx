@@ -645,8 +645,80 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* RESOURCES HUB */}
+        {/* CUSTOMER TESTIMONIALS */}
         <section className="py-20 px-4 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+                What Our Customers Say
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                Join hundreds of satisfied homeowners
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  name: "James P.",
+                  review: "I recently had the pleasure of having Nashville Painting Professionals paint several interior spaces of my home, and I am extremely impressed with the level of professionalism and quality of work they provided. From the initial contact to the final walkthrough, the team was friendly...",
+                  rating: 5
+                },
+                {
+                  name: "Sarah M.",
+                  review: "Best painter experience we've ever had. Getting a quote was quick and simple and didn't require anyone to come to our house. Communication was superb and clear. Loved the Project Schedule we got ahead of time that outlined our preferences...",
+                  rating: 5
+                },
+                {
+                  name: "Bill D.",
+                  review: "I have never had a painting experience as professional as Nashville Painting Professionals. Not only was the work they did excellent, but the communication blew me away. I received an email the week of my job telling me exactly which colors would be used...",
+                  rating: 5
+                }
+              ].map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900">
+                    <div className="flex gap-1 mb-4">
+                      {Array.from({ length: testimonial.rating }).map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-4">
+                      {testimonial.review}
+                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{testimonial.name}</p>
+                  </GlassCard>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <a 
+                href="https://www.google.com/search?q=nashville+painting+professionals+reviews" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="gap-2" data-testid="link-google-reviews">
+                  See All Reviews
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* RESOURCES HUB */}
+        <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
