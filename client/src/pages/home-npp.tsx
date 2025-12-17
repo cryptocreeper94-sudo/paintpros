@@ -120,19 +120,14 @@ export default function HomeNPP() {
               <Link href="/awards">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="relative h-64 md:h-80 rounded-2xl overflow-hidden cursor-pointer group"
+                  className="relative h-auto md:h-80 rounded-2xl overflow-hidden cursor-pointer group bg-black"
                   data-testid="link-award-section"
                 >
-                  <img src={awardImage} alt="Best Painter Award 2025" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Award className="w-5 h-5 text-yellow-400" />
-                      <span className="text-yellow-400 font-semibold text-sm uppercase tracking-wider">2025 Award</span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-white">Best Painter in Nashville</h3>
-                    <p className="text-gray-300 text-sm mt-1">Based on Google Reviews</p>
-                  </div>
+                  <img 
+                    src={awardImage} 
+                    alt="Best Painter Award 2025" 
+                    className="w-full h-full object-contain mx-auto" 
+                  />
                 </motion.div>
               </Link>
 
