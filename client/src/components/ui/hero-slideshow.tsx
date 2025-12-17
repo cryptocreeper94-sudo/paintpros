@@ -368,14 +368,24 @@ export function HeroSlideshow() {
                   <p className="text-sm md:text-lg text-muted-foreground leading-relaxed mb-4 max-w-xl">
                     {currentSlide.description}
                   </p>
-                  {currentSlide.link && (
-                    <a href={currentSlide.link}>
-                      <Button variant="default" className="gap-2" data-testid={`button-slide-${currentSlide.id}`}>
-                        {currentSlide.linkText}
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    </a>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {currentSlide.link && (
+                      <a href={currentSlide.link}>
+                        <Button variant="default" className="gap-2" data-testid={`button-slide-${currentSlide.id}`}>
+                          {currentSlide.linkText}
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
+                    {mode === "customer" && (
+                      <a href="/estimate">
+                        <Button variant="outline" className="gap-2" data-testid={`button-slide-estimate-${currentSlide.id}`}>
+                          <Calculator className="w-4 h-4" />
+                          Estimate
+                        </Button>
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -383,8 +393,8 @@ export function HeroSlideshow() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Free Estimate Button - Customer mode only */}
-      {mode === "customer" && (
+      {/* Free Estimate Button - Customer mode, hero slide only */}
+      {mode === "customer" && currentSlide.isHero && (
         <a 
           href="/estimate" 
           className="absolute bottom-12 md:bottom-14 right-1 md:right-1.5 z-20"
