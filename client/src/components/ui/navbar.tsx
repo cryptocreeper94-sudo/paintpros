@@ -68,7 +68,8 @@ export function Navbar() {
         
         {/* Center: Title - truly centered using absolute positioning */}
         <div 
-          className="absolute left-0 right-0 flex justify-center pointer-events-none"
+          className="absolute left-0 flex justify-center pointer-events-none"
+          style={{ right: '90px' }}
         >
           {tenant.id === "demo" ? (
             <div className="flex flex-col items-start pointer-events-auto">
@@ -105,8 +106,7 @@ export function Navbar() {
                 fontWeight: 400, 
                 letterSpacing: '0.03em',
                 backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)',
-                marginLeft: '-25px',
-                marginRight: '80px'
+                marginLeft: '-40px'
               }}
               data-testid="text-header-title"
             >
