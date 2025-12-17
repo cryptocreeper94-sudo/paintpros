@@ -387,7 +387,7 @@ export function HeroSlideshow() {
       {mode === "customer" && (
         <a 
           href="/estimate" 
-          className="absolute bottom-2 md:bottom-3 right-2 md:right-3 z-20"
+          className="absolute bottom-7 md:bottom-8 right-1 md:right-1.5 z-20"
           data-testid="link-hero-free-estimate"
         >
           <Button size="sm" className="shadow-lg gap-1 text-xs">
