@@ -390,8 +390,8 @@ export function HeroSlideshow() {
           className="absolute bottom-7 md:bottom-8 right-1 md:right-1.5 z-20"
           data-testid="link-hero-free-estimate"
         >
-          <Button size="sm" className="shadow-lg gap-1 text-xs">
-            <Calculator className="w-3 h-3" />
+          <Button size="sm" className="shadow-lg gap-1 text-[10px] px-2 py-1 h-6">
+            <Calculator className="w-2.5 h-2.5" />
             Estimate
           </Button>
         </a>
