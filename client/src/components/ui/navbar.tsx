@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen, LogIn, User, LogOut, KeyRound, Award } from "lucide-react";
+import { X, PaintRoller, ChevronRight, Sun, Moon, ArrowLeft, Home, Menu, LogIn, User, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -25,17 +25,6 @@ export function Navbar() {
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
     { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator },
   ].filter(link => link.enabled !== false);
-
-  const adminLinks = [
-    { name: "Owner", href: "/owner", icon: Crown, color: "text-gold-400" },
-    { name: "Admin", href: "/admin", icon: Shield, color: "text-blue-400" },
-    { name: "Project Manager", href: "/project-manager", icon: MapPin, color: "text-teal-400" },
-    { name: "Crew Lead", href: "/crew-lead", icon: HardHat, color: "text-orange-400" },
-    { name: "Contractor Application", href: "/contractor-application", icon: Briefcase, color: "text-green-400" },
-    { name: "Blog", href: "/blog", icon: BookOpen, color: "text-pink-400" },
-    { name: "Awards", href: "/awards", icon: Award, color: "text-gold-400", nppOnly: true },
-    { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
-  ];
 
   return (
     <>
@@ -280,38 +269,6 @@ export function Navbar() {
                       </span>
                     </Link>
                   )}
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-white/10 my-4" />
-
-                {/* Staff Access Links (PIN-based) */}
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2 flex items-center gap-2">
-                    <KeyRound className="w-3 h-3" />
-                    Staff Access
-                  </p>
-                  {adminLinks
-                    .filter(link => !link.nppOnly || tenant.id !== "demo")
-                    .map((link, index) => (
-                    <motion.div
-                      key={link.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: (mainLinks.length + index) * 0.05 }}
-                    >
-                      <Link href={link.href}>
-                        <span 
-                          className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <link.icon className={cn("w-5 h-5", link.color)} />
-                          <span className="text-lg font-medium text-foreground">{link.name}</span>
-                          <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                        </span>
-                      </Link>
-                    </motion.div>
-                  ))}
                 </div>
 
                 {/* Tenant name decoration at bottom */}

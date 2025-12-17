@@ -110,7 +110,7 @@ export function Footer() {
           
           {/* Team Button */}
           <a 
-            href="/admin" 
+            href="/team" 
             className="flex items-center gap-1 text-muted-foreground/70 hover:text-accent transition-colors text-[9px] md:text-[10px]"
             data-testid="link-team"
           >

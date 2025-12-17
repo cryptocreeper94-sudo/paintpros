@@ -1544,6 +1544,7 @@ export async function registerRoutes(
         { role: "ops_manager", pin: "4444", mustChangePin: true },
         { role: "owner", pin: "1111", mustChangePin: true },
         { role: "project_manager", pin: "2222", mustChangePin: false },
+        { role: "crew_lead", pin: "3333", mustChangePin: false },
         { role: "developer", pin: "0424", mustChangePin: false }
       ];
       
@@ -1555,6 +1556,51 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error initializing PINs:", error);
       res.status(500).json({ error: "Failed to initialize PINs" });
+    }
+  });
+
+  // POST /api/auth/pin/verify-any - Verify PIN against all roles (returns matching role)
+  app.post("/api/auth/pin/verify-any", async (req, res) => {
+    try {
+      const { pin } = req.body;
+      if (!pin) {
+        res.status(400).json({ success: false, message: "PIN required" });
+        return;
+      }
+
+      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
+      const rateLimit = checkPinRateLimit(clientIp, "any");
+      
+      if (!rateLimit.allowed) {
+        res.status(429).json({ 
+          success: false,
+          message: "Too many failed attempts. Please try again later.",
+          retryAfter: rateLimit.retryAfter 
+        });
+        return;
+      }
+
+      // Check PIN against all known roles
+      const roles = ["owner", "ops_manager", "project_manager", "crew_lead", "developer"];
+      
+      for (const role of roles) {
+        const userPin = await storage.getUserPinByRole(role);
+        if (userPin && userPin.pin === pin) {
+          recordPinAttempt(clientIp, "any", true);
+          res.json({ 
+            success: true, 
+            role,
+            mustChangePin: userPin.mustChangePin 
+          });
+          return;
+        }
+      }
+      
+      recordPinAttempt(clientIp, "any", false);
+      res.json({ success: false, message: "Invalid PIN" });
+    } catch (error) {
+      console.error("Error verifying PIN:", error);
+      res.status(500).json({ success: false, message: "Failed to verify PIN" });
     }
   });
 
