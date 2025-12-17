@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink, Users } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
@@ -107,6 +107,16 @@ export function Footer() {
               </>
             )}
           </div>
+          
+          {/* Team Button */}
+          <a 
+            href="/admin" 
+            className="flex items-center gap-1 text-muted-foreground/70 hover:text-accent transition-colors text-[9px] md:text-[10px]"
+            data-testid="link-team"
+          >
+            <Users className="w-3 h-3 md:w-3.5 md:h-3.5" />
+            <span>Team</span>
+          </a>
           
           {/* Desktop Links */}
           <div className="gap-4 whitespace-nowrap hidden md:flex">

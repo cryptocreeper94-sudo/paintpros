@@ -101,10 +101,10 @@ export function Navbar() {
             </div>
           ) : (
             <div 
-              className="whitespace-nowrap px-1 pointer-events-auto text-sm md:text-base lg:text-lg bg-clip-text text-transparent"
+              className="whitespace-nowrap px-1 pointer-events-auto text-2xl md:text-3xl lg:text-4xl bg-clip-text text-transparent"
               style={{ 
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
-                fontWeight: 400, 
+                fontWeight: 500, 
                 letterSpacing: '0.03em',
                 backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)',
                 marginLeft: '35px'
