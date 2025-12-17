@@ -49,6 +49,8 @@ import {
   type CustomerPreferences, type InsertCustomerPreferences, customerPreferences,
   type PushSubscription as PushSub, type InsertPushSubscription, pushSubscriptions,
   type AppointmentReminder, type InsertAppointmentReminder, appointmentReminders,
+  type PaintColor, type InsertPaintColor, paintColors,
+  type CustomerColorSelection, type InsertCustomerColorSelection, customerColorSelections,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -380,6 +382,16 @@ export interface IStorage {
   hasReminderBeenSent(bookingId: string, reminderType: string): Promise<boolean>;
   getUpcomingBookingsForReminders(hoursAhead: number, maxHoursAhead: number, tenantId?: string): Promise<Booking[]>;
   getUserByBookingEmail(email: string, tenantId: string): Promise<User | undefined>;
+  
+  // Paint Colors
+  getPaintColors(filters: { brand?: string; category?: string; search?: string; limit?: number }): Promise<PaintColor[]>;
+  getPaintColorById(id: string): Promise<PaintColor | undefined>;
+  getCoordinatingColors(color: PaintColor): Promise<PaintColor[]>;
+  seedPaintColors(): Promise<number>;
+  
+  // Customer Color Selections
+  createColorSelection(selection: InsertCustomerColorSelection): Promise<CustomerColorSelection>;
+  getColorSelectionsByEstimate(estimateId: string): Promise<CustomerColorSelection[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2429,6 +2441,96 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.select().from(users)
       .where(and(eq(users.email, email), eq(users.tenantId, tenantId)));
     return user;
+  }
+
+  // Paint Colors
+  async getPaintColors(filters: { brand?: string; category?: string; search?: string; limit?: number }): Promise<PaintColor[]> {
+    const conditions = [eq(paintColors.isActive, true)];
+    
+    if (filters.brand) {
+      conditions.push(eq(paintColors.brand, filters.brand));
+    }
+    if (filters.category) {
+      conditions.push(eq(paintColors.category, filters.category));
+    }
+    if (filters.search) {
+      conditions.push(or(
+        ilike(paintColors.colorName, `%${filters.search}%`),
+        ilike(paintColors.colorCode, `%${filters.search}%`)
+      )!);
+    }
+    
+    return await db.select().from(paintColors)
+      .where(and(...conditions))
+      .orderBy(desc(paintColors.popularity))
+      .limit(filters.limit || 50);
+  }
+
+  async getPaintColorById(id: string): Promise<PaintColor | undefined> {
+    const [color] = await db.select().from(paintColors).where(eq(paintColors.id, id));
+    return color;
+  }
+
+  async getCoordinatingColors(color: PaintColor): Promise<PaintColor[]> {
+    if (!color.coordinatingColors || color.coordinatingColors.length === 0) {
+      return [];
+    }
+    return await db.select().from(paintColors)
+      .where(inArray(paintColors.colorCode, color.coordinatingColors));
+  }
+
+  async seedPaintColors(): Promise<number> {
+    const existingColors = await db.select().from(paintColors).limit(1);
+    if (existingColors.length > 0) {
+      return 0;
+    }
+
+    const seedColors: InsertPaintColor[] = [
+      // Sherwin-Williams Whites
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7005", colorName: "Pure White", hexValue: "#F3EDE4", category: "white", undertone: "neutral", lrv: 84, coordinatingColors: ["SW 7006", "SW 7015"], trimColors: ["SW 7006"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 100 },
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7011", colorName: "Natural Choice", hexValue: "#E6DFD5", category: "white", undertone: "warm", lrv: 73, coordinatingColors: ["SW 7012", "SW 7013"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 95 },
+      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 7012", colorName: "Creamy", hexValue: "#F4E8D6", category: "white", undertone: "warm", lrv: 81, coordinatingColors: ["SW 7011", "SW 7013"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "kitchen"], popularity: 92 },
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7015", colorName: "Repose Gray", hexValue: "#C2BCB4", category: "neutral", undertone: "cool", lrv: 58, coordinatingColors: ["SW 7016", "SW 7005"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 98 },
+      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 7016", colorName: "Mindful Gray", hexValue: "#BBB5AC", category: "neutral", undertone: "warm", lrv: 48, coordinatingColors: ["SW 7015", "SW 7017"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["living-room", "office"], popularity: 90 },
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 6119", colorName: "Antique White", hexValue: "#F2E6D9", category: "white", undertone: "warm", lrv: 72, coordinatingColors: ["SW 6120", "SW 6121"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 88 },
+      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 7029", colorName: "Agreeable Gray", hexValue: "#D1CBC0", category: "neutral", undertone: "warm", lrv: 60, coordinatingColors: ["SW 7015", "SW 7030"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 99 },
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7030", colorName: "Anew Gray", hexValue: "#C8C0B5", category: "neutral", undertone: "warm", lrv: 47, coordinatingColors: ["SW 7029", "SW 7031"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["bedroom", "office"], popularity: 85 },
+      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 6106", colorName: "Kilim Beige", hexValue: "#CCC1B0", category: "warm", undertone: "warm", lrv: 57, coordinatingColors: ["SW 6105", "SW 6107"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 80 },
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 6126", colorName: "Navajo White", hexValue: "#F1E0CC", category: "warm", undertone: "warm", lrv: 77, coordinatingColors: ["SW 6125", "SW 6127"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom"], popularity: 78 },
+      
+      // Benjamin Moore Classics
+      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "HC-172", colorName: "Revere Pewter", hexValue: "#CCC5B9", category: "neutral", undertone: "warm", lrv: 55, coordinatingColors: ["HC-173", "OC-17"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 97 },
+      { brand: "benjamin-moore", productLine: "Aura", colorCode: "OC-17", colorName: "White Dove", hexValue: "#F3EFE0", category: "white", undertone: "warm", lrv: 85, coordinatingColors: ["HC-172", "OC-20"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 96 },
+      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "OC-20", colorName: "Pale Oak", hexValue: "#D7CFC4", category: "neutral", undertone: "warm", lrv: 69, coordinatingColors: ["OC-17", "OC-21"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 94 },
+      { brand: "benjamin-moore", productLine: "Aura", colorCode: "AF-685", colorName: "Thunder", hexValue: "#3D3F43", category: "accent", undertone: "cool", lrv: 5, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["office", "accent-wall"], popularity: 75 },
+      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "2163-10", colorName: "Black", hexValue: "#313131", category: "accent", undertone: "neutral", lrv: 3, coordinatingColors: ["OC-17", "OC-20"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "exterior-trim"], popularity: 70 },
+      { brand: "benjamin-moore", productLine: "Aura", colorCode: "HC-80", colorName: "Bleeker Beige", hexValue: "#C9BDA8", category: "warm", undertone: "warm", lrv: 52, coordinatingColors: ["HC-81", "OC-17"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 82 },
+      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "1471", colorName: "Swiss Coffee", hexValue: "#F0E9DF", category: "white", undertone: "warm", lrv: 81, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom"], popularity: 91 },
+      { brand: "benjamin-moore", productLine: "Aura", colorCode: "2163-40", colorName: "Gray Owl", hexValue: "#C5C4BC", category: "neutral", undertone: "cool", lrv: 65, coordinatingColors: ["OC-17", "2163-50"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["living-room", "bedroom"], popularity: 89 },
+      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "CC-40", colorName: "Cloud White", hexValue: "#F0ECE3", category: "white", undertone: "neutral", lrv: 83, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 93 },
+      { brand: "benjamin-moore", productLine: "Aura", colorCode: "HC-173", colorName: "Edgecomb Gray", hexValue: "#D5CEC4", category: "neutral", undertone: "warm", lrv: 63, coordinatingColors: ["HC-172", "OC-17"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 87 },
+      
+      // Popular Accent Colors
+      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 6244", colorName: "Naval", hexValue: "#34495E", category: "accent", undertone: "cool", lrv: 4, coordinatingColors: ["SW 7005", "SW 6245"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "office", "bedroom"], popularity: 86 },
+      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 6258", colorName: "Tricorn Black", hexValue: "#2E2E2E", category: "accent", undertone: "neutral", lrv: 3, coordinatingColors: ["SW 7005", "SW 7015"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "exterior-trim"], popularity: 83 },
+      { brand: "benjamin-moore", productLine: "Aura", colorCode: "2062-10", colorName: "Hale Navy", hexValue: "#3C4A5C", category: "accent", undertone: "cool", lrv: 5, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "office"], popularity: 84 },
+      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 6207", colorName: "Retreat", hexValue: "#5F7167", category: "accent", undertone: "cool", lrv: 15, coordinatingColors: ["SW 7005", "SW 6208"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom"], popularity: 76 },
+      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "HC-158", colorName: "Newburyport Blue", hexValue: "#4A6270", category: "accent", undertone: "cool", lrv: 12, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom", "office"], popularity: 79 },
+    ];
+
+    await db.insert(paintColors).values(seedColors);
+    return seedColors.length;
+  }
+
+  // Customer Color Selections
+  async createColorSelection(selection: InsertCustomerColorSelection): Promise<CustomerColorSelection> {
+    const [result] = await db.insert(customerColorSelections).values(selection).returning();
+    return result;
+  }
+
+  async getColorSelectionsByEstimate(estimateId: string): Promise<CustomerColorSelection[]> {
+    return await db.select().from(customerColorSelections)
+      .where(eq(customerColorSelections.estimateId, estimateId));
   }
 }
 

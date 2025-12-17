@@ -1669,3 +1669,80 @@ export const insertQuickbooksSyncLogSchema = createInsertSchema(quickbooksSyncLo
 
 export type InsertQuickbooksSyncLog = z.infer<typeof insertQuickbooksSyncLogSchema>;
 export type QuickbooksSyncLog = typeof quickbooksSyncLog.$inferSelect;
+
+// Paint Colors Library - Curated color database for estimates and visualization
+export const paintColors = pgTable("paint_colors", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Brand and product line
+  brand: text("brand").notNull(), // 'sherwin-williams', 'benjamin-moore', 'behr', 'ppg'
+  productLine: text("product_line").notNull(), // 'Duration', 'Emerald', 'Regal Select', 'Aura'
+  
+  // Color identification
+  colorCode: text("color_code").notNull(), // 'SW 7005', 'HC-172'
+  colorName: text("color_name").notNull(), // 'Pure White', 'Revere Pewter'
+  hexValue: text("hex_value").notNull(), // '#FFFFFF'
+  
+  // Color characteristics
+  category: text("category").notNull(), // 'white', 'neutral', 'warm', 'cool', 'accent'
+  undertone: text("undertone"), // 'warm', 'cool', 'neutral', 'yellow', 'pink', 'green', 'blue'
+  lrv: integer("lrv"), // Light Reflectance Value (0-100)
+  
+  // Coordinating colors (stored as array of color codes)
+  coordinatingColors: text("coordinating_colors").array(), // ['SW 7006', 'SW 7008']
+  trimColors: text("trim_colors").array(), // Recommended trim colors
+  accentColors: text("accent_colors").array(), // Recommended accent colors
+  
+  // Application recommendations
+  interiorRecommended: boolean("interior_recommended").default(true),
+  exteriorRecommended: boolean("exterior_recommended").default(false),
+  roomTypes: text("room_types").array(), // ['living-room', 'bedroom', 'kitchen', 'bathroom']
+  
+  // Metadata
+  description: text("description"),
+  imageUrl: text("image_url"), // Swatch image
+  popularity: integer("popularity").default(0), // For sorting by popularity
+  
+  // Tenant can have custom/favorite colors
+  tenantId: text("tenant_id"), // null = global library, value = tenant-specific
+  isActive: boolean("is_active").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPaintColorSchema = createInsertSchema(paintColors).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPaintColor = z.infer<typeof insertPaintColorSchema>;
+export type PaintColor = typeof paintColors.$inferSelect;
+
+// Customer Color Selections - Track colors customers have selected/saved
+export const customerColorSelections = pgTable("customer_color_selections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  estimateId: varchar("estimate_id").references(() => estimates.id),
+  
+  // Color reference
+  paintColorId: varchar("paint_color_id").references(() => paintColors.id),
+  
+  // Where to apply
+  roomName: text("room_name"), // 'Living Room', 'Master Bedroom'
+  surfaceType: text("surface_type"), // 'walls', 'trim', 'ceiling', 'doors', 'cabinets'
+  
+  // AI visualization reference
+  visualizationImageUrl: text("visualization_image_url"), // AI-generated preview
+  
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCustomerColorSelectionSchema = createInsertSchema(customerColorSelections).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCustomerColorSelection = z.infer<typeof insertCustomerColorSelectionSchema>;
+export type CustomerColorSelection = typeof customerColorSelections.$inferSelect;

@@ -5895,6 +5895,104 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // ============ PAINT COLORS LIBRARY ============
+
+  // Get all paint colors with optional filters
+  app.get("/api/paint-colors", async (req, res) => {
+    try {
+      const { brand, category, search, limit = "50" } = req.query;
+      const colors = await storage.getPaintColors({
+        brand: brand as string | undefined,
+        category: category as string | undefined,
+        search: search as string | undefined,
+        limit: parseInt(limit as string)
+      });
+      res.json(colors);
+    } catch (error) {
+      console.error("Error fetching paint colors:", error);
+      res.status(500).json({ error: "Failed to fetch paint colors" });
+    }
+  });
+
+  // Get a single paint color by ID
+  app.get("/api/paint-colors/:id", async (req, res) => {
+    try {
+      const color = await storage.getPaintColorById(req.params.id);
+      if (!color) {
+        return res.status(404).json({ error: "Color not found" });
+      }
+      res.json(color);
+    } catch (error) {
+      console.error("Error fetching paint color:", error);
+      res.status(500).json({ error: "Failed to fetch paint color" });
+    }
+  });
+
+  // Get paint colors by brand
+  app.get("/api/paint-colors/brand/:brand", async (req, res) => {
+    try {
+      const colors = await storage.getPaintColors({
+        brand: req.params.brand,
+        limit: 100
+      });
+      res.json(colors);
+    } catch (error) {
+      console.error("Error fetching paint colors by brand:", error);
+      res.status(500).json({ error: "Failed to fetch paint colors" });
+    }
+  });
+
+  // Get coordinating colors for a specific color
+  app.get("/api/paint-colors/:id/coordinating", async (req, res) => {
+    try {
+      const color = await storage.getPaintColorById(req.params.id);
+      if (!color) {
+        return res.status(404).json({ error: "Color not found" });
+      }
+      const coordinatingColors = await storage.getCoordinatingColors(color);
+      res.json(coordinatingColors);
+    } catch (error) {
+      console.error("Error fetching coordinating colors:", error);
+      res.status(500).json({ error: "Failed to fetch coordinating colors" });
+    }
+  });
+
+  // Seed paint colors (developer only - one-time setup)
+  app.post("/api/paint-colors/seed", async (req, res) => {
+    try {
+      const count = await storage.seedPaintColors();
+      res.json({ success: true, message: `Seeded ${count} paint colors` });
+    } catch (error) {
+      console.error("Error seeding paint colors:", error);
+      res.status(500).json({ error: "Failed to seed paint colors" });
+    }
+  });
+
+  // Customer color selections
+  app.post("/api/color-selections", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname);
+      const selection = await storage.createColorSelection({
+        ...req.body,
+        tenantId
+      });
+      res.json(selection);
+    } catch (error) {
+      console.error("Error creating color selection:", error);
+      res.status(500).json({ error: "Failed to create color selection" });
+    }
+  });
+
+  app.get("/api/color-selections/estimate/:estimateId", async (req, res) => {
+    try {
+      const selections = await storage.getColorSelectionsByEstimate(req.params.estimateId);
+      res.json(selections);
+    } catch (error) {
+      console.error("Error fetching color selections:", error);
+      res.status(500).json({ error: "Failed to fetch color selections" });
+    }
+  });
+
   return httpServer;
 }
 
