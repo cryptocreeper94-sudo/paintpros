@@ -91,7 +91,7 @@ export function Navbar() {
             </div>
           ) : (
             <div 
-              className="whitespace-nowrap px-1 pointer-events-auto text-base md:text-lg lg:text-xl bg-clip-text text-transparent"
+              className="whitespace-nowrap px-1 pointer-events-auto text-xs md:text-sm lg:text-base bg-clip-text text-transparent"
               style={{ 
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                 fontWeight: 500, 
