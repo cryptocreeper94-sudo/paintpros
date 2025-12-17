@@ -18,7 +18,10 @@ export default function Home() {
     return <HomeNPP />;
   }
   
-  // Default: Use the full-featured Bento layout for all tenants
-  // NPP now uses the same rich homepage with awards, color palette, service area, etc.
+  // Default tenant-based routing
+  if (tenant.id === "npp") {
+    return <HomeNPP />;
+  }
+  
   return <HomeDemo />;
 }
