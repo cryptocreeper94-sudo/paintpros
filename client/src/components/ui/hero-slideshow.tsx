@@ -387,12 +387,12 @@ export function HeroSlideshow() {
       {mode === "customer" && (
         <a 
           href="/estimate" 
-          className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-20"
+          className="absolute bottom-2 md:bottom-3 right-2 md:right-3 z-20"
           data-testid="link-hero-free-estimate"
         >
-          <Button size="sm" className="shadow-lg gap-1.5 text-xs md:text-sm">
-            <Calculator className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            Get Free Estimate
+          <Button size="sm" className="shadow-lg gap-1 text-xs">
+            <Calculator className="w-3 h-3" />
+            Estimate
           </Button>
         </a>
       )}
