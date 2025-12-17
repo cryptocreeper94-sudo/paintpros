@@ -106,7 +106,7 @@ export function Navbar() {
                 fontWeight: 400, 
                 letterSpacing: '0.03em',
                 backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)',
-                marginLeft: '33px'
+                marginLeft: '37px'
               }}
               data-testid="text-header-title"
             >
