@@ -19,7 +19,6 @@ import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png"
 import warrantyImage from "@assets/generated_images/clean_warranty_shield_badge.png";
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
-import googleRatingImage from "@assets/generated_images/five_star_google_rating.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
@@ -469,59 +468,7 @@ export default function Home() {
             )}
           </BentoItem>
 
-          {/* 9. Google Rating */}
-          {tenant.credentials?.googleRating && (
-            <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-              <a 
-                href={tenant.social?.googleReviews || "https://www.google.com/maps"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block h-full"
-                data-testid="link-google-reviews"
-              >
-                <GlassCard className="p-2 md:p-8 bg-gradient-to-br from-accent/10 to-transparent border-accent/20 cursor-pointer hover:border-accent/40 transition-colors h-full relative overflow-hidden" glow>
-                  <img 
-                    src={googleRatingImage} 
-                    alt="Five star rating" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-60"
-                  />
-                  <div className="flex items-center gap-2 md:gap-4 h-full relative z-10">
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => {
-                        const rating = tenant.credentials?.googleRating || 0;
-                        const fillPercent = Math.min(1, Math.max(0, rating - i));
-                        const isFull = fillPercent >= 1;
-                        const isPartial = fillPercent > 0 && fillPercent < 1;
-                        const isEmpty = fillPercent <= 0;
-                        
-                        return (
-                          <div key={i} className="relative w-3 h-3 md:w-6 md:h-6">
-                            {/* Background empty star */}
-                            <Star className="absolute inset-0 w-full h-full text-yellow-400/40 dark:text-yellow-300/50" />
-                            {/* Filled star with clip for partial */}
-                            {!isEmpty && (
-                              <div 
-                                className="absolute inset-0 overflow-hidden"
-                                style={{ width: `${fillPercent * 100}%` }}
-                              >
-                                <Star className="w-3 h-3 md:w-6 md:h-6 fill-[#1e3a8a] text-[#1e3a8a] dark:fill-[#1e40af] dark:text-[#1e40af] drop-shadow-[0_0_4px_rgba(30,58,138,0.8)]" />
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div>
-                      <p className="text-lg md:text-3xl font-bold font-display text-[#1e3a8a] dark:text-[#1e40af] drop-shadow-[0_0_8px_rgba(30,58,138,0.6)]">{tenant.credentials.googleRating}</p>
-                      <p className="text-[10px] md:text-xs text-foreground dark:text-white font-medium">Google</p>
-                    </div>
-                  </div>
-                </GlassCard>
-              </a>
-            </BentoItem>
-          )}
-
-          {/* 10. Fan Deck Visual - Opens Color Selector Modal - Bottom Left */}
+          {/* Fan Deck Visual - Opens Color Selector Modal */}
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2} className="relative group">
             <button 
               onClick={() => setColorSelectorOpen(true)}

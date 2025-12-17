@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Calculator, Palette, Briefcase, Star, Calendar, Phone, FileText, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calculator, Palette, Briefcase, Star, DollarSign, Info } from "lucide-react";
 import { GlassCard } from "./glass-card";
 import { useTenant } from "@/context/TenantContext";
 
@@ -11,13 +11,11 @@ interface NavSlide {
   icon: typeof Calculator;
   href: string;
   gradient: string;
-  forRoles: ("user" | "employee" | "all")[];
 }
 
 export function NavigationCarousel() {
   const tenant = useTenant();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const isDemo = tenant.id === "demo";
 
   const slides: NavSlide[] = [
     {
@@ -26,8 +24,7 @@ export function NavigationCarousel() {
       description: "Use our instant calculator to get a custom quote in seconds",
       icon: Calculator,
       href: "/estimate",
-      gradient: "from-accent/30 to-accent/10",
-      forRoles: ["user", "all"]
+      gradient: "from-accent/30 to-accent/10"
     },
     {
       id: "services",
@@ -35,8 +32,7 @@ export function NavigationCarousel() {
       description: "Explore interior, exterior, commercial & residential painting",
       icon: Palette,
       href: "/services",
-      gradient: "from-cyan-500/30 to-cyan-500/10",
-      forRoles: ["user", "all"]
+      gradient: "from-cyan-500/30 to-cyan-500/10"
     },
     {
       id: "portfolio",
@@ -44,8 +40,7 @@ export function NavigationCarousel() {
       description: "Browse our gallery of completed projects & transformations",
       icon: Briefcase,
       href: "/portfolio",
-      gradient: "from-purple-500/30 to-purple-500/10",
-      forRoles: ["user", "all"]
+      gradient: "from-purple-500/30 to-purple-500/10"
     },
     {
       id: "reviews",
@@ -53,44 +48,23 @@ export function NavigationCarousel() {
       description: "Read what our satisfied customers have to say",
       icon: Star,
       href: "/reviews",
-      gradient: "from-yellow-500/30 to-yellow-500/10",
-      forRoles: ["user", "all"]
+      gradient: "from-yellow-500/30 to-yellow-500/10"
     },
     {
-      id: "booking",
-      title: "Book Appointment",
-      description: "Schedule your free consultation at a time that works for you",
-      icon: Calendar,
-      href: "/booking",
-      gradient: "from-green-500/30 to-green-500/10",
-      forRoles: ["user", "all"]
+      id: "pricing",
+      title: "Pricing Guide",
+      description: "Transparent pricing with no hidden fees or surprises",
+      icon: DollarSign,
+      href: "/pricing",
+      gradient: "from-green-500/30 to-green-500/10"
     },
     {
-      id: "contact",
-      title: "Contact Us",
-      description: "Get in touch with our team for questions or quotes",
-      icon: Phone,
-      href: "/contact",
-      gradient: "from-blue-500/30 to-blue-500/10",
-      forRoles: ["user", "all"]
-    },
-    {
-      id: "documents",
-      title: "Document Center",
-      description: "Access contracts, estimates, and project files",
-      icon: FileText,
-      href: "/documents",
-      gradient: "from-orange-500/30 to-orange-500/10",
-      forRoles: ["employee", "all"]
-    },
-    {
-      id: "crm",
-      title: "CRM Dashboard",
-      description: "Manage leads, deals, and customer relationships",
-      icon: Users,
-      href: "/crm",
-      gradient: "from-pink-500/30 to-pink-500/10",
-      forRoles: ["employee", "all"]
+      id: "about",
+      title: "About Us",
+      description: "Learn about our team, values, and commitment to quality",
+      icon: Info,
+      href: "/about",
+      gradient: "from-blue-500/30 to-blue-500/10"
     }
   ];
 
