@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -8,6 +9,12 @@ import * as hallmarkService from "./hallmarkService";
 import { startReminderScheduler } from "./reminder-scheduler";
 
 const app = express();
+
+// Security headers - configured for production use
+app.use(helmet({
+  contentSecurityPolicy: false, // Disabled to allow inline scripts from Vite in dev
+  crossOriginEmbedderPolicy: false, // Allow embedding in Replit iframe
+}));
 const httpServer = createServer(app);
 
 // Track if we've already processed auto-deploy for this instance
