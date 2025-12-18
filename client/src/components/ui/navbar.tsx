@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useAuth } from "@/hooks/use-auth";
-import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
+import nppEmblem from "@assets/npp_emblem_clean.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,9 +49,9 @@ export function Navbar() {
             <Menu size={28} className="text-gray-700" />
           ) : (
             <img 
-              src={nppLogo} 
+              src={nppEmblem} 
               alt="Menu"
-              className="h-10 md:h-20 lg:h-24 w-auto object-contain"
+              className="h-8 md:h-14 lg:h-16 w-auto object-contain"
             />
           )}
         </button>
