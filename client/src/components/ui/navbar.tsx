@@ -14,6 +14,7 @@ export function Navbar() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
 
   const mainLinks = [
+    { name: "Home", href: "/", icon: Home },
     { name: "Services", href: "/services" },
     { name: "Portfolio", href: "/portfolio", enabled: tenant.features.portfolio },
     { name: "Pricing", href: "/pricing" },
