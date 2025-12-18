@@ -69,7 +69,7 @@ export default function HomeNPP() {
       <main className="min-h-screen">
         
         {/* HERO SECTION - Mobile-First Centered Layout */}
-        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white px-4 py-12 md:py-20">
+        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white px-4 py-12 pb-[100px] md:py-20 md:pb-20">
           {/* Desktop painters image */}
           <div className="pointer-events-none absolute inset-0 hidden md:block">
             <div className="absolute bottom-0 right-0 h-[80%] w-[60%]">
@@ -126,17 +126,17 @@ export default function HomeNPP() {
             </motion.p>
           </div>
 
-          {/* Mobile painters image - centered below content */}
+          {/* Mobile painters image - centered below content, shifted up visually */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative z-10 -mt-[200px] w-full md:hidden"
+            className="relative z-0 mt-4 w-full md:hidden pointer-events-none"
           >
             <img
               src={paintersImage}
               alt="Professional painters at work"
-              className="mx-auto block w-full max-w-full object-contain"
+              className="mx-auto block w-full max-w-full object-contain -translate-y-[200px]"
             />
           </motion.div>
         </section>
