@@ -4,7 +4,6 @@ import { Footer } from "@/components/layout/footer";
 import { useTenant } from "@/context/TenantContext";
 import { Award, Star, CheckCircle, Calendar, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import nppEmblem from "@assets/npp_emblem_full.png";
 import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
 
 export default function Awards() {
@@ -35,13 +34,6 @@ export default function Awards() {
           className="max-w-4xl mx-auto px-4 py-8"
         >
           <motion.div variants={itemVariants} className="text-center mb-8">
-            <div className="flex justify-center mb-6">
-              <img 
-                src={nppEmblem} 
-                alt="Nashville Painting Professionals" 
-                className="h-24 md:h-32 w-auto"
-              />
-            </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/20 rounded-full mb-4">
               <Award className="w-5 h-5 text-accent" />
               <span className="text-accent font-medium text-sm">Recognition</span>
