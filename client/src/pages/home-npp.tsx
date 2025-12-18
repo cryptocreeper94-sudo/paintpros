@@ -133,28 +133,28 @@ export default function HomeNPP() {
               {/* Solana Verification Card */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="relative h-64 md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-teal-900 p-8 flex flex-col justify-between"
+                className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-teal-900 p-5 md:p-8 flex flex-col justify-between"
                 data-testid="card-solana-verification"
               >
-                <img src={solanaLogo} alt="" className="absolute right-4 top-4 w-24 h-24 opacity-30" />
+                <img src={solanaLogo} alt="" className="absolute right-4 top-4 w-16 h-16 md:w-24 md:h-24 opacity-30" />
                 <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-teal-400">
-                      <BadgeCheck className="w-5 h-5 text-white" />
+                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-purple-500 to-teal-400">
+                      <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
-                    <Badge className="bg-gradient-to-r from-purple-500 to-teal-400 text-white border-0">
+                    <Badge className="bg-gradient-to-r from-purple-500 to-teal-400 text-white border-0 text-xs md:text-sm">
                       Industry First
                     </Badge>
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
                     Solana Blockchain Verified
                   </h3>
-                  <p className="text-gray-300">
+                  <p className="text-sm md:text-base text-gray-300">
                     Every document immutably stamped for anti-fraud protection
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-teal-400">
-                  <span className="text-sm font-medium">Learn how we protect you</span>
+                <div className="flex items-center gap-2 text-teal-400 mt-4">
+                  <span className="text-xs md:text-sm font-medium">Learn how we protect you</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </motion.div>
