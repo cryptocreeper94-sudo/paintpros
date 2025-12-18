@@ -131,19 +131,19 @@ export function Navbar() {
         <div className="fixed top-12 left-2 z-40 md:hidden flex items-center gap-1">
           <button 
             onClick={() => window.history.back()}
-            className="p-2 bg-background/90 backdrop-blur-sm border border-white/10 rounded-full shadow-lg hover:bg-white/20 transition-all"
+            className="p-2.5 bg-white dark:bg-gray-800 backdrop-blur-sm border border-gray-300 dark:border-gray-600 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
             aria-label="Go back"
             data-testid="button-back-mobile"
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-white" />
           </button>
           <Link href="/">
             <button 
-              className="p-2 bg-background/90 backdrop-blur-sm border border-white/10 rounded-full shadow-lg hover:bg-white/20 transition-all"
+              className="p-2.5 bg-white dark:bg-gray-800 backdrop-blur-sm border border-gray-300 dark:border-gray-600 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
               aria-label="Go home"
               data-testid="button-home-mobile"
             >
-              <Home className="w-5 h-5 text-white" />
+              <Home className="w-5 h-5 text-gray-700 dark:text-white" />
             </button>
           </Link>
         </div>
