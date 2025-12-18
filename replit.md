@@ -85,11 +85,22 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 
 ## Changelog
 
-### December 2025
-- **AI Color Visualizer**: Added canvas-based color preview tool with OpenAI Vision analysis for wall photos
-- **Room Scanner**: Added placeholder for upcoming square footage estimation feature
+### December 2025 (Latest)
+- **HeroSlideshow Integration**: Added interactive customer slideshow to NPP homepage with 8 feature slides (AI Visualizer, Color Library, Room Scanner, Glossary, Estimate, Booking, Portal)
+- **Team Page Staff Slideshow**: Staff tutorial slideshow at /team accessible from footer Team link with PIN authentication
+- **Fixed Navigation**: Hamburger menu now stays fixed at top of screen with transparent background
+- **Homepage Structure Update**: Added "See How It Works" section with HeroSlideshow below hero banner
+- **AI Color Visualizer**: Canvas-based color preview tool with OpenAI Vision analysis for wall photos
+- **Room Scanner**: Placeholder for upcoming square footage estimation feature (Coming Soon)
 - **Homepage Updates**: Updated hero tagline to highlight AI tools ("AI Room Visualizer · Square Footage Scanner · Instant Estimates")
 - **Navigation**: Added Home link as first item in hamburger menu
 - **UI Fixes**: Removed header border line, fixed menu scroll containment
 - **Footer**: Removed Investors link from NPP tenant footer (demo-only feature)
 - **Theme**: Removed dark mode completely per client preference for better readability
+
+### PIN Authentication Reference
+- **Developer**: 0424
+- **Owner**: 1111  
+- **Project Manager**: 2222
+- **Crew Lead**: 3333
+- **Ops Manager (Admin)**: 4444
