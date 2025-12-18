@@ -37,6 +37,7 @@ import exteriorImage from "@assets/generated_images/exterior_painting.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg.png";
 import crewImage from "@assets/generated_images/professional_painting_crew_at_work.png";
+import painterCutout from "@assets/generated_images/painter_on_white_background.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
 import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
@@ -69,9 +70,13 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          {/* Background image - positioned on right half for desktop, full width faded on mobile */}
-          <div className="absolute inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-1/2">
-            <img src={crewImage} alt="" className="w-full h-full object-cover object-left opacity-15 md:opacity-25" />
+          {/* Painter cutout - positioned on right side as if painting the screen */}
+          <div className="absolute right-0 bottom-0 md:right-10 lg:right-20 hidden md:block">
+            <img 
+              src={painterCutout} 
+              alt="" 
+              className="h-[70vh] w-auto object-contain object-bottom opacity-90"
+            />
           </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
             {/* NPP Logo/Emblem */}
