@@ -53,6 +53,16 @@
   }
 }
 
+html {
+  scroll-padding-top: 140px;
+}
+
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 90px;
+  }
+}
+
 :root {
   /* Army Green Theme Base - Washed Out */
   /* Primary Green: Reduced saturation from 44% to 25%, Lightness increased slightly */
