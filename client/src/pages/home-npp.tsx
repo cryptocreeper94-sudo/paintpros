@@ -99,13 +99,13 @@ export default function HomeNPP() {
               className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
             >
               <Link href="/estimate">
-                <Button size="lg" className="text-lg px-8 py-6 gap-2" data-testid="button-hero-estimate">
+                <Button size="sm" className="text-sm px-6 gap-2" data-testid="button-hero-estimate">
                   Free Estimate
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <a href="#see-how">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6" data-testid="button-see-how">
+                <Button variant="outline" size="sm" className="text-sm px-6" data-testid="button-see-how">
                   See How It Works
                 </Button>
               </a>
