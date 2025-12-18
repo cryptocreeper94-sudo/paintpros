@@ -31,7 +31,7 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: 'transparent' }}>
       <div className={cn(
         "flex items-center px-3 md:px-4",
-        tenant.id === "demo" ? "h-16 md:h-20" : "h-12 md:h-14"
+        tenant.id === "demo" ? "h-16 md:h-20" : "h-20 md:h-28 lg:h-36"
       )}>
         {/* Left: Hamburger Menu - NPP logo for NPP, standard menu for demo */}
         <button 
@@ -51,7 +51,7 @@ export function Navbar() {
             <img 
               src={nppLogo} 
               alt="Menu"
-              className="h-10 md:h-16 lg:h-20 w-auto object-contain"
+              className="h-16 md:h-24 lg:h-32 w-auto object-contain"
             />
           )}
         </button>
