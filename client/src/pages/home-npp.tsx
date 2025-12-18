@@ -86,7 +86,7 @@ export default function HomeNPP() {
             >
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight">
                 Painting Done
-                <span className="block">The Right Way</span>
+                <span className="block text-accent">The Right Way</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 mt-6 max-w-2xl mx-auto">
                 Nashville's Most Trusted Painters
