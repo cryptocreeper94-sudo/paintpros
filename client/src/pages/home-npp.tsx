@@ -127,9 +127,6 @@ export default function HomeNPP() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-900 text-center mb-8">
-                How We Can Help You
-              </h2>
               <div className="h-[400px] md:h-[450px]">
                 <HeroSlideshow />
               </div>
