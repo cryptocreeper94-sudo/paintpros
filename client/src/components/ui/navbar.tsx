@@ -36,27 +36,20 @@ export function Navbar() {
         "flex items-center px-3 md:px-4",
         tenant.id === "demo" ? "h-16 md:h-20" : "h-12 md:h-14"
       )}>
-        {/* Left: Hamburger Menu - NPP uses emblem, demo uses standard menu icon */}
+        {/* Left: Hamburger Menu - standard menu icon for all tenants */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
-            tenant.id === "demo" ? "p-1 ml-2" : "p-1"
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50 p-2",
+            tenant.id === "demo" ? "ml-2" : "ml-1"
           )}
-          style={tenant.id !== "demo" ? { marginLeft: '-100px', marginTop: '-31px' } : undefined}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={tenant.id === "demo" ? 32 : 28} className="text-white" />
-          ) : tenant.id === "demo" ? (
-            <Menu size={32} className="text-white" />
+            <X size={28} className="text-gray-700 dark:text-white" />
           ) : (
-            <img 
-              src={nppEmblem} 
-              alt="Menu"
-              className="h-[62px] md:h-[78px] w-auto object-contain pointer-events-none"
-            />
+            <Menu size={28} className="text-gray-700 dark:text-white" />
           )}
         </button>
         
@@ -94,13 +87,12 @@ export function Navbar() {
             </div>
           ) : (
             <div 
-              className="whitespace-nowrap px-1 pointer-events-auto text-xs md:text-sm lg:text-base bg-clip-text text-transparent"
+              className="whitespace-nowrap px-1 pointer-events-auto text-lg md:text-2xl lg:text-3xl xl:text-4xl bg-clip-text text-transparent"
               style={{ 
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                 fontWeight: 500, 
-                letterSpacing: '0.03em',
-                backgroundImage: 'linear-gradient(to right, #8B7355, #6B8E4E, #8B7355)',
-                marginLeft: '80px'
+                letterSpacing: '0.08em',
+                backgroundImage: 'linear-gradient(to right, #8B7355, #6B8E4E, #8B7355)'
               }}
               data-testid="text-header-title"
             >

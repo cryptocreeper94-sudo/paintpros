@@ -39,6 +39,7 @@ import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg
 import crewImage from "@assets/generated_images/professional_painting_crew_at_work.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
+import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
 
 interface PaintColor {
   id: number;
@@ -68,10 +69,25 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          <div className="absolute inset-0 md:left-auto md:right-0 md:w-1/2 w-full h-full">
-            <img src={crewImage} alt="" className="w-full h-full object-cover object-center opacity-15 md:opacity-20" />
+          {/* Background image - positioned on right half for desktop, full width faded on mobile */}
+          <div className="absolute inset-0 md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-1/2">
+            <img src={crewImage} alt="" className="w-full h-full object-cover object-left opacity-15 md:opacity-25" />
           </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+            {/* NPP Logo/Emblem */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center mb-6"
+            >
+              <img 
+                src={nppLogo} 
+                alt="Nashville Painting Professionals" 
+                className="h-20 md:h-28 lg:h-32 w-auto object-contain"
+              />
+            </motion.div>
+            
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
