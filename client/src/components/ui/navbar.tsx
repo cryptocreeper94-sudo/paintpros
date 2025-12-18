@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useAuth } from "@/hooks/use-auth";
-import nppEmblem from "@assets/npp_emblem_clean.png";
+import nppEmblem from "@assets/npp_emblem.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
