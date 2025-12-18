@@ -51,7 +51,7 @@ export function Navbar() {
             <img 
               src={nppLogo} 
               alt="Menu"
-              className="h-10 md:h-12 w-auto object-contain"
+              className="h-10 md:h-20 lg:h-24 w-auto object-contain"
             />
           )}
         </button>
