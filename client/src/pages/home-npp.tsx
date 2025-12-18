@@ -68,8 +68,8 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          <div className="absolute right-0 top-0 w-1/2 h-full opacity-20">
-            <img src={crewImage} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 md:left-auto md:right-0 md:w-1/2 w-full h-full">
+            <img src={crewImage} alt="" className="w-full h-full object-cover object-center opacity-15 md:opacity-20" />
           </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
             <motion.div
