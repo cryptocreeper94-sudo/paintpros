@@ -23,9 +23,11 @@ import {
   Check,
   Sparkles,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Camera
 } from "lucide-react";
 import type { PaintColor } from "@shared/schema";
+import { ColorVisualizer, ColorVisualizerCard } from "@/components/color-visualizer";
 
 // Hue ranges for color families (0-360 degrees)
 const hueRanges = [
@@ -461,6 +463,8 @@ export default function ColorLibrary() {
   const [selectedHue, setSelectedHue] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState<PaintColor | null>(null);
+  const [showVisualizer, setShowVisualizer] = useState(false);
+  const [visualizerColor, setVisualizerColor] = useState<{ hex: string; name: string } | null>(null);
 
   const { data: allColors = [], isLoading } = useQuery<PaintColor[]>({
     queryKey: ["/api/paint-colors"],
@@ -518,37 +522,57 @@ export default function ColorLibrary() {
             </div>
           </motion.div>
 
-          {/* Search */}
+          {/* Search and Visualizer CTA */}
           <motion.div 
             className="mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
           >
-            <GlassCard className="p-4" glow="accent">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search colors by name or code..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                    data-testid="input-search-colors"
-                  />
+            <div className="grid md:grid-cols-3 gap-4">
+              <GlassCard className="md:col-span-2 p-4" glow="accent">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search colors by name or code..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                      data-testid="input-search-colors"
+                    />
+                  </div>
+                  {selectedHue && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSelectedHue(null)}
+                      data-testid="button-clear-hue-filter"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Clear {hueRanges.find(h => h.id === selectedHue)?.name} filter
+                    </Button>
+                  )}
                 </div>
-                {selectedHue && (
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setSelectedHue(null)}
-                    data-testid="button-clear-hue-filter"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Clear {hueRanges.find(h => h.id === selectedHue)?.name} filter
-                  </Button>
-                )}
-              </div>
-            </GlassCard>
+              </GlassCard>
+
+              {/* Visualizer CTA */}
+              <GlassCard 
+                className="p-4 cursor-pointer hover:border-accent/40 transition-all bg-gradient-to-br from-accent/5 to-gold-400/5" 
+                glow="accent"
+                onClick={() => setShowVisualizer(true)}
+              >
+                <div className="flex items-center gap-3 h-full">
+                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
+                    <Camera className="w-5 h-5 text-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground text-sm">AI Color Visualizer</p>
+                    <p className="text-xs text-muted-foreground truncate">See colors on your wall</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-accent flex-shrink-0" />
+                </div>
+              </GlassCard>
+            </div>
           </motion.div>
 
           {/* Interactive Color Wheel */}
@@ -706,9 +730,19 @@ export default function ColorLibrary() {
                       <Sparkles className="w-4 h-4" />
                       Add to Estimate
                     </Button>
-                    <Button variant="outline" className="gap-2" data-testid="button-visualize-color">
-                      <Palette className="w-4 h-4" />
-                      Visualize in Room
+                    <Button 
+                      variant="outline" 
+                      className="gap-2" 
+                      data-testid="button-visualize-color"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setVisualizerColor({ hex: selectedColor.hexValue, name: selectedColor.colorName });
+                        setShowVisualizer(true);
+                        setSelectedColor(null);
+                      }}
+                    >
+                      <Camera className="w-4 h-4" />
+                      Visualize on Wall
                     </Button>
                   </div>
                 </GlassCard>
@@ -716,6 +750,13 @@ export default function ColorLibrary() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Color Visualizer Modal */}
+        <ColorVisualizer 
+          isOpen={showVisualizer} 
+          onClose={() => setShowVisualizer(false)}
+          initialColor={visualizerColor || undefined}
+        />
       </main>
     </PageLayout>
   );

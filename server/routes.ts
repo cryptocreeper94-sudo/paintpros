@@ -2480,6 +2480,73 @@ export async function registerRoutes(
     }
   });
 
+  // ============ COLOR VISUALIZER (AI-Powered) ============
+  
+  // POST /api/color-visualize - Analyze wall photo and provide color recommendations
+  app.post("/api/color-visualize", async (req, res) => {
+    try {
+      const { imageBase64, colorHex, colorName, intensity } = req.body;
+      
+      if (!imageBase64 || !colorHex) {
+        res.status(400).json({ error: "Image and color data required" });
+        return;
+      }
+      
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+      
+      // Use AI to analyze the wall and provide insights
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert interior designer and color consultant. Analyze the room/wall photo and provide a brief, encouraging comment about how the selected paint color (${colorName}, ${colorHex}) would look in this space. Keep your response to 1-2 sentences. Be specific about features you see in the room. Do not use emojis.`
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `The customer wants to paint this wall/room with ${colorName} (${colorHex}) at ${intensity}% intensity. What do you think about this color choice for this space?`
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: imageBase64,
+                  detail: "low"
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 150,
+        temperature: 0.7,
+      });
+
+      const analysis = response.choices[0]?.message?.content || 
+        `${colorName} would be a beautiful choice for this space!`;
+
+      res.json({
+        success: true,
+        analysis,
+        colorHex,
+        colorName,
+      });
+    } catch (error: any) {
+      console.error("Color visualization error:", error);
+      // Return a generic positive response if AI fails
+      res.json({
+        success: true,
+        analysis: `${req.body.colorName || "This color"} would look great in your space!`,
+        colorHex: req.body.colorHex,
+        colorName: req.body.colorName,
+      });
+    }
+  });
+
   // ============ ROOM SCAN (AI Vision) ============
   
   // POST /api/room-scan - Analyze room image with AI Vision
