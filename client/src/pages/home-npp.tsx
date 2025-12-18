@@ -137,33 +137,35 @@ export default function HomeNPP() {
               </Link>
 
               {/* Solana Verification Card */}
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-teal-900 p-5 md:p-8 flex flex-col justify-between"
-                data-testid="card-solana-verification"
-              >
-                <img src={solanaLogo} alt="" className="absolute right-4 top-4 w-16 h-16 md:w-24 md:h-24 opacity-30" />
-                <div>
-                  <div className="flex items-center gap-2 mb-3 md:mb-4">
-                    <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-purple-500 to-teal-400">
-                      <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              <Link href="/verify/NPP-20251217-3C66C8">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-teal-900 p-5 md:p-8 flex flex-col justify-between cursor-pointer"
+                  data-testid="card-solana-verification"
+                >
+                  <img src={solanaLogo} alt="" className="absolute right-4 top-4 w-16 h-16 md:w-24 md:h-24 opacity-30" />
+                  <div>
+                    <div className="flex items-center gap-2 mb-3 md:mb-4">
+                      <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-purple-500 to-teal-400">
+                        <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                      </div>
+                      <Badge className="bg-gradient-to-r from-purple-500 to-teal-400 text-white border-0 text-xs md:text-sm">
+                        Industry First
+                      </Badge>
                     </div>
-                    <Badge className="bg-gradient-to-r from-purple-500 to-teal-400 text-white border-0 text-xs md:text-sm">
-                      Industry First
-                    </Badge>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                      America's First Blockchain-Verified Painter
+                    </h3>
+                    <p className="text-sm md:text-base text-gray-300">
+                      The only painting company with Solana blockchain verification. Every estimate, contract, and invoice is immutably stamped for complete transparency and anti-fraud protection.
+                    </p>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                    America's First Blockchain-Verified Painter
-                  </h3>
-                  <p className="text-sm md:text-base text-gray-300">
-                    The only painting company with Solana blockchain verification. Every estimate, contract, and invoice is immutably stamped for complete transparency and anti-fraud protection.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-teal-400 mt-4">
-                  <span className="text-xs md:text-sm font-medium">See our verified documents</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </motion.div>
+                  <div className="flex items-center gap-2 text-teal-400 mt-4">
+                    <span className="text-xs md:text-sm font-medium">See our verified documents</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </motion.div>
+              </Link>
             </div>
           </div>
         </section>
