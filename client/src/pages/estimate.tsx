@@ -435,14 +435,16 @@ export default function Estimate() {
                 {/* Glow effect behind card */}
                 <div className="absolute inset-0 bg-gradient-to-r from-accent/30 via-gold-400/20 to-accent/30 blur-3xl opacity-50 pointer-events-none" />
                 
-                <GlassCard className="relative p-5 md:p-8 border-accent/20 overflow-y-auto flex-1 min-h-0" glow style={{ backgroundColor: 'white' }}>
-                  <button
-                    onClick={() => setShowEmailModal(false)}
-                    className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                    data-testid="button-close-email-modal"
-                  >
-                    <X className="w-5 h-5 text-gray-600" />
-                  </button>
+                {/* Close button - positioned outside GlassCard to avoid overflow-hidden issues */}
+                <button
+                  onClick={() => setShowEmailModal(false)}
+                  className="absolute top-3 right-3 z-50 w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                  data-testid="button-close-email-modal"
+                >
+                  <X className="w-5 h-5 text-gray-600" />
+                </button>
+                
+                <GlassCard className="relative p-5 md:p-8 pt-14 border-accent/20 overflow-y-auto flex-1 min-h-0" glow style={{ backgroundColor: 'white' }}>
                   <div className="text-center mb-6">
                     <motion.div 
                       className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-accent/30 to-gold-400/20 flex items-center justify-center border border-accent/30 shadow-lg shadow-accent/20"
