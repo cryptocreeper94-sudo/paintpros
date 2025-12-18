@@ -59,6 +59,13 @@ export default function Resources() {
       title: "Guides & Education",
       items: [
         {
+          name: "Painting Glossary",
+          description: "A-Z guide to painting and interior trim terminology",
+          href: "/glossary",
+          icon: BookOpen,
+          color: "text-indigo-500"
+        },
+        {
           name: "Colors & Sheens Guide",
           description: "Learn about different paint finishes and when to use them",
           href: "#sheens",

@@ -35,6 +35,7 @@ import Awards from "@/pages/awards";
 import Team from "@/pages/team";
 import ColorLibrary from "@/pages/color-library";
 import Resources from "@/pages/resources";
+import Glossary from "@/pages/glossary";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -72,6 +73,7 @@ function Router() {
       <Route path="/awards" component={Awards} />
       <Route path="/team" component={Team} />
       <Route path="/colors" component={ColorLibrary} />
+      <Route path="/glossary" component={Glossary} />
       <Route path="/color-library" component={ColorLibrary} />
       <Route path="/resources" component={Resources} />
       <Route component={NotFound} />
