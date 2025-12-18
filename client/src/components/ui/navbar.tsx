@@ -101,11 +101,14 @@ export function Navbar() {
       {/* Navigation Controls - Back and Close buttons on all pages except home */}
       {location !== "/" && (
         <>
-          {/* Mobile - below header */}
-          <div className="fixed top-12 left-2 z-40 md:hidden flex items-center gap-1">
+          {/* Mobile - positioned to avoid hamburger menu overlap */}
+          <div className="fixed top-3 left-3 z-[60] md:hidden flex items-center gap-2">
             <button 
-              onClick={() => window.history.back()}
-              className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.history.back();
+              }}
+              className="p-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
               aria-label="Go back"
               data-testid="button-back-mobile"
             >
@@ -113,7 +116,8 @@ export function Navbar() {
             </button>
             <Link href="/">
               <button 
-                className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+                onClick={(e) => e.stopPropagation()}
+                className="p-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
                 aria-label="Go home"
                 data-testid="button-home-mobile"
               >
