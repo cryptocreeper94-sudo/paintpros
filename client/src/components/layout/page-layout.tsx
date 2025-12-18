@@ -23,7 +23,7 @@ export function PageLayout({ children }: PageLayoutProps) {
         </div>
       )}
       <Navbar />
-      <div className="flex-grow relative z-10 pt-[42px] md:pt-20 pb-[70px]">
+      <div className="flex-grow relative z-10 pb-[70px]">
         {children}
       </div>
       <Footer />
