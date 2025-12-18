@@ -29,47 +29,67 @@ import type { PaintColor } from "@shared/schema";
 
 // Hue ranges for color families (0-360 degrees)
 const hueRanges = [
-  { id: "red", name: "Reds", minHue: 350, maxHue: 10, color: "#EF4444" },
-  { id: "orange", name: "Oranges", minHue: 10, maxHue: 40, color: "#FB923C" },
-  { id: "yellow", name: "Yellows", minHue: 40, maxHue: 60, color: "#FBBF24" },
-  { id: "green", name: "Greens", minHue: 80, maxHue: 160, color: "#22C55E" },
-  { id: "cyan", name: "Cyans", minHue: 160, maxHue: 200, color: "#06B6D4" },
-  { id: "blue", name: "Blues", minHue: 200, maxHue: 260, color: "#3B82F6" },
-  { id: "purple", name: "Purples", minHue: 260, maxHue: 290, color: "#A855F7" },
-  { id: "pink", name: "Pinks", minHue: 290, maxHue: 350, color: "#EC4899" },
+  { id: "neutral", name: "Neutrals", minHue: -1, maxHue: -1, color: "#B8B5A8", isNeutral: true },
+  { id: "red", name: "Reds", minHue: 350, maxHue: 15, color: "#EF4444" },
+  { id: "orange", name: "Oranges", minHue: 15, maxHue: 45, color: "#FB923C" },
+  { id: "yellow", name: "Yellows", minHue: 45, maxHue: 70, color: "#FBBF24" },
+  { id: "green", name: "Greens", minHue: 70, maxHue: 170, color: "#22C55E" },
+  { id: "blue", name: "Blues", minHue: 170, maxHue: 260, color: "#3B82F6" },
+  { id: "purple", name: "Purples", minHue: 260, maxHue: 300, color: "#A855F7" },
+  { id: "pink", name: "Pinks", minHue: 300, maxHue: 350, color: "#EC4899" },
 ];
 
-function hexToHue(hex: string): number {
+function hexToHSL(hex: string): { h: number; s: number; l: number } {
   const r = parseInt(hex.substr(1, 2), 16) / 255;
   const g = parseInt(hex.substr(3, 2), 16) / 255;
   const b = parseInt(hex.substr(5, 2), 16) / 255;
   
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  const c = max - min;
+  const l = (max + min) / 2;
   
-  let hue = 0;
-  if (c === 0) return 0;
-  if (max === r) hue = (g - b) / c % 6;
-  else if (max === g) hue = (b - r) / c + 2;
-  else hue = (r - g) / c + 4;
+  let h = 0;
+  let s = 0;
   
-  hue = Math.round(hue * 60);
-  if (hue < 0) hue += 360;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) * 60; break;
+      case g: h = ((b - r) / d + 2) * 60; break;
+      case b: h = ((r - g) / d + 4) * 60; break;
+    }
+  }
   
-  return hue;
+  return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
 }
 
-function getColorHueFamily(color: PaintColor): string | null {
-  const hue = hexToHue(color.hexValue);
-  const family = hueRanges.find(range => {
+function getColorHueFamily(color: PaintColor): string {
+  const { h, s, l } = hexToHSL(color.hexValue);
+  
+  // Colors with very low saturation or very high/low lightness are neutrals
+  if (s < 15 || l > 90 || l < 10) {
+    return "neutral";
+  }
+  
+  // Find matching hue range
+  for (const range of hueRanges) {
+    if (range.isNeutral) continue;
+    
     if (range.minHue <= range.maxHue) {
-      return hue >= range.minHue && hue <= range.maxHue;
+      if (h >= range.minHue && h < range.maxHue) {
+        return range.id;
+      }
     } else {
-      return hue >= range.minHue || hue <= range.maxHue;
+      // Handle wrap-around (e.g., red: 350-15)
+      if (h >= range.minHue || h < range.maxHue) {
+        return range.id;
+      }
     }
-  });
-  return family?.id || null;
+  }
+  
+  return "neutral";
 }
 
 function InteractiveColorWheel({ 
@@ -81,74 +101,10 @@ function InteractiveColorWheel({
   onSelectHue: (id: string | null) => void;
   allColors: PaintColor[];
 }) {
-  const radius = 140;
-  
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-96 h-96">
-        {/* Center reset button */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          initial={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
-        >
-          <button
-            onClick={() => onSelectHue(null)}
-            className={`w-28 h-28 rounded-full transition-all ${
-              selectedHue === null
-                ? "bg-gradient-to-br from-accent/30 to-accent/10 ring-2 ring-accent shadow-lg"
-                : "bg-gradient-to-br from-muted/20 to-muted/10"
-            }`}
-          >
-            <div className="flex flex-col items-center justify-center h-full">
-              <Palette className="w-8 h-8 text-accent mb-1" />
-              <p className="text-xs font-semibold">All Colors</p>
-            </div>
-          </button>
-        </motion.div>
-
-        {/* Color wheel */}
-        <svg viewBox="0 0 400 400" className="w-full h-full">
-          {hueRanges.map((hueRange, index) => {
-            const angle = (index * 360) / hueRanges.length;
-            const radian = (angle * Math.PI) / 180;
-            const x = 200 + radius * Math.cos(radian);
-            const y = 200 + radius * Math.sin(radian);
-            const isSelected = selectedHue === hueRange.id;
-            const count = allColors.filter(c => getColorHueFamily(c) === hueRange.id).length;
-            
-            return (
-              <g key={hueRange.id}>
-                {/* Connecting line */}
-                <line
-                  x1="200"
-                  y1="200"
-                  x2={x}
-                  y2={y}
-                  stroke={isSelected ? hueRange.color : "#E5E7EB"}
-                  strokeWidth={isSelected ? 4 : 1}
-                  opacity={isSelected ? 1 : 0.2}
-                />
-                {/* Circle button */}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={isSelected ? 32 : 28}
-                  fill={hueRange.color}
-                  stroke="white"
-                  strokeWidth={isSelected ? 4 : 2}
-                  style={{ cursor: "pointer", transition: "all 0.3s ease" }}
-                  onClick={() => onSelectHue(hueRange.id)}
-                  opacity={count > 0 ? 1 : 0.5}
-                />
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* Hue labels */}
-      <div className="grid grid-cols-4 gap-4 mt-12 w-full max-w-2xl">
+      {/* Color wheel grid */}
+      <div className="grid grid-cols-4 md:grid-cols-8 gap-3 md:gap-4 w-full max-w-4xl mb-8">
         {hueRanges.map((hueRange) => {
           const count = allColors.filter(c => getColorHueFamily(c) === hueRange.id).length;
           const isSelected = selectedHue === hueRange.id;
@@ -157,25 +113,64 @@ function InteractiveColorWheel({
             <motion.button
               key={hueRange.id}
               onClick={() => onSelectHue(hueRange.id)}
-              className={`text-center p-3 rounded-lg transition-all ${
+              className={`flex flex-col items-center p-3 md:p-4 rounded-xl transition-all ${
                 isSelected 
-                  ? "bg-accent/10 ring-2 ring-accent" 
-                  : "bg-muted/5 hover:bg-muted/10"
-              } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
-              whileHover={count > 0 ? { scale: 1.05 } : {}}
+                  ? "ring-2 ring-offset-2 ring-accent shadow-lg scale-105" 
+                  : "hover:shadow-md"
+              } ${count === 0 ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+              style={{ 
+                backgroundColor: isSelected ? `${hueRange.color}15` : 'transparent'
+              }}
+              whileHover={count > 0 ? { scale: 1.05, y: -4 } : {}}
               whileTap={count > 0 ? { scale: 0.95 } : {}}
               disabled={count === 0}
+              data-testid={`button-hue-${hueRange.id}`}
             >
-              <div 
-                className="w-full h-12 rounded mb-2 transition-transform"
+              <motion.div 
+                className="w-14 h-14 md:w-16 md:h-16 rounded-full border-4 border-white shadow-lg mb-2"
                 style={{ backgroundColor: hueRange.color }}
+                whileHover={{ scale: 1.1 }}
+                animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
+                transition={{ duration: 0.3 }}
               />
-              <p className="text-sm font-semibold text-foreground">{hueRange.name}</p>
+              <p className="text-xs md:text-sm font-semibold text-foreground">{hueRange.name}</p>
               <p className="text-xs text-muted-foreground">{count} colors</p>
             </motion.button>
           );
         })}
       </div>
+
+      {/* All Colors button */}
+      <motion.button
+        onClick={() => onSelectHue(null)}
+        className={`flex items-center gap-3 px-6 py-3 rounded-full transition-all ${
+          selectedHue === null
+            ? "bg-accent text-accent-foreground shadow-lg"
+            : "bg-muted/10 text-foreground hover:bg-muted/20"
+        }`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        data-testid="button-all-colors"
+      >
+        <Palette className="w-5 h-5" />
+        <span className="font-semibold">View All {allColors.length} Colors</span>
+      </motion.button>
+
+      {/* Selected hue indicator */}
+      {selectedHue && (
+        <motion.div 
+          className="mt-6 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <p className="text-lg font-semibold text-foreground">
+            Showing <span style={{ color: hueRanges.find(h => h.id === selectedHue)?.color }}>{hueRanges.find(h => h.id === selectedHue)?.name}</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {allColors.filter(c => getColorHueFamily(c) === selectedHue).length} paint colors available
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -522,7 +517,7 @@ export default function ColorLibrary() {
             </div>
           </motion.div>
 
-          {/* Filters */}
+          {/* Search */}
           <motion.div 
             className="mb-8"
             initial={{ opacity: 0 }}
@@ -531,7 +526,6 @@ export default function ColorLibrary() {
           >
             <GlassCard className="p-4" glow="accent">
               <div className="flex flex-col md:flex-row gap-4">
-                {/* Search */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -542,26 +536,21 @@ export default function ColorLibrary() {
                     data-testid="input-search-colors"
                   />
                 </div>
-              </div>
-
-              {/* Category Pills */}
-              <div className="flex gap-2 mt-4 flex-wrap">
-                {categories.map((cat) => (
-                  <Badge
-                    key={cat.id}
-                    variant={selectedCategory === cat.id ? "default" : "secondary"}
-                    className="cursor-pointer hover-elevate"
-                    onClick={() => setSelectedCategory(cat.id)}
-                    data-testid={`badge-category-${cat.id}`}
+                {selectedHue && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setSelectedHue(null)}
+                    data-testid="button-clear-hue-filter"
                   >
-                    {cat.name}
-                  </Badge>
-                ))}
+                    <X className="w-4 h-4 mr-2" />
+                    Clear {hueRanges.find(h => h.id === selectedHue)?.name} filter
+                  </Button>
+                )}
               </div>
             </GlassCard>
           </motion.div>
 
-          {/* Color Category Cards */}
+          {/* Interactive Color Wheel */}
           <motion.div 
             className="mb-12"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -569,12 +558,13 @@ export default function ColorLibrary() {
             transition={{ delay: 0.2 }}
           >
             <GlassCard className="p-8" glow="accent">
-              <h2 className="text-center text-lg font-semibold text-foreground mb-6">Browse by Color Category</h2>
+              <h2 className="text-center text-2xl font-bold text-foreground mb-2">Choose Your Color Family</h2>
+              <p className="text-center text-muted-foreground mb-8">Click a base color to explore all available paint options in that family</p>
               {!isLoading && (
-                <ColorCategoryCards 
-                  selectedCategory={selectedCategory} 
-                  onSelectCategory={setSelectedCategory}
-                  allColors={colors}
+                <InteractiveColorWheel 
+                  selectedHue={selectedHue} 
+                  onSelectHue={setSelectedHue}
+                  allColors={allColors}
                 />
               )}
             </GlassCard>
