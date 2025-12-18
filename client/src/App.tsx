@@ -65,6 +65,7 @@ function Router() {
       <Route path="/contractor-application" component={ContractorApplication} />
       <Route path="/blog" component={Blog} />
       <Route path="/terms" component={TermsWarranty} />
+      <Route path="/warranty" component={TermsWarranty} />
       <Route path="/account" component={Account} />
       <Route path="/help" component={Help} />
       <Route path="/auth" component={AuthPage} />
