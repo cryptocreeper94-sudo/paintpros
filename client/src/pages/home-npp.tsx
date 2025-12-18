@@ -78,7 +78,7 @@ export default function HomeNPP() {
               className="w-full max-w-5xl h-auto object-contain opacity-90"
             />
           </div>
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8 ml-8 md:ml-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -134,15 +134,16 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* TRUST & AWARDS SECTION */}
-        <section className="py-16 px-4 bg-gray-50">
+        {/* TRUST & AWARDS SECTION - Bento Grid */}
+        <section className="py-8 md:py-16 px-3 md:px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Award Card */}
-              <Link href="/awards">
+            {/* Mobile: 2-column Bento Grid, Desktop: 2-column */}
+            <div className="grid grid-cols-2 gap-3 md:gap-8">
+              {/* Award Card - spans full width on mobile for visual impact */}
+              <Link href="/awards" className="col-span-2 md:col-span-1">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="relative h-auto md:h-80 rounded-2xl overflow-hidden cursor-pointer group bg-black"
+                  className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group bg-black"
                   data-testid="link-award-section"
                 >
                   <img 
@@ -156,32 +157,32 @@ export default function HomeNPP() {
               {/* Award Description Card */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-yellow-100 p-5 md:p-8 flex flex-col justify-between border border-amber-200"
+                className="col-span-2 md:col-span-1 relative h-auto md:h-80 rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-yellow-100 p-4 md:p-8 flex flex-col justify-between border border-amber-200"
                 data-testid="card-award-description"
               >
-                <div className="absolute right-4 top-4 w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
-                  <Award className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                <div className="absolute right-3 top-3 md:right-4 md:top-4 w-12 h-12 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
+                  <Award className="w-6 h-6 md:w-10 md:h-10 text-white" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 mb-3 md:mb-4">
-                    <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-600">
-                      <Star className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <div className="flex items-center gap-2 mb-2 md:mb-4">
+                    <div className="p-1 md:p-2 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-600">
+                      <Star className="w-3 h-3 md:w-5 md:h-5 text-white" />
                     </div>
-                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white border-0 text-xs md:text-sm">
+                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white border-0 text-[10px] md:text-sm">
                       2025 Winner
                     </Badge>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-base md:text-2xl font-bold text-gray-900 mb-1 md:mb-2 pr-12 md:pr-0">
                     Best Painter in Nashville
                   </h3>
-                  <p className="text-sm md:text-base text-gray-700">
-                    Recognized for excellence in craftsmanship, customer service, and professional standards. Voted by Nashville homeowners as the most trusted painting company in Middle Tennessee.
+                  <p className="text-xs md:text-base text-gray-700 line-clamp-3 md:line-clamp-none">
+                    Recognized for excellence in craftsmanship, customer service, and professional standards. Voted by Nashville homeowners as the most trusted painting company.
                   </p>
                 </div>
                 <Link href="/awards">
-                  <div className="flex items-center gap-2 text-amber-700 mt-4 cursor-pointer hover:text-amber-800 transition-colors">
-                    <span className="text-xs md:text-sm font-medium">Learn more about our recognition</span>
-                    <ArrowRight className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-amber-700 mt-2 md:mt-4 cursor-pointer hover:text-amber-800 transition-colors">
+                    <span className="text-[10px] md:text-sm font-medium">Learn more</span>
+                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                   </div>
                 </Link>
               </motion.div>
