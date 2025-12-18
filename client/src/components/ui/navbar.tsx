@@ -29,7 +29,7 @@ export function Navbar() {
 
   return (
     <>
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50">
       <div className={cn(
         "flex items-center px-3 md:px-4",
         tenant.id === "demo" ? "h-16 md:h-20" : "h-20 md:h-28 lg:h-36"
