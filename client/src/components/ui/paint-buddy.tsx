@@ -294,13 +294,13 @@ export function PaintBuddy() {
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleOpen}
-            className="fixed bottom-[54px] right-[18px] z-50 group"
+            className="fixed bottom-[70px] right-2 md:bottom-[54px] md:right-[18px] z-50 group"
             data-testid="button-paint-buddy-open"
           >
             <motion.img
               src={rollieMascot}
               alt="Paint Buddy"
-              className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
+              className="w-12 h-12 md:w-16 md:h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
