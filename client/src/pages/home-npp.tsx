@@ -84,7 +84,7 @@ export default function HomeNPP() {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight">
-                Paint Your Home
+                Painting Done
                 <span className="block text-accent">The Right Way</span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 mt-6 max-w-2xl mx-auto">
