@@ -71,14 +71,17 @@ export default function HomeNPP() {
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
           {/* Painters image - positioned to look like they're painting the title */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingTop: '300px', marginLeft: '-200px' }}>
+          <div 
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ paddingTop: '300px' }}
+          >
             <img 
               src={paintersImage} 
               alt="Professional painters at work" 
-              className="w-full max-w-5xl h-auto object-contain opacity-90"
+              className="w-full max-w-5xl h-auto object-contain opacity-90 ml-[-50px] md:ml-[-200px]"
             />
           </div>
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8 ml-8 md:ml-16">
+          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8 ml-[150px] md:ml-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -190,136 +193,158 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* SEE HOW SECTION - Our Approach */}
-        <section className="py-20 px-4 bg-gray-50">
+        {/* SEE HOW SECTION - Our Approach - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-6 md:mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-4">
                 How We Deliver Excellence
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              <p className="text-sm md:text-xl text-gray-600 max-w-2xl mx-auto">
                 Detailed estimates and project plans unique to you
               </p>
             </motion.div>
 
-            {/* Large Feature Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative h-64 md:h-96 rounded-2xl overflow-hidden mb-8"
-            >
-              <img src={estimateImage} alt="Professional estimate consultation" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
-                <div className="p-8 md:p-12 max-w-lg">
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                    Detailed estimates and project plans unique to you
-                  </h3>
+            {/* Bento Grid Layout - 2 cols on mobile, 4 cols on desktop */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+              {/* Large Feature Image - spans 2 cols */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, rotateY: 2 }}
+                className="col-span-2 md:col-span-4 relative h-32 md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-lg"
+                style={{ transformStyle: 'preserve-3d' }}
+              >
+                <img src={estimateImage} alt="Professional estimate consultation" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
+                  <div className="p-4 md:p-12 max-w-lg">
+                    <h3 className="text-base md:text-3xl font-bold text-white">
+                      Detailed estimates unique to you
+                    </h3>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
 
-            {/* Three Feature Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
+              {/* Feature Card 1 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, rotateX: 5, rotateY: -5 }}
                 transition={{ delay: 0.1 }}
+                className="col-span-1"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900">
-                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
-                    <Shield className="w-6 h-6 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl hover:shadow-accent/20">
+                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                    <Shield className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Meticulous Preparation
+                  <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2">
+                    Meticulous Prep
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    We protect your home with proper masking, drop cloths, and surface prep before any paint touches your walls.
+                  <p className="text-[10px] md:text-sm text-gray-600 line-clamp-3">
+                    Proper masking, drop cloths, and surface prep before painting.
                   </p>
                 </GlassCard>
               </motion.div>
 
+              {/* Feature Card 2 */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
                 transition={{ delay: 0.2 }}
+                className="col-span-1"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900">
-                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
-                    <Brush className="w-6 h-6 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl hover:shadow-accent/20">
+                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                    <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Full-Time Professional Painters
+                  <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2">
+                    Pro Painters
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Our crew are dedicated professionals, not day laborers. Top-tier results from experienced craftsmen.
+                  <p className="text-[10px] md:text-sm text-gray-600 line-clamp-3">
+                    Dedicated professionals, not day laborers. Top-tier results.
                   </p>
                 </GlassCard>
               </motion.div>
 
+              {/* Feature Card 3 - spans 2 cols on mobile for variety */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.03, rotateX: 3 }}
                 transition={{ delay: 0.3 }}
+                className="col-span-2 md:col-span-2"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900">
-                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
-                    <Sparkles className="w-6 h-6 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/80 backdrop-blur-sm border border-accent/20 shadow-xl hover:shadow-accent/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg shadow-accent/30">
+                      <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1">
+                        Perfection in Every Detail
+                      </h3>
+                      <p className="text-[10px] md:text-sm text-gray-600">
+                        From clean lines to flawless finishes, perfection down to the last brushstroke.
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Perfection in Every Detail
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    From clean lines to flawless finishes, we deliver perfection down to the last brushstroke.
-                  </p>
                 </GlassCard>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* SERVICES SECTION - Interior & Exterior */}
-        <section className="py-20 px-4 bg-white dark:bg-gray-900">
+        {/* SERVICES SECTION - Interior & Exterior - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-6 md:mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-4">
                 Our Services
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
+              <p className="text-sm md:text-xl text-gray-600">
                 Professional painting for every space
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            {/* 2-column Bento Grid on mobile */}
+            <div className="grid grid-cols-2 gap-3 md:gap-8">
               {/* Interior */}
               <Link href="/services">
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="relative h-80 rounded-2xl overflow-hidden cursor-pointer group"
+                  whileHover={{ scale: 1.03, rotateY: 3 }}
+                  className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
                   data-testid="link-interior-services"
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <img src={interiorImage} alt="Interior Painting" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Home className="w-5 h-5 text-accent" />
-                      <span className="text-accent font-semibold text-sm uppercase tracking-wider">Interior</span>
+                  <img src={interiorImage} alt="Interior Painting" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6">
+                    <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
+                      <div className="p-1 md:p-1.5 rounded-md bg-accent/80 shadow-lg shadow-accent/30">
+                        <Home className="w-3 h-3 md:w-5 md:h-5 text-white" />
+                      </div>
+                      <span className="text-accent font-semibold text-[10px] md:text-sm uppercase tracking-wider">Interior</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Interior Painting</h3>
-                    <p className="text-gray-300 text-sm">Walls, ceilings, trim, doors, and cabinets</p>
+                    <h3 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2">Interior Painting</h3>
+                    <p className="text-gray-300 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Walls, ceilings, trim, doors</p>
                   </div>
                 </motion.div>
               </Link>
@@ -327,19 +352,22 @@ export default function HomeNPP() {
               {/* Exterior */}
               <Link href="/services">
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="relative h-80 rounded-2xl overflow-hidden cursor-pointer group"
+                  whileHover={{ scale: 1.03, rotateY: -3 }}
+                  className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
                   data-testid="link-exterior-services"
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <img src={exteriorImage} alt="Exterior Painting" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Building2 className="w-5 h-5 text-accent" />
-                      <span className="text-accent font-semibold text-sm uppercase tracking-wider">Exterior</span>
+                  <img src={exteriorImage} alt="Exterior Painting" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6">
+                    <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
+                      <div className="p-1 md:p-1.5 rounded-md bg-accent/80 shadow-lg shadow-accent/30">
+                        <Building2 className="w-3 h-3 md:w-5 md:h-5 text-white" />
+                      </div>
+                      <span className="text-accent font-semibold text-[10px] md:text-sm uppercase tracking-wider">Exterior</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Exterior Painting</h3>
-                    <p className="text-gray-300 text-sm">Siding, trim, decks, fences, and more</p>
+                    <h3 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2">Exterior Painting</h3>
+                    <p className="text-gray-300 text-[10px] md:text-sm line-clamp-1 md:line-clamp-none">Siding, trim, decks, fences</p>
                   </div>
                 </motion.div>
               </Link>
@@ -450,37 +478,40 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* WHAT TO EXPECT - Process & Timing */}
-        <section className="py-20 px-4 bg-white dark:bg-gray-900">
+        {/* WHAT TO EXPECT - Process & Timing - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-6 md:mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-4">
                 What to Expect
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
+              <p className="text-sm md:text-xl text-gray-600">
                 Our process from start to finish
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 2x2 Bento Grid on mobile */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.1 }}
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 text-center">
-                  <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="w-8 h-8 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                    <Calendar className="w-5 h-5 md:w-8 md:h-8 text-accent" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Day 1: Prep</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Furniture moving, surface cleaning, patching holes, taping edges, laying drop cloths
+                  <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Day 1: Prep</h3>
+                  <p className="text-gray-600 text-[9px] md:text-sm line-clamp-3">
+                    Furniture moving, cleaning, patching, taping edges
                   </p>
                 </GlassCard>
               </motion.div>
@@ -489,15 +520,17 @@ export default function HomeNPP() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.2 }}
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 text-center">
-                  <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                    <Brush className="w-8 h-8 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                    <Brush className="w-5 h-5 md:w-8 md:h-8 text-accent" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Day 2-3: Painting</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Primer application, first coat, drying time (2-4 hours), second coat for full coverage
+                  <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Day 2-3: Paint</h3>
+                  <p className="text-gray-600 text-[9px] md:text-sm line-clamp-3">
+                    Primer, first coat, drying, second coat
                   </p>
                 </GlassCard>
               </motion.div>
@@ -506,15 +539,17 @@ export default function HomeNPP() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.3 }}
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 text-center">
-                  <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                    <Clock className="w-8 h-8 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                    <Clock className="w-5 h-5 md:w-8 md:h-8 text-accent" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Drying Time</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Touch dry: 1-2 hours. Recoat: 4 hours. Full cure: 2-4 weeks (avoid scrubbing)
+                  <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Drying Time</h3>
+                  <p className="text-gray-600 text-[9px] md:text-sm line-clamp-3">
+                    Touch dry: 1-2 hrs. Full cure: 2-4 weeks
                   </p>
                 </GlassCard>
               </motion.div>
@@ -523,15 +558,17 @@ export default function HomeNPP() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.4 }}
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 text-center">
-                  <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="w-8 h-8 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/30 border border-accent/20">
+                  <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/30">
+                    <CheckCircle2 className="w-5 h-5 md:w-8 md:h-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Final Walkthrough</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Touch-ups, cleanup, furniture replacement, and your satisfaction guaranteed
+                  <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Walkthrough</h3>
+                  <p className="text-gray-600 text-[9px] md:text-sm line-clamp-3">
+                    Touch-ups, cleanup, satisfaction guaranteed
                   </p>
                 </GlassCard>
               </motion.div>
@@ -539,43 +576,48 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* COLORS & SHEENS - Educational Content */}
-        <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
+        {/* COLORS & SHEENS - Educational Content - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-6 md:mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-4">
                 Colors & Sheens Guide
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
+              <p className="text-sm md:text-xl text-gray-600">
                 Understanding paint finishes for your project
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* 2-column Bento Grid on mobile, 3 on desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {[
-                { name: "Flat/Matte", desc: "No shine, hides imperfections. Best for ceilings and low-traffic areas.", icon: Layers },
-                { name: "Eggshell", desc: "Slight sheen, easy to clean. Perfect for living rooms and bedrooms.", icon: Droplets },
-                { name: "Satin", desc: "Soft glow, durable. Great for kitchens, bathrooms, and trim.", icon: Sparkles },
-                { name: "Semi-Gloss", desc: "Noticeable shine, very durable. Ideal for doors, cabinets, and trim.", icon: Shield },
-                { name: "High-Gloss", desc: "Maximum shine and durability. Best for accent pieces and high-wear areas.", icon: Star },
-                { name: "Primer", desc: "Seals surfaces for better paint adhesion. Essential for bare wood and repairs.", icon: Brush },
+                { name: "Flat/Matte", desc: "No shine, hides imperfections. Best for ceilings.", icon: Layers },
+                { name: "Eggshell", desc: "Slight sheen, easy to clean. For living rooms.", icon: Droplets },
+                { name: "Satin", desc: "Soft glow, durable. For kitchens & baths.", icon: Sparkles },
+                { name: "Semi-Gloss", desc: "Noticeable shine. Ideal for doors & trim.", icon: Shield },
+                { name: "High-Gloss", desc: "Maximum shine & durability. Accent pieces.", icon: Star },
+                { name: "Primer", desc: "Seals surfaces. Essential for bare wood.", icon: Brush },
               ].map((sheen, index) => (
                 <motion.div
                   key={sheen.name}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05, rotateY: index % 2 === 0 ? 3 : -3 }}
+                  transition={{ delay: index * 0.05 }}
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900">
-                    <sheen.icon className="w-8 h-8 text-accent mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{sheen.name}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">{sheen.desc}</p>
+                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm shadow-xl hover:shadow-accent/20 border border-gray-100">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                      <sheen.icon className="w-4 h-4 md:w-5 md:h-5 text-accent" />
+                    </div>
+                    <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">{sheen.name}</h3>
+                    <p className="text-gray-600 text-[9px] md:text-sm line-clamp-3">{sheen.desc}</p>
                   </GlassCard>
                 </motion.div>
               ))}
@@ -583,122 +625,135 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* SERVICE AREA */}
-        <section className="py-20 px-4 bg-white dark:bg-gray-900">
+        {/* SERVICE AREA - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* 2-column Bento Grid on mobile */}
+            <div className="grid grid-cols-2 gap-3 md:gap-8 items-stretch">
+              {/* Text Content */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
+                className="col-span-2 md:col-span-1 flex flex-col justify-center"
               >
-                <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-6">
+                <h2 className="text-xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-6">
                   Serving Nashville & Beyond
                 </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-                  Proudly serving the greater Nashville metro area and surrounding communities.
+                <p className="text-xs md:text-xl text-gray-600 mb-3 md:mb-6">
+                  Proudly serving the greater Nashville metro area.
                 </p>
-                <div className="grid grid-cols-2 gap-4">
+                {/* Cities Grid - 4 cols on mobile */}
+                <div className="grid grid-cols-4 md:grid-cols-2 gap-1.5 md:gap-4">
                   {["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville", "Mt. Juliet", "Gallatin", "Lebanon"].map((city) => (
-                    <div key={city} className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-accent" />
-                      <span className="text-gray-700 dark:text-gray-300">{city}</span>
+                    <div key={city} className="flex items-center gap-1 md:gap-2 bg-gray-50 rounded-lg p-1.5 md:p-2">
+                      <MapPin className="w-2.5 h-2.5 md:w-4 md:h-4 text-accent flex-shrink-0" />
+                      <span className="text-gray-700 text-[8px] md:text-sm truncate">{city}</span>
                     </div>
                   ))}
                 </div>
               </motion.div>
+              {/* Map Image */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.02, rotateY: -3 }}
                 viewport={{ once: true }}
-                className="relative h-80 rounded-2xl overflow-hidden"
+                className="col-span-2 md:col-span-1 relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-xl"
+                style={{ transformStyle: 'preserve-3d' }}
               >
                 <img src={mapImage} alt="Nashville Service Area" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-accent/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-accent/40 to-transparent" />
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* END-TO-END COMMUNICATION */}
-        <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
+        {/* END-TO-END COMMUNICATION - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* 2-column Bento Grid on mobile */}
+            <div className="grid grid-cols-2 gap-3 md:gap-8 items-stretch">
+              {/* Title - spans full width on mobile for hierarchy */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="order-2 md:order-1"
+                className="col-span-2 md:col-span-1 order-1 md:order-2 flex flex-col justify-center"
               >
-                <GlassCard className="p-8 bg-white dark:bg-gray-900">
-                  <MessageSquare className="w-12 h-12 text-accent mb-6" />
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    End-to-End Communication
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Our project managers keep you up to date on project progress with daily text updates. 
-                    You'll always know what's happening and what to expect next.
-                  </p>
-                  <ul className="space-y-3">
-                    {["Daily progress updates", "Photo documentation", "Direct line to your project manager", "Real-time scheduling changes"].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </GlassCard>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="order-1 md:order-2"
-              >
-                <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-6">
+                <h2 className="text-xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-6">
                   Stay Connected
                 </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300">
-                  We believe in transparent communication. From your first estimate to the final walkthrough, 
-                  you'll never be left wondering about your project status.
+                <p className="text-xs md:text-xl text-gray-600">
+                  Transparent communication from estimate to final walkthrough.
                 </p>
+              </motion.div>
+              {/* Feature Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.02, rotateY: 3 }}
+                viewport={{ once: true }}
+                className="col-span-2 md:col-span-1 order-2 md:order-1"
+                style={{ transformStyle: 'preserve-3d' }}
+              >
+                <GlassCard className="p-4 md:p-8 bg-white/90 backdrop-blur-sm shadow-xl border border-gray-100">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mb-3 md:mb-6 shadow-lg shadow-accent/30">
+                    <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                  </div>
+                  <h3 className="text-base md:text-2xl font-bold text-gray-900 mb-2 md:mb-4">
+                    End-to-End Communication
+                  </h3>
+                  <p className="text-xs md:text-base text-gray-600 mb-3 md:mb-6 line-clamp-2 md:line-clamp-none">
+                    Daily text updates on project progress. Always know what's happening.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 md:space-y-3 md:block">
+                    {["Daily updates", "Photo docs", "Direct line", "Real-time"].map((item) => (
+                      <div key={item} className="flex items-center gap-1.5 md:gap-2 text-gray-700">
+                        <CheckCircle2 className="w-3 h-3 md:w-5 md:h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-[10px] md:text-sm">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </GlassCard>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* CUSTOMER TESTIMONIALS */}
-        <section className="py-20 px-4 bg-white dark:bg-gray-900">
+        {/* CUSTOMER TESTIMONIALS - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-6 md:mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-4">
                 What Our Customers Say
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
+              <p className="text-sm md:text-xl text-gray-600">
                 Join hundreds of satisfied homeowners
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* 2-column Bento Grid on mobile, 3 on desktop */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
               {[
                 {
                   name: "James P.",
-                  review: "I recently had the pleasure of having Nashville Painting Professionals paint several interior spaces of my home, and I am extremely impressed with the level of professionalism and quality of work they provided. From the initial contact to the final walkthrough, the team was friendly...",
+                  review: "Extremely impressed with the professionalism and quality. The team was friendly from start to finish...",
                   rating: 5
                 },
                 {
                   name: "Sarah M.",
-                  review: "Best painter experience we've ever had. Getting a quote was quick and simple and didn't require anyone to come to our house. Communication was superb and clear. Loved the Project Schedule we got ahead of time that outlined our preferences...",
+                  review: "Best painter experience ever. Quick quote, superb communication, and great project schedule...",
                   rating: 5
                 },
                 {
                   name: "Bill D.",
-                  review: "I have never had a painting experience as professional as Nashville Painting Professionals. Not only was the work they did excellent, but the communication blew me away. I received an email the week of my job telling me exactly which colors would be used...",
+                  review: "Most professional painting experience ever. Excellent work and amazing communication throughout...",
                   rating: 5
                 }
               ].map((testimonial, index) => (
@@ -707,99 +762,127 @@ export default function HomeNPP() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  whileHover={{ scale: 1.05, rotateX: 3 }}
                   transition={{ delay: index * 0.1 }}
+                  className={index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"}
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900">
-                    <div className="flex gap-1 mb-4">
+                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm shadow-xl hover:shadow-accent/20 border border-gray-100">
+                    <div className="flex gap-0.5 md:gap-1 mb-2 md:mb-4">
                       {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                        <Star key={i} className="w-3 h-3 md:w-5 md:h-5 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-4">
+                    <p className="text-gray-600 text-[10px] md:text-sm mb-2 md:mb-4 line-clamp-3 md:line-clamp-4">
                       {testimonial.review}
                     </p>
-                    <p className="font-semibold text-gray-900 dark:text-white">{testimonial.name}</p>
+                    <p className="font-semibold text-gray-900 text-xs md:text-base">{testimonial.name}</p>
                   </GlassCard>
                 </motion.div>
               ))}
             </div>
 
-            <div className="text-center mt-8">
+            <div className="text-center mt-4 md:mt-8">
               <a 
                 href="https://www.google.com/search?q=nashville+painting+professionals+reviews" 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                <Button variant="outline" className="gap-2" data-testid="link-google-reviews">
+                <Button variant="outline" size="sm" className="gap-2 text-xs md:text-sm" data-testid="link-google-reviews">
                   See All Reviews
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                 </Button>
               </a>
             </div>
           </div>
         </section>
 
-        {/* RESOURCES HUB */}
-        <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
+        {/* RESOURCES HUB - Bento Grid */}
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-6 md:mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-2 md:mb-4">
                 Resources & Guides
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
-                Everything you need to know about your painting project
+              <p className="text-sm md:text-xl text-gray-600">
+                Everything you need for your painting project
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 2x2 Bento Grid on mobile */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
               <Link href="/color-library">
-                <motion.div whileHover={{ scale: 1.03 }} data-testid="link-resource-colors">
-                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 cursor-pointer">
-                    <Palette className="w-10 h-10 text-accent mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Color Library</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      Browse our curated collection of professional paint colors
+                <motion.div 
+                  whileHover={{ scale: 1.05, rotateY: 3 }} 
+                  data-testid="link-resource-colors"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                      <Palette className="w-4 h-4 md:w-5 md:h-5 text-accent" />
+                    </div>
+                    <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Color Library</h3>
+                    <p className="text-gray-600 text-[9px] md:text-sm line-clamp-2">
+                      Browse professional paint colors
                     </p>
                   </GlassCard>
                 </motion.div>
               </Link>
 
               <Link href="/terms-warranty">
-                <motion.div whileHover={{ scale: 1.03 }} data-testid="link-resource-warranty">
-                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 cursor-pointer">
-                    <Shield className="w-10 h-10 text-accent mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Warranty Info</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      Learn about our {tenant.credentials?.warrantyYears || 3}-year workmanship guarantee
+                <motion.div 
+                  whileHover={{ scale: 1.05, rotateY: -3 }} 
+                  data-testid="link-resource-warranty"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                      <Shield className="w-4 h-4 md:w-5 md:h-5 text-accent" />
+                    </div>
+                    <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Warranty</h3>
+                    <p className="text-gray-600 text-[9px] md:text-sm line-clamp-2">
+                      {tenant.credentials?.warrantyYears || 3}-year guarantee
                     </p>
                   </GlassCard>
                 </motion.div>
               </Link>
 
               <Link href="/help">
-                <motion.div whileHover={{ scale: 1.03 }} data-testid="link-resource-faq">
-                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 cursor-pointer">
-                    <HelpCircle className="w-10 h-10 text-accent mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">FAQs</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      Answers to commonly asked questions about our services
+                <motion.div 
+                  whileHover={{ scale: 1.05, rotateY: 3 }} 
+                  data-testid="link-resource-faq"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
+                      <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-accent" />
+                    </div>
+                    <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">FAQs</h3>
+                    <p className="text-gray-600 text-[9px] md:text-sm line-clamp-2">
+                      Common questions answered
                     </p>
                   </GlassCard>
                 </motion.div>
               </Link>
 
               <Link href="/services">
-                <motion.div whileHover={{ scale: 1.03 }} data-testid="link-resource-glossary">
-                  <GlassCard className="h-full p-6 bg-white dark:bg-gray-900 cursor-pointer">
-                    <BookOpen className="w-10 h-10 text-accent mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Service Details</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">
-                      Detailed information about each service we offer
+                <motion.div 
+                  whileHover={{ scale: 1.05, rotateY: -3 }} 
+                  data-testid="link-resource-glossary"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/30 border border-accent/20">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/30">
+                      <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    </div>
+                    <h3 className="text-xs md:text-lg font-bold text-gray-900 mb-1 md:mb-2">Services</h3>
+                    <p className="text-gray-600 text-[9px] md:text-sm line-clamp-2">
+                      Full service details
                     </p>
                   </GlassCard>
                 </motion.div>
@@ -808,24 +891,26 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* FINAL CTA */}
-        <section className="py-24 px-4 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent">
+        {/* FINAL CTA - Mobile Optimized */}
+        <section className="py-12 md:py-24 px-3 md:px-4 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02 }}
               viewport={{ once: true }}
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-3 md:mb-6">
                 Ready to Transform Your Space?
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              <p className="text-sm md:text-xl text-gray-600 mb-4 md:mb-8">
                 Get your free estimate today and see why we're Nashville's most trusted painters.
               </p>
               <Link href="/estimate">
-                <Button size="lg" className="text-lg px-12 py-6 gap-2" data-testid="button-final-cta">
+                <Button size="lg" className="text-sm md:text-lg px-6 md:px-12 py-4 md:py-6 gap-2 shadow-xl shadow-accent/30" data-testid="button-final-cta">
                   Get Your Free Estimate
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
               </Link>
             </motion.div>
