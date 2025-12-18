@@ -37,7 +37,7 @@ import exteriorImage from "@assets/generated_images/exterior_painting.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg.png";
 import crewImage from "@assets/generated_images/professional_painting_crew_at_work.png";
-import painterCutout from "@assets/generated_images/photorealistic_painter_with_teal_paint_stroke.png";
+import painterCutout from "@assets/generated_images/photorealistic_painter_with_teal_paint_stroke_on_white_background.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
 
