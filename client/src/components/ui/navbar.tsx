@@ -96,7 +96,7 @@ export function Navbar() {
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                 fontWeight: 500, 
                 letterSpacing: '0.03em',
-                backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)',
+                backgroundImage: 'linear-gradient(to right, #8B7355, #6B8E4E, #8B7355)',
                 marginLeft: '80px'
               }}
               data-testid="text-header-title"

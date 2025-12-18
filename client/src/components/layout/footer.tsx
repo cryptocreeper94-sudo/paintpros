@@ -50,7 +50,7 @@ export function Footer() {
         <div className="w-full px-1 md:px-4 flex justify-between items-center">
           
           {/* Copyright */}
-          <div className="whitespace-nowrap text-[9px] md:text-[10px]">
+          <div className="whitespace-nowrap text-[9px] md:text-[10px] text-stone-600/90">
             {isDemo ? (
               <>
                 <span className="hidden sm:inline">Powered by Darkwave Studios, LLC</span>
@@ -82,28 +82,28 @@ export function Footer() {
           {/* Version - Clickable */}
           <button
             onClick={() => setShowVersionModal(true)}
-            className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px] hover:text-amber-400 transition-colors underline decoration-dotted underline-offset-2"
+            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-amber-600/80 hover:text-amber-500"
             data-testid="button-version"
           >
             v{version}
           </button>
 
-          {/* Socials */}
+          {/* Socials - Brand Colors */}
           <div className="flex gap-2 md:gap-3">
             {tenant.social?.instagram && (
-              <a href={tenant.social.instagram} className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+              <a href={tenant.social.instagram} className="transition-all hover:scale-110"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
             )}
             {tenant.social?.facebook && (
-              <a href={tenant.social.facebook} className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+              <a href={tenant.social.facebook} className="transition-all hover:scale-110"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
             )}
             {tenant.social?.linkedin && (
-              <a href={tenant.social.linkedin} className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+              <a href={tenant.social.linkedin} className="transition-all hover:scale-110"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
             )}
             {!tenant.social?.instagram && !tenant.social?.facebook && !tenant.social?.linkedin && (
               <>
-                <a href="#" className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                <a href="#" className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                <a href="#" className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+                <a href="#" className="transition-all hover:scale-110"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
+                <a href="#" className="transition-all hover:scale-110"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
+                <a href="#" className="transition-all hover:scale-110"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
               </>
             )}
           </div>
@@ -111,7 +111,7 @@ export function Footer() {
           {/* Team Button */}
           <a 
             href="/team" 
-            className="flex items-center gap-1 text-muted-foreground/70 hover:text-accent transition-colors text-[9px] md:text-[10px]"
+            className="flex items-center gap-1 text-emerald-700/70 hover:text-emerald-600 transition-colors text-[9px] md:text-[10px]"
             data-testid="link-team"
           >
             <Users className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -119,10 +119,10 @@ export function Footer() {
           </a>
           
           {/* Desktop Links */}
-          <div className="gap-4 whitespace-nowrap hidden md:flex">
-            <a href="/investors" className="hover:text-accent transition-colors" data-testid="link-investors">Investors</a>
-            <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
-            <a href="/terms" className="hover:text-accent transition-colors" data-testid="link-terms">Terms & Warranty</a>
+          <div className="gap-4 whitespace-nowrap hidden md:flex text-stone-600/80">
+            <a href="/investors" className="hover:text-amber-600 transition-colors" data-testid="link-investors">Investors</a>
+            <a href="#" className="hover:text-amber-600 transition-colors">Privacy Policy</a>
+            <a href="/terms" className="hover:text-amber-600 transition-colors" data-testid="link-terms">Terms & Warranty</a>
           </div>
 
           
