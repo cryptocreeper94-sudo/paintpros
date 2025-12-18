@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, ChevronRight, Sun, Moon, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen } from "lucide-react";
+import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
-import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/use-auth";
-import nppEmblem from "@assets/npp_emblem_full.png";
-import nppText from "@assets/npp_text_full.png";
+import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const tenant = useTenant();
-  const { theme, toggleTheme } = useTheme();
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
 
   const mainLinks = [
@@ -36,20 +33,26 @@ export function Navbar() {
         "flex items-center px-3 md:px-4",
         tenant.id === "demo" ? "h-16 md:h-20" : "h-12 md:h-14"
       )}>
-        {/* Left: Hamburger Menu - standard menu icon for all tenants */}
+        {/* Left: Hamburger Menu - NPP logo for NPP, standard menu for demo */}
         <button 
           className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50 p-2",
-            tenant.id === "demo" ? "ml-2" : "ml-1"
+            "hover:opacity-80 transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
+            tenant.id === "demo" ? "p-2 ml-2" : "p-1 ml-1"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={28} className="text-gray-700 dark:text-white" />
+            <X size={28} className="text-gray-700" />
+          ) : tenant.id === "demo" ? (
+            <Menu size={28} className="text-gray-700" />
           ) : (
-            <Menu size={28} className="text-gray-700 dark:text-white" />
+            <img 
+              src={nppLogo} 
+              alt="Menu"
+              className="h-10 md:h-12 w-auto object-contain"
+            />
           )}
         </button>
         
@@ -101,20 +104,8 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Spacer to push icons to the right */}
+        {/* Spacer to push content to the right */}
         <div className="flex-1" />
-
-        {/* Right: Theme Toggle - pushed to right edge */}
-        <div className="flex items-center gap-2 relative z-10" style={{ marginRight: '-10px' }}>
-          <button 
-            onClick={toggleTheme}
-            className="p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -mt-1.5"
-            aria-label="Toggle theme"
-            data-testid="button-theme-toggle"
-          >
-            {theme === "dark" ? <Sun className="w-8 h-8 text-accent" /> : <Moon className="w-8 h-8 text-gray-700" />}
-          </button>
-        </div>
       </div>
     </header>
 
@@ -123,19 +114,19 @@ export function Navbar() {
         <div className="fixed top-12 left-2 z-40 md:hidden flex items-center gap-1">
           <button 
             onClick={() => window.history.back()}
-            className="p-2.5 bg-white dark:bg-gray-800 backdrop-blur-sm border border-gray-300 dark:border-gray-600 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
             aria-label="Go back"
             data-testid="button-back-mobile"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-white" />
+            <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
           <Link href="/">
             <button 
-              className="p-2.5 bg-white dark:bg-gray-800 backdrop-blur-sm border border-gray-300 dark:border-gray-600 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+              className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
               aria-label="Go home"
               data-testid="button-home-mobile"
             >
-              <Home className="w-5 h-5 text-gray-700 dark:text-white" />
+              <Home className="w-5 h-5 text-gray-700" />
             </button>
           </Link>
         </div>
@@ -166,10 +157,10 @@ export function Navbar() {
                 {/* Close button */}
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="mb-6 p-2 hover:bg-white/10 rounded-lg transition-all"
+                  className="mb-6 p-2 hover:bg-gray-100 rounded-lg transition-all"
                   aria-label="Close menu"
                 >
-                  <X size={24} className="text-white" />
+                  <X size={24} className="text-gray-700" />
                 </button>
 
                 {/* Main Links */}

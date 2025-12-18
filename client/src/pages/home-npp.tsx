@@ -40,7 +40,6 @@ import crewImage from "@assets/generated_images/professional_painting_crew_at_wo
 import painterCutout from "@assets/generated_images/painter_on_white_background.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
-import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
 
 interface PaintColor {
   id: number;
@@ -69,40 +68,37 @@ export default function HomeNPP() {
       <main className="min-h-screen">
         
         {/* HERO SECTION */}
-        <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          {/* Painter cutout - positioned on right side as if painting the screen */}
-          <div className="absolute right-0 bottom-0 md:right-10 lg:right-20 hidden md:block">
+        <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+          {/* Paint stroke effect - same color as estimate button */}
+          <div className="absolute left-0 top-0 bottom-0 w-1/3 hidden md:block">
+            <div 
+              className="absolute inset-0 opacity-20"
+              style={{
+                background: 'linear-gradient(to right, #5C6B4A 0%, #5C6B4A 60%, transparent 100%)',
+              }}
+            />
+          </div>
+          
+          {/* Painter cutout - positioned on left side, mirrored, as if painting the screen */}
+          <div className="absolute left-0 bottom-0 md:left-10 lg:left-20 hidden md:block">
             <img 
               src={painterCutout} 
               alt="" 
               className="h-[70vh] w-auto object-contain object-bottom opacity-90"
+              style={{ transform: 'scaleX(-1)' }}
             />
           </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
-            {/* NPP Logo/Emblem */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="flex justify-center mb-6"
-            >
-              <img 
-                src={nppLogo} 
-                alt="Nashville Painting Professionals" 
-                className="h-20 md:h-28 lg:h-32 w-auto object-contain"
-              />
-            </motion.div>
-            
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 dark:text-white leading-tight">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight">
                 Paint Your Home
                 <span className="block text-accent">The Right Way</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mt-6 max-w-2xl mx-auto">
+              <p className="text-xl md:text-2xl text-gray-600 mt-6 max-w-2xl mx-auto">
                 Nashville's Most Trusted Painters
               </p>
             </motion.div>
