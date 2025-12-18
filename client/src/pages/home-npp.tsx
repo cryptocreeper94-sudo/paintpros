@@ -68,20 +68,21 @@ export default function HomeNPP() {
     <PageLayout>
       <main className="min-h-screen">
         
-        {/* HERO SECTION */}
-        <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
-          {/* Painters image - positioned to look like they're painting the title */}
-          <div 
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            style={{ paddingTop: '300px' }}
-          >
-            <img 
-              src={paintersImage} 
-              alt="Professional painters at work" 
-              className="w-full max-w-5xl h-auto object-contain opacity-90 ml-[-50px] md:ml-[-200px]"
-            />
+        {/* HERO SECTION - Mobile-First Centered Layout */}
+        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col justify-center px-4 py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+          {/* Painters image - hidden on mobile, visible on desktop */}
+          <div className="hidden md:block absolute inset-0 pointer-events-none">
+            <div className="absolute bottom-0 right-0 w-[60%] h-[80%]">
+              <img 
+                src={paintersImage} 
+                alt="Professional painters at work" 
+                className="w-full h-full object-contain object-bottom opacity-90"
+              />
+            </div>
           </div>
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8 ml-[150px] md:ml-16">
+          
+          {/* Text Content - Centered on mobile */}
+          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6 md:space-y-8 md:ml-0 md:mr-auto md:text-left md:pl-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -91,7 +92,7 @@ export default function HomeNPP() {
                 Painting Done
                 <span className="block text-accent">The Right Way</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 mt-6 max-w-2xl mx-auto">
+              <p className="text-lg md:text-2xl text-gray-600 mt-4 md:mt-6 max-w-2xl mx-auto md:mx-0">
                 Nashville's Most Trusted Painters
               </p>
             </motion.div>
@@ -100,25 +101,44 @@ export default function HomeNPP() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 sm:ml-40"
+              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 md:gap-4"
             >
               <Link href="/estimate">
-                <Button size="sm" className="text-sm px-6 gap-2" data-testid="button-hero-estimate">
+                <Button size="default" className="text-sm px-6 gap-2 shadow-lg shadow-accent/30" data-testid="button-hero-estimate">
                   Free Estimate
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <a href="#see-how">
-                <Button variant="outline" size="sm" className="text-sm px-6" data-testid="button-see-how">
+                <Button variant="outline" size="default" className="text-sm px-6" data-testid="button-see-how">
                   See How It Works
                 </Button>
               </a>
             </motion.div>
 
-            <p className="text-sm text-gray-900 font-medium bg-white/30 px-4 py-2 rounded-full inline-block">
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-xs md:text-sm text-gray-700 font-medium bg-gray-100 px-4 py-2 rounded-full inline-block"
+            >
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
-            </p>
+            </motion.p>
           </div>
+          
+          {/* Mobile painters image - smaller, positioned at bottom */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="md:hidden relative mt-6 px-4"
+          >
+            <img 
+              src={paintersImage} 
+              alt="Professional painters at work" 
+              className="w-full max-w-sm mx-auto h-auto object-contain"
+            />
+          </motion.div>
         </section>
 
         {/* HELP SLIDESHOW - See How It Works */}
