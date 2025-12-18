@@ -28,13 +28,106 @@ import {
 import type { PaintColor } from "@shared/schema";
 
 const categories = [
-  { id: "all", name: "All" },
-  { id: "white", name: "Whites" },
-  { id: "neutral", name: "Neutrals" },
-  { id: "warm", name: "Warm" },
-  { id: "cool", name: "Cool" },
-  { id: "accent", name: "Accents" },
+  { id: "all", name: "All", color: "#6B7280" },
+  { id: "white", name: "Whites", color: "#F5F5F5" },
+  { id: "neutral", name: "Neutrals", color: "#D3D3D3" },
+  { id: "warm", name: "Warm", color: "#E8B89A" },
+  { id: "cool", name: "Cool", color: "#A8DADC" },
+  { id: "accent", name: "Accents", color: "#5C6B4A" },
 ];
+
+function ColorPaletteWheel({ 
+  selectedCategory, 
+  onSelectCategory 
+}: { 
+  selectedCategory: string; 
+  onSelectCategory: (id: string) => void;
+}) {
+  const radius = 120;
+  
+  return (
+    <div className="flex justify-center items-center py-8">
+      <div className="relative w-72 h-72">
+        {/* Center circle */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+        >
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center border-2 border-accent/30">
+            <Palette className="w-10 h-10 text-accent" />
+          </div>
+        </motion.div>
+
+        {/* Color wheel segments */}
+        <svg viewBox="0 0 300 300" className="w-full h-full">
+          {categories.map((cat, index) => {
+            const angle = (index * 360) / categories.length;
+            const radian = (angle * Math.PI) / 180;
+            const x = 150 + radius * Math.cos(radian);
+            const y = 150 + radius * Math.sin(radian);
+            const isSelected = selectedCategory === cat.id;
+            
+            return (
+              <g key={cat.id}>
+                {/* Connecting line */}
+                <line
+                  x1="150"
+                  y1="150"
+                  x2={x}
+                  y2={y}
+                  stroke={isSelected ? cat.color : "#E5E7EB"}
+                  strokeWidth={isSelected ? 3 : 1}
+                  opacity={isSelected ? 1 : 0.3}
+                />
+                {/* Circle button */}
+                <motion.circle
+                  cx={x}
+                  cy={y}
+                  r={isSelected ? 28 : 24}
+                  fill={cat.color}
+                  stroke={isSelected ? "#000" : "#E5E7EB"}
+                  strokeWidth={isSelected ? 3 : 1}
+                  style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                  onClick={() => onSelectCategory(cat.id)}
+                  whileHover={{ r: 30 }}
+                  whileTap={{ r: 22 }}
+                />
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Labels */}
+        {categories.map((cat, index) => {
+          const angle = (index * 360) / categories.length;
+          const radian = (angle * Math.PI) / 180;
+          const x = 150 + (radius + 50) * Math.cos(radian);
+          const y = 150 + (radius + 50) * Math.sin(radian);
+          const isSelected = selectedCategory === cat.id;
+          
+          return (
+            <motion.div
+              key={`label-${cat.id}`}
+              className="absolute"
+              style={{
+                left: `${(x / 300) * 100}%`,
+                top: `${(y / 300) * 100}%`,
+                transform: "translate(-50%, -50%)",
+                pointerEvents: "none"
+              }}
+              animate={{ scale: isSelected ? 1.1 : 1 }}
+            >
+              <p className={`text-center text-sm font-semibold whitespace-nowrap ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
+                {cat.name}
+              </p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function ColorFlipCard({ color, onSelect }: { color: PaintColor; onSelect?: (color: PaintColor) => void }) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -410,6 +503,22 @@ export default function ColorLibrary() {
                   </Badge>
                 ))}
               </div>
+            </GlassCard>
+          </motion.div>
+
+          {/* Color Palette Wheel */}
+          <motion.div 
+            className="mb-12"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <GlassCard className="p-8" glow="accent">
+              <h2 className="text-center text-lg font-semibold text-foreground mb-4">Select Color Category</h2>
+              <ColorPaletteWheel 
+                selectedCategory={selectedCategory} 
+                onSelectCategory={setSelectedCategory}
+              />
             </GlassCard>
           </motion.div>
 
