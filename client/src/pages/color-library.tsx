@@ -6,6 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { 
   Search, 
   Palette, 
@@ -20,12 +26,6 @@ import {
   ChevronRight
 } from "lucide-react";
 import type { PaintColor } from "@shared/schema";
-
-const brands = [
-  { id: "all", name: "All Brands", icon: Palette },
-  { id: "sherwin-williams", name: "Sherwin-Williams", icon: Droplets },
-  { id: "benjamin-moore", name: "Benjamin Moore", icon: Sun },
-];
 
 const categories = [
   { id: "all", name: "All" },
@@ -177,9 +177,6 @@ function HorizontalColorScroller({
   colors: PaintColor[]; 
   onSelect?: (color: PaintColor) => void;
 }) {
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const scrollContainerRef = useState<HTMLDivElement | null>(null);
-
   const scrollLeft = () => {
     const container = document.getElementById(`scroll-${title.replace(/\s/g, "-")}`);
     if (container) {
@@ -197,9 +194,9 @@ function HorizontalColorScroller({
   if (colors.length === 0) return null;
 
   return (
-    <div className="relative">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-display font-bold">{title}</h2>
+    <div className="relative mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         <div className="flex gap-2">
           <Button 
             size="icon" 
@@ -235,15 +232,96 @@ function HorizontalColorScroller({
   );
 }
 
+function BrandAccordion({
+  brandName,
+  brandId,
+  brandIcon: BrandIcon,
+  colors,
+  onSelect,
+  defaultOpen = false
+}: {
+  brandName: string;
+  brandId: string;
+  brandIcon: typeof Droplets;
+  colors: PaintColor[];
+  onSelect?: (color: PaintColor) => void;
+  defaultOpen?: boolean;
+}) {
+  const productLines = Array.from(new Set(colors.map(c => c.productLine)));
+  
+  const colorsByCategory = {
+    white: colors.filter(c => c.category === "white"),
+    neutral: colors.filter(c => c.category === "neutral"),
+    warm: colors.filter(c => c.category === "warm"),
+    cool: colors.filter(c => c.category === "cool"),
+    accent: colors.filter(c => c.category === "accent"),
+  };
+
+  if (colors.length === 0) return null;
+
+  return (
+    <AccordionItem value={brandId} className="border rounded-xl overflow-hidden mb-4 bg-card/50">
+      <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-accent/5">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
+            <BrandIcon className="w-6 h-6 text-accent" />
+          </div>
+          <div className="text-left">
+            <h2 className="text-xl font-bold">{brandName}</h2>
+            <p className="text-sm text-muted-foreground">{colors.length} colors available</p>
+          </div>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className="px-6 pb-6">
+        <div className="space-y-4 pt-4">
+          {colorsByCategory.white.length > 0 && (
+            <HorizontalColorScroller 
+              title="Whites & Off-Whites" 
+              colors={colorsByCategory.white}
+              onSelect={onSelect}
+            />
+          )}
+          {colorsByCategory.neutral.length > 0 && (
+            <HorizontalColorScroller 
+              title="Neutrals & Grays" 
+              colors={colorsByCategory.neutral}
+              onSelect={onSelect}
+            />
+          )}
+          {colorsByCategory.warm.length > 0 && (
+            <HorizontalColorScroller 
+              title="Warm Tones" 
+              colors={colorsByCategory.warm}
+              onSelect={onSelect}
+            />
+          )}
+          {colorsByCategory.cool.length > 0 && (
+            <HorizontalColorScroller 
+              title="Cool Tones" 
+              colors={colorsByCategory.cool}
+              onSelect={onSelect}
+            />
+          )}
+          {colorsByCategory.accent.length > 0 && (
+            <HorizontalColorScroller 
+              title="Bold Accents" 
+              colors={colorsByCategory.accent}
+              onSelect={onSelect}
+            />
+          )}
+        </div>
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
 export default function ColorLibrary() {
-  const [selectedBrand, setSelectedBrand] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState<PaintColor | null>(null);
 
   const buildQueryUrl = () => {
     const params = new URLSearchParams();
-    if (selectedBrand !== "all") params.set("brand", selectedBrand);
     if (selectedCategory !== "all") params.set("category", selectedCategory);
     if (searchQuery) params.set("search", searchQuery);
     const queryString = params.toString();
@@ -251,7 +329,7 @@ export default function ColorLibrary() {
   };
 
   const { data: colors = [], isLoading } = useQuery<PaintColor[]>({
-    queryKey: ["/api/paint-colors", selectedBrand, selectedCategory, searchQuery],
+    queryKey: ["/api/paint-colors", selectedCategory, searchQuery],
     queryFn: async () => {
       const response = await fetch(buildQueryUrl());
       if (!response.ok) throw new Error("Failed to fetch colors");
@@ -267,10 +345,8 @@ export default function ColorLibrary() {
     setSelectedColor(null);
   };
 
-  const whiteColors = colors.filter(c => c.category === "white");
-  const neutralColors = colors.filter(c => c.category === "neutral");
-  const warmColors = colors.filter(c => c.category === "warm");
-  const accentColors = colors.filter(c => c.category === "accent");
+  const sherwinWilliamsColors = colors.filter(c => c.brand === "sherwin-williams");
+  const benjaminMooreColors = colors.filter(c => c.brand === "benjamin-moore");
 
   return (
     <PageLayout>
@@ -316,23 +392,6 @@ export default function ColorLibrary() {
                     data-testid="input-search-colors"
                   />
                 </div>
-
-                {/* Brand Filter */}
-                <div className="flex gap-2 flex-wrap">
-                  {brands.map((brand) => (
-                    <Button
-                      key={brand.id}
-                      variant={selectedBrand === brand.id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedBrand(brand.id)}
-                      className="gap-1"
-                      data-testid={`button-brand-${brand.id}`}
-                    >
-                      <brand.icon className="w-4 h-4" />
-                      {brand.name}
-                    </Button>
-                  ))}
-                </div>
               </div>
 
               {/* Category Pills */}
@@ -363,43 +422,26 @@ export default function ColorLibrary() {
             </div>
           )}
 
-          {/* Color Sections */}
-          {!isLoading && selectedCategory === "all" && (
-            <div className="space-y-12">
-              <HorizontalColorScroller 
-                title="Popular Whites" 
-                colors={whiteColors} 
+          {/* Accordion Layout */}
+          {!isLoading && (
+            <Accordion type="multiple" defaultValue={["sherwin-williams", "benjamin-moore"]} className="space-y-4">
+              <BrandAccordion
+                brandName="Sherwin-Williams"
+                brandId="sherwin-williams"
+                brandIcon={Droplets}
+                colors={sherwinWilliamsColors}
                 onSelect={handleSelectColor}
+                defaultOpen
               />
-              <HorizontalColorScroller 
-                title="Timeless Neutrals" 
-                colors={neutralColors} 
+              <BrandAccordion
+                brandName="Benjamin Moore"
+                brandId="benjamin-moore"
+                brandIcon={Sun}
+                colors={benjaminMooreColors}
                 onSelect={handleSelectColor}
+                defaultOpen
               />
-              <HorizontalColorScroller 
-                title="Warm Tones" 
-                colors={warmColors} 
-                onSelect={handleSelectColor}
-              />
-              <HorizontalColorScroller 
-                title="Bold Accents" 
-                colors={accentColors} 
-                onSelect={handleSelectColor}
-              />
-            </div>
-          )}
-
-          {/* Filtered Grid View */}
-          {!isLoading && selectedCategory !== "all" && (
-            <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {colors.map((color) => (
-                <ColorFlipCard key={color.id} color={color} onSelect={handleSelectColor} />
-              ))}
-            </motion.div>
+            </Accordion>
           )}
 
           {/* Empty State */}
