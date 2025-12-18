@@ -112,7 +112,7 @@ export default function HomeNPP() {
             </motion.div>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Free estimates · No obligation · Licensed & Insured
+              AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </p>
           </div>
         </section>
