@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
@@ -177,21 +177,23 @@ function HorizontalColorScroller({
   colors: PaintColor[]; 
   onSelect?: (color: PaintColor) => void;
 }) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const scrollLeft = () => {
-    const container = document.getElementById(`scroll-${title.replace(/\s/g, "-")}`);
-    if (container) {
-      container.scrollBy({ left: -320, behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -320, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
-    const container = document.getElementById(`scroll-${title.replace(/\s/g, "-")}`);
-    if (container) {
-      container.scrollBy({ left: 320, behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 320, behavior: "smooth" });
     }
   };
 
   if (colors.length === 0) return null;
+
+  const titleSlug = title.toLowerCase().replace(/[^a-z0-9]/g, "-");
 
   return (
     <div className="relative mb-6">
@@ -202,7 +204,7 @@ function HorizontalColorScroller({
             size="icon" 
             variant="outline" 
             onClick={scrollLeft}
-            data-testid={`button-scroll-left-${title.replace(/\s/g, "-")}`}
+            data-testid={`button-scroll-left-${titleSlug}`}
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -210,7 +212,7 @@ function HorizontalColorScroller({
             size="icon" 
             variant="outline" 
             onClick={scrollRight}
-            data-testid={`button-scroll-right-${title.replace(/\s/g, "-")}`}
+            data-testid={`button-scroll-right-${titleSlug}`}
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -218,7 +220,7 @@ function HorizontalColorScroller({
       </div>
       
       <div 
-        id={`scroll-${title.replace(/\s/g, "-")}`}
+        ref={scrollContainerRef}
         className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
