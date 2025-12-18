@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useAuth } from "@/hooks/use-auth";
-import nppEmblem from "@assets/npp_emblem.png";
+import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,19 +49,19 @@ export function Navbar() {
             <Menu size={28} className="text-gray-700" />
           ) : (
             <img 
-              src={nppEmblem} 
+              src={nppLogo} 
               alt="Menu"
-              className="h-8 md:h-14 lg:h-16 w-auto object-contain"
+              className="h-10 md:h-16 lg:h-20 w-auto object-contain"
             />
           )}
         </button>
         
-        {/* Center: Title - truly centered using absolute positioning */}
-        <div 
-          className="absolute left-0 flex justify-center pointer-events-none"
-          style={{ right: '90px' }}
-        >
-          {tenant.id === "demo" ? (
+        {/* Center: Title - only show for demo tenant */}
+        {tenant.id === "demo" && (
+          <div 
+            className="absolute left-0 flex justify-center pointer-events-none"
+            style={{ right: '90px' }}
+          >
             <div className="flex flex-col items-start pointer-events-auto" style={{ marginLeft: '50px' }}>
               <div 
                 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
@@ -88,21 +88,8 @@ export function Navbar() {
                 White-Label Websites for Painting Contractors
               </div>
             </div>
-          ) : (
-            <div 
-              className="whitespace-nowrap px-1 pointer-events-auto text-lg md:text-2xl lg:text-3xl xl:text-4xl bg-clip-text text-transparent"
-              style={{ 
-                fontFamily: 'Orbitron, Rajdhani, sans-serif', 
-                fontWeight: 500, 
-                letterSpacing: '0.08em',
-                backgroundImage: 'linear-gradient(to right, #8B7355, #6B8E4E, #8B7355)'
-              }}
-              data-testid="text-header-title"
-            >
-              {tenant.name}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
