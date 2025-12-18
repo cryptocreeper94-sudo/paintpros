@@ -68,8 +68,9 @@ function hexToHSL(hex: string): { h: number; s: number; l: number } {
 function getColorHueFamily(color: PaintColor): string {
   const { h, s, l } = hexToHSL(color.hexValue);
   
-  // Colors with very low saturation or very high/low lightness are neutrals
-  if (s < 15 || l > 90 || l < 10) {
+  // Only truly achromatic colors are neutrals (very low saturation AND mid-range lightness)
+  // Be more permissive - even slightly tinted colors should go to their hue family
+  if (s < 8 || l > 95 || l < 5) {
     return "neutral";
   }
   
