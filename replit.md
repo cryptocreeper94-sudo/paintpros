@@ -15,7 +15,7 @@ The platform is multi-tenant, configured via `client/src/config/tenant.ts`. Each
 
 ### UI/UX and Design System
 The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, tight spacing, and mobile-first responsiveness.
-- **Themes:** Light and Dark Mode, with Dark Mode featuring a desaturated Army Green base and Gold highlights.
+- **Themes:** Light mode only (dark mode removed per client preference for better text visibility).
 - **Effects:** Glassmorphism, glow effects, and 3D hover animations.
 - **Components:** Custom components include `GlassCard`, `FlipButton`, auto-scroll marquees, and Embla-based carousels. Radix-based accordions are used for collapsible content.
 - **Mobile Pattern:** Carousels are used for horizontal scrolling on mobile, often containing `GlassCard` and `Accordion`.
@@ -48,6 +48,8 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **System Health Monitoring:** Real-time health dashboard visible on Admin (4444), Owner (1111), and Developer (0424) dashboards. Monitors database, payments (Stripe), email (Resend), blockchain (Solana), and AI (OpenAI) services with color-coded status indicators and expandable details.
 - **SEO Management System:** Comprehensive SEO tracking and editing for Admin, Owner, and Developer dashboards. Features include per-page meta tag management (title, description, keywords, robots), Open Graph tags (title, description, image, type, site name, locale), Twitter Card tags (card type, title, description, image, site handle), structured data (JSON-LD schemas), canonical URLs, and SEO scoring with audit history. Components: `SeoManager` for meta tag injection, `SeoTracker` for dashboard display. Database tables: `seoPages`, `seoAudits`. All routes enforce tenant isolation for multi-tenant security.
 - **Color Library System:** Curated professional paint color database featuring Sherwin-Williams and Benjamin Moore colors. Features include an **interactive color wheel** for browsing by hue family (Neutrals, Reds, Oranges, Yellows, Greens, Blues, Purples, Pinks), HSL-based color classification, flip cards with color details (LRV, undertone, coordinating colors), search functionality, and integration with the estimate flow. Colors with low saturation or extreme lightness are automatically classified as Neutrals. Database tables: `paintColors` (brand, productLine, colorCode, colorName, hexValue, category, undertone, lrv, coordinatingColors, trimColors, roomTypes), `customerColorSelections` (for saving customer color choices per estimate). Key component: `client/src/pages/color-library.tsx`.
+- **AI Color Visualizer:** Canvas-based tool allowing customers to upload wall photos and preview paint colors with adjustable intensity (10-90%). Uses OpenAI Vision API (`gpt-4o`) to provide contextual design insights about color choices including lighting recommendations, mood assessment, and coordination suggestions. Accessible from the Color Library page via CTA button or from individual color cards. Key component: `client/src/components/color-visualizer.tsx`. API endpoint: `/api/color-visualize`.
+- **Room Scanner (Square Footage Estimator):** Camera-based tool for estimating room dimensions. Currently marked "Coming Soon" with locked state. Designed to help customers estimate square footage for accurate painting quotes. Key component: `client/src/components/room-scanner.tsx`.
 - **Painting Glossary:** Comprehensive A-Z glossary of 120+ painting and interior trim terms. Features include search functionality, category filtering (Painting, Trim & Moulding, Finishes, Techniques), alphabetical navigation, and glass card design. Accessible via `/glossary` route and linked from Resources page. Key component: `client/src/pages/glossary.tsx`.
 - **Layout Switcher (Developer):** Developer dashboard includes a Layout Switcher card allowing quick toggle between Bento grid and minimalist homepage layouts for client demos. Preference stored in localStorage as `dev_layout_override`.
 
@@ -80,3 +82,14 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **Radix UI:** For accessible UI components.
 - **Drizzle:** For database schema definition.
 - **Custom Auth:** Email/password authentication with bcrypt hashing and session management.
+
+## Changelog
+
+### December 2025
+- **AI Color Visualizer**: Added canvas-based color preview tool with OpenAI Vision analysis for wall photos
+- **Room Scanner**: Added placeholder for upcoming square footage estimation feature
+- **Homepage Updates**: Updated hero tagline to highlight AI tools ("AI Room Visualizer · Square Footage Scanner · Instant Estimates")
+- **Navigation**: Added Home link as first item in hamburger menu
+- **UI Fixes**: Removed header border line, fixed menu scroll containment
+- **Footer**: Removed Investors link from NPP tenant footer (demo-only feature)
+- **Theme**: Removed dark mode completely per client preference for better readability
