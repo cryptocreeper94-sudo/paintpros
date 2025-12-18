@@ -208,10 +208,10 @@ function ColorFlipCard({ color, onSelect }: { color: PaintColor; onSelect?: (col
               </Badge>
             </div>
           </div>
-          <GlassCard className="h-2/5 rounded-t-none rounded-b-xl p-4" glow="accent">
-            <h3 className="font-bold text-lg truncate">{color.colorName}</h3>
+          <GlassCard className="h-2/5 rounded-t-none rounded-b-xl p-3" glow="accent">
+            <h3 className="font-bold text-base leading-tight">{color.colorName}</h3>
             <p className="text-sm text-muted-foreground">{color.colorCode}</p>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
               <Badge variant="outline" className="text-xs">
                 LRV: {color.lrv}
               </Badge>
@@ -221,7 +221,7 @@ function ColorFlipCard({ color, onSelect }: { color: PaintColor; onSelect?: (col
                 </Badge>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-1">
               Tap for details
             </p>
           </GlassCard>
