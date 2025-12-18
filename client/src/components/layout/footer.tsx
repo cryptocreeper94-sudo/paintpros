@@ -64,6 +64,23 @@ export function Footer() {
             )}
           </div>
           
+          {/* Solana Blockchain Verified Badge */}
+          <a
+            href="https://solscan.io/tx/4uEWYGVxqUwjrqnt3EVZjdprKarprrxJEFieKqJSLo8neMPU8UhhXJBjgwsrmAdr3gcAbcYfkXwTG4zBqn1JCx6X"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 transition-all hover:scale-110 group"
+            data-testid="link-solana-verified"
+            title="America's First Blockchain-Verified Painter"
+          >
+            <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-gradient-to-br from-purple-500 to-teal-400 flex items-center justify-center">
+              <Shield className="w-2 h-2 md:w-2.5 md:h-2.5 text-white" />
+            </div>
+            <span className="hidden lg:inline text-[8px] md:text-[9px] text-purple-400/90 group-hover:text-purple-300">
+              Blockchain Verified
+            </span>
+          </a>
+          
           {/* Hallmark Badge */}
           <button
             onClick={() => setShowModal(true)}

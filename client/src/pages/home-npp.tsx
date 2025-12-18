@@ -39,6 +39,7 @@ import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg
 import crewImage from "@assets/generated_images/professional_painting_crew_at_work.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
+import paintersImage from "@assets/generated_images/two_painters_ladder_and_ground.png";
 
 interface PaintColor {
   id: number;
@@ -68,6 +69,14 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+          {/* Painters image - positioned to look like they're painting the title */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <img 
+              src={paintersImage} 
+              alt="Professional painters at work" 
+              className="w-full max-w-5xl h-auto object-contain opacity-90"
+            />
+          </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -127,36 +136,38 @@ export default function HomeNPP() {
                 </motion.div>
               </Link>
 
-              {/* Solana Verification Card */}
-              <a href="https://solscan.io/tx/4uEWYGVxqUwjrqnt3EVZjdprKarprrxJEFieKqJSLo8neMPU8UhhXJBjgwsrmAdr3gcAbcYfkXwTG4zBqn1JCx6X" target="_blank" rel="noopener noreferrer">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-teal-900 p-5 md:p-8 flex flex-col justify-between cursor-pointer"
-                  data-testid="card-solana-verification"
-                >
-                  <img src={solanaLogo} alt="" className="absolute right-4 top-4 w-16 h-16 md:w-24 md:h-24 opacity-30" />
-                  <div>
-                    <div className="flex items-center gap-2 mb-3 md:mb-4">
-                      <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-purple-500 to-teal-400">
-                        <BadgeCheck className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                      </div>
-                      <Badge className="bg-gradient-to-r from-purple-500 to-teal-400 text-white border-0 text-xs md:text-sm">
-                        Industry First
-                      </Badge>
+              {/* Award Description Card */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-yellow-100 p-5 md:p-8 flex flex-col justify-between border border-amber-200"
+                data-testid="card-award-description"
+              >
+                <div className="absolute right-4 top-4 w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
+                  <Award className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-600">
+                      <Star className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
-                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                      America's First Blockchain-Verified Painter
-                    </h3>
-                    <p className="text-sm md:text-base text-gray-300">
-                      The only painting company with Solana blockchain verification. Every estimate, contract, and invoice is immutably stamped for complete transparency and anti-fraud protection.
-                    </p>
+                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white border-0 text-xs md:text-sm">
+                      2025 Winner
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-2 text-teal-400 mt-4">
-                    <span className="text-xs md:text-sm font-medium">See our verified documents</span>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                    Best Painter in Nashville
+                  </h3>
+                  <p className="text-sm md:text-base text-gray-700">
+                    Recognized for excellence in craftsmanship, customer service, and professional standards. Voted by Nashville homeowners as the most trusted painting company in Middle Tennessee.
+                  </p>
+                </div>
+                <Link href="/awards">
+                  <div className="flex items-center gap-2 text-amber-700 mt-4 cursor-pointer hover:text-amber-800 transition-colors">
+                    <span className="text-xs md:text-sm font-medium">Learn more about our recognition</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
-                </motion.div>
-              </a>
+                </Link>
+              </motion.div>
             </div>
           </div>
         </section>
