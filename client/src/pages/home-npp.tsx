@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -54,6 +54,17 @@ interface PaintColor {
 
 export default function HomeNPP() {
   const tenant = useTenant();
+  const [showSidMessage, setShowSidMessage] = useState(false);
+
+  // Show message for Sid
+  useEffect(() => {
+    const timer1 = setTimeout(() => setShowSidMessage(true), 1500);
+    const timer2 = setTimeout(() => setShowSidMessage(false), 4000);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
 
   // Fetch colors for preview
   const { data: colors = [] } = useQuery<PaintColor[]>({
@@ -65,6 +76,19 @@ export default function HomeNPP() {
 
   return (
     <PageLayout>
+      {/* Fun message for Sid */}
+      {showSidMessage && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: -50 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: -50 }}
+          className="fixed top-1/3 left-1/2 -translate-x-1/2 z-[9999] bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-6 rounded-2xl shadow-2xl text-center"
+        >
+          <p className="text-2xl font-bold">Hey Sid!</p>
+          <p className="text-xl mt-2">Fuck you Sid</p>
+          <p className="text-sm mt-2 opacity-75">with love</p>
+        </motion.div>
+      )}
       <main className="min-h-screen">
         
         {/* HERO SECTION */}
@@ -96,7 +120,7 @@ export default function HomeNPP() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 sm:ml-20"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 sm:ml-40"
             >
               <Link href="/estimate">
                 <Button size="sm" className="text-sm px-6 gap-2" data-testid="button-hero-estimate">
