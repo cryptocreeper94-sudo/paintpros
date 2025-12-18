@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Home, Calculator, Calendar, Users, Bell, Gift, BarChart3, FileText, MessageSquare, Lock, Settings, Shield, Star, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Calculator, Calendar, Users, Bell, Gift, BarChart3, FileText, MessageSquare, Lock, Settings, Shield, Star, CheckCircle2, Palette, Camera, Sparkles, Eye, BookOpen } from "lucide-react";
 import { GlassCard } from "./glass-card";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -15,6 +15,8 @@ import happyFamily from "@assets/generated_images/happy_family_with_painted_home
 import bookingCalendar from "@assets/generated_images/appointment_booking_calendar.png";
 import businessDashboard from "@assets/generated_images/business_management_dashboard.png";
 import paintingCrew from "@assets/generated_images/professional_painting_crew_at_work.png";
+import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg.png";
+import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 
 interface HelpSlide {
   id: string;
@@ -63,6 +65,33 @@ export function HeroSlideshow() {
       linkText: "Learn More"
     },
     {
+      id: "visualizer",
+      title: "AI Color Visualizer",
+      description: "Upload a photo of your room and preview paint colors with AI-powered design insights.",
+      image: interiorImage,
+      icon: Sparkles,
+      link: "/color-library",
+      linkText: "Try Visualizer"
+    },
+    {
+      id: "color-library",
+      title: "Explore Our Color Library",
+      description: "Browse curated colors from Sherwin-Williams and Benjamin Moore organized by hue family.",
+      image: colorWheelImage,
+      icon: Palette,
+      link: "/color-library",
+      linkText: "Browse Colors"
+    },
+    {
+      id: "room-scanner",
+      title: "Room Scanner",
+      description: "Use your camera to estimate room dimensions and get accurate square footage for your quote.",
+      image: interiorImage,
+      icon: Camera,
+      link: "/color-library",
+      linkText: "Coming Soon"
+    },
+    {
       id: "estimate",
       title: "Get an Instant Estimate",
       description: "Use our smart estimator to get an accurate quote in seconds.",
@@ -79,6 +108,15 @@ export function HeroSlideshow() {
       icon: Calendar,
       link: "/estimate",
       linkText: "Book Now"
+    },
+    {
+      id: "glossary",
+      title: "Painting Glossary",
+      description: "Learn 120+ professional painting terms from A to Z with our comprehensive glossary.",
+      image: paintBrush,
+      icon: BookOpen,
+      link: "/glossary",
+      linkText: "View Glossary"
     },
     {
       id: "account",

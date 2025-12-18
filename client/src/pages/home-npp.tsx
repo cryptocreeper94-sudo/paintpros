@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
+import { HeroSlideshow } from "@/components/ui/hero-slideshow";
 
 // Import images
 import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
@@ -117,8 +118,27 @@ export default function HomeNPP() {
           </div>
         </section>
 
+        {/* HELP SLIDESHOW - See How It Works */}
+        <section id="see-how" className="py-12 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-gray-900 text-center mb-8">
+                How We Can Help You
+              </h2>
+              <div className="h-[400px] md:h-[450px]">
+                <HeroSlideshow />
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* TRUST & AWARDS SECTION */}
-        <section className="py-16 px-4 bg-white dark:bg-gray-900">
+        <section className="py-16 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8">
               {/* Award Card */}
@@ -173,7 +193,7 @@ export default function HomeNPP() {
         </section>
 
         {/* SEE HOW SECTION - Our Approach */}
-        <section id="see-how" className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
+        <section className="py-20 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
