@@ -69,12 +69,16 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
-          {/* Paint roller effect - green paint strokes on background */}
-          <div className="absolute left-0 top-0 bottom-0 w-1/3 hidden md:block">
+          {/* Paint roller effect - solid paint mark as if just rolled */}
+          <div className="absolute left-8 top-12 hidden md:block pointer-events-none">
             <div 
-              className="absolute inset-0 opacity-25"
+              className="rounded-full blur-3xl"
               style={{
-                background: 'linear-gradient(to right, #5C6B4A 0%, #5C6B4A 60%, transparent 100%)',
+                width: '500px',
+                height: '400px',
+                backgroundColor: '#5C6B4A',
+                opacity: 0.15,
+                filter: 'blur(80px)',
               }}
             />
           </div>
@@ -84,7 +88,7 @@ export default function HomeNPP() {
             <img 
               src={painterCutout} 
               alt="" 
-              className="h-[70vh] w-auto object-contain object-bottom opacity-90"
+              className="h-[70vh] w-auto object-contain object-bottom opacity-90 relative z-10"
               style={{ transform: 'scaleX(-1)' }}
             />
           </div>
