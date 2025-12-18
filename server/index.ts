@@ -21,6 +21,23 @@ const httpServer = createServer(app);
 let autoDeployProcessed = false;
 
 /**
+ * Ensure paint colors are seeded in the database
+ * This runs on every server start to guarantee colors are available
+ */
+async function ensurePaintColors(): Promise<void> {
+  try {
+    const colors = await storage.getPaintColors({ limit: 1 });
+    if (colors.length === 0) {
+      console.log("[seed] No paint colors found, seeding database...");
+      const count = await storage.seedPaintColors();
+      console.log(`[seed] Seeded ${count} paint colors successfully`);
+    }
+  } catch (error) {
+    console.error("[seed] Error ensuring paint colors:", error);
+  }
+}
+
+/**
  * Ensure default crew leads exist for all registered tenants
  * This runs on every server start to guarantee PIN 3333 always works
  */
@@ -277,6 +294,9 @@ app.use((req, res, next) => {
       
       // Ensure default crew leads exist for all tenants
       await ensureDefaultCrewLeads();
+      
+      // Ensure paint colors are seeded
+      await ensurePaintColors();
       
       // Run automatic version bump on production deployment
       // This happens after server is ready to ensure database connection is established
