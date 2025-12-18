@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, ChevronRight, Sun, Moon, ArrowLeft, Home, Menu, LogIn, User, LogOut } from "lucide-react";
+import { X, PaintRoller, ChevronRight, Sun, Moon, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -22,6 +22,9 @@ export function Navbar() {
     { name: "Pricing", href: "/pricing" },
     { name: "About", href: "/about" },
     { name: "Reviews", href: "/reviews", enabled: tenant.features.reviews },
+    { name: "Awards", href: "/awards", icon: Award },
+    { name: "Color Library", href: "/colors", icon: Palette },
+    { name: "Resources", href: "/resources", icon: BookOpen },
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
     { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator },
   ].filter(link => link.enabled !== false);
