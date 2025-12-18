@@ -97,27 +97,50 @@ export function Navbar() {
       </div>
     </header>
 
-      {/* Mobile Navigation - Fixed below header */}
+      {/* Navigation Controls - Back and Close buttons on all pages except home */}
       {location !== "/" && (
-        <div className="fixed top-12 left-2 z-40 md:hidden flex items-center gap-1">
-          <button 
-            onClick={() => window.history.back()}
-            className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
-            aria-label="Go back"
-            data-testid="button-back-mobile"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
-          </button>
-          <Link href="/">
+        <>
+          {/* Mobile - below header */}
+          <div className="fixed top-12 left-2 z-40 md:hidden flex items-center gap-1">
             <button 
+              onClick={() => window.history.back()}
               className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
-              aria-label="Go home"
-              data-testid="button-home-mobile"
+              aria-label="Go back"
+              data-testid="button-back-mobile"
             >
-              <Home className="w-5 h-5 text-gray-700" />
+              <ArrowLeft className="w-5 h-5 text-gray-700" />
             </button>
-          </Link>
-        </div>
+            <Link href="/">
+              <button 
+                className="p-2.5 bg-white backdrop-blur-sm border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+                aria-label="Go home"
+                data-testid="button-home-mobile"
+              >
+                <X className="w-5 h-5 text-gray-700" />
+              </button>
+            </Link>
+          </div>
+          {/* Desktop - top right corner */}
+          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
+            <button 
+              onClick={() => window.history.back()}
+              className="p-2.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-md hover:bg-gray-100 transition-all"
+              aria-label="Go back"
+              data-testid="button-back-desktop"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <Link href="/">
+              <button 
+                className="p-2.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-md hover:bg-gray-100 transition-all"
+                aria-label="Close and go home"
+                data-testid="button-close-desktop"
+              >
+                <X className="w-5 h-5 text-gray-700" />
+              </button>
+            </Link>
+          </div>
+        </>
       )}
 
       {/* Sidebar Menu */}
