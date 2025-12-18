@@ -69,6 +69,16 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+          {/* Paint roller effect - green paint strokes on background */}
+          <div className="absolute left-0 top-0 bottom-0 w-1/3 hidden md:block">
+            <div 
+              className="absolute inset-0 opacity-25"
+              style={{
+                background: 'linear-gradient(to right, #5C6B4A 0%, #5C6B4A 60%, transparent 100%)',
+              }}
+            />
+          </div>
+          
           {/* Painter cutout - positioned on left side, mirrored, as if painting the screen */}
           <div className="absolute left-0 bottom-0 md:left-10 lg:left-20 hidden md:block">
             <img 
@@ -77,20 +87,6 @@ export default function HomeNPP() {
               className="h-[70vh] w-auto object-contain object-bottom opacity-90"
               style={{ transform: 'scaleX(-1)' }}
             />
-          </div>
-          
-          {/* Paint swatch - positioned near the painter */}
-          <div className="absolute left-12 bottom-20 hidden md:block">
-            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-32">
-              <div 
-                className="w-full h-24 rounded-md border-4 border-gray-300 mb-3"
-                style={{ backgroundColor: '#5C6B4A' }}
-              />
-              <div className="text-center">
-                <p className="text-xs font-semibold text-gray-700">Featured Color</p>
-                <p className="text-xs text-gray-500 mt-1">#5C6B4A</p>
-              </div>
-            </div>
           </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
             <motion.div
