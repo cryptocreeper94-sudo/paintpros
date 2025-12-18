@@ -111,7 +111,7 @@ export default function HomeNPP() {
               </a>
             </motion.div>
 
-            <p className="text-sm text-gray-900 font-medium bg-white/50 px-4 py-2 rounded-full inline-block">
+            <p className="text-sm text-gray-900 font-medium bg-white/30 px-4 py-2 rounded-full inline-block">
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </p>
           </div>
