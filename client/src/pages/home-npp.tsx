@@ -70,7 +70,7 @@ export default function HomeNPP() {
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
           {/* Painters image - positioned to look like they're painting the title */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingTop: '420px' }}>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingTop: '500px' }}>
             <img 
               src={paintersImage} 
               alt="Professional painters at work" 
