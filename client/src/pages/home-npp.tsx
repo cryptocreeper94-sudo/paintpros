@@ -37,9 +37,8 @@ import exteriorImage from "@assets/generated_images/exterior_painting.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg.png";
 import crewImage from "@assets/generated_images/professional_painting_crew_at_work.png";
-import painterCutout from "@assets/generated_images/painter_on_white_background.png";
+import painterCutout from "@assets/generated_images/photorealistic_painter_with_teal_paint_stroke.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
-import paintStrokeBg from "@assets/generated_images/organic_paint_roller_wash_mark.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
 
 interface PaintColor {
@@ -70,22 +69,12 @@ export default function HomeNPP() {
         
         {/* HERO SECTION */}
         <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
-          {/* Paint stroke effect - organic paint mark behind the text */}
-          <div className="absolute left-1/3 top-1/4 w-full h-full hidden md:flex items-center justify-center pointer-events-none -z-0">
-            <img 
-              src={paintStrokeBg}
-              alt=""
-              className="w-3/4 h-auto object-contain opacity-70"
-            />
-          </div>
-          
-          {/* Painter cutout - positioned on left side, mirrored, as if painting the screen */}
+          {/* Painter with paint stroke effect - positioned on left side */}
           <div className="absolute left-0 bottom-0 md:left-10 lg:left-20 hidden md:block z-10">
             <img 
               src={painterCutout} 
               alt="" 
               className="h-[70vh] w-auto object-contain object-bottom opacity-90"
-              style={{ transform: 'scaleX(-1)' }}
             />
           </div>
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
