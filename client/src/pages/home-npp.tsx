@@ -131,7 +131,7 @@ export default function HomeNPP() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative z-10 mt-8 w-full md:hidden"
+            className="relative z-10 -mt-[200px] w-full md:hidden"
           >
             <img
               src={paintersImage}
