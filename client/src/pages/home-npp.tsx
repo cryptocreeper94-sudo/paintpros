@@ -153,14 +153,14 @@ export default function HomeNPP() {
                     </Badge>
                   </div>
                   <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                    Solana Blockchain Verified
+                    America's First Blockchain-Verified Painter
                   </h3>
                   <p className="text-sm md:text-base text-gray-300">
-                    Every document immutably stamped for anti-fraud protection
+                    The only painting company with Solana blockchain verification. Every estimate, contract, and invoice is immutably stamped for complete transparency and anti-fraud protection.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-teal-400 mt-4">
-                  <span className="text-xs md:text-sm font-medium">Learn how we protect you</span>
+                  <span className="text-xs md:text-sm font-medium">See our verified documents</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </motion.div>
