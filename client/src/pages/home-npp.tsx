@@ -137,7 +137,7 @@ export default function HomeNPP() {
               </Link>
 
               {/* Solana Verification Card */}
-              <Link href="/verify/NPP-20251217-3C66C8">
+              <a href="https://solscan.io/tx/4uEWYGVxqUwjrqnt3EVZjdprKarprrxJEFieKqJSLo8neMPU8UhhXJBjgwsrmAdr3gcAbcYfkXwTG4zBqn1JCx6X" target="_blank" rel="noopener noreferrer">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="relative min-h-[280px] md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-teal-900 p-5 md:p-8 flex flex-col justify-between cursor-pointer"
@@ -165,7 +165,7 @@ export default function HomeNPP() {
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </motion.div>
-              </Link>
+              </a>
             </div>
           </div>
         </section>

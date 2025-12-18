@@ -149,7 +149,8 @@ export function formatDate(date: Date | string): string {
   });
 }
 
-export function truncateHash(hash: string, length: number = 8): string {
+export function truncateHash(hash: string | undefined | null, length: number = 8): string {
+  if (!hash) return '';
   if (hash.length <= length * 2) return hash;
   return `${hash.slice(0, length)}...${hash.slice(-length)}`;
 }
