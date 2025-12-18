@@ -27,62 +27,155 @@ import {
 } from "lucide-react";
 import type { PaintColor } from "@shared/schema";
 
-const categories = [
-  { id: "all", name: "All", color: "#6B7280" },
-  { id: "white", name: "Whites", color: "#F5F5F5" },
-  { id: "neutral", name: "Neutrals", color: "#D3D3D3" },
-  { id: "warm", name: "Warm", color: "#E8B89A" },
-  { id: "cool", name: "Cool", color: "#A8DADC" },
-  { id: "accent", name: "Accents", color: "#5C6B4A" },
+// Hue ranges for color families (0-360 degrees)
+const hueRanges = [
+  { id: "red", name: "Reds", minHue: 350, maxHue: 10, color: "#EF4444" },
+  { id: "orange", name: "Oranges", minHue: 10, maxHue: 40, color: "#FB923C" },
+  { id: "yellow", name: "Yellows", minHue: 40, maxHue: 60, color: "#FBBF24" },
+  { id: "green", name: "Greens", minHue: 80, maxHue: 160, color: "#22C55E" },
+  { id: "cyan", name: "Cyans", minHue: 160, maxHue: 200, color: "#06B6D4" },
+  { id: "blue", name: "Blues", minHue: 200, maxHue: 260, color: "#3B82F6" },
+  { id: "purple", name: "Purples", minHue: 260, maxHue: 290, color: "#A855F7" },
+  { id: "pink", name: "Pinks", minHue: 290, maxHue: 350, color: "#EC4899" },
 ];
 
-function ColorCategoryCards({ 
-  selectedCategory, 
-  onSelectCategory,
+function hexToHue(hex: string): number {
+  const r = parseInt(hex.substr(1, 2), 16) / 255;
+  const g = parseInt(hex.substr(3, 2), 16) / 255;
+  const b = parseInt(hex.substr(5, 2), 16) / 255;
+  
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const c = max - min;
+  
+  let hue = 0;
+  if (c === 0) return 0;
+  if (max === r) hue = (g - b) / c % 6;
+  else if (max === g) hue = (b - r) / c + 2;
+  else hue = (r - g) / c + 4;
+  
+  hue = Math.round(hue * 60);
+  if (hue < 0) hue += 360;
+  
+  return hue;
+}
+
+function getColorHueFamily(color: PaintColor): string | null {
+  const hue = hexToHue(color.hexValue);
+  const family = hueRanges.find(range => {
+    if (range.minHue <= range.maxHue) {
+      return hue >= range.minHue && hue <= range.maxHue;
+    } else {
+      return hue >= range.minHue || hue <= range.maxHue;
+    }
+  });
+  return family?.id || null;
+}
+
+function InteractiveColorWheel({ 
+  selectedHue, 
+  onSelectHue,
   allColors
 }: { 
-  selectedCategory: string; 
-  onSelectCategory: (id: string) => void;
+  selectedHue: string | null; 
+  onSelectHue: (id: string | null) => void;
   allColors: PaintColor[];
 }) {
+  const radius = 140;
+  
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      {categories.map((cat) => {
-        const categoryColors = cat.id === "all" 
-          ? allColors 
-          : allColors.filter(c => c.category === cat.id);
-        const isSelected = selectedCategory === cat.id;
-        
-        return (
-          <motion.div
-            key={cat.id}
-            onClick={() => onSelectCategory(cat.id)}
-            className="cursor-pointer group"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.95 }}
+    <div className="flex flex-col items-center">
+      <div className="relative w-96 h-96">
+        {/* Center reset button */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+        >
+          <button
+            onClick={() => onSelectHue(null)}
+            className={`w-28 h-28 rounded-full transition-all ${
+              selectedHue === null
+                ? "bg-gradient-to-br from-accent/30 to-accent/10 ring-2 ring-accent shadow-lg"
+                : "bg-gradient-to-br from-muted/20 to-muted/10"
+            }`}
           >
-            <GlassCard 
-              className={`h-32 p-0 overflow-hidden transition-all ${isSelected ? "ring-2 ring-accent" : ""}`}
-              glow={isSelected ? "accent" : undefined}
-            >
-              {/* Color grid display */}
-              <div className="w-full h-full flex flex-wrap overflow-hidden">
-                {categoryColors.slice(0, 4).map((color, idx) => (
-                  <div
-                    key={idx}
-                    className="w-1/2 h-1/2 transition-transform group-hover:scale-110"
-                    style={{ backgroundColor: color.hexValue }}
-                  />
-                ))}
-              </div>
-            </GlassCard>
-            <div className="mt-2 text-center">
-              <p className="text-sm font-semibold text-foreground">{cat.name}</p>
-              <p className="text-xs text-muted-foreground">{categoryColors.length} colors</p>
+            <div className="flex flex-col items-center justify-center h-full">
+              <Palette className="w-8 h-8 text-accent mb-1" />
+              <p className="text-xs font-semibold">All Colors</p>
             </div>
-          </motion.div>
-        );
-      })}
+          </button>
+        </motion.div>
+
+        {/* Color wheel */}
+        <svg viewBox="0 0 400 400" className="w-full h-full">
+          {hueRanges.map((hueRange, index) => {
+            const angle = (index * 360) / hueRanges.length;
+            const radian = (angle * Math.PI) / 180;
+            const x = 200 + radius * Math.cos(radian);
+            const y = 200 + radius * Math.sin(radian);
+            const isSelected = selectedHue === hueRange.id;
+            const count = allColors.filter(c => getColorHueFamily(c) === hueRange.id).length;
+            
+            return (
+              <g key={hueRange.id}>
+                {/* Connecting line */}
+                <line
+                  x1="200"
+                  y1="200"
+                  x2={x}
+                  y2={y}
+                  stroke={isSelected ? hueRange.color : "#E5E7EB"}
+                  strokeWidth={isSelected ? 4 : 1}
+                  opacity={isSelected ? 1 : 0.2}
+                />
+                {/* Circle button */}
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={isSelected ? 32 : 28}
+                  fill={hueRange.color}
+                  stroke="white"
+                  strokeWidth={isSelected ? 4 : 2}
+                  style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                  onClick={() => onSelectHue(hueRange.id)}
+                  opacity={count > 0 ? 1 : 0.5}
+                />
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      {/* Hue labels */}
+      <div className="grid grid-cols-4 gap-4 mt-12 w-full max-w-2xl">
+        {hueRanges.map((hueRange) => {
+          const count = allColors.filter(c => getColorHueFamily(c) === hueRange.id).length;
+          const isSelected = selectedHue === hueRange.id;
+          
+          return (
+            <motion.button
+              key={hueRange.id}
+              onClick={() => onSelectHue(hueRange.id)}
+              className={`text-center p-3 rounded-lg transition-all ${
+                isSelected 
+                  ? "bg-accent/10 ring-2 ring-accent" 
+                  : "bg-muted/5 hover:bg-muted/10"
+              } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+              whileHover={count > 0 ? { scale: 1.05 } : {}}
+              whileTap={count > 0 ? { scale: 0.95 } : {}}
+              disabled={count === 0}
+            >
+              <div 
+                className="w-full h-12 rounded mb-2 transition-transform"
+                style={{ backgroundColor: hueRange.color }}
+              />
+              <p className="text-sm font-semibold text-foreground">{hueRange.name}</p>
+              <p className="text-xs text-muted-foreground">{count} colors</p>
+            </motion.button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -369,26 +462,30 @@ function BrandAccordion({
 }
 
 export default function ColorLibrary() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedHue, setSelectedHue] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState<PaintColor | null>(null);
 
-  const buildQueryUrl = () => {
-    const params = new URLSearchParams();
-    if (selectedCategory !== "all") params.set("category", selectedCategory);
-    if (searchQuery) params.set("search", searchQuery);
-    const queryString = params.toString();
-    return `/api/paint-colors${queryString ? `?${queryString}` : ""}`;
-  };
-
-  const { data: colors = [], isLoading } = useQuery<PaintColor[]>({
-    queryKey: ["/api/paint-colors", selectedCategory, searchQuery],
+  const { data: allColors = [], isLoading } = useQuery<PaintColor[]>({
+    queryKey: ["/api/paint-colors"],
     queryFn: async () => {
-      const response = await fetch(buildQueryUrl());
+      const response = await fetch("/api/paint-colors");
       if (!response.ok) throw new Error("Failed to fetch colors");
       return response.json();
     },
   });
+
+  // Filter colors by selected hue and search
+  let colors = allColors;
+  if (selectedHue) {
+    colors = colors.filter(c => getColorHueFamily(c) === selectedHue);
+  }
+  if (searchQuery) {
+    colors = colors.filter(c => 
+      c.colorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.colorCode.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
 
   const handleSelectColor = (color: PaintColor) => {
     setSelectedColor(color);
