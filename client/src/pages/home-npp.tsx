@@ -69,20 +69,20 @@ export default function HomeNPP() {
       <main className="min-h-screen">
         
         {/* HERO SECTION - Mobile-First Centered Layout */}
-        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col justify-center px-4 py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
-          {/* Painters image - hidden on mobile, visible on desktop */}
-          <div className="hidden md:block absolute inset-0 pointer-events-none">
-            <div className="absolute bottom-0 right-0 w-[60%] h-[80%]">
-              <img 
-                src={paintersImage} 
-                alt="Professional painters at work" 
-                className="w-full h-full object-contain object-bottom opacity-90"
+        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white px-4 py-12 md:py-20">
+          {/* Desktop painters image */}
+          <div className="pointer-events-none absolute inset-0 hidden md:block">
+            <div className="absolute bottom-0 right-0 h-[80%] w-[60%]">
+              <img
+                src={paintersImage}
+                alt="Professional painters at work"
+                className="h-full w-full object-contain object-bottom opacity-90"
               />
             </div>
           </div>
-          
-          {/* Text Content - Centered on mobile */}
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6 md:space-y-8 md:ml-0 md:mr-auto md:text-left md:pl-8">
+
+          {/* Text Content - Centered on mobile, left-aligned on desktop */}
+          <div className="relative z-10 flex w-full max-w-4xl flex-col items-center space-y-6 text-center md:space-y-8 md:items-start md:text-left md:pl-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -96,12 +96,12 @@ export default function HomeNPP() {
                 Nashville's Most Trusted Painters
               </p>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 md:gap-4"
+              className="flex w-full flex-col items-center justify-center gap-3 md:w-auto md:flex-row md:justify-start md:gap-4"
             >
               <Link href="/estimate">
                 <Button size="default" className="text-sm px-6 gap-2 shadow-lg shadow-accent/30" data-testid="button-hero-estimate">
@@ -116,27 +116,27 @@ export default function HomeNPP() {
               </a>
             </motion.div>
 
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-xs md:text-sm text-gray-700 font-medium bg-gray-100 px-4 py-2 rounded-full inline-block"
+              className="mx-auto inline-block rounded-full bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
             >
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </motion.p>
           </div>
-          
-          {/* Mobile painters image - smaller, positioned at bottom */}
-          <motion.div 
+
+          {/* Mobile painters image - centered below content */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="md:hidden relative mt-6 px-4"
+            className="relative z-10 mt-8 w-full md:hidden"
           >
-            <img 
-              src={paintersImage} 
-              alt="Professional painters at work" 
-              className="w-full max-w-sm mx-auto h-auto object-contain"
+            <img
+              src={paintersImage}
+              alt="Professional painters at work"
+              className="mx-auto block w-full max-w-[280px] sm:max-w-sm object-contain"
             />
           </motion.div>
         </section>
