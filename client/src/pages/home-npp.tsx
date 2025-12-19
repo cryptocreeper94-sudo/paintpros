@@ -88,13 +88,13 @@ export default function HomeNPP() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
+              <p className="text-lg md:text-2xl text-[#800000] mb-4 md:mb-6 max-w-2xl mx-auto md:mx-0 whitespace-nowrap">
+                Nashville's Most Trusted Painters
+              </p>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight">
                 Painting Done
                 <span className="block text-accent">The Right Way</span>
               </h1>
-              <p className="text-lg md:text-2xl text-[#800000] mt-4 md:mt-6 max-w-2xl mx-auto md:mx-0 whitespace-nowrap">
-                Nashville's Most Trusted Painters
-              </p>
             </motion.div>
 
             <motion.div
