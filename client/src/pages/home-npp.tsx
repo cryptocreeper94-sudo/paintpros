@@ -136,7 +136,7 @@ export default function HomeNPP() {
             <img
               src={paintersImage}
               alt="Professional painters at work"
-              className="mx-auto block w-full max-w-full object-contain -translate-y-[85px] scale-[2.565]"
+              className="mx-auto block w-full max-w-full object-contain -translate-y-[65px] scale-[2.565]"
             />
           </motion.div>
         </section>
