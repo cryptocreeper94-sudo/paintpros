@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -6,7 +6,7 @@ import { LogoFlipCard } from "@/components/ui/logo-flip-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
 import { HeroSlideshow } from "@/components/ui/hero-slideshow";
-import { Award } from "lucide-react";
+import { Award, LayoutGrid, Rows, Eye } from "lucide-react";
 import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
 import portfolioImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, BadgeCheck } from "lucide-react";
@@ -45,7 +45,20 @@ export default function HomeDemo() {
   const [materialsModalOpen, setMaterialsModalOpen] = useState(false);
   const [ontimeModalOpen, setOntimeModalOpen] = useState(false);
   const [warrantyModalOpen, setWarrantyModalOpen] = useState(false);
-  
+  const [layoutPanelOpen, setLayoutPanelOpen] = useState(false);
+  const [currentLayout, setCurrentLayout] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('dev_layout_override');
+    setCurrentLayout(saved);
+  }, []);
+
+  const handleLayoutChange = (layout: 'bento' | 'minimalist') => {
+    localStorage.setItem('dev_layout_override', layout);
+    setCurrentLayout(layout);
+    window.location.reload();
+  };
+
   const testimonials = [
     {
       text: "Absolutely transformed our home. The team was punctual, polite, and the lines are razor sharp. Worth every penny.",
@@ -560,6 +573,64 @@ export default function HomeDemo() {
         currentUserRole="visitor"
         currentUserName="Visitor"
       />
+      
+      {/* Floating Layout Toggle for Demo - Visible to visitors */}
+      {isDemo && (
+        <div className="fixed bottom-14 left-4 z-40">
+          <AnimatePresence>
+            {layoutPanelOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                className="mb-2 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-gray-200 p-3 min-w-[200px]"
+              >
+                <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5" />
+                  Preview Layouts
+                </p>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => handleLayoutChange('bento')}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                      currentLayout === 'bento' || (!currentLayout && isDemo)
+                        ? 'bg-accent text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    data-testid="button-demo-layout-bento"
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                    Bento Grid
+                  </button>
+                  <button
+                    onClick={() => handleLayoutChange('minimalist')}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                      currentLayout === 'minimalist'
+                        ? 'bg-accent text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    data-testid="button-demo-layout-minimalist"
+                  >
+                    <Rows className="w-4 h-4" />
+                    Minimalist
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-500 mt-2 leading-tight">
+                  See how your site could look with different layouts
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <button
+            onClick={() => setLayoutPanelOpen(!layoutPanelOpen)}
+            className="flex items-center gap-2 px-3 py-2 bg-accent text-white rounded-full shadow-lg hover:bg-accent/90 transition-colors text-sm font-medium"
+            data-testid="button-layout-toggle"
+          >
+            <LayoutGrid className="w-4 h-4" />
+            <span className="hidden sm:inline">Layouts</span>
+          </button>
+        </div>
+      )}
     </PageLayout>
   );
 }

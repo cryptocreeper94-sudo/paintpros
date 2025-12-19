@@ -7,6 +7,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { TenantProvider } from "@/context/TenantContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AccessProvider } from "@/context/AccessContext";
+import { DemoProvider } from "@/context/DemoContext";
+import { DemoModeBanner } from "@/components/demo-mode-banner";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
@@ -97,15 +99,18 @@ function App() {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <TenantProvider>
-          <AccessProvider>
-            <TooltipProvider>
-              <ScrollToTop />
-              <AnalyticsTracker />
-              <Toaster />
-              <Router />
-              <PaintBuddy />
-            </TooltipProvider>
-          </AccessProvider>
+          <DemoProvider>
+            <AccessProvider>
+              <TooltipProvider>
+                <DemoModeBanner />
+                <ScrollToTop />
+                <AnalyticsTracker />
+                <Toaster />
+                <Router />
+                <PaintBuddy />
+              </TooltipProvider>
+            </AccessProvider>
+          </DemoProvider>
         </TenantProvider>
       </QueryClientProvider>
     </ThemeProvider>
