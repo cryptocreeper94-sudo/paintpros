@@ -53,7 +53,7 @@ export function Navbar() {
               src={nppLogo} 
               alt="Menu"
               className="h-[240px] md:h-56 lg:h-80 w-auto object-contain"
-              style={{ marginTop: '-40px', marginLeft: '-115px' }}
+              style={{ marginTop: '-40px', marginLeft: '-130px' }}
             />
           )}
         </button>
