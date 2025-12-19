@@ -287,29 +287,29 @@ export function HeroSlideshow() {
           className="h-full"
         >
           {currentSlide.isHero ? (
-            /* Hero slide - full background with text overlay */
-            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative">
+            /* Hero slide - light background with subtle texture */
+            <div className="p-4 pt-10 pb-6 md:p-12 md:pt-12 flex flex-col justify-center items-start h-full relative bg-gray-50">
               <div 
-                className="absolute inset-0 bg-center bg-cover z-0 opacity-40 mix-blend-overlay transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 bg-center bg-cover z-0 opacity-10 transition-transform duration-700 group-hover:scale-105"
                 style={{ backgroundImage: `url(${currentSlide.image})`, backgroundSize: '300%' }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-0" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/70 z-0" />
               
               <div className="relative z-10 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 dark:bg-accent/20 border border-accent/50 dark:border-accent/30 text-cyan-800 dark:text-white text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-accent/30 border border-accent/50 text-gray-700 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-2 md:mb-6 backdrop-blur-md shadow-sm">
                   <Star className="w-3 h-3 fill-accent text-accent" />
                   {ratingBadge}
                 </div>
-                <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-glow">
+                <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-gray-800">
                   {currentSlide.title} <br className="hidden md:block" />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344] dark:from-accent dark:to-[#8B7355]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344]">
                     {currentSlide.subtitle}
                   </span>
                 </h1>
-                <p className="text-[11px] md:text-xl text-cyan-700 dark:text-cyan-700 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed drop-shadow-lg">
+                <p className="text-[11px] md:text-xl text-gray-600 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed">
                   {currentSlide.description}
                 </p>
-                <p className="text-[10px] md:text-sm text-muted-foreground italic">
+                <p className="text-[10px] md:text-sm text-gray-500 italic">
                   Swipe to see how we can help you
                 </p>
               </div>
@@ -399,7 +399,7 @@ export function HeroSlideshow() {
       {mode === "customer" && currentSlide.isHero && (
         <a 
           href="/estimate" 
-          className="absolute bottom-12 md:bottom-14 right-1 md:right-1.5 z-20"
+          className="absolute bottom-[73px] md:bottom-[81px] right-1 md:right-1.5 z-20"
           data-testid="link-hero-free-estimate"
         >
           <Button size="sm" className="shadow-lg gap-1 text-[10px] px-2 py-1 h-6">
