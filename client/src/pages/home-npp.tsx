@@ -120,7 +120,7 @@ export default function HomeNPP() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mx-auto inline-block rounded-full bg-gray-100/20 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
+              className="mx-auto inline-block rounded-full bg-gray-100/35 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
             >
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </motion.p>
