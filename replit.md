@@ -86,6 +86,8 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 ## Changelog
 
 ### December 2025 (Latest)
+- **Demo Mode System**: Added comprehensive demo mode for PaintPros tenant with sample data for bookings (3), CRM deals (5), calendar events (4), and crew members (4). Includes DemoProvider context, DemoModeBanner component showing "Demo Mode" indicator, and read-only sample data showcase for prospects.
+- **Public Layout Toggle**: Added floating layout toggle button on PaintPros demo homepage allowing visitors to preview Bento vs Minimalist layout styles. Persists selection in localStorage and reloads page to apply.
 - **HeroSlideshow Integration**: Added interactive customer slideshow to NPP homepage with 8 feature slides (AI Visualizer, Color Library, Room Scanner, Glossary, Estimate, Booking, Portal)
 - **Team Page Staff Slideshow**: Staff tutorial slideshow at /team accessible from footer Team link with PIN authentication
 - **Fixed Navigation**: Hamburger menu now stays fixed at top of screen with transparent background
