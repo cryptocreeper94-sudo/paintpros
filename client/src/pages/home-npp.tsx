@@ -92,7 +92,7 @@ export default function HomeNPP() {
                 Painting Done
                 <span className="block text-accent">The Right Way</span>
               </h1>
-              <p className="text-lg md:text-2xl text-gray-600 mt-4 md:mt-6 max-w-2xl mx-auto md:mx-0">
+              <p className="text-lg md:text-2xl text-red-600 font-semibold mt-4 md:mt-6 max-w-2xl mx-auto md:mx-0">
                 Nashville's Most Trusted Painters
               </p>
             </motion.div>
