@@ -70,8 +70,8 @@ export default function HomeNPP() {
         
         {/* HERO SECTION - Mobile-First Centered Layout */}
         <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white px-4 py-12 pb-[100px] md:py-20 md:pb-20">
-          {/* Desktop painters image */}
-          <div className="pointer-events-none absolute inset-0 hidden md:block">
+          {/* Desktop painters image - z-0 to stay behind text */}
+          <div className="pointer-events-none absolute inset-0 z-0 hidden md:block">
             <div className="absolute bottom-0 right-0 h-[80%] w-[60%]">
               <img
                 src={paintersImage}
@@ -81,8 +81,8 @@ export default function HomeNPP() {
             </div>
           </div>
 
-          {/* Text Content - Centered on mobile, left-aligned on desktop */}
-          <div className="relative z-10 flex w-full max-w-4xl flex-col items-center space-y-6 text-center md:space-y-8 md:items-start md:text-left md:pl-8">
+          {/* Text Content - z-20 to stay above painters */}
+          <div className="relative z-20 flex w-full max-w-4xl flex-col items-center space-y-6 text-center md:space-y-8 md:items-start md:text-left md:pl-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ export default function HomeNPP() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mx-auto inline-block rounded-full bg-gray-100/45 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
+              className="mx-auto inline-block rounded-full bg-gray-100/40 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
             >
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </motion.p>
