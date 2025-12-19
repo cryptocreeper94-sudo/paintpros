@@ -120,23 +120,23 @@ export default function HomeNPP() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mx-auto inline-block rounded-full bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
+              className="mx-auto inline-block rounded-full bg-gray-100 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm opacity-20"
             >
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </motion.p>
           </div>
 
-          {/* Mobile painters image - centered below content, shifted up visually */}
+          {/* Mobile painters image - centered below content, shifted up visually, behind text */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative z-0 mt-4 w-full md:hidden pointer-events-none"
+            className="absolute bottom-0 left-0 right-0 z-0 w-full md:hidden pointer-events-none"
           >
             <img
               src={paintersImage}
               alt="Professional painters at work"
-              className="mx-auto block w-full max-w-full object-contain -translate-y-[200px] scale-[2.565]"
+              className="mx-auto block w-full max-w-full object-contain -translate-y-[225px] scale-[2.565]"
             />
           </motion.div>
         </section>
