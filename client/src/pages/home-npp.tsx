@@ -101,16 +101,16 @@ export default function HomeNPP() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex w-full flex-col items-center justify-center gap-3 md:w-auto md:flex-row md:justify-start md:gap-4"
+              className="flex w-full flex-row items-center justify-center gap-3 md:w-auto md:justify-start md:gap-4"
             >
               <Link href="/estimate">
-                <Button size="default" className="text-sm px-6 gap-2 shadow-lg shadow-accent/30" data-testid="button-hero-estimate">
+                <Button size="default" className="text-sm px-4 md:px-6 gap-2 shadow-lg shadow-accent/30" data-testid="button-hero-estimate">
                   Free Estimate
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <a href="#see-how">
-                <Button variant="outline" size="default" className="text-sm px-6" data-testid="button-see-how">
+                <Button size="default" className="text-sm px-4 md:px-6 bg-accent/90 text-white border-accent shadow-lg shadow-accent/20" data-testid="button-see-how">
                   See How It Works
                 </Button>
               </a>
