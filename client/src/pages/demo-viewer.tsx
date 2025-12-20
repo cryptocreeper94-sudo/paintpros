@@ -1,23 +1,28 @@
 import { useState, useEffect } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
+import { GlassCard } from "@/components/ui/glass-card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { DemoWelcomeModal } from "@/components/demo-welcome-modal";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { 
+  hover3D, 
+  hover3DSubtle, 
+  cardVariants, 
+  staggerContainer, 
+  iconContainerStyles, 
+  cardBackgroundStyles 
+} from "@/lib/theme-effects";
+import { 
   Users, 
   Calendar, 
   FileText, 
-  BarChart3, 
   Settings,
   Palette,
   Building2,
-  Shield,
   Eye,
   ArrowRight,
   DollarSign,
@@ -25,7 +30,11 @@ import {
   Briefcase,
   Wrench,
   HelpCircle,
-  Sparkles
+  Sparkles,
+  LayoutGrid,
+  Crown,
+  Shield,
+  Hammer
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
@@ -84,17 +93,21 @@ export default function DemoViewer() {
     {
       title: "Owner Dashboard",
       description: "Business overview, revenue tracking, and high-level metrics",
-      icon: Building2,
+      icon: Crown,
       path: "/owner",
-      color: "bg-purple-100 text-purple-700",
+      gradient: "from-purple-500/20 to-indigo-500/10",
+      iconBg: "bg-purple-500/20",
+      iconColor: "text-purple-600",
       features: ["Revenue Analytics", "Team Performance", "Business Health"]
     },
     {
       title: "Admin Dashboard",
       description: "Operations management, bookings, and customer service",
-      icon: Settings,
+      icon: Shield,
       path: "/admin",
-      color: "bg-blue-100 text-blue-700",
+      gradient: "from-blue-500/20 to-cyan-500/10",
+      iconBg: "bg-blue-500/20",
+      iconColor: "text-blue-600",
       features: ["Bookings", "CRM Pipeline", "Documents"]
     },
     {
@@ -102,7 +115,9 @@ export default function DemoViewer() {
       description: "System health, integrations, and technical monitoring",
       icon: Wrench,
       path: "/developer",
-      color: "bg-emerald-100 text-emerald-700",
+      gradient: "from-emerald-500/20 to-teal-500/10",
+      iconBg: "bg-emerald-500/20",
+      iconColor: "text-emerald-600",
       features: ["API Health", "SEO Tracker", "Integrations"]
     },
     {
@@ -110,15 +125,19 @@ export default function DemoViewer() {
       description: "Job scheduling, crew assignments, and project tracking",
       icon: Calendar,
       path: "/project-manager",
-      color: "bg-orange-100 text-orange-700",
+      gradient: "from-orange-500/20 to-amber-500/10",
+      iconBg: "bg-orange-500/20",
+      iconColor: "text-orange-600",
       features: ["Calendar", "Job Pipeline", "Crew Scheduling"]
     },
     {
       title: "Crew Lead",
       description: "Daily tasks, time tracking, and job notes",
-      icon: Users,
+      icon: Hammer,
       path: "/crew-lead",
-      color: "bg-teal-100 text-teal-700",
+      gradient: "from-teal-500/20 to-cyan-500/10",
+      iconBg: "bg-teal-500/20",
+      iconColor: "text-teal-600",
       features: ["Time Clock", "Job Notes", "Incident Reports"]
     }
   ];
@@ -192,143 +211,164 @@ export default function DemoViewer() {
     <PageLayout>
       <DemoWelcomeModal open={showWelcome} onClose={handleCloseWelcome} />
       
-      <main className="py-8 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-                Demo Viewer
-              </Badge>
-              <Badge variant="outline" className="text-gray-600">
-                <Eye className="w-3 h-3 mr-1" /> Read-Only Access
-              </Badge>
+      <main className="py-8 px-4 md:px-8">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="max-w-7xl mx-auto space-y-8"
+        >
+          <motion.div variants={cardVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <Badge className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0">
+                  Demo Viewer
+                </Badge>
+                <Badge variant="outline" className="text-muted-foreground">
+                  <Eye className="w-3 h-3 mr-1" /> Read-Only Access
+                </Badge>
+              </div>
+              <h1 className="text-3xl font-display font-bold">Welcome, Jenn!</h1>
+              <p className="text-muted-foreground mt-1">
+                Explore the complete PaintPros.io platform and see how it powers painting businesses.
+              </p>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">Welcome, Jenn!</h1>
-            <p className="text-gray-600 mt-1">
-              Explore the complete PaintPros.io platform and see how it powers painting businesses.
-            </p>
-          </div>
-          <Button 
-            onClick={() => setShowWelcome(true)}
-            variant="outline"
-            className="gap-2"
-            data-testid="button-show-welcome"
-          >
-            <HelpCircle className="w-4 h-4" />
-            Platform Overview
-          </Button>
-        </div>
+            <FlipButton 
+              onClick={() => setShowWelcome(true)}
+              className="gap-2"
+              data-testid="button-show-welcome"
+            >
+              <HelpCircle className="w-4 h-4" />
+              Platform Overview
+            </FlipButton>
+          </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {quickStats.map((stat, i) => (
-            <Card key={i} className="border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500">{stat.label}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <p className="text-xs text-emerald-600 mt-1">{stat.trend}</p>
-                  </div>
-                  <div className="p-2 bg-gray-100 rounded-lg">
-                    <stat.icon className="w-5 h-5 text-gray-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Role Dashboards</h2>
-          <p className="text-gray-600 mb-4 text-sm">
-            Each role has a dedicated dashboard tailored to their responsibilities. Click to explore.
-          </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dashboards.map((dashboard, i) => (
-              <Card 
-                key={i} 
-                className="border-gray-200 hover-elevate cursor-pointer transition-shadow"
-                onClick={() => setLocation(dashboard.path)}
-                data-testid={`card-dashboard-${dashboard.path.replace('/', '')}`}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className={`p-2 rounded-lg ${dashboard.color}`}>
-                      <dashboard.icon className="w-5 h-5" />
+          <BentoGrid className="grid-cols-2 md:grid-cols-4">
+            {quickStats.map((stat, i) => (
+              <BentoItem key={i} className="col-span-1">
+                <motion.div variants={cardVariants}>
+                  <GlassCard className="p-4 h-full">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">{stat.label}</p>
+                        <p className="text-2xl font-bold mt-1">{stat.value}</p>
+                        <p className="text-xs text-emerald-600 mt-1">{stat.trend}</p>
+                      </div>
+                      <div className={`${iconContainerStyles} bg-accent/20`}>
+                        <stat.icon className="w-5 h-5 text-accent" />
+                      </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400" />
-                  </div>
-                  <CardTitle className="text-lg mt-3">{dashboard.title}</CardTitle>
-                  <CardDescription className="text-sm">
-                    {dashboard.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex flex-wrap gap-1">
-                    {dashboard.features.map((feature, j) => (
-                      <Badge key={j} variant="secondary" className="text-xs">
-                        {feature}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                  </GlassCard>
+                </motion.div>
+              </BentoItem>
             ))}
-          </div>
-        </div>
+          </BentoGrid>
 
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Customer-Facing Tools</h2>
-          <p className="text-gray-600 mb-4 text-sm">
-            These are the tools your customers see and interact with on the public website.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {customerTools.map((tool, i) => (
-              <Card 
-                key={i}
-                className="border-gray-200 hover-elevate cursor-pointer"
-                onClick={() => setLocation(tool.path)}
-                data-testid={`card-tool-${tool.title.toLowerCase().replace(/\s+/g, '-')}`}
-              >
-                <CardContent className="p-4 text-center">
-                  <div className="p-3 bg-emerald-100 rounded-full w-fit mx-auto mb-3">
-                    <tool.icon className="w-6 h-6 text-emerald-700" />
+          <motion.div variants={cardVariants}>
+            <div className="flex items-center gap-2 mb-4">
+              <LayoutGrid className="w-5 h-5 text-accent" />
+              <h2 className="text-xl font-semibold">Role Dashboards</h2>
+            </div>
+            <p className="text-muted-foreground mb-4 text-sm">
+              Each role has a dedicated dashboard tailored to their responsibilities. Click to explore.
+            </p>
+            <BentoGrid className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {dashboards.map((dashboard, i) => (
+                <BentoItem key={i} className="col-span-1">
+                  <motion.div
+                    variants={cardVariants}
+                    whileHover={hover3DSubtle}
+                    onClick={() => setLocation(dashboard.path)}
+                    className="cursor-pointer h-full"
+                    data-testid={`card-dashboard-${dashboard.path.replace('/', '')}`}
+                  >
+                    <GlassCard className="p-5 h-full relative overflow-visible group">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${dashboard.gradient} opacity-50 rounded-xl`} />
+                      <div className="relative">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className={`p-3 rounded-xl ${dashboard.iconBg} ${dashboard.iconColor}`}>
+                            <dashboard.icon className="w-6 h-6" />
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                        </div>
+                        <h3 className="text-lg font-semibold mb-1">{dashboard.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {dashboard.description}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {dashboard.features.map((feature, j) => (
+                            <Badge key={j} variant="secondary" className="text-xs">
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </GlassCard>
+                  </motion.div>
+                </BentoItem>
+              ))}
+            </BentoGrid>
+          </motion.div>
+
+          <motion.div variants={cardVariants}>
+            <div className="flex items-center gap-2 mb-4">
+              <Palette className="w-5 h-5 text-accent" />
+              <h2 className="text-xl font-semibold">Customer-Facing Tools</h2>
+            </div>
+            <p className="text-muted-foreground mb-4 text-sm">
+              These are the tools your customers see and interact with on the public website.
+            </p>
+            <BentoGrid className="grid-cols-2 md:grid-cols-4">
+              {customerTools.map((tool, i) => (
+                <BentoItem key={i} className="col-span-1">
+                  <motion.div
+                    variants={cardVariants}
+                    whileHover={hover3DSubtle}
+                    onClick={() => setLocation(tool.path)}
+                    className="cursor-pointer h-full"
+                    data-testid={`card-tool-${tool.title.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <GlassCard className="p-4 h-full text-center">
+                      <div className="p-3 bg-emerald-500/20 rounded-full w-fit mx-auto mb-3">
+                        <tool.icon className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <h3 className="font-semibold text-sm">{tool.title}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{tool.description}</p>
+                    </GlassCard>
+                  </motion.div>
+                </BentoItem>
+              ))}
+            </BentoGrid>
+          </motion.div>
+
+          <motion.div variants={cardVariants}>
+            <GlassCard className="p-6 border-amber-500/30 bg-amber-500/5">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-amber-500/20 rounded-xl">
+                  <Shield className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Demo Mode Active</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    You're viewing the platform with sample data. All features are accessible in read-only mode.
+                    This is exactly what a licensed painting company would see when using PaintPros.io.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <Badge variant="outline" className="text-amber-600 border-amber-500/30">
+                      <CheckCircle2 className="w-3 h-3 mr-1" /> AI Tools Active
+                    </Badge>
+                    <Badge variant="outline" className="text-amber-600 border-amber-500/30">
+                      <CheckCircle2 className="w-3 h-3 mr-1" /> Sample Data Loaded
+                    </Badge>
+                    <Badge variant="outline" className="text-amber-600 border-amber-500/30">
+                      <CheckCircle2 className="w-3 h-3 mr-1" /> All Dashboards Unlocked
+                    </Badge>
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{tool.title}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{tool.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        <Card className="border-amber-200 bg-amber-50">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-amber-100 rounded-lg">
-                <Shield className="w-6 h-6 text-amber-700" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Demo Mode Active</h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  You're viewing the platform with sample data. All features are accessible in read-only mode.
-                  This is exactly what a licensed painting company would see when using PaintPros.io.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  <Badge variant="outline" className="text-amber-700 border-amber-300">
-                    <CheckCircle2 className="w-3 h-3 mr-1" /> AI Tools Active
-                  </Badge>
-                  <Badge variant="outline" className="text-amber-700 border-amber-300">
-                    <CheckCircle2 className="w-3 h-3 mr-1" /> Sample Data Loaded
-                  </Badge>
-                  <Badge variant="outline" className="text-amber-700 border-amber-300">
-                    <CheckCircle2 className="w-3 h-3 mr-1" /> All Dashboards Unlocked
-                  </Badge>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </GlassCard>
+          </motion.div>
+        </motion.div>
       </main>
     </PageLayout>
   );
