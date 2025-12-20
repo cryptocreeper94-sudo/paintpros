@@ -86,6 +86,7 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 ## Changelog
 
 ### December 2025 (Latest)
+- **Demo Viewer Dashboard (Jenn)**: Added dedicated demo viewer role with PIN 777 for Jenn. Features 3-step welcome modal explaining the complete turnkey SaaS platform and Orbit/Darkwave Studios ecosystem integration. Dashboard provides read-only access to all role dashboards with quick stats and customer-facing tools navigation.
 - **Demo Mode System**: Added comprehensive demo mode for PaintPros tenant with sample data for bookings (3), CRM deals (5), calendar events (4), and crew members (4). Includes DemoProvider context, DemoModeBanner component showing "Demo Mode" indicator, and read-only sample data showcase for prospects.
 - **Public Layout Toggle**: Added floating layout toggle button on PaintPros demo homepage allowing visitors to preview Bento vs Minimalist layout styles. Persists selection in localStorage and reloads page to apply.
 - **HeroSlideshow Integration**: Added interactive customer slideshow to NPP homepage with 8 feature slides (AI Visualizer, Color Library, Room Scanner, Glossary, Estimate, Booking, Portal)
@@ -106,3 +107,4 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **Project Manager**: 2222
 - **Crew Lead**: 3333
 - **Ops Manager (Admin)**: 4444
+- **Demo Viewer (Jenn)**: 777

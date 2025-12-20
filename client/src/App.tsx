@@ -39,6 +39,7 @@ import Team from "@/pages/team";
 import ColorLibrary from "@/pages/color-library";
 import Resources from "@/pages/resources";
 import Glossary from "@/pages/glossary";
+import DemoViewer from "@/pages/demo-viewer";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -89,6 +90,7 @@ function Router() {
       <Route path="/glossary" component={Glossary} />
       <Route path="/color-library" component={ColorLibrary} />
       <Route path="/resources" component={Resources} />
+      <Route path="/demo-viewer" component={DemoViewer} />
       <Route component={NotFound} />
     </Switch>
   );

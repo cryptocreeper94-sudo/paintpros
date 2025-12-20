@@ -1545,7 +1545,8 @@ export async function registerRoutes(
         { role: "owner", pin: "1111", mustChangePin: true },
         { role: "project_manager", pin: "2222", mustChangePin: false },
         { role: "crew_lead", pin: "3333", mustChangePin: false },
-        { role: "developer", pin: "0424", mustChangePin: false }
+        { role: "developer", pin: "0424", mustChangePin: false },
+        { role: "demo_viewer", pin: "777", mustChangePin: false }
       ];
       
       for (const pinData of defaultPins) {
@@ -1581,7 +1582,7 @@ export async function registerRoutes(
       }
 
       // Check PIN against all known roles
-      const roles = ["owner", "ops_manager", "project_manager", "crew_lead", "developer"];
+      const roles = ["owner", "ops_manager", "project_manager", "crew_lead", "developer", "demo_viewer"];
       
       for (const role of roles) {
         const userPin = await storage.getUserPinByRole(role);
