@@ -187,7 +187,7 @@ export default function DemoViewer() {
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     className="bg-black/5 border-border text-center text-2xl h-14 tracking-[0.5em] rounded-xl focus:ring-2 focus:ring-purple-500/30"
-                    maxLength={3}
+                    maxLength={4}
                     data-testid="input-demo-pin"
                   />
                   {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm text-center">{error}</motion.p>}

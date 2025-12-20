@@ -47,6 +47,7 @@ const ROLE_ROUTES: Record<string, { route: string; displayName: string; color: s
   "project_manager": { route: "/project-manager", displayName: "Area Manager", color: "text-teal-400", icon: MapPin },
   "crew_lead": { route: "/crew-lead", displayName: "Crew Lead", color: "text-orange-400", icon: HardHat },
   "developer": { route: "/developer", displayName: "Developer", color: "text-purple-400", icon: Code },
+  "demo_viewer": { route: "/demo-viewer", displayName: "Demo Viewer", color: "text-pink-400", icon: Star },
 };
 
 export default function Team() {
@@ -119,10 +120,10 @@ export default function Team() {
   };
 
   const handlePinSubmit = async () => {
-    if (pinValue.length !== 4) {
+    if (pinValue.length < 3 || pinValue.length > 4) {
       toast({
         title: "Invalid PIN",
-        description: "Please enter a 4-digit PIN.",
+        description: "Please enter your PIN.",
         variant: "destructive",
       });
       return;
