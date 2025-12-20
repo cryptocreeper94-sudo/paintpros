@@ -238,10 +238,10 @@ export default function HomeNPP() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.02, rotateY: 2 }}
-                className="col-span-2 md:col-span-4 relative h-48 md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-lg"
+                className="col-span-2 md:col-span-4 relative h-56 md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-lg"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <img src={estimateImage} alt="Professional estimate consultation" className="w-full h-full object-contain bg-gray-100" />
+                <img src={estimateImage} alt="Professional estimate consultation" className="w-full h-full object-cover object-center" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
                   <div className="p-4 md:p-12 max-w-lg">
                     <h3 className="text-base md:text-3xl font-bold text-white">
