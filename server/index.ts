@@ -21,6 +21,30 @@ const httpServer = createServer(app);
 let autoDeployProcessed = false;
 
 /**
+ * Ensure default staff PINs exist in the database
+ * This runs on every server start to guarantee all PINs work in production
+ */
+async function ensureDefaultPins(): Promise<void> {
+  const DEFAULT_PINS = [
+    { role: "ops_manager", pin: "4444", mustChangePin: true },
+    { role: "owner", pin: "1111", mustChangePin: true },
+    { role: "project_manager", pin: "2222", mustChangePin: false },
+    { role: "crew_lead", pin: "3333", mustChangePin: false },
+    { role: "developer", pin: "0424", mustChangePin: false },
+    { role: "demo_viewer", pin: "7777", mustChangePin: false }
+  ];
+
+  for (const pinData of DEFAULT_PINS) {
+    try {
+      await storage.createOrUpdateUserPin(pinData);
+    } catch (error) {
+      console.error(`[seed] Error ensuring PIN for ${pinData.role}:`, error);
+    }
+  }
+  console.log("[seed] Default staff PINs ensured");
+}
+
+/**
  * Ensure paint colors are seeded in the database
  * This runs on every server start to guarantee colors are available
  */
@@ -291,6 +315,9 @@ app.use((req, res, next) => {
     },
     async () => {
       log(`serving on port ${port}`);
+      
+      // Ensure default staff PINs exist
+      await ensureDefaultPins();
       
       // Ensure default crew leads exist for all tenants
       await ensureDefaultCrewLeads();
