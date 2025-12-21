@@ -14,7 +14,7 @@ export function PageLayout({ children }: PageLayoutProps) {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
       {/* Watermark background - paint roller (NPP only) */}
       {tenant.id !== "demo" && (
-        <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center pt-[136px] md:pt-[186px]">
+        <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center pt-[156px] md:pt-[206px]">
           <img 
             src={paintRollerWatermark} 
             alt="" 
