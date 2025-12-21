@@ -374,6 +374,8 @@ export const hallmarks = pgTable("hallmarks", {
   verifiedAt: timestamp("verified_at"),
   blockchainTxSignature: text("blockchain_tx_signature"),
   blockchainExplorerUrl: text("blockchain_explorer_url"),
+  darkwaveTxSignature: text("darkwave_tx_signature"),
+  darkwaveExplorerUrl: text("darkwave_explorer_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -385,6 +387,8 @@ export const insertHallmarkSchema = createInsertSchema(hallmarks).omit({
   verifiedAt: true,
   blockchainTxSignature: true,
   blockchainExplorerUrl: true,
+  darkwaveTxSignature: true,
+  darkwaveExplorerUrl: true,
 });
 
 export type InsertHallmark = z.infer<typeof insertHallmarkSchema>;
@@ -542,6 +546,8 @@ export const releaseVersions = pgTable("release_versions", {
   contentHash: text("content_hash").notNull(),
   solanaTxSignature: text("solana_tx_signature"),
   solanaTxStatus: text("solana_tx_status").default("pending"),
+  darkwaveTxSignature: text("darkwave_tx_signature"),
+  darkwaveTxStatus: text("darkwave_tx_status").default("pending"),
   deploymentId: text("deployment_id"),
   releaseNotes: text("release_notes"), // What changed in this version
   metadata: jsonb("metadata"),
@@ -554,6 +560,7 @@ export const insertReleaseVersionSchema = createInsertSchema(releaseVersions).om
   issuedAt: true,
   createdAt: true,
   solanaTxStatus: true,
+  darkwaveTxStatus: true,
 });
 
 export type InsertReleaseVersion = z.infer<typeof insertReleaseVersionSchema>;
