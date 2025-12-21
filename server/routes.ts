@@ -26,6 +26,7 @@ import * as crypto from "crypto";
 import OpenAI from "openai";
 import { z } from "zod";
 import * as solana from "./solana";
+import * as darkwave from "./darkwave";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } from "./resend";
@@ -2236,7 +2237,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/releases/:id/stamp - Stamp release to Solana (tenant-aware)
+  // POST /api/releases/:id/stamp - Stamp release to Solana and Darkwave (dual-chain)
   app.post("/api/releases/:id/stamp", async (req, res) => {
     try {
       const { network = "mainnet-beta" } = req.body;
@@ -2253,35 +2254,71 @@ export async function registerRoutes(
         return;
       }
       
+      // Stamp to Solana
       const wallet = solana.getWalletFromPrivateKey(privateKey);
-      const result = await solana.stampHashToBlockchain(
+      const solanaResult = await solana.stampHashToBlockchain(
         release.contentHash,
         wallet,
         network,
         { entityType: 'release', entityId: release.id },
-        release.tenantId // Pass tenant for proper memo prefix
+        release.tenantId
       );
       
-      const updated = await storage.updateReleaseSolanaStatus(
+      await storage.updateReleaseSolanaStatus(
         release.id,
-        result.signature,
+        solanaResult.signature,
         "confirmed"
       );
       
-      if (release.hallmarkId) {
-        const explorerUrl = network === "devnet"
-          ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
-          : `https://explorer.solana.com/tx/${result.signature}`;
-        await storage.updateHallmarkBlockchain(release.hallmarkId, result.signature, explorerUrl);
+      // Stamp to Darkwave Chain (if configured)
+      let darkwaveResult: { success: boolean; txHash?: string; explorerUrl?: string } = { success: false };
+      if (darkwave.isDarkwaveConfigured()) {
+        darkwaveResult = await darkwave.submitHashToDarkwave(
+          release.contentHash,
+          {
+            entityType: 'release',
+            entityId: release.id,
+            tenantId: release.tenantId,
+            version: release.version
+          }
+        );
+        
+        if (darkwaveResult.success && darkwaveResult.txHash) {
+          await storage.updateReleaseDarkwaveStatus(
+            release.id,
+            darkwaveResult.txHash,
+            "confirmed"
+          );
+        }
       }
+      
+      // Update hallmark with blockchain info
+      if (release.hallmarkId) {
+        const solanaExplorerUrl = network === "devnet"
+          ? `https://explorer.solana.com/tx/${solanaResult.signature}?cluster=devnet`
+          : `https://explorer.solana.com/tx/${solanaResult.signature}`;
+        await storage.updateHallmarkBlockchain(release.hallmarkId, solanaResult.signature, solanaExplorerUrl);
+        
+        if (darkwaveResult.success && darkwaveResult.txHash) {
+          await storage.updateHallmarkDarkwave(release.hallmarkId, darkwaveResult.txHash, darkwaveResult.explorerUrl || '');
+        }
+      }
+      
+      const updated = await storage.getReleaseById(release.id);
       
       res.json({
         release: updated,
         blockchain: {
-          signature: result.signature,
-          explorerUrl: network === "devnet"
-            ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
-            : `https://explorer.solana.com/tx/${result.signature}`
+          solana: {
+            signature: solanaResult.signature,
+            explorerUrl: network === "devnet"
+              ? `https://explorer.solana.com/tx/${solanaResult.signature}?cluster=devnet`
+              : `https://explorer.solana.com/tx/${solanaResult.signature}`
+          },
+          darkwave: darkwaveResult.success ? {
+            txHash: darkwaveResult.txHash,
+            explorerUrl: darkwaveResult.explorerUrl
+          } : null
         }
       });
     } catch (error) {

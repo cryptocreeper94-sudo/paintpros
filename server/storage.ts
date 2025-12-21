@@ -148,6 +148,8 @@ export interface IStorage {
   createRelease(release: InsertReleaseVersion): Promise<ReleaseVersion>;
   getLatestRelease(): Promise<ReleaseVersion | undefined>;
   updateReleaseSolanaStatus(id: string, signature: string, status: string): Promise<ReleaseVersion | undefined>;
+  updateReleaseDarkwaveStatus(id: string, txHash: string, status: string): Promise<ReleaseVersion | undefined>;
+  updateHallmarkDarkwave(id: string, txSignature: string, explorerUrl: string): Promise<Hallmark | undefined>;
   
   // Proposal Templates
   createProposalTemplate(template: InsertProposalTemplate): Promise<ProposalTemplate>;
@@ -885,6 +887,24 @@ export class DatabaseStorage implements IStorage {
       .update(releaseVersions)
       .set({ solanaTxSignature: signature, solanaTxStatus: status })
       .where(eq(releaseVersions.id, id))
+      .returning();
+    return result;
+  }
+
+  async updateReleaseDarkwaveStatus(id: string, txHash: string, status: string): Promise<ReleaseVersion | undefined> {
+    const [result] = await db
+      .update(releaseVersions)
+      .set({ darkwaveTxSignature: txHash, darkwaveTxStatus: status })
+      .where(eq(releaseVersions.id, id))
+      .returning();
+    return result;
+  }
+
+  async updateHallmarkDarkwave(id: string, txSignature: string, explorerUrl: string): Promise<Hallmark | undefined> {
+    const [result] = await db
+      .update(hallmarks)
+      .set({ darkwaveTxSignature: txSignature, darkwaveExplorerUrl: explorerUrl, updatedAt: new Date() })
+      .where(eq(hallmarks.id, id))
       .returning();
     return result;
   }

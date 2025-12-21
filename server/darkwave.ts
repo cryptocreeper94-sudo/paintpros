@@ -35,19 +35,27 @@ function generateSignature(payload: string, secret: string): string {
 }
 
 /**
- * Get authentication headers for Darkwave API
+ * Get authentication headers for Darkwave API with HMAC signature
  */
-function getAuthHeaders(): Record<string, string> {
+function getAuthHeaders(payload: string): Record<string, string> {
   const apiKey = process.env.DARKWAVE_API_KEY;
+  const apiSecret = process.env.DARKWAVE_API_SECRET;
   
   if (!apiKey) {
     throw new Error('DARKWAVE_API_KEY not configured');
   }
   
-  return {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-API-Key': apiKey,
+    'X-Timestamp': Date.now().toString(),
   };
+  
+  if (apiSecret) {
+    headers['X-Signature'] = generateSignature(payload, apiSecret);
+  }
+  
+  return headers;
 }
 
 /**
@@ -82,10 +90,11 @@ export async function submitHashToDarkwave(
 
     console.log(`[Darkwave] Submitting hash for ${metadata.entityType}: ${metadata.entityId}`);
 
+    const payloadStr = JSON.stringify(payload);
     const response = await fetch(`${DARKWAVE_BASE_URL}/api/hash/submit`, {
       method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload),
+      headers: getAuthHeaders(payloadStr),
+      body: payloadStr,
     });
 
     if (!response.ok) {
@@ -148,10 +157,11 @@ export async function generateDarkwaveHallmark(
 
     console.log(`[Darkwave] Generating hallmark for ${metadata.type}: ${metadata.name}`);
 
+    const payloadStr = JSON.stringify(payload);
     const response = await fetch(`${DARKWAVE_BASE_URL}/api/hallmark/generate`, {
       method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload),
+      headers: getAuthHeaders(payloadStr),
+      body: payloadStr,
     });
 
     if (!response.ok) {
