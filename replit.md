@@ -36,6 +36,7 @@ The design adheres to a "Sparkle and Shine" aesthetic, utilizing a Bento Grid la
 - **Room Scanner (Square Footage Estimator):** A "Coming Soon" camera-based tool for estimating room dimensions.
 - **Painting Glossary:** A comprehensive A-Z glossary of painting and interior trim terms with search, category filtering, and alphabetical navigation.
 - **Layout Switcher (Developer):** A developer dashboard feature to toggle between Bento grid and minimalist homepage layouts for demo purposes.
+- **Dual-Chain Verification Shields:** Two blockchain verification cards on the demo homepage - Solana (green/purple gradient) and Darkwave (purple/blue gradient). Each opens a modal with QR code linking to the respective blockchain explorer for document verification.
 
 ### System Design Choices
 - **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, and tables for CRM, Crew Management, Messaging, and Franchise Management.

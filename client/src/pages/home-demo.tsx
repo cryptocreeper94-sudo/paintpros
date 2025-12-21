@@ -22,10 +22,12 @@ import onTimeImage from "@assets/generated_images/on-time_punctuality_clock.png"
 import warrantyImage from "@assets/generated_images/clean_warranty_shield_badge.png";
 import testimonialImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
+import darkwaveLogo from "@assets/generated_images/darkwave_blockchain_logo_icon.png";
 import { useTenant } from "@/context/TenantContext";
 import { ServiceAreaModal } from "@/components/service-area-modal";
 import { ColorSelectorModal } from "@/components/color-selector-modal";
 import { SolanaVerifiedModal } from "@/components/solana-verified-modal";
+import { DarkwaveVerifiedModal } from "@/components/darkwave-verified-modal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { ContactModal } from "@/components/contact-modal";
 import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
@@ -39,6 +41,7 @@ export default function HomeDemo() {
   const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
   const [colorSelectorOpen, setColorSelectorOpen] = useState(false);
   const [solanaVerifiedOpen, setSolanaVerifiedOpen] = useState(false);
+  const [darkwaveVerifiedOpen, setDarkwaveVerifiedOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [cryptoModalOpen, setCryptoModalOpen] = useState(false);
   const [aboutUsOpen, setAboutUsOpen] = useState(false);
@@ -221,6 +224,60 @@ export default function HomeDemo() {
                   {/* Learn More CTA */}
                   <div className="flex items-center gap-1 pt-1 text-cyan-700 dark:text-[#14F195]">
                     <span className="text-[8px] md:text-[10px] font-medium">Learn how we protect you</span>
+                    <ArrowRight className="w-2.5 h-2.5" />
+                  </div>
+                </div>
+              </GlassCard>
+            </button>
+          </BentoItem>
+
+          {/* Darkwave Verified Badge - DUAL-CHAIN PROTECTION */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
+            <button
+              onClick={() => setDarkwaveVerifiedOpen(true)}
+              className="w-full h-full text-left"
+              data-testid="button-darkwave-verified"
+            >
+              <GlassCard 
+                className="p-2 md:p-4 cursor-pointer hover:border-[#7C3AED]/40 transition-all h-full max-h-[90px] md:max-h-none bg-gradient-to-br from-[#7C3AED]/10 via-[#3B82F6]/5 to-[#7C3AED]/10 border-[#7C3AED]/30 relative overflow-hidden"
+                hoverEffect
+                glow
+              >
+                {/* Darkwave logo background */}
+                <img 
+                  src={darkwaveLogo} 
+                  alt="" 
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 object-contain opacity-25"
+                />
+                {/* Animated gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#7C3AED]/20 via-transparent to-[#3B82F6]/20 animate-pulse opacity-50" />
+                
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  {/* Dual-Chain Badge */}
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="p-1.5 rounded-lg bg-gradient-to-br from-[#7C3AED] to-[#3B82F6] flex-shrink-0 shadow-[0_0_15px_rgba(124,58,237,0.4)]">
+                      <BadgeCheck className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[9px] md:text-[10px] font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">Dual-Chain</span>
+                      <span className="text-[7px] md:text-[9px] px-1.5 py-0.5 bg-gradient-to-r from-[#7C3AED] to-[#3B82F6] rounded text-white font-bold inline-block w-fit">DARKWAVE CHAIN</span>
+                    </div>
+                  </div>
+                  
+                  {/* Main Headline */}
+                  <h3 className="font-display font-bold text-xs md:text-base text-foreground dark:text-white leading-tight mb-1">
+                    <span className="text-purple-700 dark:text-purple-400">Secondary</span> Blockchain
+                    <span className="text-purple-700 dark:text-purple-400"> Verification</span>
+                  </h3>
+                  
+                  {/* Security messaging */}
+                  <p className="text-[8px] md:text-[10px] text-muted-foreground leading-snug">
+                    <span className="text-purple-700 dark:text-purple-400 font-medium">Redundant security</span> • Dual-chain stamps • Extra protection
+                  </p>
+                  
+                  {/* Learn More CTA */}
+                  <div className="flex items-center gap-1 pt-1 text-purple-700 dark:text-purple-400">
+                    <span className="text-[8px] md:text-[10px] font-medium">View Darkwave verification</span>
                     <ArrowRight className="w-2.5 h-2.5" />
                   </div>
                 </div>
@@ -538,6 +595,10 @@ export default function HomeDemo() {
       <SolanaVerifiedModal
         isOpen={solanaVerifiedOpen}
         onClose={() => setSolanaVerifiedOpen(false)}
+      />
+      <DarkwaveVerifiedModal
+        isOpen={darkwaveVerifiedOpen}
+        onClose={() => setDarkwaveVerifiedOpen(false)}
       />
       <ContactModal
         isOpen={contactOpen}
