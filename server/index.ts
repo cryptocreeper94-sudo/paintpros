@@ -5,6 +5,7 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { storage } from "./storage";
 import * as solana from "./solana";
+import * as darkwave from "./darkwave";
 import * as hallmarkService from "./hallmarkService";
 import { startReminderScheduler } from "./reminder-scheduler";
 
@@ -104,9 +105,10 @@ const DEPLOY_TENANTS = [
 ];
 
 /**
- * Automatic Version Bump & Solana Stamp on Production Deployment
+ * Automatic Version Bump & Dual-Chain Stamp on Production Deployment
  * This runs once when the server starts in production mode
  * Bumps versions for ALL registered tenants independently
+ * Stamps to both Solana (primary) and Darkwave Chain (secondary)
  */
 async function autoDeployVersionBump(): Promise<void> {
   if (autoDeployProcessed) {
@@ -208,12 +210,35 @@ async function autoDeployVersionBump(): Promise<void> {
           const explorerUrl = `https://explorer.solana.com/tx/${result.signature}`;
           await storage.updateHallmarkBlockchain(savedHallmark.id, result.signature, explorerUrl);
           
-          console.log(`[auto-deploy][${tenant.id}] SUCCESS! TX: ${result.signature}`);
+          console.log(`[auto-deploy][${tenant.id}] Solana SUCCESS! TX: ${result.signature}`);
         } catch (stampError) {
           console.error(`[auto-deploy][${tenant.id}] Solana stamp failed:`, stampError);
         }
       } else {
-        console.log(`[auto-deploy][${tenant.id}] No wallet - version bumped without blockchain stamp`);
+        console.log(`[auto-deploy][${tenant.id}] No Solana wallet - version bumped without Solana stamp`);
+      }
+      
+      // Attempt Darkwave blockchain stamp for this tenant (parallel to Solana)
+      try {
+        console.log(`[auto-deploy][${tenant.id}] Stamping to Darkwave Chain...`);
+        
+        const darkwaveResult = await darkwave.submitHashToDarkwave(contentHash, {
+          entityType: 'release',
+          entityId: release.id,
+          tenantId: tenant.id,
+          version: newVersion,
+        });
+        
+        if (darkwaveResult.success && darkwaveResult.txHash) {
+          await storage.updateReleaseDarkwaveStatus(release.id, darkwaveResult.txHash, "confirmed");
+          const darkwaveExplorerUrl = darkwaveResult.explorerUrl || `https://explorer.darkwave.io/tx/${darkwaveResult.txHash}`;
+          await storage.updateHallmarkDarkwave(savedHallmark.id, darkwaveResult.txHash, darkwaveExplorerUrl);
+          console.log(`[auto-deploy][${tenant.id}] Darkwave SUCCESS! TX: ${darkwaveResult.txHash}`);
+        } else {
+          console.log(`[auto-deploy][${tenant.id}] Darkwave skipped: ${darkwaveResult.error || 'Not configured'}`);
+        }
+      } catch (darkwaveError) {
+        console.error(`[auto-deploy][${tenant.id}] Darkwave stamp failed:`, darkwaveError);
       }
       
       console.log(`[auto-deploy][${tenant.id}] COMPLETE: v${newVersion} (Build ${buildNumber})`);

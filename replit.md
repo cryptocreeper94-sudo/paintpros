@@ -1,78 +1,62 @@
 # PaintPros.io by Orbit - Documentation
 
 ## Overview
-PaintPros.io is a multi-tenant SaaS platform by Orbit for the painting and home services industry. It offers white-label websites with a modern Bento Grid design, interactive estimating tools, SEO management, and role-based dashboards. The platform supports franchisable and standalone licensing, aiming for a premium online presence. Key features include online booking, internal messaging, crew management, and integrations with the Orbit ecosystem and Solana blockchain for document stamping.
+PaintPros.io by Orbit is a multi-tenant SaaS platform for the painting and home services industry. It provides white-label websites with a modern Bento Grid design, interactive estimating tools, comprehensive SEO management, and role-based dashboards. The platform supports both franchisable and standalone licensing, aiming to deliver a premium online presence with features like online booking, internal messaging, crew management, and integrations with the Orbit ecosystem and Solana blockchain for document stamping. The project ambition is to offer a comprehensive, cutting-edge solution that enhances efficiency and customer engagement in the home services market.
 
 ## User Preferences
-I prefer simple language and detailed explanations. I want iterative development and for you to ask before making major changes. Do not make changes to the `assets/branding/` folder.
-
-**Light Theme Preference:** The client strongly prefers light themes over dark themes for better text visibility. The estimate page now uses a light color scheme with white backgrounds and dark gray text for maximum readability. All form inputs use gray-50 backgrounds with gray-900 text.
+I prefer simple language and detailed explanations. I want iterative development and for you to ask before making major changes. Do not make changes to the `assets/branding/` folder. The client strongly prefers light themes over dark themes for better text visibility.
 
 ## System Architecture
 
 ### Multi-Tenant Architecture
-The platform is multi-tenant, configured via `client/src/config/tenant.ts`. Each tenant has specific branding, services, pricing, SEO metadata, feature toggles (estimator, portfolio, reviews, blog, AI assistant), and credentials. A `TenantProvider` and `useTenant()` hook manage tenant context.
+The platform features a multi-tenant architecture, configured via `client/src/config/tenant.ts`. Each tenant possesses unique branding, services, pricing, SEO metadata, and feature toggles. A `TenantProvider` and `useTenant()` hook manage the tenant-specific context.
 
 ### UI/UX and Design System
-The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, tight spacing, and mobile-first responsiveness.
-- **Themes:** Light mode only (dark mode removed per client preference for better text visibility).
-- **Effects:** Glassmorphism, glow effects, and 3D hover animations.
-- **Components:** Custom components include `GlassCard`, `FlipButton`, auto-scroll marquees, and Embla-based carousels. Radix-based accordions are used for collapsible content.
-- **Mobile Pattern:** Carousels are used for horizontal scrolling on mobile, often containing `GlassCard` and `Accordion`.
-- **Homepage Structure (NPP):** Comprehensive vertical scrolling layout inspired by Craftwork.com but with NPP's unique content:
-  1. **Hero Section** - "Paint Your Home The Right Way" with painter image and CTA buttons
-  2. **Trust & Awards** - Award card (Best Painter 2025) + Solana Blockchain Verification card
-  3. **How We Deliver Excellence** - Feature image + 3 cards (Meticulous Preparation, Full-Time Painters, Perfection in Details)
-  4. **Our Services** - Interior/Exterior cards with images
-  5. **Dive Into Color** - Color library preview with horizontal scroll carousels by brand (Sherwin-Williams, Benjamin Moore)
-  6. **What to Expect** - Process timeline (Prep, Painting, Drying, Walkthrough)
-  7. **Colors & Sheens Guide** - Educational content about paint finishes
-  8. **Service Area** - Nashville metro area coverage with map
-  9. **End-to-End Communication** - Daily updates feature highlight
-  10. **Customer Testimonials** - 5-star reviews with customer quotes
-  11. **Resources Hub** - Links to Color Library, Warranty, FAQs, Services
-  12. **Final CTA** - "Get Your Free Estimate"
-  Key component: `client/src/pages/home-npp.tsx`
-- **Default Theme:** Light mode is now the default (client preference for better readability). Stored in `client/src/context/ThemeContext.tsx`.
+The design adheres to a "Sparkle and Shine" aesthetic, utilizing a Bento Grid layout with tight spacing and mobile-first responsiveness.
+- **Themes:** Exclusively light mode, prioritizing text visibility and readability.
+- **Effects:** Incorporates glassmorphism, glow effects, and 3D hover animations.
+- **Components:** Features custom components like `GlassCard`, `FlipButton`, auto-scroll marquees, and Embla-based carousels. Radix-based accordions are used for collapsible content.
+- **Mobile Pattern:** Carousels facilitate horizontal scrolling on mobile, often containing `GlassCard` and `Accordion` components.
+- **Homepage Structure (NPP):** A vertically scrolling layout inspired by Craftwork.com, featuring sections such as a Hero, Trust & Awards, Services, Color Library preview, process timeline, testimonials, and CTAs.
 
 ### Feature Specifications
-- **Service Descriptions:** Clearly define Interior/Exterior, Commercial/Residential painting services, including Walls, Ceilings, Trim, Doors, and Drywall REPAIR only.
-- **Estimator Pricing Logic:** Configurable per tenant, with default pricing examples like $150/door, $5.00/sqft for full jobs, and $2.50/sqft for Walls Only.
-- **Role-Based Access:** PIN-based access for Admin (4444), Owner (1111), Area Manager (2222), Developer (0424), and Crew Lead (3333), each with specific dashboard access.
-- **Online Booking System:** A 5-step customer wizard for service type, date, time, contact, and confirmation. Admin dashboards display bookings.
-- **ORBIT Weather System:** Displays real-time weather in the footer and a full modal with animated radar, using ZIP code search.
-- **Crew Management System:** Dashboard for crew leads with time tracking, job notes, and incident reporting.
-- **Internal Messaging System:** Real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges.
-- **PDF Document Center:** Document management with digital signatures for contracts, estimates, invoices, and proposals. Includes creation, version tracking, and signature capture via `react-signature-canvas`. API routes have role-based authentication and tenant scoping.
-- **Franchise Management System:** Multi-location franchise support with territory licensing, tiered pricing, and Partner API integration. Includes franchise CRUD, location management, API credential generation with scoped permissions, and usage tracking with rate limiting.
-- **System Health Monitoring:** Real-time health dashboard visible on Admin (4444), Owner (1111), and Developer (0424) dashboards. Monitors database, payments (Stripe), email (Resend), blockchain (Solana), and AI (OpenAI) services with color-coded status indicators and expandable details.
-- **SEO Management System:** Comprehensive SEO tracking and editing for Admin, Owner, and Developer dashboards. Features include per-page meta tag management (title, description, keywords, robots), Open Graph tags (title, description, image, type, site name, locale), Twitter Card tags (card type, title, description, image, site handle), structured data (JSON-LD schemas), canonical URLs, and SEO scoring with audit history. Components: `SeoManager` for meta tag injection, `SeoTracker` for dashboard display. Database tables: `seoPages`, `seoAudits`. All routes enforce tenant isolation for multi-tenant security.
-- **Color Library System:** Curated professional paint color database featuring Sherwin-Williams and Benjamin Moore colors. Features include an **interactive color wheel** for browsing by hue family (Neutrals, Reds, Oranges, Yellows, Greens, Blues, Purples, Pinks), HSL-based color classification, flip cards with color details (LRV, undertone, coordinating colors), search functionality, and integration with the estimate flow. Colors with low saturation or extreme lightness are automatically classified as Neutrals. Database tables: `paintColors` (brand, productLine, colorCode, colorName, hexValue, category, undertone, lrv, coordinatingColors, trimColors, roomTypes), `customerColorSelections` (for saving customer color choices per estimate). Key component: `client/src/pages/color-library.tsx`.
-- **AI Color Visualizer:** Canvas-based tool allowing customers to upload wall photos and preview paint colors with adjustable intensity (10-90%). Uses OpenAI Vision API (`gpt-4o`) to provide contextual design insights about color choices including lighting recommendations, mood assessment, and coordination suggestions. Accessible from the Color Library page via CTA button or from individual color cards. Key component: `client/src/components/color-visualizer.tsx`. API endpoint: `/api/color-visualize`.
-- **Room Scanner (Square Footage Estimator):** Camera-based tool for estimating room dimensions. Currently marked "Coming Soon" with locked state. Designed to help customers estimate square footage for accurate painting quotes. Key component: `client/src/components/room-scanner.tsx`.
-- **Painting Glossary:** Comprehensive A-Z glossary of 120+ painting and interior trim terms. Features include search functionality, category filtering (Painting, Trim & Moulding, Finishes, Techniques), alphabetical navigation, and glass card design. Accessible via `/glossary` route and linked from Resources page. Key component: `client/src/pages/glossary.tsx`.
-- **Layout Switcher (Developer):** Developer dashboard includes a Layout Switcher card allowing quick toggle between Bento grid and minimalist homepage layouts for client demos. Preference stored in localStorage as `dev_layout_override`.
+- **Service Descriptions:** Clearly defined painting services (Interior/Exterior, Commercial/Residential) including Walls, Ceilings, Trim, Doors, and Drywall REPAIR.
+- **Estimator Pricing Logic:** Configurable per tenant with flexible pricing models (e.g., per door, per sqft).
+- **Role-Based Access:** PIN-based access for Admin, Owner, Area Manager, Developer, and Crew Lead, each with specific dashboard privileges.
+- **Online Booking System:** A 5-step customer wizard for service scheduling, with administrative oversight via dashboards.
+- **ORBIT Weather System:** Displays real-time weather and radar, with ZIP code search functionality.
+- **Crew Management System:** Dashboard for crew leads, offering time tracking, job notes, and incident reporting.
+- **Internal Messaging System:** Real-time chat widget using Socket.IO, supporting speech-to-text, typing indicators, and role-based badges.
+- **PDF Document Center:** Manages contracts, estimates, invoices, and proposals with digital signatures via `react-signature-canvas`, ensuring role-based authentication and tenant scoping.
+- **Franchise Management System:** Supports multi-location franchises with territory licensing, tiered pricing, and Partner API integration, including CRUD operations, location management, and API credential generation.
+- **System Health Monitoring:** Real-time health dashboard for Admin, Owner, and Developer roles, monitoring database, payment, email, blockchain, and AI services.
+- **SEO Management System:** Comprehensive SEO tracking and editing accessible by Admin, Owner, and Developer. Features meta tag management, Open Graph tags, Twitter Card tags, structured data, canonical URLs, and SEO scoring with audit history. Enforces tenant isolation.
+- **Color Library System:** A curated database of professional paint colors from brands like Sherwin-Williams and Benjamin Moore. Includes an interactive color wheel, HSL-based classification, color detail flip cards, search, and integration with the estimate flow.
+- **AI Color Visualizer:** A canvas-based tool enabling customers to upload wall photos and preview paint colors with intensity adjustment. Uses OpenAI Vision API for contextual design insights.
+- **Room Scanner (Square Footage Estimator):** A "Coming Soon" camera-based tool for estimating room dimensions.
+- **Painting Glossary:** A comprehensive A-Z glossary of painting and interior trim terms with search, category filtering, and alphabetical navigation.
+- **Layout Switcher (Developer):** A developer dashboard feature to toggle between Bento grid and minimalist homepage layouts for demo purposes.
 
 ### System Design Choices
-- **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management, Internal Messaging, Document Center, CRM Calendar, and Franchise Management.
-- **File Structure:** `client/src` for frontend, `shared/schema.ts` for database models, and `server/` for data access and API routes.
-- **Authentication System:** Hybrid architecture with custom email/password for customers and PIN-based access for staff. Key files: `server/customAuth.ts`, `client/src/pages/auth.tsx`, `client/src/hooks/use-auth.ts`, `client/src/components/ui/navbar.tsx`.
+- **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, and tables for CRM, Crew Management, Messaging, and Franchise Management.
+- **File Structure:** `client/src` for frontend, `shared/schema.ts` for database models, and `server/` for data access and APIs.
+- **Authentication System:** Hybrid approach with custom email/password for customers and PIN-based access for staff.
 
 ### Security Measures
-- **PIN Rate Limiting:** 5 attempts within 15-minute window, exponential backoff lockout (2^n minutes), lockout counter persists across attempts for escalation, successful login clears history. Implemented in `/api/auth/pin/verify` and `/api/auth/pin/change` endpoints.
-- **Database Indexes:** Performance and security indexes on users (tenantId, role), bookings (tenantId, userId, scheduledDate, status, customerEmail), seoPages (tenantId, pagePath composite), leads (tenantId), estimates (tenantId), crmDeals (tenantId, stage composite).
-- **Security Headers:** Helmet.js configured with X-Frame-Options, X-Content-Type-Options, HSTS, and other HTTP security headers. CSP disabled for Vite dev compatibility.
-- **Input Validation:** Zod schema validation on messaging endpoints (conversations, messages) and booking endpoints with proper 400 error responses.
-- **XSS Sanitization:** Using the `xss` library to sanitize user-controlled fields across the platform: SEO pages (metaTitle, metaDescription, metaKeywords, ogTitle, ogDescription, twitterTitle, twitterDescription, pageTitle), messages (content), CRM deals (title, notes, jobAddress), CRM notes (content), calendar events (title, description, location, notes), and documents (title, description).
-- **Tenant Isolation:** All multi-tenant tables (bookings, documents, conversations, seoPages, leads, estimates, crmDeals) have tenantId columns with database indexes. Storage methods and API routes filter data by tenant using `getTenantFromHostname()` for complete data isolation between tenants.
+- **PIN Rate Limiting:** Implements rate limiting with exponential backoff for PIN authentication.
+- **Database Indexes:** Utilizes performance and security indexes on critical tables.
+- **Security Headers:** Configured with Helmet.js for various HTTP security headers.
+- **Input Validation:** Employs Zod schema validation for all incoming data.
+- **XSS Sanitization:** Uses the `xss` library to sanitize user-controlled input fields.
+- **Tenant Isolation:** Enforces strict tenant isolation for all multi-tenant data through `tenantId` columns and API filtering.
 
 ## External Dependencies
 
-- **Solana/Helius:** For blockchain stamping of document hashes (primary chain).
-- **Darkwave Chain:** Secondary blockchain for dual-chain verification. Uses REST API with HMAC authentication. Endpoints: `/api/hash/submit`, `/api/hallmark/generate`. Key file: `server/darkwave.ts`. Required secrets: `DARKWAVE_API_KEY`, `DARKWAVE_API_SECRET`.
+- **Solana/Helius:** Primary blockchain for document hash stamping.
+- **Darkwave Chain:** Secondary blockchain for dual-chain verification, accessed via REST API with HMAC authentication.
 - **Payments:** Stripe and Coinbase Commerce.
-- **AI:** OpenAI API (for AI assistant features).
-- **Orbit Ecosystem:** Custom integration for payroll sync, staffing, code snippets, and health checks.
+- **AI:** OpenAI API for AI assistant features.
+- **Orbit Ecosystem:** Custom integrations for payroll sync, staffing, code snippets, and health checks.
 - **Open-Meteo API:** Provides real-time weather data.
 - **RainViewer API:** Provides animated weather radar tiles.
 - **OpenStreetMap:** Used for base maps in the weather radar modal.
@@ -82,30 +66,4 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 - **Embla Carousel:** For horizontal carousels.
 - **Radix UI:** For accessible UI components.
 - **Drizzle:** For database schema definition.
-- **Custom Auth:** Email/password authentication with bcrypt hashing and session management.
-
-## Changelog
-
-### December 2025 (Latest)
-- **Demo Viewer Dashboard (Jenn)**: Added dedicated demo viewer role with PIN 777 for Jenn. Features 3-step welcome modal explaining the complete turnkey SaaS platform and Orbit/Darkwave Studios ecosystem integration. Dashboard provides read-only access to all role dashboards with quick stats and customer-facing tools navigation.
-- **Demo Mode System**: Added comprehensive demo mode for PaintPros tenant with sample data for bookings (3), CRM deals (5), calendar events (4), and crew members (4). Includes DemoProvider context, DemoModeBanner component showing "Demo Mode" indicator, and read-only sample data showcase for prospects.
-- **Public Layout Toggle**: Added floating layout toggle button on PaintPros demo homepage allowing visitors to preview Bento vs Minimalist layout styles. Persists selection in localStorage and reloads page to apply.
-- **HeroSlideshow Integration**: Added interactive customer slideshow to NPP homepage with 8 feature slides (AI Visualizer, Color Library, Room Scanner, Glossary, Estimate, Booking, Portal)
-- **Team Page Staff Slideshow**: Staff tutorial slideshow at /team accessible from footer Team link with PIN authentication
-- **Fixed Navigation**: Hamburger menu now stays fixed at top of screen with transparent background
-- **Homepage Structure Update**: Added "See How It Works" section with HeroSlideshow below hero banner
-- **AI Color Visualizer**: Canvas-based color preview tool with OpenAI Vision analysis for wall photos
-- **Room Scanner**: Placeholder for upcoming square footage estimation feature (Coming Soon)
-- **Homepage Updates**: Updated hero tagline to highlight AI tools ("AI Room Visualizer · Square Footage Scanner · Instant Estimates")
-- **Navigation**: Added Home link as first item in hamburger menu
-- **UI Fixes**: Removed header border line, fixed menu scroll containment
-- **Footer**: Removed Investors link from NPP tenant footer (demo-only feature)
-- **Theme**: Removed dark mode completely per client preference for better readability
-
-### PIN Authentication Reference
-- **Developer**: 0424
-- **Owner**: 1111  
-- **Project Manager**: 2222
-- **Crew Lead**: 3333
-- **Ops Manager (Admin)**: 4444
-- **Demo Viewer (Jenn)**: 7777
+- **Custom Auth:** Email/password authentication with bcrypt and session management.
