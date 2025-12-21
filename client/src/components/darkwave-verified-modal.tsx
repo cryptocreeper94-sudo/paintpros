@@ -1,9 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, ExternalLink, Hash, Award, CheckCircle2, Waves } from "lucide-react";
+import { ShieldCheck, ExternalLink, CheckCircle2, Waves } from "lucide-react";
 import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { FOUNDING_ASSETS } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
 import darkwaveLogo from "@assets/generated_images/darkwave_blockchain_logo_icon.png";
 
@@ -41,10 +40,6 @@ export function DarkwaveVerifiedModal({ isOpen, onClose }: DarkwaveVerifiedModal
         .catch(() => setLatestRelease(null));
     }
   }, [isOpen, isDemo]);
-  
-  const tenantAsset = isDemo ? FOUNDING_ASSETS.PAINTPROS_PLATFORM : FOUNDING_ASSETS.NPP_GENESIS;
-  const serialNumber = tenantAsset.number;
-  const displaySerial = serialNumber.replace('#', '');
   
   const darkwaveTxSig = latestRelease?.darkwaveTxSignature || latestRelease?.hallmarkDetails?.darkwaveTxSignature;
   const darkwaveExplorerUrl = darkwaveTxSig 
@@ -138,26 +133,6 @@ export function DarkwaveVerifiedModal({ isOpen, onClose }: DarkwaveVerifiedModal
               </div>
             </GlassCard>
           )}
-
-          {/* Company Badge & Serial - Compact */}
-          <GlassCard className="p-2.5 bg-gradient-to-br from-[#7C3AED]/5 to-[#3B82F6]/5 border-white/10">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#3B82F6] text-white text-[8px] font-bold uppercase tracking-wider">
-                <Award className="w-2.5 h-2.5" />
-                {tenantAsset.badge}
-              </div>
-              <div className="flex items-center gap-1">
-                <Hash className="w-3 h-3 text-muted-foreground" />
-                <span className="font-mono text-xs font-bold text-purple-700 dark:text-purple-400">{displaySerial}</span>
-              </div>
-              {latestRelease?.version && (
-                <div className="flex items-center gap-1 ml-auto">
-                  <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
-                  <CheckCircle2 className="w-2.5 h-2.5 text-[#7C3AED]" />
-                </div>
-              )}
-            </div>
-          </GlassCard>
 
           <p className="text-[8px] text-muted-foreground/50 text-center">
             Powered by Darkwave Chain + Solana for dual-chain verification
