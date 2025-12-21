@@ -68,7 +68,8 @@ The design aims for a "Sparkle and Shine" aesthetic with a Bento Grid layout, ti
 
 ## External Dependencies
 
-- **Solana/Helius:** For blockchain stamping of document hashes.
+- **Solana/Helius:** For blockchain stamping of document hashes (primary chain).
+- **Darkwave Chain:** Secondary blockchain for dual-chain verification. Uses REST API with HMAC authentication. Endpoints: `/api/hash/submit`, `/api/hallmark/generate`. Key file: `server/darkwave.ts`. Required secrets: `DARKWAVE_API_KEY`, `DARKWAVE_API_SECRET`.
 - **Payments:** Stripe and Coinbase Commerce.
 - **AI:** OpenAI API (for AI assistant features).
 - **Orbit Ecosystem:** Custom integration for payroll sync, staffing, code snippets, and health checks.

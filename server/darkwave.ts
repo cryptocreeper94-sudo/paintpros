@@ -105,14 +105,21 @@ export async function submitHashToDarkwave(
 
     const data = await response.json();
     
-    console.log(`[Darkwave] Hash submitted successfully. TX: ${data.txHash || 'pending'}`);
+    const txHash = data.txHash || data.transactionHash;
+    
+    if (!txHash) {
+      console.warn('[Darkwave] No transaction hash returned from API');
+      return { success: false, error: 'No transaction hash returned' };
+    }
+    
+    console.log(`[Darkwave] Hash submitted successfully. TX: ${txHash}`);
     
     return {
       success: true,
-      txHash: data.txHash || data.transactionHash,
+      txHash,
       blockNumber: data.blockNumber,
       timestamp: data.timestamp,
-      explorerUrl: data.explorerUrl || `https://explorer.darkwave.io/tx/${data.txHash}`,
+      explorerUrl: data.explorerUrl || `https://explorer.darkwave.io/tx/${txHash}`,
     };
   } catch (error) {
     console.error('[Darkwave] Error submitting hash:', error);
