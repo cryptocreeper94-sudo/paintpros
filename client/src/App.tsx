@@ -40,6 +40,8 @@ import ColorLibrary from "@/pages/color-library";
 import Resources from "@/pages/resources";
 import Glossary from "@/pages/glossary";
 import DemoViewer from "@/pages/demo-viewer";
+import TrialSignup from "@/pages/trial-signup";
+import TrialPortal from "@/pages/trial-portal";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -91,6 +93,8 @@ function Router() {
       <Route path="/color-library" component={ColorLibrary} />
       <Route path="/resources" component={Resources} />
       <Route path="/demo-viewer" component={DemoViewer} />
+      <Route path="/start-trial" component={TrialSignup} />
+      <Route path="/trial/:slug" component={TrialPortal} />
       <Route component={NotFound} />
     </Switch>
   );
