@@ -286,6 +286,7 @@ export default function TrialPortal() {
             <div className="flex items-center gap-3">
               <TimeRemaining hours={trial.hoursRemaining} />
               <Button 
+                onClick={() => setLocation(`/trial/${slug}/upgrade`)}
                 data-testid="button-upgrade"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
@@ -382,7 +383,10 @@ export default function TrialPortal() {
                         <p className="text-amber-700 mt-1 mb-4">
                           Don't lose your progress! Upgrade now to keep your portal, leads, and all customizations.
                         </p>
-                        <Button data-testid="button-upgrade-expired">
+                        <Button 
+                          onClick={() => setLocation(`/trial/${slug}/upgrade`)}
+                          data-testid="button-upgrade-expired"
+                        >
                           Upgrade to Keep Your Portal
                         </Button>
                       </div>
@@ -447,7 +451,7 @@ export default function TrialPortal() {
                   <Button 
                     className="w-full"
                     data-testid="button-view-pricing"
-                    onClick={() => setLocation('/pricing')}
+                    onClick={() => setLocation(`/trial/${slug}/upgrade`)}
                   >
                     View Pricing Plans
                   </Button>

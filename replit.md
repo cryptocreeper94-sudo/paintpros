@@ -47,11 +47,25 @@ The trial system implements a "10-minute portal" approach where painters get a f
 - **Onboarding Steps:** Tracked via `completedSteps` array (setup, visualizer, estimate, stamp) for guided Trial Mission Control checklist.
 - **API Endpoints:**
   - `POST /api/trial/signup` - Create new trial with company info
+  - `GET /api/trial/plans` - Get available pricing plans (must be registered before :slug routes)
   - `GET /api/trial/:slug` - Get trial by URL slug with usage/progress info
   - `PATCH /api/trial/:id` - Update trial branding settings
   - `POST /api/trial/:id/complete-step` - Mark onboarding step complete
   - `POST /api/trial/:id/increment-usage` - Track usage with limit enforcement
   - `GET /api/trial/:id/usage-logs` - Get activity history
+  - `POST /api/trial/:id/upgrade` - Create Stripe checkout session for subscription
+  - `POST /api/trial/:id/convert` - Convert trial to paid tenant after successful payment
+
+### Trial Upgrade System
+Seamless upgrade flow from trial to paid subscription:
+- **Pricing Tiers:** Starter ($49/mo), Professional ($99/mo - most popular), Enterprise ($199/mo)
+- **Flow:** Trial portal → Upgrade page → Stripe checkout → Success page → Conversion → Back to portal
+- **Data Preservation:** All trial data (branding, leads, estimates, blockchain stamps) carries over to paid account
+- **Frontend Pages:**
+  - `/trial/:slug/upgrade` - Pricing page with 3 plan cards
+  - `/trial/:slug/upgrade-success` - Post-payment success page with conversion
+- **Stripe Integration:** Uses checkout.sessions.create for subscription mode, passes plan ID in success URL
+- **Conversion Protection:** Validates plan ID, session ID, prevents double conversion, handles errors gracefully
 
 ### System Design Choices
 - **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, and tables for CRM, Crew Management, Messaging, and Franchise Management.

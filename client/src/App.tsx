@@ -42,6 +42,8 @@ import Glossary from "@/pages/glossary";
 import DemoViewer from "@/pages/demo-viewer";
 import TrialSignup from "@/pages/trial-signup";
 import TrialPortal from "@/pages/trial-portal";
+import TrialUpgrade from "@/pages/trial-upgrade";
+import TrialUpgradeSuccess from "@/pages/trial-upgrade-success";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -95,6 +97,8 @@ function Router() {
       <Route path="/demo-viewer" component={DemoViewer} />
       <Route path="/start-trial" component={TrialSignup} />
       <Route path="/trial/:slug" component={TrialPortal} />
+      <Route path="/trial/:slug/upgrade" component={TrialUpgrade} />
+      <Route path="/trial/:slug/upgrade-success" component={TrialUpgradeSuccess} />
       <Route component={NotFound} />
     </Switch>
   );

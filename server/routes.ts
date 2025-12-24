@@ -6218,6 +6218,38 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       res.status(500).json({ error: "Failed to create trial" });
     }
   });
+
+  // ============ TRIAL UPGRADE ENDPOINTS (MUST COME BEFORE :slug ROUTES) ============
+  
+  // Pricing plans for trial upgrade
+  const UPGRADE_PLANS = {
+    starter: {
+      id: 'starter',
+      name: 'Starter',
+      price: 49,
+      interval: 'month',
+      features: ['Unlimited estimates', 'Up to 50 leads/month', '5 blockchain stamps/month', 'Basic branding']
+    },
+    professional: {
+      id: 'professional', 
+      name: 'Professional',
+      price: 99,
+      interval: 'month',
+      features: ['Unlimited estimates', 'Unlimited leads', '25 blockchain stamps/month', 'Full branding', 'Priority support']
+    },
+    enterprise: {
+      id: 'enterprise',
+      name: 'Enterprise',
+      price: 199,
+      interval: 'month',
+      features: ['Everything in Professional', 'Unlimited blockchain stamps', 'White-label domain', 'API access', 'Dedicated support']
+    }
+  };
+  
+  // GET /api/trial/plans - Get available upgrade plans (MUST BE BEFORE :slug)
+  app.get("/api/trial/plans", async (req, res) => {
+    res.json(Object.values(UPGRADE_PLANS));
+  });
   
   // GET /api/trial/:slug - Get trial tenant by slug
   app.get("/api/trial/:slug", async (req, res) => {
@@ -6422,6 +6454,221 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error expiring trial tenants:", error);
       res.status(500).json({ error: "Failed to expire trials" });
+    }
+  });
+
+  // POST /api/trial/:id/upgrade - Create upgrade checkout session
+  app.post("/api/trial/:id/upgrade", async (req, res) => {
+    try {
+      if (!stripe) {
+        res.status(500).json({ error: "Payment processing not configured" });
+        return;
+      }
+      
+      const { planId } = req.body;
+      if (!planId || !UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS]) {
+        res.status(400).json({ error: "Invalid plan selected" });
+        return;
+      }
+      
+      const trial = await storage.getTrialTenantById(req.params.id);
+      if (!trial) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      const plan = UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS];
+      const host = `https://${req.get("host")}`;
+      
+      // Create Stripe checkout session for subscription
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: `PaintPros.io ${plan.name} Plan`,
+                description: `Monthly subscription for ${trial.companyName}`,
+              },
+              unit_amount: plan.price * 100,
+              recurring: {
+                interval: 'month',
+              },
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "subscription",
+        success_url: `${host}/trial/${trial.companySlug}/upgrade-success?session_id={CHECKOUT_SESSION_ID}&plan=${plan.id}`,
+        cancel_url: `${host}/trial/${trial.companySlug}?upgrade=cancelled`,
+        customer_email: trial.ownerEmail,
+        metadata: {
+          trialId: trial.id,
+          trialSlug: trial.companySlug,
+          planId: plan.id,
+          type: "trial_upgrade",
+        },
+        subscription_data: {
+          metadata: {
+            trialId: trial.id,
+            companyName: trial.companyName,
+            planId: plan.id,
+          },
+        },
+      });
+      
+      // Log the upgrade attempt
+      await storage.logTrialUsage({
+        trialTenantId: trial.id,
+        action: 'upgrade_initiated',
+        resourceType: 'subscription',
+        metadata: { planId: plan.id, sessionId: session.id }
+      });
+      
+      res.json({ 
+        sessionId: session.id, 
+        url: session.url,
+        plan: plan
+      });
+    } catch (error: any) {
+      console.error("Error creating upgrade checkout:", error);
+      res.status(500).json({ error: error.message || "Failed to create checkout session" });
+    }
+  });
+  
+  // POST /api/trial/:id/convert - Convert trial to full tenant (called after successful payment)
+  app.post("/api/trial/:id/convert", async (req, res) => {
+    try {
+      const { planId, stripeSessionId } = req.body;
+      
+      // Validate plan ID
+      const validPlans = ['starter', 'professional', 'enterprise'];
+      if (!planId || !validPlans.includes(planId)) {
+        res.status(400).json({ error: "Invalid plan selected" });
+        return;
+      }
+      
+      // Validate session ID exists
+      if (!stripeSessionId) {
+        res.status(400).json({ error: "Missing payment session" });
+        return;
+      }
+      
+      const trial = await storage.getTrialTenantById(req.params.id);
+      if (!trial) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      // Prevent double conversion
+      if (trial.status === 'converted') {
+        res.json({
+          success: true,
+          message: "Trial already converted",
+          tenant: {
+            id: `tenant_${trial.companySlug}`,
+            companyName: trial.companyName,
+            companySlug: trial.companySlug,
+            ownerEmail: trial.ownerEmail,
+            planId,
+          }
+        });
+        return;
+      }
+      
+      // Verify status is active or expired (expired can still upgrade)
+      if (trial.status !== 'active' && trial.status !== 'expired') {
+        res.status(400).json({ error: "Trial cannot be upgraded" });
+        return;
+      }
+      
+      // Verify Stripe session if Stripe is configured
+      let verifiedPlanId = planId;
+      let stripeCustomerId: string | undefined;
+      let stripeSubscriptionId: string | undefined;
+      
+      if (stripe) {
+        try {
+          const session = await stripe.checkout.sessions.retrieve(stripeSessionId);
+          
+          // Verify session is completed
+          if (session.payment_status !== 'paid') {
+            res.status(400).json({ error: "Payment not completed" });
+            return;
+          }
+          
+          // Verify session belongs to this trial
+          if (session.metadata?.trialId !== trial.id) {
+            res.status(400).json({ error: "Invalid payment session" });
+            return;
+          }
+          
+          // Use plan from Stripe metadata (source of truth)
+          if (session.metadata?.planId && validPlans.includes(session.metadata.planId)) {
+            verifiedPlanId = session.metadata.planId;
+          }
+          
+          stripeCustomerId = session.customer as string | undefined;
+          stripeSubscriptionId = session.subscription as string | undefined;
+        } catch (stripeError: any) {
+          console.error("Stripe session verification failed:", stripeError);
+          res.status(400).json({ error: "Could not verify payment" });
+          return;
+        }
+      }
+      
+      // Update trial status to converted
+      await storage.updateTrialTenant(trial.id, { 
+        status: 'converted',
+        convertedAt: new Date(),
+      });
+      
+      // Generate the new tenant ID from the slug
+      const newTenantId = `tenant_${trial.companySlug}`;
+      
+      // Log the conversion
+      await storage.logTrialUsage({
+        trialTenantId: trial.id,
+        action: 'converted_to_paid',
+        resourceType: 'tenant',
+        metadata: { 
+          planId: verifiedPlanId, 
+          newTenantId,
+          stripeSessionId,
+          stripeCustomerId,
+          stripeSubscriptionId
+        }
+      });
+      
+      res.json({
+        success: true,
+        message: "Trial successfully converted to paid account",
+        tenant: {
+          id: newTenantId,
+          companyName: trial.companyName,
+          companySlug: trial.companySlug,
+          ownerEmail: trial.ownerEmail,
+          planId: verifiedPlanId,
+        },
+        // All trial data is preserved and accessible
+        preservedData: {
+          branding: {
+            primaryColor: trial.primaryColor,
+            accentColor: trial.accentColor,
+            logoUrl: trial.logoUrl,
+          },
+          usage: {
+            estimatesCreated: trial.estimatesUsed,
+            leadsCaptured: trial.leadsUsed,
+            blockchainStamps: trial.blockchainStampsUsed,
+          },
+          portalUrl: `/trial/${trial.companySlug}`, // Will redirect to full portal
+        }
+      });
+    } catch (error) {
+      console.error("Error converting trial:", error);
+      res.status(500).json({ error: "Failed to convert trial" });
     }
   });
 
