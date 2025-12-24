@@ -37,6 +37,21 @@ The design adheres to a "Sparkle and Shine" aesthetic, utilizing a Bento Grid la
 - **Painting Glossary:** A comprehensive A-Z glossary of painting and interior trim terms with search, category filtering, and alphabetical navigation.
 - **Layout Switcher (Developer):** A developer dashboard feature to toggle between Bento grid and minimalist homepage layouts for demo purposes.
 - **Dual-Chain Verification Shields:** Two blockchain verification cards on the demo homepage - Solana (green/purple gradient) and Darkwave (purple/blue gradient). Each opens a modal with QR code linking to the respective blockchain explorer for document verification.
+- **Self-Service Trial System:** 72-hour sandbox trials with usage limits (1 estimate, 3 leads, 1 blockchain stamp). Auto-seeded sample data lets painters experience the platform immediately. Trial tenants get their own branded portal URL at `/trial/{company-slug}` with customizable colors and logo.
+
+### Trial Tenant Architecture
+The trial system implements a "10-minute portal" approach where painters get a fully functional sandbox immediately:
+- **Database Schema:** `trial_tenants` table stores owner info, company branding, usage limits, onboarding progress, and engagement metrics. `trial_usage_log` tracks all actions for analytics.
+- **Usage Limits:** 1 estimate, 3 leads, 1 blockchain stamp - enforced at API level with upgrade prompts when limits are reached.
+- **Expiration:** 72 hours from signup, with automatic status updates to 'expired' when checked.
+- **Onboarding Steps:** Tracked via `completedSteps` array (setup, visualizer, estimate, stamp) for guided Trial Mission Control checklist.
+- **API Endpoints:**
+  - `POST /api/trial/signup` - Create new trial with company info
+  - `GET /api/trial/:slug` - Get trial by URL slug with usage/progress info
+  - `PATCH /api/trial/:id` - Update trial branding settings
+  - `POST /api/trial/:id/complete-step` - Mark onboarding step complete
+  - `POST /api/trial/:id/increment-usage` - Track usage with limit enforcement
+  - `GET /api/trial/:id/usage-logs` - Get activity history
 
 ### System Design Choices
 - **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, and tables for CRM, Crew Management, Messaging, and Franchise Management.

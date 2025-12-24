@@ -6098,6 +6098,333 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // ============ TRIAL TENANTS ============
+  
+  // Zod schemas for trial tenant validation
+  const trialSignupSchema = z.object({
+    ownerEmail: z.string().email("Valid email required"),
+    ownerName: z.string().min(1, "Name required").max(100),
+    ownerPhone: z.string().max(20).optional().nullable(),
+    companyName: z.string().min(1, "Company name required").max(100),
+    companyCity: z.string().max(100).optional().nullable(),
+    companyState: z.string().max(50).optional().nullable(),
+    primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+    accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  });
+  
+  const trialUpdateSchema = z.object({
+    companyName: z.string().min(1).max(100).optional(),
+    companyCity: z.string().max(100).optional().nullable(),
+    companyState: z.string().max(50).optional().nullable(),
+    companyPhone: z.string().max(20).optional().nullable(),
+    primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+    accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+    logoUrl: z.string().url().optional().nullable(),
+  });
+  
+  // POST /api/trial/signup - Create a new trial tenant
+  app.post("/api/trial/signup", async (req, res) => {
+    try {
+      // Validate input with Zod
+      const parsed = trialSignupSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
+        return;
+      }
+      
+      const { ownerEmail, ownerName, ownerPhone, companyName, companyCity, companyState, primaryColor, accentColor } = parsed.data;
+      
+      // Check if email already has a trial
+      const existingTrial = await storage.getTrialTenantByEmail(ownerEmail);
+      if (existingTrial) {
+        if (existingTrial.status === 'active') {
+          res.status(400).json({ 
+            error: "Trial already exists", 
+            trialId: existingTrial.id,
+            slug: existingTrial.companySlug,
+            expiresAt: existingTrial.trialExpiresAt
+          });
+          return;
+        }
+      }
+      
+      // Generate URL-safe slug from company name with timestamp for uniqueness
+      const baseSlug = companyName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 40);
+      
+      // Add random suffix for uniqueness (prevents race conditions)
+      const randomSuffix = Math.random().toString(36).substring(2, 6);
+      let slug = `${baseSlug}-${randomSuffix}`;
+      
+      // Fallback check in case of collision
+      let counter = 1;
+      while (await storage.getTrialTenantBySlug(slug) && counter < 10) {
+        slug = `${baseSlug}-${randomSuffix}${counter}`;
+        counter++;
+      }
+      
+      // Calculate 72-hour expiration
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+      
+      const trial = await storage.createTrialTenant({
+        ownerEmail,
+        ownerName,
+        ownerPhone: ownerPhone || null,
+        companyName,
+        companySlug: slug,
+        companyCity: companyCity || null,
+        companyState: companyState || null,
+        companyPhone: null,
+        companyEmail: ownerEmail,
+        logoUrl: null,
+        primaryColor: primaryColor || '#4A5D3E',
+        accentColor: accentColor || '#5A6D4E',
+        status: 'active',
+        trialExpiresAt: expiresAt,
+        estimatesLimit: 1,
+        leadsLimit: 3,
+        blockchainStampsLimit: 1,
+      });
+      
+      // Log the trial creation
+      await storage.logTrialUsage({
+        trialTenantId: trial.id,
+        action: 'trial_created',
+        resourceType: 'trial',
+        resourceId: trial.id,
+        metadata: { source: 'api_signup' }
+      });
+      
+      res.status(201).json({
+        success: true,
+        trial: {
+          id: trial.id,
+          slug: trial.companySlug,
+          expiresAt: trial.trialExpiresAt,
+          limits: {
+            estimates: trial.estimatesLimit,
+            leads: trial.leadsLimit,
+            blockchainStamps: trial.blockchainStampsLimit
+          }
+        },
+        portalUrl: `/trial/${trial.companySlug}`
+      });
+    } catch (error) {
+      console.error("Error creating trial tenant:", error);
+      res.status(500).json({ error: "Failed to create trial" });
+    }
+  });
+  
+  // GET /api/trial/:slug - Get trial tenant by slug
+  app.get("/api/trial/:slug", async (req, res) => {
+    try {
+      const trial = await storage.getTrialTenantBySlug(req.params.slug);
+      if (!trial) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      // Check if expired
+      const now = new Date();
+      if (trial.status === 'active' && new Date(trial.trialExpiresAt) < now) {
+        await storage.updateTrialTenant(trial.id, { status: 'expired' });
+        trial.status = 'expired';
+      }
+      
+      // Calculate time remaining
+      const expiresAt = new Date(trial.trialExpiresAt);
+      const hoursRemaining = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)));
+      
+      res.json({
+        ...trial,
+        hoursRemaining,
+        isExpired: trial.status === 'expired' || hoursRemaining === 0,
+        usage: {
+          estimates: { used: trial.estimatesUsed, limit: trial.estimatesLimit },
+          leads: { used: trial.leadsUsed, limit: trial.leadsLimit },
+          blockchainStamps: { used: trial.blockchainStampsUsed, limit: trial.blockchainStampsLimit }
+        },
+        progress: {
+          currentStep: trial.onboardingStep,
+          completedSteps: trial.completedSteps || []
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching trial tenant:", error);
+      res.status(500).json({ error: "Failed to fetch trial" });
+    }
+  });
+  
+  // PATCH /api/trial/:id - Update trial tenant settings
+  app.patch("/api/trial/:id", async (req, res) => {
+    try {
+      // Validate input with Zod
+      const parsed = trialUpdateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
+        return;
+      }
+      
+      const updates: Record<string, any> = {};
+      Object.entries(parsed.data).forEach(([key, value]) => {
+        if (value !== undefined) {
+          updates[key] = value;
+        }
+      });
+      
+      if (Object.keys(updates).length === 0) {
+        res.status(400).json({ error: "No valid updates provided" });
+        return;
+      }
+      
+      const trial = await storage.updateTrialTenant(req.params.id, updates);
+      if (!trial) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      res.json(trial);
+    } catch (error) {
+      console.error("Error updating trial tenant:", error);
+      res.status(500).json({ error: "Failed to update trial" });
+    }
+  });
+  
+  // Zod schema for step completion
+  const trialStepSchema = z.object({
+    step: z.enum(['setup', 'visualizer', 'estimate', 'stamp'], {
+      errorMap: () => ({ message: "Step must be one of: setup, visualizer, estimate, stamp" })
+    }),
+  });
+  
+  // Zod schema for usage increment
+  const trialUsageSchema = z.object({
+    field: z.enum(['estimatesUsed', 'leadsUsed', 'blockchainStampsUsed'], {
+      errorMap: () => ({ message: "Field must be one of: estimatesUsed, leadsUsed, blockchainStampsUsed" })
+    }),
+  });
+  
+  // POST /api/trial/:id/complete-step - Mark a trial step as complete
+  app.post("/api/trial/:id/complete-step", async (req, res) => {
+    try {
+      const parsed = trialStepSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
+        return;
+      }
+      const { step } = parsed.data;
+      
+      const trial = await storage.markTrialStepComplete(req.params.id, step);
+      if (!trial) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      // Log the step completion
+      await storage.logTrialUsage({
+        trialTenantId: trial.id,
+        action: 'step_completed',
+        resourceType: 'onboarding',
+        resourceId: step,
+        metadata: { step, totalCompleted: trial.completedSteps?.length || 0 }
+      });
+      
+      res.json({
+        completedSteps: trial.completedSteps,
+        currentStep: trial.onboardingStep
+      });
+    } catch (error) {
+      console.error("Error completing trial step:", error);
+      res.status(500).json({ error: "Failed to complete step" });
+    }
+  });
+  
+  // POST /api/trial/:id/increment-usage - Increment usage counter
+  app.post("/api/trial/:id/increment-usage", async (req, res) => {
+    try {
+      const parsed = trialUsageSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
+        return;
+      }
+      const { field } = parsed.data;
+      
+      // Check current limits first
+      const existing = await storage.getTrialTenantById(req.params.id);
+      if (!existing) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      const limitField = field.replace('Used', 'Limit') as 'estimatesLimit' | 'leadsLimit' | 'blockchainStampsLimit';
+      const currentUsage = existing[field as 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'];
+      const limit = existing[limitField];
+      
+      if (currentUsage >= limit) {
+        res.status(403).json({ 
+          error: "Usage limit reached",
+          field,
+          used: currentUsage,
+          limit,
+          upgradeRequired: true
+        });
+        return;
+      }
+      
+      const trial = await storage.incrementTrialUsage(req.params.id, field as 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed');
+      if (!trial) {
+        res.status(404).json({ error: "Trial not found" });
+        return;
+      }
+      
+      // Log the usage
+      await storage.logTrialUsage({
+        trialTenantId: trial.id,
+        action: field.replace('Used', '_used'),
+        resourceType: field.replace('Used', '').toLowerCase(),
+        metadata: { newCount: trial[field as 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'] }
+      });
+      
+      res.json({
+        success: true,
+        usage: {
+          estimates: { used: trial.estimatesUsed, limit: trial.estimatesLimit },
+          leads: { used: trial.leadsUsed, limit: trial.leadsLimit },
+          blockchainStamps: { used: trial.blockchainStampsUsed, limit: trial.blockchainStampsLimit }
+        }
+      });
+    } catch (error) {
+      console.error("Error incrementing trial usage:", error);
+      res.status(500).json({ error: "Failed to increment usage" });
+    }
+  });
+  
+  // GET /api/trial/:id/usage-logs - Get trial usage history
+  app.get("/api/trial/:id/usage-logs", async (req, res) => {
+    try {
+      const logs = await storage.getTrialUsageLogs(req.params.id);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching trial usage logs:", error);
+      res.status(500).json({ error: "Failed to fetch usage logs" });
+    }
+  });
+  
+  // POST /api/trial/expire-all - Expire all trials past their expiration (admin endpoint)
+  app.post("/api/trial/expire-all", async (req, res) => {
+    try {
+      const count = await storage.expireTrialTenants();
+      res.json({ expired: count });
+    } catch (error) {
+      console.error("Error expiring trial tenants:", error);
+      res.status(500).json({ error: "Failed to expire trials" });
+    }
+  });
+
   return httpServer;
 }
 
