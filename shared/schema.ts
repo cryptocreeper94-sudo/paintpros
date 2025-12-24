@@ -1753,3 +1753,105 @@ export const insertCustomerColorSelectionSchema = createInsertSchema(customerCol
 
 export type InsertCustomerColorSelection = z.infer<typeof insertCustomerColorSelectionSchema>;
 export type CustomerColorSelection = typeof customerColorSelections.$inferSelect;
+
+// Trial Tenants - Self-service trial signup with usage limits
+export const trialTenants = pgTable("trial_tenants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Owner info
+  ownerEmail: text("owner_email").notNull(),
+  ownerName: text("owner_name").notNull(),
+  ownerPhone: text("owner_phone"),
+  
+  // Company info (for their portal)
+  companyName: text("company_name").notNull(),
+  companySlug: text("company_slug").notNull().unique(), // URL-friendly unique identifier
+  companyCity: text("company_city"),
+  companyState: text("company_state"),
+  companyPhone: text("company_phone"),
+  companyEmail: text("company_email"),
+  logoUrl: text("logo_url"),
+  
+  // Theme customization
+  primaryColor: text("primary_color").default("#4A5D3E"), // Default army green
+  accentColor: text("accent_color").default("#5A6D4E"),
+  
+  // Trial status
+  status: text("status").notNull().default("active"), // 'active', 'expired', 'converted', 'cancelled'
+  trialStartedAt: timestamp("trial_started_at").defaultNow().notNull(),
+  trialExpiresAt: timestamp("trial_expires_at").notNull(), // 72 hours from start
+  convertedAt: timestamp("converted_at"),
+  
+  // Usage limits & tracking
+  estimatesUsed: integer("estimates_used").default(0).notNull(),
+  estimatesLimit: integer("estimates_limit").default(1).notNull(),
+  leadsUsed: integer("leads_used").default(0).notNull(),
+  leadsLimit: integer("leads_limit").default(3).notNull(),
+  blockchainStampsUsed: integer("blockchain_stamps_used").default(0).notNull(),
+  blockchainStampsLimit: integer("blockchain_stamps_limit").default(1).notNull(),
+  
+  // Onboarding progress
+  onboardingStep: integer("onboarding_step").default(1).notNull(), // 1-5 steps
+  completedSteps: text("completed_steps").array().default(sql`ARRAY[]::text[]`), // ['setup', 'visualizer', 'estimate', 'stamp']
+  
+  // Engagement tracking
+  lastActivityAt: timestamp("last_activity_at"),
+  totalPageViews: integer("total_page_views").default(0),
+  
+  // Sample data seeded
+  sampleDataSeeded: boolean("sample_data_seeded").default(false),
+  sampleEstimateId: varchar("sample_estimate_id"),
+  sampleLeadId: varchar("sample_lead_id"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_trial_tenants_slug").on(table.companySlug),
+  index("idx_trial_tenants_email").on(table.ownerEmail),
+  index("idx_trial_tenants_status").on(table.status),
+  index("idx_trial_tenants_expires").on(table.trialExpiresAt),
+]);
+
+export const insertTrialTenantSchema = createInsertSchema(trialTenants).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  estimatesUsed: true,
+  leadsUsed: true,
+  blockchainStampsUsed: true,
+  onboardingStep: true,
+  completedSteps: true,
+  lastActivityAt: true,
+  totalPageViews: true,
+  sampleDataSeeded: true,
+  sampleEstimateId: true,
+  sampleLeadId: true,
+  convertedAt: true,
+});
+
+export type InsertTrialTenant = z.infer<typeof insertTrialTenantSchema>;
+export type TrialTenant = typeof trialTenants.$inferSelect;
+
+// Trial usage actions - track what users do in trial
+export const trialUsageLog = pgTable("trial_usage_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  trialTenantId: varchar("trial_tenant_id").references(() => trialTenants.id).notNull(),
+  
+  action: text("action").notNull(), // 'estimate_created', 'lead_captured', 'stamp_used', 'visualizer_used', 'page_view'
+  resourceType: text("resource_type"), // 'estimate', 'lead', 'stamp', 'color'
+  resourceId: varchar("resource_id"),
+  metadata: jsonb("metadata"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_trial_usage_tenant").on(table.trialTenantId),
+  index("idx_trial_usage_action").on(table.action),
+]);
+
+export const insertTrialUsageLogSchema = createInsertSchema(trialUsageLog).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertTrialUsageLog = z.infer<typeof insertTrialUsageLogSchema>;
+export type TrialUsageLog = typeof trialUsageLog.$inferSelect;

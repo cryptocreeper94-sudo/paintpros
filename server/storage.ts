@@ -51,6 +51,8 @@ import {
   type AppointmentReminder, type InsertAppointmentReminder, appointmentReminders,
   type PaintColor, type InsertPaintColor, paintColors,
   type CustomerColorSelection, type InsertCustomerColorSelection, customerColorSelections,
+  type TrialTenant, type InsertTrialTenant, trialTenants,
+  type TrialUsageLog, type InsertTrialUsageLog, trialUsageLog,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -394,6 +396,21 @@ export interface IStorage {
   // Customer Color Selections
   createColorSelection(selection: InsertCustomerColorSelection): Promise<CustomerColorSelection>;
   getColorSelectionsByEstimate(estimateId: string): Promise<CustomerColorSelection[]>;
+  
+  // Trial Tenants
+  createTrialTenant(tenant: InsertTrialTenant): Promise<TrialTenant>;
+  getTrialTenantById(id: string): Promise<TrialTenant | undefined>;
+  getTrialTenantBySlug(slug: string): Promise<TrialTenant | undefined>;
+  getTrialTenantByEmail(email: string): Promise<TrialTenant | undefined>;
+  getTrialTenants(status?: string): Promise<TrialTenant[]>;
+  updateTrialTenant(id: string, updates: Partial<TrialTenant>): Promise<TrialTenant | undefined>;
+  incrementTrialUsage(id: string, field: 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'): Promise<TrialTenant | undefined>;
+  markTrialStepComplete(id: string, step: string): Promise<TrialTenant | undefined>;
+  expireTrialTenants(): Promise<number>;
+  
+  // Trial Usage Log
+  logTrialUsage(log: InsertTrialUsageLog): Promise<TrialUsageLog>;
+  getTrialUsageLogs(trialTenantId: string): Promise<TrialUsageLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2551,6 +2568,104 @@ export class DatabaseStorage implements IStorage {
   async getColorSelectionsByEstimate(estimateId: string): Promise<CustomerColorSelection[]> {
     return await db.select().from(customerColorSelections)
       .where(eq(customerColorSelections.estimateId, estimateId));
+  }
+
+  // Trial Tenants
+  async createTrialTenant(tenant: InsertTrialTenant): Promise<TrialTenant> {
+    const [result] = await db.insert(trialTenants).values(tenant).returning();
+    return result;
+  }
+
+  async getTrialTenantById(id: string): Promise<TrialTenant | undefined> {
+    const [result] = await db.select().from(trialTenants)
+      .where(eq(trialTenants.id, id));
+    return result;
+  }
+
+  async getTrialTenantBySlug(slug: string): Promise<TrialTenant | undefined> {
+    const [result] = await db.select().from(trialTenants)
+      .where(eq(trialTenants.companySlug, slug));
+    return result;
+  }
+
+  async getTrialTenantByEmail(email: string): Promise<TrialTenant | undefined> {
+    const [result] = await db.select().from(trialTenants)
+      .where(eq(trialTenants.ownerEmail, email));
+    return result;
+  }
+
+  async getTrialTenants(status?: string): Promise<TrialTenant[]> {
+    if (status) {
+      return await db.select().from(trialTenants)
+        .where(eq(trialTenants.status, status))
+        .orderBy(desc(trialTenants.createdAt));
+    }
+    return await db.select().from(trialTenants)
+      .orderBy(desc(trialTenants.createdAt));
+  }
+
+  async updateTrialTenant(id: string, updates: Partial<TrialTenant>): Promise<TrialTenant | undefined> {
+    const [result] = await db.update(trialTenants)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(trialTenants.id, id))
+      .returning();
+    return result;
+  }
+
+  async incrementTrialUsage(id: string, field: 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'): Promise<TrialTenant | undefined> {
+    const [result] = await db.update(trialTenants)
+      .set({ 
+        [field]: sql`${trialTenants[field]} + 1`,
+        lastActivityAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(trialTenants.id, id))
+      .returning();
+    return result;
+  }
+
+  async markTrialStepComplete(id: string, step: string): Promise<TrialTenant | undefined> {
+    const tenant = await this.getTrialTenantById(id);
+    if (!tenant) return undefined;
+    
+    const completedSteps = tenant.completedSteps || [];
+    if (!completedSteps.includes(step)) {
+      completedSteps.push(step);
+    }
+    
+    const [result] = await db.update(trialTenants)
+      .set({ 
+        completedSteps,
+        onboardingStep: completedSteps.length + 1,
+        lastActivityAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(trialTenants.id, id))
+      .returning();
+    return result;
+  }
+
+  async expireTrialTenants(): Promise<number> {
+    const result = await db.update(trialTenants)
+      .set({ status: 'expired', updatedAt: new Date() })
+      .where(and(
+        eq(trialTenants.status, 'active'),
+        sql`${trialTenants.trialExpiresAt} < NOW()`
+      ))
+      .returning();
+    return result.length;
+  }
+
+  // Trial Usage Log
+  async logTrialUsage(log: InsertTrialUsageLog): Promise<TrialUsageLog> {
+    const [result] = await db.insert(trialUsageLog).values(log).returning();
+    return result;
+  }
+
+  async getTrialUsageLogs(trialTenantId: string): Promise<TrialUsageLog[]> {
+    return await db.select().from(trialUsageLog)
+      .where(eq(trialUsageLog.trialTenantId, trialTenantId))
+      .orderBy(desc(trialUsageLog.createdAt));
   }
 }
 
