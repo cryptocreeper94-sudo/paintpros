@@ -30,6 +30,14 @@ The design adheres to a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **Self-Service Trial System:** 72-hour sandbox trials with usage limits and auto-seeded data, providing a branded portal URL (`/trial/{company-slug}`).
 - **Trial Upgrade System:** Seamless upgrade from trial to paid subscription with automated tenant provisioning, data migration, and Stripe integration for various pricing tiers.
 
+### Trade Verticals System
+The platform supports expansion into multiple trade verticals beyond painting:
+- **Supported Trades:** Painting (live), Roofing, HVAC, Electrical, Plumbing, Landscaping, General Contracting
+- **Configuration:** `shared/trade-verticals.ts` defines trade-specific services, estimator fields, terminology, and branding
+- **Placeholder Domains:** roofpros.io, hvacpros.io, electricpros.io, plumbpros.io, landscapepros.io, buildpros.io
+- **Showcase Page:** `/trade-verticals` displays all available trade platforms with status badges
+- **Future Integration:** Tenants will be assigned a tradeType to inherit trade-specific services and branding
+
 ### Royalty Tracking System
 A comprehensive system for tracking royalties across Orbit Ventures' SaaS portfolio (PaintPros.io, Brew and Board, Orbit Staffing). It supports multi-product tracking, revenue/expense management, and automated 50% profit share calculations, integrated with Stripe Connect for automated payouts and blockchain verification on Solana and Darkwave.
 
