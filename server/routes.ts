@@ -6222,28 +6222,72 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
 
   // ============ TRIAL UPGRADE ENDPOINTS (MUST COME BEFORE :slug ROUTES) ============
   
-  // Pricing plans for trial upgrade
+  // Pricing plans for trial upgrade - aligned with B2B licensing
   const UPGRADE_PLANS = {
     starter: {
       id: 'starter',
       name: 'Starter',
-      price: 49,
+      price: 349,
+      setupFee: 5000,
       interval: 'month',
-      features: ['Unlimited estimates', 'Up to 50 leads/month', '5 blockchain stamps/month', 'Basic branding']
+      target: 'Solo contractors, 1 location',
+      features: [
+        'White-label website with Bento Grid design',
+        'Interactive estimator tool',
+        'Basic lead capture & CRM',
+        'Email support (2 business day response)'
+      ],
+      blockchainAddon: { available: true, price: 69 }
     },
     professional: {
       id: 'professional', 
       name: 'Professional',
-      price: 99,
+      price: 549,
+      setupFee: 7000,
       interval: 'month',
-      features: ['Unlimited estimates', 'Unlimited leads', '25 blockchain stamps/month', 'Full branding', 'Priority support']
+      target: 'Growing painters, 1-3 locations',
+      popular: true,
+      features: [
+        'Everything in Starter',
+        'Full analytics dashboard',
+        'Role-based dashboards (Owner, Admin, Project Manager)',
+        'Phone support (24-hour response)',
+        '2 strategy sessions per year',
+        'Blockchain stamping included'
+      ]
+    },
+    franchise: {
+      id: 'franchise',
+      name: 'Franchise Core',
+      price: 799,
+      setupFee: 10000,
+      perLocationFee: 99,
+      interval: 'month',
+      target: 'Multi-location (5+ sites)',
+      features: [
+        'Everything in Professional',
+        'Multi-tenant management console',
+        'Shared asset libraries across locations',
+        'Orbit ecosystem integrations',
+        'Dedicated account manager',
+        'Compliance & audit trail'
+      ]
     },
     enterprise: {
       id: 'enterprise',
       name: 'Enterprise',
-      price: 199,
+      price: 1399,
+      setupFee: 15000,
       interval: 'month',
-      features: ['Everything in Professional', 'Unlimited blockchain stamps', 'White-label domain', 'API access', 'Dedicated support']
+      target: 'Large franchises',
+      features: [
+        'Full brand suppression (Orbit/PaintPros removed)',
+        'API priority access',
+        'Co-branded marketing assets',
+        'SLA guarantees (99.9% uptime)',
+        '4-hour critical response',
+        'Custom contract terms'
+      ]
     }
   };
   
@@ -6481,25 +6525,44 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const plan = UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS];
       const host = `https://${req.get("host")}`;
       
-      // Create Stripe checkout session for subscription
+      // Build line items: setup fee (one-time) + monthly subscription
+      const lineItems: any[] = [];
+      
+      // Add one-time setup fee
+      if (plan.setupFee && plan.setupFee > 0) {
+        lineItems.push({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `${plan.name} Setup & Onboarding Fee`,
+              description: `One-time setup for ${trial.companyName} - includes white-label configuration, branding setup, and initial training`,
+            },
+            unit_amount: plan.setupFee * 100,
+          },
+          quantity: 1,
+        });
+      }
+      
+      // Add recurring subscription
+      lineItems.push({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: `PaintPros.io ${plan.name} Plan`,
+            description: `Monthly subscription for ${trial.companyName}`,
+          },
+          unit_amount: plan.price * 100,
+          recurring: {
+            interval: 'month',
+          },
+        },
+        quantity: 1,
+      });
+      
+      // Create Stripe checkout session for subscription + one-time setup fee
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: `PaintPros.io ${plan.name} Plan`,
-                description: `Monthly subscription for ${trial.companyName}`,
-              },
-              unit_amount: plan.price * 100,
-              recurring: {
-                interval: 'month',
-              },
-            },
-            quantity: 1,
-          },
-        ],
+        line_items: lineItems,
         mode: "subscription",
         success_url: `${host}/trial/${trial.companySlug}/upgrade-success?session_id={CHECKOUT_SESSION_ID}&plan=${plan.id}`,
         cancel_url: `${host}/trial/${trial.companySlug}?upgrade=cancelled`,
@@ -6508,6 +6571,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           trialId: trial.id,
           trialSlug: trial.companySlug,
           planId: plan.id,
+          setupFee: plan.setupFee?.toString() || '0',
+          monthlyPrice: plan.price.toString(),
           type: "trial_upgrade",
         },
         subscription_data: {
@@ -6544,7 +6609,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const { planId, stripeSessionId } = req.body;
       
       // Validate plan ID
-      const validPlans = ['starter', 'professional', 'enterprise'];
+      const validPlans = ['starter', 'professional', 'franchise', 'enterprise'];
       if (!planId || !validPlans.includes(planId)) {
         res.status(400).json({ error: "Invalid plan selected" });
         return;
