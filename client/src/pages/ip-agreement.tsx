@@ -104,8 +104,12 @@ export default function IPAgreementPage() {
 Effective Date: ${new Date().toISOString()}
 IP Contributor: Sidonie Summers
 Platform Developer: Jason Andrews
-PaintPros.io Profit Share: 50% of net profits after costs
-Estimator Royalties: $25,000/year (W-2) or $20,000/year (1099) when Developer earns $125k+
+COVERED PLATFORMS:
+  1. PaintPros.io (paintpros.io) - Painting contractor SaaS
+  2. Brew and Board (brewandboard.coffee) - Coffee franchise SaaS  
+  3. Orbit Staffing (orbitstaffing.io) - Staffing platform SaaS
+SaaS Profit Share: 50% of net profits after costs (ALL THREE PLATFORMS)
+Nashville Project Royalties: $25,000/year (W-2) or $20,000/year (1099) when Developer earns $125k+
 One-Time Signing Bonus: $6,000 from initial project investment
 Payment Method: ${paymentMethod} - ${paymentHandle}
 Email: ${signerEmail}`;
@@ -144,7 +148,7 @@ Email: ${signerEmail}`;
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2 print:text-2xl">IP Partnership & Royalty Agreement</h1>
-          <p className="text-lg text-gray-600">PaintPros.io Platform</p>
+          <p className="text-lg text-gray-600">Orbit Ventures SaaS Portfolio</p>
           <p className="text-sm text-gray-500 mt-2">Version 1.0 - Blockchain-Verified Document</p>
           <p className="text-xs text-gray-400 mt-1">Date: {new Date().toLocaleDateString()}</p>
         </div>
@@ -157,10 +161,10 @@ Email: ${signerEmail}`;
             <CardContent className="p-6 print:p-4">
               <h2 className="text-lg font-bold text-purple-900 mb-3 print:text-gray-900">Dear Sidonie,</h2>
               <p className="text-gray-700 mb-4">
-                This agreement formalizes what I've always intended: that when revenue is generated from this platform, you will receive your rightful share.
+                This agreement formalizes what I've always intended: that when revenue is generated from our SaaS platforms, you will receive your rightful share.
               </p>
               <p className="text-gray-700 mb-4">
-                The concept for the <strong>customer-facing estimation tools</strong> was your idea. You originated the vision that became the foundation of this entire platform. You researched existing solutions, identified what was missing in the market, and conceived the approach we're now building. Without your contribution, none of this would exist.
+                You originated the ideas for <strong>all three platforms</strong> covered by this agreement. PaintPros.io's customer-facing estimation tools, Brew and Board's coffee franchise system, and Orbit Staffing's workflow management - these all came from your vision. You researched markets, identified gaps, and conceived the approaches we're now building. Without your contribution, none of this would exist.
               </p>
               <p className="text-gray-700 mb-4">
                 When this platform generates revenue, it will be <em>because of</em> your intellectual contribution. The payments outlined in this agreement are <strong>royalties you will be entitled to</strong> - not gifts, not charity - but compensation for your intellectual property being used commercially.
@@ -194,21 +198,39 @@ Email: ${signerEmail}`;
                   2. Intellectual Property Contribution
                 </h2>
                 <p className="text-gray-700 mb-3">
-                  The Contributor originated the core concept for the <strong>customer-facing estimation suite</strong>, which includes:
-                </p>
-                <ul className="text-gray-700 space-y-1 ml-4">
-                  <li>• <strong>Online Estimator Tool</strong> - Helps homeowners understand project scope and pricing</li>
-                  <li>• <strong>AI Color Visualizer</strong> - Allows customers to preview paint colors on their walls</li>
-                  <li>• <strong>Square Footage Estimator</strong> - Camera-based room measurement tool</li>
-                  <li>• <strong>Manual Calculator</strong> - Traditional input-based estimation</li>
-                </ul>
-                <p className="text-gray-700 mt-4">
-                  The Contributor also provided research on existing market solutions and identified gaps that informed the platform's development.
+                  The Contributor originated the core concepts for <strong>three SaaS platforms</strong>:
                 </p>
                 
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg print:bg-white">
+                <div className="space-y-4 mb-4">
+                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg print:bg-white">
+                    <h4 className="font-bold text-purple-900 mb-2">1. PaintPros.io (paintpros.io)</h4>
+                    <p className="text-sm text-gray-700 mb-2">Multi-tenant SaaS platform for painting contractors with white-label websites, franchise enrollment, and customer-facing estimation tools:</p>
+                    <ul className="text-gray-700 space-y-1 ml-4 text-sm">
+                      <li>• <strong>Online Estimator Tool</strong> - Helps homeowners understand project scope and pricing</li>
+                      <li>• <strong>AI Color Visualizer</strong> - Allows customers to preview paint colors on their walls</li>
+                      <li>• <strong>Square Footage Estimator</strong> - Camera-based room measurement tool</li>
+                      <li>• <strong>Manual Calculator</strong> - Traditional input-based estimation</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg print:bg-white">
+                    <h4 className="font-bold text-amber-900 mb-2">2. Brew and Board (brewandboard.coffee)</h4>
+                    <p className="text-sm text-gray-700">SaaS franchise platform for coffee shop operations and management. Scalable, white-label solution for coffee franchise operators with inventory, scheduling, and customer engagement tools.</p>
+                  </div>
+                  
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg print:bg-white">
+                    <h4 className="font-bold text-blue-900 mb-2">3. Orbit Staffing (orbitstaffing.io)</h4>
+                    <p className="text-sm text-gray-700">Full-service staffing company platform with efficient workflow management. Born from experience working in the staffing industry and identifying operational inefficiencies that could be solved through automation and better tooling.</p>
+                  </div>
+                </div>
+                
+                <p className="text-gray-700">
+                  The Contributor provided research on existing market solutions and identified gaps that informed all three platforms' development.
+                </p>
+                
+                <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg print:bg-white">
                   <p className="text-gray-700">
-                    <strong>How this creates value:</strong> The PaintPros.io platform is licensed to painting business owners (contractors, franchise operators). These estimation tools are what their customers (homeowners) use to engage with their business. The tools drive customer engagement and lead generation - making the platform valuable to the business owners who pay for licenses.
+                    <strong>How this creates value:</strong> All three platforms are licensed to business owners in their respective industries. The tools and systems drive customer engagement, operational efficiency, and lead generation - making each platform valuable to the business owners who pay for licenses.
                   </p>
                 </div>
               </div>
@@ -219,36 +241,43 @@ Email: ${signerEmail}`;
               <div>
                 <div className="flex items-center gap-2 mb-4">
                   <Zap className="w-5 h-5 text-purple-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Part A: PaintPros.io SaaS Platform Revenue</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Part A: SaaS Platform Revenue (All Three Platforms)</h2>
                 </div>
                 
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4 print:bg-white">
                   <p className="text-gray-900 font-semibold mb-2">
-                    When the platform generates revenue, the Contributor shall receive:
+                    When the platforms generate revenue, the Contributor shall receive:
                   </p>
                   <p className="text-2xl font-bold text-purple-700 mb-2">
                     50% of Net Profits
                   </p>
                   <p className="text-gray-600 text-sm">
-                    After costs, from all revenue generated by the PaintPros.io platform, including:
+                    After costs, from all revenue generated by ALL THREE platforms:
                   </p>
-                  <ul className="mt-2 text-sm text-gray-600 space-y-1">
-                    <li>• SaaS subscription fees from painting business owners</li>
-                    <li>• Franchise licensing fees</li>
-                    <li>• Setup and onboarding fees</li>
-                    <li>• Per-location surcharges</li>
-                    <li>• Any future revenue streams from the platform</li>
-                  </ul>
+                  <div className="mt-3 space-y-2">
+                    <div className="p-2 bg-white rounded border border-purple-100">
+                      <p className="font-medium text-purple-900">PaintPros.io</p>
+                      <p className="text-xs text-gray-600">Painting contractor SaaS subscriptions, franchise licensing, setup fees</p>
+                    </div>
+                    <div className="p-2 bg-white rounded border border-amber-100">
+                      <p className="font-medium text-amber-900">Brew and Board</p>
+                      <p className="text-xs text-gray-600">Coffee franchise SaaS subscriptions, setup fees, per-location charges</p>
+                    </div>
+                    <div className="p-2 bg-white rounded border border-blue-100">
+                      <p className="font-medium text-blue-900">Orbit Staffing</p>
+                      <p className="text-xs text-gray-600">Staffing platform subscriptions, placement fees, service charges</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Growth Projections */}
                 <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-4 print:bg-white">
                   <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-purple-600" />
-                    Potential Growth Projections
+                    Potential Growth Projections (Combined)
                   </h3>
                   <p className="text-sm text-gray-600 mb-3">
-                    Based on pricing tiers ($349-$1,399/month + setup fees), here's what your 50% share could look like as the platform grows:
+                    Based on pricing tiers across all three platforms, here's what your 50% share could look like as the portfolio grows:
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100">

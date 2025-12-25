@@ -1951,10 +1951,32 @@ export type TrialUsageLog = typeof trialUsageLog.$inferSelect;
 // ============================================
 
 // Product codes for multi-product tracking
+// All products originated by Sidonie Summers - 50% profit share each
 export const ROYALTY_PRODUCTS = {
-  paintpros: { code: 'paintpros', name: 'PaintPros.io', domain: 'paintpros.io' },
-  brewandboard: { code: 'brewandboard', name: 'Brew and Board', domain: 'brewandboard.coffee' },
-  shared: { code: 'shared', name: 'Shared/Combined', domain: null },
+  paintpros: { 
+    code: 'paintpros', 
+    name: 'PaintPros.io', 
+    domain: 'paintpros.io',
+    description: 'Multi-tenant SaaS platform for painting contractors with white-label websites, estimating tools, and franchise enrollment'
+  },
+  brewandboard: { 
+    code: 'brewandboard', 
+    name: 'Brew and Board', 
+    domain: 'brewandboard.coffee',
+    description: 'SaaS franchise platform for coffee shop operations and management'
+  },
+  orbitstaffing: { 
+    code: 'orbitstaffing', 
+    name: 'Orbit Staffing', 
+    domain: 'orbitstaffing.io',
+    description: 'Full-service staffing company platform with efficient workflow management'
+  },
+  shared: { 
+    code: 'shared', 
+    name: 'Shared/Combined', 
+    domain: null,
+    description: 'Expenses or revenue that apply across all products'
+  },
 } as const;
 
 export type RoyaltyProductCode = keyof typeof ROYALTY_PRODUCTS;
@@ -2006,6 +2028,9 @@ export type RoyaltyRevenue = typeof royaltyRevenue.$inferSelect;
 export const royaltyExpenses = pgTable("royalty_expenses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   
+  // Product tracking (which product is this expense for)
+  productCode: text("product_code").notNull().default("shared"), // 'paintpros', 'brewandboard', 'orbitstaffing', 'shared'
+  
   // Expense details
   category: text("category").notNull(), // 'hosting', 'software', 'marketing', 'other'
   description: text("description").notNull(),
@@ -2016,12 +2041,16 @@ export const royaltyExpenses = pgTable("royalty_expenses", {
   periodMonth: integer("period_month").notNull(), // 1-12
   periodYear: integer("period_year").notNull(),
   
+  // For shared expenses - how to allocate across products (optional)
+  allocationPercent: decimal("allocation_percent", { precision: 5, scale: 2 }), // If shared, what % goes to each product
+  
   // Metadata
   receiptUrl: text("receipt_url"),
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
   index("idx_royalty_expenses_period").on(table.periodYear, table.periodMonth),
+  index("idx_royalty_expenses_product").on(table.productCode),
 ]);
 
 export const insertRoyaltyExpenseSchema = createInsertSchema(royaltyExpenses).omit({
