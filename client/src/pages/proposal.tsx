@@ -189,7 +189,7 @@ export default function ProposalPage() {
                 <h3 className="font-semibold text-gray-900 mb-3">Referral Commission</h3>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-700">Partner Referrals (Sidney)</span>
+                    <span className="text-gray-700">Partner Referrals (Sidonie)</span>
                     <span className="font-bold text-[#4A5D3E]">2% of Project Value</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
@@ -343,6 +343,7 @@ export default function ProposalPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Company Representative</p>
+                  <p className="text-sm text-gray-700 mb-2">Ryan</p>
                   <div className="border-b-2 border-gray-300 h-16 mb-2"></div>
                   <p className="text-sm text-gray-700">Signature</p>
                   <div className="border-b border-gray-200 h-8 mt-4 mb-2"></div>
