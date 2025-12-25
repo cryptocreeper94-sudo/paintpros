@@ -362,11 +362,14 @@ Email: ${signerEmail}`;
                   </h3>
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
-                      <p className="text-gray-700">When Ryan signs the partnership proposal:</p>
-                      <p className="text-sm text-gray-500">From the initial $29,000 project investment</p>
+                      <p className="text-gray-700">When the partnership deal closes:</p>
+                      <p className="text-sm text-gray-500">From the initial project investment, paid as soon as funds are received</p>
                     </div>
                     <p className="text-2xl font-bold text-amber-700">$5,000</p>
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    You can receive this as a cashier's check or via your preferred payment method below.
+                  </p>
                 </div>
 
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 print:bg-white">
@@ -383,7 +386,7 @@ Email: ${signerEmail}`;
                 <ul className="text-gray-700 space-y-2">
                   <li>• <strong>SaaS Profits:</strong> Calculated monthly, paid within 15 days of month close (once revenue begins)</li>
                   <li>• <strong>Project Royalties:</strong> Paid monthly, distributed evenly throughout the year (once project is active)</li>
-                  <li>• <strong>Signing Bonus:</strong> Paid within 30 days of Ryan's signature on the partnership proposal</li>
+                  <li>• <strong>Signing Bonus:</strong> Paid as soon as funds are received from the partnership deal (cashier's check available upon request)</li>
                   <li>• <strong>Transparency:</strong> Full access to revenue records for verification</li>
                 </ul>
               </div>
