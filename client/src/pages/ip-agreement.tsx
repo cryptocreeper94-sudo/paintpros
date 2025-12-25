@@ -324,7 +324,7 @@ Email: ${signerEmail}`;
                 </p>
 
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 print:bg-white">
-                  <h3 className="font-bold text-green-800 mb-3">Ongoing Royalties (Annual)</h3>
+                  <h3 className="font-bold text-green-800 mb-3">Base Royalties (Annual)</h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-green-200 flex-wrap gap-2">
                       <div>
@@ -353,6 +353,27 @@ Email: ${signerEmail}`;
                   <p className="text-xs text-gray-500 mt-1">
                     * Payments distributed monthly, averaged throughout the year to account for bonus fluctuations.
                   </p>
+                </div>
+
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4 print:bg-white">
+                  <h3 className="font-bold text-emerald-800 mb-3">Additional Royalties (Above $125k)</h3>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-emerald-200 flex-wrap gap-2">
+                    <div>
+                      <p className="font-medium text-gray-900">For any amount Jason earns above $125k/year</p>
+                      <p className="text-sm text-gray-500">Calculated on total earnings exceeding the threshold</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-emerald-700">15%</p>
+                      <p className="text-xs text-gray-500">of amount over $125k</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 p-3 bg-white rounded-lg border border-emerald-100">
+                    <p className="text-xs text-gray-600 font-medium mb-2">Example:</p>
+                    <p className="text-xs text-gray-500">If Jason earns $150,000/year as W-2:</p>
+                    <p className="text-xs text-gray-500">• Base royalty: $25,000</p>
+                    <p className="text-xs text-gray-500">• 15% of $25,000 (amount over $125k): $3,750</p>
+                    <p className="text-xs text-gray-700 font-medium">• Total: $28,750/year</p>
+                  </div>
                 </div>
 
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 print:bg-white">
