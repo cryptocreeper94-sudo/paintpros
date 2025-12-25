@@ -18,9 +18,9 @@ const PRICING_TIERS = [
 ];
 
 const PROJECTIONS = [
-  { year: "2025", customers: 100, mrr: "$25K", revenue: "$300K + $350K setup", profit: "$200K" },
-  { year: "2026", customers: 500, mrr: "$125K", revenue: "$1.5M + $1.4M setup", profit: "$1.2M" },
-  { year: "2027", customers: 2000, mrr: "$500K", revenue: "$6M + $4M setup", profit: "$5M" },
+  { year: "2025", customers: 50, mrr: "$22K", revenue: "$264K MRR + $300K setup", profit: "$180K", note: "Beta launch" },
+  { year: "2026", customers: 200, mrr: "$90K", revenue: "$1.08M MRR + $1.2M setup", profit: "$1M" },
+  { year: "2027", customers: 500, mrr: "$225K", revenue: "$2.7M MRR + $2.5M setup", profit: "$2.8M" },
 ];
 
 const COMPETITORS = [
@@ -64,18 +64,18 @@ UNIT ECONOMICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Gross Margin:           85% (low infrastructure cost)
-LTV:CAC Ratio:          30:1
-ARPU:                   $349/month + $5,000 setup
-3-Year Customer LTV:    $17,564 ($5,000 + 36 x $349)
-CAC (projected):        $400
+LTV:CAC Ratio:          44:1
+ARPU:                   ~$450/month + $6,000 setup (blended)
+3-Year Customer LTV:    $22,200 ($6,000 + 36 x $450)
+CAC (projected):        $500
 
 REVENUE PROJECTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Year    Customers    MRR        Revenue (MRR + Setup)    Net Profit
-2025    100          $35K       $920K                    $350K
-2026    500          $175K      $4.6M                    $2M
-2027    2,000        $700K      $14M                     $7M
+Year    Customers    MRR        Revenue (Annual + Setup)    Net Profit
+2025    50           $22K       $564K                       $180K
+2026    200          $90K       $2.28M                      $1M
+2027    500          $225K      $5.2M                       $2.8M
 
 MARKET OPPORTUNITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -113,7 +113,8 @@ Traditional approach (Jobber + custom website + agency):
 • Ongoing development: $500-2K/mo
 • Total: ~$1,500-3,000/mo + coordination overhead
 
-PaintPros.io: $349/mo + $5,000 setup (all-inclusive platform)
+PaintPros.io Starter: $349/mo + $5,000 setup (all-inclusive platform)
+PaintPros.io Professional: $549/mo + $7,000 setup (analytics + blockchain)
 
 DARKWAVE STUDIOS ECOSYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -289,8 +290,8 @@ Ecosystem: https://darkwavestudios.io`;
                       ))}
                       <tr className="bg-accent/10 border border-accent/30">
                         <td className="py-3 px-4 font-bold text-accent">PaintPros.io</td>
-                        <td className="py-3 px-4 font-mono font-bold text-green-400">$249/mo</td>
-                        <td className="py-3 px-4 text-green-400">$3,500</td>
+                        <td className="py-3 px-4 font-mono font-bold text-green-400">$349-$1,399/mo</td>
+                        <td className="py-3 px-4 text-green-400">$5,000-$15,000</td>
                         <td className="py-3 px-4 text-xs font-medium text-accent">White-Label Platform</td>
                       </tr>
                     </tbody>
@@ -362,8 +363,8 @@ Ecosystem: https://darkwavestudios.io`;
                         <span className="font-mono text-red-400 font-bold">~$1,500-3,000/mo</span>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className="font-medium text-accent">PaintPros.io</span>
-                        <span className="font-mono text-green-400 font-bold">$249/mo + $3,500 setup</span>
+                        <span className="font-medium text-accent">PaintPros.io Starter</span>
+                        <span className="font-mono text-green-400 font-bold">$349/mo + $5,000 setup</span>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-4">
