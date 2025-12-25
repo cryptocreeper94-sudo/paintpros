@@ -76,17 +76,17 @@ export default function ProposalRyan() {
         <Separator className="my-8 print:my-4" />
 
         <section className="mb-8">
-          <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 print:bg-white">
+          <Card className="border-green-300 bg-white print:bg-white">
             <CardContent className="p-6">
-              <h2 className="text-xl font-bold text-green-900 mb-4">Hey Ryan,</h2>
-              <p className="text-gray-700 mb-4">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Hey Ryan,</h2>
+              <p className="text-gray-800 mb-4">
                 I've been thinking a lot about what we discussed, and I'm genuinely excited about the opportunity to help expand into Murfreesboro. You've built something incredible with Nashville Painting Professionals, and I believe we can replicate that success in a brand new market.
               </p>
-              <p className="text-gray-700 mb-4">
-                This proposal outlines a <strong>90-day launch plan</strong> where I handle the tech, marketing, and project coordination - so you can focus on what you do best: selling and growing the business. If after 90 days we're not seeing the traction we want, we revisit and adjust. No pressure, just results.
+              <p className="text-gray-800 mb-4">
+                This proposal outlines a <strong className="text-gray-900">90-day launch plan</strong> where I handle the tech, marketing, and project coordination - so you can focus on what you do best: selling and growing the business. If after 90 days we're not seeing the traction we want, we revisit and adjust. No pressure, just results.
               </p>
-              <p className="text-gray-700">
-                I also want to mention - I'd love to collaborate with <strong>Logan</strong> on the social media side. He's got great instincts with Instagram, and I think combining his creative eye with the automation tools we're building could be really powerful. The more minds working together, the better.
+              <p className="text-gray-800">
+                I also want to mention - I'd love to collaborate with <strong className="text-gray-900">Logan</strong> on the social media side. He's got great instincts with Instagram, and I think combining his creative eye with the automation tools we're building could be really powerful. The more minds working together, the better.
               </p>
             </CardContent>
           </Card>
@@ -99,13 +99,13 @@ export default function ProposalRyan() {
           </h2>
           <Card>
             <CardContent className="p-6 space-y-4">
-              <p className="text-gray-700">
-                This isn't just adding a service area - this is building a <strong>new company</strong>. A fresh brand, a fresh LLC, positioned specifically for the Murfreesboro and Rutherford County market. Separate from NPP, but leveraging everything that's made NPP successful.
+              <p className="text-gray-800">
+                This isn't just adding a service area - this is building a <strong className="text-gray-900">new company</strong>. A fresh brand, a fresh LLC, positioned specifically for the Murfreesboro and Rutherford County market. Separate from NPP, but leveraging everything that's made NPP successful.
               </p>
               <div className="grid md:grid-cols-2 gap-4 mt-4">
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <h3 className="font-bold text-green-800 mb-2">What You Get</h3>
-                  <ul className="text-sm text-gray-700 space-y-2">
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <h3 className="font-bold text-gray-900 mb-2">What You Get</h3>
+                  <ul className="text-sm text-gray-800 space-y-2">
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                       <span>Brand new professional website built for Murfreesboro</span>
@@ -128,9 +128,9 @@ export default function ProposalRyan() {
                     </li>
                   </ul>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h3 className="font-bold text-blue-800 mb-2">The Automation Advantage</h3>
-                  <ul className="text-sm text-gray-700 space-y-2">
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <h3 className="font-bold text-gray-900 mb-2">The Automation Advantage</h3>
+                  <ul className="text-sm text-gray-800 space-y-2">
                     <li className="flex items-start gap-2">
                       <Zap className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                       <span>Leads come in automatically, 24/7</span>
@@ -160,20 +160,20 @@ export default function ProposalRyan() {
 
         <section className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-purple-600" />
+            <Users className="w-5 h-5 text-green-700" />
             The Murfreesboro Connection
           </h2>
           <Card>
             <CardContent className="p-6">
-              <p className="text-gray-700 mb-4">
-                Here's what makes Murfreesboro a no-brainer: My sister is a <strong>top real estate agent</strong> in the area. She has connections to homeowners, property managers, and investors who constantly need painting services. That's a built-in referral network from day one.
+              <p className="text-gray-800 mb-4">
+                Here's what makes Murfreesboro a no-brainer: My sister is a <strong className="text-gray-900">top real estate agent</strong> in the area. She has connections to homeowners, property managers, and investors who constantly need painting services. That's a built-in referral network from day one.
               </p>
-              <p className="text-gray-700 mb-4">
+              <p className="text-gray-800 mb-4">
                 Plus, your high-end Nashville clients will naturally refer friends and family in the Murfreesboro area. The reputation you've built travels with you.
               </p>
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <p className="text-sm text-purple-800">
-                  <strong>Referral Structure:</strong> When my sister refers a project, we split the referral fee fairly. When I bring in leads directly, I earn a small commission. This keeps everyone motivated and aligned.
+              <div className="bg-green-50 border border-green-300 rounded-lg p-4">
+                <p className="text-sm text-gray-800">
+                  <strong className="text-gray-900">Referral Structure:</strong> When my sister refers a project, we split the referral fee fairly. When I bring in leads directly, I earn a small commission. This keeps everyone motivated and aligned.
                 </p>
               </div>
             </CardContent>
@@ -182,21 +182,21 @@ export default function ProposalRyan() {
 
         <section className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Globe className="w-5 h-5 text-blue-600" />
+            <Globe className="w-5 h-5 text-green-700" />
             Part of Something Bigger
           </h2>
           <Card>
             <CardContent className="p-6">
-              <p className="text-gray-700 mb-4">
-                The painting platform is just one piece of what we're building. The same technology powering this expansion connects to <strong>Orbit Staffing</strong> - a comprehensive workforce and financial management system. Everything syncs automatically: revenue tracking, project management, payroll coordination.
+              <p className="text-gray-800 mb-4">
+                The painting platform is just one piece of what we're building. The same technology powering this expansion connects to <strong className="text-gray-900">Orbit Staffing</strong> - a comprehensive workforce and financial management system. Everything syncs automatically: revenue tracking, project management, payroll coordination.
               </p>
-              <p className="text-gray-700 mb-4">
-                And there's more on the horizon: <strong>Brew and Board</strong> (coffee franchise management) uses the same ecosystem. As these platforms grow, there are opportunities to be part of that growth too - if you're interested.
+              <p className="text-gray-800 mb-4">
+                And there's more on the horizon: <strong className="text-gray-900">Brew and Board</strong> (coffee franchise management) uses the same ecosystem. As these platforms grow, there are opportunities to be part of that growth too - if you're interested.
               </p>
               <div className="flex flex-wrap gap-2 mt-4">
-                <Badge variant="secondary" className="bg-green-100 text-green-800">PaintPros.io</Badge>
-                <Badge variant="secondary" className="bg-amber-100 text-amber-800">Brew and Board</Badge>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">Orbit Staffing</Badge>
+                <Badge variant="secondary" className="bg-green-100 text-green-900 border border-green-300">PaintPros.io</Badge>
+                <Badge variant="secondary" className="bg-amber-100 text-amber-900 border border-amber-300">Brew and Board</Badge>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-900 border border-blue-300">Orbit Staffing</Badge>
               </div>
             </CardContent>
           </Card>
@@ -265,46 +265,46 @@ export default function ProposalRyan() {
 
         <section className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-amber-600" />
+            <Shield className="w-5 h-5 text-green-700" />
             Additional Support Terms
           </h2>
           <Card>
             <CardContent className="p-6">
-              <p className="text-gray-700 mb-4">
+              <p className="text-gray-800 mb-4">
                 For any project management work outside of normal scope - troubleshooting issues, handling problems on-site, or managing jobs that come up unexpectedly:
               </p>
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                  <p className="font-bold text-amber-800 mb-2">Business Hours</p>
-                  <p className="text-gray-700">$30-35/hour</p>
-                  <p className="text-sm text-gray-500">2-hour minimum</p>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-300">
+                  <p className="font-bold text-gray-900 mb-2">Business Hours</p>
+                  <p className="text-gray-800">$30-35/hour</p>
+                  <p className="text-sm text-gray-600">2-hour minimum</p>
                 </div>
-                <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                  <p className="font-bold text-orange-800 mb-2">Evenings & Weekends</p>
-                  <p className="text-gray-700">$60/hour</p>
-                  <p className="text-sm text-gray-500">2-hour minimum</p>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-300">
+                  <p className="font-bold text-gray-900 mb-2">Evenings & Weekends</p>
+                  <p className="text-gray-800">$60/hour</p>
+                  <p className="text-sm text-gray-600">2-hour minimum</p>
                 </div>
               </div>
               <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <p className="font-medium text-gray-800 mb-2">Travel</p>
-                <p className="text-gray-700">$0.67/mile for jobs outside Wilson or Rutherford counties</p>
+                <p className="font-medium text-gray-900 mb-2">Travel</p>
+                <p className="text-gray-800">$0.67/mile for jobs outside Wilson or Rutherford counties</p>
               </div>
             </CardContent>
           </Card>
         </section>
 
         <section className="mb-8">
-          <Card className="border-green-300 bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="border-green-300 bg-white">
             <CardContent className="p-6">
-              <h2 className="text-xl font-bold text-green-900 mb-4">The Investment</h2>
-              <p className="text-gray-700 mb-4">
-                For the full 90-day launch package - websites, SEO, automation, social media setup, project management, IT support, and ongoing customization - I think <strong>$30,000</strong> is fair.
+              <h2 className="text-xl font-bold text-gray-900 mb-4">The Investment</h2>
+              <p className="text-gray-800 mb-4">
+                For the full 90-day launch package - websites, SEO, automation, social media setup, project management, IT support, and ongoing customization - I think <strong className="text-gray-900">$30,000</strong> is fair.
               </p>
-              <p className="text-gray-700 mb-4">
-                To put that in perspective: if you were to hire separate people to handle web development, SEO, social media, IT, and project management, you'd easily be looking at <strong>$200,000+ per year</strong>. This is a fraction of that cost for a comprehensive 90-day launch.
+              <p className="text-gray-800 mb-4">
+                To put that in perspective: if you were to hire separate people to handle web development, SEO, social media, IT, and project management, you'd easily be looking at <strong className="text-gray-900">$200,000+ per year</strong>. This is a fraction of that cost for a comprehensive 90-day launch.
               </p>
-              <div className="bg-white border border-green-200 rounded-lg p-4 mt-4">
-                <p className="text-green-800 font-medium">
+              <div className="bg-green-50 border border-green-300 rounded-lg p-4 mt-4">
+                <p className="text-gray-800 font-medium">
                   And here's my commitment: If after 90 days we're not seeing the results we want, we sit down and revisit. No hard feelings, just honest evaluation and adjustment.
                 </p>
               </div>
@@ -313,13 +313,13 @@ export default function ProposalRyan() {
         </section>
 
         <section className="mb-8">
-          <Card className="border-blue-200">
+          <Card>
             <CardContent className="p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Bonus Structure</h2>
-              <p className="text-gray-700 mb-4">
-                When projects complete on-time and under budget, I believe in sharing the wins. Industry standard for project completion bonuses is typically <strong>5-10% of the savings</strong>. We can discuss the exact structure that works for both of us.
+              <p className="text-gray-800 mb-4">
+                When projects complete on-time and under budget, I believe in sharing the wins. Industry standard for project completion bonuses is typically <strong className="text-gray-900">5-10% of the savings</strong>. We can discuss the exact structure that works for both of us.
               </p>
-              <p className="text-sm text-gray-600 italic">
+              <p className="text-sm text-gray-700 italic">
                 This keeps everyone aligned - I'm motivated to run efficient projects, you save money, we both win.
               </p>
             </CardContent>
@@ -338,12 +338,12 @@ export default function ProposalRyan() {
               {signed ? (
                 <div className="text-center py-6">
                   <CheckCircle2 className="w-16 h-16 text-green-600 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-green-800 mb-2">Thank you, {signerName}!</p>
-                  <p className="text-gray-600">Let's build something great together. I'll be in touch soon.</p>
+                  <p className="text-lg font-medium text-gray-900 mb-2">Thank you, {signerName}!</p>
+                  <p className="text-gray-700">Let's build something great together. I'll be in touch soon.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-gray-700 mb-4">
+                  <p className="text-gray-800 mb-4">
                     If this looks good to you, sign below and let's make it happen. Looking forward to working together!
                   </p>
                   
