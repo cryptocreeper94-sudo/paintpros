@@ -200,11 +200,11 @@ export default function ProposalPage() {
                     <span className="font-bold text-[#4A5D3E]">$75/hour (2-hour minimum)</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-700">Mileage (outside Wilson County)</span>
+                    <span className="text-gray-700">Mileage (outside base territory)</span>
                     <span className="font-bold text-[#4A5D3E]">$0.67/mile (IRS rate)</span>
                   </div>
                   <p className="text-xs text-gray-500 pt-2 border-t border-gray-200">
-                    Base territory: Wilson County, TN. Mileage applies beyond county lines.
+                    Base territory: Wilson County and Rutherford County, TN. Mileage applies outside these counties.
                   </p>
                 </div>
               </div>
