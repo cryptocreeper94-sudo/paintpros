@@ -6,7 +6,7 @@ import { LogoFlipCard } from "@/components/ui/logo-flip-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { CarouselView } from "@/components/ui/carousel-view";
 import { HeroSlideshow } from "@/components/ui/hero-slideshow";
-import { Award, LayoutGrid, Rows, Eye } from "lucide-react";
+import { Award, LayoutGrid, Rows, Eye, TrendingUp } from "lucide-react";
 import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
 import portfolioImage from "@assets/generated_images/freshly_painted_home_interior.png";
 import { ArrowRight, Star, Brush, ShieldCheck, Clock, CheckCircle2, MapPin, BadgeCheck } from "lucide-react";
@@ -35,6 +35,7 @@ import { AboutUsModal } from "@/components/about-us-modal";
 import { FeatureModal } from "@/components/feature-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { InvestorSnapshotModal } from "@/components/investor-snapshot-modal";
 
 export default function HomeDemo() {
   const tenant = useTenant();
@@ -50,6 +51,7 @@ export default function HomeDemo() {
   const [warrantyModalOpen, setWarrantyModalOpen] = useState(false);
   const [layoutPanelOpen, setLayoutPanelOpen] = useState(false);
   const [currentLayout, setCurrentLayout] = useState<string | null>(null);
+  const [investorSnapshotOpen, setInvestorSnapshotOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('dev_layout_override');
@@ -692,6 +694,24 @@ export default function HomeDemo() {
           </button>
         </div>
       )}
+
+      {/* Investor Snapshot Button - Available on demo homepage */}
+      <div className="fixed bottom-4 left-4 z-40">
+        <button
+          onClick={() => setInvestorSnapshotOpen(true)}
+          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full shadow-lg hover:from-green-700 hover:to-emerald-700 transition-colors text-sm font-medium"
+          data-testid="button-investor-snapshot"
+        >
+          <TrendingUp className="w-4 h-4" />
+          <span className="hidden sm:inline">Investor Info</span>
+        </button>
+      </div>
+
+      {/* Investor Snapshot Modal */}
+      <InvestorSnapshotModal 
+        isOpen={investorSnapshotOpen} 
+        onClose={() => setInvestorSnapshotOpen(false)} 
+      />
     </PageLayout>
   );
 }

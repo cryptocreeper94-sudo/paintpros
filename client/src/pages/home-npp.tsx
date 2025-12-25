@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
+import { InvestorSnapshotModal } from "@/components/investor-snapshot-modal";
 import { 
   ArrowRight, 
   Award, 
@@ -25,7 +26,8 @@ import {
   BadgeCheck,
   MessageSquare,
   Calendar,
-  Sparkles
+  Sparkles,
+  TrendingUp
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -55,6 +57,7 @@ interface PaintColor {
 
 export default function HomeNPP() {
   const tenant = useTenant();
+  const [investorSnapshotOpen, setInvestorSnapshotOpen] = useState(false);
 
   // Fetch colors for preview
   const { data: colors = [] } = useQuery<PaintColor[]>({
@@ -940,6 +943,24 @@ export default function HomeNPP() {
       </main>
       
       <PWAInstallPrompt />
+
+      {/* Investor Snapshot Button */}
+      <div className="fixed bottom-4 left-4 z-40">
+        <button
+          onClick={() => setInvestorSnapshotOpen(true)}
+          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full shadow-lg hover:from-green-700 hover:to-emerald-700 transition-colors text-sm font-medium"
+          data-testid="button-investor-snapshot"
+        >
+          <TrendingUp className="w-4 h-4" />
+          <span className="hidden sm:inline">Investor Info</span>
+        </button>
+      </div>
+
+      {/* Investor Snapshot Modal */}
+      <InvestorSnapshotModal 
+        isOpen={investorSnapshotOpen} 
+        onClose={() => setInvestorSnapshotOpen(false)} 
+      />
     </PageLayout>
   );
 }
