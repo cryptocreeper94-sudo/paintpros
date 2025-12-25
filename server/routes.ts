@@ -6581,41 +6581,63 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       }
       
       const plan = UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS];
+      const tierConfig = SUBSCRIPTION_TIERS[planId as SubscriptionTier];
       const host = `https://${req.get("host")}`;
       
       // Build line items: setup fee (one-time) + monthly subscription
+      // Use Stripe Price IDs when configured, otherwise fall back to price_data
       const lineItems: any[] = [];
       
       // Add one-time setup fee
       if (plan.setupFee && plan.setupFee > 0) {
+        const setupPriceId = tierConfig?.stripeSetupPriceId;
+        if (setupPriceId) {
+          // Use pre-configured Stripe Price ID
+          lineItems.push({
+            price: setupPriceId,
+            quantity: 1,
+          });
+        } else {
+          // Fall back to dynamic price_data
+          lineItems.push({
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: `${plan.name} Setup & Onboarding Fee`,
+                description: `One-time setup for ${trial.companyName} - includes white-label configuration, branding setup, and initial training`,
+              },
+              unit_amount: plan.setupFee * 100,
+            },
+            quantity: 1,
+          });
+        }
+      }
+      
+      // Add recurring subscription
+      const subscriptionPriceId = tierConfig?.stripePriceId;
+      if (subscriptionPriceId) {
+        // Use pre-configured Stripe Price ID for recurring subscription
+        lineItems.push({
+          price: subscriptionPriceId,
+          quantity: 1,
+        });
+      } else {
+        // Fall back to dynamic price_data
         lineItems.push({
           price_data: {
             currency: "usd",
             product_data: {
-              name: `${plan.name} Setup & Onboarding Fee`,
-              description: `One-time setup for ${trial.companyName} - includes white-label configuration, branding setup, and initial training`,
+              name: `PaintPros.io ${plan.name} Plan`,
+              description: `Monthly subscription for ${trial.companyName}`,
             },
-            unit_amount: plan.setupFee * 100,
+            unit_amount: plan.price * 100,
+            recurring: {
+              interval: 'month',
+            },
           },
           quantity: 1,
         });
       }
-      
-      // Add recurring subscription
-      lineItems.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: `PaintPros.io ${plan.name} Plan`,
-            description: `Monthly subscription for ${trial.companyName}`,
-          },
-          unit_amount: plan.price * 100,
-          recurring: {
-            interval: 'month',
-          },
-        },
-        quantity: 1,
-      });
       
       // Create Stripe checkout session for subscription + one-time setup fee
       const session = await stripe.checkout.sessions.create({

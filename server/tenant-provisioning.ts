@@ -1,8 +1,22 @@
 import { db } from "./db";
-import { tenants, trialTenants, users, leads, estimates, blockchainStamps } from "@shared/schema";
+import { tenants, trialTenants, users, leads, estimates } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
 import type { Tenant, TrialTenant, InsertTenant } from "@shared/schema";
 import { sendTenantWelcomeEmail, sendAdminNotificationEmail } from "./resend";
+
+// Stripe Price IDs - set via environment variables for production
+// Create these in Stripe Dashboard: Products > Add Product > Add Price (recurring monthly)
+const STRIPE_PRICE_IDS = {
+  starter: process.env.STRIPE_PRICE_STARTER || null,
+  starterSetup: process.env.STRIPE_PRICE_STARTER_SETUP || null,
+  professional: process.env.STRIPE_PRICE_PROFESSIONAL || null,
+  professionalSetup: process.env.STRIPE_PRICE_PROFESSIONAL_SETUP || null,
+  franchise: process.env.STRIPE_PRICE_FRANCHISE || null,
+  franchiseSetup: process.env.STRIPE_PRICE_FRANCHISE_SETUP || null,
+  franchiseLocation: process.env.STRIPE_PRICE_FRANCHISE_LOCATION || null,
+  enterprise: process.env.STRIPE_PRICE_ENTERPRISE || null,
+  enterpriseSetup: process.env.STRIPE_PRICE_ENTERPRISE_SETUP || null,
+};
 
 // Pricing configuration for each tier
 export const SUBSCRIPTION_TIERS = {
@@ -10,6 +24,8 @@ export const SUBSCRIPTION_TIERS = {
     name: "Starter",
     monthlyPrice: 349,
     setupFee: 5000,
+    stripePriceId: STRIPE_PRICE_IDS.starter,
+    stripeSetupPriceId: STRIPE_PRICE_IDS.starterSetup,
     features: {
       estimator: true,
       colorLibrary: true,
@@ -25,6 +41,8 @@ export const SUBSCRIPTION_TIERS = {
     name: "Professional",
     monthlyPrice: 549,
     setupFee: 7000,
+    stripePriceId: STRIPE_PRICE_IDS.professional,
+    stripeSetupPriceId: STRIPE_PRICE_IDS.professionalSetup,
     features: {
       estimator: true,
       colorLibrary: true,
@@ -41,6 +59,9 @@ export const SUBSCRIPTION_TIERS = {
     monthlyPrice: 799,
     setupFee: 10000,
     perLocationPrice: 99,
+    stripePriceId: STRIPE_PRICE_IDS.franchise,
+    stripeSetupPriceId: STRIPE_PRICE_IDS.franchiseSetup,
+    stripeLocationPriceId: STRIPE_PRICE_IDS.franchiseLocation,
     features: {
       estimator: true,
       colorLibrary: true,
@@ -56,6 +77,8 @@ export const SUBSCRIPTION_TIERS = {
     name: "Enterprise",
     monthlyPrice: 1399,
     setupFee: 15000,
+    stripePriceId: STRIPE_PRICE_IDS.enterprise,
+    stripeSetupPriceId: STRIPE_PRICE_IDS.enterpriseSetup,
     features: {
       estimator: true,
       colorLibrary: true,
@@ -67,7 +90,7 @@ export const SUBSCRIPTION_TIERS = {
       analytics: true,
     }
   }
-} as const;
+};
 
 export type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
 
@@ -311,7 +334,6 @@ async function migrateTrialData(trialId: string, trialSlug: string, newTenantId:
 
   let totalLeads = 0;
   let totalEstimates = 0;
-  let totalStamps = 0;
 
   for (const tenantIdFormat of possibleTenantIds) {
     // Migrate leads
@@ -332,17 +354,11 @@ async function migrateTrialData(trialId: string, trialSlug: string, newTenantId:
       totalEstimates += matchingEstimates.length;
     }
 
-    // Migrate blockchain stamps
-    const matchingStamps = await db.select().from(blockchainStamps).where(eq(blockchainStamps.tenantId, tenantIdFormat));
-    if (matchingStamps.length > 0) {
-      await db.update(blockchainStamps)
-        .set({ tenantId: newTenantId })
-        .where(eq(blockchainStamps.tenantId, tenantIdFormat));
-      totalStamps += matchingStamps.length;
-    }
+    // Note: blockchain_stamps are linked via entityId to estimates, not via tenantId
+    // They will automatically be associated with the new tenant through their linked estimates
   }
 
-  console.log(`[Provisioning] Migrated ${totalLeads} leads, ${totalEstimates} estimates, ${totalStamps} blockchain stamps`);
+  console.log(`[Provisioning] Migrated ${totalLeads} leads, ${totalEstimates} estimates`);
 }
 
 export async function getTenantBySlug(slug: string): Promise<Tenant | null> {
