@@ -10,6 +10,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { BrandingConfigurator } from "@/components/trial/branding-configurator";
 import { 
   Clock, CheckCircle2, Palette, FileText, Shield, 
   Users, ArrowRight, Sparkles, Rocket, AlertTriangle, 
@@ -189,6 +190,7 @@ export default function TrialPortal() {
   const { slug } = useParams<{ slug: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [brandingModalOpen, setBrandingModalOpen] = useState(false);
 
   const { data: trial, isLoading, error } = useQuery<TrialData>({
     queryKey: ['/api/trial', slug],
@@ -215,7 +217,7 @@ export default function TrialPortal() {
   const handleStepClick = (step: string) => {
     switch (step) {
       case 'setup':
-        toast({ title: "Branding customization", description: "Coming in the next update!" });
+        setBrandingModalOpen(true);
         break;
       case 'visualizer':
         setLocation('/colors');
@@ -466,6 +468,19 @@ export default function TrialPortal() {
           )}
         </div>
       </main>
+      
+      <BrandingConfigurator
+        open={brandingModalOpen}
+        onOpenChange={setBrandingModalOpen}
+        trialId={trial.id}
+        trialSlug={slug || ''}
+        currentBranding={{
+          companyName: trial.companyName,
+          primaryColor: trial.primaryColor,
+          accentColor: trial.accentColor,
+          logoUrl: trial.logoUrl,
+        }}
+      />
     </div>
   );
 }
