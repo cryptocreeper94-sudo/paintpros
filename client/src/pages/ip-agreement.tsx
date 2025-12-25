@@ -106,7 +106,7 @@ IP Contributor: Sidonie Summers
 Platform Developer: Jason Andrews
 PaintPros.io Profit Share: 50% of net profits after costs
 Estimator Royalties: $25,000/year (W-2) or $20,000/year (1099) when Developer earns $125k+
-One-Time Signing Bonus: $5,000 from initial project investment
+One-Time Signing Bonus: $6,000 from initial project investment
 Payment Method: ${paymentMethod} - ${paymentHandle}
 Email: ${signerEmail}`;
 
@@ -365,7 +365,7 @@ Email: ${signerEmail}`;
                       <p className="text-gray-700">When the partnership deal closes:</p>
                       <p className="text-sm text-gray-500">From the initial project investment, paid as soon as funds are received</p>
                     </div>
-                    <p className="text-2xl font-bold text-amber-700">$5,000</p>
+                    <p className="text-2xl font-bold text-amber-700">$6,000</p>
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
                     You can receive this as a cashier's check or via your preferred payment method below.
