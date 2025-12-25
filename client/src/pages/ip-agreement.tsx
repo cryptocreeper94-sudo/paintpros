@@ -780,28 +780,62 @@ Email: ${signerEmail}`;
             <CardContent className="p-6 print:p-4">
               <h2 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-blue-600" />
-                Automatic Payment Setup via Stripe
+                Your Payments Are Automatic
               </h2>
               <p className="text-gray-700 mb-4">
-                To make your royalty payments as seamless and reliable as possible, I'm using <strong>Stripe</strong> - the same payment system used by companies like Amazon, Google, and Shopify. Setting up your own Stripe account means:
+                Once you set up Stripe (takes about 5 minutes), <strong>you never have to think about payments again</strong>. You don't have to remind me, you don't have to ask - the money just shows up in your bank account automatically. Here's how simple it is:
               </p>
+              
+              <div className="bg-white rounded-lg p-4 border border-blue-200 mb-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-green-700 font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">A Sale Happens</p>
+                      <p className="text-sm text-gray-600">Someone subscribes to PaintPros, Nashville project pays out, or any revenue comes in</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-green-700 font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Your 50% Is Calculated</p>
+                      <p className="text-sm text-gray-600">The system automatically calculates your share - no manual math, no guesswork</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-green-700 font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Money Hits Your Bank</p>
+                      <p className="text-sm text-gray-600">Stripe deposits your share directly - you pick when and how often</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <p className="font-medium text-blue-800 mb-2">You Choose When You Get Paid</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• <strong>Instantly</strong> - Every time money comes in</li>
+                    <li>• <strong>Weekly</strong> - Every Friday or Monday</li>
+                    <li>• <strong>Biweekly</strong> - Every other week</li>
+                    <li>• <strong>Monthly</strong> - Once per month</li>
+                  </ul>
+                  <p className="text-xs text-gray-500 mt-2 italic">You can change this anytime in your settings</p>
+                </div>
                 <div className="bg-white rounded-lg p-4 border border-blue-200">
                   <p className="font-medium text-blue-800 mb-2">Why Stripe?</p>
                   <ul className="text-sm space-y-1 text-gray-600">
-                    <li>• <strong>Automatic payments</strong> - Your royalties are calculated and sent automatically</li>
-                    <li>• <strong>Direct to your bank</strong> - Funds go straight to your bank account</li>
-                    <li>• <strong>Secure & trusted</strong> - Bank-level encryption protects your info</li>
-                    <li>• <strong>Transparent tracking</strong> - See every payment with full details</li>
-                  </ul>
-                </div>
-                <div className="bg-white rounded-lg p-4 border border-blue-200">
-                  <p className="font-medium text-blue-800 mb-2">How It Works</p>
-                  <ul className="text-sm space-y-1 text-gray-600">
-                    <li>1. Click the button below to create your free Stripe account</li>
-                    <li>2. Link your bank account (takes about 5 minutes)</li>
-                    <li>3. Your account connects directly to our system</li>
-                    <li>4. Royalties are automatically deposited each month</li>
+                    <li>• Used by Amazon, Google, Shopify</li>
+                    <li>• Bank-level security</li>
+                    <li>• Direct deposit to your bank</li>
+                    <li>• Full payment history and tracking</li>
                   </ul>
                 </div>
               </div>
@@ -810,7 +844,7 @@ Email: ${signerEmail}`;
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div>
                     <p className="font-bold text-lg">Ready to Set Up Automatic Payments?</p>
-                    <p className="text-blue-100 text-sm">Create your free Stripe account to receive your 50% profit share automatically.</p>
+                    <p className="text-blue-100 text-sm">5 minutes to set up, then your 50% just shows up automatically.</p>
                   </div>
                   <a 
                     href="https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://paintpros.io/stripe-connect-callback&client_id=ca_PLACEHOLDER&state=sidonie_summers"
@@ -824,9 +858,15 @@ Email: ${signerEmail}`;
                 </div>
               </div>
 
+              <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-sm text-amber-800">
+                  <strong>About Taxes:</strong> We'll both receive 1099s at tax time since this is business income. Your statements will show gross amounts - you'll want to set aside about 25-30% for taxes (just like any self-employment income). I'll do the same on my end.
+                </p>
+              </div>
+
               <div className="mt-4 p-3 bg-blue-100 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> While we're setting up the Stripe integration, you can still receive payments via Venmo, Cash App, or Zelle (select below). Once Stripe is connected, you'll have the option to switch to automatic deposits.
+                  <strong>Backup Options:</strong> While we're setting up Stripe, you can still receive payments via Venmo, Cash App, or Zelle (select below). Once Stripe is connected, everything becomes automatic.
                 </p>
               </div>
 
