@@ -46,12 +46,29 @@ Comprehensive royalty tracking for the Orbit Ventures SaaS portfolio (PaintPros.
 - **Royalty Dashboard:** Admin dashboard at `/royalty-dashboard` for entering revenue, expenses, and payouts with automatic 50% profit share calculations.
 - **Nashville Project Royalties:** Separate tracking for W-2/1099 income from Nashville painting project ($25k/year W-2 or $20k/year 1099 when Developer earns $125k+).
 - **Growth Projections:** Conservative estimates show path from $15k-$30k/year (early stage) to $500k+/year (Enterprise Orbit Staffing), with Orbit Staffing valued at $20M+.
+- **Stripe Connect:** IP agreement includes Stripe Connect section for automatic bank deposits to Sidonie. Selected as recommended payment method with clear setup instructions.
 - **API Endpoints:**
   - `GET/POST /api/royalty/revenue` - Revenue entry CRUD
   - `GET/POST /api/royalty/expenses` - Expense tracking
   - `GET/POST /api/royalty/payouts` - Payment records
   - `GET/PUT /api/royalty/config` - Profit share configuration
   - `GET /api/royalty/summary` - Combined calculations
+
+### Orbit Financial Hub Integration
+PaintPros.io is integrated with Orbit Staffing (orbitstaffing.io) as the central financial hub for Darkwave Studios:
+- **Architecture:** PaintPros pushes financial data TO Orbit Staffing via secure webhook API
+- **Data Flow:** Revenue, expenses, and payouts are synced in real-time to Orbit Staffing's owner/developer tenant
+- **HMAC Authentication:** Uses signed payloads with shared secret for secure service-to-service communication
+- **Automatic Sync:** Every revenue/expense/payout created in PaintPros automatically syncs to Orbit
+- **Environment Variables:**
+  - `ORBIT_FINANCIAL_HUB_URL` - Orbit Staffing API endpoint
+  - `ORBIT_FINANCIAL_HUB_KEY` - App identifier for PaintPros
+  - `ORBIT_FINANCIAL_HUB_SECRET` - HMAC signing secret (stored securely)
+- **Key Files:**
+  - `server/financialHubClient.ts` - Integration client with reportRevenue(), reportExpense(), reportPayout()
+- **API Endpoints:**
+  - `GET /api/financial-hub/status` - Check connection status to Orbit Staffing
+- **Sidonie's Statements:** Orbit Staffing generates biweekly/monthly PDF statements with royalty calculations, blockchain verification, and automatic email delivery
 
 ### Trial Tenant Architecture
 The trial system implements a "10-minute portal" approach where painters get a fully functional sandbox immediately:

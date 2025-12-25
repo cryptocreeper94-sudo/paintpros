@@ -36,6 +36,7 @@ import type { RequestHandler } from "express";
 import * as quickbooks from "./quickbooks";
 import xss from "xss";
 import { provisionTenantFromTrial, SUBSCRIPTION_TIERS, type SubscriptionTier } from "./tenant-provisioning";
+import * as financialHub from "./financialHubClient";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -6926,6 +6927,15 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   app.post("/api/royalty/revenue", async (req, res) => {
     try {
       const revenue = await storage.createRoyaltyRevenue(req.body);
+      
+      // Sync to Orbit Financial Hub
+      financialHub.reportRevenue({
+        grossAmount: parseFloat(req.body.amount) || 0,
+        description: req.body.description || 'PaintPros revenue',
+        externalRef: revenue.id,
+        productCode: req.body.productCode || 'paintpros'
+      }).catch(err => console.error('[Financial Hub] Background sync failed:', err));
+      
       res.status(201).json(revenue);
     } catch (error) {
       console.error("Error creating royalty revenue:", error);
@@ -6960,6 +6970,15 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   app.post("/api/royalty/expenses", async (req, res) => {
     try {
       const expense = await storage.createRoyaltyExpense(req.body);
+      
+      // Sync to Orbit Financial Hub
+      financialHub.reportExpense({
+        grossAmount: parseFloat(req.body.amount) || 0,
+        description: req.body.description || 'PaintPros expense',
+        externalRef: expense.id,
+        category: req.body.category
+      }).catch(err => console.error('[Financial Hub] Background sync failed:', err));
+      
       res.status(201).json(expense);
     } catch (error) {
       console.error("Error creating royalty expense:", error);
@@ -6994,6 +7013,16 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   app.post("/api/royalty/payouts", async (req, res) => {
     try {
       const payout = await storage.createRoyaltyPayout(req.body);
+      
+      // Sync to Orbit Financial Hub
+      financialHub.reportPayout({
+        grossAmount: parseFloat(req.body.amount) || 0,
+        recipientName: req.body.recipientName || 'Sidonie Summers',
+        description: req.body.description || 'Royalty payout',
+        externalRef: payout.id,
+        paymentMethod: req.body.paymentMethod
+      }).catch(err => console.error('[Financial Hub] Background sync failed:', err));
+      
       res.status(201).json(payout);
     } catch (error) {
       console.error("Error creating royalty payout:", error);
@@ -7036,6 +7065,21 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error updating royalty config:", error);
       res.status(500).json({ error: "Failed to update royalty config" });
+    }
+  });
+
+  // GET /api/financial-hub/status - Check Orbit Financial Hub connection
+  app.get("/api/financial-hub/status", async (req, res) => {
+    try {
+      const status = await financialHub.checkHubStatus();
+      res.json({
+        configured: financialHub.isFinancialHubConfigured(),
+        connected: status.connected,
+        hubStatus: status.status
+      });
+    } catch (error) {
+      console.error("Error checking financial hub status:", error);
+      res.status(500).json({ error: "Failed to check financial hub status" });
     }
   });
 
