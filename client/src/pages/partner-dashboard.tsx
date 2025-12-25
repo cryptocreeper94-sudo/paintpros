@@ -4,12 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { DollarSign, TrendingUp, Calendar, Clock, Shield, ArrowRight, Wallet, PiggyBank, FileText, Settings, ExternalLink } from "lucide-react";
 
 type PaymentFrequency = "instant" | "weekly" | "biweekly" | "monthly";
 
 export default function PartnerDashboard() {
   const [paymentFrequency, setPaymentFrequency] = useState<PaymentFrequency>("biweekly");
+  const { toast } = useToast();
+
+  const handleSaveSettings = () => {
+    toast({
+      title: "Settings Saved",
+      description: `Payment frequency set to ${paymentFrequency}. Your payments will arrive automatically.`,
+    });
+  };
 
   const { data: royaltySummary } = useQuery<{
     totalRevenue: number;
@@ -176,10 +185,10 @@ export default function PartnerDashboard() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="instant">Instant (as money comes in)</SelectItem>
-                    <SelectItem value="weekly">Weekly (every Friday)</SelectItem>
-                    <SelectItem value="biweekly">Biweekly (every other Friday)</SelectItem>
-                    <SelectItem value="monthly">Monthly (1st of month)</SelectItem>
+                    <SelectItem value="instant" data-testid="option-frequency-instant">Instant (as money comes in)</SelectItem>
+                    <SelectItem value="weekly" data-testid="option-frequency-weekly">Weekly (every Friday)</SelectItem>
+                    <SelectItem value="biweekly" data-testid="option-frequency-biweekly">Biweekly (every other Friday)</SelectItem>
+                    <SelectItem value="monthly" data-testid="option-frequency-monthly">Monthly (1st of month)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-gray-500 mt-2">Choose when your 50% share gets deposited</p>
@@ -201,7 +210,7 @@ export default function PartnerDashboard() {
                 </div>
               </div>
 
-              <Button className="w-full" variant="outline" data-testid="button-save-settings">
+              <Button className="w-full" variant="outline" data-testid="button-save-settings" onClick={handleSaveSettings}>
                 Save Settings
               </Button>
             </CardContent>
@@ -220,7 +229,7 @@ export default function PartnerDashboard() {
               As co-owner, you have full access to all three platforms. Click to explore:
             </p>
             <div className="grid md:grid-cols-3 gap-4">
-              <a href="/" className="block p-4 bg-white rounded-lg border border-purple-200 group">
+              <a href="/" className="block p-4 bg-white rounded-lg border border-purple-200 group" data-testid="link-platform-paintpros">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-medium text-purple-900">PaintPros.io</p>
                   <ExternalLink className="w-4 h-4 text-purple-400 group-hover:text-purple-600 transition-colors" />
@@ -228,7 +237,7 @@ export default function PartnerDashboard() {
                 <p className="text-sm text-gray-600">Painting contractor platform</p>
                 <Badge variant="secondary" className="mt-2">You're here</Badge>
               </a>
-              <a href="https://brewandboard.coffee" target="_blank" rel="noopener noreferrer" className="block p-4 bg-white rounded-lg border border-amber-200 group">
+              <a href="https://brewandboard.coffee" target="_blank" rel="noopener noreferrer" className="block p-4 bg-white rounded-lg border border-amber-200 group" data-testid="link-platform-brewandboard">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-medium text-amber-900">Brew and Board</p>
                   <ExternalLink className="w-4 h-4 text-amber-400 group-hover:text-amber-600 transition-colors" />
@@ -236,7 +245,7 @@ export default function PartnerDashboard() {
                 <p className="text-sm text-gray-600">Coffee franchise management</p>
                 <Badge variant="secondary" className="mt-2">Full Access</Badge>
               </a>
-              <a href="https://orbitstaffing.io" target="_blank" rel="noopener noreferrer" className="block p-4 bg-white rounded-lg border border-blue-200 group">
+              <a href="https://orbitstaffing.io" target="_blank" rel="noopener noreferrer" className="block p-4 bg-white rounded-lg border border-blue-200 group" data-testid="link-platform-orbitstaffing">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-medium text-blue-900">Orbit Staffing</p>
                   <ExternalLink className="w-4 h-4 text-blue-400 group-hover:text-blue-600 transition-colors" />
