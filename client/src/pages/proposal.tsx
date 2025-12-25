@@ -169,6 +169,19 @@ export default function ProposalPage() {
                 </div>
               </div>
 
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Referral Commission</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-700">Partner Referrals (Sidney)</span>
+                    <span className="font-bold text-[#4A5D3E]">1% of Project Value</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    For leads referred by designated partner that convert to completed projects. Paid upon client payment collection.
+                  </p>
+                </div>
+              </div>
+
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Beta Deliverables</h3>
                 <div className="grid md:grid-cols-2 gap-2">
