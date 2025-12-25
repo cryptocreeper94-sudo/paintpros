@@ -1944,3 +1944,162 @@ export const insertTrialUsageLogSchema = createInsertSchema(trialUsageLog).omit(
 
 export type InsertTrialUsageLog = z.infer<typeof insertTrialUsageLogSchema>;
 export type TrialUsageLog = typeof trialUsageLog.$inferSelect;
+
+// ============================================
+// ROYALTY LEDGER SYSTEM
+// Tracks revenue, expenses, and payouts to Sidonie
+// ============================================
+
+// Revenue entries - SaaS (auto from Stripe) and Nashville project (manual)
+export const royaltyRevenue = pgTable("royalty_revenue", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Revenue type
+  revenueType: text("revenue_type").notNull(), // 'saas_subscription', 'saas_setup', 'saas_other', 'nashville_paycheck'
+  
+  // Amount and date
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  periodStart: timestamp("period_start").notNull(), // Start of pay period
+  periodEnd: timestamp("period_end").notNull(), // End of pay period
+  
+  // Source details
+  stripePaymentId: varchar("stripe_payment_id"), // For Stripe revenue
+  description: text("description"), // Manual description
+  
+  // Nashville-specific fields
+  isW2: boolean("is_w2").default(true), // W-2 vs 1099 for Nashville
+  
+  // Metadata
+  metadata: jsonb("metadata"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_royalty_revenue_type").on(table.revenueType),
+  index("idx_royalty_revenue_period").on(table.periodStart),
+]);
+
+export const insertRoyaltyRevenueSchema = createInsertSchema(royaltyRevenue).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertRoyaltyRevenue = z.infer<typeof insertRoyaltyRevenueSchema>;
+export type RoyaltyRevenue = typeof royaltyRevenue.$inferSelect;
+
+// Business expenses (for calculating net profit)
+export const royaltyExpenses = pgTable("royalty_expenses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Expense details
+  category: text("category").notNull(), // 'hosting', 'software', 'marketing', 'other'
+  description: text("description").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  expenseDate: timestamp("expense_date").notNull(),
+  
+  // Period this applies to (for monthly calculations)
+  periodMonth: integer("period_month").notNull(), // 1-12
+  periodYear: integer("period_year").notNull(),
+  
+  // Metadata
+  receiptUrl: text("receipt_url"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_royalty_expenses_period").on(table.periodYear, table.periodMonth),
+]);
+
+export const insertRoyaltyExpenseSchema = createInsertSchema(royaltyExpenses).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertRoyaltyExpense = z.infer<typeof insertRoyaltyExpenseSchema>;
+export type RoyaltyExpense = typeof royaltyExpenses.$inferSelect;
+
+// Payouts to Sidonie
+export const royaltyPayouts = pgTable("royalty_payouts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Payout type
+  payoutType: text("payout_type").notNull(), // 'saas_profit_share', 'nashville_base', 'nashville_overage', 'signing_bonus'
+  
+  // Amount
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  
+  // Period covered
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
+  
+  // Payment details
+  paymentMethod: text("payment_method"), // 'venmo', 'cashapp', 'zelle', 'cashiers_check', 'stripe_connect'
+  paymentReference: text("payment_reference"), // Transaction ID or check number
+  
+  // Status
+  status: text("status").notNull().default("pending"), // 'pending', 'paid', 'confirmed'
+  paidAt: timestamp("paid_at"),
+  confirmedAt: timestamp("confirmed_at"),
+  
+  // Notes
+  notes: text("notes"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_royalty_payouts_status").on(table.status),
+  index("idx_royalty_payouts_type").on(table.payoutType),
+]);
+
+export const insertRoyaltyPayoutSchema = createInsertSchema(royaltyPayouts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  paidAt: true,
+  confirmedAt: true,
+});
+
+export type InsertRoyaltyPayout = z.infer<typeof insertRoyaltyPayoutSchema>;
+export type RoyaltyPayout = typeof royaltyPayouts.$inferSelect;
+
+// Royalty configuration (thresholds, percentages, etc.)
+export const royaltyConfig = pgTable("royalty_config", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // SaaS profit share
+  saasProfitSharePercent: decimal("saas_profit_share_percent", { precision: 5, scale: 2 }).default("50").notNull(),
+  
+  // Nashville project royalties
+  nashvilleThreshold: decimal("nashville_threshold", { precision: 10, scale: 2 }).default("125000").notNull(),
+  nashvilleBaseW2: decimal("nashville_base_w2", { precision: 10, scale: 2 }).default("25000").notNull(),
+  nashvilleBase1099: decimal("nashville_base_1099", { precision: 10, scale: 2 }).default("20000").notNull(),
+  nashvilleOveragePercent: decimal("nashville_overage_percent", { precision: 5, scale: 2 }).default("15").notNull(),
+  
+  // Signing bonus
+  signingBonusAmount: decimal("signing_bonus_amount", { precision: 10, scale: 2 }).default("6000").notNull(),
+  signingBonusPaid: boolean("signing_bonus_paid").default(false),
+  
+  // Contributor info
+  contributorName: text("contributor_name").default("Sidonie Summers"),
+  contributorEmail: text("contributor_email"),
+  contributorPaymentMethod: text("contributor_payment_method"),
+  contributorPaymentHandle: text("contributor_payment_handle"),
+  contributorStripeAccountId: text("contributor_stripe_account_id"),
+  
+  // Agreement reference
+  agreementVersion: text("agreement_version").default("1.0"),
+  agreementHash: text("agreement_hash"),
+  agreementSignedAt: timestamp("agreement_signed_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertRoyaltyConfigSchema = createInsertSchema(royaltyConfig).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertRoyaltyConfig = z.infer<typeof insertRoyaltyConfigSchema>;
+export type RoyaltyConfig = typeof royaltyConfig.$inferSelect;
