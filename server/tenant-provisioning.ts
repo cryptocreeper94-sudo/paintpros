@@ -4,18 +4,18 @@ import { eq, and } from "drizzle-orm";
 import type { Tenant, TrialTenant, InsertTenant } from "@shared/schema";
 import { sendTenantWelcomeEmail, sendAdminNotificationEmail } from "./resend";
 
-// Stripe Price IDs - set via environment variables for production
-// Create these in Stripe Dashboard: Products > Add Product > Add Price (recurring monthly)
+// Stripe Price IDs - set via environment variables
+// Checks for STRIPE_LIVE_PRICE_* first, then falls back to STRIPE_PRICE_*
 const STRIPE_PRICE_IDS = {
-  starter: process.env.STRIPE_PRICE_STARTER || null,
-  starterSetup: process.env.STRIPE_PRICE_STARTER_SETUP || null,
-  professional: process.env.STRIPE_PRICE_PROFESSIONAL || null,
-  professionalSetup: process.env.STRIPE_PRICE_PROFESSIONAL_SETUP || null,
-  franchise: process.env.STRIPE_PRICE_FRANCHISE || null,
-  franchiseSetup: process.env.STRIPE_PRICE_FRANCHISE_SETUP || null,
-  franchiseLocation: process.env.STRIPE_PRICE_FRANCHISE_LOCATION || null,
-  enterprise: process.env.STRIPE_PRICE_ENTERPRISE || null,
-  enterpriseSetup: process.env.STRIPE_PRICE_ENTERPRISE_SETUP || null,
+  starter: process.env.STRIPE_LIVE_PRICE_STARTER || process.env.STRIPE_PRICE_STARTER || null,
+  starterSetup: process.env.STRIPE_LIVE_PRICE_STARTER_SETUP || process.env.STRIPE_PRICE_STARTER_SETUP || null,
+  professional: process.env.STRIPE_LIVE_PRICE_PROFESSIONAL || process.env.STRIPE_PRICE_PROFESSIONAL || null,
+  professionalSetup: process.env.STRIPE_LIVE_PRICE_PROFESSIONAL_SETUP || process.env.STRIPE_PRICE_PROFESSIONAL_SETUP || null,
+  franchise: process.env.STRIPE_LIVE_PRICE_FRANCHISE || process.env.STRIPE_PRICE_FRANCHISE || null,
+  franchiseSetup: process.env.STRIPE_LIVE_PRICE_FRANCHISE_SETUP || process.env.STRIPE_PRICE_FRANCHISE_SETUP || null,
+  franchiseLocation: process.env.STRIPE_LIVE_PRICE_FRANCHISE_LOCATION || process.env.STRIPE_PRICE_FRANCHISE_LOCATION || null,
+  enterprise: process.env.STRIPE_LIVE_PRICE_ENTERPRISE || process.env.STRIPE_PRICE_ENTERPRISE || null,
+  enterpriseSetup: process.env.STRIPE_LIVE_PRICE_ENTERPRISE_SETUP || process.env.STRIPE_PRICE_ENTERPRISE_SETUP || null,
 };
 
 // Pricing configuration for each tier
