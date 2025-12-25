@@ -179,9 +179,17 @@ export function ColorVisualizer({ isOpen, onClose, initialColor }: ColorVisualiz
                 <Paintbrush className="w-7 h-7 text-accent" />
               </div>
               <h2 className="text-xl sm:text-2xl font-display font-bold text-gray-900 mb-2">AI Color Visualizer</h2>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-sm mb-3">
                 Upload a photo of your wall and see how different paint colors would look
               </p>
+              <div className="bg-accent/5 border border-accent/20 rounded-lg p-3 text-left max-w-md mx-auto">
+                <p className="text-xs font-medium text-accent mb-1">Tips for Best Results:</p>
+                <ul className="text-xs text-gray-600 space-y-0.5">
+                  <li>Use well-lit photos with natural daylight</li>
+                  <li>Capture flat wall surfaces for accurate color preview</li>
+                  <li>Adjust intensity slider to match your desired coverage</li>
+                </ul>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
