@@ -185,19 +185,6 @@ export default function ProposalPage() {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Referral Commission</h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-700">Partner Referrals (Jenn)</span>
-                    <span className="font-bold text-[#4A5D3E]">2% of Project Value</span>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-2">
-                    For leads referred by designated partner that convert to completed projects. Paid upon client payment collection.
-                  </p>
-                </div>
-              </div>
-
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Beta Deliverables</h3>
                 <div className="grid md:grid-cols-2 gap-2">
@@ -240,13 +227,17 @@ export default function ProposalPage() {
                     <span className="font-bold text-[#4A5D3E]">$120,000</span>
                   </div>
                   <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Insurance Stipend</span>
+                    <span className="font-bold text-[#4A5D3E]">$6,000/year ($500/month)</span>
+                  </div>
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-700">Project Bonuses (5% originated / 2% assigned)</span>
                     <span className="font-bold text-[#4A5D3E]">$15,000 - $30,000 est.</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between items-center">
                     <span className="font-semibold text-gray-900">Total Target Compensation</span>
-                    <span className="font-bold text-[#4A5D3E] text-lg">$135,000 - $150,000</span>
+                    <span className="font-bold text-[#4A5D3E] text-lg">$141,000 - $156,000</span>
                   </div>
                 </div>
               </div>
