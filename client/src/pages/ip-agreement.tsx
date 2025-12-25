@@ -184,21 +184,48 @@ Email: ${signerEmail}`;
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-3">4. Payment Terms</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">4. Automated Platform - No Responsibilities</h2>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-gray-700 mb-3">
+                    <strong>Important:</strong> The PaintPros.io platform operates as a fully automated self-service franchise system. This means:
+                  </p>
+                  <ul className="text-sm text-gray-600 space-y-2">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <span><strong>No work required from the Contributor.</strong> Customers sign up, pay, and use the platform automatically.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <span><strong>Passive income.</strong> The Contributor receives their 50% share without any operational responsibilities.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <span><strong>The Developer handles everything:</strong> Technical maintenance, customer support, billing, and platform operations.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <span><strong>Automatic notifications.</strong> Both parties will be notified of any system issues affecting customer signups or platform access.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">5. Payment Terms</h2>
                 <p className="text-gray-700">
-                  Profit distributions shall be calculated monthly and paid within 15 days of the close of each month. The Developer shall maintain transparent records accessible to the Contributor for verification purposes.
+                  Profit distributions shall be calculated monthly and paid within 15 days of the close of each month. The Developer shall maintain transparent records accessible to the Contributor for verification purposes. Payments will be made via direct deposit or agreed-upon payment method.
                 </p>
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-3">5. Duration</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">6. Duration & Inheritance</h2>
                 <p className="text-gray-700">
-                  This agreement shall remain in effect in perpetuity, continuing through any sale, merger, acquisition, or transfer of the platform. The Contributor's rights under this agreement shall pass to their heirs and beneficiaries.
+                  This agreement shall remain in effect <strong>in perpetuity</strong>, continuing through any sale, merger, acquisition, or transfer of the platform. The Contributor's rights under this agreement shall <strong>pass to their heirs and beneficiaries</strong>, ensuring this income stream continues for their family.
                 </p>
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-3">6. Blockchain Verification</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">7. Blockchain Verification</h2>
                 <p className="text-gray-700">
                   This agreement shall be cryptographically hashed and recorded on both the <strong>Solana</strong> blockchain and the <strong>Darkwave Smart Chain</strong> to provide immutable proof of its existence, terms, and execution date.
                 </p>
