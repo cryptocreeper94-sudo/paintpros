@@ -17,8 +17,13 @@ interface Plan {
   id: string;
   name: string;
   price: number;
+  setupFee: number;
   interval: string;
+  target: string;
   features: string[];
+  popular?: boolean;
+  perLocationFee?: number;
+  blockchainAddon?: { available: boolean; price: number };
 }
 
 interface TrialData {
@@ -77,12 +82,21 @@ export default function TrialUpgrade() {
     switch (planId) {
       case 'starter': return Rocket;
       case 'professional': return Crown;
+      case 'franchise': return Users;
       case 'enterprise': return Building2;
       default: return Sparkles;
     }
   };
 
-  const isPopular = (planId: string) => planId === 'professional';
+  const isPopular = (plan: Plan) => plan.popular === true;
+  
+  const formatPrice = (plan: Plan) => {
+    let priceDisplay = `$${plan.price}`;
+    if (plan.perLocationFee) {
+      priceDisplay += ` + $${plan.perLocationFee}/loc`;
+    }
+    return priceDisplay;
+  };
 
   if (trialLoading || plansLoading) {
     return (
@@ -137,8 +151,8 @@ export default function TrialUpgrade() {
             <BentoGrid className="mb-8">
               {plans?.map((plan, index) => {
                 const Icon = getIcon(plan.id);
-                const popular = isPopular(plan.id);
-                const colSpan = 4;
+                const popular = isPopular(plan);
+                const colSpan = 3;
                 
                 return (
                   <BentoItem key={plan.id} colSpan={colSpan} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
@@ -158,10 +172,19 @@ export default function TrialUpgrade() {
                           <Icon className={`w-6 h-6 ${popular ? 'text-emerald-600' : 'text-slate-600'}`} />
                         </div>
                         <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
-                        <div className="mt-2">
-                          <span className="text-4xl font-bold">${plan.price}</span>
+                        <p className="text-xs text-slate-500 mt-1">{plan.target}</p>
+                        <div className="mt-3">
+                          <span className="text-3xl font-bold">{formatPrice(plan)}</span>
                           <span className="text-slate-500">/{plan.interval}</span>
                         </div>
+                        <p className="text-sm text-slate-600 mt-1 font-medium">
+                          + ${plan.setupFee.toLocaleString()} setup fee
+                        </p>
+                        {plan.blockchainAddon?.available && (
+                          <p className="text-xs text-slate-400 mt-1">
+                            Blockchain stamping: +${plan.blockchainAddon.price}/mo
+                          </p>
+                        )}
                       </div>
                       
                       <Accordion type="single" collapsible defaultValue="features" className="mb-4">
@@ -204,7 +227,7 @@ export default function TrialUpgrade() {
               <CarouselContent className="-ml-2">
                 {plans?.map((plan) => {
                   const Icon = getIcon(plan.id);
-                  const popular = isPopular(plan.id);
+                  const popular = isPopular(plan);
                   
                   return (
                     <CarouselItem key={plan.id} className="pl-2 basis-[85%]">
@@ -223,7 +246,9 @@ export default function TrialUpgrade() {
                           </div>
                           <div>
                             <h3 className="font-bold text-slate-900">{plan.name}</h3>
-                            <p className="text-lg font-bold">${plan.price}<span className="text-sm text-slate-500">/mo</span></p>
+                            <p className="text-xs text-slate-500">{plan.target}</p>
+                            <p className="text-lg font-bold">{formatPrice(plan)}<span className="text-sm text-slate-500">/mo</span></p>
+                            <p className="text-xs text-slate-600">+ ${plan.setupFee.toLocaleString()} setup</p>
                           </div>
                         </div>
                         
