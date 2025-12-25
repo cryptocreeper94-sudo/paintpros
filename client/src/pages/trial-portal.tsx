@@ -103,7 +103,7 @@ function MissionControlChecklist({ trial, onStepClick }: { trial: TrialData; onS
                     className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
                       isComplete 
                         ? 'bg-emerald-50/80 border border-emerald-200' 
-                        : 'bg-white/50 border border-slate-200 hover:bg-slate-50'
+                        : 'bg-white/50 border border-slate-200 hover-elevate'
                     }`}
                     data-testid={`button-step-${step.id}`}
                   >
@@ -364,7 +364,7 @@ export default function TrialPortal() {
                 {quickActions.map((action) => (
                   <button 
                     key={action.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50 border border-slate-200 hover:bg-slate-50 transition-colors text-left"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50 border border-slate-200 hover-elevate transition-colors text-left"
                     onClick={() => setLocation(action.route)}
                     data-testid={`button-${action.id}`}
                   >
