@@ -53,6 +53,10 @@ import {
   type CustomerColorSelection, type InsertCustomerColorSelection, customerColorSelections,
   type TrialTenant, type InsertTrialTenant, trialTenants,
   type TrialUsageLog, type InsertTrialUsageLog, trialUsageLog,
+  type RoyaltyRevenue, type InsertRoyaltyRevenue, royaltyRevenue,
+  type RoyaltyExpense, type InsertRoyaltyExpense, royaltyExpenses,
+  type RoyaltyPayout, type InsertRoyaltyPayout, royaltyPayouts,
+  type RoyaltyConfig, type InsertRoyaltyConfig, royaltyConfig,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -2666,6 +2670,196 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(trialUsageLog)
       .where(eq(trialUsageLog.trialTenantId, trialTenantId))
       .orderBy(desc(trialUsageLog.createdAt));
+  }
+
+  // ============================================
+  // ROYALTY LEDGER OPERATIONS
+  // ============================================
+
+  // Revenue entries
+  async createRoyaltyRevenue(revenue: InsertRoyaltyRevenue): Promise<RoyaltyRevenue> {
+    const [result] = await db.insert(royaltyRevenue).values(revenue).returning();
+    return result;
+  }
+
+  async getRoyaltyRevenue(productCode?: string): Promise<RoyaltyRevenue[]> {
+    if (productCode) {
+      return await db.select().from(royaltyRevenue)
+        .where(eq(royaltyRevenue.productCode, productCode))
+        .orderBy(desc(royaltyRevenue.periodStart));
+    }
+    return await db.select().from(royaltyRevenue)
+      .orderBy(desc(royaltyRevenue.periodStart));
+  }
+
+  async getRoyaltyRevenueByPeriod(year: number, month?: number): Promise<RoyaltyRevenue[]> {
+    const startDate = new Date(year, month ? month - 1 : 0, 1);
+    const endDate = month 
+      ? new Date(year, month, 0, 23, 59, 59) 
+      : new Date(year, 11, 31, 23, 59, 59);
+    
+    return await db.select().from(royaltyRevenue)
+      .where(and(
+        sql`${royaltyRevenue.periodStart} >= ${startDate}`,
+        sql`${royaltyRevenue.periodEnd} <= ${endDate}`
+      ))
+      .orderBy(desc(royaltyRevenue.periodStart));
+  }
+
+  async updateRoyaltyRevenue(id: string, updates: Partial<InsertRoyaltyRevenue>): Promise<RoyaltyRevenue | undefined> {
+    const [result] = await db.update(royaltyRevenue)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(royaltyRevenue.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteRoyaltyRevenue(id: string): Promise<void> {
+    await db.delete(royaltyRevenue).where(eq(royaltyRevenue.id, id));
+  }
+
+  // Expenses
+  async createRoyaltyExpense(expense: InsertRoyaltyExpense): Promise<RoyaltyExpense> {
+    const [result] = await db.insert(royaltyExpenses).values(expense).returning();
+    return result;
+  }
+
+  async getRoyaltyExpenses(productCode?: string): Promise<RoyaltyExpense[]> {
+    if (productCode) {
+      return await db.select().from(royaltyExpenses)
+        .where(eq(royaltyExpenses.productCode, productCode))
+        .orderBy(desc(royaltyExpenses.expenseDate));
+    }
+    return await db.select().from(royaltyExpenses)
+      .orderBy(desc(royaltyExpenses.expenseDate));
+  }
+
+  async getRoyaltyExpensesByPeriod(year: number, month?: number): Promise<RoyaltyExpense[]> {
+    if (month) {
+      return await db.select().from(royaltyExpenses)
+        .where(and(
+          eq(royaltyExpenses.periodYear, year),
+          eq(royaltyExpenses.periodMonth, month)
+        ))
+        .orderBy(desc(royaltyExpenses.expenseDate));
+    }
+    return await db.select().from(royaltyExpenses)
+      .where(eq(royaltyExpenses.periodYear, year))
+      .orderBy(desc(royaltyExpenses.expenseDate));
+  }
+
+  async updateRoyaltyExpense(id: string, updates: Partial<InsertRoyaltyExpense>): Promise<RoyaltyExpense | undefined> {
+    const [result] = await db.update(royaltyExpenses)
+      .set(updates)
+      .where(eq(royaltyExpenses.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteRoyaltyExpense(id: string): Promise<void> {
+    await db.delete(royaltyExpenses).where(eq(royaltyExpenses.id, id));
+  }
+
+  // Payouts
+  async createRoyaltyPayout(payout: InsertRoyaltyPayout): Promise<RoyaltyPayout> {
+    const [result] = await db.insert(royaltyPayouts).values(payout).returning();
+    return result;
+  }
+
+  async getRoyaltyPayouts(status?: string): Promise<RoyaltyPayout[]> {
+    if (status) {
+      return await db.select().from(royaltyPayouts)
+        .where(eq(royaltyPayouts.status, status))
+        .orderBy(desc(royaltyPayouts.createdAt));
+    }
+    return await db.select().from(royaltyPayouts)
+      .orderBy(desc(royaltyPayouts.createdAt));
+  }
+
+  async updateRoyaltyPayout(id: string, updates: Partial<RoyaltyPayout>): Promise<RoyaltyPayout | undefined> {
+    const [result] = await db.update(royaltyPayouts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(royaltyPayouts.id, id))
+      .returning();
+    return result;
+  }
+
+  async markRoyaltyPayoutPaid(id: string, paymentMethod: string, paymentReference: string): Promise<RoyaltyPayout | undefined> {
+    const [result] = await db.update(royaltyPayouts)
+      .set({ 
+        status: 'paid', 
+        paymentMethod, 
+        paymentReference,
+        paidAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(royaltyPayouts.id, id))
+      .returning();
+    return result;
+  }
+
+  // Config
+  async getRoyaltyConfig(): Promise<RoyaltyConfig | undefined> {
+    const [result] = await db.select().from(royaltyConfig).limit(1);
+    return result;
+  }
+
+  async upsertRoyaltyConfig(config: Partial<InsertRoyaltyConfig>): Promise<RoyaltyConfig> {
+    const existing = await this.getRoyaltyConfig();
+    if (existing) {
+      const [result] = await db.update(royaltyConfig)
+        .set({ ...config, updatedAt: new Date() })
+        .where(eq(royaltyConfig.id, existing.id))
+        .returning();
+      return result;
+    }
+    const [result] = await db.insert(royaltyConfig).values(config as InsertRoyaltyConfig).returning();
+    return result;
+  }
+
+  // Summary calculations
+  async getRoyaltySummary(year: number, month?: number): Promise<{
+    totalRevenue: number;
+    totalExpenses: number;
+    netProfit: number;
+    contributorShare: number;
+    revenueByProduct: Record<string, number>;
+    expensesByProduct: Record<string, number>;
+  }> {
+    const config = await this.getRoyaltyConfig();
+    const profitSharePercent = config ? parseFloat(config.saasProfitSharePercent) : 50;
+    
+    const revenues = await this.getRoyaltyRevenueByPeriod(year, month);
+    const expenses = await this.getRoyaltyExpensesByPeriod(year, month);
+    
+    const revenueByProduct: Record<string, number> = {};
+    const expensesByProduct: Record<string, number> = {};
+    
+    let totalRevenue = 0;
+    for (const rev of revenues) {
+      const amount = parseFloat(rev.amount);
+      totalRevenue += amount;
+      revenueByProduct[rev.productCode] = (revenueByProduct[rev.productCode] || 0) + amount;
+    }
+    
+    let totalExpenses = 0;
+    for (const exp of expenses) {
+      const amount = parseFloat(exp.amount);
+      totalExpenses += amount;
+      expensesByProduct[exp.productCode] = (expensesByProduct[exp.productCode] || 0) + amount;
+    }
+    
+    const netProfit = totalRevenue - totalExpenses;
+    const contributorShare = Math.max(0, netProfit * (profitSharePercent / 100));
+    
+    return {
+      totalRevenue,
+      totalExpenses,
+      netProfit,
+      contributorShare,
+      revenueByProduct,
+      expensesByProduct
+    };
   }
 }
 

@@ -6892,6 +6892,153 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // ============================================
+  // ROYALTY LEDGER API ROUTES
+  // ============================================
+
+  // GET /api/royalty/summary - Get royalty summary for a period
+  app.get("/api/royalty/summary", async (req, res) => {
+    try {
+      const year = parseInt(req.query.year as string) || new Date().getFullYear();
+      const month = req.query.month ? parseInt(req.query.month as string) : undefined;
+      
+      const summary = await storage.getRoyaltySummary(year, month);
+      res.json(summary);
+    } catch (error) {
+      console.error("Error fetching royalty summary:", error);
+      res.status(500).json({ error: "Failed to fetch royalty summary" });
+    }
+  });
+
+  // GET /api/royalty/revenue - Get all revenue entries
+  app.get("/api/royalty/revenue", async (req, res) => {
+    try {
+      const productCode = req.query.product as string | undefined;
+      const revenues = await storage.getRoyaltyRevenue(productCode);
+      res.json(revenues);
+    } catch (error) {
+      console.error("Error fetching royalty revenue:", error);
+      res.status(500).json({ error: "Failed to fetch royalty revenue" });
+    }
+  });
+
+  // POST /api/royalty/revenue - Create revenue entry (Nashville paychecks, manual SaaS)
+  app.post("/api/royalty/revenue", async (req, res) => {
+    try {
+      const revenue = await storage.createRoyaltyRevenue(req.body);
+      res.status(201).json(revenue);
+    } catch (error) {
+      console.error("Error creating royalty revenue:", error);
+      res.status(500).json({ error: "Failed to create royalty revenue" });
+    }
+  });
+
+  // DELETE /api/royalty/revenue/:id - Delete revenue entry
+  app.delete("/api/royalty/revenue/:id", async (req, res) => {
+    try {
+      await storage.deleteRoyaltyRevenue(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting royalty revenue:", error);
+      res.status(500).json({ error: "Failed to delete royalty revenue" });
+    }
+  });
+
+  // GET /api/royalty/expenses - Get all expense entries
+  app.get("/api/royalty/expenses", async (req, res) => {
+    try {
+      const productCode = req.query.product as string | undefined;
+      const expenses = await storage.getRoyaltyExpenses(productCode);
+      res.json(expenses);
+    } catch (error) {
+      console.error("Error fetching royalty expenses:", error);
+      res.status(500).json({ error: "Failed to fetch royalty expenses" });
+    }
+  });
+
+  // POST /api/royalty/expenses - Create expense entry
+  app.post("/api/royalty/expenses", async (req, res) => {
+    try {
+      const expense = await storage.createRoyaltyExpense(req.body);
+      res.status(201).json(expense);
+    } catch (error) {
+      console.error("Error creating royalty expense:", error);
+      res.status(500).json({ error: "Failed to create royalty expense" });
+    }
+  });
+
+  // DELETE /api/royalty/expenses/:id - Delete expense entry
+  app.delete("/api/royalty/expenses/:id", async (req, res) => {
+    try {
+      await storage.deleteRoyaltyExpense(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting royalty expense:", error);
+      res.status(500).json({ error: "Failed to delete royalty expense" });
+    }
+  });
+
+  // GET /api/royalty/payouts - Get all payout entries
+  app.get("/api/royalty/payouts", async (req, res) => {
+    try {
+      const status = req.query.status as string | undefined;
+      const payouts = await storage.getRoyaltyPayouts(status);
+      res.json(payouts);
+    } catch (error) {
+      console.error("Error fetching royalty payouts:", error);
+      res.status(500).json({ error: "Failed to fetch royalty payouts" });
+    }
+  });
+
+  // POST /api/royalty/payouts - Create payout entry
+  app.post("/api/royalty/payouts", async (req, res) => {
+    try {
+      const payout = await storage.createRoyaltyPayout(req.body);
+      res.status(201).json(payout);
+    } catch (error) {
+      console.error("Error creating royalty payout:", error);
+      res.status(500).json({ error: "Failed to create royalty payout" });
+    }
+  });
+
+  // PATCH /api/royalty/payouts/:id/paid - Mark payout as paid
+  app.patch("/api/royalty/payouts/:id/paid", async (req, res) => {
+    try {
+      const { paymentMethod, paymentReference } = req.body;
+      const payout = await storage.markRoyaltyPayoutPaid(req.params.id, paymentMethod, paymentReference);
+      if (!payout) {
+        res.status(404).json({ error: "Payout not found" });
+        return;
+      }
+      res.json(payout);
+    } catch (error) {
+      console.error("Error marking payout paid:", error);
+      res.status(500).json({ error: "Failed to mark payout paid" });
+    }
+  });
+
+  // GET /api/royalty/config - Get royalty configuration
+  app.get("/api/royalty/config", async (req, res) => {
+    try {
+      const config = await storage.getRoyaltyConfig();
+      res.json(config || {});
+    } catch (error) {
+      console.error("Error fetching royalty config:", error);
+      res.status(500).json({ error: "Failed to fetch royalty config" });
+    }
+  });
+
+  // PATCH /api/royalty/config - Update royalty configuration
+  app.patch("/api/royalty/config", async (req, res) => {
+    try {
+      const config = await storage.upsertRoyaltyConfig(req.body);
+      res.json(config);
+    } catch (error) {
+      console.error("Error updating royalty config:", error);
+      res.status(500).json({ error: "Failed to update royalty config" });
+    }
+  });
+
   return httpServer;
 }
 
