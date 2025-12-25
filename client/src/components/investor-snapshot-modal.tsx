@@ -210,6 +210,57 @@ Contact: Darkwave Studios / Orbit Development Team`;
                   </div>
                 </div>
 
+                <div className="rounded-xl bg-white/5 border border-border p-5">
+                  <h3 className="font-bold mb-3 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-red-500" />
+                    Why We Win vs Competitors
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 font-medium text-muted-foreground">Feature</th>
+                          <th className="text-center py-2 font-medium text-green-500">PaintPros</th>
+                          <th className="text-center py-2 font-medium text-muted-foreground">Jobber</th>
+                          <th className="text-center py-2 font-medium text-muted-foreground">ServiceTitan</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-muted-foreground">
+                        <tr className="border-b border-white/5">
+                          <td className="py-2">White-Label Website</td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                        </tr>
+                        <tr className="border-b border-white/5">
+                          <td className="py-2">Customer-Facing Estimator</td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                          <td className="text-center text-xs text-yellow-500">Internal</td>
+                        </tr>
+                        <tr className="border-b border-white/5">
+                          <td className="py-2">AI Color Visualizer</td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                        </tr>
+                        <tr className="border-b border-white/5">
+                          <td className="py-2">Blockchain Verification</td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                          <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
+                        </tr>
+                        <tr>
+                          <td className="py-2">Setup Fee</td>
+                          <td className="text-center text-green-500">$5-15K</td>
+                          <td className="text-center">$0</td>
+                          <td className="text-center">$5-30K</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
                 <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl p-5 border border-green-500/20">
                   <h3 className="font-bold mb-2 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-green-500" />
