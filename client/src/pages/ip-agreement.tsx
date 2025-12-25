@@ -265,6 +265,43 @@ Email: ${signerEmail}`;
                     </ul>
                     <p className="text-xs text-blue-700 mt-2 font-medium">AI-estimated platform value: $20M+ based on comparable enterprise HR/staffing SaaS platforms</p>
                   </div>
+
+                  <div className="p-4 bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg print:bg-white">
+                    <h4 className="font-bold text-green-900 mb-2 flex items-center gap-2">
+                      4. Trade Vertical Expansion (Future Platforms)
+                      <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">$2.2T+ Combined TAM</span>
+                    </h4>
+                    <p className="text-sm text-gray-700 mb-3">
+                      The PaintPros.io platform is designed to expand into additional skilled trade verticals. Each vertical shares the same core infrastructure but features trade-specific branding, services, and estimators. <strong>As Co-Owner, your 50% ownership extends to all future trade verticals:</strong>
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                      <div className="p-2 bg-white rounded border border-green-100">
+                        <p className="font-medium text-green-800">RoofPros</p>
+                        <p className="text-gray-500">roofpros.io - $56B market</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-green-100">
+                        <p className="font-medium text-green-800">HVACPros</p>
+                        <p className="text-gray-500">hvacpros.io - $130B market</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-green-100">
+                        <p className="font-medium text-green-800">ElectricPros</p>
+                        <p className="text-gray-500">electricpros.io - $200B market</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-green-100">
+                        <p className="font-medium text-green-800">PlumbPros</p>
+                        <p className="text-gray-500">plumbpros.io - $130B market</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-green-100">
+                        <p className="font-medium text-green-800">LandscapePros</p>
+                        <p className="text-gray-500">landscapepros.io - $130B market</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-green-100">
+                        <p className="font-medium text-green-800">BuildPros</p>
+                        <p className="text-gray-500">buildpros.io - $1.5T market</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-green-700 mt-3 font-medium">Your 50% co-ownership applies to ALL trade verticals launched under this platform architecture.</p>
+                  </div>
                 </div>
                 
                 <p className="text-gray-700">

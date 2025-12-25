@@ -39,6 +39,17 @@ const PAINTPROS_FEATURES = [
   { feature: "Premium design (Bento Grid)", us: true, them: false },
   { feature: "SEO management tools", us: true, them: false },
   { feature: "Orbit ecosystem integration", us: true, them: false },
+  { feature: "Multi-trade vertical expansion", us: true, them: false },
+];
+
+const TRADE_VERTICALS = [
+  { name: "PaintPros", domain: "paintpros.io", market: "$46.5B", status: "Live", contractors: "300K+" },
+  { name: "RoofPros", domain: "roofpros.io", market: "$56B", status: "Coming Soon", contractors: "100K+" },
+  { name: "HVACPros", domain: "hvacpros.io", market: "$130B", status: "Coming Soon", contractors: "150K+" },
+  { name: "ElectricPros", domain: "electricpros.io", market: "$200B", status: "Coming Soon", contractors: "75K+" },
+  { name: "PlumbPros", domain: "plumbpros.io", market: "$130B", status: "Coming Soon", contractors: "120K+" },
+  { name: "LandscapePros", domain: "landscapepros.io", market: "$130B", status: "Coming Soon", contractors: "600K+" },
+  { name: "BuildPros", domain: "buildpros.io", market: "$1.5T", status: "Coming Soon", contractors: "700K+" },
 ];
 
 export default function Investors() {
@@ -115,6 +126,25 @@ Traditional approach (Jobber + custom website + agency):
 
 PaintPros.io Starter: $349/mo + $5,000 setup (all-inclusive platform)
 PaintPros.io Professional: $549/mo + $7,000 setup (analytics + blockchain)
+
+TRADE VERTICAL EXPANSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The platform is designed for multi-vertical expansion:
+
+Platform          Domain               Market Size    Status
+─────────────────────────────────────────────────────────────
+PaintPros         paintpros.io         $46.5B         Live
+RoofPros          roofpros.io          $56B           Coming Soon
+HVACPros          hvacpros.io          $130B          Coming Soon
+ElectricPros      electricpros.io      $200B          Coming Soon
+PlumbPros         plumbpros.io         $130B          Coming Soon
+LandscapePros     landscapepros.io     $130B          Coming Soon
+BuildPros         buildpros.io         $1.5T          Coming Soon
+
+Combined TAM: $2.2T+ across all trade verticals
+Each vertical shares core infrastructure: booking, CRM, crew management, 
+payments, documents, and blockchain verification.
 
 DARKWAVE STUDIOS ECOSYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -478,6 +508,66 @@ Ecosystem: https://darkwavestudios.io`;
               </GlassCard>
             </motion.div>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="mb-12"
+          >
+            <GlassCard className="p-8" glow>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/30 to-blue-500/30 flex items-center justify-center">
+                  <Building2 className="w-8 h-8 text-green-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Trade Vertical Expansion</h2>
+                  <p className="text-muted-foreground">One platform, multiple $100B+ markets</p>
+                </div>
+              </div>
+
+              <p className="text-muted-foreground mb-6">
+                The platform architecture supports rapid expansion into adjacent trade verticals. Each vertical shares the same core infrastructure (booking, CRM, crew management, payments, blockchain) but features trade-specific services, estimators, and branding.
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+                {TRADE_VERTICALS.map((vertical) => (
+                  <div
+                    key={vertical.name}
+                    className={`rounded-xl p-3 text-center border ${
+                      vertical.status === "Live" 
+                        ? "bg-green-500/10 border-green-500/30" 
+                        : "bg-white/5 border-border dark:border-white/10"
+                    }`}
+                    data-testid={`card-vertical-${vertical.name.toLowerCase()}`}
+                  >
+                    <p className="font-bold text-sm">{vertical.name}</p>
+                    <p className="text-xs text-muted-foreground font-mono">{vertical.domain}</p>
+                    <p className={`text-xs mt-1 ${vertical.status === "Live" ? "text-green-400" : "text-muted-foreground"}`}>
+                      {vertical.status}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/20">
+                <div className="grid md:grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-3xl font-bold text-green-400">$2.2T+</p>
+                    <p className="text-xs text-muted-foreground">Combined TAM</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-blue-400">2M+</p>
+                    <p className="text-xs text-muted-foreground">Target Contractors</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-purple-400">7</p>
+                    <p className="text-xs text-muted-foreground">Trade Verticals</p>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

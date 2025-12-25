@@ -38,6 +38,7 @@ import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
+import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -777,6 +778,13 @@ export default function Owner() {
             <BentoItem colSpan={12} rowSpan={3}>
               <motion.div className="h-full" variants={cardVariants} custom={13} whileHover={hover3DSubtle}>
                 <CRMCalendar />
+              </motion.div>
+            </BentoItem>
+
+            {/* Trade Verticals Expansion */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <motion.div className="h-full" variants={cardVariants} custom={14} whileHover={hover3DSubtle}>
+                <TradeVerticalsCard showFullDetails={false} />
               </motion.div>
             </BentoItem>
 

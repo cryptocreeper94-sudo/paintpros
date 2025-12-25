@@ -34,6 +34,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { FranchiseManagement } from "@/components/franchise-management";
+import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
 
@@ -2488,6 +2489,13 @@ export default function Developer() {
               <GlassCard className={`h-full p-6 ${cardBackgroundStyles.mixed}`} glow="purple" animatedBorder>
                 <TenantAnalyticsDashboard />
               </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Trade Verticals Expansion */}
+          <BentoItem colSpan={6} rowSpan={2}>
+            <motion.div variants={cardVariants} className="h-full">
+              <TradeVerticalsCard showFullDetails={true} />
             </motion.div>
           </BentoItem>
 

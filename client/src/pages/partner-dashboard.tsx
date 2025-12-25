@@ -257,6 +257,42 @@ export default function PartnerDashboard() {
           </CardContent>
         </Card>
 
+        <Card className="mb-8 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              Trade Vertical Expansion
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              The PaintPros platform is expanding into additional trade verticals. As co-owner, your 50% ownership extends to ALL future platforms:
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[
+                { name: "RoofPros", domain: "roofpros.io", market: "$56B", status: "Coming Soon" },
+                { name: "HVACPros", domain: "hvacpros.io", market: "$130B", status: "Coming Soon" },
+                { name: "ElectricPros", domain: "electricpros.io", market: "$200B", status: "Coming Soon" },
+                { name: "PlumbPros", domain: "plumbpros.io", market: "$130B", status: "Coming Soon" },
+                { name: "LandscapePros", domain: "landscapepros.io", market: "$130B", status: "Coming Soon" },
+                { name: "BuildPros", domain: "buildpros.io", market: "$1.5T", status: "Coming Soon" },
+              ].map((vertical) => (
+                <div key={vertical.name} className="p-3 bg-white rounded-lg border border-green-200 text-center" data-testid={`card-vertical-${vertical.name.toLowerCase()}`}>
+                  <p className="font-medium text-green-800 text-sm">{vertical.name}</p>
+                  <p className="text-xs text-gray-500 font-mono">{vertical.domain}</p>
+                  <Badge variant="outline" className="mt-2 text-xs">{vertical.market}</Badge>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 p-3 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg border border-green-200">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <p className="text-sm text-green-800 font-medium">Combined Total Addressable Market:</p>
+                <p className="text-lg font-bold text-green-900">$2.2T+</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
