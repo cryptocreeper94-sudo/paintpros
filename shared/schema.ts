@@ -1950,9 +1950,21 @@ export type TrialUsageLog = typeof trialUsageLog.$inferSelect;
 // Tracks revenue, expenses, and payouts to Sidonie
 // ============================================
 
+// Product codes for multi-product tracking
+export const ROYALTY_PRODUCTS = {
+  paintpros: { code: 'paintpros', name: 'PaintPros.io', domain: 'paintpros.io' },
+  brewandboard: { code: 'brewandboard', name: 'Brew and Board', domain: 'brewandboard.coffee' },
+  shared: { code: 'shared', name: 'Shared/Combined', domain: null },
+} as const;
+
+export type RoyaltyProductCode = keyof typeof ROYALTY_PRODUCTS;
+
 // Revenue entries - SaaS (auto from Stripe) and Nashville project (manual)
 export const royaltyRevenue = pgTable("royalty_revenue", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Product tracking
+  productCode: text("product_code").notNull().default("paintpros"), // 'paintpros', 'brewandboard', 'shared'
   
   // Revenue type
   revenueType: text("revenue_type").notNull(), // 'saas_subscription', 'saas_setup', 'saas_other', 'nashville_paycheck'
@@ -1964,6 +1976,7 @@ export const royaltyRevenue = pgTable("royalty_revenue", {
   
   // Source details
   stripePaymentId: varchar("stripe_payment_id"), // For Stripe revenue
+  stripeProductId: varchar("stripe_product_id"), // Stripe product ID for mapping
   description: text("description"), // Manual description
   
   // Nashville-specific fields
@@ -1977,6 +1990,7 @@ export const royaltyRevenue = pgTable("royalty_revenue", {
 }, (table) => [
   index("idx_royalty_revenue_type").on(table.revenueType),
   index("idx_royalty_revenue_period").on(table.periodStart),
+  index("idx_royalty_revenue_product").on(table.productCode),
 ]);
 
 export const insertRoyaltyRevenueSchema = createInsertSchema(royaltyRevenue).omit({
