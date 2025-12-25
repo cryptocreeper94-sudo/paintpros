@@ -5789,13 +5789,14 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
 
     // 2. Payment Processor (Stripe) Health Check
-    const stripeConfigured = !!process.env.STRIPE_SECRET_KEY;
+    const stripeKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
+    const stripeConfigured = !!stripeKey;
     if (stripeConfigured) {
       try {
-        const Stripe = require("stripe");
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        const StripeModule = await import("stripe");
+        const stripeClient = new StripeModule.default(stripeKey);
         const stripeStart = Date.now();
-        await stripe.paymentIntents.list({ limit: 1 });
+        await stripeClient.paymentIntents.list({ limit: 1 });
         checks.push({
           name: "payments",
           status: "healthy",
