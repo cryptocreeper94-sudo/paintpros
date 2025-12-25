@@ -32,7 +32,7 @@ export function Navbar() {
     <>
     <header className="relative z-50">
       <div className={cn(
-        "flex items-center px-3 md:px-4",
+        "flex items-center px-3 md:px-4 overflow-hidden",
         tenant.id === "demo" ? "h-16 md:h-20" : "h-20 md:h-28 lg:h-36"
       )}>
         {/* Left: Hamburger Menu - NPP logo for NPP, standard menu for demo */}
