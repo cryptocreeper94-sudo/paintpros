@@ -100,17 +100,19 @@ export default function IPAgreementPage() {
       return;
     }
 
-    const agreementText = `IP PARTNERSHIP & ROYALTY AGREEMENT - Version 1.0
+    const agreementText = `CO-OWNERSHIP & ROYALTY AGREEMENT - Version 1.0
 Effective Date: ${new Date().toISOString()}
-IP Contributor: Sidonie Summers
-Platform Developer: Jason Andrews
+EQUAL PARTNERS:
+  Co-Owner & IP Originator: Sidonie Summers (50% ownership)
+  Co-Owner & Platform Developer: Jason Andrews (50% ownership)
 COVERED PLATFORMS:
   1. PaintPros.io (paintpros.io) - Painting contractor SaaS
   2. Brew and Board (brewandboard.coffee) - Coffee franchise SaaS  
-  3. Orbit Staffing (orbitstaffing.io) - Staffing platform SaaS
+  3. Orbit Staffing (orbitstaffing.io) - Staffing platform SaaS ($20M+ estimated value)
 SaaS Profit Share: 50% of net profits after costs (ALL THREE PLATFORMS)
 Nashville Project Royalties: $25,000/year (W-2) or $20,000/year (1099) when Developer earns $125k+
 One-Time Signing Bonus: $6,000 from initial project investment
+Blockchain Verification: Solana + Darkwave Smart Chain (dwsc.io)
 Payment Method: ${paymentMethod} - ${paymentHandle}
 Email: ${signerEmail}`;
 
@@ -214,7 +216,7 @@ Email: ${signerEmail}`;
                   2. Intellectual Property Contribution
                 </h2>
                 <p className="text-gray-700 mb-3">
-                  The Contributor originated the core concepts for <strong>three SaaS platforms</strong>:
+                  As Co-Owner, Sidonie originated the core concepts for <strong>three SaaS platforms</strong>:
                 </p>
                 
                 <div className="space-y-4 mb-4">
@@ -253,7 +255,7 @@ Email: ${signerEmail}`;
                 </div>
                 
                 <p className="text-gray-700">
-                  The Contributor provided research on existing market solutions and identified gaps that informed all three platforms' development.
+                  As Co-Owner, Sidonie provided research on existing market solutions and identified gaps that informed all three platforms' development.
                 </p>
                 
                 <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg print:bg-white">
@@ -274,7 +276,7 @@ Email: ${signerEmail}`;
                 
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4 print:bg-white">
                   <p className="text-gray-900 font-semibold mb-2">
-                    When the platforms generate revenue, the Contributor shall receive:
+                    When the platforms generate revenue, Sidonie shall receive as Co-Owner:
                   </p>
                   <p className="text-2xl font-bold text-purple-700 mb-2">
                     50% of Net Profits
@@ -472,7 +474,7 @@ Email: ${signerEmail}`;
               <div>
                 <h2 className="text-lg font-bold text-gray-900 mb-3">4. Duration & Inheritance</h2>
                 <p className="text-gray-700">
-                  This agreement shall remain in effect <strong>in perpetuity</strong>, continuing through any sale, merger, acquisition, or transfer of the platform or project. The Contributor's rights under this agreement shall <strong>pass to their heirs and beneficiaries</strong>, ensuring this income stream continues for their family.
+                  This agreement shall remain in effect <strong>in perpetuity</strong>, continuing through any sale, merger, acquisition, or transfer of the platform or project. Sidonie's co-ownership rights under this agreement shall <strong>pass to her heirs and beneficiaries</strong>, ensuring this income stream continues for her family.
                 </p>
               </div>
 

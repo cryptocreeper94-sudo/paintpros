@@ -39,6 +39,20 @@ The design adheres to a "Sparkle and Shine" aesthetic, utilizing a Bento Grid la
 - **Dual-Chain Verification Shields:** Two blockchain verification cards on the demo homepage - Solana (green/purple gradient) and Darkwave (purple/blue gradient). Each opens a modal with QR code linking to the respective blockchain explorer for document verification.
 - **Self-Service Trial System:** 72-hour sandbox trials with usage limits (1 estimate, 3 leads, 1 blockchain stamp). Auto-seeded sample data lets painters experience the platform immediately. Trial tenants get their own branded portal URL at `/trial/{company-slug}` with customizable colors and logo.
 
+### Royalty Tracking System
+Comprehensive royalty tracking for the Orbit Ventures SaaS portfolio (PaintPros.io, Brew and Board, Orbit Staffing):
+- **Co-Ownership Agreement:** IP agreement at `/ip-agreement` recognizes Sidonie Summers as 50% co-owner with equal decision-making authority across all three platforms. Blockchain-verified on Solana and Darkwave Smart Chain (dwsc.io).
+- **Multi-Product Tracking:** Database schema supports tracking revenue/expenses by productCode (paintpros, brewandboard, orbitstaffing) with all revenue flowing through single Stripe account.
+- **Royalty Dashboard:** Admin dashboard at `/royalty-dashboard` for entering revenue, expenses, and payouts with automatic 50% profit share calculations.
+- **Nashville Project Royalties:** Separate tracking for W-2/1099 income from Nashville painting project ($25k/year W-2 or $20k/year 1099 when Developer earns $125k+).
+- **Growth Projections:** Conservative estimates show path from $15k-$30k/year (early stage) to $500k+/year (Enterprise Orbit Staffing), with Orbit Staffing valued at $20M+.
+- **API Endpoints:**
+  - `GET/POST /api/royalty/revenue` - Revenue entry CRUD
+  - `GET/POST /api/royalty/expenses` - Expense tracking
+  - `GET/POST /api/royalty/payouts` - Payment records
+  - `GET/PUT /api/royalty/config` - Profit share configuration
+  - `GET /api/royalty/summary` - Combined calculations
+
 ### Trial Tenant Architecture
 The trial system implements a "10-minute portal" approach where painters get a fully functional sandbox immediately:
 - **Database Schema:** `trial_tenants` table stores owner info, company branding, usage limits, onboarding progress, and engagement metrics. `trial_usage_log` tracks all actions for analytics.
