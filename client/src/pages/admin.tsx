@@ -33,6 +33,7 @@ import { MessagingWidget } from "@/components/messaging-widget";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
+import { PartnerModal } from "@/components/partner-modal";
 
 const DEFAULT_PIN = "4444";
 
@@ -216,122 +217,10 @@ export default function Admin() {
         onClose={() => setShowPinChange(false)}
       />
 
-      {showWelcomeModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-          onClick={() => setShowWelcomeModal(false)}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <GlassCard className="p-6 md:p-8 bg-gray-900/95 border-white/20" glow>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <Heart className="w-8 h-8 text-pink-400" />
-                  <h2 className="text-2xl font-display font-bold text-white">Hey Sid, is this better?</h2>
-                </div>
-                <motion.button
-                  onClick={() => setShowWelcomeModal(false)}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors border border-white/20"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  data-testid="button-close-welcome"
-                >
-                  <X className="w-5 h-5 text-white" />
-                </motion.button>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-gray-300">
-                  Hey, just wanted to show you this - here's where we stand with PaintPros.io:
-                </p>
-
-                <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-xl p-4 border border-green-500/40">
-                  <h3 className="font-bold flex items-center gap-2 mb-3 text-white">
-                    <DollarSign className="w-5 h-5 text-green-400" />
-                    Valuation Projections
-                  </h3>
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="bg-black/40 rounded-lg p-3">
-                      <p className="text-xs text-gray-400">250 tenants</p>
-                      <p className="font-bold text-lg text-green-400">$7.5M-$12M</p>
-                      <p className="text-xs text-gray-400">~$1.5M ARR</p>
-                    </div>
-                    <div className="bg-black/40 rounded-lg p-3">
-                      <p className="text-xs text-gray-400">500 tenants</p>
-                      <p className="font-bold text-lg text-blue-400">$15M-$24M</p>
-                      <p className="text-xs text-gray-400">~$3M ARR</p>
-                    </div>
-                    <div className="bg-black/40 rounded-lg p-3">
-                      <p className="text-xs text-gray-400">2,000 tenants</p>
-                      <p className="font-bold text-lg text-purple-400">$50M+</p>
-                      <p className="text-xs text-gray-400">~$10M ARR</p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-2 text-center">SaaS companies trade at 5-8x annual recurring revenue</p>
-                </div>
-
-                <div className="bg-gradient-to-r from-accent/20 to-purple-500/20 rounded-xl p-4 border border-accent/40">
-                  <h3 className="font-bold flex items-center gap-2 mb-3 text-white">
-                    <Award className="w-5 h-5 text-accent" />
-                    Competitive Edge
-                  </h3>
-                  <p className="text-sm text-gray-300 mb-3">
-                    We outshine Jobber, Housecall Pro, and ServiceTitan in these areas:
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-200">
-                    <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" /> Blockchain verification</div>
-                    <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" /> White-label multi-tenant</div>
-                    <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" /> Bilingual AI assistant</div>
-                    <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-400" /> Premium Bento UI design</div>
-                  </div>
-                </div>
-
-                <div className="bg-white/10 rounded-xl p-4 border border-white/20">
-                  <h3 className="font-bold flex items-center gap-2 mb-3 text-white">
-                    <ListTodo className="w-5 h-5 text-blue-400" />
-                    Next Steps (One per day)
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-green-500/20 border border-green-500/40">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span className="line-through text-gray-400">Stripe & Coinbase payments</span>
-                      <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-green-500/30 text-green-400">Done</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/20">
-                      <div className="w-4 h-4 rounded border-2 border-gray-500" />
-                      <span className="text-gray-200">Tenant provisioning automation</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/20">
-                      <div className="w-4 h-4 rounded border-2 border-gray-500" />
-                      <span className="text-gray-200">QuickBooks Online integration</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/20">
-                      <div className="w-4 h-4 rounded border-2 border-gray-500" />
-                      <span className="text-gray-200">Customer portal</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-pink-500/20 to-rose-500/20 rounded-xl p-4 border border-pink-500/40 text-center">
-                  <p className="text-lg font-medium text-gray-200">
-                    I'll see you shortly!
-                  </p>
-                  <p className="text-xl font-bold text-pink-400 mt-1">
-                    - Jason
-                  </p>
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
-        </motion.div>
-      )}
+      <PartnerModal 
+        open={showWelcomeModal} 
+        onOpenChange={setShowWelcomeModal}
+      />
 
       <main className="pt-20 px-4 md:px-6 pb-24">
         {isDemo && (
