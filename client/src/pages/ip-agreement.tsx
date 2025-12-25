@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Printer, CheckCircle2, Shield, Link2, Loader2, DollarSign, Calendar, Zap, TrendingUp, Users, Lightbulb, FileText } from "lucide-react";
+import { Printer, CheckCircle2, Shield, Link2, Loader2, DollarSign, Calendar, Zap, TrendingUp, Users, Lightbulb, FileText, Download } from "lucide-react";
 import SignatureCanvas from "react-signature-canvas";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -144,9 +144,13 @@ Email: ${signerEmail}`;
   return (
     <div className="min-h-screen bg-white print:bg-white">
       <div className="print:hidden fixed top-4 right-4 z-50 flex gap-2">
-        <Button onClick={handlePrint} variant="outline" className="gap-2">
+        <Button onClick={handlePrint} variant="outline" className="gap-2" data-testid="button-print-agreement">
           <Printer className="w-4 h-4" />
-          Print / Save as PDF
+          Print
+        </Button>
+        <Button onClick={handlePrint} variant="default" className="gap-2" data-testid="button-download-agreement">
+          <Download className="w-4 h-4" />
+          Download PDF
         </Button>
       </div>
 
@@ -179,7 +183,7 @@ Email: ${signerEmail}`;
                 You originated the ideas for <strong>all three platforms</strong> covered by this agreement. PaintPros.io's customer-facing estimation tools, Brew and Board's coffee franchise system, and Orbit Staffing's comprehensive workforce management - these all came from your vision. You researched markets, identified gaps, and conceived the approaches we're now building. Without your contribution, none of this would exist.
               </p>
               <p className="text-gray-700 mb-4">
-                As co-owner, you have <strong>full decision-making authority</strong> alongside me on all operational matters for these three platforms. While I'll handle the day-to-day technical work and customer support, major decisions about direction, pricing, partnerships, and strategy are ours to make together. If you want to participate in marketing, business development, or any other aspect - the door is always open. But there's no pressure; your ownership stake remains the same regardless.
+                As co-owner, you receive <strong>50% of all profits</strong> and have full access to see everything across all three platforms. I'll handle the day-to-day operations as Managing Partner - the technical work, customer support, and business decisions - while keeping you fully informed through regular statements and complete financial transparency. Your profit share remains the same regardless of any operational decisions I make.
               </p>
               <p className="text-gray-700 mb-4">
                 I want you to understand something important: <strong>this could be the beginning of real financial freedom for both of us.</strong> What we're building has genuine potential to replace traditional employment income and give us the creative freedom to build the life we want. The projections in this document are conservative - the actual opportunity could be much larger.
@@ -207,15 +211,15 @@ Email: ${signerEmail}`;
                 <ul className="mt-2 space-y-2 text-gray-700">
                   <li className="p-2 bg-purple-50 rounded border border-purple-100">
                     <strong>Co-Owner & IP Originator:</strong> Sidonie Summers ("Partner")
-                    <p className="text-sm text-gray-600 mt-1">50% ownership stake with full decision-making authority on strategic matters</p>
+                    <p className="text-sm text-gray-600 mt-1">50% profit share with full read access to all platforms and financial transparency</p>
                   </li>
                   <li className="p-2 bg-blue-50 rounded border border-blue-100">
-                    <strong>Co-Owner & Platform Developer:</strong> Jason Andrews ("Developer")
-                    <p className="text-sm text-gray-600 mt-1">50% ownership stake with responsibility for technical implementation and operations</p>
+                    <strong>Co-Owner & Managing Partner:</strong> Jason Andrews ("Developer")
+                    <p className="text-sm text-gray-600 mt-1">50% profit share with responsibility for operations, technical implementation, and day-to-day decisions</p>
                   </li>
                 </ul>
                 <p className="text-sm text-gray-600 mt-3 italic">
-                  Both parties share equal authority over major business decisions including pricing, partnerships, licensing terms, and strategic direction.
+                  Both parties receive equal profit share. The Managing Partner handles operational decisions while keeping the Partner fully informed and financially equal.
                 </p>
               </div>
 
@@ -594,6 +598,178 @@ Email: ${signerEmail}`;
               <p className="text-gray-700 italic">
                 As these platforms grow and we bring them to market, you'll see this vision become reality. Your role as co-owner means you share equally in everything we build - and I'm committed to making this work.
               </p>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Orbit Financial Hub Integration Section */}
+        <section className="mb-8 print:mb-4">
+          <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 print:bg-white print:border-gray-300">
+            <CardContent className="p-6 print:p-4">
+              <h2 className="text-lg font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                <Link2 className="w-5 h-5 text-indigo-600" />
+                How Everything Is Connected: The Orbit Financial Hub
+              </h2>
+              <p className="text-gray-700 mb-4">
+                I've built a unified financial system that connects all three platforms together. Here's how it works in simple terms:
+              </p>
+              
+              <div className="bg-white rounded-lg p-4 border border-indigo-200 mb-4">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-purple-700 font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Revenue Comes In</p>
+                      <p className="text-sm text-gray-600">When someone pays for a PaintPros subscription, Nashville project income arrives, or any platform generates money - it gets recorded automatically.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-purple-700 font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Syncs to Orbit Staffing</p>
+                      <p className="text-sm text-gray-600">All revenue and expenses automatically sync to <strong>Orbit Staffing</strong> (orbitstaffing.io) - our central financial hub. Think of it as our shared "headquarters" for all the money.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-purple-700 font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Your 50% Is Calculated</p>
+                      <p className="text-sm text-gray-600">Orbit Staffing automatically calculates your half of the profits. No manual math, no guesswork - just transparent numbers.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-green-700 font-bold text-sm">4</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">You Get Your Statement + Payment</p>
+                      <p className="text-sm text-gray-600">Every pay period (biweekly or monthly), you'll receive a detailed PDF statement showing all income, expenses, your share, and payment confirmation. Blockchain-verified for audit-proof records.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg p-4 border border-indigo-200">
+                  <p className="font-medium text-indigo-800 mb-2">What This Means For You</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• Complete transparency - see every dollar in and out</li>
+                    <li>• Automatic calculations - no room for error</li>
+                    <li>• Blockchain verification - permanent, tamper-proof records</li>
+                    <li>• Regular statements - know exactly what's coming</li>
+                  </ul>
+                </div>
+                <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg p-4 border border-green-200">
+                  <p className="font-medium text-green-800 mb-2">Nashville/Murfreesboro Projects</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• Projects starting within 1-2 weeks</li>
+                    <li>• Pay stubs will be scanned and tracked</li>
+                    <li>• Your share calculated automatically</li>
+                    <li>• First statement coming soon!</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Governance & Partnership Structure */}
+        <section className="mb-8 print:mb-4">
+          <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 print:bg-white print:border-gray-300">
+            <CardContent className="p-6 print:p-4">
+              <h2 className="text-lg font-bold text-amber-900 mb-3 flex items-center gap-2">
+                <Users className="w-5 h-5 text-amber-600" />
+                Partnership Structure & Decision Making
+              </h2>
+              <p className="text-gray-700 mb-4">
+                To be completely transparent about how our partnership works:
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white rounded-lg p-4 border border-amber-200">
+                  <p className="font-medium text-amber-800 mb-2">Your Role: Co-Owner & IP Partner</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• <strong>50% of all profits</strong> - equal share of everything we earn</li>
+                    <li>• Full read access to all three platforms</li>
+                    <li>• Regular statements showing all financials</li>
+                    <li>• Blockchain-verified ownership record</li>
+                    <li>• No work required - passive income</li>
+                  </ul>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-amber-200">
+                  <p className="font-medium text-amber-800 mb-2">My Role: Managing Partner</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• Day-to-day technical operations</li>
+                    <li>• Customer support and sales</li>
+                    <li>• Platform development and maintenance</li>
+                    <li>• Final decisions on pricing and operations</li>
+                    <li>• This is my full-time commitment</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-amber-100 border border-amber-300 rounded-lg p-4">
+                <p className="text-gray-700 text-sm">
+                  <strong>How decisions work:</strong> Since I'm handling the day-to-day operations and this will become my primary income, I'll have final say on operational decisions like pricing, features, and business direction. But I'm always open to discuss any ideas or concerns you have - we're partners, and your input matters. The key thing is: <strong>your 50% profit share never changes regardless of any operational decisions.</strong>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Platform Access Section */}
+        <section className="mb-8 print:mb-4">
+          <Card className="border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 print:bg-white print:border-gray-300">
+            <CardContent className="p-6 print:p-4">
+              <h2 className="text-lg font-bold text-teal-900 mb-3 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-teal-600" />
+                Your Access to All Platforms
+              </h2>
+              <p className="text-gray-700 mb-4">
+                As co-owner, you have full access to view everything across all three platforms:
+              </p>
+              
+              <div className="space-y-3">
+                <a href="https://paintpros.io" target="_blank" rel="noopener noreferrer" className="block bg-white rounded-lg p-4 border border-teal-200">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <p className="font-medium text-purple-900">PaintPros.io</p>
+                      <p className="text-sm text-gray-600">Painting contractor SaaS platform</p>
+                    </div>
+                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Full Access</span>
+                  </div>
+                </a>
+                <a href="https://brewandboard.coffee" target="_blank" rel="noopener noreferrer" className="block bg-white rounded-lg p-4 border border-teal-200">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <p className="font-medium text-amber-900">Brew and Board</p>
+                      <p className="text-sm text-gray-600">Coffee franchise management platform</p>
+                    </div>
+                    <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Full Access</span>
+                  </div>
+                </a>
+                <a href="https://orbitstaffing.io" target="_blank" rel="noopener noreferrer" className="block bg-white rounded-lg p-4 border border-teal-200">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <p className="font-medium text-blue-900">Orbit Staffing</p>
+                      <p className="text-sm text-gray-600">Financial hub + staffing platform ($20M+ value)</p>
+                    </div>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Full Access + Statements</span>
+                  </div>
+                </a>
+              </div>
+
+              <div className="mt-4 bg-teal-100 border border-teal-300 rounded-lg p-4">
+                <p className="text-sm text-teal-800">
+                  <strong>Your login credentials will be provided separately.</strong> You'll be able to see dashboards, financial reports, customer data, and everything else. Orbit Staffing is where your statements and royalty calculations live.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </section>
