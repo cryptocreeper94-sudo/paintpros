@@ -37,14 +37,14 @@ export default function IPAgreementPage() {
     mutationFn: async (data: { documentHash: string; signerEmail: string; paymentMethod: string; paymentHandle: string }) => {
       const response = await apiRequest("POST", "/api/blockchain/stamp", {
         documentHash: data.documentHash,
-        documentType: "IP Partnership & Royalty Agreement",
+        documentType: "Co-Ownership & Royalty Agreement",
         metadata: {
-          contributor: "Sidonie Summers",
-          developer: "Jason Andrews",
+          coOwner1: "Sidonie Summers (50% ownership)",
+          coOwner2: "Jason Andrews (50% ownership)",
           signerEmail: data.signerEmail,
           paymentMethod: data.paymentMethod,
           paymentHandle: data.paymentHandle,
-          agreementType: "IP Partnership + Estimator Royalties",
+          agreementType: "Co-Ownership Agreement - PaintPros.io, Brew and Board, Orbit Staffing",
           effectiveDate: new Date().toISOString(),
           version: "1.0",
         }
@@ -82,10 +82,19 @@ export default function IPAgreementPage() {
       return;
     }
 
-    if (!paymentMethod || !paymentHandle.trim()) {
+    if (!paymentMethod) {
       toast({
         title: "Payment Method Required",
-        description: "Please select a payment method and enter your handle/username.",
+        description: "Please select a payment method.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (paymentMethod !== "stripe" && !paymentHandle.trim()) {
+      toast({
+        title: "Payment Handle Required",
+        description: "Please enter your payment handle/username for the selected payment method.",
         variant: "destructive",
       });
       return;
@@ -589,6 +598,71 @@ Email: ${signerEmail}`;
           </Card>
         </section>
 
+        {/* Stripe Connect Payment Section */}
+        <section className="mb-8 print:mb-4">
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 print:bg-white print:border-gray-300">
+            <CardContent className="p-6 print:p-4">
+              <h2 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-blue-600" />
+                Automatic Payment Setup via Stripe
+              </h2>
+              <p className="text-gray-700 mb-4">
+                To make your royalty payments as seamless and reliable as possible, I'm using <strong>Stripe</strong> - the same payment system used by companies like Amazon, Google, and Shopify. Setting up your own Stripe account means:
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <p className="font-medium text-blue-800 mb-2">Why Stripe?</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• <strong>Automatic payments</strong> - Your royalties are calculated and sent automatically</li>
+                    <li>• <strong>Direct to your bank</strong> - Funds go straight to your bank account</li>
+                    <li>• <strong>Secure & trusted</strong> - Bank-level encryption protects your info</li>
+                    <li>• <strong>Transparent tracking</strong> - See every payment with full details</li>
+                  </ul>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <p className="font-medium text-blue-800 mb-2">How It Works</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>1. Click the button below to create your free Stripe account</li>
+                    <li>2. Link your bank account (takes about 5 minutes)</li>
+                    <li>3. Your account connects directly to our system</li>
+                    <li>4. Royalties are automatically deposited each month</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-4 text-white print:hidden">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-lg">Ready to Set Up Automatic Payments?</p>
+                    <p className="text-blue-100 text-sm">Create your free Stripe account to receive your 50% profit share automatically.</p>
+                  </div>
+                  <a 
+                    href="https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://paintpros.io/stripe-connect-callback&client_id=ca_PLACEHOLDER&state=sidonie_summers"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-white text-blue-600 rounded-lg font-bold text-sm whitespace-nowrap"
+                    data-testid="button-stripe-connect"
+                  >
+                    Connect with Stripe
+                  </a>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-blue-100 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> While we're setting up the Stripe integration, you can still receive payments via Venmo, Cash App, or Zelle (select below). Once Stripe is connected, you'll have the option to switch to automatic deposits.
+                </p>
+              </div>
+
+              <div className="mt-4 print:block hidden">
+                <p className="text-sm text-gray-600">
+                  <strong>Stripe Setup URL:</strong> Visit paintpros.io/stripe-connect to set up automatic payments after signing.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
         {/* Signature Section */}
         {!stamped && (
           <section className="mb-10 print:hidden">
@@ -610,23 +684,30 @@ Email: ${signerEmail}`;
 
                 <div>
                   <Label className="text-base font-semibold">Preferred Payment Method</Label>
-                  <p className="text-sm text-gray-500 mb-3">Select how you'd like to receive payments:</p>
+                  <p className="text-sm text-gray-500 mb-3">Select how you'd like to receive payments (you can use the Stripe Connect button above to set up automatic bank deposits):</p>
                   <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-2">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border border-blue-300 bg-blue-50">
+                      <RadioGroupItem value="stripe" id="stripe" data-testid="radio-stripe" />
+                      <Label htmlFor="stripe" className="flex-1 cursor-pointer">
+                        <span className="font-medium text-blue-700">Stripe (Recommended)</span>
+                        <span className="text-sm text-blue-600 ml-2">Automatic bank deposits</span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border">
                       <RadioGroupItem value="venmo" id="venmo" data-testid="radio-venmo" />
                       <Label htmlFor="venmo" className="flex-1 cursor-pointer">
                         <span className="font-medium">Venmo</span>
                         <span className="text-sm text-gray-500 ml-2">Fast, mobile payments</span>
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border">
                       <RadioGroupItem value="cashapp" id="cashapp" data-testid="radio-cashapp" />
                       <Label htmlFor="cashapp" className="flex-1 cursor-pointer">
                         <span className="font-medium">Cash App</span>
                         <span className="text-sm text-gray-500 ml-2">Quick transfers</span>
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border">
                       <RadioGroupItem value="zelle" id="zelle" data-testid="radio-zelle" />
                       <Label htmlFor="zelle" className="flex-1 cursor-pointer">
                         <span className="font-medium">Zelle</span>
@@ -636,7 +717,7 @@ Email: ${signerEmail}`;
                   </RadioGroup>
                 </div>
 
-                {paymentMethod && (
+                {paymentMethod && paymentMethod !== "stripe" && (
                   <div>
                     <Label htmlFor="paymentHandle">
                       {paymentMethod === "venmo" && "Venmo Username"}
@@ -654,6 +735,23 @@ Email: ${signerEmail}`;
                       }
                       data-testid="input-payment-handle"
                     />
+                  </div>
+                )}
+
+                {paymentMethod === "stripe" && (
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-green-800">Stripe Selected - Automatic Payments</p>
+                        <p className="text-sm text-green-700 mt-1">
+                          Click the "Connect with Stripe" button above to set up your account. Once connected, your 50% royalty share will be automatically deposited to your bank account each month.
+                        </p>
+                        <p className="text-xs text-green-600 mt-2">
+                          No username or handle needed - Stripe connects directly to your bank.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
