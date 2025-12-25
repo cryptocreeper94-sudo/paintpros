@@ -16,6 +16,10 @@ const STRIPE_PRICE_IDS = {
   franchiseLocation: process.env.STRIPE_LIVE_PRICE_FRANCHISE_LOCATION || process.env.STRIPE_PRICE_FRANCHISE_LOCATION || null,
   enterprise: process.env.STRIPE_LIVE_PRICE_ENTERPRISE || process.env.STRIPE_PRICE_ENTERPRISE || null,
   enterpriseSetup: process.env.STRIPE_LIVE_PRICE_ENTERPRISE_SETUP || process.env.STRIPE_PRICE_ENTERPRISE_SETUP || null,
+  // PaintPros Franchise - uses franchise pricing but with PaintPros branding
+  paintprosFranchise: process.env.STRIPE_LIVE_PRICE_PAINTPROS_FRANCHISE || process.env.STRIPE_PRICE_PAINTPROS_FRANCHISE || process.env.STRIPE_LIVE_PRICE_FRANCHISE || process.env.STRIPE_PRICE_FRANCHISE || null,
+  paintprosFranchiseSetup: process.env.STRIPE_LIVE_PRICE_PAINTPROS_FRANCHISE_SETUP || process.env.STRIPE_PRICE_PAINTPROS_FRANCHISE_SETUP || process.env.STRIPE_LIVE_PRICE_FRANCHISE_SETUP || process.env.STRIPE_PRICE_FRANCHISE_SETUP || null,
+  paintprosFranchiseLocation: process.env.STRIPE_LIVE_PRICE_PAINTPROS_FRANCHISE_LOCATION || process.env.STRIPE_PRICE_PAINTPROS_FRANCHISE_LOCATION || process.env.STRIPE_LIVE_PRICE_FRANCHISE_LOCATION || process.env.STRIPE_PRICE_FRANCHISE_LOCATION || null,
 };
 
 // Pricing configuration for each tier
@@ -89,6 +93,27 @@ export const SUBSCRIPTION_TIERS = {
       messaging: true,
       analytics: true,
     }
+  },
+  paintpros_franchise: {
+    name: "PaintPros Franchise",
+    monthlyPrice: 799,
+    setupFee: 10000,
+    perLocationPrice: 99,
+    stripePriceId: STRIPE_PRICE_IDS.paintprosFranchise,
+    stripeSetupPriceId: STRIPE_PRICE_IDS.paintprosFranchiseSetup,
+    stripeLocationPriceId: STRIPE_PRICE_IDS.paintprosFranchiseLocation,
+    features: {
+      estimator: true,
+      colorLibrary: true,
+      aiVisualizer: true,
+      blockchainStamping: true,
+      crm: true,
+      booking: true,
+      messaging: true,
+      analytics: true,
+      franchiseNetwork: true,
+      territoryProtection: true,
+    }
   }
 };
 
@@ -101,11 +126,19 @@ interface ProvisioningResult {
   message?: string;
 }
 
+interface FranchiseData {
+  city: string;
+  state: string;
+  territory: string;
+}
+
 interface StripeCheckoutData {
   sessionId: string;
   customerId: string;
   subscriptionId: string;
   planId: SubscriptionTier;
+  isPaintProsFranchise?: boolean;
+  franchiseData?: FranchiseData;
 }
 
 export async function provisionTenantFromTrial(
@@ -164,21 +197,38 @@ export async function provisionTenantFromTrial(
       return { success: false, error: `Invalid tier: ${tier}` };
     }
 
+    // 4. Determine if this is a PaintPros franchise enrollment
+    const isPaintProsFranchise = stripeData?.isPaintProsFranchise || false;
+    const franchiseData = stripeData?.franchiseData;
+
+    // PaintPros franchise branding (locked colors and logo)
+    const paintProsBranding = {
+      primaryColor: "#4A5D3E", // PaintPros green
+      accentColor: "#5A6D4E",
+      logoUrl: "/assets/branding/paintpros-logo.png",
+    };
+
     // 4. Create the production tenant
     const tenantData: InsertTenant = {
       trialTenantId: trial.id,
       ownerEmail: trial.ownerEmail,
       ownerName: trial.ownerName,
       ownerPhone: trial.ownerPhone || undefined,
-      companyName: trial.companyName,
-      companySlug: finalSlug,
-      companyCity: trial.companyCity || undefined,
-      companyState: trial.companyState || undefined,
+      // For PaintPros franchises, use city-based naming: "PaintPros Austin" 
+      companyName: isPaintProsFranchise && franchiseData 
+        ? `PaintPros ${franchiseData.city}` 
+        : trial.companyName,
+      companySlug: isPaintProsFranchise && franchiseData 
+        ? `paintpros-${franchiseData.city.toLowerCase().replace(/\s+/g, '-')}-${franchiseData.state.toLowerCase()}`
+        : finalSlug,
+      companyCity: franchiseData?.city || trial.companyCity || undefined,
+      companyState: franchiseData?.state || trial.companyState || undefined,
       companyPhone: trial.companyPhone || undefined,
       companyEmail: trial.companyEmail || undefined,
-      logoUrl: trial.logoUrl || undefined,
-      primaryColor: trial.primaryColor || "#4A5D3E",
-      accentColor: trial.accentColor || "#5A6D4E",
+      // Lock branding for PaintPros franchises
+      logoUrl: isPaintProsFranchise ? paintProsBranding.logoUrl : (trial.logoUrl || undefined),
+      primaryColor: isPaintProsFranchise ? paintProsBranding.primaryColor : (trial.primaryColor || "#4A5D3E"),
+      accentColor: isPaintProsFranchise ? paintProsBranding.accentColor : (trial.accentColor || "#5A6D4E"),
       subscriptionTier: tier,
       subscriptionStatus: "active",
       stripeCustomerId: stripeData?.customerId,
@@ -191,12 +241,23 @@ export async function provisionTenantFromTrial(
       perLocationPrice: "perLocationPrice" in tierConfig ? tierConfig.perLocationPrice?.toString() : undefined,
       featuresEnabled: tierConfig.features,
       status: "provisioning",
-      notes: `Auto-provisioned from trial ${trial.id} on ${new Date().toISOString()}`,
+      notes: isPaintProsFranchise 
+        ? `PaintPros Franchise enrollment for ${franchiseData?.territory || 'unspecified territory'} - provisioned from trial ${trial.id} on ${new Date().toISOString()}`
+        : `Auto-provisioned from trial ${trial.id} on ${new Date().toISOString()}`,
       metadata: {
         trialStartedAt: trial.trialStartedAt,
         trialExpiresAt: trial.trialExpiresAt,
         stripeSessionId: stripeData?.sessionId,
         provisionedAutomatically: true,
+        // PaintPros franchise metadata
+        ...(isPaintProsFranchise ? {
+          isPaintProsFranchise: true,
+          franchiseTerritory: franchiseData?.territory,
+          franchiseCity: franchiseData?.city,
+          franchiseState: franchiseData?.state,
+          brandingLocked: true,
+          parentBrand: "PaintPros",
+        } : {}),
       },
     };
 

@@ -3825,6 +3825,14 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
             
             // Auto-provision the tenant from the trial
             try {
+              // Extract franchise data from session metadata
+              const isPaintProsFranchise = session.metadata.isPaintProsFranchise === 'true';
+              const franchiseData = isPaintProsFranchise ? {
+                city: session.metadata.franchiseCity || '',
+                state: session.metadata.franchiseState || '',
+                territory: session.metadata.franchiseTerritory || '',
+              } : undefined;
+
               const provisionResult = await provisionTenantFromTrial(
                 session.metadata.trialId,
                 (session.metadata.planId || 'professional') as SubscriptionTier,
@@ -3833,6 +3841,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
                   customerId: session.customer as string || "",
                   subscriptionId: session.subscription as string || "",
                   planId: (session.metadata.planId || 'professional') as SubscriptionTier,
+                  isPaintProsFranchise,
+                  franchiseData,
                 }
               );
               
@@ -6346,6 +6356,25 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         '4-hour critical response',
         'Custom contract terms'
       ]
+    },
+    paintpros_franchise: {
+      id: 'paintpros_franchise',
+      name: 'PaintPros Franchise',
+      price: 799,
+      setupFee: 10000,
+      perLocationFee: 99,
+      interval: 'month',
+      target: 'Join the PaintPros network',
+      isPaintProsFranchise: true,
+      features: [
+        'Operate under PaintPros brand recognition',
+        'Pre-built marketing & brand assets',
+        'National referral network access',
+        'Shared lead generation system',
+        'Franchise training & onboarding',
+        'Territory exclusivity protection',
+        'All Professional tier features included'
+      ]
     }
   };
   
@@ -6568,10 +6597,18 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         return;
       }
       
-      const { planId } = req.body;
+      const { planId, franchiseData } = req.body;
       if (!planId || !UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS]) {
         res.status(400).json({ error: "Invalid plan selected" });
         return;
+      }
+      
+      // Validate franchise data for PaintPros franchise plan
+      if (planId === 'paintpros_franchise') {
+        if (!franchiseData?.city || !franchiseData?.state || !franchiseData?.territory) {
+          res.status(400).json({ error: "City, state, and territory are required for franchise enrollment" });
+          return;
+        }
       }
       
       const trial = await storage.getTrialTenantById(req.params.id);
@@ -6654,12 +6691,26 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           setupFee: plan.setupFee?.toString() || '0',
           monthlyPrice: plan.price.toString(),
           type: "trial_upgrade",
+          // Franchise enrollment data
+          ...(planId === 'paintpros_franchise' && franchiseData ? {
+            isPaintProsFranchise: 'true',
+            franchiseCity: franchiseData.city,
+            franchiseState: franchiseData.state,
+            franchiseTerritory: franchiseData.territory,
+          } : {}),
         },
         subscription_data: {
           metadata: {
             trialId: trial.id,
             companyName: trial.companyName,
             planId: plan.id,
+            // Franchise enrollment data
+            ...(planId === 'paintpros_franchise' && franchiseData ? {
+              isPaintProsFranchise: 'true',
+              franchiseCity: franchiseData.city,
+              franchiseState: franchiseData.state,
+              franchiseTerritory: franchiseData.territory,
+            } : {}),
           },
         },
       });

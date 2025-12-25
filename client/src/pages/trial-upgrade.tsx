@@ -1,16 +1,20 @@
+import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { GlassCard } from "@/components/ui/glass-card";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { 
   Check, Sparkles, Shield, Users, FileText, Zap, 
-  ArrowLeft, Crown, Rocket, Building2, ChevronRight
+  ArrowLeft, Crown, Rocket, Building2, ChevronRight, MapPin, Award
 } from "lucide-react";
 
 interface Plan {
@@ -24,6 +28,7 @@ interface Plan {
   popular?: boolean;
   perLocationFee?: number;
   blockchainAddon?: { available: boolean; price: number };
+  isPaintProsFranchise?: boolean;
 }
 
 interface TrialData {
@@ -39,6 +44,11 @@ export default function TrialUpgrade() {
   const { slug } = useParams<{ slug: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  
+  const [showFranchiseModal, setShowFranchiseModal] = useState(false);
+  const [franchiseCity, setFranchiseCity] = useState("");
+  const [franchiseState, setFranchiseState] = useState("");
+  const [franchiseTerritory, setFranchiseTerritory] = useState("");
 
   const { data: trial, isLoading: trialLoading } = useQuery<TrialData>({
     queryKey: ['/api/trial', slug],
@@ -78,15 +88,46 @@ export default function TrialUpgrade() {
     },
   });
 
+  const franchiseUpgradeMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", `/api/trial/${trial?.id}/upgrade`, { 
+        planId: 'paintpros_franchise',
+        franchiseData: {
+          city: franchiseCity,
+          state: franchiseState,
+          territory: franchiseTerritory,
+        }
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setShowFranchiseModal(false);
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Franchise enrollment failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
+
   const getIcon = (planId: string) => {
     switch (planId) {
       case 'starter': return Rocket;
       case 'professional': return Crown;
       case 'franchise': return Users;
       case 'enterprise': return Building2;
+      case 'paintpros_franchise': return Award;
       default: return Sparkles;
     }
   };
+
+  const regularPlans = plans?.filter(p => !p.isPaintProsFranchise) || [];
+  const franchisePlan = plans?.find(p => p.isPaintProsFranchise);
 
   const isPopular = (plan: Plan) => plan.popular === true;
   
@@ -149,7 +190,7 @@ export default function TrialUpgrade() {
 
           <div className="hidden md:block">
             <BentoGrid className="mb-8">
-              {plans?.map((plan, index) => {
+              {regularPlans.map((plan, index) => {
                 const Icon = getIcon(plan.id);
                 const popular = isPopular(plan);
                 const colSpan = 3;
@@ -225,7 +266,7 @@ export default function TrialUpgrade() {
           <div className="md:hidden mb-8">
             <Carousel opts={{ align: "start", loop: false }} className="w-full">
               <CarouselContent className="-ml-2">
-                {plans?.map((plan) => {
+                {regularPlans.map((plan) => {
                   const Icon = getIcon(plan.id);
                   const popular = isPopular(plan);
                   
@@ -285,6 +326,69 @@ export default function TrialUpgrade() {
             </Carousel>
           </div>
 
+          {franchisePlan && (
+            <div className="mb-8">
+              <div className="text-center mb-6">
+                <Badge className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white border-0">
+                  <Award className="w-3 h-3 mr-1" />
+                  Join an Established Brand
+                </Badge>
+              </div>
+              <GlassCard 
+                hoverEffect="3d" 
+                glow="purple"
+                depth="deep"
+                className="p-6 bg-gradient-to-br from-purple-50/80 via-white to-indigo-50/80 ring-2 ring-purple-400/50"
+              >
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg">
+                        <Award className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-900">{franchisePlan.name}</h3>
+                        <p className="text-sm text-purple-600 font-medium">{franchisePlan.target}</p>
+                      </div>
+                    </div>
+                    <p className="text-slate-600 mb-4">
+                      Skip the brand-building phase. Operate under the trusted PaintPros name with 
+                      instant credibility, national marketing support, and exclusive territory rights.
+                    </p>
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-3xl font-bold text-slate-900">${franchisePlan.price}</span>
+                      <span className="text-slate-500">/{franchisePlan.interval}</span>
+                      {franchisePlan.perLocationFee && (
+                        <span className="text-sm text-slate-500">+ ${franchisePlan.perLocationFee}/location</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-600 font-medium mb-4">
+                      + ${franchisePlan.setupFee.toLocaleString()} one-time setup fee
+                    </p>
+                    <Button 
+                      size="lg"
+                      className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg"
+                      onClick={() => setShowFranchiseModal(true)}
+                      data-testid="button-paintpros-franchise"
+                    >
+                      <MapPin className="w-4 h-4 mr-2" />
+                      Claim Your Territory
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {franchisePlan.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <Check className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
+                        <span className="text-sm text-slate-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          )}
+
           <GlassCard hoverEffect="subtle" glow="accent" depth="deep" className="p-6 bg-slate-900/95">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center">
               <div>
@@ -311,6 +415,100 @@ export default function TrialUpgrade() {
           </GlassCard>
         </div>
       </div>
+
+      <Dialog open={showFranchiseModal} onOpenChange={setShowFranchiseModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Award className="w-5 h-5 text-purple-600" />
+              Join PaintPros Franchise Network
+            </DialogTitle>
+            <DialogDescription>
+              Claim your exclusive territory. Once approved, you'll operate under the PaintPros brand 
+              with full marketing support and national recognition.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="franchise-city">City</Label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input 
+                  id="franchise-city"
+                  placeholder="e.g., Austin"
+                  value={franchiseCity}
+                  onChange={(e) => setFranchiseCity(e.target.value)}
+                  className="pl-10"
+                  data-testid="input-franchise-city"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="franchise-state">State</Label>
+              <Input 
+                id="franchise-state"
+                placeholder="e.g., Texas"
+                value={franchiseState}
+                onChange={(e) => setFranchiseState(e.target.value)}
+                data-testid="input-franchise-state"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="franchise-territory">Exclusive Territory</Label>
+              <Input 
+                id="franchise-territory"
+                placeholder="e.g., Greater Austin Metro Area"
+                value={franchiseTerritory}
+                onChange={(e) => setFranchiseTerritory(e.target.value)}
+                data-testid="input-franchise-territory"
+              />
+              <p className="text-xs text-slate-500">Define your protected service area</p>
+            </div>
+            
+            <GlassCard hoverEffect="none" depth="shallow" className="p-4 bg-purple-50/80">
+              <h4 className="font-medium text-slate-900 mb-2">What you get:</h4>
+              <ul className="space-y-1 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <Check className="w-3 h-3 text-purple-500" />
+                  PaintPros branded website & materials
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3 h-3 text-purple-500" />
+                  Territory exclusivity protection
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3 h-3 text-purple-500" />
+                  National referral network access
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3 h-3 text-purple-500" />
+                  Franchise training & onboarding
+                </li>
+              </ul>
+            </GlassCard>
+          </div>
+          
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowFranchiseModal(false)}
+              data-testid="button-cancel-franchise"
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+              onClick={() => franchiseUpgradeMutation.mutate()}
+              disabled={!franchiseCity || !franchiseState || !franchiseTerritory || franchiseUpgradeMutation.isPending}
+              data-testid="button-confirm-franchise"
+            >
+              {franchiseUpgradeMutation.isPending ? 'Processing...' : 'Continue to Payment'}
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
