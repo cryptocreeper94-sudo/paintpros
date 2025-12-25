@@ -14,8 +14,9 @@ import { BrandingConfigurator } from "@/components/trial/branding-configurator";
 import { 
   Clock, CheckCircle2, Palette, FileText, Shield, 
   Users, ArrowRight, Sparkles, Rocket, AlertTriangle, 
-  Building2, Mail, MapPin, ExternalLink, ChevronRight
+  Building2, Mail, MapPin, ExternalLink, ChevronRight, MessageSquare
 } from "lucide-react";
+import { ContactModal } from "@/components/contact-modal";
 
 interface TrialData {
   id: string;
@@ -191,6 +192,7 @@ export default function TrialPortal() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [brandingModalOpen, setBrandingModalOpen] = useState(false);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
   const { data: trial, isLoading, error } = useQuery<TrialData>({
     queryKey: ['/api/trial', slug],
@@ -295,6 +297,14 @@ export default function TrialPortal() {
             </div>
             <div className="flex items-center gap-3">
               <TimeRemaining hours={trial.hoursRemaining} />
+              <Button 
+                variant="outline"
+                onClick={() => setFeedbackModalOpen(true)}
+                data-testid="button-feedback"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Feedback
+              </Button>
               <Button 
                 onClick={() => setLocation(`/trial/${slug}/upgrade`)}
                 data-testid="button-upgrade"
@@ -484,6 +494,11 @@ export default function TrialPortal() {
             completeStepMutation.mutate('setup');
           }
         }}
+      />
+      
+      <ContactModal 
+        isOpen={feedbackModalOpen} 
+        onClose={() => setFeedbackModalOpen(false)} 
       />
     </div>
   );
