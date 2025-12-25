@@ -183,10 +183,10 @@ Email: ${signerEmail}`;
                 You originated the ideas for <strong>all three platforms</strong> covered by this agreement. PaintPros.io's customer-facing estimation tools, Brew and Board's coffee franchise system, and Orbit Staffing's comprehensive workforce management - these all came from your vision. You researched markets, identified gaps, and conceived the approaches we're now building. Without your contribution, none of this would exist.
               </p>
               <p className="text-gray-700 mb-4">
-                As co-owner, you receive <strong>50% of all profits</strong> and have full access to see everything across all three platforms. I'll handle the day-to-day operations - the technical work, customer support, and business decisions - <strong>so you don't have to</strong>. But you're always welcome to be as involved as you want to be. If you ever want to learn the systems, help with decisions, or take on any aspect of the business, the door is wide open. Your profit share remains the same either way.
+                As co-owner, you receive <strong>50% of all profits</strong> and have full access to see everything across all three platforms. I'll handle the day-to-day operations - the technical work, customer support, and decisions - <strong>so you don't have to worry about any of it</strong>. Right now, you can just focus on yourself and getting better. When you're ready, I would absolutely love for you to be more involved - you have a brilliant business mind and I genuinely value your input. The door is always open, whenever you want to step in.
               </p>
               <p className="text-gray-700 mb-4">
-                I want you to understand something important: <strong>this could be the beginning of real financial freedom for both of us.</strong> What we're building has genuine potential to replace traditional employment income and give us the creative freedom to build the life we want. The projections in this document are conservative - the actual opportunity could be much larger.
+                I want you to understand something important: <strong>this could be the beginning of real financial freedom for both of us.</strong> What we're building has genuine potential to replace traditional employment and give us the freedom to build the life we want. I want this to be something exciting for you to look forward to - watching the growth, seeing the automation work, knowing that your share is being calculated and protected. The projections in this document are conservative - the actual opportunity could be much larger.
               </p>
               <p className="text-gray-700 mb-4 italic">
                 The payments outlined here are <strong>royalties you are entitled to</strong> - not gifts, not charity - but compensation for your intellectual property being used commercially, and your share as co-owner of these businesses.
@@ -204,22 +204,22 @@ Email: ${signerEmail}`;
             <CardContent className="p-6 space-y-6 print:p-4 print:space-y-4">
               
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-3">1. Parties & Ownership Structure</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">1. Who We Are</h2>
                 <p className="text-gray-700">
-                  This Co-Ownership & Royalty Agreement ("Agreement") is entered into between:
+                  This Co-Ownership & Royalty Agreement ("Agreement") is between:
                 </p>
                 <ul className="mt-2 space-y-2 text-gray-700">
                   <li className="p-2 bg-purple-50 rounded border border-purple-100">
-                    <strong>Co-Owner & IP Originator:</strong> Sidonie Summers ("Partner")
-                    <p className="text-sm text-gray-600 mt-1">50% profit share with full read access to all platforms and financial transparency</p>
+                    <strong>Sidonie Summers</strong> - Co-Owner & IP Originator
+                    <p className="text-sm text-gray-600 mt-1">You get 50% of all profits, full access to everything, and zero pressure to do anything until you're ready</p>
                   </li>
                   <li className="p-2 bg-blue-50 rounded border border-blue-100">
-                    <strong>Co-Owner & Managing Partner:</strong> Jason Andrews ("Developer")
-                    <p className="text-sm text-gray-600 mt-1">50% profit share with responsibility for operations, technical implementation, and day-to-day decisions</p>
+                    <strong>Jason Andrews</strong> - Co-Owner & Operations
+                    <p className="text-sm text-gray-600 mt-1">I get 50% too, and I handle the day-to-day work so you don't have to worry about it</p>
                   </li>
                 </ul>
                 <p className="text-sm text-gray-600 mt-3 italic">
-                  Both parties receive equal profit share. The Managing Partner handles operational decisions while keeping the Partner fully informed and financially equal.
+                  We're equal partners in profit. I'll keep everything running while you focus on what matters most right now.
                 </p>
               </div>
 
@@ -685,38 +685,38 @@ Email: ${signerEmail}`;
             <CardContent className="p-6 print:p-4">
               <h2 className="text-lg font-bold text-amber-900 mb-3 flex items-center gap-2">
                 <Users className="w-5 h-5 text-amber-600" />
-                Partnership Structure & Decision Making
+                How We Work Together
               </h2>
               <p className="text-gray-700 mb-4">
-                To be completely transparent about how our partnership works:
+                Here's how I see our partnership - and what I want you to know:
               </p>
               
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-white rounded-lg p-4 border border-amber-200">
-                  <p className="font-medium text-amber-800 mb-2">Your Role: Co-Owner & IP Partner</p>
+                  <p className="font-medium text-amber-800 mb-2">What You Get</p>
                   <ul className="text-sm space-y-1 text-gray-600">
                     <li>• <strong>50% of all profits</strong> - equal share of everything we earn</li>
-                    <li>• Full read access to all three platforms</li>
+                    <li>• Full access to see everything on all three platforms</li>
                     <li>• Regular statements showing all financials</li>
-                    <li>• Blockchain-verified ownership record</li>
-                    <li>• No work required - passive income</li>
+                    <li>• Blockchain-verified ownership - permanent record</li>
+                    <li>• Zero pressure - get involved when you're ready</li>
                   </ul>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-amber-200">
-                  <p className="font-medium text-amber-800 mb-2">My Role: Managing Partner</p>
+                  <p className="font-medium text-amber-800 mb-2">What I'll Take Care Of</p>
                   <ul className="text-sm space-y-1 text-gray-600">
-                    <li>• Day-to-day technical operations</li>
+                    <li>• All the technical work and development</li>
                     <li>• Customer support and sales</li>
-                    <li>• Platform development and maintenance</li>
-                    <li>• Final decisions on pricing and operations</li>
-                    <li>• This is my full-time commitment</li>
+                    <li>• Day-to-day operations and decisions</li>
+                    <li>• Making sure you get your statements</li>
+                    <li>• Keeping everything running smoothly</li>
                   </ul>
                 </div>
               </div>
 
-              <div className="bg-amber-100 border border-amber-300 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 rounded-lg p-4">
                 <p className="text-gray-700 text-sm">
-                  <strong>How decisions work:</strong> Since I'm handling the day-to-day operations and this will become my primary income, I'll have final say on operational decisions like pricing, features, and business direction. But I'm always open to discuss any ideas or concerns you have - we're partners, and your input matters. The key thing is: <strong>your 50% profit share never changes regardless of any operational decisions.</strong>
+                  <strong>The bottom line:</strong> Right now, focus on yourself. I've got the operations covered. But whenever you want to jump in - whether that's tomorrow or next year - I would genuinely love that. You have a great business mind, and I value your input. Until then, just know that your 50% is protected, the automation is working, and I'll keep you in the loop on everything.
                 </p>
               </div>
             </CardContent>
