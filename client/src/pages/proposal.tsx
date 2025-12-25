@@ -170,11 +170,11 @@ export default function ProposalPage() {
                   </div>
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-gray-700">Projects Assigned to Me (Not Originated)</span>
+                      <span className="text-gray-700">Projects Assigned to Me (Full Management)</span>
                       <span className="font-bold text-[#4A5D3E]">2% of Project Value</span>
                     </div>
                     <p className="text-xs text-gray-500">
-                      For projects handed off for management only
+                      For projects handed off for ongoing management (not ad-hoc visits)
                     </p>
                   </div>
                   <div className="pt-2 border-t border-gray-200">
@@ -182,6 +182,30 @@ export default function ProposalPage() {
                       Example: $300,000 project I originate = $15,000 bonus
                     </p>
                   </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Ad-Hoc Field Support</h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <p className="text-xs text-gray-500 mb-3">
+                    For quick site visits, check-ins, or dispatch calls (not full project management)
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Weekday Rate</span>
+                    <span className="font-bold text-[#4A5D3E]">$55/hour (2-hour minimum)</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Weekend/Holiday Rate</span>
+                    <span className="font-bold text-[#4A5D3E]">$75/hour (2-hour minimum)</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Mileage (outside Wilson County)</span>
+                    <span className="font-bold text-[#4A5D3E]">$0.67/mile (IRS rate)</span>
+                  </div>
+                  <p className="text-xs text-gray-500 pt-2 border-t border-gray-200">
+                    Base territory: Wilson County, TN. Mileage applies beyond county lines.
+                  </p>
                 </div>
               </div>
 
