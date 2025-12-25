@@ -147,9 +147,10 @@ Email: ${signerEmail}`;
               <Shield className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 print:text-2xl">IP Partnership & Royalty Agreement</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 print:text-2xl">Co-Ownership & Royalty Agreement</h1>
           <p className="text-lg text-gray-600">Orbit Ventures SaaS Portfolio</p>
-          <p className="text-sm text-gray-500 mt-2">Version 1.0 - Blockchain-Verified Document</p>
+          <p className="text-sm text-purple-600 font-medium mt-2">Equal Partnership in Three SaaS Platforms</p>
+          <p className="text-sm text-gray-500 mt-1">Version 1.0 - Blockchain-Verified on Solana & Darkwave</p>
           <p className="text-xs text-gray-400 mt-1">Date: {new Date().toLocaleDateString()}</p>
         </div>
 
@@ -157,20 +158,26 @@ Email: ${signerEmail}`;
 
         {/* Introduction */}
         <section className="mb-8 print:mb-4">
-          <Card className="border-purple-200 bg-purple-50 print:bg-white print:border-gray-300">
+          <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 print:bg-white print:border-gray-300">
             <CardContent className="p-6 print:p-4">
               <h2 className="text-lg font-bold text-purple-900 mb-3 print:text-gray-900">Dear Sidonie,</h2>
               <p className="text-gray-700 mb-4">
-                This agreement formalizes what I've always intended: that when revenue is generated from our SaaS platforms, you will receive your rightful share.
+                This agreement formalizes what I've always intended and what you deserve: <strong>full co-ownership</strong> in the three SaaS platforms we're building together. You are not just a contributor - you are my <strong>equal partner</strong> in these ventures.
               </p>
               <p className="text-gray-700 mb-4">
-                You originated the ideas for <strong>all three platforms</strong> covered by this agreement. PaintPros.io's customer-facing estimation tools, Brew and Board's coffee franchise system, and Orbit Staffing's workflow management - these all came from your vision. You researched markets, identified gaps, and conceived the approaches we're now building. Without your contribution, none of this would exist.
+                You originated the ideas for <strong>all three platforms</strong> covered by this agreement. PaintPros.io's customer-facing estimation tools, Brew and Board's coffee franchise system, and Orbit Staffing's comprehensive workforce management - these all came from your vision. You researched markets, identified gaps, and conceived the approaches we're now building. Without your contribution, none of this would exist.
               </p>
               <p className="text-gray-700 mb-4">
-                When this platform generates revenue, it will be <em>because of</em> your intellectual contribution. The payments outlined in this agreement are <strong>royalties you will be entitled to</strong> - not gifts, not charity - but compensation for your intellectual property being used commercially.
+                As co-owner, you have <strong>full decision-making authority</strong> alongside me on all operational matters for these three platforms. While I'll handle the day-to-day technical work and customer support, major decisions about direction, pricing, partnerships, and strategy are ours to make together. If you want to participate in marketing, business development, or any other aspect - the door is always open. But there's no pressure; your ownership stake remains the same regardless.
+              </p>
+              <p className="text-gray-700 mb-4">
+                I want you to understand something important: <strong>this could be the beginning of real financial freedom for both of us.</strong> What we're building has genuine potential to replace traditional employment income and give us the creative freedom to build the life we want. The projections in this document are conservative - the actual opportunity could be much larger.
+              </p>
+              <p className="text-gray-700 mb-4 italic">
+                The payments outlined here are <strong>royalties you are entitled to</strong> - not gifts, not charity - but compensation for your intellectual property being used commercially, and your share as co-owner of these businesses.
               </p>
               <p className="text-gray-700 mt-4 font-medium">
-                - Jason
+                With respect and partnership,<br />- Jason
               </p>
             </CardContent>
           </Card>
@@ -182,14 +189,23 @@ Email: ${signerEmail}`;
             <CardContent className="p-6 space-y-6 print:p-4 print:space-y-4">
               
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-3">1. Parties</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">1. Parties & Ownership Structure</h2>
                 <p className="text-gray-700">
-                  This Intellectual Property Partnership & Royalty Agreement ("Agreement") is entered into between:
+                  This Co-Ownership & Royalty Agreement ("Agreement") is entered into between:
                 </p>
-                <ul className="mt-2 space-y-1 text-gray-700">
-                  <li><strong>IP Contributor:</strong> Sidonie Summers ("Contributor")</li>
-                  <li><strong>Platform Developer:</strong> Jason Andrews ("Developer")</li>
+                <ul className="mt-2 space-y-2 text-gray-700">
+                  <li className="p-2 bg-purple-50 rounded border border-purple-100">
+                    <strong>Co-Owner & IP Originator:</strong> Sidonie Summers ("Partner")
+                    <p className="text-sm text-gray-600 mt-1">50% ownership stake with full decision-making authority on strategic matters</p>
+                  </li>
+                  <li className="p-2 bg-blue-50 rounded border border-blue-100">
+                    <strong>Co-Owner & Platform Developer:</strong> Jason Andrews ("Developer")
+                    <p className="text-sm text-gray-600 mt-1">50% ownership stake with responsibility for technical implementation and operations</p>
+                  </li>
                 </ul>
+                <p className="text-sm text-gray-600 mt-3 italic">
+                  Both parties share equal authority over major business decisions including pricing, partnerships, licensing terms, and strategic direction.
+                </p>
               </div>
 
               <div>
@@ -219,8 +235,20 @@ Email: ${signerEmail}`;
                   </div>
                   
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg print:bg-white">
-                    <h4 className="font-bold text-blue-900 mb-2">3. Orbit Staffing (orbitstaffing.io)</h4>
-                    <p className="text-sm text-gray-700">Full-service staffing company platform with efficient workflow management. Born from experience working in the staffing industry and identifying operational inefficiencies that could be solved through automation and better tooling.</p>
+                    <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                      3. Orbit Staffing (orbitstaffing.io)
+                      <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">Est. Value: $20M+</span>
+                    </h4>
+                    <p className="text-sm text-gray-700 mb-2">Enterprise-grade staffing and workforce management platform. Born from your direct experience in the staffing industry, this is the most comprehensive platform in our portfolio:</p>
+                    <ul className="text-gray-700 space-y-1 ml-4 text-sm">
+                      <li>• <strong>Indeed-style Job Board</strong> - Full job search for employers AND employees</li>
+                      <li>• <strong>Complete Payroll Suite</strong> - Every payroll feature imaginable, processing to compliance</li>
+                      <li>• <strong>Direct Integrations</strong> - Connects to all major payroll systems (ADP, Gusto, Paychex, etc.)</li>
+                      <li>• <strong>Scheduling System</strong> - Integration with major scheduling platforms</li>
+                      <li>• <strong>AI-Powered Matching</strong> - Intelligent candidate-to-job matching algorithms</li>
+                      <li>• <strong>Compliance Management</strong> - Automated I-9, W-4, background checks</li>
+                    </ul>
+                    <p className="text-xs text-blue-700 mt-2 font-medium">AI-estimated platform value: $20M+ based on comparable enterprise HR/staffing SaaS platforms</p>
                   </div>
                 </div>
                 
@@ -274,43 +302,43 @@ Email: ${signerEmail}`;
                 <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-4 print:bg-white">
                   <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-purple-600" />
-                    Potential Growth Projections (Combined)
+                    Your Path to Financial Freedom
                   </h3>
                   <p className="text-sm text-gray-600 mb-3">
-                    Based on pricing tiers across all three platforms, here's what your 50% share could look like as the portfolio grows:
+                    Here's what your 50% share could look like as our combined portfolio grows. These are <strong>conservative estimates</strong> - the Orbit Staffing platform alone has potential to exceed all of these:
                   </p>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100">
+                    <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100 flex-wrap gap-2">
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">5 customers (mid-tier avg)</span>
+                        <span className="text-sm text-gray-700">Early Stage (5-10 customers)</span>
                       </div>
-                      <span className="font-semibold text-purple-700">~$15,000/year</span>
+                      <span className="font-semibold text-purple-700">$15,000 - $30,000/year</span>
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100">
+                    <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100 flex-wrap gap-2">
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">10 customers</span>
+                        <span className="text-sm text-gray-700">Growth Stage (25-50 customers)</span>
                       </div>
-                      <span className="font-semibold text-purple-700">~$30,000/year</span>
+                      <span className="font-semibold text-purple-700">$75,000 - $150,000/year</span>
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100">
+                    <div className="flex items-center justify-between p-2 bg-gradient-to-r from-purple-100 to-blue-100 rounded border border-purple-200 flex-wrap gap-2">
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">25 customers</span>
+                        <Users className="w-4 h-4 text-purple-600" />
+                        <span className="text-sm text-gray-700 font-medium">Scale Stage (100+ customers)</span>
                       </div>
-                      <span className="font-semibold text-purple-700">~$75,000/year</span>
+                      <span className="font-bold text-purple-700">$300,000+ /year</span>
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-white rounded border border-purple-100">
+                    <div className="flex items-center justify-between p-2 bg-gradient-to-r from-green-100 to-emerald-100 rounded border border-green-200 flex-wrap gap-2">
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">50 customers</span>
+                        <TrendingUp className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-gray-700 font-medium">Enterprise Orbit Staffing Only</span>
                       </div>
-                      <span className="font-semibold text-purple-700">~$150,000/year</span>
+                      <span className="font-bold text-green-700">$500,000+ /year</span>
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 mt-3">
-                    * Projections based on average subscription of $500/month. Actual amounts will vary based on customer mix and costs.
+                    * Projections based on average subscription pricing. Orbit Staffing enterprise clients can generate $10,000-$50,000/month each. The $20M valuation implies significant recurring revenue potential.
                   </p>
                 </div>
 
@@ -468,6 +496,93 @@ Email: ${signerEmail}`;
                 </p>
               </div>
 
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Darkwave Smart Chain Section */}
+        <section className="mb-8 print:mb-4">
+          <Card className="border-purple-200 bg-gradient-to-br from-purple-900 to-blue-900 text-white print:bg-white print:text-gray-900 print:border-gray-300">
+            <CardContent className="p-6 print:p-4">
+              <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-purple-300 print:text-gray-600" />
+                The Bigger Picture: Darkwave Smart Chain
+              </h2>
+              <p className="text-purple-100 mb-4 print:text-gray-700">
+                All three platforms we're building are part of something larger: the <strong className="text-white print:text-gray-900">Darkwave Smart Chain (DWSC)</strong> ecosystem. This is our own blockchain technology that provides the verification layer for all our applications.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white/10 rounded-lg p-4 print:bg-gray-50 print:border print:border-gray-200">
+                  <p className="font-medium text-purple-200 mb-2 print:text-gray-600">What DWSC Provides:</p>
+                  <ul className="text-sm space-y-1 text-purple-100 print:text-gray-600">
+                    <li>• Document verification & immutable records</li>
+                    <li>• Smart contracts for automated payments</li>
+                    <li>• Proof of authenticity for all platform data</li>
+                    <li>• Enterprise-grade security infrastructure</li>
+                  </ul>
+                </div>
+                <div className="bg-white/10 rounded-lg p-4 print:bg-gray-50 print:border print:border-gray-200">
+                  <p className="font-medium text-purple-200 mb-2 print:text-gray-600">Long-Term Vision:</p>
+                  <ul className="text-sm space-y-1 text-purple-100 print:text-gray-600">
+                    <li>• Foundation for all Orbit Ventures products</li>
+                    <li>• Revenue from transaction & verification fees</li>
+                    <li>• Enterprise licensing opportunities</li>
+                    <li>• Additional co-ownership revenue stream</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="bg-white/20 rounded-lg p-3 flex items-center justify-between flex-wrap gap-2 print:bg-gray-100">
+                <div>
+                  <p className="text-sm text-purple-200 print:text-gray-600">Explore the technology:</p>
+                  <p className="font-bold text-white print:text-gray-900">dwsc.io</p>
+                </div>
+                <a 
+                  href="https://dwsc.io" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-white text-purple-900 rounded-lg font-medium text-sm print:hidden"
+                >
+                  Visit DWSC.io
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Future Vision Section */}
+        <section className="mb-8 print:mb-4">
+          <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 print:bg-white print:border-gray-300">
+            <CardContent className="p-6 print:p-4">
+              <h2 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-green-600" />
+                Our Shared Future
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Sidonie, I want you to know what this partnership represents: the beginning of something that could genuinely change our lives. The combined potential of these three platforms - especially Orbit Staffing with its $20M+ valuation - gives us a real path to:
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <p className="font-medium text-green-800 mb-2">Financial Freedom</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• Passive income that grows over time</li>
+                    <li>• Freedom from traditional employment constraints</li>
+                    <li>• Long-term wealth building through ownership</li>
+                    <li>• Inheritable income stream for our families</li>
+                  </ul>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <p className="font-medium text-green-800 mb-2">Creative Freedom</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• Work on projects we're passionate about</li>
+                    <li>• Set our own schedules and priorities</li>
+                    <li>• Build things that help people</li>
+                    <li>• Leave the painting world behind when you're ready</li>
+                  </ul>
+                </div>
+              </div>
+              <p className="text-gray-700 italic">
+                As these platforms grow and we bring them to market, you'll see this vision become reality. Your role as co-owner means you share equally in everything we build - and I'm committed to making this work.
+              </p>
             </CardContent>
           </Card>
         </section>
