@@ -44,6 +44,7 @@ import TrialSignup from "@/pages/trial-signup";
 import TrialPortal from "@/pages/trial-portal";
 import TrialUpgrade from "@/pages/trial-upgrade";
 import TrialUpgradeSuccess from "@/pages/trial-upgrade-success";
+import PartnershipProposal from "@/pages/proposal";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -78,6 +79,7 @@ function Router() {
       <Route path="/pay/:estimateId" component={Pay} />
       <Route path="/proposal/:id/sign" component={ProposalSign} />
       <Route path="/investors" component={Investors} />
+      <Route path="/partnership-proposal" component={PartnershipProposal} />
       <Route path="/compare" component={Compare} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/crew-lead" component={CrewLead} />
