@@ -56,16 +56,32 @@ The trial system implements a "10-minute portal" approach where painters get a f
   - `POST /api/trial/:id/upgrade` - Create Stripe checkout session for subscription
   - `POST /api/trial/:id/convert` - Convert trial to paid tenant after successful payment
 
-### Trial Upgrade System
-Seamless upgrade flow from trial to paid subscription:
-- **Pricing Tiers:** Starter ($49/mo), Professional ($99/mo - most popular), Enterprise ($199/mo)
-- **Flow:** Trial portal → Upgrade page → Stripe checkout → Success page → Conversion → Back to portal
+### Trial Upgrade System (B2B Licensing Model)
+Seamless upgrade flow from trial to paid subscription with automated tenant provisioning:
+- **Pricing Tiers:** 
+  - Starter: $349/mo + $5,000 setup
+  - Professional: $549/mo + $7,000 setup (most popular)
+  - Franchise: $799/mo + $99/location + $10,000 setup
+  - Enterprise: $1,399/mo + $15,000 setup
+- **Flow:** Trial portal → Upgrade page → Stripe checkout → Webhook → Auto-Provision → Welcome Email → Dashboard
+- **Automated Provisioning:** The `provisionTenantFromTrial()` service handles:
+  - Creates production tenant record in `tenants` table
+  - Migrates trial data (leads, estimates, blockchain stamps)
+  - Creates owner user account
+  - Sends welcome email to owner
+  - Sends admin notification
 - **Data Preservation:** All trial data (branding, leads, estimates, blockchain stamps) carries over to paid account
 - **Frontend Pages:**
-  - `/trial/:slug/upgrade` - Pricing page with 3 plan cards
+  - `/trial/:slug/upgrade` - Pricing page with tier cards
   - `/trial/:slug/upgrade-success` - Post-payment success page with conversion
-- **Stripe Integration:** Uses checkout.sessions.create for subscription mode, passes plan ID in success URL
+- **Stripe Integration:** 
+  - Uses checkout.sessions.create for subscription mode
+  - Webhook at `/api/payments/stripe/webhook` auto-provisions on `checkout.session.completed`
+  - Passes plan ID in session metadata
 - **Conversion Protection:** Validates plan ID, session ID, prevents double conversion, handles errors gracefully
+- **Key Files:**
+  - `server/tenant-provisioning.ts` - Core provisioning logic
+  - `docs/TENANT_PROVISIONING_SYSTEM.md` - Complete technical documentation
 
 ### System Design Choices
 - **Database Schema:** Key tables include `leads`, `estimates`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, and tables for CRM, Crew Management, Messaging, and Franchise Management.

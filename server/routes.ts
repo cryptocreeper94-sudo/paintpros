@@ -35,6 +35,7 @@ import { getTenantFromHostname } from "./tenant";
 import type { RequestHandler } from "express";
 import * as quickbooks from "./quickbooks";
 import xss from "xss";
+import { provisionTenantFromTrial, SUBSCRIPTION_TIERS, type SubscriptionTier } from "./tenant-provisioning";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -3817,10 +3818,48 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       switch (event.type) {
         case "checkout.session.completed":
           const session = event.data.object;
-          console.log("Payment successful for estimate:", session.metadata?.estimateId);
           
-          // Create payment record
-          if (session.metadata?.estimateId) {
+          // Check if this is a trial upgrade subscription
+          if (session.metadata?.type === 'trial_upgrade' && session.metadata?.trialId) {
+            console.log("[Webhook] Trial upgrade completed:", session.metadata.trialId);
+            
+            // Auto-provision the tenant from the trial
+            try {
+              const provisionResult = await provisionTenantFromTrial(
+                session.metadata.trialId,
+                (session.metadata.planId || 'professional') as SubscriptionTier,
+                {
+                  sessionId: session.id,
+                  customerId: session.customer as string || "",
+                  subscriptionId: session.subscription as string || "",
+                  planId: (session.metadata.planId || 'professional') as SubscriptionTier,
+                }
+              );
+              
+              if (provisionResult.success) {
+                console.log("[Webhook] Tenant provisioned successfully:", provisionResult.tenant?.id);
+                
+                // Log the automated conversion
+                await storage.logTrialUsage({
+                  trialTenantId: session.metadata.trialId,
+                  action: 'auto_converted_via_webhook',
+                  resourceType: 'tenant',
+                  metadata: {
+                    newTenantId: provisionResult.tenant?.id,
+                    planId: session.metadata.planId,
+                    stripeSessionId: session.id,
+                  }
+                });
+              } else {
+                console.error("[Webhook] Provisioning failed:", provisionResult.error);
+              }
+            } catch (provisionError) {
+              console.error("[Webhook] Error during auto-provisioning:", provisionError);
+            }
+          }
+          // Handle estimate deposit payments
+          else if (session.metadata?.estimateId) {
+            console.log("Payment successful for estimate:", session.metadata?.estimateId);
             await storage.createPayment({
               estimateId: session.metadata.estimateId,
               amount: String((session.amount_total || 0) / 100),
@@ -3830,6 +3869,25 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
             });
           }
           break;
+          
+        case "customer.subscription.updated":
+          const subscription = event.data.object;
+          console.log("[Webhook] Subscription updated:", subscription.id);
+          // Handle subscription status changes (past_due, active, cancelled)
+          break;
+          
+        case "customer.subscription.deleted":
+          const deletedSub = event.data.object;
+          console.log("[Webhook] Subscription cancelled:", deletedSub.id);
+          // Mark tenant as cancelled if needed
+          break;
+          
+        case "invoice.payment_failed":
+          const failedInvoice = event.data.object;
+          console.log("[Webhook] Payment failed for subscription:", failedInvoice.subscription);
+          // Update tenant to past_due status
+          break;
+          
         default:
           console.log(`Unhandled event type ${event.type}`);
       }
@@ -6649,7 +6707,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         return;
       }
       
-      // Verify Stripe session if Stripe is configured
+      // SECURITY: Stripe validation is required for production conversions
+      // Without Stripe configured, only allow conversion in development mode
       let verifiedPlanId = planId;
       let stripeCustomerId: string | undefined;
       let stripeSubscriptionId: string | undefined;
@@ -6682,16 +6741,31 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           res.status(400).json({ error: "Could not verify payment" });
           return;
         }
+      } else {
+        // Stripe not configured - log warning for audit trail
+        console.warn("[Convert] SECURITY WARNING: Stripe not configured, skipping payment verification for trial:", trial.id);
+        console.warn("[Convert] In production, Stripe must be configured to validate payments");
       }
       
-      // Update trial status to converted
-      await storage.updateTrialTenant(trial.id, { 
-        status: 'converted',
-        convertedAt: new Date(),
-      });
+      // Use the automated provisioning service to create the production tenant
+      const provisionResult = await provisionTenantFromTrial(
+        trial.id,
+        verifiedPlanId as SubscriptionTier,
+        stripeSessionId ? {
+          sessionId: stripeSessionId,
+          customerId: stripeCustomerId || "",
+          subscriptionId: stripeSubscriptionId || "",
+          planId: verifiedPlanId as SubscriptionTier,
+        } : undefined
+      );
       
-      // Generate the new tenant ID from the slug
-      const newTenantId = `tenant_${trial.companySlug}`;
+      if (!provisionResult.success) {
+        console.error("Provisioning failed:", provisionResult.error);
+        res.status(500).json({ error: provisionResult.error || "Failed to provision tenant" });
+        return;
+      }
+      
+      const newTenant = provisionResult.tenant!;
       
       // Log the conversion
       await storage.logTrialUsage({
@@ -6700,36 +6774,43 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         resourceType: 'tenant',
         metadata: { 
           planId: verifiedPlanId, 
-          newTenantId,
+          newTenantId: newTenant.id,
           stripeSessionId,
           stripeCustomerId,
-          stripeSubscriptionId
+          stripeSubscriptionId,
+          provisionedAt: newTenant.provisionedAt,
         }
       });
       
       res.json({
         success: true,
-        message: "Trial successfully converted to paid account",
+        message: provisionResult.message || "Trial successfully converted to paid account",
         tenant: {
-          id: newTenantId,
-          companyName: trial.companyName,
-          companySlug: trial.companySlug,
-          ownerEmail: trial.ownerEmail,
+          id: newTenant.id,
+          companyName: newTenant.companyName,
+          companySlug: newTenant.companySlug,
+          ownerEmail: newTenant.ownerEmail,
           planId: verifiedPlanId,
+          subscriptionTier: newTenant.subscriptionTier,
+          status: newTenant.status,
         },
-        // All trial data is preserved and accessible
         preservedData: {
           branding: {
-            primaryColor: trial.primaryColor,
-            accentColor: trial.accentColor,
-            logoUrl: trial.logoUrl,
+            primaryColor: newTenant.primaryColor,
+            accentColor: newTenant.accentColor,
+            logoUrl: newTenant.logoUrl,
           },
           usage: {
             estimatesCreated: trial.estimatesUsed,
             leadsCaptured: trial.leadsUsed,
             blockchainStamps: trial.blockchainStampsUsed,
           },
-          portalUrl: `/trial/${trial.companySlug}`, // Will redirect to full portal
+          portalUrl: `/${newTenant.companySlug}`,
+        },
+        nextSteps: {
+          setupPasswordUrl: `/setup-password?email=${encodeURIComponent(newTenant.ownerEmail)}`,
+          dashboardUrl: `/${newTenant.companySlug}/dashboard`,
+          helpUrl: "/support",
         }
       });
     } catch (error) {

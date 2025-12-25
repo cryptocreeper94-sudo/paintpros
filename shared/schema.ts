@@ -1754,6 +1754,95 @@ export const insertCustomerColorSelectionSchema = createInsertSchema(customerCol
 export type InsertCustomerColorSelection = z.infer<typeof insertCustomerColorSelectionSchema>;
 export type CustomerColorSelection = typeof customerColorSelections.$inferSelect;
 
+// Production Tenants - Paid customer configurations (auto-provisioned from trial conversions)
+export const tenants = pgTable("tenants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Source tracking
+  trialTenantId: varchar("trial_tenant_id"), // Reference to original trial (if converted)
+  
+  // Owner info
+  ownerEmail: text("owner_email").notNull(),
+  ownerName: text("owner_name").notNull(),
+  ownerPhone: text("owner_phone"),
+  ownerUserId: varchar("owner_user_id").references(() => users.id), // Link to user account
+  
+  // Company info
+  companyName: text("company_name").notNull(),
+  companySlug: text("company_slug").notNull().unique(), // URL identifier (e.g., "johnsons-painting")
+  companyCity: text("company_city"),
+  companyState: text("company_state"),
+  companyPhone: text("company_phone"),
+  companyEmail: text("company_email"),
+  companyWebsite: text("company_website"),
+  logoUrl: text("logo_url"),
+  
+  // Theme customization
+  primaryColor: text("primary_color").default("#4A5D3E"),
+  accentColor: text("accent_color").default("#5A6D4E"),
+  
+  // Subscription details
+  subscriptionTier: text("subscription_tier").notNull(), // 'starter', 'professional', 'franchise', 'enterprise'
+  subscriptionStatus: text("subscription_status").notNull().default("active"), // 'active', 'past_due', 'cancelled', 'paused'
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  
+  // Billing info
+  monthlyPrice: decimal("monthly_price", { precision: 10, scale: 2 }),
+  setupFee: decimal("setup_fee", { precision: 10, scale: 2 }),
+  setupFeePaid: boolean("setup_fee_paid").default(false),
+  billingCycleStart: timestamp("billing_cycle_start"),
+  
+  // Franchise-specific (for multi-location)
+  parentTenantId: varchar("parent_tenant_id"), // Self-reference for franchise hierarchy
+  locationCount: integer("location_count").default(1),
+  perLocationPrice: decimal("per_location_price", { precision: 10, scale: 2 }),
+  
+  // Feature flags (can override defaults per tenant)
+  featuresEnabled: jsonb("features_enabled").$type<{
+    estimator?: boolean;
+    colorLibrary?: boolean;
+    aiVisualizer?: boolean;
+    blockchainStamping?: boolean;
+    crm?: boolean;
+    booking?: boolean;
+    messaging?: boolean;
+    analytics?: boolean;
+  }>().default({}),
+  
+  // Status
+  status: text("status").notNull().default("provisioning"), // 'provisioning', 'active', 'suspended', 'cancelled'
+  provisionedAt: timestamp("provisioned_at"),
+  activatedAt: timestamp("activated_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  
+  // Metadata
+  notes: text("notes"), // Internal notes from admin
+  metadata: jsonb("metadata"), // Flexible storage for additional data
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tenants_slug").on(table.companySlug),
+  index("idx_tenants_owner_email").on(table.ownerEmail),
+  index("idx_tenants_status").on(table.status),
+  index("idx_tenants_subscription").on(table.subscriptionStatus),
+  index("idx_tenants_stripe_customer").on(table.stripeCustomerId),
+  index("idx_tenants_parent").on(table.parentTenantId),
+]);
+
+export const insertTenantSchema = createInsertSchema(tenants).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  provisionedAt: true,
+  activatedAt: true,
+  cancelledAt: true,
+});
+
+export type InsertTenant = z.infer<typeof insertTenantSchema>;
+export type Tenant = typeof tenants.$inferSelect;
+
 // Trial Tenants - Self-service trial signup with usage limits
 export const trialTenants = pgTable("trial_tenants", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
