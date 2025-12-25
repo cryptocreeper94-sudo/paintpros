@@ -49,6 +49,7 @@ import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
 import PartnerDashboard from "@/pages/partner-dashboard";
 import ProposalRyan from "@/pages/proposal-ryan";
+import TradeVerticals from "@/pages/trade-verticals";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -89,6 +90,7 @@ function Router() {
       <Route path="/partner" component={PartnerDashboard} />
       <Route path="/proposal-ryan" component={ProposalRyan} />
       <Route path="/compare" component={Compare} />
+      <Route path="/trade-verticals" component={TradeVerticals} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/crew-lead" component={CrewLead} />
       <Route path="/contractor-application" component={ContractorApplication} />
