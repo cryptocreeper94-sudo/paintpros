@@ -480,6 +480,11 @@ export default function TrialPortal() {
           accentColor: trial.accentColor,
           logoUrl: trial.logoUrl,
         }}
+        onSaveSuccess={() => {
+          if (!trial.progress?.completedSteps?.includes('setup')) {
+            completeStepMutation.mutate('setup');
+          }
+        }}
       />
     </div>
   );

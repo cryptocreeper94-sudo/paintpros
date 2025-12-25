@@ -20,6 +20,7 @@ interface BrandingConfiguratorProps {
     accentColor: string;
     logoUrl: string | null;
   };
+  onSaveSuccess?: () => void;
 }
 
 const presetColors = [
@@ -38,7 +39,8 @@ export function BrandingConfigurator({
   onOpenChange, 
   trialId, 
   trialSlug,
-  currentBranding 
+  currentBranding,
+  onSaveSuccess
 }: BrandingConfiguratorProps) {
   const { toast } = useToast();
   
@@ -65,6 +67,7 @@ export function BrandingConfigurator({
         title: "Branding updated",
         description: "Your portal now reflects your brand colors.",
       });
+      onSaveSuccess?.();
       onOpenChange(false);
     },
     onError: (error: Error) => {
