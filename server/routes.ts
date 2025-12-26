@@ -30,6 +30,7 @@ import * as darkwave from "./darkwave";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } from "./resend";
+import { Resend } from "resend";
 import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
 import { getTenantFromHostname } from "./tenant";
 import type { RequestHandler } from "express";
@@ -558,11 +559,82 @@ export async function registerRoutes(
 
   // ============ CONTRACTOR APPLICATIONS ============
   
-  // POST /api/contractor-applications - Submit contractor application
+  // POST /api/contractor-applications - Submit contractor application with portfolio
   app.post("/api/contractor-applications", async (req, res) => {
     try {
       const applicationData = req.body;
-      console.log("Contractor application received:", applicationData);
+      console.log("Contractor application received:", applicationData.firstName, applicationData.lastName);
+      
+      // Send email via Resend with portfolio attachments
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      
+      // Prepare attachments from portfolio images
+      const attachments = (applicationData.portfolioImages || []).map((img: { name: string; data: string }, index: number) => {
+        // Extract base64 data (remove data:image/xxx;base64, prefix)
+        const base64Data = img.data.split(",")[1] || img.data;
+        // Determine content type from data URL
+        const contentTypeMatch = img.data.match(/^data:(image\/[^;]+);/);
+        const contentType = contentTypeMatch ? contentTypeMatch[1] : "image/jpeg";
+        return {
+          filename: img.name || `portfolio-${index + 1}.jpg`,
+          content: Buffer.from(base64Data, "base64"),
+          contentType: contentType,
+        };
+      });
+
+      // Build email HTML
+      const emailHtml = `
+        <h1>New Contractor Application</h1>
+        <p><strong>Submitted:</strong> ${applicationData.submittedAt}</p>
+        <p><strong>Language:</strong> ${applicationData.language === "es" ? "Spanish" : "English"}</p>
+        
+        <h2>Personal Information</h2>
+        <ul>
+          <li><strong>Name:</strong> ${applicationData.firstName} ${applicationData.lastName}</li>
+          <li><strong>Email:</strong> ${applicationData.email}</li>
+          <li><strong>Phone:</strong> ${applicationData.phone}</li>
+        </ul>
+        
+        <h2>Company Information</h2>
+        <ul>
+          <li><strong>Company:</strong> ${applicationData.companyName || "N/A"}</li>
+          <li><strong>Years Experience:</strong> ${applicationData.yearsExperience}</li>
+          <li><strong>Crew Size:</strong> ${applicationData.crewSize}</li>
+        </ul>
+        
+        <h2>Availability</h2>
+        <ul>
+          <li><strong>Available Start:</strong> ${applicationData.availableStart}</li>
+          <li><strong>Weekly Hours:</strong> ${applicationData.weeklyHours}</li>
+          <li><strong>Schedule:</strong> ${applicationData.preferredSchedule}</li>
+        </ul>
+        
+        <h2>Experience & Qualifications</h2>
+        <p><strong>Work History:</strong><br/>${(applicationData.workHistory || "N/A").replace(/\n/g, "<br/>")}</p>
+        <p><strong>Certifications:</strong><br/>${(applicationData.certifications || "N/A").replace(/\n/g, "<br/>")}</p>
+        <p><strong>Specialties:</strong> ${applicationData.specialties}</p>
+        <p><strong>Has Equipment:</strong> ${applicationData.hasEquipment ? "Yes" : "No"}</p>
+        
+        <h2>References</h2>
+        <p>${(applicationData.references || "N/A").replace(/\n/g, "<br/>")}</p>
+        
+        <h2>Why They Want to Join</h2>
+        <p>${(applicationData.whyJoin || "N/A").replace(/\n/g, "<br/>")}</p>
+        
+        <h2>Portfolio</h2>
+        <p><strong>${attachments.length} photos attached</strong></p>
+        <p><em>Review the attached images to see examples of their work.</em></p>
+      `;
+
+      await resend.emails.send({
+        from: "PaintPros <noreply@orbitstaffing.io>",
+        to: ["service@nashvillepaintingprofessionals.com"],
+        subject: `New Contractor Application: ${applicationData.firstName} ${applicationData.lastName}`,
+        html: emailHtml,
+        attachments: attachments,
+      });
+
+      console.log("Contractor application email sent successfully");
       res.status(201).json({ success: true, message: "Application submitted successfully" });
     } catch (error) {
       console.error("Error processing contractor application:", error);

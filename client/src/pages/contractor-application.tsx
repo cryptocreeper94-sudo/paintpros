@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Briefcase, Send, CheckCircle, Users, Clock, Award, Phone, Mail, Building2, Calendar } from "lucide-react";
+import { Briefcase, Send, CheckCircle, Users, Clock, Award, Phone, Mail, Building2, Calendar, Camera, X, Upload, Image } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { toast } from "sonner";
 
@@ -51,6 +51,13 @@ const translations = {
     required: "Required field",
     english: "English",
     spanish: "Spanish",
+    portfolio: "Work Portfolio",
+    portfolioDescription: "Upload 4-5 photos of your best work. Show us examples that match your specialty - trim carpenters should show trim work, painters should show completed paint jobs.",
+    portfolioHint: "Photos help us understand your skill level and craftsmanship",
+    uploadPhotos: "Upload Photos",
+    dragDrop: "Drag & drop or click to upload",
+    maxPhotos: "Upload up to 5 photos (JPG, PNG)",
+    photoCount: "photos uploaded",
   },
   es: {
     title: "Solicitud de Contratista",
@@ -91,8 +98,21 @@ const translations = {
     required: "Campo requerido",
     english: "Inglés",
     spanish: "Español",
+    portfolio: "Portafolio de Trabajo",
+    portfolioDescription: "Sube 4-5 fotos de tu mejor trabajo. Muéstranos ejemplos que coincidan con tu especialidad - los carpinteros de molduras deben mostrar trabajo de molduras, los pintores deben mostrar trabajos de pintura completados.",
+    portfolioHint: "Las fotos nos ayudan a entender tu nivel de habilidad y artesanía",
+    uploadPhotos: "Subir Fotos",
+    dragDrop: "Arrastra y suelta o haz clic para subir",
+    maxPhotos: "Sube hasta 5 fotos (JPG, PNG)",
+    photoCount: "fotos subidas",
   },
 };
+
+interface PortfolioImage {
+  file: File;
+  preview: string;
+  name: string;
+}
 
 export default function ContractorApplication() {
   const tenant = useTenant();
@@ -101,8 +121,42 @@ export default function ContractorApplication() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [hasEquipment, setHasEquipment] = useState<boolean | null>(null);
   const [schedule, setSchedule] = useState("");
+  const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
 
   const t = translations[language];
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    const remainingSlots = 5 - portfolioImages.length;
+    const filesToAdd = Array.from(files).slice(0, remainingSlots);
+    
+    const imageErrorMsg = language === "es" ? "Por favor sube solo archivos de imagen" : "Please upload only image files";
+    filesToAdd.forEach((file) => {
+      if (!file.type.startsWith("image/")) {
+        toast.error(imageErrorMsg);
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPortfolioImages((prev) => {
+          if (prev.length >= 5) return prev;
+          return [...prev, {
+            file,
+            preview: reader.result as string,
+            name: file.name,
+          }];
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setPortfolioImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -128,6 +182,10 @@ export default function ContractorApplication() {
       whyJoin: formData.get("whyJoin"),
       language,
       submittedAt: new Date().toISOString(),
+      portfolioImages: portfolioImages.map((img) => ({
+        name: img.name,
+        data: img.preview,
+      })),
     };
 
     try {
@@ -372,6 +430,83 @@ export default function ContractorApplication() {
                   </div>
                 </div>
               </div>
+            </GlassCard>
+
+            {/* Portfolio Upload Section */}
+            <GlassCard className="p-6" glow="accent">
+              <div className="flex items-center gap-2 mb-4">
+                <Camera className="w-5 h-5 text-accent" />
+                <h2 className="text-lg font-bold">{t.portfolio}</h2>
+              </div>
+              <p className="text-muted-foreground text-sm mb-4">
+                {t.portfolioDescription}
+              </p>
+              <p className="text-xs text-muted-foreground/70 mb-4 italic">
+                {t.portfolioHint}
+              </p>
+              
+              {/* Upload Area */}
+              <div className="mb-4">
+                <label 
+                  htmlFor="portfolio-upload"
+                  className={`flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
+                    portfolioImages.length >= 5 
+                      ? "border-muted bg-muted/20 cursor-not-allowed" 
+                      : "border-accent/50 hover:border-accent hover:bg-accent/5"
+                  }`}
+                  data-testid="label-portfolio-upload"
+                >
+                  <Upload className={`w-8 h-8 mb-2 ${portfolioImages.length >= 5 ? "text-muted-foreground" : "text-accent"}`} />
+                  <span className={`text-sm font-medium ${portfolioImages.length >= 5 ? "text-muted-foreground" : ""}`}>
+                    {t.dragDrop}
+                  </span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {t.maxPhotos}
+                  </span>
+                  <input
+                    id="portfolio-upload"
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg"
+                    multiple
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    disabled={portfolioImages.length >= 5}
+                    data-testid="input-portfolio-upload"
+                  />
+                </label>
+              </div>
+
+              {/* Image Previews */}
+              {portfolioImages.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium flex items-center gap-2">
+                      <Image className="w-4 h-4 text-accent" />
+                      {portfolioImages.length} {t.photoCount}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    {portfolioImages.map((img, index) => (
+                      <div key={index} className="relative group" data-testid={`portfolio-image-${index}`}>
+                        <img
+                          src={img.preview}
+                          alt={`Portfolio ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border border-border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          data-testid={`button-remove-image-${index}`}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">{img.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </GlassCard>
 
             <GlassCard className="p-6" glow="gold">
