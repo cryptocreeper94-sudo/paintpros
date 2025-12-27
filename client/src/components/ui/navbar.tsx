@@ -70,7 +70,7 @@ export function Navbar() {
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                 fontWeight: 500, 
                 letterSpacing: '0.05em',
-                backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
+                backgroundImage: 'linear-gradient(to right, #A89070, #7A5C45, #3D4A3A, #7A5C45, #A89070)'
               }}
               data-testid="text-header-title"
             >
@@ -82,7 +82,7 @@ export function Navbar() {
                 fontFamily: 'Rajdhani, sans-serif', 
                 fontWeight: 400, 
                 letterSpacing: '0.02em',
-                backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
+                backgroundImage: 'linear-gradient(to right, #A89070, #7A5C45, #3D4A3A, #7A5C45, #A89070)'
               }}
               data-testid="text-header-tagline"
             >
