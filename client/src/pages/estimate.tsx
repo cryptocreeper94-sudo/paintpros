@@ -117,8 +117,12 @@ export default function Estimate() {
 
   // AI Feature usage tracking (1 use ever for demo)
   const [aiScannerUsed, setAiScannerUsed] = useState(() => {
-    if (isDemo) {
-      return localStorage.getItem('demo_ai_scanner_used') === 'true';
+    if (isDemo && typeof window !== 'undefined') {
+      try {
+        return localStorage.getItem('demo_ai_scanner_used') === 'true';
+      } catch {
+        return false;
+      }
     }
     return false;
   });
@@ -204,8 +208,12 @@ export default function Estimate() {
   // Handle AI Scanner result
   const handleScannerResult = (result: { squareFootage: number }) => {
     setSquareFootage(result.squareFootage);
-    if (isDemo) {
-      localStorage.setItem('demo_ai_scanner_used', 'true');
+    if (isDemo && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('demo_ai_scanner_used', 'true');
+      } catch {
+        // Privacy mode or localStorage unavailable
+      }
       setAiScannerUsed(true);
     }
   };

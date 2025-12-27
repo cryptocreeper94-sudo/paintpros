@@ -29,7 +29,7 @@ import * as solana from "./solana";
 import * as darkwave from "./darkwave";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
-import { sendContactEmail, sendEstimateAcceptedEmail, type ContactFormData } from "./resend";
+import { sendContactEmail, sendEstimateAcceptedEmail, sendEstimateProposalEmail, type ContactFormData, type EstimateProposalData } from "./resend";
 import { Resend } from "resend";
 import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
 import { getTenantFromHostname } from "./tenant";
@@ -751,6 +751,105 @@ export async function registerRoutes(
         console.error("Error creating estimate:", error);
         res.status(500).json({ error: "Failed to create estimate" });
       }
+    }
+  });
+
+  // POST /api/estimates/submit - Submit estimate wizard with email
+  app.post("/api/estimates/submit", async (req, res) => {
+    try {
+      const tenantId = getTenantFromHostname(req.hostname);
+      const { customer, services, measurements, colors, photos, pricing } = req.body;
+
+      // Determine tenant-specific service email
+      const tenantEmails: Record<string, string> = {
+        'npp': 'service@nashvillepaintingprofessionals.com',
+        'demo': 'demo@paintpros.io',
+      };
+      const serviceEmail = tenantEmails[tenantId] || process.env.CONTACT_EMAIL || 'contact@paintpros.io';
+      
+      // Get tenant name from tenant configuration
+      const tenantNames: Record<string, string> = {
+        'npp': 'Nashville Painting Professionals',
+        'demo': 'PaintPros.io Demo',
+      };
+      const tenantName = tenantNames[tenantId] || 'PaintPros.io';
+
+      // Create lead if doesn't exist
+      let lead;
+      try {
+        lead = await storage.createLead({
+          email: customer.email,
+          firstName: customer.firstName,
+          lastName: customer.lastName,
+          phone: customer.phone,
+          tenantId,
+        });
+      } catch {
+        // Lead might already exist, try to find by email
+        const leads = await storage.getLeads(tenantId);
+        lead = leads.find(l => l.email === customer.email) || { id: crypto.randomUUID() };
+      }
+
+      // Create estimate record
+      const estimate = await storage.createEstimate({
+        leadId: lead.id,
+        tenantId,
+        includeWalls: services.walls,
+        includeTrim: services.trim,
+        includeCeilings: services.ceilings,
+        doorCount: measurements.doorCount,
+        squareFootage: measurements.squareFootage,
+        totalEstimate: pricing.total.toString(),
+        pricingTier: pricing.tier,
+      });
+
+      // Store photos if any
+      if (photos && photos.length > 0) {
+        for (const photo of photos) {
+          try {
+            await storage.createEstimatePhoto({
+              estimateId: estimate.id,
+              photoUrl: photo.base64,
+              roomType: photo.roomType,
+              caption: photo.caption || null,
+            });
+          } catch (photoError) {
+            console.error("Error storing photo:", photoError);
+          }
+        }
+      }
+
+      // Send email via Resend
+      const emailData: EstimateProposalData = {
+        customer: {
+          firstName: customer.firstName,
+          lastName: customer.lastName,
+          email: customer.email,
+          phone: customer.phone,
+          address: customer.address,
+        },
+        services,
+        measurements,
+        colors: colors || [],
+        pricing,
+        tenantName,
+        serviceEmail,
+      };
+
+      const emailResult = await sendEstimateProposalEmail(emailData);
+      if (!emailResult.success) {
+        console.error("Failed to send estimate email:", emailResult.error);
+        // Don't fail the request, just log the error
+      }
+
+      res.status(201).json({ 
+        success: true, 
+        estimateId: estimate.id,
+        emailSent: emailResult.success
+      });
+    } catch (error) {
+      console.error("Error submitting estimate:", error);
+      res.status(500).json({ error: "Failed to submit estimate" });
     }
   });
 

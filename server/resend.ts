@@ -282,6 +282,168 @@ export async function sendTenantWelcomeEmail(data: TenantWelcomeData): Promise<{
   }
 }
 
+export interface EstimateProposalData {
+  customer: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    address?: string;
+  };
+  services: {
+    walls: boolean;
+    trim: boolean;
+    ceilings: boolean;
+    doors: boolean;
+    cabinets: boolean;
+  };
+  measurements: {
+    squareFootage: number;
+    doorCount: number;
+    cabinetDoors: number;
+    cabinetDrawers: number;
+  };
+  colors: Array<{
+    colorName: string;
+    hexValue: string;
+    surface: string;
+    brand: string;
+  }>;
+  pricing: {
+    tier: string;
+    tierName: string;
+    total: number;
+  };
+  tenantName: string;
+  serviceEmail: string;
+}
+
+export async function sendEstimateProposalEmail(data: EstimateProposalData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { client, fromEmail } = await getResendClient();
+    const sender = fromEmail || `${data.tenantName} <onboarding@resend.dev>`;
+
+    const servicesList = Object.entries(data.services)
+      .filter(([_, selected]) => selected)
+      .map(([service]) => service.charAt(0).toUpperCase() + service.slice(1))
+      .join(', ');
+
+    const colorSwatches = data.colors.map(c => 
+      `<span style="display:inline-block;margin:2px;padding:4px 8px;background:${c.hexValue};color:${parseInt(c.hexValue.slice(1), 16) > 8388607 ? '#000' : '#fff'};border-radius:4px;font-size:12px;">${c.colorName} (${c.surface})</span>`
+    ).join('');
+
+    const measurementsHtml = [];
+    if (data.measurements.squareFootage > 0) {
+      measurementsHtml.push(`<p><strong>Square Footage:</strong> ${data.measurements.squareFootage.toLocaleString()} sq ft</p>`);
+    }
+    if (data.measurements.doorCount > 0) {
+      measurementsHtml.push(`<p><strong>Doors:</strong> ${data.measurements.doorCount}</p>`);
+    }
+    if (data.measurements.cabinetDoors > 0 || data.measurements.cabinetDrawers > 0) {
+      measurementsHtml.push(`<p><strong>Cabinet Doors:</strong> ${data.measurements.cabinetDoors}, <strong>Drawers:</strong> ${data.measurements.cabinetDrawers}</p>`);
+    }
+
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
+        <div style="background: linear-gradient(135deg, #344e41, #588157); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h1 style="color: white; margin: 0;">${data.tenantName}</h1>
+          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Your Painting Estimate</p>
+        </div>
+        
+        <div style="padding: 30px; background: #f8f9fa;">
+          <p style="font-size: 18px;">Dear ${data.customer.firstName},</p>
+          <p>Thank you for requesting an estimate from ${data.tenantName}. We're excited about the opportunity to transform your space!</p>
+          
+          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #344e41;">
+            <h3 style="margin-top: 0; color: #344e41;">Project Summary</h3>
+            <p><strong>Services:</strong> ${servicesList}</p>
+            ${measurementsHtml.join('')}
+          </div>
+          
+          ${data.colors.length > 0 ? `
+          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #344e41;">Selected Colors</h3>
+            <div style="margin-top: 10px;">${colorSwatches}</div>
+          </div>
+          ` : ''}
+          
+          <div style="background: #344e41; padding: 25px; border-radius: 8px; text-align: center; margin: 20px 0;">
+            <p style="color: rgba(255,255,255,0.9); margin: 0 0 10px 0; font-size: 14px;">${data.pricing.tierName} Package</p>
+            <p style="color: white; font-size: 36px; font-weight: bold; margin: 0;">$${data.pricing.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+          </div>
+          
+          <p style="font-size: 12px; color: #666; text-align: center; font-style: italic;">
+            This estimate is a guide for discussion purposes only. Final pricing will be confirmed after an in-person consultation.
+          </p>
+          
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="mailto:${data.serviceEmail}" style="display: inline-block; background: #344e41; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold;">Contact Us to Schedule</a>
+          </div>
+          
+          <p style="margin-top: 30px;">We'll be in touch within 24 hours to discuss your project and schedule a convenient time for an in-person consultation.</p>
+          
+          <p>Best regards,<br/><strong>${data.tenantName} Team</strong></p>
+        </div>
+        
+        <div style="padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #eee;">
+          <p>${data.tenantName} | Professional Painting Services</p>
+          <p style="margin-top: 10px;">Powered by <a href="https://paintpros.io" style="color: #344e41;">PaintPros.io</a></p>
+        </div>
+      </div>
+    `;
+
+    // Send to customer
+    await client.emails.send({
+      from: sender,
+      to: [data.customer.email],
+      subject: `Your Painting Estimate from ${data.tenantName} - $${data.pricing.total.toLocaleString()}`,
+      html: emailHtml
+    });
+
+    // Send to service team
+    const businessEmailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #344e41;">New Estimate Request</h2>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Customer Information</h3>
+          <p><strong>Name:</strong> ${data.customer.firstName} ${data.customer.lastName}</p>
+          <p><strong>Email:</strong> <a href="mailto:${data.customer.email}">${data.customer.email}</a></p>
+          ${data.customer.phone ? `<p><strong>Phone:</strong> <a href="tel:${data.customer.phone}">${data.customer.phone}</a></p>` : ''}
+          ${data.customer.address ? `<p><strong>Address:</strong> ${data.customer.address}</p>` : ''}
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Project Details</h3>
+          <p><strong>Services:</strong> ${servicesList}</p>
+          ${measurementsHtml.join('')}
+          ${data.colors.length > 0 ? `<p><strong>Colors:</strong> ${data.colors.map(c => c.colorName).join(', ')}</p>` : ''}
+        </div>
+        
+        <div style="background: #22c55e; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+          <p style="margin: 0; font-size: 14px;">${data.pricing.tierName} Package</p>
+          <p style="margin: 10px 0 0 0; font-size: 28px; font-weight: bold;">$${data.pricing.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+        </div>
+        
+        <p style="margin-top: 20px;">Please follow up with this customer within 24 hours.</p>
+      </div>
+    `;
+
+    await client.emails.send({
+      from: sender,
+      to: [data.serviceEmail],
+      subject: `New Estimate: ${data.customer.firstName} ${data.customer.lastName} - $${data.pricing.total.toLocaleString()}`,
+      html: businessEmailHtml
+    });
+
+    console.log(`[Email] Estimate proposal sent to ${data.customer.email} and ${data.serviceEmail}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send estimate proposal email:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
+  }
+}
+
 export interface AdminNotificationData {
   type: 'new_tenant' | 'trial_expired' | 'subscription_cancelled';
   tenantName: string;
