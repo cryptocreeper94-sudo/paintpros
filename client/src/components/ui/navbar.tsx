@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench } from "lucide-react";
+import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench, FileText, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -20,12 +20,14 @@ export function Navbar() {
     { name: "Pricing", href: "/pricing" },
     { name: "About", href: "/about" },
     { name: "Reviews", href: "/reviews", enabled: tenant.features.reviews },
+    { name: "Blog", href: "/blog", icon: FileText, enabled: tenant.features.blog },
     { name: "Awards", href: "/awards", icon: Award },
     { name: "Color Library", href: "/colors", icon: Palette },
     { name: "Resources", href: "/resources", icon: BookOpen },
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
     { name: "Investors", href: "/investors", icon: TrendingUp, enabled: tenant.id === "demo" },
-    { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator },
+    { name: "Book Online", href: "/estimate", icon: Calendar, highlight: true, enabled: tenant.features.onlineBooking },
+    { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator && !tenant.features.onlineBooking },
   ].filter(link => link.enabled !== false);
 
   return (
