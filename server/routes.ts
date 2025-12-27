@@ -212,6 +212,16 @@ const pwaConfigs: Record<string, {
   }
 };
 
+// Standalone Estimator PWA config
+const estimatorPwaConfig = {
+  name: "AI Paint Estimator",
+  shortName: "Estimator",
+  description: "AI-powered room scanning and instant paint estimates",
+  backgroundColor: "#1a1a2e",
+  themeColor: "#4a90d9",
+  iconPath: "/pwa/estimator"
+};
+
 
 // Track online users: Map<socketId, { userId, role, displayName }>
 const onlineUsers = new Map<string, { userId: string; role: string; displayName: string }>();
@@ -539,6 +549,42 @@ export async function registerRoutes(
         }
       ],
       categories: ["business", "lifestyle"],
+      lang: "en-US",
+      dir: "ltr"
+    };
+    
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(manifest);
+  });
+
+  // Standalone Estimator PWA manifest
+  app.get("/estimator/manifest.json", (req, res) => {
+    const manifest = {
+      name: estimatorPwaConfig.name,
+      short_name: estimatorPwaConfig.shortName,
+      description: estimatorPwaConfig.description,
+      start_url: "/estimator-app",
+      scope: "/estimator",
+      display: "standalone",
+      background_color: estimatorPwaConfig.backgroundColor,
+      theme_color: estimatorPwaConfig.themeColor,
+      orientation: "portrait-primary",
+      icons: [
+        {
+          src: `${estimatorPwaConfig.iconPath}/icon-192.png`,
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any maskable"
+        },
+        {
+          src: `${estimatorPwaConfig.iconPath}/icon-512.png`,
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any maskable"
+        }
+      ],
+      categories: ["business", "productivity", "utilities"],
       lang: "en-US",
       dir: "ltr"
     };
