@@ -36,6 +36,7 @@ import { FeatureModal } from "@/components/feature-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { InvestorSnapshotModal } from "@/components/investor-snapshot-modal";
+import { TradeVerticalSelector } from "@/components/trade-vertical-selector";
 
 export default function HomeDemo() {
   const tenant = useTenant();
@@ -99,6 +100,13 @@ export default function HomeDemo() {
           <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4} mobileRowSpan={3} className="relative">
             <HeroSlideshow />
           </BentoItem>
+
+          {/* Trade Vertical Selector - Demo Only */}
+          {tenant.id === "demo" && (
+            <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
+              <TradeVerticalSelector />
+            </BentoItem>
+          )}
 
           {/* Award Card - Best Painter 2025 (NPP only) */}
           {tenant.id === "npp" && (
