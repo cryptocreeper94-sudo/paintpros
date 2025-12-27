@@ -1,17 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, TrendingUp, Calendar, Clock, Shield, ArrowRight, Wallet, PiggyBank, FileText, Settings, ExternalLink } from "lucide-react";
+import { DollarSign, TrendingUp, Calendar, Clock, Shield, ArrowRight, Wallet, PiggyBank, FileText, Settings, ExternalLink, Sparkles, CheckCircle, X, Smartphone, Mail, Palette, Camera } from "lucide-react";
 
 type PaymentFrequency = "instant" | "weekly" | "biweekly" | "monthly";
 
+const CURRENT_UPDATE_VERSION = "2025.01.27";
+
 export default function PartnerDashboard() {
   const [paymentFrequency, setPaymentFrequency] = useState<PaymentFrequency>("biweekly");
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { toast } = useToast();
+
+  // Check if Sidonie has seen the latest update
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const lastSeenVersion = localStorage.getItem('partner_update_seen');
+        if (lastSeenVersion !== CURRENT_UPDATE_VERSION) {
+          setShowUpdateModal(true);
+        }
+      } catch {
+        // Privacy mode or localStorage unavailable
+      }
+    }
+  }, []);
+
+  const dismissUpdateModal = () => {
+    setShowUpdateModal(false);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('partner_update_seen', CURRENT_UPDATE_VERSION);
+      } catch {
+        // Privacy mode
+      }
+    }
+  };
 
   const handleSaveSettings = () => {
     toast({
@@ -323,6 +352,77 @@ export default function PartnerDashboard() {
           <p className="mt-1">Blockchain-verified ownership on Solana & Darkwave Smart Chain</p>
         </div>
       </div>
+
+      {/* Platform Update Modal for Sidonie */}
+      <Dialog open={showUpdateModal} onOpenChange={(open) => { if (!open) dismissUpdateModal(); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Sparkles className="w-6 h-6 text-purple-500" />
+              Platform Updates - December 2024
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Hey Sidonie! Here's what's new across the platform.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 border border-purple-200">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                <Smartphone className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-purple-900">Mobile-First Estimator Rewrite</p>
+                <p className="text-sm text-purple-700">Complete 5-step wizard optimized for mobile use. Customers can now get instant quotes from their phones while taking room photos.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <Mail className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-blue-900">Professional Email Proposals</p>
+                <p className="text-sm text-blue-700">Customers now receive beautifully formatted estimate proposals via email, with a copy sent to the service team.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                <Palette className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-green-900">Color Selection Integration</p>
+                <p className="text-sm text-green-700">Customers can pick colors from our curated library right in the estimator. NPP shows only professional brands (Sherwin-Williams, Benjamin Moore).</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <Camera className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-amber-900">AI Room Scanner (Demo Limited)</p>
+                <p className="text-sm text-amber-700">Demo users get 1 free use of AI room scanning. After that, it locks - creating an upgrade incentive.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-3 rounded-lg bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-purple-600" />
+              <p className="text-sm font-medium text-purple-900">Version stamped on both Solana & Darkwave</p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button onClick={dismissUpdateModal} className="w-full" data-testid="button-dismiss-update">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Got it, thanks!
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

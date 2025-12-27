@@ -26,7 +26,7 @@ interface UploadedPhoto {
 }
 
 interface SelectedColor {
-  colorId: number;
+  colorId: string;
   colorName: string;
   hexValue: string;
   brand: string;
@@ -429,9 +429,17 @@ export default function Estimate() {
             </motion.div>
           </div>
 
-          {/* Progress Steps */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          {/* Progress Steps - Mobile Optimized */}
+          <div className="mb-6 md:mb-8">
+            {/* Mobile: Compact step indicator */}
+            <div className="flex items-center justify-center gap-2 mb-3 md:hidden">
+              <span className="text-sm font-semibold text-accent">Step {currentStep}</span>
+              <span className="text-sm text-muted-foreground">of {totalSteps}</span>
+              <span className="text-sm font-medium ml-2">{stepTitles[currentStep - 1]}</span>
+            </div>
+            
+            {/* Desktop: Full step indicator */}
+            <div className="hidden md:flex items-center justify-between">
               {stepTitles.map((title, index) => {
                 const step = index + 1;
                 const Icon = stepIcons[index];
@@ -450,17 +458,14 @@ export default function Estimate() {
                     >
                       {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                     </motion.div>
-                    <p className={`text-xs text-center hidden md:block ${isActive ? 'text-accent font-semibold' : 'text-muted-foreground'}`}>
+                    <p className={`text-xs text-center ${isActive ? 'text-accent font-semibold' : 'text-muted-foreground'}`}>
                       {title}
                     </p>
-                    {index < totalSteps - 1 && (
-                      <div className="hidden md:block absolute w-full h-0.5 bg-muted top-5 left-1/2" />
-                    )}
                   </div>
                 );
               })}
             </div>
-            <div className="w-full bg-muted h-2 rounded-full mt-4 overflow-hidden">
+            <div className="w-full bg-muted h-2 md:h-2 rounded-full mt-3 md:mt-4 overflow-hidden">
               <motion.div
                 className="h-full bg-accent rounded-full"
                 initial={{ width: 0 }}
@@ -479,7 +484,7 @@ export default function Estimate() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <GlassCard className="p-6 md:p-8" glow>
+              <GlassCard className="p-4 md:p-8" glow>
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                     {(() => { const Icon = stepIcons[currentStep - 1]; return <Icon className="w-5 h-5 text-accent" />; })()}
@@ -552,9 +557,9 @@ export default function Estimate() {
                   </div>
                 )}
 
-                {/* Step 2: Services */}
+                {/* Step 2: Services - Mobile Optimized Grid */}
                 {currentStep === 2 && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                     {[
                       { key: 'walls', label: 'Walls', icon: Square, img: wallsImg },
                       { key: 'trim', label: 'Trim & Molding', icon: Layers, img: trimImg },
@@ -567,28 +572,28 @@ export default function Estimate() {
                         <motion.button
                           key={key}
                           onClick={() => setJobSelections(prev => ({ ...prev, [key]: !prev[key as keyof typeof prev] }))}
-                          className={`relative p-4 rounded-xl border-2 transition-all ${
+                          className={`relative p-3 md:p-4 rounded-xl border-2 transition-all min-h-[140px] md:min-h-[160px] ${
                             isSelected 
                               ? 'border-accent bg-accent/10' 
-                              : 'border-border hover:border-accent/50'
+                              : 'border-border hover:border-accent/50 active:border-accent/50'
                           }`}
                           whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          whileTap={{ scale: 0.97 }}
                           data-testid={`button-service-${key}`}
                         >
                           {img && (
-                            <div className="w-full h-24 rounded-lg overflow-hidden mb-3">
+                            <div className="w-full h-16 md:h-24 rounded-lg overflow-hidden mb-2 md:mb-3">
                               <img src={img} alt={label} className="w-full h-full object-cover" />
                             </div>
                           )}
                           {!img && (
-                            <div className="w-full h-24 rounded-lg bg-muted/50 mb-3 flex items-center justify-center">
-                              <Icon className="w-10 h-10 text-muted-foreground" />
+                            <div className="w-full h-16 md:h-24 rounded-lg bg-muted/50 mb-2 md:mb-3 flex items-center justify-center">
+                              <Icon className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground" />
                             </div>
                           )}
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-sm">{label}</span>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="font-semibold text-xs md:text-sm leading-tight">{label}</span>
+                            <div className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center ${
                               isSelected ? 'bg-accent border-accent' : 'border-muted-foreground'
                             }`}>
                               {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -1109,7 +1114,7 @@ export default function Estimate() {
         <RoomScannerModal
           isOpen={showScannerModal}
           onClose={() => setShowScannerModal(false)}
-          onResult={handleScannerResult}
+          onScanComplete={(sqft) => handleScannerResult({ squareFootage: sqft })}
         />
       )}
     </PageLayout>
