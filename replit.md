@@ -52,6 +52,14 @@ PaintPros.io integrates with Orbit Staffing as the central financial hub, pushin
 ### Security Measures
 Includes PIN rate limiting, database indexes, security headers (Helmet.js), Zod schema validation, XSS sanitization, and strict tenant isolation.
 
+### Feature Roadmap
+Planned enhancements and premium features:
+- **Multi-Room Scanner (Coming Soon):** Upload multiple photos per room and scan entire homes for 95%+ measurement accuracy using AI cross-referencing
+- **3D Room Visualization:** AR-powered room preview showing paint colors on actual walls before purchase
+- **Crew GPS Tracking:** Real-time location tracking for active job sites with arrival notifications
+- **Customer Portal Mobile App:** Native iOS/Android apps for customers to track project progress
+- **Advanced Analytics Dashboard:** Revenue forecasting, crew utilization metrics, and seasonal trend analysis
+
 ## External Dependencies
 
 - **Blockchain:** Solana (primary for document stamping), Darkwave Chain (secondary for verification).
