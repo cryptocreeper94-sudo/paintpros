@@ -59,11 +59,14 @@ export interface TenantConfig {
   
   // Pricing (can be customized per tenant)
   pricing: {
+    wallsOnlyPerSqFt: number;
+    trimOnlyPerSqFt: number;
+    ceilingsOnlyPerSqFt: number;
+    wallsAndTrimPerSqFt: number;
+    fullJobPerSqFt: number; // walls + trim + ceilings
     doorsPerUnit: number;
-    wallsPerSqFt: number;
-    fullJobPerSqFt: number;
-    ceilingsPerSqFt?: number;
-    trimPerLinearFt?: number;
+    cabinetDoorsPerUnit: number;
+    cabinetDrawersPerUnit: number;
   };
   
   // SEO
@@ -145,9 +148,14 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   },
   
   pricing: {
-    doorsPerUnit: 150,
-    wallsPerSqFt: 2.50,
+    wallsOnlyPerSqFt: 2.50,
+    trimOnlyPerSqFt: 2.50,
+    ceilingsOnlyPerSqFt: 3.00,
+    wallsAndTrimPerSqFt: 3.50,
     fullJobPerSqFt: 5.00,
+    doorsPerUnit: 150,
+    cabinetDoorsPerUnit: 150,
+    cabinetDrawersPerUnit: 75,
   },
   
   seo: {
@@ -226,11 +234,14 @@ export const paintProsDemo: TenantConfig = {
   },
   
   pricing: {
-    doorsPerUnit: 150,
-    wallsPerSqFt: 2.50,
+    wallsOnlyPerSqFt: 2.50,
+    trimOnlyPerSqFt: 2.50,
+    ceilingsOnlyPerSqFt: 3.00,
+    wallsAndTrimPerSqFt: 3.50,
     fullJobPerSqFt: 5.00,
-    ceilingsPerSqFt: 1.75,
-    trimPerLinearFt: 3.00,
+    doorsPerUnit: 150,
+    cabinetDoorsPerUnit: 150,
+    cabinetDrawersPerUnit: 75,
   },
   
   seo: {
