@@ -2,7 +2,10 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send, Wrench } from "lucide-react";
+import { MaterialBreakdown } from "@/components/material-breakdown";
+import { useAccess } from "@/context/AccessContext";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -114,6 +117,13 @@ export default function Estimate() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  // Pro View for contractors/owners with live access only
+  const [showProView, setShowProView] = useState(false);
+  const access = useAccess();
+  const canAccessProTools = access?.currentUser?.isAuthenticated && 
+    access?.currentUser?.accessMode === "live" &&
+    ["admin", "owner", "developer"].includes(access?.currentUser?.role || "");
 
   // AI Feature usage tracking (1 use ever for demo)
   const [aiScannerUsed, setAiScannerUsed] = useState(() => {
@@ -990,6 +1000,61 @@ export default function Estimate() {
                         This estimate is a guide for discussion purposes only. Final pricing will be confirmed after an in-person consultation.
                       </p>
                     </div>
+
+                    {/* Pro View - Material & Labor Breakdown (Contractors/Owners only) */}
+                    {canAccessProTools && needsSquareFootage && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <Wrench className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-sm">Pro View</p>
+                              <p className="text-xs text-muted-foreground">
+                                {squareFootage > 0 
+                                  ? "Material quantities & labor estimates" 
+                                  : "Enter square footage in Step 4 to see breakdown"}
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            checked={showProView}
+                            onCheckedChange={setShowProView}
+                            disabled={squareFootage <= 0}
+                            data-testid="switch-pro-view"
+                          />
+                        </div>
+                        
+                        <AnimatePresence>
+                          {showProView && needsSquareFootage && squareFootage > 0 && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <MaterialBreakdown
+                                input={{
+                                  squareFootage: squareFootage,
+                                  includeWalls: jobSelections.walls,
+                                  includeCeilings: jobSelections.ceilings,
+                                  includeTrim: jobSelections.trim,
+                                  doorCount: doorCount,
+                                  roomCount: Math.max(1, Math.ceil(squareFootage / 250)),
+                                  ceilingHeight: 9,
+                                  surfaceCondition: "good",
+                                  paintQuality: selectedPricingTier === "best" ? "ultra_premium" : selectedPricingTier === "better" ? "premium" : "standard"
+                                }}
+                                showPricing={true}
+                                showLabor={true}
+                                className="mt-4"
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )}
 
                     {submitError && (
                       <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-center gap-3">
