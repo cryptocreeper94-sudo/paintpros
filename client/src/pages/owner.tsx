@@ -39,6 +39,7 @@ import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
+import { OwnerAnnouncementModal } from "@/components/owner-announcement-modal";
 
 const DEFAULT_OWNER_PIN = "1111";
 
