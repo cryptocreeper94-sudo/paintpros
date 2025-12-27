@@ -54,4 +54,4 @@ ORBIT_FINANCIAL_HUB_URL = "https://orbit-staffing-os.replit.app"
 ORBIT_FINANCIAL_HUB_KEY = "dw_app_orbit"
 
 [userenv.development]
-VITE_TENANT_ID = "demo"
+VITE_TENANT_ID = "npp"
