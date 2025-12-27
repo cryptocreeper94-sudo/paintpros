@@ -16,7 +16,7 @@ The design adheres to a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 
 ### Core Features
 - **Service & Estimator:** Configurable painting services with flexible, tenant-specific pricing logic.
-- **Rollie AI Voice Assistant:** Conversational AI chatbot powered by OpenAI with natural ElevenLabs text-to-speech voices. Supports English/Spanish, male/female voice options, and speech-to-text input. Bundled with all AI Estimator packages as a killer feature.
+- **Rollie AI Voice Assistant:** Conversational AI chatbot powered by OpenAI with natural ElevenLabs text-to-speech voices. Supports English/Spanish, male/female voice options, and speech-to-text input. Bundled with all AI Estimator packages.
 - **Role-Based Access:** PIN-based access for various roles (Admin, Owner, Developer, etc.) with specific dashboard privileges.
 - **Online Booking:** A 5-step customer wizard for scheduling services, with admin oversight.
 - **Weather & Crew Management:** Real-time weather display and dashboards for crew leads with time tracking and reporting.
