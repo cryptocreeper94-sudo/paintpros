@@ -2146,3 +2146,218 @@ export const insertRoyaltyConfigSchema = createInsertSchema(royaltyConfig).omit(
 
 export type InsertRoyaltyConfig = z.infer<typeof insertRoyaltyConfigSchema>;
 export type RoyaltyConfig = typeof royaltyConfig.$inferSelect;
+
+// ============ PROJECT MANAGEMENT FEATURES ============
+
+// Project Templates - Saved estimate templates for repeat jobs
+export const projectTemplates = pgTable("project_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category"), // 'residential', 'commercial', 'apartment_turnover', etc.
+  
+  // Template data (services, measurements, etc.)
+  services: jsonb("services").$type<string[]>().default([]),
+  defaultSquareFootage: integer("default_square_footage"),
+  roomCount: integer("room_count"),
+  
+  // Pricing multipliers
+  laborMultiplier: decimal("labor_multiplier", { precision: 4, scale: 2 }).default("1.0"),
+  materialMultiplier: decimal("material_multiplier", { precision: 4, scale: 2 }).default("1.0"),
+  
+  // Usage tracking
+  useCount: integer("use_count").default(0),
+  lastUsedAt: timestamp("last_used_at"),
+  
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_project_templates_tenant").on(table.tenantId),
+  index("idx_project_templates_category").on(table.category),
+]);
+
+export const insertProjectTemplateSchema = createInsertSchema(projectTemplates).omit({
+  id: true,
+  useCount: true,
+  lastUsedAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertProjectTemplate = z.infer<typeof insertProjectTemplateSchema>;
+export type ProjectTemplate = typeof projectTemplates.$inferSelect;
+
+// Project Photos - Before/After gallery
+export const projectPhotos = pgTable("project_photos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  
+  // Link to estimate or project
+  estimateId: varchar("estimate_id").references(() => estimates.id),
+  projectName: text("project_name"),
+  
+  // Photo details
+  photoType: text("photo_type").notNull(), // 'before', 'after', 'progress', 'detail'
+  photoUrl: text("photo_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  caption: text("caption"),
+  roomName: text("room_name"), // 'living_room', 'kitchen', etc.
+  
+  // Metadata
+  takenAt: timestamp("taken_at"),
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  isPublic: boolean("is_public").default(false), // Show in public gallery
+  isFeatured: boolean("is_featured").default(false), // Featured in marketing
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_project_photos_tenant").on(table.tenantId),
+  index("idx_project_photos_estimate").on(table.estimateId),
+  index("idx_project_photos_type").on(table.photoType),
+  index("idx_project_photos_public").on(table.isPublic),
+]);
+
+export const insertProjectPhotoSchema = createInsertSchema(projectPhotos).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertProjectPhoto = z.infer<typeof insertProjectPhotoSchema>;
+export type ProjectPhoto = typeof projectPhotos.$inferSelect;
+
+// Blueprint Uploads - PDF plans with AI-extracted dimensions
+export const blueprintUploads = pgTable("blueprint_uploads", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  
+  // File info
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  fileSize: integer("file_size"),
+  pageCount: integer("page_count").default(1),
+  
+  // Link to estimate
+  estimateId: varchar("estimate_id").references(() => estimates.id),
+  projectName: text("project_name"),
+  
+  // AI extraction results
+  extractionStatus: text("extraction_status").default("pending"), // 'pending', 'processing', 'completed', 'failed'
+  extractedData: jsonb("extracted_data").$type<{
+    rooms?: Array<{
+      name: string;
+      width: number;
+      length: number;
+      height: number;
+      squareFootage: number;
+      wallArea: number;
+    }>;
+    totalSquareFootage?: number;
+    totalWallArea?: number;
+    roomCount?: number;
+    notes?: string[];
+  }>(),
+  extractionError: text("extraction_error"),
+  extractedAt: timestamp("extracted_at"),
+  
+  // Metadata
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_blueprint_uploads_tenant").on(table.tenantId),
+  index("idx_blueprint_uploads_estimate").on(table.estimateId),
+  index("idx_blueprint_uploads_status").on(table.extractionStatus),
+]);
+
+export const insertBlueprintUploadSchema = createInsertSchema(blueprintUploads).omit({
+  id: true,
+  extractionStatus: true,
+  extractedData: true,
+  extractionError: true,
+  extractedAt: true,
+  createdAt: true,
+});
+
+export type InsertBlueprintUpload = z.infer<typeof insertBlueprintUploadSchema>;
+export type BlueprintUpload = typeof blueprintUploads.$inferSelect;
+
+// Material Breakdowns - Detailed material lists for estimates
+export const materialBreakdowns = pgTable("material_breakdowns", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  estimateId: varchar("estimate_id").references(() => estimates.id).notNull(),
+  
+  // Material details
+  category: text("category").notNull(), // 'paint', 'primer', 'supplies', 'equipment'
+  itemName: text("item_name").notNull(),
+  brand: text("brand"),
+  sku: text("sku"),
+  
+  // Quantities
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  unit: text("unit").notNull(), // 'gallon', 'roll', 'pack', 'each'
+  
+  // Pricing
+  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }),
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }),
+  
+  // Supplier info
+  supplierName: text("supplier_name"),
+  supplierUrl: text("supplier_url"),
+  
+  // Notes
+  notes: text("notes"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_material_breakdowns_tenant").on(table.tenantId),
+  index("idx_material_breakdowns_estimate").on(table.estimateId),
+  index("idx_material_breakdowns_category").on(table.category),
+]);
+
+export const insertMaterialBreakdownSchema = createInsertSchema(materialBreakdowns).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertMaterialBreakdown = z.infer<typeof insertMaterialBreakdownSchema>;
+export type MaterialBreakdown = typeof materialBreakdowns.$inferSelect;
+
+// Labor Estimates - Detailed labor breakdowns
+export const laborEstimates = pgTable("labor_estimates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  estimateId: varchar("estimate_id").references(() => estimates.id).notNull(),
+  
+  // Task details
+  taskName: text("task_name").notNull(),
+  taskCategory: text("task_category"), // 'prep', 'prime', 'paint', 'trim', 'cleanup'
+  
+  // Labor calculations
+  estimatedHours: decimal("estimated_hours", { precision: 6, scale: 2 }).notNull(),
+  crewSize: integer("crew_size").default(2),
+  totalCrewHours: decimal("total_crew_hours", { precision: 6, scale: 2 }),
+  
+  // Difficulty factors
+  difficultyMultiplier: decimal("difficulty_multiplier", { precision: 4, scale: 2 }).default("1.0"),
+  surfaceCondition: text("surface_condition"), // 'good', 'fair', 'poor', 'damaged'
+  
+  // Timing
+  estimatedDays: decimal("estimated_days", { precision: 4, scale: 1 }),
+  
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_labor_estimates_tenant").on(table.tenantId),
+  index("idx_labor_estimates_estimate").on(table.estimateId),
+]);
+
+export const insertLaborEstimateSchema = createInsertSchema(laborEstimates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertLaborEstimate = z.infer<typeof insertLaborEstimateSchema>;
+export type LaborEstimate = typeof laborEstimates.$inferSelect;
