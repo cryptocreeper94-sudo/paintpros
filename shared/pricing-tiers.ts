@@ -5,6 +5,8 @@ export interface PricingTier {
   monthlyPrice: number;
   annualPrice: number;
   annualSavings: number;
+  standardMonthlyPrice: number;
+  standardAnnualPrice: number;
   features: string[];
   limits: {
     estimatesPerMonth: number | 'unlimited';
@@ -26,23 +28,29 @@ export interface PricingTier {
   stripePriceIdAnnual?: string;
 }
 
+export const FOUNDERS_CLUB_LIMIT = 100;
+export const FOUNDERS_CLUB_ACTIVE = true;
+
 export const PRICING_TIERS: PricingTier[] = [
   {
     id: 'starter',
     name: 'Starter',
     tagline: 'Perfect for solo painters',
-    monthlyPrice: 49,
-    annualPrice: 470,
-    annualSavings: 118,
+    monthlyPrice: 199,
+    annualPrice: 1990,
+    annualSavings: 398,
+    standardMonthlyPrice: 399,
+    standardAnnualPrice: 3990,
     features: [
-      '15 estimates per month',
+      '25 estimates per month',
       'Basic AI Room Scanner',
       'Professional proposals',
       'Email support',
-      'Mobile-friendly'
+      'Mobile-friendly',
+      'Customer portal'
     ],
     limits: {
-      estimatesPerMonth: 15,
+      estimatesPerMonth: 25,
       teamMembers: 1,
       aiScannerLevel: 'basic',
       multiRoomScanner: false,
@@ -55,26 +63,29 @@ export const PRICING_TIERS: PricingTier[] = [
       prioritySupport: false,
       dedicatedAccount: false
     },
-    ctaText: 'Start Free Trial'
+    ctaText: 'Join Founders Club'
   },
   {
     id: 'professional',
     name: 'Professional',
     tagline: 'For growing painting companies',
-    monthlyPrice: 99,
-    annualPrice: 950,
-    annualSavings: 238,
+    monthlyPrice: 499,
+    annualPrice: 4990,
+    annualSavings: 998,
+    standardMonthlyPrice: 799,
+    standardAnnualPrice: 7990,
     features: [
       'Unlimited estimates',
       'Full AI Scanner with calibration',
       'Wall surface area calculation',
       'CRM & lead tracking',
-      'Up to 3 team members',
-      'Priority email support'
+      'Up to 5 team members',
+      'Priority email support',
+      'Color visualizer'
     ],
     limits: {
       estimatesPerMonth: 'unlimited',
-      teamMembers: 3,
+      teamMembers: 5,
       aiScannerLevel: 'full',
       multiRoomScanner: false,
       crmAccess: true,
@@ -87,47 +98,52 @@ export const PRICING_TIERS: PricingTier[] = [
       dedicatedAccount: false
     },
     popular: true,
-    ctaText: 'Start Free Trial'
+    ctaText: 'Join Founders Club'
   },
   {
     id: 'business',
     name: 'Business',
     tagline: 'For established contractors',
-    monthlyPrice: 199,
-    annualPrice: 1910,
-    annualSavings: 478,
+    monthlyPrice: 799,
+    annualPrice: 7990,
+    annualSavings: 1598,
+    standardMonthlyPrice: 1299,
+    standardAnnualPrice: 12990,
     features: [
       'Everything in Professional',
       'Multi-Room Scanner (Priority)',
       'Online booking system',
       'Crew management & scheduling',
-      'Up to 10 team members',
-      '10 blockchain doc stamps/mo',
-      'Dedicated support'
+      'Up to 15 team members',
+      '25 blockchain doc stamps/mo',
+      'Dedicated support',
+      'Internal messaging'
     ],
     limits: {
       estimatesPerMonth: 'unlimited',
-      teamMembers: 10,
+      teamMembers: 15,
       aiScannerLevel: 'full',
       multiRoomScanner: true,
       crmAccess: true,
       onlineBooking: true,
       crewManagement: true,
-      blockchainStamps: 10,
+      blockchainStamps: 25,
       whiteLabel: false,
       apiAccess: false,
       prioritySupport: true,
       dedicatedAccount: true
     },
-    ctaText: 'Start Free Trial'
+    ctaText: 'Join Founders Club'
   },
   {
     id: 'enterprise',
     name: 'Enterprise',
     tagline: 'For franchises & property mgmt',
-    monthlyPrice: 399,
-    annualPrice: 3830,
-    annualSavings: 958,
+    monthlyPrice: 1499,
+    annualPrice: 14990,
+    annualSavings: 2998,
+    standardMonthlyPrice: 2499,
+    standardAnnualPrice: 24990,
     features: [
       'Everything in Business',
       'Unlimited team members',
@@ -136,7 +152,8 @@ export const PRICING_TIERS: PricingTier[] = [
       'Unlimited blockchain stamps',
       'Multi-location support',
       'Custom integrations',
-      'Dedicated account manager'
+      'Dedicated account manager',
+      'Franchise support'
     ],
     limits: {
       estimatesPerMonth: 'unlimited',
