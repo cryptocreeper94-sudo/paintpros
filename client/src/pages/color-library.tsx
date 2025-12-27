@@ -24,10 +24,13 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  Camera
+  Camera,
+  Store,
+  ShoppingCart
 } from "lucide-react";
 import type { PaintColor } from "@shared/schema";
 import { ColorVisualizer, ColorVisualizerCard } from "@/components/color-visualizer";
+import { useTenant } from "@/context/TenantContext";
 
 // Hue ranges for color families (0-360 degrees)
 const hueRanges = [
@@ -495,8 +498,13 @@ export default function ColorLibrary() {
     setSelectedColor(null);
   };
 
+  const tenant = useTenant();
+  const isDemo = tenant.id === "demo";
+  
   const sherwinWilliamsColors = colors.filter(c => c.brand === "sherwin-williams");
   const benjaminMooreColors = colors.filter(c => c.brand === "benjamin-moore");
+  const behrColors = colors.filter(c => c.brand === "behr");
+  const valsparColors = colors.filter(c => c.brand === "valspar");
 
   return (
     <PageLayout>
@@ -625,6 +633,24 @@ export default function ColorLibrary() {
                 onSelect={handleSelectColor}
                 defaultOpen
               />
+              {isDemo && behrColors.length > 0 && (
+                <BrandAccordion
+                  brandName="Behr (Home Depot)"
+                  brandId="behr"
+                  brandIcon={Store}
+                  colors={behrColors}
+                  onSelect={handleSelectColor}
+                />
+              )}
+              {isDemo && valsparColors.length > 0 && (
+                <BrandAccordion
+                  brandName="Valspar (Lowe's)"
+                  brandId="valspar"
+                  brandIcon={ShoppingCart}
+                  colors={valsparColors}
+                  onSelect={handleSelectColor}
+                />
+              )}
             </Accordion>
           )}
 
@@ -670,7 +696,10 @@ export default function ColorLibrary() {
                         <h2 className="text-2xl font-bold">{selectedColor.colorName}</h2>
                         <p className="text-muted-foreground">{selectedColor.colorCode}</p>
                         <Badge variant="outline" className="mt-1">
-                          {selectedColor.brand === "sherwin-williams" ? "Sherwin-Williams" : "Benjamin Moore"} - {selectedColor.productLine}
+                          {selectedColor.brand === "sherwin-williams" ? "Sherwin-Williams" : 
+                           selectedColor.brand === "benjamin-moore" ? "Benjamin Moore" :
+                           selectedColor.brand === "behr" ? "Behr" :
+                           selectedColor.brand === "valspar" ? "Valspar" : selectedColor.brand} - {selectedColor.productLine}
                         </Badge>
                       </div>
                     </div>
