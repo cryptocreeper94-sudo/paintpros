@@ -40,6 +40,9 @@ import * as quickbooks from "./quickbooks";
 import xss from "xss";
 import { provisionTenantFromTrial, SUBSCRIPTION_TIERS, type SubscriptionTier } from "./tenant-provisioning";
 import * as financialHub from "./financialHubClient";
+import { startScheduler, stopScheduler, getSchedulerStatus, manualDeploy } from "./marketing-scheduler";
+import { getConfiguredPlatforms, Platform } from "./social-connectors";
+import { marketingPosts, marketingScheduleConfigs, marketingDeploys } from "@shared/schema";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -7530,6 +7533,190 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error fetching blueprints:", error);
       res.status(500).json({ error: "Failed to fetch blueprints" });
+    }
+  });
+
+  // ============================================
+  // MARKETING AUTO-DEPLOY SYSTEM API
+  // ============================================
+
+  // Middleware to verify owner secret from environment variable
+  const verifyOwnerSecret: RequestHandler = (req, res, next) => {
+    const ownerSecret = process.env.OWNER_SECRET;
+    if (!ownerSecret) {
+      res.status(503).json({ error: "Owner authentication not configured" });
+      return;
+    }
+    
+    const providedSecret = req.headers['x-owner-secret'] as string;
+    if (!providedSecret || providedSecret !== ownerSecret) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    next();
+  };
+
+  // Start marketing scheduler on server boot
+  startScheduler();
+
+  // GET /api/owner-admin/marketing/status - Get scheduler status and configured platforms
+  app.get("/api/owner-admin/marketing/status", verifyOwnerSecret, async (_req, res) => {
+    try {
+      const status = getSchedulerStatus();
+      const platforms = getConfiguredPlatforms();
+      res.json({ ...status, configuredPlatforms: platforms });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get status" });
+    }
+  });
+
+  // POST /api/owner-admin/marketing/posts - Add new post to rotation
+  app.post("/api/owner-admin/marketing/posts", verifyOwnerSecret, async (req, res) => {
+    try {
+      const { content, category, imageUrl } = req.body;
+      if (!content) {
+        res.status(400).json({ error: "Content is required" });
+        return;
+      }
+
+      const [post] = await db.insert(marketingPosts).values({
+        content: xss(content),
+        category: category || "general",
+        imageUrl: imageUrl || null,
+        isActive: true,
+      }).returning();
+
+      res.status(201).json(post);
+    } catch (error) {
+      console.error("Error creating marketing post:", error);
+      res.status(500).json({ error: "Failed to create post" });
+    }
+  });
+
+  // GET /api/owner-admin/marketing/posts - List all posts
+  app.get("/api/owner-admin/marketing/posts", verifyOwnerSecret, async (_req, res) => {
+    try {
+      const posts = await db.select().from(marketingPosts).orderBy(desc(marketingPosts.createdAt));
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch posts" });
+    }
+  });
+
+  // DELETE /api/owner-admin/marketing/posts/:id - Delete a post
+  app.delete("/api/owner-admin/marketing/posts/:id", verifyOwnerSecret, async (req, res) => {
+    try {
+      await db.delete(marketingPosts).where(eq(marketingPosts.id, req.params.id));
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete post" });
+    }
+  });
+
+  // PATCH /api/owner-admin/marketing/posts/:id - Update a post
+  app.patch("/api/owner-admin/marketing/posts/:id", verifyOwnerSecret, async (req, res) => {
+    try {
+      const { content, category, imageUrl, isActive } = req.body;
+      const updates: Partial<typeof marketingPosts.$inferInsert> = {};
+      
+      if (content !== undefined) updates.content = xss(content);
+      if (category !== undefined) updates.category = category;
+      if (imageUrl !== undefined) updates.imageUrl = imageUrl;
+      if (isActive !== undefined) updates.isActive = isActive;
+
+      const [post] = await db.update(marketingPosts)
+        .set(updates)
+        .where(eq(marketingPosts.id, req.params.id))
+        .returning();
+
+      res.json(post);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update post" });
+    }
+  });
+
+  // POST /api/owner-admin/marketing/deploy/:platform - Manual deploy to single platform
+  app.post("/api/owner-admin/marketing/deploy/:platform", verifyOwnerSecret, async (req, res) => {
+    try {
+      const platform = req.params.platform as Platform;
+      const { content, imageUrl } = req.body;
+
+      if (!['twitter', 'discord', 'telegram', 'facebook'].includes(platform)) {
+        res.status(400).json({ error: "Invalid platform" });
+        return;
+      }
+
+      if (!content) {
+        res.status(400).json({ error: "Content is required" });
+        return;
+      }
+
+      const result = await manualDeploy(platform, content, imageUrl);
+      res.json(result);
+    } catch (error) {
+      console.error("Error deploying:", error);
+      res.status(500).json({ error: "Failed to deploy" });
+    }
+  });
+
+  // POST /api/owner-admin/marketing/schedule - Configure auto-posting schedule per platform
+  app.post("/api/owner-admin/marketing/schedule", verifyOwnerSecret, async (req, res) => {
+    try {
+      const { platform, intervalMinutes, isActive } = req.body;
+
+      if (!['twitter', 'discord', 'telegram', 'facebook'].includes(platform)) {
+        res.status(400).json({ error: "Invalid platform" });
+        return;
+      }
+
+      const existing = await db.select().from(marketingScheduleConfigs)
+        .where(eq(marketingScheduleConfigs.platform, platform));
+
+      let config;
+      if (existing.length > 0) {
+        [config] = await db.update(marketingScheduleConfigs)
+          .set({ 
+            intervalMinutes: intervalMinutes ?? existing[0].intervalMinutes,
+            isActive: isActive ?? existing[0].isActive,
+            updatedAt: new Date()
+          })
+          .where(eq(marketingScheduleConfigs.platform, platform))
+          .returning();
+      } else {
+        [config] = await db.insert(marketingScheduleConfigs).values({
+          platform,
+          intervalMinutes: intervalMinutes ?? 240,
+          isActive: isActive ?? false,
+        }).returning();
+      }
+
+      res.json(config);
+    } catch (error) {
+      console.error("Error updating schedule:", error);
+      res.status(500).json({ error: "Failed to update schedule" });
+    }
+  });
+
+  // GET /api/owner-admin/marketing/schedule - Get all schedule configs
+  app.get("/api/owner-admin/marketing/schedule", verifyOwnerSecret, async (_req, res) => {
+    try {
+      const configs = await db.select().from(marketingScheduleConfigs);
+      res.json(configs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch schedules" });
+    }
+  });
+
+  // GET /api/owner-admin/marketing/history - Get deployment history
+  app.get("/api/owner-admin/marketing/history", verifyOwnerSecret, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const deploys = await db.select().from(marketingDeploys)
+        .orderBy(desc(marketingDeploys.deployedAt))
+        .limit(limit);
+      res.json(deploys);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch history" });
     }
   });
 
