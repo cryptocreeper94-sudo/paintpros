@@ -169,8 +169,8 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     estimator: true,
     portfolio: true,
     reviews: true,
-    blog: false,
-    onlineBooking: false,
+    blog: true,
+    onlineBooking: true,
     aiAssistant: true,
   },
   
