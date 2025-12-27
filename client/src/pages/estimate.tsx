@@ -21,6 +21,7 @@ import wallsImg from "@assets/generated_images/interior_wall_painting.png";
 import trimImg from "@assets/generated_images/trim_and_molding.png";
 import ceilingsImg from "@assets/generated_images/ceiling_painting.png";
 import doorsImg from "@assets/generated_images/door_painting.png";
+import cabinetsImg from "@assets/generated_images/white_painted_kitchen_cabinets.png";
 
 interface UploadedPhoto {
   id: string;
@@ -546,7 +547,7 @@ export default function Estimate() {
                       { key: 'trim', label: 'Trim & Molding', icon: Layers, img: trimImg },
                       { key: 'ceilings', label: 'Ceilings', icon: Square, img: ceilingsImg },
                       { key: 'doors', label: 'Doors', icon: DoorOpen, img: doorsImg },
-                      { key: 'cabinets', label: 'Cabinets', icon: Home, img: null },
+                      { key: 'cabinets', label: 'Cabinets', icon: Home, img: cabinetsImg },
                     ].map(({ key, label, icon: Icon, img }) => {
                       const isSelected = jobSelections[key as keyof typeof jobSelections];
                       return (
@@ -973,7 +974,6 @@ export default function Estimate() {
           {/* Navigation Buttons - Uniform styling */}
           <div className="flex justify-between gap-4 mt-6">
             <FlipButton
-              variant="secondary"
               onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
               disabled={currentStep === 1}
               className="h-12 min-w-[120px]"
