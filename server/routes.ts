@@ -3525,7 +3525,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
-  // POST /api/tts - Convert text to speech using OpenAI TTS
+  // POST /api/tts - Convert text to speech using ElevenLabs
   app.post("/api/tts", async (req, res) => {
     try {
       const { text, voice } = req.body;
@@ -3535,22 +3535,52 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         return;
       }
 
-      // Valid OpenAI voices: alloy, echo, fable, onyx, nova, shimmer
-      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
-      const selectedVoice = validVoices.includes(voice) ? voice : "nova";
+      const apiKey = process.env.ELEVENLABS_API_KEY;
+      if (!apiKey) {
+        console.error("ElevenLabs API key not configured");
+        res.status(500).json({ error: "TTS service not configured" });
+        return;
+      }
 
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      // ElevenLabs voice IDs - using friendly warm voices
+      const voiceMap: Record<string, string> = {
+        "nova": "21m00Tcm4TlvDq8ikWAM", // Rachel - warm female
+        "alloy": "pNInz6obpgDQGcFmaJgB", // Adam - neutral male
+        "echo": "VR6AewLTigWG4xSOukaG", // Arnold - deep male
+        "onyx": "ErXwobaYiN019PkySvjV", // Antoni - young male
+        "shimmer": "EXAVITQu4vr4xnSDxMaL", // Bella - soft female
+        "fable": "MF3mGyEYCl7XYWbV9V6O", // Elli - young female
+      };
+      
+      // Default to Rachel (warm, professional female voice)
+      const voiceId = voiceMap[voice] || "21m00Tcm4TlvDq8ikWAM";
+
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: "POST",
+        headers: {
+          "Accept": "audio/mpeg",
+          "Content-Type": "application/json",
+          "xi-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          text: text.slice(0, 2500), // ElevenLabs free tier limit
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+          },
+        }),
       });
 
-      const mp3Response = await openai.audio.speech.create({
-        model: "tts-1",
-        voice: selectedVoice,
-        input: text.slice(0, 4096),
-      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("ElevenLabs API error:", response.status, errorText);
+        res.status(response.status).json({ error: "TTS generation failed" });
+        return;
+      }
 
-      const buffer = Buffer.from(await mp3Response.arrayBuffer());
+      const audioBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(audioBuffer);
       
       res.set({
         "Content-Type": "audio/mpeg",
