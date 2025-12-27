@@ -88,16 +88,22 @@ export function Footer() {
             v{version}
           </button>
 
-          {/* Socials - Only show if tenant has configured social links */}
+          {/* Socials - Show configured links or placeholders */}
           <div className="flex gap-2 md:gap-3 items-center">
-            {tenant.social?.instagram && (
+            {tenant.social?.instagram ? (
               <a href={tenant.social.instagram} className="transition-all hover:scale-110" data-testid="link-instagram"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
+            ) : (
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-instagram-placeholder"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
             )}
-            {tenant.social?.facebook && (
+            {tenant.social?.facebook ? (
               <a href={tenant.social.facebook} className="transition-all hover:scale-110" data-testid="link-facebook"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
+            ) : (
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-facebook-placeholder"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
             )}
-            {tenant.social?.linkedin && (
+            {tenant.social?.linkedin ? (
               <a href={tenant.social.linkedin} className="transition-all hover:scale-110" data-testid="link-linkedin"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
+            ) : (
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-linkedin-placeholder"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
             )}
             {/* Darkwave Smart Chain link for demo site */}
             {isDemo && (
