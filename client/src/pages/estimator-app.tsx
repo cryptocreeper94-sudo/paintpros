@@ -76,9 +76,11 @@ export default function EstimatorApp() {
   ];
 
   useEffect(() => {
+    const originalTitle = document.title;
     document.title = 'AI Paint Estimator - Get Instant Quotes';
     
     const existingManifest = document.querySelector('link[rel="manifest"]');
+    const originalManifestHref = existingManifest?.getAttribute('href') || '/manifest.json';
     if (existingManifest) {
       existingManifest.setAttribute('href', '/estimator/manifest.json');
     } else {
@@ -89,12 +91,25 @@ export default function EstimatorApp() {
     }
     
     let themeColor = document.querySelector('meta[name="theme-color"]');
+    const originalThemeColor = themeColor?.getAttribute('content') || '#3a4f41';
     if (!themeColor) {
       themeColor = document.createElement('meta');
       themeColor.setAttribute('name', 'theme-color');
       document.head.appendChild(themeColor);
     }
     themeColor.setAttribute('content', '#4a90d9');
+    
+    return () => {
+      document.title = originalTitle;
+      const manifestEl = document.querySelector('link[rel="manifest"]');
+      if (manifestEl) {
+        manifestEl.setAttribute('href', originalManifestHref);
+      }
+      const themeEl = document.querySelector('meta[name="theme-color"]');
+      if (themeEl) {
+        themeEl.setAttribute('content', originalThemeColor);
+      }
+    };
   }, []);
 
   return (

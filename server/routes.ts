@@ -565,7 +565,7 @@ export async function registerRoutes(
       short_name: estimatorPwaConfig.shortName,
       description: estimatorPwaConfig.description,
       start_url: "/estimator-app",
-      scope: "/estimator",
+      scope: "/",
       display: "standalone",
       background_color: estimatorPwaConfig.backgroundColor,
       theme_color: estimatorPwaConfig.themeColor,
