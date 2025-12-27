@@ -60,12 +60,35 @@ export default function Estimate() {
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
 
-  // Step 1: Contact Info
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  // Step 1: Contact Info - with localStorage persistence
+  const [firstName, setFirstName] = useState(() => {
+    try { return localStorage.getItem('estimator_firstName') || ""; } catch { return ""; }
+  });
+  const [lastName, setLastName] = useState(() => {
+    try { return localStorage.getItem('estimator_lastName') || ""; } catch { return ""; }
+  });
+  const [email, setEmail] = useState(() => {
+    try { return localStorage.getItem('estimator_email') || ""; } catch { return ""; }
+  });
+  const [phone, setPhone] = useState(() => {
+    try { return localStorage.getItem('estimator_phone') || ""; } catch { return ""; }
+  });
+  const [address, setAddress] = useState(() => {
+    try { return localStorage.getItem('estimator_address') || ""; } catch { return ""; }
+  });
+
+  // Save contact info to localStorage when it changes
+  useEffect(() => {
+    try {
+      if (firstName) localStorage.setItem('estimator_firstName', firstName);
+      if (lastName) localStorage.setItem('estimator_lastName', lastName);
+      if (email) localStorage.setItem('estimator_email', email);
+      if (phone) localStorage.setItem('estimator_phone', phone);
+      if (address) localStorage.setItem('estimator_address', address);
+    } catch {
+      // Privacy mode or localStorage unavailable
+    }
+  }, [firstName, lastName, email, phone, address]);
 
   // Step 2: Services
   const [jobSelections, setJobSelections] = useState({
