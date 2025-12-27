@@ -30,6 +30,88 @@ import {
 } from "lucide-react";
 import type { SeoPage } from "@shared/schema";
 
+function LiveHeadTagsViewer() {
+  const [tags, setTags] = useState<{ name: string; content: string; type: string }[]>([]);
+  const [expanded, setExpanded] = useState(false);
+
+  const refreshTags = () => {
+    const headTags: { name: string; content: string; type: string }[] = [];
+    
+    headTags.push({ name: "title", content: document.title, type: "title" });
+    
+    const metas = document.querySelectorAll("meta");
+    metas.forEach((meta) => {
+      const name = meta.getAttribute("name") || meta.getAttribute("property") || meta.getAttribute("http-equiv");
+      const content = meta.getAttribute("content");
+      if (name && content) {
+        const type = meta.getAttribute("property") ? "og/twitter" : "meta";
+        headTags.push({ name, content, type });
+      }
+    });
+    
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      headTags.push({ name: "canonical", content: canonical.getAttribute("href") || "", type: "link" });
+    }
+    
+    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+    scripts.forEach((script, i) => {
+      try {
+        const data = JSON.parse(script.textContent || "{}");
+        headTags.push({ name: `JSON-LD ${i + 1} (${data["@type"] || "Schema"})`, content: JSON.stringify(data, null, 2), type: "schema" });
+      } catch {}
+    });
+    
+    setTags(headTags);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <h4 className="font-medium flex items-center gap-2">
+          <Globe className="w-4 h-4" />
+          Live Head Tags
+        </h4>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={refreshTags} data-testid="button-refresh-head-tags">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Scan Page
+          </Button>
+          {tags.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={() => setExpanded(!expanded)}>
+              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </Button>
+          )}
+        </div>
+      </div>
+      
+      {tags.length > 0 && (
+        <div className={`space-y-1 ${expanded ? "" : "max-h-[200px] overflow-hidden"}`}>
+          {tags.map((tag, i) => (
+            <div key={i} className="flex items-start gap-2 p-2 rounded bg-muted/50 text-xs">
+              <Badge variant="outline" className="shrink-0">
+                {tag.type === "og/twitter" ? "OG" : tag.type === "schema" ? "LD" : tag.type.toUpperCase()}
+              </Badge>
+              <div className="min-w-0 flex-1">
+                <span className="font-mono text-primary">{tag.name}</span>
+                <div className="text-muted-foreground truncate max-w-full">
+                  {tag.content.length > 150 ? tag.content.substring(0, 150) + "..." : tag.content}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {tags.length === 0 && (
+        <div className="text-sm text-muted-foreground p-4 text-center border rounded-lg bg-muted/20">
+          Click "Scan Page" to view all active meta tags on this page
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface SeoSummary {
   totalPages: number;
   averageScore: number;

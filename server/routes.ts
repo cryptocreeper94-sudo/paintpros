@@ -2807,26 +2807,47 @@ export async function registerRoutes(
           messages: [
             {
               role: "system",
-              content: `You are an expert at estimating room dimensions from photographs. 
-Analyze the image and estimate the room's approximate dimensions.
-Consider visual cues like:
-- Standard door heights (6'8" or 80 inches)
-- Standard ceiling heights (8-10 feet)
-- Furniture sizes for scale
-- Floor tiles or flooring patterns
-- Outlet and switch plate sizes
+              content: `You are a professional construction estimator and room measurement expert with 20+ years of experience in the painting industry. Your task is to accurately estimate room dimensions from photographs.
 
-IMPORTANT: Provide conservative estimates. It's better to underestimate than overestimate.
+CALIBRATION REFERENCE OBJECTS (use these standard sizes):
+- Interior doors: 80" (6'8") height, 32-36" width
+- Standard electrical outlets: 4.5" tall
+- Light switches: 2.75" wide x 4.5" tall  
+- Baseboards: 3-6" height typical
+- Crown molding: 2-5" height typical
+- Ceiling fan diameter: 42-52" typical
+- 8-panel interior door: each panel ~9" x 18"
+- Standard furniture (queen bed: 60"x80", sofa: 84-96" long)
+
+MEASUREMENT METHODOLOGY:
+1. First identify at least 2 reference objects in the image
+2. Use perspective geometry to estimate distance/depth
+3. Cross-check estimates using multiple reference points
+4. Consider ceiling height variations (standard 8ft, modern 9ft, vaulted)
+
+FOR PAINTING ESTIMATES - calculate WALL SURFACE AREA:
+- Wall area = perimeter × ceiling height
+- Account for door/window openings to subtract later
+- Note any alcoves, bump-outs, or irregular shapes
+
+ACCURACY GUIDANCE:
+- 70%+ confidence: Clear reference objects visible, good lighting, can see floor-ceiling
+- 50-70% confidence: Some reference objects, partial room visible
+- Below 50%: Limited reference points, poor angle, significant obstructions
+
+IMPORTANT: Be conservative. Underestimate by 5-10% if uncertain. This protects against scope creep.
 
 Respond ONLY with a JSON object in this exact format:
 {
-  "length_ft": <number>,
-  "width_ft": <number>,
-  "height_ft": <number>,
-  "square_footage": <number>,
+  "length_ft": <number with 1 decimal>,
+  "width_ft": <number with 1 decimal>,
+  "height_ft": <number with 1 decimal>,
+  "square_footage": <floor area number>,
+  "wall_surface_sqft": <estimated paintable wall area>,
   "confidence": <number 0-100>,
   "room_type_detected": "<string>",
-  "reasoning": "<brief explanation of how you estimated>"
+  "reference_objects_used": ["<object1>", "<object2>"],
+  "reasoning": "<brief explanation of calibration method used>"
 }
 
 Do not include any text before or after the JSON.`
@@ -2836,7 +2857,7 @@ Do not include any text before or after the JSON.`
               content: [
                 {
                   type: "text",
-                  text: `Analyze this ${roomType || 'room'} image and estimate its dimensions for painting purposes.`
+                  text: `Analyze this ${roomType || 'room'} image and estimate its dimensions for a painting estimate. The customer needs floor square footage and wall surface area for pricing. Identify reference objects in the image to calibrate your measurements.`
                 },
                 {
                   type: "image_url",
@@ -2848,7 +2869,7 @@ Do not include any text before or after the JSON.`
               ]
             }
           ],
-          max_tokens: 500
+          max_tokens: 600
         });
         
         const content = response.choices[0]?.message?.content || "";
