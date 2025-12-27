@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Camera, Upload, Calculator, Sparkles, Download, CheckCircle, ArrowRight, Smartphone } from 'lucide-react';
+import { Camera, Calculator, Sparkles, Download, CheckCircle, ArrowRight, Smartphone, Share2, Copy, Check } from 'lucide-react';
 import { Link } from 'wouter';
+import { QRCodeSVG } from 'qrcode.react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -14,6 +17,40 @@ export default function EstimatorApp() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const { toast } = useToast();
+  
+  const appUrl = typeof window !== 'undefined' ? `${window.location.origin}/estimator-app` : '';
+  
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'AI Paint Estimator',
+          text: 'Get instant paint estimates with AI room scanning. Try it free!',
+          url: appUrl
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          setShareOpen(true);
+        }
+      }
+    } else {
+      setShareOpen(true);
+    }
+  };
+  
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(appUrl);
+      setCopied(true);
+      toast({ title: 'Link copied!', description: 'Ready to paste and share' });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast({ title: 'Could not copy', description: 'Please copy the link manually', variant: 'destructive' });
+    }
+  };
 
   useEffect(() => {
     const handleBeforeInstall = (e: Event) => {
@@ -98,6 +135,22 @@ export default function EstimatorApp() {
       document.head.appendChild(themeColor);
     }
     themeColor.setAttribute('content', '#4a90d9');
+    
+    const setMetaTag = (property: string, content: string) => {
+      let meta = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement;
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+    
+    setMetaTag('og:title', 'AI Paint Estimator');
+    setMetaTag('og:description', 'Get instant paint estimates with AI room scanning. Upload a photo, get professional quotes in seconds.');
+    setMetaTag('og:image', `${window.location.origin}/pwa/estimator/icon-512.png`);
+    setMetaTag('og:url', `${window.location.origin}/estimator-app`);
+    setMetaTag('og:type', 'website');
     
     return () => {
       document.title = originalTitle;
@@ -194,7 +247,65 @@ export default function EstimatorApp() {
             </Link>
           </div>
 
-          <div className="mt-8 text-center">
+          <Card className="mt-6 bg-slate-800/30 border-slate-700/50">
+            <CardContent className="pt-6">
+              <div className="text-center mb-4">
+                <h3 className="font-medium text-white mb-1">Share This App</h3>
+                <p className="text-sm text-slate-400">Send to contractors or customers</p>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleShare} 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  data-testid="button-share-app"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share Link
+                </Button>
+                <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="gap-2" data-testid="button-show-qr">
+                      QR Code
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-slate-900 border-slate-700">
+                    <DialogHeader>
+                      <DialogTitle className="text-white text-center">Share AI Paint Estimator</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center gap-4 py-4">
+                      <div className="bg-white p-4 rounded-lg">
+                        <QRCodeSVG 
+                          value={appUrl} 
+                          size={200}
+                          level="H"
+                          includeMargin={true}
+                        />
+                      </div>
+                      <p className="text-sm text-slate-400 text-center">
+                        Scan to open or screenshot to share
+                      </p>
+                      <div className="w-full flex gap-2">
+                        <div className="flex-1 bg-slate-800 rounded px-3 py-2 text-sm text-slate-300 truncate">
+                          {appUrl}
+                        </div>
+                        <Button 
+                          onClick={handleCopyLink} 
+                          size="icon" 
+                          variant="outline"
+                          data-testid="button-copy-link"
+                        >
+                          {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 text-center">
             <Badge variant="secondary" className="gap-1">
               Powered by PaintPros.io
             </Badge>
