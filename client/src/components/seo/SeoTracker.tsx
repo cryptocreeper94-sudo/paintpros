@@ -190,6 +190,11 @@ export function SeoTracker() {
         </div>
         
         <Separator />
+
+        {/* Live Head Tags Viewer */}
+        <LiveHeadTagsViewer />
+        
+        <Separator />
         
         {/* Page List */}
         <div className="space-y-2">
@@ -305,6 +310,21 @@ export function SeoTracker() {
               </TabsList>
               
               <TabsContent value="meta" className="space-y-4 mt-4">
+                <div className="p-4 rounded-lg border bg-muted/30 mb-4">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Google Search Preview</Label>
+                  <div className="bg-white dark:bg-gray-900 rounded-lg p-4 max-w-lg">
+                    <div className="text-xs text-muted-foreground mb-1">
+                      {selectedPage.canonicalUrl || "https://yourdomain.com" + selectedPage.pagePath}
+                    </div>
+                    <div className="text-lg text-blue-600 dark:text-blue-400 hover:underline cursor-pointer line-clamp-1 font-medium">
+                      {selectedPage.metaTitle || "Page Title - Your Business Name"}
+                    </div>
+                    <div className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                      {selectedPage.metaDescription || "Meta description will appear here. Write a compelling description that encourages users to click."}
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="metaTitle">Meta Title (30-60 chars)</Label>
                   <Input 
@@ -316,6 +336,9 @@ export function SeoTracker() {
                   />
                   <div className="text-xs text-muted-foreground">
                     {(selectedPage.metaTitle || "").length}/60 characters
+                    {(selectedPage.metaTitle || "").length > 60 && (
+                      <span className="text-yellow-500 ml-2">Title may be truncated</span>
+                    )}
                   </div>
                 </div>
                 
@@ -330,6 +353,12 @@ export function SeoTracker() {
                   />
                   <div className="text-xs text-muted-foreground">
                     {(selectedPage.metaDescription || "").length}/160 characters
+                    {(selectedPage.metaDescription || "").length > 160 && (
+                      <span className="text-yellow-500 ml-2">Description may be truncated</span>
+                    )}
+                    {(selectedPage.metaDescription || "").length < 120 && (selectedPage.metaDescription || "").length > 0 && (
+                      <span className="text-blue-500 ml-2">Consider adding more detail</span>
+                    )}
                   </div>
                 </div>
                 
@@ -368,6 +397,37 @@ export function SeoTracker() {
               </TabsContent>
               
               <TabsContent value="og" className="space-y-4 mt-4">
+                <div className="p-4 rounded-lg border bg-muted/30 mb-4">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Facebook/LinkedIn Preview</Label>
+                  <div className="bg-white dark:bg-gray-900 rounded-lg border overflow-hidden max-w-md">
+                    <div className="aspect-[1.91/1] bg-gray-100 dark:bg-gray-800 relative">
+                      {(selectedPage.ogImage || selectedPage.metaTitle) ? (
+                        <img 
+                          src={selectedPage.ogImage || "/og-image.png"} 
+                          alt="OG Preview" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.src = "/og-image.png"; }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                          No image set
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <div className="text-xs text-muted-foreground uppercase mb-1">
+                        {selectedPage.canonicalUrl ? new URL(selectedPage.canonicalUrl).hostname : "yourdomain.com"}
+                      </div>
+                      <div className="font-semibold text-sm text-foreground line-clamp-2">
+                        {selectedPage.ogTitle || selectedPage.metaTitle || "Page Title"}
+                      </div>
+                      <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                        {selectedPage.ogDescription || selectedPage.metaDescription || "Page description will appear here"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="ogTitle">OG Title</Label>
                   <Input 
@@ -426,6 +486,38 @@ export function SeoTracker() {
               </TabsContent>
               
               <TabsContent value="twitter" className="space-y-4 mt-4">
+                <div className="p-4 rounded-lg border bg-muted/30 mb-4">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Twitter/X Card Preview</Label>
+                  <div className="bg-white dark:bg-gray-900 rounded-xl border overflow-hidden max-w-md">
+                    <div className="aspect-[2/1] bg-gray-100 dark:bg-gray-800 relative">
+                      {(selectedPage.twitterImage || selectedPage.ogImage) ? (
+                        <img 
+                          src={selectedPage.twitterImage || selectedPage.ogImage || "/og-image.png"} 
+                          alt="Twitter Preview" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.currentTarget.src = "/og-image.png"; }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                          No image set
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <div className="font-semibold text-sm text-foreground line-clamp-1">
+                        {selectedPage.twitterTitle || selectedPage.ogTitle || selectedPage.metaTitle || "Page Title"}
+                      </div>
+                      <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                        {selectedPage.twitterDescription || selectedPage.ogDescription || selectedPage.metaDescription || "Page description"}
+                      </div>
+                      <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
+                        <Globe className="w-3 h-3" />
+                        {selectedPage.canonicalUrl ? new URL(selectedPage.canonicalUrl).hostname : "yourdomain.com"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="twitterCard">Card Type</Label>
                   <Input 
