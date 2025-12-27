@@ -351,52 +351,170 @@ export async function sendEstimateProposalEmail(data: EstimateProposalData): Pro
     }
 
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
-        <div style="background: linear-gradient(135deg, #344e41, #588157); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-          <h1 style="color: white; margin: 0;">${data.tenantName}</h1>
-          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Your Painting Estimate</p>
-        </div>
-        
-        <div style="padding: 30px; background: #f8f9fa;">
-          <p style="font-size: 18px;">Dear ${data.customer.firstName},</p>
-          <p>Thank you for requesting an estimate from ${data.tenantName}. We're excited about the opportunity to transform your space!</p>
-          
-          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #344e41;">
-            <h3 style="margin-top: 0; color: #344e41;">Project Summary</h3>
-            <p><strong>Services:</strong> ${servicesList}</p>
-            ${measurementsHtml.join('')}
-          </div>
-          
-          ${data.colors.length > 0 ? `
-          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0; color: #344e41;">Selected Colors</h3>
-            <div style="margin-top: 10px;">${colorSwatches}</div>
-          </div>
-          ` : ''}
-          
-          <div style="background: #344e41; padding: 25px; border-radius: 8px; text-align: center; margin: 20px 0;">
-            <p style="color: rgba(255,255,255,0.9); margin: 0 0 10px 0; font-size: 14px;">${data.pricing.tierName} Package</p>
-            <p style="color: white; font-size: 36px; font-weight: bold; margin: 0;">$${data.pricing.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-          </div>
-          
-          <p style="font-size: 12px; color: #666; text-align: center; font-style: italic;">
-            This estimate is a guide for discussion purposes only. Final pricing will be confirmed after an in-person consultation.
-          </p>
-          
-          <div style="text-align: center; margin-top: 30px;">
-            <a href="mailto:${data.serviceEmail}" style="display: inline-block; background: #344e41; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold;">Contact Us to Schedule</a>
-          </div>
-          
-          <p style="margin-top: 30px;">We'll be in touch within 24 hours to discuss your project and schedule a convenient time for an in-person consultation.</p>
-          
-          <p>Best regards,<br/><strong>${data.tenantName} Team</strong></p>
-        </div>
-        
-        <div style="padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #eee;">
-          <p>${data.tenantName} | Professional Painting Services</p>
-          <p style="margin-top: 10px;">Powered by <a href="https://paintpros.io" style="color: #344e41;">PaintPros.io</a></p>
-        </div>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f4f5;">
+          <tr>
+            <td align="center" style="padding: 40px 20px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 520px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+                
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #2d4a3e 0%, #3d6b54 100%); padding: 32px 24px; text-align: center;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td align="center">
+                          <p style="margin: 0; font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; line-height: 1.2;">Nashville Painting</p>
+                          <p style="margin: 4px 0 0 0; font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; line-height: 1.2;">Professionals</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" style="padding-top: 16px;">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="background-color: rgba(255,255,255,0.15); border-radius: 20px; padding: 8px 20px;">
+                                <p style="margin: 0; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.95); text-transform: uppercase; letter-spacing: 1px;">Your Painting Estimate</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Greeting -->
+                <tr>
+                  <td style="padding: 32px 24px 0 24px;">
+                    <p style="margin: 0; font-size: 20px; font-weight: 600; color: #18181b;">Hi ${data.customer.firstName},</p>
+                    <p style="margin: 12px 0 0 0; font-size: 15px; line-height: 1.6; color: #52525b;">Thank you for your interest! Here's a summary of your painting estimate.</p>
+                  </td>
+                </tr>
+                
+                <!-- Price Card -->
+                <tr>
+                  <td style="padding: 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, #2d4a3e 0%, #3d6b54 100%); border-radius: 12px;">
+                      <tr>
+                        <td style="padding: 28px; text-align: center;">
+                          <p style="margin: 0; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px;">Estimated Total</p>
+                          <p style="margin: 8px 0 0 0; font-size: 42px; font-weight: 700; color: #ffffff; letter-spacing: -1px;">$${data.pricing.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Project Details Grid -->
+                <tr>
+                  <td style="padding: 0 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 16px; background-color: #fafafa; border-radius: 12px;">
+                          <p style="margin: 0 0 12px 0; font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Services Included</p>
+                          <p style="margin: 0; font-size: 15px; font-weight: 500; color: #18181b; line-height: 1.5;">${servicesList}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Measurements -->
+                ${measurementsHtml.length > 0 ? `
+                <tr>
+                  <td style="padding: 12px 24px 0 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 16px; background-color: #fafafa; border-radius: 12px;">
+                          <p style="margin: 0 0 12px 0; font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Project Measurements</p>
+                          ${data.measurements.squareFootage > 0 ? `<p style="margin: 0 0 4px 0; font-size: 15px; color: #18181b;"><span style="font-weight: 500;">${data.measurements.squareFootage.toLocaleString()} sq ft</span></p>` : ''}
+                          ${data.measurements.doorCount > 0 ? `<p style="margin: 0 0 4px 0; font-size: 15px; color: #18181b;"><span style="font-weight: 500;">${data.measurements.doorCount} doors</span></p>` : ''}
+                          ${data.measurements.cabinetDoors > 0 || data.measurements.cabinetDrawers > 0 ? `<p style="margin: 0; font-size: 15px; color: #18181b;"><span style="font-weight: 500;">${data.measurements.cabinetDoors} cabinet doors, ${data.measurements.cabinetDrawers} drawers</span></p>` : ''}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                ` : ''}
+                
+                <!-- Colors -->
+                ${data.colors.length > 0 ? `
+                <tr>
+                  <td style="padding: 12px 24px 0 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding: 16px; background-color: #fafafa; border-radius: 12px;">
+                          <p style="margin: 0 0 12px 0; font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Selected Colors</p>
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            ${data.colors.map(c => `
+                            <tr>
+                              <td style="padding: 4px 0;">
+                                <table role="presentation" cellspacing="0" cellpadding="0">
+                                  <tr>
+                                    <td style="width: 24px; height: 24px; background-color: ${c.hexValue}; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);"></td>
+                                    <td style="padding-left: 12px;">
+                                      <p style="margin: 0; font-size: 14px; font-weight: 500; color: #18181b;">${c.colorName}</p>
+                                      <p style="margin: 2px 0 0 0; font-size: 12px; color: #71717a;">${c.brand} - ${c.surface}</p>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                            `).join('')}
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                ` : ''}
+                
+                <!-- CTA Button -->
+                <tr>
+                  <td style="padding: 28px 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td align="center">
+                          <a href="mailto:${data.serviceEmail}?subject=Painting%20Estimate%20Inquiry" style="display: inline-block; background: linear-gradient(135deg, #2d4a3e 0%, #3d6b54 100%); color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px;">Schedule Your Consultation</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Next Steps -->
+                <tr>
+                  <td style="padding: 0 24px 24px 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-top: 1px solid #e4e4e7;">
+                      <tr>
+                        <td style="padding-top: 24px;">
+                          <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 600; color: #18181b;">What happens next?</p>
+                          <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #52525b;">We'll contact you within 24 hours to schedule an in-person consultation. Final pricing will be confirmed after we assess your space.</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #fafafa; padding: 24px; text-align: center; border-top: 1px solid #e4e4e7;">
+                    <p style="margin: 0; font-size: 13px; color: #71717a;">Nashville Painting Professionals</p>
+                    <p style="margin: 8px 0 0 0; font-size: 12px; color: #a1a1aa;">Powered by <a href="https://paintpros.io" style="color: #3d6b54; text-decoration: none;">PaintPros.io</a></p>
+                  </td>
+                </tr>
+                
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
     `;
 
     // Send to customer
