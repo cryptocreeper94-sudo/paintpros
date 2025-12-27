@@ -2,6 +2,7 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send, Wrench } from "lucide-react";
 import { MaterialBreakdown } from "@/components/material-breakdown";
@@ -822,9 +823,9 @@ export default function Estimate() {
                           {Object.entries(jobSelections)
                             .filter(([_, selected]) => selected)
                             .map(([service]) => (
-                              <span key={service} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full capitalize">
+                              <Badge key={service} variant="secondary" className="capitalize">
                                 {service}
-                              </span>
+                              </Badge>
                             ))}
                         </div>
                         {needsSquareFootage && (
@@ -969,34 +970,34 @@ export default function Estimate() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-6">
-            <Button
-              variant="outline"
+          {/* Navigation Buttons - Uniform styling */}
+          <div className="flex justify-between gap-4 mt-6">
+            <FlipButton
+              variant="secondary"
               onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
               disabled={currentStep === 1}
-              className="h-12"
+              className="h-12 min-w-[120px]"
               data-testid="button-prev-step"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
-            </Button>
+            </FlipButton>
             
             {currentStep < totalSteps ? (
               <FlipButton
                 onClick={() => setCurrentStep(prev => Math.min(totalSteps, prev + 1))}
                 disabled={!canProceed(currentStep)}
-                className="h-12"
+                className="h-12 min-w-[120px]"
                 data-testid="button-next-step"
               >
                 Next
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 ml-2" />
               </FlipButton>
             ) : (
               <FlipButton
                 onClick={handleSubmit}
                 disabled={isSubmitting || estimate.total === 0}
-                className="h-12"
+                className="h-12 min-w-[160px]"
                 data-testid="button-submit-estimate"
               >
                 {isSubmitting ? (
