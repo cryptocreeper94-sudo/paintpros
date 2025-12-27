@@ -149,7 +149,7 @@ export default function Estimate() {
     if (isDemo) {
       setFirstName("Demo");
       setLastName("User");
-      setEmail("demo@paintpros.io");
+      setEmail("cryptocreeper94@gmail.com");
       setPhone("(555) 123-4567");
       setAddress("123 Demo Street, Nashville, TN 37203");
       setJobSelections({ walls: true, trim: true, ceilings: false, doors: true, cabinets: false });

@@ -204,7 +204,7 @@ export const paintProsDemo: TenantConfig = {
   logo: "/icons/paintpros-mascot.png",
   
   phone: "(888) PAINT-PRO",
-  email: "demo@paintpros.io",
+  email: "cryptocreeper94@gmail.com",
   
   theme: {
     primaryColor: "hsl(220, 70%, 50%)",

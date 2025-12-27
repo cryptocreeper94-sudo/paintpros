@@ -626,9 +626,17 @@ export async function registerRoutes(
         <p><em>Review the attached images to see examples of their work.</em></p>
       `;
 
+      // Route to tenant-specific email
+      const tenantId = getTenantFromHostname(req.hostname);
+      const tenantEmails: Record<string, string> = {
+        'npp': 'service@nashvillepaintingprofessionals.com',
+        'demo': 'cryptocreeper94@gmail.com',
+      };
+      const recipientEmail = tenantEmails[tenantId] || 'cryptocreeper94@gmail.com';
+
       await resend.emails.send({
         from: "PaintPros <noreply@orbitstaffing.io>",
-        to: ["service@nashvillepaintingprofessionals.com"],
+        to: [recipientEmail],
         subject: `New Contractor Application: ${applicationData.firstName} ${applicationData.lastName}`,
         html: emailHtml,
         attachments: attachments,
@@ -763,9 +771,9 @@ export async function registerRoutes(
       // Determine tenant-specific service email
       const tenantEmails: Record<string, string> = {
         'npp': 'service@nashvillepaintingprofessionals.com',
-        'demo': 'demo@paintpros.io',
+        'demo': 'cryptocreeper94@gmail.com',
       };
-      const serviceEmail = tenantEmails[tenantId] || process.env.CONTACT_EMAIL || 'contact@paintpros.io';
+      const serviceEmail = tenantEmails[tenantId] || process.env.CONTACT_EMAIL || 'cryptocreeper94@gmail.com';
       
       // Get tenant name from tenant configuration
       const tenantNames: Record<string, string> = {
