@@ -74,7 +74,61 @@ export const MARKETING_POSTS = [
   { content: "From solo painter to enterprise fleet - PaintPros has the tools for every stage of your business.", category: "general" },
   { content: "Modern painting business. Modern tools. PaintPros gives you the technology edge over your competition.", category: "general" },
   { content: "Save 10+ hours per week on admin tasks. Spend more time painting, less time on paperwork. #WorkSmarter", category: "general" },
-  { content: "What's your painting business missing? AI estimates, online booking, CRM, crew tracking - get it all at paintpros.io", category: "general" }
+  { content: "What's your painting business missing? AI estimates, online booking, CRM, crew tracking - get it all at paintpros.io", category: "general" },
+
+  // Trade Vertical - Roofing (7)
+  { content: "RoofPros.io is coming - AI-powered estimates for roofing contractors. Same smart technology, built for roofers. Join the waitlist.", category: "trade-roofing" },
+  { content: "Roofing contractors: Drone photos + AI = instant roof measurements and accurate estimates. Coming soon to roofpros.io", category: "trade-roofing" },
+  { content: "From shingle replacement to full roof installation - RoofPros AI will calculate materials, labor, and pricing instantly.", category: "trade-roofing" },
+  { content: "Commercial and residential roofing estimates powered by AI. RoofPros.io - launching soon for smart roofing contractors.", category: "trade-roofing" },
+  { content: "Weather damage assessments in minutes, not hours. RoofPros AI analyzes photos and generates professional estimates fast.", category: "trade-roofing" },
+  { content: "Stop climbing roofs just for estimates. RoofPros AI calculates square footage from drone or ground photos. #RoofingBusiness", category: "trade-roofing" },
+  { content: "The future of roofing estimates is here. AI-powered, accurate, professional. RoofPros.io coming Q1 2025.", category: "trade-roofing" },
+
+  // Trade Vertical - HVAC (7)
+  { content: "HVACPros.io launching soon - AI-powered load calculations and system sizing for HVAC contractors. Join the waitlist.", category: "trade-hvac" },
+  { content: "HVAC contractors: Get instant BTU calculations and equipment recommendations with AI. Coming to hvacpros.io", category: "trade-hvac" },
+  { content: "From furnace replacement to full system installation - HVACPros AI handles the calculations, you close the deal.", category: "trade-hvac" },
+  { content: "Residential and commercial HVAC estimates powered by smart technology. HVACPros.io - the future of HVAC sales.", category: "trade-hvac" },
+  { content: "Room-by-room load calculations in minutes. Upload floor plans, get accurate system sizing. HVACPros AI is coming.", category: "trade-hvac" },
+  { content: "Stop guessing on equipment sizing. HVACPros AI provides accurate recommendations every time. #HVACContractor", category: "trade-hvac" },
+  { content: "The HVAC industry needs smarter tools. We're building them. HVACPros.io coming 2025.", category: "trade-hvac" },
+
+  // Trade Vertical - Electrical (7)
+  { content: "ElectricPros.io is on the way - AI-powered estimates for electrical contractors. Panel upgrades, rewiring, installations.", category: "trade-electrical" },
+  { content: "Electrical contractors: Calculate wire runs, breaker requirements, and labor hours with AI. Coming to electricpros.io", category: "trade-electrical" },
+  { content: "From outlet installation to whole-house rewiring - ElectricPros AI generates accurate estimates instantly.", category: "trade-electrical" },
+  { content: "Residential and commercial electrical estimates powered by smart technology. ElectricPros.io launching 2025.", category: "trade-electrical" },
+  { content: "Code-compliant estimates every time. ElectricPros AI knows the requirements and calculates accordingly.", category: "trade-electrical" },
+  { content: "Panel upgrade quotes in minutes, not hours. ElectricPros AI analyzes photos and generates professional proposals.", category: "trade-electrical" },
+  { content: "Smart tools for smart electricians. ElectricPros.io - AI-powered estimates coming soon. #ElectricalContractor", category: "trade-electrical" },
+
+  // Trade Vertical - Plumbing (7)
+  { content: "PlumbPros.io launching soon - AI-powered estimates for plumbing contractors. Fixtures, piping, water heaters.", category: "trade-plumbing" },
+  { content: "Plumbing contractors: Get instant material lists and labor calculations with AI. Coming to plumbpros.io", category: "trade-plumbing" },
+  { content: "From faucet installation to whole-house repiping - PlumbPros AI handles the math, you focus on the work.", category: "trade-plumbing" },
+  { content: "Residential and commercial plumbing estimates powered by smart technology. PlumbPros.io coming 2025.", category: "trade-plumbing" },
+  { content: "Water heater replacement quotes in minutes. PlumbPros AI calculates sizing, materials, and labor accurately.", category: "trade-plumbing" },
+  { content: "Stop underestimating plumbing jobs. PlumbPros AI ensures accurate pricing every time. #PlumbingBusiness", category: "trade-plumbing" },
+  { content: "The plumbing industry is going digital. PlumbPros.io - AI estimates for professional plumbers.", category: "trade-plumbing" },
+
+  // Trade Vertical - Landscaping (7)
+  { content: "LandscapePros.io is coming - AI-powered estimates for landscaping contractors. Lawns, hardscape, irrigation.", category: "trade-landscaping" },
+  { content: "Landscaping contractors: Calculate material quantities and labor hours with AI. Coming to landscapepros.io", category: "trade-landscaping" },
+  { content: "From lawn installation to complete outdoor living spaces - LandscapePros AI generates professional estimates.", category: "trade-landscaping" },
+  { content: "Residential and commercial landscaping estimates powered by smart technology. LandscapePros.io launching 2025.", category: "trade-landscaping" },
+  { content: "Measure properties from aerial photos. LandscapePros AI calculates square footage and material needs instantly.", category: "trade-landscaping" },
+  { content: "Paver patios, retaining walls, planting beds - accurate estimates for every landscaping project. #LandscapingBusiness", category: "trade-landscaping" },
+  { content: "Smart landscaping starts with smart estimates. LandscapePros.io - AI-powered tools for pros.", category: "trade-landscaping" },
+
+  // Trade Vertical - General Contracting (7)
+  { content: "BuildPros.io launching soon - AI-powered estimates for general contractors. Remodels, additions, renovations.", category: "trade-general" },
+  { content: "General contractors: Get comprehensive project estimates with AI analysis. Coming to buildpros.io", category: "trade-general" },
+  { content: "From kitchen remodels to room additions - BuildPros AI calculates materials, trades, and timelines.", category: "trade-general" },
+  { content: "Residential and commercial construction estimates powered by smart technology. BuildPros.io coming 2025.", category: "trade-general" },
+  { content: "Coordinate multiple trades with AI-powered scheduling and cost estimation. BuildPros.io for general contractors.", category: "trade-general" },
+  { content: "Stop losing money on underestimated projects. BuildPros AI ensures accurate pricing from day one.", category: "trade-general" },
+  { content: "The GC industry needs better tools. We're building them. BuildPros.io - smarter estimates for smarter contractors.", category: "trade-general" }
 ];
 
 export async function seedMarketingPosts() {
