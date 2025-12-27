@@ -2361,3 +2361,75 @@ export const insertLaborEstimateSchema = createInsertSchema(laborEstimates).omit
 
 export type InsertLaborEstimate = z.infer<typeof insertLaborEstimateSchema>;
 export type LaborEstimate = typeof laborEstimates.$inferSelect;
+
+
+// ============================================
+// MARKETING AUTO-DEPLOY SYSTEM
+// ============================================
+
+// Marketing Posts - Content for social media rotation
+export const marketingPosts = pgTable("marketing_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  content: text("content").notNull(),
+  category: text("category").notNull().default("general"), // general, promo, tips, testimonial
+  imageUrl: text("image_url"),
+  usageCount: integer("usage_count").default(0).notNull(),
+  lastUsedAt: timestamp("last_used_at"),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_posts_category").on(table.category),
+  index("idx_marketing_posts_active").on(table.isActive),
+]);
+
+export const insertMarketingPostSchema = createInsertSchema(marketingPosts).omit({
+  id: true,
+  usageCount: true,
+  lastUsedAt: true,
+  createdAt: true,
+});
+
+export type InsertMarketingPost = z.infer<typeof insertMarketingPostSchema>;
+export type MarketingPost = typeof marketingPosts.$inferSelect;
+
+// Marketing Schedule Configs - Per-platform posting schedules
+export const marketingScheduleConfigs = pgTable("marketing_schedule_configs", {
+  platform: text("platform").primaryKey(), // twitter, discord, telegram, facebook
+  intervalMinutes: integer("interval_minutes").default(240).notNull(),
+  lastDeployedAt: timestamp("last_deployed_at"),
+  isActive: boolean("is_active").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertMarketingScheduleConfigSchema = createInsertSchema(marketingScheduleConfigs).omit({
+  lastDeployedAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertMarketingScheduleConfig = z.infer<typeof insertMarketingScheduleConfigSchema>;
+export type MarketingScheduleConfig = typeof marketingScheduleConfigs.$inferSelect;
+
+// Marketing Deploys - History of all deployments
+export const marketingDeploys = pgTable("marketing_deploys", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  postId: varchar("post_id").references(() => marketingPosts.id),
+  platform: text("platform").notNull(), // twitter, discord, telegram, facebook
+  status: text("status").notNull().default("pending"), // pending, success, failed
+  externalId: text("external_id"), // Platform-specific post ID
+  errorMessage: text("error_message"),
+  deployedAt: timestamp("deployed_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_deploys_platform").on(table.platform),
+  index("idx_marketing_deploys_status").on(table.status),
+  index("idx_marketing_deploys_deployed_at").on(table.deployedAt),
+]);
+
+export const insertMarketingDeploySchema = createInsertSchema(marketingDeploys).omit({
+  id: true,
+  deployedAt: true,
+});
+
+export type InsertMarketingDeploy = z.infer<typeof insertMarketingDeploySchema>;
+export type MarketingDeploy = typeof marketingDeploys.$inferSelect;
