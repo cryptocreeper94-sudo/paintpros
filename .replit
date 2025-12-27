@@ -51,7 +51,7 @@ CONTACT_EMAIL = "cryptocreeper94@gmail.com"
 VAPID_PUBLIC_KEY = "BDZaak-efN4_Ra-s9wNRAXZotXWi61WFtFYBRrqOBAXw4_apIWTKk8rMEtw8rrqzQGeoCYkvVQw4ibb0lLOjNJE"
 VAPID_PRIVATE_KEY = "R6paziBx3x0ju8YJZAEZje3UvuNarol3C0-8unnMJNk"
 ORBIT_FINANCIAL_HUB_URL = "https://orbit-staffing-os.replit.app"
-ORBIT_FINANCIAL_HUB_KEY = "dw_app_orbit"
+ORBIT_FINANCIAL_HUB_KEY = "dw_app_paintpros"
 
 [userenv.development]
 VITE_TENANT_ID = "npp"

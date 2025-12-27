@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 
 const HUB_URL = process.env.ORBIT_FINANCIAL_HUB_URL;
-const API_KEY = process.env.ORBIT_FINANCIAL_HUB_KEY;
-const API_SECRET = process.env.ORBIT_FINANCIAL_HUB_SECRET;
+const API_KEY = process.env.ORBIT_FINANCIAL_HUB_KEY || 'dw_app_paintpros';
+const API_SECRET = process.env.PAINTPROS_WEBHOOK_SECRET;
 
 function generateSignature(payload: object): string {
   const body = JSON.stringify(payload);
