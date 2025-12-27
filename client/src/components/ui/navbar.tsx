@@ -61,35 +61,30 @@ export function Navbar() {
         
         {/* Center: Title - only show for demo tenant */}
         {tenant.id === "demo" && (
-          <div 
-            className="absolute left-0 flex justify-center pointer-events-none"
-            style={{ right: '90px' }}
-          >
-            <div className="flex flex-col items-start pointer-events-auto" style={{ marginLeft: '50px' }}>
-              <div 
-                className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
-                style={{ 
-                  fontFamily: 'Orbitron, Rajdhani, sans-serif', 
-                  fontWeight: 500, 
-                  letterSpacing: '0.05em',
-                  backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
-                }}
-                data-testid="text-header-title"
-              >
-                PaintPros.io
-              </div>
-              <div 
-                className="text-xs md:text-sm lg:text-base xl:text-lg whitespace-nowrap bg-clip-text text-transparent"
-                style={{ 
-                  fontFamily: 'Rajdhani, sans-serif', 
-                  fontWeight: 400, 
-                  letterSpacing: '0.02em',
-                  backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
-                }}
-                data-testid="text-header-tagline"
-              >
-                White-Label Websites for Painting Contractors
-              </div>
+          <div className="flex flex-col items-start ml-4 md:ml-8 min-w-0 flex-shrink">
+            <div 
+              className="text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
+              style={{ 
+                fontFamily: 'Orbitron, Rajdhani, sans-serif', 
+                fontWeight: 500, 
+                letterSpacing: '0.05em',
+                backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
+              }}
+              data-testid="text-header-title"
+            >
+              PaintPros.io
+            </div>
+            <div 
+              className="hidden sm:block text-xs md:text-sm lg:text-base xl:text-lg whitespace-nowrap bg-clip-text text-transparent"
+              style={{ 
+                fontFamily: 'Rajdhani, sans-serif', 
+                fontWeight: 400, 
+                letterSpacing: '0.02em',
+                backgroundImage: 'linear-gradient(to right, #7A5C45, #A89070, #F5F5DC, #A89070, #7A5C45)'
+              }}
+              data-testid="text-header-tagline"
+            >
+              White-Label Websites for Painting Contractors
             </div>
           </div>
         )}
