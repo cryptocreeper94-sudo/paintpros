@@ -10,7 +10,7 @@ import { DollarSign, TrendingUp, Calendar, Clock, Shield, ArrowRight, Wallet, Pi
 
 type PaymentFrequency = "instant" | "weekly" | "biweekly" | "monthly";
 
-const CURRENT_UPDATE_VERSION = "2025.01.27";
+const CURRENT_UPDATE_VERSION = "2024.12.27-v2";
 
 export default function PartnerDashboard() {
   const [paymentFrequency, setPaymentFrequency] = useState<PaymentFrequency>("biweekly");
@@ -355,25 +355,29 @@ export default function PartnerDashboard() {
 
       {/* Platform Update Modal for Sidonie */}
       <Dialog open={showUpdateModal} onOpenChange={(open) => { if (!open) dismissUpdateModal(); }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <Sparkles className="w-6 h-6 text-purple-500" />
-              Platform Updates - December 2024
+              Hey Sid!
             </DialogTitle>
             <DialogDescription className="text-base">
-              Hey Sidonie! Here's what's new across the platform.
+              Quick update on the latest publish.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            <p className="text-base text-gray-700">
+              This is the newest publish - we got the email working, so give it a shot!
+            </p>
+            
             <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 border border-purple-200">
               <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
                 <Smartphone className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="font-semibold text-purple-900">Mobile-First Estimator Rewrite</p>
-                <p className="text-sm text-purple-700">Complete 5-step wizard optimized for mobile use. Customers can now get instant quotes from their phones while taking room photos.</p>
+                <p className="font-semibold text-purple-900">Try Rollie Again</p>
+                <p className="text-sm text-purple-700">New voice system - sounds way better now, not like a creepy robot anymore.</p>
               </div>
             </div>
             
@@ -382,43 +386,21 @@ export default function PartnerDashboard() {
                 <Mail className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="font-semibold text-blue-900">Professional Email Proposals</p>
-                <p className="text-sm text-blue-700">Customers now receive beautifully formatted estimate proposals via email, with a copy sent to the service team.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-                <Palette className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="font-semibold text-green-900">Color Selection Integration</p>
-                <p className="text-sm text-green-700">Customers can pick colors from our curated library right in the estimator. NPP shows only professional brands (Sherwin-Williams, Benjamin Moore).</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                <Camera className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="font-semibold text-amber-900">AI Room Scanner (Demo Limited)</p>
-                <p className="text-sm text-amber-700">Demo users get 1 free use of AI room scanning. After that, it locks - creating an upgrade incentive.</p>
+                <p className="font-semibold text-blue-900">Emails Working</p>
+                <p className="text-sm text-blue-700">Estimates now send from nashpaintpros.io with a clean new design.</p>
               </div>
             </div>
           </div>
           
-          <div className="p-3 rounded-lg bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200">
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-purple-600" />
-              <p className="text-sm font-medium text-purple-900">Version stamped on both Solana & Darkwave</p>
-            </div>
+          <div className="p-4 rounded-lg bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200">
+            <p className="text-sm font-medium text-purple-900 mb-1">Give me a call after you see this</p>
+            <p className="text-xs text-purple-700">The AI agent can fill you in on all the details. Talk soon!</p>
           </div>
           
           <DialogFooter>
             <Button onClick={dismissUpdateModal} className="w-full" data-testid="button-dismiss-update">
               <CheckCircle className="w-4 h-4 mr-2" />
-              Got it, thanks!
+              Got It
             </Button>
           </DialogFooter>
         </DialogContent>

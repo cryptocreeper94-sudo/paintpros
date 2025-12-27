@@ -39,7 +39,6 @@ import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
-import { OwnerAnnouncementModal } from "@/components/owner-announcement-modal";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -270,7 +269,6 @@ export default function Owner() {
 
   return (
     <PageLayout>
-      <OwnerAnnouncementModal />
       <main className="pt-20 px-4 md:px-6 pb-24">
         {isDemo && (
           <motion.div 
