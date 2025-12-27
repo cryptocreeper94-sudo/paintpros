@@ -270,6 +270,7 @@ export default function Owner() {
 
   return (
     <PageLayout>
+      <OwnerAnnouncementModal />
       <main className="pt-20 px-4 md:px-6 pb-24">
         {isDemo && (
           <motion.div 
