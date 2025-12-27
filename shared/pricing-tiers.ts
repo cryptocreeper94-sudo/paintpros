@@ -44,6 +44,7 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       '25 estimates per month',
       'Basic AI Room Scanner',
+      'Rollie AI Voice Assistant',
       'Professional proposals',
       'Email support',
       'Mobile-friendly',
@@ -77,6 +78,7 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       'Unlimited estimates',
       'Full AI Scanner with calibration',
+      'Rollie AI Voice Assistant',
       'Wall surface area calculation',
       'CRM & lead tracking',
       'Up to 5 team members',
@@ -112,6 +114,7 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       'Everything in Professional',
       'Multi-Room Scanner (Priority)',
+      'Rollie AI Voice Assistant',
       'Online booking system',
       'Crew management & scheduling',
       'Up to 15 team members',
@@ -147,6 +150,7 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       'Everything in Business',
       'Unlimited team members',
+      'Rollie AI Voice Assistant',
       'White-label branding',
       'API access',
       'Unlimited blockchain stamps',
