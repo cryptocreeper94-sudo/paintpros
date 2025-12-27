@@ -140,17 +140,17 @@ export function Footer() {
           onClick={() => setShowModal(false)}
         >
           <div 
-            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-5 max-w-sm w-full shadow-2xl max-h-full overflow-y-auto"
+            className="bg-white border border-amber-200 rounded-2xl p-5 max-w-sm w-full shadow-2xl max-h-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-400" />
-                <h3 className="text-lg font-semibold text-white">Solana Verified Platform</h3>
+                <Shield className="w-5 h-5 text-amber-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Solana Verified Platform</h3>
               </div>
               <button 
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
                 data-testid="button-close-hallmark-modal"
               >
                 <X className="w-5 h-5" />
@@ -159,10 +159,10 @@ export function Footer() {
             
             <div className="space-y-4">
               {/* First in Industry Badge */}
-              <div className="bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20 border border-[#14F195]/30 rounded-lg p-3 text-center">
-                <span className="text-[10px] font-bold text-[#14F195] uppercase tracking-wider">Industry First</span>
-                <p className="text-sm font-semibold text-white mt-0.5">
-                  First Solana-Verified <span className="text-[#14F195]">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span>
+              <div className="bg-gradient-to-r from-purple-100 to-emerald-100 border border-emerald-300 rounded-lg p-3 text-center">
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Industry First</span>
+                <p className="text-sm font-semibold text-gray-900 mt-0.5">
+                  First Solana-Verified <span className="text-emerald-600">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span>
                 </p>
               </div>
               {/* QR Code */}
@@ -178,25 +178,25 @@ export function Footer() {
               {/* Hallmark Info */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Hallmark ID:</span>
-                  <span className="font-mono text-amber-400">{displayHallmark}</span>
+                  <span className="text-gray-500">Hallmark ID:</span>
+                  <span className="font-mono text-amber-600">{displayHallmark}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Version:</span>
-                  <span className="font-mono text-white">v{version}</span>
+                  <span className="text-gray-500">Version:</span>
+                  <span className="font-mono text-gray-900">v{version}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Build:</span>
-                  <span className="font-mono text-white">#{buildNumber}</span>
+                  <span className="text-gray-500">Build:</span>
+                  <span className="font-mono text-gray-900">#{buildNumber}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Status:</span>
+                  <span className="text-gray-500">Status:</span>
                   <span className={`font-medium ${
                     releaseInfo?.solanaTxStatus === 'confirmed' 
-                      ? 'text-green-400' 
+                      ? 'text-green-600' 
                       : releaseInfo?.solanaTxStatus === 'genesis'
-                        ? 'text-amber-400'
-                        : 'text-gray-400'
+                        ? 'text-amber-600'
+                        : 'text-gray-500'
                   }`}>
                     {releaseInfo?.solanaTxStatus === 'confirmed' 
                       ? '✓ Blockchain Verified' 
