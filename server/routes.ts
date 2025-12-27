@@ -20,7 +20,9 @@ import {
   insertConversationSchema, insertMessageSchema, insertConversationParticipantSchema,
   insertBookingSchema,
   users as usersTable,
-  type Lead, type Estimate, type SeoPage, type InsertSeoPage
+  projectTemplates, projectPhotos, blueprintUploads, materialBreakdowns, laborEstimates,
+  insertProjectTemplateSchema, insertProjectPhotoSchema, insertBlueprintUploadSchema,
+  type Lead, type Estimate, type SeoPage, type InsertSeoPage, type ProjectTemplate
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -7259,6 +7261,252 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error checking financial hub status:", error);
       res.status(500).json({ error: "Failed to check financial hub status" });
+    }
+  });
+
+  // ============ PROJECT TEMPLATES API ============
+  
+  // Get all project templates for a tenant
+  app.get("/api/project-templates", async (req, res) => {
+    try {
+      const tenantId = req.query.tenantId as string || "demo";
+      const templates = await db
+        .select()
+        .from(projectTemplates)
+        .where(eq(projectTemplates.tenantId, tenantId))
+        .orderBy(desc(projectTemplates.useCount));
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching project templates:", error);
+      res.status(500).json({ error: "Failed to fetch templates" });
+    }
+  });
+
+  // Create a new project template
+  app.post("/api/project-templates", async (req, res) => {
+    try {
+      const parsed = insertProjectTemplateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: parsed.error.message });
+      }
+      
+      const [template] = await db
+        .insert(projectTemplates)
+        .values(parsed.data)
+        .returning();
+      
+      res.json(template);
+    } catch (error) {
+      console.error("Error creating project template:", error);
+      res.status(500).json({ error: "Failed to create template" });
+    }
+  });
+
+  // Update a project template
+  app.patch("/api/project-templates/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const [updated] = await db
+        .update(projectTemplates)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(eq(projectTemplates.id, id))
+        .returning();
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Template not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating project template:", error);
+      res.status(500).json({ error: "Failed to update template" });
+    }
+  });
+
+  // Delete a project template
+  app.delete("/api/project-templates/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await db.delete(projectTemplates).where(eq(projectTemplates.id, id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting project template:", error);
+      res.status(500).json({ error: "Failed to delete template" });
+    }
+  });
+
+  // Increment template use count
+  app.post("/api/project-templates/:id/use", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const [template] = await db
+        .select()
+        .from(projectTemplates)
+        .where(eq(projectTemplates.id, id));
+      
+      if (!template) {
+        return res.status(404).json({ error: "Template not found" });
+      }
+      
+      const [updated] = await db
+        .update(projectTemplates)
+        .set({ 
+          useCount: (template.useCount || 0) + 1,
+          lastUsedAt: new Date()
+        })
+        .where(eq(projectTemplates.id, id))
+        .returning();
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating template use count:", error);
+      res.status(500).json({ error: "Failed to update template" });
+    }
+  });
+
+  // ============ PROJECT PHOTOS API ============
+  
+  // Get project photos (before/after gallery)
+  app.get("/api/project-photos", async (req, res) => {
+    try {
+      const tenantId = req.query.tenantId as string || "demo";
+      const isPublic = req.query.public === "true";
+      
+      let query = db.select().from(projectPhotos).where(eq(projectPhotos.tenantId, tenantId));
+      
+      if (isPublic) {
+        query = db.select().from(projectPhotos).where(
+          and(
+            eq(projectPhotos.tenantId, tenantId),
+            eq(projectPhotos.isPublic, true)
+          )
+        );
+      }
+      
+      const photos = await query;
+      res.json(photos);
+    } catch (error) {
+      console.error("Error fetching project photos:", error);
+      res.status(500).json({ error: "Failed to fetch photos" });
+    }
+  });
+
+  // Upload project photo
+  app.post("/api/project-photos", async (req, res) => {
+    try {
+      const parsed = insertProjectPhotoSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: parsed.error.message });
+      }
+      
+      const [photo] = await db
+        .insert(projectPhotos)
+        .values(parsed.data)
+        .returning();
+      
+      res.json(photo);
+    } catch (error) {
+      console.error("Error uploading project photo:", error);
+      res.status(500).json({ error: "Failed to upload photo" });
+    }
+  });
+
+  // Delete project photo
+  app.delete("/api/project-photos/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await db.delete(projectPhotos).where(eq(projectPhotos.id, id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting project photo:", error);
+      res.status(500).json({ error: "Failed to delete photo" });
+    }
+  });
+
+  // ============ BLUEPRINT EXTRACTION API ============
+  
+  // Extract dimensions from blueprint using AI
+  app.post("/api/blueprints/extract", async (req, res) => {
+    try {
+      // For now, return mock data - actual OpenAI Vision integration would go here
+      // In production, this would:
+      // 1. Accept file upload via multipart form
+      // 2. Send image to OpenAI Vision API
+      // 3. Parse room dimensions from response
+      // 4. Store results in blueprintUploads table
+      
+      const mockExtractedData = {
+        rooms: [
+          { name: "Living Room", width: 18, length: 22, height: 9, squareFootage: 396, wallArea: 720 },
+          { name: "Master Bedroom", width: 14, length: 16, height: 9, squareFootage: 224, wallArea: 540 },
+          { name: "Bedroom 2", width: 12, length: 12, height: 9, squareFootage: 144, wallArea: 432 },
+          { name: "Bedroom 3", width: 10, length: 12, height: 9, squareFootage: 120, wallArea: 396 },
+          { name: "Kitchen", width: 12, length: 14, height: 9, squareFootage: 168, wallArea: 468 },
+          { name: "Dining Room", width: 10, length: 12, height: 9, squareFootage: 120, wallArea: 396 },
+          { name: "Bathroom 1", width: 8, length: 10, height: 9, squareFootage: 80, wallArea: 324 },
+          { name: "Bathroom 2", width: 6, length: 8, height: 9, squareFootage: 48, wallArea: 252 },
+        ],
+        totalSquareFootage: 1300,
+        totalWallArea: 3528,
+        roomCount: 8,
+        notes: [
+          "Dimensions extracted from floor plan image",
+          "Standard 9ft ceiling height assumed",
+          "Window/door deductions not included - adjust as needed"
+        ]
+      };
+
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      res.json({
+        success: true,
+        extractedData: mockExtractedData
+      });
+    } catch (error) {
+      console.error("Error extracting blueprint:", error);
+      res.status(500).json({ error: "Failed to extract dimensions" });
+    }
+  });
+
+  // Save blueprint upload record
+  app.post("/api/blueprints", async (req, res) => {
+    try {
+      const parsed = insertBlueprintUploadSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: parsed.error.message });
+      }
+      
+      const [blueprint] = await db
+        .insert(blueprintUploads)
+        .values(parsed.data)
+        .returning();
+      
+      res.json(blueprint);
+    } catch (error) {
+      console.error("Error saving blueprint:", error);
+      res.status(500).json({ error: "Failed to save blueprint" });
+    }
+  });
+
+  // Get blueprints for an estimate
+  app.get("/api/blueprints", async (req, res) => {
+    try {
+      const estimateId = req.query.estimateId as string;
+      const tenantId = req.query.tenantId as string || "demo";
+      
+      let query;
+      if (estimateId) {
+        query = db.select().from(blueprintUploads).where(eq(blueprintUploads.estimateId, estimateId));
+      } else {
+        query = db.select().from(blueprintUploads).where(eq(blueprintUploads.tenantId, tenantId));
+      }
+      
+      const blueprints = await query;
+      res.json(blueprints);
+    } catch (error) {
+      console.error("Error fetching blueprints:", error);
+      res.status(500).json({ error: "Failed to fetch blueprints" });
     }
   });
 
