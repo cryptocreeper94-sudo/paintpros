@@ -318,7 +318,7 @@ export function PaintBuddy() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center px-4 py-4"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-start px-4 pt-16 pb-4"
             onClick={handleClose}
             data-testid="panel-paint-buddy-overlay"
           >
