@@ -7,9 +7,11 @@ import { Camera, Lock, X, Upload, AlertTriangle, Loader2, CheckCircle, Sparkles,
 
 interface ScanResult {
   estimatedSquareFootage: number;
+  wallSurfaceSqft?: number;
   confidence: number;
   reasoning: string;
   roomType: string;
+  referenceObjectsUsed?: string[];
 }
 
 interface RoomScannerProps {
@@ -135,9 +137,11 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
       const result = await response.json();
       setScanResult({
         estimatedSquareFootage: result.estimatedSquareFootage,
+        wallSurfaceSqft: result.wallSurfaceSqft,
         confidence: result.confidence,
         reasoning: result.reasoning,
         roomType: result.roomType,
+        referenceObjectsUsed: result.referenceObjectsUsed,
       });
     } catch (error: any) {
       console.error("Room scan error:", error);
@@ -303,7 +307,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                         <p className="font-medium text-green-400 mb-2 text-sm sm:text-base">Scan Complete!</p>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
                           <div>
-                            <p className="text-muted-foreground text-xs sm:text-sm">Estimated Sq Ft</p>
+                            <p className="text-muted-foreground text-xs sm:text-sm">Floor Sq Ft</p>
                             <p className="text-xl sm:text-2xl font-bold text-foreground">
                               {Math.round(scanResult.estimatedSquareFootage)}
                             </p>
@@ -314,7 +318,25 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                               {scanResult.confidence}%
                             </p>
                           </div>
+                          {scanResult.wallSurfaceSqft && (
+                            <div className="col-span-2">
+                              <p className="text-muted-foreground text-xs sm:text-sm">Wall Surface Area</p>
+                              <p className="text-lg font-bold text-foreground">
+                                ~{Math.round(scanResult.wallSurfaceSqft)} sq ft
+                              </p>
+                            </div>
+                          )}
                         </div>
+                        {scanResult.referenceObjectsUsed && scanResult.referenceObjectsUsed.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            <span className="text-[10px] text-muted-foreground">Calibrated with:</span>
+                            {scanResult.referenceObjectsUsed.map((obj, i) => (
+                              <span key={i} className="text-[10px] bg-accent/20 text-accent px-1.5 py-0.5 rounded">
+                                {obj}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         {scanResult.reasoning && (
                           <p className="text-[11px] sm:text-xs text-muted-foreground mt-2 sm:mt-3 italic leading-relaxed">
                             "{scanResult.reasoning}"

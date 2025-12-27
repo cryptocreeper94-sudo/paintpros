@@ -2907,12 +2907,14 @@ Do not include any text before or after the JSON.`
         res.json({
           id: scan.id,
           estimatedSquareFootage: parsed.square_footage,
+          wallSurfaceSqft: parsed.wall_surface_sqft,
           estimatedLength: parsed.length_ft,
           estimatedWidth: parsed.width_ft,
           estimatedHeight: parsed.height_ft,
           confidence: parsed.confidence,
           roomType: parsed.room_type_detected || roomType,
           reasoning: parsed.reasoning,
+          referenceObjectsUsed: parsed.reference_objects_used || [],
           status: "completed"
         });
         
