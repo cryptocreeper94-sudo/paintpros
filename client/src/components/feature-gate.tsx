@@ -54,7 +54,7 @@ export function FeatureGate({
         <Link href="/estimator-pricing">
           <Button size="sm" variant="outline" className="gap-1">
             <Sparkles className="w-3 h-3" />
-            View Plans
+            Learn More
           </Button>
         </Link>
       </CardContent>
@@ -88,7 +88,7 @@ export function FeatureLockedOverlay({ feature, children }: FeatureLockedOverlay
           <Link href="/estimator-pricing">
             <Button size="sm" className="gap-1">
               <Sparkles className="w-3 h-3" />
-              Upgrade
+              See Options
             </Button>
           </Link>
         </div>

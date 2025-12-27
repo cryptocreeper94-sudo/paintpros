@@ -12,7 +12,9 @@ import {
 
 export function useFeatureGate() {
   const tenant = useTenant();
-  const subscriptionTier: string = tenant?.id === 'npp' ? 'enterprise' : 'starter';
+  // NPP beta tenant uses starter tier - premium features visible but locked with friendly messaging
+  // Other tenants default to starter until they upgrade
+  const subscriptionTier: string = 'starter';
 
   const checkFeature = (
     feature: FeatureKey, 

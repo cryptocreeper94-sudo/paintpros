@@ -22,7 +22,7 @@ export function checkFeatureAccess(
     return {
       allowed: false,
       tierRequired: 'starter',
-      upgradeMessage: 'Subscribe to access this feature'
+      upgradeMessage: 'Available with full platform implementation'
     };
   }
 
@@ -31,7 +31,7 @@ export function checkFeatureAccess(
     return {
       allowed: false,
       tierRequired: 'starter',
-      upgradeMessage: 'Invalid subscription tier'
+      upgradeMessage: 'Available with full platform implementation'
     };
   }
 
@@ -48,7 +48,7 @@ export function checkFeatureAccess(
         allowed: false,
         level: value as AIScannerLevel,
         tierRequired: requiredTier?.id,
-        upgradeMessage: `Upgrade to ${requiredTier?.name || 'a higher plan'} for ${requiredLevel} AI Scanner`
+        upgradeMessage: `${requiredLevel} AI Scanner available with ${requiredTier?.name || 'expanded'} implementation`
       };
     }
     return { allowed: true, level: value as AIScannerLevel };
@@ -60,7 +60,7 @@ export function checkFeatureAccess(
       return {
         allowed: false,
         tierRequired: requiredTier?.id,
-        upgradeMessage: `Upgrade to ${requiredTier?.name || 'a higher plan'} to unlock this feature`
+        upgradeMessage: `Available with ${requiredTier?.name || 'full'} platform implementation`
       };
     }
     return { allowed: true };
@@ -73,7 +73,7 @@ export function checkFeatureAccess(
         allowed: false,
         limit: 0,
         tierRequired: requiredTier?.id,
-        upgradeMessage: `Upgrade to ${requiredTier?.name || 'a higher plan'} to unlock this feature`
+        upgradeMessage: `Available with ${requiredTier?.name || 'full'} platform implementation`
       };
     }
     
@@ -83,7 +83,7 @@ export function checkFeatureAccess(
         allowed: false,
         limit: value,
         tierRequired: nextTier?.id,
-        upgradeMessage: `You've reached your ${value} ${feature} limit. Upgrade for more.`
+        upgradeMessage: `Monthly limit reached. Additional capacity available with expanded implementation.`
       };
     }
     
