@@ -103,7 +103,7 @@ export default function EstimatorApp() {
     {
       icon: Calculator,
       title: 'Instant Estimates',
-      description: 'Good, Better, Best pricing packages generated in seconds'
+      description: 'Professional pricing estimates generated in seconds'
     },
     {
       icon: Sparkles,

@@ -37,31 +37,7 @@ interface SelectedColor {
   surface: 'walls' | 'trim' | 'ceilings' | 'doors' | 'cabinets';
 }
 
-type PricingTierLevel = "good" | "better" | "best";
-
-const pricingTierOptions = {
-  good: {
-    name: "Good",
-    description: "Quality work at an affordable price",
-    multiplier: 1.0,
-    features: ["Standard paint quality", "1-year warranty", "Basic prep work"],
-    badge: null,
-  },
-  better: {
-    name: "Better",
-    description: "Premium finish with enhanced durability",
-    multiplier: 1.20,
-    features: ["Premium paint brands", "3-year warranty", "Thorough prep & priming", "Touch-up kit included"],
-    badge: "Most Popular",
-  },
-  best: {
-    name: "Best",
-    description: "Top-tier luxury finish with full protection",
-    multiplier: 1.40,
-    features: ["Luxury paint brands", "5-year warranty", "Complete surface repair", "Custom color matching", "Deep cleaning included", "Priority scheduling"],
-    badge: "Premium",
-  },
-};
+// Static pricing - no Good/Better/Best packages
 
 export default function Estimate() {
   const tenant = useTenant();
@@ -113,7 +89,6 @@ export default function Estimate() {
   const [showScannerModal, setShowScannerModal] = useState(false);
 
   // Step 5: Review & Submit
-  const [selectedPricingTier, setSelectedPricingTier] = useState<PricingTierLevel>("better");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -257,12 +232,10 @@ export default function Estimate() {
       ? (cabinetDoors * PRICING.cabinetDoorsPerUnit) + (cabinetDrawers * PRICING.cabinetDrawersPerUnit)
       : 0;
 
-    const baseTotal = surfaceTotal + doorsTotal + cabinetsTotal;
-    const tierMultiplier = pricingTierOptions[selectedPricingTier].multiplier;
-    const total = baseTotal * tierMultiplier;
+    const total = surfaceTotal + doorsTotal + cabinetsTotal;
 
-    return { baseTotal, total, tierMultiplier };
-  }, [jobSelections, squareFootage, doorCount, cabinetDoors, cabinetDrawers, selectedPricingTier, PRICING]);
+    return { total };
+  }, [jobSelections, squareFootage, doorCount, cabinetDoors, cabinetDrawers, PRICING]);
 
   // Validation
   const isStep1Valid = firstName.trim() && lastName.trim() && email.includes('@') && email.includes('.');
@@ -322,8 +295,8 @@ export default function Estimate() {
             caption: p.caption
           })),
           pricing: {
-            tier: selectedPricingTier,
-            tierName: pricingTierOptions[selectedPricingTier].name,
+            tier: "standard",
+            tierName: "Standard",
             total: estimate.total
           }
         }),
@@ -376,9 +349,6 @@ export default function Estimate() {
                   <p className="text-lg font-semibold">Your Estimate Total</p>
                   <p className="text-4xl font-display font-bold text-accent mt-2">
                     ${estimate.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {pricingTierOptions[selectedPricingTier].name} Package
                   </p>
                 </div>
                 <Button onClick={() => window.location.href = "/"} variant="outline" data-testid="button-return-home">
@@ -913,75 +883,6 @@ export default function Estimate() {
                       </div>
                     )}
 
-                    {/* Package Selection */}
-                    <div className="p-4 rounded-xl bg-muted/10 border border-border">
-                      <h3 className="font-semibold mb-4 flex items-center gap-2">
-                        <Award className="w-4 h-4 text-accent" />
-                        Choose Your Package
-                      </h3>
-                      <div className="grid grid-cols-3 gap-3">
-                        {(["good", "better", "best"] as const).map((tier) => {
-                          const tierData = pricingTierOptions[tier];
-                          const isSelected = selectedPricingTier === tier;
-                          const tierTotal = estimate.baseTotal * tierData.multiplier;
-                          
-                          return (
-                            <motion.button
-                              key={tier}
-                              onClick={() => setSelectedPricingTier(tier)}
-                              className={`relative p-4 rounded-xl text-center transition-all border-2 ${
-                                isSelected 
-                                  ? 'border-accent bg-accent/10 shadow-lg' 
-                                  : 'border-border hover:border-accent/50'
-                              }`}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              data-testid={`button-tier-${tier}`}
-                            >
-                              {tierData.badge && (
-                                <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                  tier === "better" ? "bg-accent text-white" : "bg-gradient-to-r from-amber-500 to-yellow-400 text-black"
-                                }`}>
-                                  {tierData.badge}
-                                </div>
-                              )}
-                              
-                              <div className="flex items-center justify-center gap-1 mb-2">
-                                {tier === "good" && <Star className="w-4 h-4 text-muted-foreground" />}
-                                {tier === "better" && <Star className="w-4 h-4 text-accent" />}
-                                {tier === "best" && <Crown className="w-4 h-4 text-amber-400" />}
-                              </div>
-                              
-                              <span className="text-sm font-bold block">{tierData.name}</span>
-                              <span className="text-lg font-bold text-accent block mt-1">
-                                ${tierTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                              </span>
-                              
-                              {isSelected && (
-                                <motion.div 
-                                  className="absolute top-2 right-2"
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                >
-                                  <Check className="w-4 h-4 text-accent" />
-                                </motion.div>
-                              )}
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-                      
-                      <div className="mt-4 p-3 rounded-lg bg-white/50">
-                        <p className="text-xs text-muted-foreground mb-2">{pricingTierOptions[selectedPricingTier].description}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {pricingTierOptions[selectedPricingTier].features.map((feature, i) => (
-                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">
-                              {feature}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
 
                     {/* Total */}
                     <div className="p-6 rounded-xl bg-gradient-to-r from-accent/10 to-accent/5 border-2 border-accent/30">
@@ -1044,7 +945,7 @@ export default function Estimate() {
                                   roomCount: Math.max(1, Math.ceil(squareFootage / 250)),
                                   ceilingHeight: 9,
                                   surfaceCondition: "good",
-                                  paintQuality: selectedPricingTier === "best" ? "ultra_premium" : selectedPricingTier === "better" ? "premium" : "standard"
+                                  paintQuality: "premium"
                                 }}
                                 showPricing={true}
                                 showLabor={true}
