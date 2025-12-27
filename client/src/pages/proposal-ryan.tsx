@@ -399,7 +399,7 @@ export default function ProposalRyan() {
 
         <div className="text-center text-sm text-gray-500 mt-8 print:mt-4">
           <p>Questions? Let's talk. This is about building something together.</p>
-          <p className="mt-1">- Tyler</p>
+          <p className="mt-1">- Jason</p>
         </div>
       </div>
     </div>

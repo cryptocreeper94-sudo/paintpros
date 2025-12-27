@@ -212,7 +212,7 @@ The risk is real but manageable. The opportunity is significant and time-sensiti
 ---
 
 **Contact:**  
-Tyler [Last Name]  
+Jason [Last Name]  
 PaintPros.io by Orbit Ventures  
 [Email]  
 [Phone]
