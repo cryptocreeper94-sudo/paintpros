@@ -84,12 +84,15 @@ export class TwitterConnector {
       const base64Image = imageBuffer.toString('base64');
 
       const url = 'https://upload.twitter.com/1.1/media/upload.json';
+      
+      // For form-urlencoded requests, body params MUST be included in OAuth signature
+      const bodyParams = { media_data: base64Image };
       const body = `media_data=${encodeURIComponent(base64Image)}`;
 
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Authorization': this.getOAuthHeader('POST', url),
+          'Authorization': this.getOAuthHeader('POST', url, bodyParams),
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body,
