@@ -6,6 +6,7 @@ import { Resend } from 'resend';
 let connectionSettings: any;
 
 async function getCredentials() {
+  console.log("[Email] Getting Resend credentials...");
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -14,9 +15,11 @@ async function getCredentials() {
     : null;
 
   if (!xReplitToken) {
+    console.error("[Email] X_REPLIT_TOKEN not found");
     throw new Error('X_REPLIT_TOKEN not found for repl/depl');
   }
 
+  console.log("[Email] Fetching from connector hostname:", hostname);
   connectionSettings = await fetch(
     'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
     {
@@ -27,9 +30,11 @@ async function getCredentials() {
     }
   ).then(res => res.json()).then(data => data.items?.[0]);
 
-  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
+  if (!connectionSettings || (!connectionSettings.settings?.api_key)) {
+    console.error("[Email] Resend not connected - no API key in connection settings");
     throw new Error('Resend not connected');
   }
+  console.log("[Email] Credentials obtained successfully, fromEmail:", connectionSettings.settings.from_email);
   return {
     apiKey: connectionSettings.settings.api_key, 
     fromEmail: connectionSettings.settings.from_email
@@ -319,8 +324,10 @@ export interface EstimateProposalData {
 }
 
 export async function sendEstimateProposalEmail(data: EstimateProposalData): Promise<{ success: boolean; error?: string }> {
+  console.log("[Email] Attempting to send estimate proposal email to:", data.customer.email);
   try {
     const { client, fromEmail } = await getResendClient();
+    console.log("[Email] Resend client obtained, fromEmail:", fromEmail);
     const sender = fromEmail || `${data.tenantName} <onboarding@resend.dev>`;
 
     const servicesList = Object.entries(data.services)
