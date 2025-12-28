@@ -9,7 +9,9 @@ import { AccessProvider } from "@/context/AccessContext";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import HomeNPP from "@/pages/home-npp";
 import Services from "@/pages/services";
+import { useTenant } from "@/context/TenantContext";
 import Portfolio from "@/pages/portfolio";
 import About from "@/pages/about";
 import Reviews from "@/pages/reviews";
@@ -35,10 +37,15 @@ function AnalyticsTracker() {
   return null;
 }
 
+function TenantHome() {
+  const tenant = useTenant();
+  return tenant.id === "npp" ? <HomeNPP /> : <Home />;
+}
+
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={TenantHome} />
       <Route path="/services" component={Services} />
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/about" component={About} />
