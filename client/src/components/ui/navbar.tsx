@@ -37,60 +37,47 @@ export function Navbar() {
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-      <div className="flex items-center justify-between py-1 gap-1 overflow-hidden">
-        {/* Left: Hamburger Menu - offset left and up */}
+      <div className="grid grid-cols-[auto_1fr_auto] items-center py-2 px-2">
+        {/* Left: Hamburger Menu */}
         <button 
-          className={cn(
-            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[50px] md:-ml-[70px] -mt-[25px]",
-            tenant.id === "demo" ? "p-1" : "p-0"
-          )}
+          className="p-1 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center"
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={36} className="text-white" />
-          ) : tenant.id === "demo" ? (
-            <Menu size={36} className="text-white" />
+            <X size={28} className="text-white" />
           ) : (
             <img 
               src={nppEmblem} 
               alt="Menu"
-              className="h-14 md:h-16 w-auto object-contain"
+              className="h-10 md:h-12 w-auto object-contain"
             />
           )}
         </button>
         
-        {/* Center: Title - full text, smaller font on mobile */}
+        {/* Center: Title - truly centered with gradient */}
         <div 
-          className={cn(
-            "flex-1 text-center whitespace-nowrap -translate-x-[25px] md:-translate-x-[43px] px-1",
-            tenant.id === "demo" 
-              ? "text-white text-[14px] md:text-xl lg:text-2xl"
-              : "text-[14px] md:text-xl lg:text-2xl bg-clip-text text-transparent"
-          )}
+          className="text-center whitespace-nowrap text-[15px] md:text-xl lg:text-2xl bg-clip-text text-transparent"
           style={{ 
             fontFamily: 'Orbitron, Rajdhani, sans-serif', 
             fontWeight: 400, 
             letterSpacing: '0.03em',
-            backgroundImage: tenant.id !== "demo" ? 'linear-gradient(to right, #5C4033, #8B7355, #F5F5DC, #8B7355, #5C4033)' : undefined
+            backgroundImage: 'linear-gradient(to right, #BDB76B 0%, #355E3B 50%, #BDB76B 100%)'
           }}
           data-testid="text-header-title"
         >
-          {tenant.id === "demo" 
-            ? "PaintPros.io"
-            : tenant.name
-          }
+          {tenant.id === "demo" ? "PaintPros.io" : tenant.name}
         </div>
 
         {/* Right: Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="p-1 md:p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[8px] md:-translate-x-[15px]"
+          className="p-1 flex items-center justify-center transition-all hover:opacity-80"
           aria-label="Toggle theme"
           data-testid="button-theme-toggle"
         >
-          {theme === "dark" ? <Sun className="w-4 h-4 md:w-5 md:h-5 text-accent" /> : <Moon className="w-4 h-4 md:w-5 md:h-5 text-white" />}
+          {theme === "dark" ? <Sun className="w-5 h-5 text-accent" /> : <Moon className="w-5 h-5 text-white" />}
         </button>
       </div>
     </header>
