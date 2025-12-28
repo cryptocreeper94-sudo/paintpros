@@ -1,7 +1,15 @@
+import { useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { 
   Building2, 
   TrendingUp, 
@@ -13,10 +21,45 @@ import {
   ArrowRight,
   Car,
   Clock,
-  Percent
+  Percent,
+  PenLine,
+  RotateCcw
 } from "lucide-react";
+import SignatureCanvas from "react-signature-canvas";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProposalRyan() {
+  const [showSignature, setShowSignature] = useState(false);
+  const [accepted, setAccepted] = useState(false);
+  const [signatureData, setSignatureData] = useState<string | null>(null);
+  const sigRef = useRef<SignatureCanvas>(null);
+  const { toast } = useToast();
+
+  const clearSignature = () => {
+    sigRef.current?.clear();
+  };
+
+  const acceptProposal = () => {
+    if (sigRef.current?.isEmpty()) {
+      toast({
+        title: "Signature Required",
+        description: "Please sign in the box above to accept the proposal.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const dataUrl = sigRef.current?.toDataURL();
+    setSignatureData(dataUrl || null);
+    setAccepted(true);
+    setShowSignature(false);
+    
+    toast({
+      title: "Proposal Accepted",
+      description: "Thank you! We'll be in touch shortly to get started.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto p-6 md:p-8 space-y-8">
@@ -374,23 +417,98 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-primary text-primary-foreground">
-          <CardContent className="p-6 text-center space-y-4">
-            <h2 className="text-2xl font-bold">The Window is Open</h2>
-            <p className="opacity-90">
-              Murfreesboro is booming. New homes, new residents, new demand. 
-              Every week without modern tools is another week your competitors are pulling ahead.
-              This founding partner opportunity won't last.
-            </p>
-            <div className="pt-2">
-              <Button variant="secondary" size="lg" className="gap-2" data-testid="button-schedule-call">
-                Let's Talk
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+        {accepted ? (
+          <Card className="bg-green-600 text-white">
+            <CardContent className="p-6 text-center space-y-4">
+              <CheckCircle2 className="w-16 h-16 mx-auto" />
+              <h2 className="text-2xl font-bold">Proposal Accepted</h2>
+              <p className="opacity-90">
+                Thank you for your partnership. We'll be in touch within 24 hours to begin onboarding.
+              </p>
+              {signatureData && (
+                <div className="pt-4">
+                  <p className="text-sm opacity-75 mb-2">Your signature:</p>
+                  <div className="bg-white rounded-lg p-2 inline-block">
+                    <img src={signatureData} alt="Signature" className="max-h-20" />
+                  </div>
+                </div>
+              )}
+              <p className="text-sm opacity-75 pt-4">Dark Wave Studios, LLC</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="bg-primary text-primary-foreground">
+            <CardContent className="p-6 text-center space-y-4">
+              <h2 className="text-2xl font-bold">The Window is Open</h2>
+              <p className="opacity-90">
+                Murfreesboro is booming. New homes, new residents, new demand. 
+                Every week without modern tools is another week your competitors are pulling ahead.
+                This founding partner opportunity won't last.
+              </p>
+              <div className="pt-2">
+                <Button 
+                  variant="secondary" 
+                  size="lg" 
+                  className="gap-2" 
+                  data-testid="button-accept-proposal"
+                  onClick={() => setShowSignature(true)}
+                >
+                  <PenLine className="w-4 h-4" />
+                  Accept Proposal
+                </Button>
+              </div>
+              <p className="text-sm opacity-75 pt-4">Prepared by Dark Wave Studios, LLC</p>
+            </CardContent>
+          </Card>
+        )}
+
+        <Dialog open={showSignature} onOpenChange={setShowSignature}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Accept Proposal</DialogTitle>
+              <DialogDescription>
+                Sign below to accept the partnership proposal terms.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg bg-white">
+                <SignatureCanvas
+                  ref={sigRef}
+                  canvasProps={{
+                    className: "w-full h-48 touch-none",
+                    style: { width: "100%", height: "192px" }
+                  }}
+                  penColor="black"
+                />
+              </div>
+              
+              <p className="text-xs text-muted-foreground text-center">
+                Use your finger or mouse to sign above
+              </p>
+              
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 gap-2"
+                  onClick={clearSignature}
+                  data-testid="button-clear-signature"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Clear
+                </Button>
+                <Button 
+                  className="flex-1 gap-2"
+                  onClick={acceptProposal}
+                  data-testid="button-submit-signature"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Accept
+                </Button>
+              </div>
             </div>
-            <p className="text-sm opacity-75 pt-4">Prepared by Dark Wave Studios, LLC</p>
-          </CardContent>
-        </Card>
+          </DialogContent>
+        </Dialog>
 
       </div>
     </div>
