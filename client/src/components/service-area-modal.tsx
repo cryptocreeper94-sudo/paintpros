@@ -42,7 +42,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 md:pt-8 overflow-y-auto"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
         data-testid="modal-service-area"
       >
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
@@ -52,7 +52,7 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ type: "spring", damping: 25 }}
-          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[calc(100dvh-2rem)] shadow-2xl"
+          className="relative glass-panel rounded-2xl border border-accent/30 w-[95vw] max-w-5xl md:max-w-6xl max-h-[90vh] shadow-2xl flex flex-col"
         >
           <button
             onClick={onClose}
@@ -62,9 +62,9 @@ export function ServiceAreaModal({ isOpen, onClose }: ServiceAreaModalProps) {
             <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
-          <div className="overflow-y-auto overflow-x-hidden max-h-[calc(100dvh-4rem)] overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="overflow-y-auto overflow-x-hidden flex-1 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
             {/* Landscape map header */}
-            <div className="relative h-[35vw] min-h-[150px] max-h-[180px] md:h-48 overflow-hidden">
+            <div className="relative h-[35vw] min-h-[150px] max-h-[200px] md:min-h-[220px] md:max-h-[280px] overflow-hidden">
               <img 
                 src={mapImage} 
                 alt="Service Area Map"

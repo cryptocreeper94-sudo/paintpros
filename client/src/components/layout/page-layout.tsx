@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Home, ArrowLeft } from "lucide-react";
-import { useLocation, Link } from "wouter";
+import { useTenant } from "@/context/TenantContext";
 import paintRollerWatermark from "@assets/paint_roller_transparent.png";
 
 interface PageLayoutProps {
@@ -9,40 +8,22 @@ interface PageLayoutProps {
 }
 
 export function PageLayout({ children }: PageLayoutProps) {
-  const [location] = useLocation();
+  const tenant = useTenant();
   
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-accent selection:text-primary flex flex-col relative">
-      {/* Watermark background - paint roller */}
-      <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center pt-[136px] md:pt-[186px]">
-        <img 
-          src={paintRollerWatermark} 
-          alt="" 
-          className="w-[150vw] max-w-none h-auto opacity-35 dark:opacity-20 dark:invert dark:brightness-50 dark:contrast-75"
-        />
-      </div>
-      <Navbar />
-      {location !== "/" && (
-        <div className="fixed top-16 left-4 z-30 hidden md:flex gap-2">
-          <Link 
-            href="/"
-            className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-accent/20 transition-colors"
-            aria-label="Go home"
-            data-testid="button-home-desktop"
-          >
-            <Home className="w-5 h-5" />
-          </Link>
-          <button 
-            onClick={() => window.history.back()} 
-            className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-accent/20 transition-colors"
-            aria-label="Go back"
-            data-testid="button-back-desktop"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+      {/* Watermark background - paint roller (NPP only) */}
+      {tenant.id !== "demo" && (
+        <div className="fixed inset-0 pointer-events-none z-[1] flex items-center justify-center pt-[156px] md:pt-[206px]">
+          <img 
+            src={paintRollerWatermark} 
+            alt="" 
+            className="w-[150vw] max-w-none h-auto opacity-35 dark:opacity-20 dark:invert dark:brightness-50 dark:contrast-75"
+          />
         </div>
       )}
-      <div className="flex-grow relative z-10 pt-[42px] md:pt-20 pb-[70px]">
+      <Navbar />
+      <div className="flex-grow relative z-10 pb-[70px]">
         {children}
       </div>
       <Footer />

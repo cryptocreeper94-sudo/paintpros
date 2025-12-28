@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink, Users } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
@@ -46,11 +46,11 @@ export function Footer() {
   
   return (
     <>
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-transparent text-[10px] md:text-xs text-muted-foreground h-[40px] max-h-[40px] flex items-center">
-        <div className="w-full px-3 md:px-4 flex justify-evenly md:justify-between items-center">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-transparent border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[40px] max-h-[40px] flex items-center">
+        <div className="w-full px-1 md:px-4 flex justify-between items-center">
           
           {/* Copyright */}
-          <div className="whitespace-nowrap text-[9px] md:text-[10px]">
+          <div className="whitespace-nowrap text-[9px] md:text-[10px] text-stone-600/90">
             {isDemo ? (
               <>
                 <span className="hidden sm:inline">Powered by Darkwave Studios, LLC</span>
@@ -82,37 +82,62 @@ export function Footer() {
           {/* Version - Clickable */}
           <button
             onClick={() => setShowVersionModal(true)}
-            className="text-muted-foreground/60 font-mono text-[8px] md:text-[9px] hover:text-amber-400 transition-colors underline decoration-dotted underline-offset-2"
+            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-amber-600/80 hover:text-amber-500"
             data-testid="button-version"
           >
             v{version}
           </button>
 
-          {/* Socials */}
-          <div className="flex gap-2 md:gap-3">
-            {tenant.social?.instagram && (
-              <a href={tenant.social.instagram} className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+          {/* Socials - Show configured links or placeholders */}
+          <div className="flex gap-2 md:gap-3 items-center">
+            {tenant.social?.instagram ? (
+              <a href={tenant.social.instagram} className="transition-all hover:scale-110" data-testid="link-instagram"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
+            ) : (
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-instagram-placeholder"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
             )}
-            {tenant.social?.facebook && (
-              <a href={tenant.social.facebook} className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+            {tenant.social?.facebook ? (
+              <a href={tenant.social.facebook} className="transition-all hover:scale-110" data-testid="link-facebook"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
+            ) : (
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-facebook-placeholder"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
             )}
-            {tenant.social?.linkedin && (
-              <a href={tenant.social.linkedin} className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
+            {tenant.social?.linkedin ? (
+              <a href={tenant.social.linkedin} className="transition-all hover:scale-110" data-testid="link-linkedin"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
+            ) : (
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-linkedin-placeholder"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
             )}
-            {!tenant.social?.instagram && !tenant.social?.facebook && !tenant.social?.linkedin && (
-              <>
-                <a href="#" className="hover:text-accent transition-colors"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                <a href="#" className="hover:text-accent transition-colors"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-                <a href="#" className="hover:text-accent transition-colors"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4" /></a>
-              </>
+            {/* Darkwave Smart Chain link for demo site */}
+            {isDemo && (
+              <a 
+                href="https://dwsc.io" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-fuchsia-400/80 hover:text-fuchsia-300 transition-all hover:scale-105"
+                title="Powered by Darkwave Smart Chain"
+                data-testid="link-dwsc"
+              >
+                <ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                <span className="text-[8px] md:text-[9px] font-medium hidden sm:inline">DWSC</span>
+              </a>
             )}
           </div>
           
+          {/* Team Button */}
+          <a 
+            href="/team" 
+            className="flex items-center gap-1 text-emerald-700/70 hover:text-emerald-600 transition-colors text-[9px] md:text-[10px]"
+            data-testid="link-team"
+          >
+            <Users className="w-3 h-3 md:w-3.5 md:h-3.5" />
+            <span>Team</span>
+          </a>
+          
           {/* Desktop Links */}
-          <div className="gap-4 whitespace-nowrap hidden md:flex">
-            <a href="/investors" className="hover:text-accent transition-colors" data-testid="link-investors">Investors</a>
-            <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-accent transition-colors">Terms & Conditions</a>
+          <div className="gap-4 whitespace-nowrap hidden md:flex text-stone-600/80">
+            {isDemo && (
+              <a href="/investors" className="hover:text-amber-600 transition-colors" data-testid="link-investors">Investors</a>
+            )}
+            <a href="#" className="hover:text-amber-600 transition-colors">Privacy Policy</a>
+            <a href="/terms" className="hover:text-amber-600 transition-colors" data-testid="link-terms">Terms & Warranty</a>
           </div>
 
           
@@ -128,17 +153,17 @@ export function Footer() {
           onClick={() => setShowModal(false)}
         >
           <div 
-            className="bg-gradient-to-br from-[#2a2f1f] to-[#1a1d14] border border-amber-500/30 rounded-2xl p-5 max-w-sm w-full shadow-2xl max-h-full overflow-y-auto"
+            className="bg-white border border-amber-200 rounded-2xl p-5 max-w-sm w-full shadow-2xl max-h-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-400" />
-                <h3 className="text-lg font-semibold text-white">Solana Verified Platform</h3>
+                <Shield className="w-5 h-5 text-amber-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Solana Verified Platform</h3>
               </div>
               <button 
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
                 data-testid="button-close-hallmark-modal"
               >
                 <X className="w-5 h-5" />
@@ -147,10 +172,10 @@ export function Footer() {
             
             <div className="space-y-4">
               {/* First in Industry Badge */}
-              <div className="bg-gradient-to-r from-[#9945FF]/20 to-[#14F195]/20 border border-[#14F195]/30 rounded-lg p-3 text-center">
-                <span className="text-[10px] font-bold text-[#14F195] uppercase tracking-wider">Industry First</span>
-                <p className="text-sm font-semibold text-white mt-0.5">
-                  First Solana-Verified <span className="text-[#14F195]">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span>
+              <div className="bg-gradient-to-r from-purple-100 to-emerald-100 border border-emerald-300 rounded-lg p-3 text-center">
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Industry First</span>
+                <p className="text-sm font-semibold text-gray-900 mt-0.5">
+                  First Solana-Verified <span className="text-emerald-600">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span>
                 </p>
               </div>
               {/* QR Code */}
@@ -166,25 +191,25 @@ export function Footer() {
               {/* Hallmark Info */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Hallmark ID:</span>
-                  <span className="font-mono text-amber-400">{displayHallmark}</span>
+                  <span className="text-gray-500">Hallmark ID:</span>
+                  <span className="font-mono text-amber-600">{displayHallmark}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Version:</span>
-                  <span className="font-mono text-white">v{version}</span>
+                  <span className="text-gray-500">Version:</span>
+                  <span className="font-mono text-gray-900">v{version}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Build:</span>
-                  <span className="font-mono text-white">#{buildNumber}</span>
+                  <span className="text-gray-500">Build:</span>
+                  <span className="font-mono text-gray-900">#{buildNumber}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Status:</span>
+                  <span className="text-gray-500">Status:</span>
                   <span className={`font-medium ${
                     releaseInfo?.solanaTxStatus === 'confirmed' 
-                      ? 'text-green-400' 
+                      ? 'text-green-600' 
                       : releaseInfo?.solanaTxStatus === 'genesis'
-                        ? 'text-amber-400'
-                        : 'text-gray-400'
+                        ? 'text-amber-600'
+                        : 'text-gray-500'
                   }`}>
                     {releaseInfo?.solanaTxStatus === 'confirmed' 
                       ? '✓ Blockchain Verified' 

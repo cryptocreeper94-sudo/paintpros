@@ -7,9 +7,11 @@ import { Camera, Lock, X, Upload, AlertTriangle, Loader2, CheckCircle, Sparkles,
 
 interface ScanResult {
   estimatedSquareFootage: number;
+  wallSurfaceSqft?: number;
   confidence: number;
   reasoning: string;
   roomType: string;
+  referenceObjectsUsed?: string[];
 }
 
 interface RoomScannerProps {
@@ -135,9 +137,11 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
       const result = await response.json();
       setScanResult({
         estimatedSquareFootage: result.estimatedSquareFootage,
+        wallSurfaceSqft: result.wallSurfaceSqft,
         confidence: result.confidence,
         reasoning: result.reasoning,
         roomType: result.roomType,
+        referenceObjectsUsed: result.referenceObjectsUsed,
       });
     } catch (error: any) {
       console.error("Room scan error:", error);
@@ -213,13 +217,38 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                   </div>
                 </div>
 
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4">
                   <div className="flex items-start gap-2 sm:gap-3">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                     <div className="text-xs sm:text-sm">
                       <p className="font-medium text-amber-400 mb-1">Disclaimer</p>
                       <p className="text-muted-foreground text-[11px] sm:text-xs leading-relaxed">
                         AI estimates are approximations (±10-20%). Final pricing requires professional measurement.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-500/10 to-accent/10 border border-purple-500/20 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      <div className="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+                        <Camera className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <div className="w-8 h-8 rounded-lg bg-accent/20 border border-accent/30 flex items-center justify-center">
+                        <Camera className="w-4 h-4 text-accent" />
+                      </div>
+                      <div className="w-8 h-8 rounded-lg bg-gold-400/20 border border-gold-400/30 flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-gold-400" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-purple-400 text-xs sm:text-sm">Multi-Room Scanner</p>
+                        <span className="text-[9px] sm:text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide">Coming Soon</span>
+                      </div>
+                      <p className="text-muted-foreground text-[10px] sm:text-[11px] mt-0.5">
+                        Scan entire homes with multiple photos for 95%+ accuracy
                       </p>
                     </div>
                   </div>
@@ -303,7 +332,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                         <p className="font-medium text-green-400 mb-2 text-sm sm:text-base">Scan Complete!</p>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
                           <div>
-                            <p className="text-muted-foreground text-xs sm:text-sm">Estimated Sq Ft</p>
+                            <p className="text-muted-foreground text-xs sm:text-sm">Floor Sq Ft</p>
                             <p className="text-xl sm:text-2xl font-bold text-foreground">
                               {Math.round(scanResult.estimatedSquareFootage)}
                             </p>
@@ -314,7 +343,25 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                               {scanResult.confidence}%
                             </p>
                           </div>
+                          {scanResult.wallSurfaceSqft && (
+                            <div className="col-span-2">
+                              <p className="text-muted-foreground text-xs sm:text-sm">Wall Surface Area</p>
+                              <p className="text-lg font-bold text-foreground">
+                                ~{Math.round(scanResult.wallSurfaceSqft)} sq ft
+                              </p>
+                            </div>
+                          )}
                         </div>
+                        {scanResult.referenceObjectsUsed && scanResult.referenceObjectsUsed.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            <span className="text-[10px] text-muted-foreground">Calibrated with:</span>
+                            {scanResult.referenceObjectsUsed.map((obj, i) => (
+                              <span key={i} className="text-[10px] bg-accent/20 text-accent px-1.5 py-0.5 rounded">
+                                {obj}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         {scanResult.reasoning && (
                           <p className="text-[11px] sm:text-xs text-muted-foreground mt-2 sm:mt-3 italic leading-relaxed">
                             "{scanResult.reasoning}"

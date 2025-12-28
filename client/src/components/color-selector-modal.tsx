@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Palette, ExternalLink } from "lucide-react";
+import { useTenant } from "@/context/TenantContext";
 
 interface ColorSelectorModalProps {
   isOpen: boolean;
@@ -8,6 +9,9 @@ interface ColorSelectorModalProps {
 }
 
 export function ColorSelectorModal({ isOpen, onClose }: ColorSelectorModalProps) {
+  const tenant = useTenant();
+  const isDemo = tenant.id === "demo";
+  
   const colorTools = [
     {
       name: "Sherwin-Williams",
@@ -21,6 +25,20 @@ export function ColorSelectorModal({ isOpen, onClose }: ColorSelectorModalProps)
       url: "https://www.benjaminmoore.com/en-us/color-overview/personal-color-viewer",
       colors: ["#C41E3A", "#1E4D2B", "#2B4865", "#9B870C"],
     },
+    ...(isDemo ? [
+      {
+        name: "Behr",
+        description: "ColorSmart - Home Depot's color matching tool",
+        url: "https://www.behr.com/consumer/colors/paint-colors/",
+        colors: ["#4A6276", "#A8B5A0", "#8B7355", "#BFB8AD"],
+      },
+      {
+        name: "Valspar",
+        description: "Virtual Painter - Lowe's color visualization",
+        url: "https://www.valspar.com/en/colors/browse-colors",
+        colors: ["#4B5E6B", "#3D5C52", "#C8D0D3", "#E5D9C7"],
+      },
+    ] : []),
   ];
 
   return (

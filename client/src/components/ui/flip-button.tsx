@@ -7,7 +7,7 @@ interface FlipButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
 export function FlipButton({ children, onClick, className, disabled, ...props }: FlipButtonProps) {
   return (
     <motion.button
-      className={`glass-btn px-6 py-3 rounded-full text-foreground font-bold tracking-wide uppercase text-sm ${className || ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`glass-btn px-6 py-4 rounded-full text-foreground font-bold tracking-wide uppercase text-sm leading-relaxed ${className || ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       onClick={onClick}
       disabled={disabled}
       whileHover={{ scale: 1.05 }}
