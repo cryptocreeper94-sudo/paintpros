@@ -38,11 +38,7 @@ export default function ProposalRyan() {
               into Rutherford County (Murfreesboro) through the Orbit ecosystem - a fully integrated 
               suite of business tools already powering contractors across multiple industries.
             </p>
-            <div className="grid grid-cols-3 gap-4 pt-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">$30,000</p>
-                <p className="text-sm text-muted-foreground">3-Month Investment</p>
-              </div>
+            <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">&lt;5 weeks</p>
                 <p className="text-sm text-muted-foreground">Payback Period</p>
@@ -213,43 +209,28 @@ export default function ProposalRyan() {
               Investment Structure
             </h2>
             
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Payment</th>
-                    <th className="text-right py-2">Amount</th>
-                    <th className="text-right py-2">When</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b">
-                    <td className="py-2">Development Fee + Onboarding Deposit</td>
-                    <td className="text-right font-medium">$5,000</td>
-                    <td className="text-right text-muted-foreground">Upfront</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2">Weeks 1-4</td>
-                    <td className="text-right">$2,000/week</td>
-                    <td className="text-right text-muted-foreground">$8,000 total</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2">Weeks 5-8</td>
-                    <td className="text-right">$2,100/week</td>
-                    <td className="text-right text-muted-foreground">$8,400 total</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2">Weeks 9-12</td>
-                    <td className="text-right">$2,150/week</td>
-                    <td className="text-right text-muted-foreground">$8,600 total</td>
-                  </tr>
-                  <tr className="font-bold bg-muted/50">
-                    <td className="py-3">Total 3-Month Investment</td>
-                    <td className="text-right text-primary text-lg">$30,000</td>
-                    <td className="text-right"></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div>
+                  <p className="font-medium">Development Fee + Onboarding</p>
+                  <p className="text-sm text-muted-foreground">Upfront to begin</p>
+                </div>
+                <p className="text-2xl font-bold text-primary">$5,000</p>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div>
+                  <p className="font-medium">Weekly Rate</p>
+                  <p className="text-sm text-muted-foreground">Starting rate, with small increases over time (up to $2,150/week by end)</p>
+                </div>
+                <p className="text-2xl font-bold text-primary">$2,000/week</p>
+              </div>
+
+              <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Preferred outcome:</span> Would prefer to transition to permanent employment and can discuss terms at that point.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
