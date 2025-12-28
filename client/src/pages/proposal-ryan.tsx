@@ -212,23 +212,23 @@ export default function ProposalRyan() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                 <div>
-                  <p className="font-medium">Development Fee + Onboarding</p>
+                  <p className="font-medium">Onboarding + Setup</p>
                   <p className="text-sm text-muted-foreground">Upfront to begin</p>
                 </div>
-                <p className="text-2xl font-bold text-primary">$5,000</p>
+                <p className="text-2xl font-bold text-primary">$6,000</p>
               </div>
               
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                 <div>
                   <p className="font-medium">Weekly Rate</p>
-                  <p className="text-sm text-muted-foreground">Starting rate, with small increases over time (up to $2,150/week by end)</p>
+                  <p className="text-sm text-muted-foreground">Up to 90-day period</p>
                 </div>
                 <p className="text-2xl font-bold text-primary">$2,000/week</p>
               </div>
 
               <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">Preferred outcome:</span> Would prefer to transition to permanent employment and can discuss terms at that point.
+                  <span className="font-medium text-foreground">Full terms to be discussed for full-time employment.</span>
                 </p>
               </div>
             </div>
