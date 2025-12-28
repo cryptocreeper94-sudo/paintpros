@@ -60,7 +60,7 @@ export default function ProposalRyan() {
             <div className="grid gap-3">
               {[
                 { name: "PaintPros.io", desc: "AI estimating, CRM, booking, crew management" },
-                { name: "Dark Wave Staffing", desc: "Contractor marketplace, payroll, scheduling, bookkeeping" },
+                { name: "Orbit Staffing", desc: "Contractor marketplace, payroll, scheduling, bookkeeping" },
                 { name: "RoofPros.io", desc: "Same platform for roofing contractors" },
                 { name: "HVACPros.io", desc: "Same platform for HVAC contractors" },
                 { name: "Darkwave Commerce", desc: "Payments, invoicing, blockchain verification" },
@@ -77,7 +77,7 @@ export default function ProposalRyan() {
             <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
               <p className="font-medium">Founding Partner Benefits:</p>
               <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                <li>Direct integration with Dark Wave Staffing (simplified bookkeeping and payroll)</li>
+                <li>Direct integration with Orbit Staffing (simplified bookkeeping and payroll)</li>
                 <li>Seamless data flow between all systems - zero double entry</li>
                 <li>Priority access to new features before public release</li>
                 <li>Direct input on platform development</li>
@@ -97,7 +97,7 @@ export default function ProposalRyan() {
               <div>
                 <p className="font-medium mb-2">Scope of Services:</p>
                 <ul className="space-y-2">
-                  {["Project Management", "Marketing & Outreach", "IT Support", "Web Development", "SEO Placement", "Coordination & Oversight", "Dark Wave Staffing Integration"].map((item) => (
+                  {["Project Management", "Marketing & Outreach", "IT Support", "Web Development", "SEO Placement", "Coordination & Oversight", "Orbit Staffing Integration"].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm">
                       <CheckCircle2 className="w-4 h-4 text-green-600" />
                       {item}
@@ -358,7 +358,7 @@ export default function ProposalRyan() {
                 { title: "Murfreesboro is Growing Fast", desc: "New construction and move-ins are creating demand - competitors are gearing up" },
                 { title: "First-Mover Advantage", desc: "Be the first painting company with AI tools in the territory" },
                 { title: "Rapid ROI", desc: "One extra job per week covers your entire investment" },
-                { title: "Operational Efficiency", desc: "Dark Wave Staffing integration streamlines bookkeeping and payroll" },
+                { title: "Operational Efficiency", desc: "Orbit Staffing integration streamlines bookkeeping and payroll" },
                 { title: "Aligned Incentives", desc: "Performance bonuses mean I only win when you win" },
                 { title: "Founding Partner Status", desc: "Priority access to new features, direct input on development" },
               ].map((item, i) => (
