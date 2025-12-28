@@ -1,76 +1,62 @@
-# PaintPros.io by Orbit - Compressed Documentation
+# PaintPros.io by Orbit - Documentation
 
 ## Overview
-PaintPros.io by Orbit is a multi-tenant SaaS platform designed for the painting and home services industry. It offers white-label websites with a modern Bento Grid design, interactive estimating tools, comprehensive SEO management, and role-based dashboards. The platform supports both franchisable and standalone licensing, integrating features like online booking, internal messaging, crew management, and integrations with the Orbit ecosystem and Solana blockchain for document stamping. The project aims to provide a cutting-edge solution to enhance efficiency and customer engagement in the home services market.
+PaintPros.io is a multi-tenant SaaS platform built by Orbit for the painting and home services industry. It provides white-label websites for painting companies, featuring a modern Bento Grid design, interactive estimating tools, SEO management, and role-based dashboards. The platform supports both franchisable and standalone licensing options, aiming to deliver a premium "Sparkle and Shine" online presence. Key capabilities include multi-tenant configuration, online booking, an internal messaging system, a crew management system, and integrations with the Orbit ecosystem and Solana blockchain for document stamping.
 
 ## User Preferences
-I prefer simple language and detailed explanations. I want iterative development and for you to ask before making major changes. Do not make changes to the `assets/branding/` folder. The client strongly prefers light themes over dark themes for better text visibility.
+I prefer simple language and detailed explanations. I want iterative development and for you to ask before making major changes. Do not make changes to the `assets/branding/` folder.
 
 ## System Architecture
 
 ### Multi-Tenant Architecture
-The platform utilizes a multi-tenant architecture, allowing each tenant to have unique branding, services, pricing, SEO metadata, and feature toggles. Tenant-specific context is managed via a `TenantProvider` and `useTenant()` hook.
+The platform supports multiple tenants, each configured via `client/src/config/tenant.ts`. Tenant-specific settings include branding (name, logo, colors), services offered, custom pricing, SEO meta-data, feature toggles (estimator, portfolio, reviews, blog, AI assistant), and credentials (Google rating, warranty years, licenses). A `TenantProvider` and `useTenant()` hook manage tenant context throughout the application. Tenant selection is currently based on the `VITE_TENANT_ID` environment variable, with future plans for subdomain-based routing.
 
 ### UI/UX and Design System
-The design adheres to a "Sparkle and Shine" aesthetic with a Bento Grid layout, tight spacing, and mobile-first responsiveness. It exclusively uses light themes for readability. Visual effects include glassmorphism, glow effects, and 3D hover animations. Custom components like `GlassCard` and `FlipButton` are used alongside Radix-based accordions and Embla-based carousels for mobile navigation. Homepage layouts are inspired by Craftwork.com, featuring various sections from hero to CTAs.
+The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Grid layout, tight spacing, and mobile-first responsiveness.
+- **Themes:** Light and Dark Mode, with Dark Mode using a highly desaturated Army Green base and Gold highlights as accent.
+- **Effects:** Glassmorphism, glow effects, and 3D hover animations are prevalent.
+- **Components:** Custom components include `GlassCard`, `FlipButton`, auto-scroll marquees, and Embla-based horizontal carousels. Radix-based accordions are used for collapsible content (e.g., admin follow-ups, pricing tiers, proposal sections).
+- **Mobile Pattern:** Carousels are the primary mechanism for horizontal scrolling on mobile, with items often containing `GlassCard` and `Accordion` for detailed content.
 
-### Core Features
-- **Service & Estimator:** Configurable painting services with flexible, tenant-specific pricing logic.
-- **Rollie AI Voice Assistant:** Conversational AI chatbot powered by OpenAI with natural ElevenLabs text-to-speech voices. Supports English/Spanish, male/female voice options, and speech-to-text input. Bundled with all AI Estimator packages.
-- **Role-Based Access:** PIN-based access for various roles (Admin, Owner, Developer, etc.) with specific dashboard privileges.
-- **Online Booking:** A 5-step customer wizard for scheduling services, with admin oversight.
-- **Weather & Crew Management:** Real-time weather display and dashboards for crew leads with time tracking and reporting.
-- **Internal Messaging:** Real-time chat with Socket.IO, supporting speech-to-text and role-based badges.
-- **PDF Document Center:** Manages contracts, estimates, and invoices with digital signatures and blockchain stamping.
-- **Franchise Management:** Supports multi-location franchises with territory licensing and Partner API integration.
-- **System Health Monitoring:** Real-time dashboard for critical service monitoring.
-- **SEO Management:** Comprehensive, tenant-isolated SEO tracking and editing, including meta tags, structured data, and SEO scoring.
-- **Color Library & AI Visualizer:** A curated paint color database with an interactive color wheel and an AI-powered visualizer for previewing colors on uploaded photos using OpenAI Vision API.
-- **Painting Glossary:** A comprehensive A-Z glossary of painting terms.
-- **Blockchain Verification:** Dual-chain verification shields (Solana, Darkwave) for document verification via QR codes.
-- **Self-Service Trial System:** 72-hour sandbox trials with usage limits and auto-seeded data, providing a branded portal URL (`/trial/{company-slug}`).
-- **Trial Upgrade System:** Seamless upgrade from trial to paid subscription with automated tenant provisioning, data migration, and Stripe integration for various pricing tiers.
-
-### Trade Verticals System
-The platform supports expansion into multiple trade verticals beyond painting:
-- **Supported Trades:** Painting (live), Roofing, HVAC, Electrical, Plumbing, Landscaping, General Contracting
-- **Configuration:** `shared/trade-verticals.ts` defines trade-specific services, estimator fields, terminology, and branding
-- **Placeholder Domains:** roofpros.io, hvacpros.io, electricpros.io, plumbpros.io, landscapepros.io, buildpros.io
-- **Showcase Page:** `/trade-verticals` displays all available trade platforms with status badges
-- **Future Integration:** Tenants will be assigned a tradeType to inherit trade-specific services and branding
-
-### Royalty Tracking System
-A comprehensive system for tracking royalties across Orbit Ventures' SaaS portfolio (PaintPros.io, Brew and Board, Orbit Staffing). It supports multi-product tracking, revenue/expense management, and automated 50% profit share calculations, integrated with Stripe Connect for automated payouts and blockchain verification on Solana and Darkwave.
-
-### Orbit Financial Hub Integration
-PaintPros.io integrates with Orbit Staffing as the central financial hub, pushing revenue, expenses, and payouts via secure HMAC-authenticated webhooks for real-time synchronization and biweekly/monthly statement generation.
+### Feature Specifications
+- **Service Descriptions:** Must clearly articulate Interior/Exterior, Commercial/Residential painting, with options for Walls, Ceilings, Trim, Doors, and Drywall REPAIR only.
+- **Estimator Pricing Logic:** Configurable per tenant, with default pricing like $150 per door, $5.00/sqft for full jobs (Walls + Trim + Ceiling), and $2.50/sqft for Walls Only.
+- **Role-Based Access:** PIN-based access for Admin (4444), Owner (1111), Area Manager (2222), Developer (0424), and Crew Lead (3333). Each role has access to specific dashboards and functionalities.
+- **Online Booking System:** A 5-step customer wizard for service type, date, time, contact details, and confirmation. Admin dashboards display upcoming bookings.
+- **ORBIT Weather System:** Displays real-time weather in the footer and a full modal with animated radar. Uses ZIP code search and local storage for persistence.
+- **Crew Management System:** Provides a dashboard for crew leads with time tracking, job notes, and incident reporting. Integrated into Admin, Owner, and Developer dashboards.
+- **Internal Messaging System:** A real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges.
 
 ### System Design Choices
-- **Database Schema:** Key tables for leads, estimates, bookings, blockchain stamps, and CRM, Crew Management, Messaging, and Franchise Management.
-- **File Structure:** `client/src` for frontend, `shared/schema.ts` for database models, and `server/` for data access and APIs.
-- **Authentication:** Hybrid approach with custom email/password for customers and PIN-based access for staff.
-
-### Security Measures
-Includes PIN rate limiting, database indexes, security headers (Helmet.js), Zod schema validation, XSS sanitization, and strict tenant isolation.
-
-### Feature Roadmap
-Planned enhancements and premium features:
-- **Multi-Room Scanner (Coming Soon):** Upload multiple photos per room and scan entire homes for 95%+ measurement accuracy using AI cross-referencing
-- **3D Room Visualization:** AR-powered room preview showing paint colors on actual walls before purchase
-- **Crew GPS Tracking:** Real-time location tracking for active job sites with arrival notifications
-- **Customer Portal Mobile App:** Native iOS/Android apps for customers to track project progress
-- **Advanced Analytics Dashboard:** Revenue forecasting, crew utilization metrics, and seasonal trend analysis
+- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`) and Internal Messaging (`conversations`, `conversation_participants`, `messages`).
+- **File Structure:** Organized with `client/src` for frontend components, pages, config, and context; `shared/schema.ts` for database models; and `server/` for data access and API routes.
 
 ## External Dependencies
 
-- **Blockchain:** Solana (primary for document stamping), Darkwave Chain (secondary for verification).
-- **Payments:** Stripe, Coinbase Commerce.
-- **AI:** OpenAI API (for AI assistant and visualizer).
-- **Orbit Ecosystem:** Custom integrations for payroll, staffing, code snippets, and health checks.
-- **Weather:** Open-Meteo API, RainViewer API (radar).
-- **Mapping:** OpenStreetMap.
-- **Real-time Communication:** Socket.IO.
-- **Speech-to-Text:** Web Speech API.
-- **UI Libraries:** Framer Motion (animations), Embla Carousel, Radix UI.
-- **ORM:** Drizzle.
-- **Authentication:** Custom bcrypt and session management.
+- **Solana/Helius:** Used for blockchain stamping of document hashes (requires `HELIUS_API_KEY` or `HELIUS_RPC_URL`).
+- **Payments:** Stripe and Coinbase Commerce (manual secret configuration).
+- **AI:** OpenAI API (for AI assistant features).
+- **Orbit Ecosystem:** Custom integration via `server/orbit.ts` for payroll sync, staffing, code snippets, and health checks (requires `ORBIT_ECOSYSTEM_API_KEY`, `ORBIT_ECOSYSTEM_API_SECRET`, `ORBIT_ECOSYSTEM_DEV_URL`).
+- **Open-Meteo API:** Provides real-time weather data (no API key required).
+- **RainViewer API:** Provides animated weather radar tiles.
+- **OpenStreetMap:** Used for base maps in the weather radar modal.
+- **Socket.IO:** For real-time communication in the internal messaging system.
+- **Web Speech API:** For speech-to-text functionality in the AI assistant and messaging system.
+- **Framer Motion:** For animations throughout the UI.
+- **Embla Carousel:** For horizontal carousels.
+- **Radix UI:** For accessible UI components like accordions.
+- **Drizzle:** For database schema definition.
+
+## Recent Changes (Changelog)
+
+### December 2025
+- **v1.1.4** - Current Release
+  - Added Spanish language support (i18n) for Crew Lead dashboard
+  - AI Assistant (Rollie/PaintBuddy) now responds in Spanish when language is set to Spanish
+  - Speech recognition supports both English (en-US) and Spanish (es-ES)
+  - Language toggle persisted to localStorage for consistent experience
+  - All crew lead dashboard UI strings translated to Spanish
+  - Blockchain hallmark system confirmed working with Solana integration
+  - Real-time weather system with animated radar modal
+  - Internal messaging system with Socket.IO for real-time communication
+  - Comprehensive role-based dashboards (Admin, Owner, Developer, Crew Lead, Project Manager)

@@ -59,14 +59,11 @@ export interface TenantConfig {
   
   // Pricing (can be customized per tenant)
   pricing: {
-    wallsOnlyPerSqFt: number;
-    trimOnlyPerSqFt: number;
-    ceilingsOnlyPerSqFt: number;
-    wallsAndTrimPerSqFt: number;
-    fullJobPerSqFt: number; // walls + trim + ceilings
     doorsPerUnit: number;
-    cabinetDoorsPerUnit: number;
-    cabinetDrawersPerUnit: number;
+    wallsPerSqFt: number;
+    fullJobPerSqFt: number;
+    ceilingsPerSqFt?: number;
+    trimPerLinearFt?: number;
   };
   
   // SEO
@@ -142,20 +139,15 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     ceilings: true,
     doors: true,
     drywallRepair: true,
-    cabinetPainting: true,
+    cabinetPainting: false,
     deckStaining: false,
     pressureWashing: false,
   },
   
   pricing: {
-    wallsOnlyPerSqFt: 2.50,
-    trimOnlyPerSqFt: 2.50,
-    ceilingsOnlyPerSqFt: 3.00,
-    wallsAndTrimPerSqFt: 3.50,
-    fullJobPerSqFt: 5.00,
     doorsPerUnit: 150,
-    cabinetDoorsPerUnit: 150,
-    cabinetDrawersPerUnit: 75,
+    wallsPerSqFt: 2.50,
+    fullJobPerSqFt: 5.00,
   },
   
   seo: {
@@ -177,8 +169,8 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     estimator: true,
     portfolio: true,
     reviews: true,
-    blog: true,
-    onlineBooking: true,
+    blog: false,
+    onlineBooking: false,
     aiAssistant: true,
   },
   
@@ -204,7 +196,7 @@ export const paintProsDemo: TenantConfig = {
   logo: "/icons/paintpros-mascot.png",
   
   phone: "(888) PAINT-PRO",
-  email: "cryptocreeper94@gmail.com",
+  email: "demo@paintpros.io",
   
   theme: {
     primaryColor: "hsl(220, 70%, 50%)",
@@ -234,14 +226,11 @@ export const paintProsDemo: TenantConfig = {
   },
   
   pricing: {
-    wallsOnlyPerSqFt: 2.50,
-    trimOnlyPerSqFt: 2.50,
-    ceilingsOnlyPerSqFt: 3.00,
-    wallsAndTrimPerSqFt: 3.50,
-    fullJobPerSqFt: 5.00,
     doorsPerUnit: 150,
-    cabinetDoorsPerUnit: 150,
-    cabinetDrawersPerUnit: 75,
+    wallsPerSqFt: 2.50,
+    fullJobPerSqFt: 5.00,
+    ceilingsPerSqFt: 1.75,
+    trimPerLinearFt: 3.00,
   },
   
   seo: {

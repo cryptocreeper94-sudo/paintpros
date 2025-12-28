@@ -88,14 +88,7 @@ export async function preBuildStamp(): Promise<void> {
     return;
   }
 
-  let pool;
-  try {
-    pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  } catch (poolError) {
-    console.log("⚠️  Could not create database pool - skipping version stamp");
-    return;
-  }
-  
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const db = drizzle(pool, { schema });
   
   try {
@@ -173,13 +166,9 @@ export async function preBuildStamp(): Promise<void> {
     console.log("\n✨ Pre-build stamp complete!\n");
     
   } catch (error) {
-    console.log("⚠️  Pre-build stamp skipped:", error instanceof Error ? error.message : String(error));
+    console.error("❌ Pre-build stamp failed:", error);
   } finally {
-    try {
-      await pool.end();
-    } catch (e) {
-      // Ignore pool close errors
-    }
+    await pool.end();
   }
 }
 

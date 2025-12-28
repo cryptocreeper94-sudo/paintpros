@@ -39,34 +39,15 @@ import {
   type Document, type InsertDocument, documents,
   type DocumentVersion, type InsertDocumentVersion, documentVersions,
   type DocumentSignature, type InsertDocumentSignature, documentSignatures,
-  type CalendarEvent, type InsertCalendarEvent, calendarEvents,
-  type CalendarReminder, type InsertCalendarReminder, calendarReminders,
-  type EventColorPreset, type InsertEventColorPreset, eventColorPresets,
-  type Franchise, type InsertFranchise, franchises,
-  type PartnerApiCredential, type InsertPartnerApiCredential, partnerApiCredentials,
-  type PartnerApiLog, type InsertPartnerApiLog, partnerApiLogs,
-  type FranchiseLocation, type InsertFranchiseLocation, franchiseLocations,
-  type CustomerPreferences, type InsertCustomerPreferences, customerPreferences,
-  type PushSubscription as PushSub, type InsertPushSubscription, pushSubscriptions,
-  type AppointmentReminder, type InsertAppointmentReminder, appointmentReminders,
-  type PaintColor, type InsertPaintColor, paintColors,
-  type CustomerColorSelection, type InsertCustomerColorSelection, customerColorSelections,
-  type TrialTenant, type InsertTrialTenant, trialTenants,
-  type TrialUsageLog, type InsertTrialUsageLog, trialUsageLog,
-  type RoyaltyRevenue, type InsertRoyaltyRevenue, royaltyRevenue,
-  type RoyaltyExpense, type InsertRoyaltyExpense, royaltyExpenses,
-  type RoyaltyPayout, type InsertRoyaltyPayout, royaltyPayouts,
-  type RoyaltyConfig, type InsertRoyaltyConfig, royaltyConfig,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
 import { desc, eq, ilike, or, and, sql, max, inArray } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations
+  // User operations (for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
-  createUser(user: Partial<UpsertUser>): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
   updateUserRole(id: string, role: string, tenantId?: string): Promise<User | undefined>;
   getUsersByTenant(tenantId: string): Promise<User[]>;
@@ -74,16 +55,15 @@ export interface IStorage {
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
   getLeadById(id: string): Promise<Lead | undefined>;
-  getLeadByEmail(email: string, tenantId?: string): Promise<Lead | undefined>;
-  getLeads(tenantId?: string): Promise<Lead[]>;
-  searchLeads(query: string, tenantId?: string): Promise<Lead[]>;
+  getLeadByEmail(email: string): Promise<Lead | undefined>;
+  getLeads(): Promise<Lead[]>;
+  searchLeads(query: string): Promise<Lead[]>;
   
   // Estimates (new tool)
   createEstimate(estimate: InsertEstimate): Promise<Estimate>;
   getEstimateById(id: string): Promise<Estimate | undefined>;
-  getEstimatesByLeadId(leadId: string, tenantId?: string): Promise<Estimate[]>;
-  getEstimates(tenantId?: string): Promise<Estimate[]>;
-  updateEstimate(id: string, updates: { status?: string }): Promise<Estimate | undefined>;
+  getEstimatesByLeadId(leadId: string): Promise<Estimate[]>;
+  getEstimates(): Promise<Estimate[]>;
   
   // Legacy estimate requests
   createEstimateRequest(request: InsertEstimateRequest): Promise<EstimateRequest>;
@@ -100,12 +80,12 @@ export interface IStorage {
   
   // CRM Deals
   createCrmDeal(deal: InsertCrmDeal): Promise<CrmDeal>;
-  getCrmDeals(tenantId?: string): Promise<CrmDeal[]>;
+  getCrmDeals(): Promise<CrmDeal[]>;
   getCrmDealById(id: string): Promise<CrmDeal | undefined>;
-  getCrmDealsByStage(stage: string, tenantId?: string): Promise<CrmDeal[]>;
+  getCrmDealsByStage(stage: string): Promise<CrmDeal[]>;
   updateCrmDeal(id: string, updates: Partial<InsertCrmDeal>): Promise<CrmDeal | undefined>;
   deleteCrmDeal(id: string): Promise<void>;
-  getCrmPipelineSummary(tenantId?: string): Promise<{ stage: string; count: number; totalValue: string }[]>;
+  getCrmPipelineSummary(): Promise<{ stage: string; count: number; totalValue: string }[]>;
   
   // CRM Activities
   createCrmActivity(activity: InsertCrmActivity): Promise<CrmActivity>;
@@ -154,8 +134,6 @@ export interface IStorage {
   createRelease(release: InsertReleaseVersion): Promise<ReleaseVersion>;
   getLatestRelease(): Promise<ReleaseVersion | undefined>;
   updateReleaseSolanaStatus(id: string, signature: string, status: string): Promise<ReleaseVersion | undefined>;
-  updateReleaseDarkwaveStatus(id: string, txHash: string, status: string): Promise<ReleaseVersion | undefined>;
-  updateHallmarkDarkwave(id: string, txSignature: string, explorerUrl: string): Promise<Hallmark | undefined>;
   
   // Proposal Templates
   createProposalTemplate(template: InsertProposalTemplate): Promise<ProposalTemplate>;
@@ -318,103 +296,6 @@ export interface IStorage {
   // Document Signatures
   createDocumentSignature(signature: InsertDocumentSignature): Promise<DocumentSignature>;
   getDocumentSignatures(documentId: string): Promise<DocumentSignature[]>;
-  
-  // Calendar Events
-  createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
-  getCalendarEvents(tenantId: string, startDate?: Date, endDate?: Date): Promise<CalendarEvent[]>;
-  getCalendarEventById(id: string): Promise<CalendarEvent | undefined>;
-  getCalendarEventsByDate(tenantId: string, date: Date): Promise<CalendarEvent[]>;
-  getCalendarEventsByAssignee(tenantId: string, assignedTo: string): Promise<CalendarEvent[]>;
-  updateCalendarEvent(id: string, updates: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined>;
-  updateCalendarEventStatus(id: string, status: string): Promise<CalendarEvent | undefined>;
-  deleteCalendarEvent(id: string): Promise<void>;
-  
-  // Calendar Reminders
-  createCalendarReminder(reminder: InsertCalendarReminder): Promise<CalendarReminder>;
-  getCalendarReminders(eventId: string): Promise<CalendarReminder[]>;
-  getPendingReminders(beforeTime: Date): Promise<CalendarReminder[]>;
-  updateReminderStatus(id: string, status: string, errorMessage?: string): Promise<CalendarReminder | undefined>;
-  markReminderSent(id: string): Promise<CalendarReminder | undefined>;
-  deleteCalendarReminder(id: string): Promise<void>;
-  
-  // Event Color Presets
-  createEventColorPreset(preset: InsertEventColorPreset): Promise<EventColorPreset>;
-  getEventColorPresets(tenantId: string): Promise<EventColorPreset[]>;
-  updateEventColorPreset(id: string, updates: Partial<InsertEventColorPreset>): Promise<EventColorPreset | undefined>;
-  deleteEventColorPreset(id: string): Promise<void>;
-  
-  // Franchise Management
-  createFranchise(franchise: InsertFranchise): Promise<Franchise>;
-  getFranchises(): Promise<Franchise[]>;
-  getFranchiseById(id: string): Promise<Franchise | undefined>;
-  getFranchiseByFranchiseId(franchiseId: string): Promise<Franchise | undefined>;
-  updateFranchise(id: string, updates: Partial<InsertFranchise>): Promise<Franchise | undefined>;
-  deleteFranchise(id: string): Promise<void>;
-  
-  // Franchise Locations
-  createFranchiseLocation(location: InsertFranchiseLocation): Promise<FranchiseLocation>;
-  getFranchiseLocations(franchiseId: string): Promise<FranchiseLocation[]>;
-  updateFranchiseLocation(id: string, updates: Partial<InsertFranchiseLocation>): Promise<FranchiseLocation | undefined>;
-  deleteFranchiseLocation(id: string): Promise<void>;
-  
-  // Partner API Credentials
-  createPartnerApiCredential(credential: InsertPartnerApiCredential): Promise<PartnerApiCredential>;
-  getPartnerApiCredentials(franchiseId: string): Promise<PartnerApiCredential[]>;
-  getPartnerApiCredentialByApiKey(apiKey: string): Promise<PartnerApiCredential | undefined>;
-  updatePartnerApiCredential(id: string, updates: Partial<InsertPartnerApiCredential>): Promise<PartnerApiCredential | undefined>;
-  incrementPartnerApiRequestCount(id: string): Promise<void>;
-  deletePartnerApiCredential(id: string): Promise<void>;
-  
-  // Partner API Logs
-  createPartnerApiLog(log: InsertPartnerApiLog): Promise<PartnerApiLog>;
-  getPartnerApiLogs(franchiseId: string, limit?: number): Promise<PartnerApiLog[]>;
-  
-  // Customer Preferences
-  getCustomerPreferences(userId: string): Promise<CustomerPreferences | undefined>;
-  upsertCustomerPreferences(preferences: InsertCustomerPreferences): Promise<CustomerPreferences>;
-  
-  // Lead-User Linking
-  updateLeadUserId(leadId: string, userId: string): Promise<Lead | undefined>;
-  
-  // Push Subscriptions
-  createPushSubscription(subscription: InsertPushSubscription): Promise<PushSub>;
-  getPushSubscriptionsByUser(userId: string): Promise<PushSub[]>;
-  getPushSubscriptionByEndpoint(endpoint: string): Promise<PushSub | undefined>;
-  deletePushSubscription(endpoint: string): Promise<void>;
-  getActivePushSubscriptions(): Promise<PushSub[]>;
-  getPushSubscriptionsByUserAndTenant(userId: string, tenantId: string): Promise<PushSub[]>;
-  
-  // Appointment Reminders
-  createAppointmentReminder(reminder: InsertAppointmentReminder): Promise<AppointmentReminder>;
-  getAppointmentRemindersByBooking(bookingId: string): Promise<AppointmentReminder[]>;
-  hasReminderBeenSent(bookingId: string, reminderType: string): Promise<boolean>;
-  getUpcomingBookingsForReminders(hoursAhead: number, maxHoursAhead: number, tenantId?: string): Promise<Booking[]>;
-  getUserByBookingEmail(email: string, tenantId: string): Promise<User | undefined>;
-  
-  // Paint Colors
-  getPaintColors(filters: { brand?: string; category?: string; search?: string; limit?: number }): Promise<PaintColor[]>;
-  getPaintColorById(id: string): Promise<PaintColor | undefined>;
-  getCoordinatingColors(color: PaintColor): Promise<PaintColor[]>;
-  seedPaintColors(): Promise<number>;
-  
-  // Customer Color Selections
-  createColorSelection(selection: InsertCustomerColorSelection): Promise<CustomerColorSelection>;
-  getColorSelectionsByEstimate(estimateId: string): Promise<CustomerColorSelection[]>;
-  
-  // Trial Tenants
-  createTrialTenant(tenant: InsertTrialTenant): Promise<TrialTenant>;
-  getTrialTenantById(id: string): Promise<TrialTenant | undefined>;
-  getTrialTenantBySlug(slug: string): Promise<TrialTenant | undefined>;
-  getTrialTenantByEmail(email: string): Promise<TrialTenant | undefined>;
-  getTrialTenants(status?: string): Promise<TrialTenant[]>;
-  updateTrialTenant(id: string, updates: Partial<TrialTenant>): Promise<TrialTenant | undefined>;
-  incrementTrialUsage(id: string, field: 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'): Promise<TrialTenant | undefined>;
-  markTrialStepComplete(id: string, step: string): Promise<TrialTenant | undefined>;
-  expireTrialTenants(): Promise<number>;
-  
-  // Trial Usage Log
-  logTrialUsage(log: InsertTrialUsageLog): Promise<TrialUsageLog>;
-  getTrialUsageLogs(trialTenantId: string): Promise<TrialUsageLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -444,11 +325,6 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async createUser(userData: Partial<UpsertUser>): Promise<User> {
-    const [user] = await db.insert(users).values(userData as UpsertUser).returning();
-    return user;
-  }
-
   async updateUserRole(id: string, role: string, tenantId?: string): Promise<User | undefined> {
     const updateData: Partial<User> = { role, updatedAt: new Date() };
     if (tenantId !== undefined) {
@@ -473,28 +349,16 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getLeadByEmail(email: string, tenantId?: string): Promise<Lead | undefined> {
-    if (tenantId) {
-      const [result] = await db.select().from(leads).where(and(eq(leads.email, email), eq(leads.tenantId, tenantId)));
-      return result;
-    }
+  async getLeadByEmail(email: string): Promise<Lead | undefined> {
     const [result] = await db.select().from(leads).where(eq(leads.email, email));
     return result;
   }
 
-  async getLeads(tenantId?: string): Promise<Lead[]> {
-    if (tenantId) {
-      return await db.select().from(leads).where(eq(leads.tenantId, tenantId)).orderBy(desc(leads.createdAt));
-    }
+  async getLeads(): Promise<Lead[]> {
     return await db.select().from(leads).orderBy(desc(leads.createdAt));
   }
 
-  async searchLeads(query: string, tenantId?: string): Promise<Lead[]> {
-    if (tenantId) {
-      return await db.select().from(leads)
-        .where(and(ilike(leads.email, `%${query}%`), eq(leads.tenantId, tenantId)))
-        .orderBy(desc(leads.createdAt));
-    }
+  async searchLeads(query: string): Promise<Lead[]> {
     return await db.select().from(leads)
       .where(ilike(leads.email, `%${query}%`))
       .orderBy(desc(leads.createdAt));
@@ -511,27 +375,12 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getEstimatesByLeadId(leadId: string, tenantId?: string): Promise<Estimate[]> {
-    if (tenantId) {
-      return await db.select().from(estimates).where(and(eq(estimates.leadId, leadId), eq(estimates.tenantId, tenantId))).orderBy(desc(estimates.createdAt));
-    }
+  async getEstimatesByLeadId(leadId: string): Promise<Estimate[]> {
     return await db.select().from(estimates).where(eq(estimates.leadId, leadId)).orderBy(desc(estimates.createdAt));
   }
 
-  async getEstimates(tenantId?: string): Promise<Estimate[]> {
-    if (tenantId) {
-      return await db.select().from(estimates).where(eq(estimates.tenantId, tenantId)).orderBy(desc(estimates.createdAt));
-    }
+  async getEstimates(): Promise<Estimate[]> {
     return await db.select().from(estimates).orderBy(desc(estimates.createdAt));
-  }
-
-  async updateEstimate(id: string, updates: { status?: string }): Promise<Estimate | undefined> {
-    const [result] = await db
-      .update(estimates)
-      .set(updates)
-      .where(eq(estimates.id, id))
-      .returning();
-    return result;
   }
 
   // Legacy estimate requests
@@ -591,10 +440,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getCrmDeals(tenantId?: string): Promise<CrmDeal[]> {
-    if (tenantId) {
-      return await db.select().from(crmDeals).where(eq(crmDeals.tenantId, tenantId)).orderBy(desc(crmDeals.createdAt));
-    }
+  async getCrmDeals(): Promise<CrmDeal[]> {
     return await db.select().from(crmDeals).orderBy(desc(crmDeals.createdAt));
   }
 
@@ -603,10 +449,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getCrmDealsByStage(stage: string, tenantId?: string): Promise<CrmDeal[]> {
-    if (tenantId) {
-      return await db.select().from(crmDeals).where(and(eq(crmDeals.stage, stage), eq(crmDeals.tenantId, tenantId))).orderBy(desc(crmDeals.createdAt));
-    }
+  async getCrmDealsByStage(stage: string): Promise<CrmDeal[]> {
     return await db.select().from(crmDeals).where(eq(crmDeals.stage, stage)).orderBy(desc(crmDeals.createdAt));
   }
 
@@ -623,19 +466,7 @@ export class DatabaseStorage implements IStorage {
     await db.delete(crmDeals).where(eq(crmDeals.id, id));
   }
 
-  async getCrmPipelineSummary(tenantId?: string): Promise<{ stage: string; count: number; totalValue: string }[]> {
-    if (tenantId) {
-      const result = await db
-        .select({
-          stage: crmDeals.stage,
-          count: sql<number>`count(*)::int`,
-          totalValue: sql<string>`coalesce(sum(${crmDeals.value}), 0)::text`
-        })
-        .from(crmDeals)
-        .where(eq(crmDeals.tenantId, tenantId))
-        .groupBy(crmDeals.stage);
-      return result;
-    }
+  async getCrmPipelineSummary(): Promise<{ stage: string; count: number; totalValue: string }[]> {
     const result = await db
       .select({
         stage: crmDeals.stage,
@@ -908,24 +739,6 @@ export class DatabaseStorage implements IStorage {
       .update(releaseVersions)
       .set({ solanaTxSignature: signature, solanaTxStatus: status })
       .where(eq(releaseVersions.id, id))
-      .returning();
-    return result;
-  }
-
-  async updateReleaseDarkwaveStatus(id: string, txHash: string, status: string): Promise<ReleaseVersion | undefined> {
-    const [result] = await db
-      .update(releaseVersions)
-      .set({ darkwaveTxSignature: txHash, darkwaveTxStatus: status })
-      .where(eq(releaseVersions.id, id))
-      .returning();
-    return result;
-  }
-
-  async updateHallmarkDarkwave(id: string, txSignature: string, explorerUrl: string): Promise<Hallmark | undefined> {
-    const [result] = await db
-      .update(hallmarks)
-      .set({ darkwaveTxSignature: txSignature, darkwaveExplorerUrl: explorerUrl, updatedAt: new Date() })
-      .where(eq(hallmarks.id, id))
       .returning();
     return result;
   }
@@ -2106,780 +1919,6 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(documentSignatures)
       .where(eq(documentSignatures.documentId, documentId))
       .orderBy(desc(documentSignatures.signedAt));
-  }
-
-  // Calendar Events
-  async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
-    const [result] = await db.insert(calendarEvents).values(event).returning();
-    return result;
-  }
-
-  async getCalendarEvents(tenantId: string, startDate?: Date, endDate?: Date): Promise<CalendarEvent[]> {
-    if (startDate && endDate) {
-      return await db.select().from(calendarEvents)
-        .where(and(
-          eq(calendarEvents.tenantId, tenantId),
-          sql`${calendarEvents.startTime} >= ${startDate}`,
-          sql`${calendarEvents.startTime} <= ${endDate}`
-        ))
-        .orderBy(calendarEvents.startTime);
-    }
-    return await db.select().from(calendarEvents)
-      .where(eq(calendarEvents.tenantId, tenantId))
-      .orderBy(calendarEvents.startTime);
-  }
-
-  async getCalendarEventById(id: string): Promise<CalendarEvent | undefined> {
-    const [result] = await db.select().from(calendarEvents).where(eq(calendarEvents.id, id));
-    return result;
-  }
-
-  async getCalendarEventsByDate(tenantId: string, date: Date): Promise<CalendarEvent[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-    
-    return await db.select().from(calendarEvents)
-      .where(and(
-        eq(calendarEvents.tenantId, tenantId),
-        sql`${calendarEvents.startTime} >= ${startOfDay}`,
-        sql`${calendarEvents.startTime} <= ${endOfDay}`
-      ))
-      .orderBy(calendarEvents.startTime);
-  }
-
-  async getCalendarEventsByAssignee(tenantId: string, assignedTo: string): Promise<CalendarEvent[]> {
-    return await db.select().from(calendarEvents)
-      .where(and(
-        eq(calendarEvents.tenantId, tenantId),
-        eq(calendarEvents.assignedTo, assignedTo)
-      ))
-      .orderBy(calendarEvents.startTime);
-  }
-
-  async updateCalendarEvent(id: string, updates: Partial<InsertCalendarEvent>): Promise<CalendarEvent | undefined> {
-    const [result] = await db.update(calendarEvents)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(calendarEvents.id, id))
-      .returning();
-    return result;
-  }
-
-  async updateCalendarEventStatus(id: string, status: string): Promise<CalendarEvent | undefined> {
-    const [result] = await db.update(calendarEvents)
-      .set({ status, updatedAt: new Date() })
-      .where(eq(calendarEvents.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteCalendarEvent(id: string): Promise<void> {
-    await db.delete(calendarReminders).where(eq(calendarReminders.eventId, id));
-    await db.delete(calendarEvents).where(eq(calendarEvents.id, id));
-  }
-
-  // Calendar Reminders
-  async createCalendarReminder(reminder: InsertCalendarReminder): Promise<CalendarReminder> {
-    const [result] = await db.insert(calendarReminders).values(reminder).returning();
-    return result;
-  }
-
-  async getCalendarReminders(eventId: string): Promise<CalendarReminder[]> {
-    return await db.select().from(calendarReminders)
-      .where(eq(calendarReminders.eventId, eventId))
-      .orderBy(calendarReminders.reminderTime);
-  }
-
-  async getPendingReminders(beforeTime: Date): Promise<CalendarReminder[]> {
-    return await db.select().from(calendarReminders)
-      .where(and(
-        eq(calendarReminders.status, 'pending'),
-        sql`${calendarReminders.reminderTime} <= ${beforeTime}`
-      ))
-      .orderBy(calendarReminders.reminderTime);
-  }
-
-  async updateReminderStatus(id: string, status: string, errorMessage?: string): Promise<CalendarReminder | undefined> {
-    const [result] = await db.update(calendarReminders)
-      .set({ status, errorMessage })
-      .where(eq(calendarReminders.id, id))
-      .returning();
-    return result;
-  }
-
-  async markReminderSent(id: string): Promise<CalendarReminder | undefined> {
-    const [result] = await db.update(calendarReminders)
-      .set({ status: 'sent', sentAt: new Date() })
-      .where(eq(calendarReminders.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteCalendarReminder(id: string): Promise<void> {
-    await db.delete(calendarReminders).where(eq(calendarReminders.id, id));
-  }
-
-  // Event Color Presets
-  async createEventColorPreset(preset: InsertEventColorPreset): Promise<EventColorPreset> {
-    const [result] = await db.insert(eventColorPresets).values(preset).returning();
-    return result;
-  }
-
-  async getEventColorPresets(tenantId: string): Promise<EventColorPreset[]> {
-    return await db.select().from(eventColorPresets)
-      .where(eq(eventColorPresets.tenantId, tenantId))
-      .orderBy(eventColorPresets.name);
-  }
-
-  async updateEventColorPreset(id: string, updates: Partial<InsertEventColorPreset>): Promise<EventColorPreset | undefined> {
-    const [result] = await db.update(eventColorPresets)
-      .set(updates)
-      .where(eq(eventColorPresets.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteEventColorPreset(id: string): Promise<void> {
-    await db.delete(eventColorPresets).where(eq(eventColorPresets.id, id));
-  }
-
-  // ==========================================
-  // FRANCHISE MANAGEMENT
-  // ==========================================
-
-  async createFranchise(franchise: InsertFranchise): Promise<Franchise> {
-    const [result] = await db.insert(franchises).values(franchise).returning();
-    return result;
-  }
-
-  async getFranchises(): Promise<Franchise[]> {
-    return await db.select().from(franchises).orderBy(desc(franchises.createdAt));
-  }
-
-  async getFranchiseById(id: string): Promise<Franchise | undefined> {
-    const [result] = await db.select().from(franchises).where(eq(franchises.id, id));
-    return result;
-  }
-
-  async getFranchiseByFranchiseId(franchiseId: string): Promise<Franchise | undefined> {
-    const [result] = await db.select().from(franchises).where(eq(franchises.franchiseId, franchiseId));
-    return result;
-  }
-
-  async updateFranchise(id: string, updates: Partial<InsertFranchise>): Promise<Franchise | undefined> {
-    const [result] = await db.update(franchises)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(franchises.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteFranchise(id: string): Promise<void> {
-    // Delete related data first
-    await db.delete(franchiseLocations).where(eq(franchiseLocations.franchiseId, id));
-    // Delete API credentials and logs
-    const credentials = await db.select().from(partnerApiCredentials).where(eq(partnerApiCredentials.franchiseId, id));
-    for (const cred of credentials) {
-      await db.delete(partnerApiLogs).where(eq(partnerApiLogs.credentialId, cred.id));
-    }
-    await db.delete(partnerApiCredentials).where(eq(partnerApiCredentials.franchiseId, id));
-    await db.delete(franchises).where(eq(franchises.id, id));
-  }
-
-  // Franchise Locations
-  async createFranchiseLocation(location: InsertFranchiseLocation): Promise<FranchiseLocation> {
-    const [result] = await db.insert(franchiseLocations).values(location).returning();
-    return result;
-  }
-
-  async getFranchiseLocations(franchiseId: string): Promise<FranchiseLocation[]> {
-    return await db.select().from(franchiseLocations)
-      .where(eq(franchiseLocations.franchiseId, franchiseId))
-      .orderBy(franchiseLocations.name);
-  }
-
-  async updateFranchiseLocation(id: string, updates: Partial<InsertFranchiseLocation>): Promise<FranchiseLocation | undefined> {
-    const [result] = await db.update(franchiseLocations)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(franchiseLocations.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteFranchiseLocation(id: string): Promise<void> {
-    await db.delete(franchiseLocations).where(eq(franchiseLocations.id, id));
-  }
-
-  // Partner API Credentials
-  async createPartnerApiCredential(credential: InsertPartnerApiCredential): Promise<PartnerApiCredential> {
-    const [result] = await db.insert(partnerApiCredentials).values(credential).returning();
-    return result;
-  }
-
-  async getPartnerApiCredentials(franchiseId: string): Promise<PartnerApiCredential[]> {
-    return await db.select().from(partnerApiCredentials)
-      .where(eq(partnerApiCredentials.franchiseId, franchiseId))
-      .orderBy(desc(partnerApiCredentials.createdAt));
-  }
-
-  async getPartnerApiCredentialByApiKey(apiKey: string): Promise<PartnerApiCredential | undefined> {
-    const [result] = await db.select().from(partnerApiCredentials)
-      .where(eq(partnerApiCredentials.apiKey, apiKey));
-    return result;
-  }
-
-  async updatePartnerApiCredential(id: string, updates: Partial<InsertPartnerApiCredential>): Promise<PartnerApiCredential | undefined> {
-    const [result] = await db.update(partnerApiCredentials)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(partnerApiCredentials.id, id))
-      .returning();
-    return result;
-  }
-
-  async incrementPartnerApiRequestCount(id: string): Promise<void> {
-    await db.update(partnerApiCredentials)
-      .set({ 
-        requestCount: sql`${partnerApiCredentials.requestCount} + 1`,
-        lastUsedAt: new Date()
-      })
-      .where(eq(partnerApiCredentials.id, id));
-  }
-
-  async deletePartnerApiCredential(id: string): Promise<void> {
-    await db.delete(partnerApiLogs).where(eq(partnerApiLogs.credentialId, id));
-    await db.delete(partnerApiCredentials).where(eq(partnerApiCredentials.id, id));
-  }
-
-  // Partner API Logs
-  async createPartnerApiLog(log: InsertPartnerApiLog): Promise<PartnerApiLog> {
-    const [result] = await db.insert(partnerApiLogs).values(log).returning();
-    return result;
-  }
-
-  async getPartnerApiLogs(franchiseId: string, limit: number = 50): Promise<PartnerApiLog[]> {
-    return await db.select().from(partnerApiLogs)
-      .where(eq(partnerApiLogs.franchiseId, franchiseId))
-      .orderBy(desc(partnerApiLogs.createdAt))
-      .limit(limit);
-  }
-
-  // Customer Preferences
-  async getCustomerPreferences(userId: string): Promise<CustomerPreferences | undefined> {
-    const [result] = await db.select().from(customerPreferences)
-      .where(eq(customerPreferences.userId, userId));
-    return result;
-  }
-
-  async upsertCustomerPreferences(data: InsertCustomerPreferences): Promise<CustomerPreferences> {
-    const [result] = await db.insert(customerPreferences)
-      .values(data)
-      .onConflictDoUpdate({
-        target: customerPreferences.userId,
-        set: {
-          ...data,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return result;
-  }
-
-  // Lead-User Linking
-  async updateLeadUserId(leadId: string, userId: string): Promise<Lead | undefined> {
-    const [result] = await db.update(leads)
-      .set({ userId })
-      .where(eq(leads.id, leadId))
-      .returning();
-    return result;
-  }
-
-  // Push Subscriptions
-  async createPushSubscription(subscription: InsertPushSubscription): Promise<PushSub> {
-    const existing = await this.getPushSubscriptionByEndpoint(subscription.endpoint);
-    if (existing) {
-      const [result] = await db.update(pushSubscriptions)
-        .set({ ...subscription, isActive: true, updatedAt: new Date() })
-        .where(eq(pushSubscriptions.endpoint, subscription.endpoint))
-        .returning();
-      return result;
-    }
-    const [result] = await db.insert(pushSubscriptions).values(subscription).returning();
-    return result;
-  }
-
-  async getPushSubscriptionsByUser(userId: string): Promise<PushSub[]> {
-    return await db.select().from(pushSubscriptions)
-      .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.isActive, true)));
-  }
-
-  async getPushSubscriptionByEndpoint(endpoint: string): Promise<PushSub | undefined> {
-    const [result] = await db.select().from(pushSubscriptions)
-      .where(eq(pushSubscriptions.endpoint, endpoint));
-    return result;
-  }
-
-  async deletePushSubscription(endpoint: string): Promise<void> {
-    await db.update(pushSubscriptions)
-      .set({ isActive: false, updatedAt: new Date() })
-      .where(eq(pushSubscriptions.endpoint, endpoint));
-  }
-
-  async getActivePushSubscriptions(): Promise<PushSub[]> {
-    return await db.select().from(pushSubscriptions)
-      .where(eq(pushSubscriptions.isActive, true));
-  }
-
-  async getPushSubscriptionsByUserAndTenant(userId: string, tenantId: string): Promise<PushSub[]> {
-    return await db.select().from(pushSubscriptions)
-      .where(and(
-        eq(pushSubscriptions.userId, userId),
-        eq(pushSubscriptions.tenantId, tenantId),
-        eq(pushSubscriptions.isActive, true)
-      ));
-  }
-
-  // Appointment Reminders
-  async createAppointmentReminder(reminder: InsertAppointmentReminder): Promise<AppointmentReminder> {
-    const [result] = await db.insert(appointmentReminders).values(reminder).returning();
-    return result;
-  }
-
-  async getAppointmentRemindersByBooking(bookingId: string): Promise<AppointmentReminder[]> {
-    return await db.select().from(appointmentReminders)
-      .where(eq(appointmentReminders.bookingId, bookingId));
-  }
-
-  async hasReminderBeenSent(bookingId: string, reminderType: string): Promise<boolean> {
-    const [result] = await db.select().from(appointmentReminders)
-      .where(and(
-        eq(appointmentReminders.bookingId, bookingId),
-        eq(appointmentReminders.reminderType, reminderType)
-      ));
-    return !!result;
-  }
-
-  async getUpcomingBookingsForReminders(hoursAhead: number, maxHoursAhead: number, tenantId?: string): Promise<Booking[]> {
-    const now = new Date();
-    const minTime = new Date(now.getTime() + hoursAhead * 60 * 60 * 1000);
-    const maxTime = new Date(now.getTime() + maxHoursAhead * 60 * 60 * 1000);
-    
-    const conditions = [
-      eq(bookings.status, 'confirmed'),
-      sql`${bookings.scheduledDate} >= ${minTime}`,
-      sql`${bookings.scheduledDate} <= ${maxTime}`
-    ];
-    
-    if (tenantId) {
-      conditions.push(eq(bookings.tenantId, tenantId));
-    }
-    
-    return await db.select().from(bookings)
-      .where(and(...conditions));
-  }
-  
-  async getUserByBookingEmail(email: string, tenantId: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users)
-      .where(and(eq(users.email, email), eq(users.tenantId, tenantId)));
-    return user;
-  }
-
-  // Paint Colors
-  async getPaintColors(filters: { brand?: string; category?: string; search?: string; limit?: number }): Promise<PaintColor[]> {
-    const conditions = [eq(paintColors.isActive, true)];
-    
-    if (filters.brand) {
-      conditions.push(eq(paintColors.brand, filters.brand));
-    }
-    if (filters.category) {
-      conditions.push(eq(paintColors.category, filters.category));
-    }
-    if (filters.search) {
-      conditions.push(or(
-        ilike(paintColors.colorName, `%${filters.search}%`),
-        ilike(paintColors.colorCode, `%${filters.search}%`)
-      )!);
-    }
-    
-    return await db.select().from(paintColors)
-      .where(and(...conditions))
-      .orderBy(desc(paintColors.popularity))
-      .limit(filters.limit || 50);
-  }
-
-  async getPaintColorById(id: string): Promise<PaintColor | undefined> {
-    const [color] = await db.select().from(paintColors).where(eq(paintColors.id, id));
-    return color;
-  }
-
-  async getCoordinatingColors(color: PaintColor): Promise<PaintColor[]> {
-    if (!color.coordinatingColors || color.coordinatingColors.length === 0) {
-      return [];
-    }
-    return await db.select().from(paintColors)
-      .where(inArray(paintColors.colorCode, color.coordinatingColors));
-  }
-
-  async seedPaintColors(): Promise<number> {
-    const existingColors = await db.select().from(paintColors).limit(1);
-    if (existingColors.length > 0) {
-      return 0;
-    }
-
-    const seedColors: InsertPaintColor[] = [
-      // Sherwin-Williams Whites
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7005", colorName: "Pure White", hexValue: "#F3EDE4", category: "white", undertone: "neutral", lrv: 84, coordinatingColors: ["SW 7006", "SW 7015"], trimColors: ["SW 7006"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 100 },
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7011", colorName: "Natural Choice", hexValue: "#E6DFD5", category: "white", undertone: "warm", lrv: 73, coordinatingColors: ["SW 7012", "SW 7013"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 95 },
-      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 7012", colorName: "Creamy", hexValue: "#F4E8D6", category: "white", undertone: "warm", lrv: 81, coordinatingColors: ["SW 7011", "SW 7013"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "kitchen"], popularity: 92 },
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7015", colorName: "Repose Gray", hexValue: "#C2BCB4", category: "neutral", undertone: "cool", lrv: 58, coordinatingColors: ["SW 7016", "SW 7005"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 98 },
-      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 7016", colorName: "Mindful Gray", hexValue: "#BBB5AC", category: "neutral", undertone: "warm", lrv: 48, coordinatingColors: ["SW 7015", "SW 7017"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["living-room", "office"], popularity: 90 },
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 6119", colorName: "Antique White", hexValue: "#F2E6D9", category: "white", undertone: "warm", lrv: 72, coordinatingColors: ["SW 6120", "SW 6121"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 88 },
-      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 7029", colorName: "Agreeable Gray", hexValue: "#D1CBC0", category: "neutral", undertone: "warm", lrv: 60, coordinatingColors: ["SW 7015", "SW 7030"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 99 },
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 7030", colorName: "Anew Gray", hexValue: "#C8C0B5", category: "neutral", undertone: "warm", lrv: 47, coordinatingColors: ["SW 7029", "SW 7031"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["bedroom", "office"], popularity: 85 },
-      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 6106", colorName: "Kilim Beige", hexValue: "#CCC1B0", category: "warm", undertone: "warm", lrv: 57, coordinatingColors: ["SW 6105", "SW 6107"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 80 },
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 6126", colorName: "Navajo White", hexValue: "#F1E0CC", category: "warm", undertone: "warm", lrv: 77, coordinatingColors: ["SW 6125", "SW 6127"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom"], popularity: 78 },
-      
-      // Benjamin Moore Classics
-      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "HC-172", colorName: "Revere Pewter", hexValue: "#CCC5B9", category: "neutral", undertone: "warm", lrv: 55, coordinatingColors: ["HC-173", "OC-17"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 97 },
-      { brand: "benjamin-moore", productLine: "Aura", colorCode: "OC-17", colorName: "White Dove", hexValue: "#F3EFE0", category: "white", undertone: "warm", lrv: 85, coordinatingColors: ["HC-172", "OC-20"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 96 },
-      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "OC-20", colorName: "Pale Oak", hexValue: "#D7CFC4", category: "neutral", undertone: "warm", lrv: 69, coordinatingColors: ["OC-17", "OC-21"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 94 },
-      { brand: "benjamin-moore", productLine: "Aura", colorCode: "AF-685", colorName: "Thunder", hexValue: "#3D3F43", category: "accent", undertone: "cool", lrv: 5, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["office", "accent-wall"], popularity: 75 },
-      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "2163-10", colorName: "Black", hexValue: "#313131", category: "accent", undertone: "neutral", lrv: 3, coordinatingColors: ["OC-17", "OC-20"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "exterior-trim"], popularity: 70 },
-      { brand: "benjamin-moore", productLine: "Aura", colorCode: "HC-80", colorName: "Bleeker Beige", hexValue: "#C9BDA8", category: "warm", undertone: "warm", lrv: 52, coordinatingColors: ["HC-81", "OC-17"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 82 },
-      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "1471", colorName: "Swiss Coffee", hexValue: "#F0E9DF", category: "white", undertone: "warm", lrv: 81, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom"], popularity: 91 },
-      { brand: "benjamin-moore", productLine: "Aura", colorCode: "2163-40", colorName: "Gray Owl", hexValue: "#C5C4BC", category: "neutral", undertone: "cool", lrv: 65, coordinatingColors: ["OC-17", "2163-50"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: false, roomTypes: ["living-room", "bedroom"], popularity: 89 },
-      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "CC-40", colorName: "Cloud White", hexValue: "#F0ECE3", category: "white", undertone: "neutral", lrv: 83, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 93 },
-      { brand: "benjamin-moore", productLine: "Aura", colorCode: "HC-173", colorName: "Edgecomb Gray", hexValue: "#D5CEC4", category: "neutral", undertone: "warm", lrv: 63, coordinatingColors: ["HC-172", "OC-17"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 87 },
-      
-      // Popular Accent Colors
-      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 6244", colorName: "Naval", hexValue: "#34495E", category: "accent", undertone: "cool", lrv: 4, coordinatingColors: ["SW 7005", "SW 6245"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "office", "bedroom"], popularity: 86 },
-      { brand: "sherwin-williams", productLine: "Duration", colorCode: "SW 6258", colorName: "Tricorn Black", hexValue: "#2E2E2E", category: "accent", undertone: "neutral", lrv: 3, coordinatingColors: ["SW 7005", "SW 7015"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "exterior-trim"], popularity: 83 },
-      { brand: "benjamin-moore", productLine: "Aura", colorCode: "2062-10", colorName: "Hale Navy", hexValue: "#3C4A5C", category: "accent", undertone: "cool", lrv: 5, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "office"], popularity: 84 },
-      { brand: "sherwin-williams", productLine: "Emerald", colorCode: "SW 6207", colorName: "Retreat", hexValue: "#5F7167", category: "accent", undertone: "cool", lrv: 15, coordinatingColors: ["SW 7005", "SW 6208"], trimColors: ["SW 7005"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom"], popularity: 76 },
-      { brand: "benjamin-moore", productLine: "Regal Select", colorCode: "HC-158", colorName: "Newburyport Blue", hexValue: "#4A6270", category: "accent", undertone: "cool", lrv: 12, coordinatingColors: ["OC-17", "HC-172"], trimColors: ["OC-17"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom", "office"], popularity: 79 },
-      
-      // Behr (Home Depot) Colors
-      { brand: "behr", productLine: "Marquee", colorCode: "N520-1", colorName: "White Metal", hexValue: "#E8E4DF", category: "white", undertone: "cool", lrv: 80, coordinatingColors: ["N520-2", "N520-3"], trimColors: ["N520-1"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 88 },
-      { brand: "behr", productLine: "Marquee", colorCode: "W-B-600", colorName: "Ultra Pure White", hexValue: "#F5F5F5", category: "white", undertone: "neutral", lrv: 94, coordinatingColors: ["N520-1", "PPU18-06"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "kitchen"], popularity: 92 },
-      { brand: "behr", productLine: "Premium Plus", colorCode: "PPU18-06", colorName: "Ultra Silver", hexValue: "#C5C2BD", category: "neutral", undertone: "cool", lrv: 52, coordinatingColors: ["PPU18-05", "PPU18-07"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "office"], popularity: 85 },
-      { brand: "behr", productLine: "Marquee", colorCode: "N370-3", colorName: "Sage Green", hexValue: "#A8B5A0", category: "accent", undertone: "cool", lrv: 44, coordinatingColors: ["N370-2", "N370-4"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bedroom", "bathroom", "kitchen"], popularity: 78 },
-      { brand: "behr", productLine: "Premium Plus", colorCode: "PPU5-04", colorName: "Café Ole", hexValue: "#8B7355", category: "warm", undertone: "warm", lrv: 18, coordinatingColors: ["PPU5-03", "PPU5-05"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "dining-room"], popularity: 72 },
-      { brand: "behr", productLine: "Marquee", colorCode: "M510-5", colorName: "Blue Anthem", hexValue: "#4A6276", category: "accent", undertone: "cool", lrv: 12, coordinatingColors: ["M510-4", "M510-6"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "bedroom", "office"], popularity: 80 },
-      { brand: "behr", productLine: "Premium Plus", colorCode: "HDC-MD-04", colorName: "Totally Black", hexValue: "#2A2A2A", category: "accent", undertone: "neutral", lrv: 3, coordinatingColors: ["W-B-600", "N520-1"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "exterior-trim"], popularity: 75 },
-      { brand: "behr", productLine: "Marquee", colorCode: "GR-W10", colorName: "Greige", hexValue: "#BFB8AD", category: "neutral", undertone: "warm", lrv: 48, coordinatingColors: ["GR-W09", "GR-W11"], trimColors: ["W-B-600"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 83 },
-      
-      // Valspar (Lowe's) Colors
-      { brand: "valspar", productLine: "Reserve", colorCode: "1006-1B", colorName: "Du Jour", hexValue: "#F2EDE5", category: "white", undertone: "warm", lrv: 83, coordinatingColors: ["1006-2B", "1006-3B"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom", "bathroom"], popularity: 86 },
-      { brand: "valspar", productLine: "Signature", colorCode: "7002-7", colorName: "Bistro White", hexValue: "#EDE7DA", category: "white", undertone: "warm", lrv: 78, coordinatingColors: ["7002-6", "7002-8"], trimColors: ["7002-7"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["kitchen", "dining-room"], popularity: 84 },
-      { brand: "valspar", productLine: "Reserve", colorCode: "4003-1A", colorName: "Gray Silt", hexValue: "#C4BEB5", category: "neutral", undertone: "warm", lrv: 50, coordinatingColors: ["4003-2A", "4003-3A"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 82 },
-      { brand: "valspar", productLine: "Signature", colorCode: "5002-1A", colorName: "Coastal Fog", hexValue: "#C8D0D3", category: "neutral", undertone: "cool", lrv: 58, coordinatingColors: ["5002-2A", "5002-3A"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["bathroom", "bedroom"], popularity: 79 },
-      { brand: "valspar", productLine: "Reserve", colorCode: "5001-3B", colorName: "Ocean Storm", hexValue: "#4B5E6B", category: "accent", undertone: "cool", lrv: 10, coordinatingColors: ["5001-2B", "5001-4B"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "office"], popularity: 77 },
-      { brand: "valspar", productLine: "Signature", colorCode: "6005-1C", colorName: "Evening Emerald", hexValue: "#3D5C52", category: "accent", undertone: "cool", lrv: 9, coordinatingColors: ["6005-2C", "6005-3C"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "bedroom"], popularity: 74 },
-      { brand: "valspar", productLine: "Reserve", colorCode: "3001-1A", colorName: "Soft Chamois", hexValue: "#E5D9C7", category: "warm", undertone: "warm", lrv: 68, coordinatingColors: ["3001-2A", "3001-3A"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["living-room", "bedroom"], popularity: 81 },
-      { brand: "valspar", productLine: "Signature", colorCode: "1007-10C", colorName: "Cracked Pepper", hexValue: "#3A3A3A", category: "accent", undertone: "neutral", lrv: 4, coordinatingColors: ["1006-1B", "7002-7"], trimColors: ["1006-1B"], interiorRecommended: true, exteriorRecommended: true, roomTypes: ["accent-wall", "exterior-trim"], popularity: 73 },
-    ];
-
-    await db.insert(paintColors).values(seedColors);
-    return seedColors.length;
-  }
-
-  // Customer Color Selections
-  async createColorSelection(selection: InsertCustomerColorSelection): Promise<CustomerColorSelection> {
-    const [result] = await db.insert(customerColorSelections).values(selection).returning();
-    return result;
-  }
-
-  async getColorSelectionsByEstimate(estimateId: string): Promise<CustomerColorSelection[]> {
-    return await db.select().from(customerColorSelections)
-      .where(eq(customerColorSelections.estimateId, estimateId));
-  }
-
-  // Trial Tenants
-  async createTrialTenant(tenant: InsertTrialTenant): Promise<TrialTenant> {
-    const [result] = await db.insert(trialTenants).values(tenant).returning();
-    return result;
-  }
-
-  async getTrialTenantById(id: string): Promise<TrialTenant | undefined> {
-    const [result] = await db.select().from(trialTenants)
-      .where(eq(trialTenants.id, id));
-    return result;
-  }
-
-  async getTrialTenantBySlug(slug: string): Promise<TrialTenant | undefined> {
-    const [result] = await db.select().from(trialTenants)
-      .where(eq(trialTenants.companySlug, slug));
-    return result;
-  }
-
-  async getTrialTenantByEmail(email: string): Promise<TrialTenant | undefined> {
-    const [result] = await db.select().from(trialTenants)
-      .where(eq(trialTenants.ownerEmail, email));
-    return result;
-  }
-
-  async getTrialTenants(status?: string): Promise<TrialTenant[]> {
-    if (status) {
-      return await db.select().from(trialTenants)
-        .where(eq(trialTenants.status, status))
-        .orderBy(desc(trialTenants.createdAt));
-    }
-    return await db.select().from(trialTenants)
-      .orderBy(desc(trialTenants.createdAt));
-  }
-
-  async updateTrialTenant(id: string, updates: Partial<TrialTenant>): Promise<TrialTenant | undefined> {
-    const [result] = await db.update(trialTenants)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(trialTenants.id, id))
-      .returning();
-    return result;
-  }
-
-  async incrementTrialUsage(id: string, field: 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'): Promise<TrialTenant | undefined> {
-    const [result] = await db.update(trialTenants)
-      .set({ 
-        [field]: sql`${trialTenants[field]} + 1`,
-        lastActivityAt: new Date(),
-        updatedAt: new Date()
-      })
-      .where(eq(trialTenants.id, id))
-      .returning();
-    return result;
-  }
-
-  async markTrialStepComplete(id: string, step: string): Promise<TrialTenant | undefined> {
-    const tenant = await this.getTrialTenantById(id);
-    if (!tenant) return undefined;
-    
-    const completedSteps = tenant.completedSteps || [];
-    if (!completedSteps.includes(step)) {
-      completedSteps.push(step);
-    }
-    
-    const [result] = await db.update(trialTenants)
-      .set({ 
-        completedSteps,
-        onboardingStep: completedSteps.length + 1,
-        lastActivityAt: new Date(),
-        updatedAt: new Date()
-      })
-      .where(eq(trialTenants.id, id))
-      .returning();
-    return result;
-  }
-
-  async expireTrialTenants(): Promise<number> {
-    const result = await db.update(trialTenants)
-      .set({ status: 'expired', updatedAt: new Date() })
-      .where(and(
-        eq(trialTenants.status, 'active'),
-        sql`${trialTenants.trialExpiresAt} < NOW()`
-      ))
-      .returning();
-    return result.length;
-  }
-
-  // Trial Usage Log
-  async logTrialUsage(log: InsertTrialUsageLog): Promise<TrialUsageLog> {
-    const [result] = await db.insert(trialUsageLog).values(log).returning();
-    return result;
-  }
-
-  async getTrialUsageLogs(trialTenantId: string): Promise<TrialUsageLog[]> {
-    return await db.select().from(trialUsageLog)
-      .where(eq(trialUsageLog.trialTenantId, trialTenantId))
-      .orderBy(desc(trialUsageLog.createdAt));
-  }
-
-  // ============================================
-  // ROYALTY LEDGER OPERATIONS
-  // ============================================
-
-  // Revenue entries
-  async createRoyaltyRevenue(revenue: InsertRoyaltyRevenue): Promise<RoyaltyRevenue> {
-    const [result] = await db.insert(royaltyRevenue).values(revenue).returning();
-    return result;
-  }
-
-  async getRoyaltyRevenue(productCode?: string): Promise<RoyaltyRevenue[]> {
-    if (productCode) {
-      return await db.select().from(royaltyRevenue)
-        .where(eq(royaltyRevenue.productCode, productCode))
-        .orderBy(desc(royaltyRevenue.periodStart));
-    }
-    return await db.select().from(royaltyRevenue)
-      .orderBy(desc(royaltyRevenue.periodStart));
-  }
-
-  async getRoyaltyRevenueByPeriod(year: number, month?: number): Promise<RoyaltyRevenue[]> {
-    const startDate = new Date(year, month ? month - 1 : 0, 1);
-    const endDate = month 
-      ? new Date(year, month, 0, 23, 59, 59) 
-      : new Date(year, 11, 31, 23, 59, 59);
-    
-    return await db.select().from(royaltyRevenue)
-      .where(and(
-        sql`${royaltyRevenue.periodStart} >= ${startDate}`,
-        sql`${royaltyRevenue.periodEnd} <= ${endDate}`
-      ))
-      .orderBy(desc(royaltyRevenue.periodStart));
-  }
-
-  async updateRoyaltyRevenue(id: string, updates: Partial<InsertRoyaltyRevenue>): Promise<RoyaltyRevenue | undefined> {
-    const [result] = await db.update(royaltyRevenue)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(royaltyRevenue.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteRoyaltyRevenue(id: string): Promise<void> {
-    await db.delete(royaltyRevenue).where(eq(royaltyRevenue.id, id));
-  }
-
-  // Expenses
-  async createRoyaltyExpense(expense: InsertRoyaltyExpense): Promise<RoyaltyExpense> {
-    const [result] = await db.insert(royaltyExpenses).values(expense).returning();
-    return result;
-  }
-
-  async getRoyaltyExpenses(productCode?: string): Promise<RoyaltyExpense[]> {
-    if (productCode) {
-      return await db.select().from(royaltyExpenses)
-        .where(eq(royaltyExpenses.productCode, productCode))
-        .orderBy(desc(royaltyExpenses.expenseDate));
-    }
-    return await db.select().from(royaltyExpenses)
-      .orderBy(desc(royaltyExpenses.expenseDate));
-  }
-
-  async getRoyaltyExpensesByPeriod(year: number, month?: number): Promise<RoyaltyExpense[]> {
-    if (month) {
-      return await db.select().from(royaltyExpenses)
-        .where(and(
-          eq(royaltyExpenses.periodYear, year),
-          eq(royaltyExpenses.periodMonth, month)
-        ))
-        .orderBy(desc(royaltyExpenses.expenseDate));
-    }
-    return await db.select().from(royaltyExpenses)
-      .where(eq(royaltyExpenses.periodYear, year))
-      .orderBy(desc(royaltyExpenses.expenseDate));
-  }
-
-  async updateRoyaltyExpense(id: string, updates: Partial<InsertRoyaltyExpense>): Promise<RoyaltyExpense | undefined> {
-    const [result] = await db.update(royaltyExpenses)
-      .set(updates)
-      .where(eq(royaltyExpenses.id, id))
-      .returning();
-    return result;
-  }
-
-  async deleteRoyaltyExpense(id: string): Promise<void> {
-    await db.delete(royaltyExpenses).where(eq(royaltyExpenses.id, id));
-  }
-
-  // Payouts
-  async createRoyaltyPayout(payout: InsertRoyaltyPayout): Promise<RoyaltyPayout> {
-    const [result] = await db.insert(royaltyPayouts).values(payout).returning();
-    return result;
-  }
-
-  async getRoyaltyPayouts(status?: string): Promise<RoyaltyPayout[]> {
-    if (status) {
-      return await db.select().from(royaltyPayouts)
-        .where(eq(royaltyPayouts.status, status))
-        .orderBy(desc(royaltyPayouts.createdAt));
-    }
-    return await db.select().from(royaltyPayouts)
-      .orderBy(desc(royaltyPayouts.createdAt));
-  }
-
-  async updateRoyaltyPayout(id: string, updates: Partial<RoyaltyPayout>): Promise<RoyaltyPayout | undefined> {
-    const [result] = await db.update(royaltyPayouts)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(royaltyPayouts.id, id))
-      .returning();
-    return result;
-  }
-
-  async markRoyaltyPayoutPaid(id: string, paymentMethod: string, paymentReference: string): Promise<RoyaltyPayout | undefined> {
-    const [result] = await db.update(royaltyPayouts)
-      .set({ 
-        status: 'paid', 
-        paymentMethod, 
-        paymentReference,
-        paidAt: new Date(),
-        updatedAt: new Date()
-      })
-      .where(eq(royaltyPayouts.id, id))
-      .returning();
-    return result;
-  }
-
-  // Config
-  async getRoyaltyConfig(): Promise<RoyaltyConfig | undefined> {
-    const [result] = await db.select().from(royaltyConfig).limit(1);
-    return result;
-  }
-
-  async upsertRoyaltyConfig(config: Partial<InsertRoyaltyConfig>): Promise<RoyaltyConfig> {
-    const existing = await this.getRoyaltyConfig();
-    if (existing) {
-      const [result] = await db.update(royaltyConfig)
-        .set({ ...config, updatedAt: new Date() })
-        .where(eq(royaltyConfig.id, existing.id))
-        .returning();
-      return result;
-    }
-    const [result] = await db.insert(royaltyConfig).values(config as InsertRoyaltyConfig).returning();
-    return result;
-  }
-
-  // Summary calculations
-  async getRoyaltySummary(year: number, month?: number): Promise<{
-    totalRevenue: number;
-    totalExpenses: number;
-    netProfit: number;
-    contributorShare: number;
-    revenueByProduct: Record<string, number>;
-    expensesByProduct: Record<string, number>;
-  }> {
-    const config = await this.getRoyaltyConfig();
-    const profitSharePercent = config ? parseFloat(config.saasProfitSharePercent) : 50;
-    
-    const revenues = await this.getRoyaltyRevenueByPeriod(year, month);
-    const expenses = await this.getRoyaltyExpensesByPeriod(year, month);
-    
-    const revenueByProduct: Record<string, number> = {};
-    const expensesByProduct: Record<string, number> = {};
-    
-    let totalRevenue = 0;
-    for (const rev of revenues) {
-      const amount = parseFloat(rev.amount);
-      totalRevenue += amount;
-      revenueByProduct[rev.productCode] = (revenueByProduct[rev.productCode] || 0) + amount;
-    }
-    
-    let totalExpenses = 0;
-    for (const exp of expenses) {
-      const amount = parseFloat(exp.amount);
-      totalExpenses += amount;
-      expensesByProduct[exp.productCode] = (expensesByProduct[exp.productCode] || 0) + amount;
-    }
-    
-    const netProfit = totalRevenue - totalExpenses;
-    const contributorShare = Math.max(0, netProfit * (profitSharePercent / 100));
-    
-    return {
-      totalRevenue,
-      totalExpenses,
-      netProfit,
-      contributorShare,
-      revenueByProduct,
-      expensesByProduct
-    };
   }
 }
 

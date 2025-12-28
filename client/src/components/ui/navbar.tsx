@@ -1,149 +1,121 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench, FileText, Calendar } from "lucide-react";
+import { X, PaintRoller, Shield, Crown, Code, ChevronRight, MapPin, Sun, Moon, ArrowLeft, Home, Menu, HardHat, Briefcase, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
-import { useAuth } from "@/hooks/use-auth";
-import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
+import { useTheme } from "@/context/ThemeContext";
+import nppEmblem from "@assets/npp_emblem_full.png";
+import nppText from "@assets/npp_text_full.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const tenant = useTenant();
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const mainLinks = [
-    { name: "Home", href: "/", icon: Home },
     { name: "Services", href: "/services" },
     { name: "Portfolio", href: "/portfolio", enabled: tenant.features.portfolio },
     { name: "Pricing", href: "/pricing" },
     { name: "About", href: "/about" },
     { name: "Reviews", href: "/reviews", enabled: tenant.features.reviews },
-    { name: "Blog", href: "/blog", icon: FileText, enabled: tenant.features.blog },
-    { name: "Awards", href: "/awards", icon: Award },
-    { name: "Color Library", href: "/colors", icon: Palette },
-    { name: "Resources", href: "/resources", icon: BookOpen },
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
-    { name: "Investors", href: "/investors", icon: TrendingUp, enabled: tenant.id === "demo" },
-    { name: "Book Online", href: "/estimate", icon: Calendar, highlight: true, enabled: tenant.features.onlineBooking },
-    { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator && !tenant.features.onlineBooking },
+    { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator },
   ].filter(link => link.enabled !== false);
+
+  const adminLinks = [
+    { name: "Owner", href: "/owner", icon: Crown, color: "text-gold-400" },
+    { name: "Admin", href: "/admin", icon: Shield, color: "text-blue-400" },
+    { name: "Project Manager", href: "/project-manager", icon: MapPin, color: "text-teal-400" },
+    { name: "Crew Lead", href: "/crew-lead", icon: HardHat, color: "text-orange-400" },
+    { name: "Contractor Application", href: "/contractor-application", icon: Briefcase, color: "text-green-400" },
+    { name: "Blog", href: "/blog", icon: BookOpen, color: "text-pink-400" },
+    { name: "Developer", href: "/developer", icon: Code, color: "text-purple-400" },
+  ];
 
   return (
     <>
-    <header className="relative z-50">
-      <div className={cn(
-        "flex items-center px-3 md:px-4 overflow-hidden",
-        tenant.id === "demo" ? "h-16 md:h-20" : "h-20 md:h-28 lg:h-36"
-      )}>
-        {/* Left: Hamburger Menu - NPP logo for NPP, standard menu for demo */}
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10" style={{ backgroundColor: '#344e41' }}>
+      <div className="flex items-center justify-between py-1 gap-1 overflow-hidden">
+        {/* Left: Hamburger Menu - offset left and up */}
         <button 
           className={cn(
-            "hover:opacity-80 transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
-            tenant.id === "demo" ? "p-2 ml-2" : "p-1 ml-1"
+            "hover:bg-white/10 rounded-lg transition-all flex-shrink-0 flex items-center -ml-[50px] md:-ml-[70px] -mt-[25px]",
+            tenant.id === "demo" ? "p-1" : "p-0"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={28} className="text-gray-700" />
+            <X size={36} className="text-white" />
           ) : tenant.id === "demo" ? (
-            <Menu size={28} className="text-gray-700" />
+            <Menu size={36} className="text-white" />
           ) : (
             <img 
-              src={nppLogo} 
+              src={nppEmblem} 
               alt="Menu"
-              className="h-[240px] md:h-56 lg:h-80 w-auto object-contain"
-              style={{ marginTop: '-40px', marginLeft: '-145px' }}
+              className="h-14 md:h-16 w-auto object-contain"
             />
           )}
         </button>
         
-        {/* Center: Title - only show for demo tenant */}
-        {tenant.id === "demo" && (
-          <div className="flex flex-col items-start ml-4 md:ml-8 min-w-0 flex-shrink">
-            <div 
-              className="text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-5xl whitespace-nowrap bg-clip-text text-transparent"
-              style={{ 
-                fontFamily: 'Orbitron, Rajdhani, sans-serif', 
-                fontWeight: 500, 
-                letterSpacing: '0.05em',
-                backgroundImage: 'linear-gradient(to right, #A89070, #7A5C45, #3D4A3A, #7A5C45, #A89070)'
-              }}
-              data-testid="text-header-title"
-            >
-              PaintPros.io
-            </div>
-            <div 
-              className="hidden sm:block text-xs md:text-sm lg:text-base xl:text-lg whitespace-nowrap bg-clip-text text-transparent"
-              style={{ 
-                fontFamily: 'Rajdhani, sans-serif', 
-                fontWeight: 400, 
-                letterSpacing: '0.02em',
-                backgroundImage: 'linear-gradient(to right, #A89070, #7A5C45, #3D4A3A, #7A5C45, #A89070)'
-              }}
-              data-testid="text-header-tagline"
-            >
-              White-Label Websites for Painting Contractors
-            </div>
-          </div>
-        )}
+        {/* Center: Title - full text, smaller font on mobile */}
+        <div 
+          className={cn(
+            "flex-1 text-center whitespace-nowrap -translate-x-[25px] md:-translate-x-[43px] px-1",
+            tenant.id === "demo" 
+              ? "text-white text-[14px] md:text-xl lg:text-2xl"
+              : "text-[14px] md:text-xl lg:text-2xl bg-clip-text text-transparent"
+          )}
+          style={{ 
+            fontFamily: 'Orbitron, Rajdhani, sans-serif', 
+            fontWeight: 400, 
+            letterSpacing: '0.03em',
+            backgroundImage: tenant.id !== "demo" ? 'linear-gradient(to right, #5C4033, #8B7355, #F5F5DC, #8B7355, #5C4033)' : undefined
+          }}
+          data-testid="text-header-title"
+        >
+          {tenant.id === "demo" 
+            ? "PaintPros.io"
+            : tenant.name
+          }
+        </div>
 
-        {/* Spacer to push content to the right */}
-        <div className="flex-1" />
+        {/* Right: Theme Toggle */}
+        <button 
+          onClick={toggleTheme}
+          className="p-1 md:p-1.5 flex items-center justify-center transition-all flex-shrink-0 hover:opacity-80 -translate-x-[8px] md:-translate-x-[15px]"
+          aria-label="Toggle theme"
+          data-testid="button-theme-toggle"
+        >
+          {theme === "dark" ? <Sun className="w-4 h-4 md:w-5 md:h-5 text-accent" /> : <Moon className="w-4 h-4 md:w-5 md:h-5 text-white" />}
+        </button>
       </div>
     </header>
 
-      {/* Navigation Controls - Back and Close buttons on all pages except home */}
+      {/* Mobile Navigation - Fixed below header */}
       {location !== "/" && (
-        <>
-          {/* Mobile - positioned to avoid hamburger menu overlap */}
-          <div className="fixed top-3 left-3 z-[60] md:hidden flex items-center gap-2">
+        <div className="fixed top-12 left-2 z-40 md:hidden flex items-center gap-1">
+          <button 
+            onClick={() => window.history.back()}
+            className="p-2 bg-background/90 backdrop-blur-sm border border-white/10 rounded-full shadow-lg hover:bg-white/20 transition-all"
+            aria-label="Go back"
+            data-testid="button-back-mobile"
+          >
+            <ArrowLeft className="w-5 h-5 text-white" />
+          </button>
+          <Link href="/">
             <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                window.history.back();
-              }}
-              className="p-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
-              aria-label="Go back"
-              data-testid="button-back-mobile"
+              className="p-2 bg-background/90 backdrop-blur-sm border border-white/10 rounded-full shadow-lg hover:bg-white/20 transition-all"
+              aria-label="Go home"
+              data-testid="button-home-mobile"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+              <Home className="w-5 h-5 text-white" />
             </button>
-            <Link href="/">
-              <button 
-                onClick={(e) => e.stopPropagation()}
-                className="p-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
-                aria-label="Go home"
-                data-testid="button-home-mobile"
-              >
-                <X className="w-5 h-5 text-gray-700" />
-              </button>
-            </Link>
-          </div>
-          {/* Desktop - top right corner */}
-          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
-            <button 
-              onClick={() => window.history.back()}
-              className="p-2.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-md hover:bg-gray-100 transition-all"
-              aria-label="Go back"
-              data-testid="button-back-desktop"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
-            </button>
-            <Link href="/">
-              <button 
-                className="p-2.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-md hover:bg-gray-100 transition-all"
-                aria-label="Close and go home"
-                data-testid="button-close-desktop"
-              >
-                <X className="w-5 h-5 text-gray-700" />
-              </button>
-            </Link>
-          </div>
-        </>
+          </Link>
+        </div>
       )}
 
       {/* Sidebar Menu */}
@@ -165,16 +137,16 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 h-full w-72 bg-background border-r border-white/10 z-50 overflow-y-auto overscroll-contain"
+              className="fixed top-0 left-0 h-full w-72 bg-background border-r border-white/10 z-50 overflow-y-auto"
             >
               <div className="px-4 py-6">
                 {/* Close button */}
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="mb-6 p-2 hover:bg-gray-100 rounded-lg transition-all"
+                  className="mb-6 p-2 hover:bg-white/10 rounded-lg transition-all"
                   aria-label="Close menu"
                 >
-                  <X size={24} className="text-gray-700" />
+                  <X size={24} className="text-white" />
                 </button>
 
                 {/* Main Links */}
@@ -208,132 +180,28 @@ export function Navbar() {
                 {/* Divider */}
                 <div className="border-t border-white/10 my-4" />
 
-                {/* For Contractors Section */}
-                <div className="space-y-1 mb-4">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2 flex items-center gap-2">
-                    <HardHat className="w-3 h-3" />
-                    For Contractors
-                  </p>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link href="/contractor-application">
-                      <span 
-                        className={cn(
-                          "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
-                          "bg-gradient-to-r from-accent/10 to-transparent hover:from-accent/20",
-                          "border border-accent/20 hover:border-accent/40",
-                          location === "/contractor-application" && "bg-accent/20 border-accent/50"
-                        )}
-                        onClick={() => setIsOpen(false)}
-                        data-testid="link-contractor-application"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                          <Briefcase className="w-4 h-4 text-accent" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-base font-medium text-foreground">Join Our Team</span>
-                          <p className="text-xs text-muted-foreground">Apply as a contractor</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 opacity-50" />
-                      </span>
-                    </Link>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35 }}
-                  >
-                    <Link href="/trade-verticals">
-                      <span 
-                        className={cn(
-                          "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
-                          "hover:bg-white/5",
-                          location === "/trade-verticals" && "bg-accent/10"
-                        )}
-                        onClick={() => setIsOpen(false)}
-                        data-testid="link-trade-verticals"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                          <Wrench className="w-4 h-4 text-blue-400" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-base font-medium text-foreground">All Trade Platforms</span>
-                          <p className="text-xs text-muted-foreground">Explore our verticals</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 opacity-50" />
-                      </span>
-                    </Link>
-                  </motion.div>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-white/10 my-4" />
-
-                {/* User Account Section */}
-                <div className="space-y-1 mb-4">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Account</p>
-                  {authLoading ? (
-                    <div className="py-3 px-4 text-muted-foreground">Loading...</div>
-                  ) : isAuthenticated && user ? (
-                    <>
-                      <div className="flex items-center gap-3 py-3 px-4 rounded-xl bg-accent/10">
-                        {user.profileImageUrl ? (
-                          <img src={user.profileImageUrl} alt="" className="w-8 h-8 rounded-full" />
-                        ) : (
-                          <User className="w-5 h-5 text-accent" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-foreground truncate">
-                            {user.firstName || user.email || "User"}
-                          </div>
-                          {user.email && user.firstName && (
-                            <div className="text-xs text-muted-foreground truncate">{user.email}</div>
-                          )}
-                        </div>
-                      </div>
-                      <Link href="/account">
+                {/* Admin Links */}
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2">Access</p>
+                  {adminLinks.map((link, index) => (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (mainLinks.length + index) * 0.05 }}
+                    >
+                      <Link href={link.href}>
                         <span 
                           className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
                           onClick={() => setIsOpen(false)}
-                          data-testid="link-my-account"
                         >
-                          <User className="w-5 h-5 text-accent" />
-                          <span className="text-lg font-medium text-foreground">My Account</span>
+                          <link.icon className={cn("w-5 h-5", link.color)} />
+                          <span className="text-lg font-medium text-foreground">{link.name}</span>
                           <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
                         </span>
                       </Link>
-                      <button 
-                        onClick={async () => {
-                          setIsOpen(false);
-                          try {
-                            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                            window.location.href = '/';
-                          } catch (e) {
-                            console.error('Logout failed', e);
-                          }
-                        }}
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 w-full text-left"
-                      >
-                        <LogOut className="w-5 h-5 text-red-400" />
-                        <span className="text-lg font-medium text-foreground">Log Out</span>
-                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                      </button>
-                    </>
-                  ) : (
-                    <Link href="/auth">
-                      <span 
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 bg-accent/10"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <LogIn className="w-5 h-5 text-accent" />
-                        <span className="text-lg font-medium text-foreground">Login / Sign Up</span>
-                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
-                      </span>
-                    </Link>
-                  )}
+                    </motion.div>
+                  ))}
                 </div>
 
                 {/* Tenant name decoration at bottom */}

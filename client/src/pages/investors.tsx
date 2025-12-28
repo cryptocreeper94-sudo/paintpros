@@ -18,9 +18,9 @@ const PRICING_TIERS = [
 ];
 
 const PROJECTIONS = [
-  { year: "2025", customers: 50, mrr: "$22K", revenue: "$264K MRR + $300K setup", profit: "$180K", note: "Beta launch" },
-  { year: "2026", customers: 200, mrr: "$90K", revenue: "$1.08M MRR + $1.2M setup", profit: "$1M" },
-  { year: "2027", customers: 500, mrr: "$225K", revenue: "$2.7M MRR + $2.5M setup", profit: "$2.8M" },
+  { year: "2025", customers: 100, mrr: "$25K", revenue: "$300K + $350K setup", profit: "$200K" },
+  { year: "2026", customers: 500, mrr: "$125K", revenue: "$1.5M + $1.4M setup", profit: "$1.2M" },
+  { year: "2027", customers: 2000, mrr: "$500K", revenue: "$6M + $4M setup", profit: "$5M" },
 ];
 
 const COMPETITORS = [
@@ -39,17 +39,6 @@ const PAINTPROS_FEATURES = [
   { feature: "Premium design (Bento Grid)", us: true, them: false },
   { feature: "SEO management tools", us: true, them: false },
   { feature: "Orbit ecosystem integration", us: true, them: false },
-  { feature: "Multi-trade vertical expansion", us: true, them: false },
-];
-
-const TRADE_VERTICALS = [
-  { name: "PaintPros", domain: "paintpros.io", market: "$46.5B", status: "Live", contractors: "300K+" },
-  { name: "RoofPros", domain: "roofpros.io", market: "$56B", status: "Coming Soon", contractors: "100K+" },
-  { name: "HVACPros", domain: "hvacpros.io", market: "$130B", status: "Coming Soon", contractors: "150K+" },
-  { name: "ElectricPros", domain: "electricpros.io", market: "$200B", status: "Coming Soon", contractors: "75K+" },
-  { name: "PlumbPros", domain: "plumbpros.io", market: "$130B", status: "Coming Soon", contractors: "120K+" },
-  { name: "LandscapePros", domain: "landscapepros.io", market: "$130B", status: "Coming Soon", contractors: "600K+" },
-  { name: "BuildPros", domain: "buildpros.io", market: "$1.5T", status: "Coming Soon", contractors: "700K+" },
 ];
 
 export default function Investors() {
@@ -75,18 +64,18 @@ UNIT ECONOMICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Gross Margin:           85% (low infrastructure cost)
-LTV:CAC Ratio:          44:1
-ARPU:                   ~$450/month + $6,000 setup (blended)
-3-Year Customer LTV:    $22,200 ($6,000 + 36 x $450)
-CAC (projected):        $500
+LTV:CAC Ratio:          30:1
+ARPU:                   $349/month + $5,000 setup
+3-Year Customer LTV:    $17,564 ($5,000 + 36 x $349)
+CAC (projected):        $400
 
 REVENUE PROJECTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Year    Customers    MRR        Revenue (Annual + Setup)    Net Profit
-2025    50           $22K       $564K                       $180K
-2026    200          $90K       $2.28M                      $1M
-2027    500          $225K      $5.2M                       $2.8M
+Year    Customers    MRR        Revenue (MRR + Setup)    Net Profit
+2025    100          $35K       $920K                    $350K
+2026    500          $175K      $4.6M                    $2M
+2027    2,000        $700K      $14M                     $7M
 
 MARKET OPPORTUNITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -124,27 +113,7 @@ Traditional approach (Jobber + custom website + agency):
 • Ongoing development: $500-2K/mo
 • Total: ~$1,500-3,000/mo + coordination overhead
 
-PaintPros.io Starter: $349/mo + $5,000 setup (all-inclusive platform)
-PaintPros.io Professional: $549/mo + $7,000 setup (analytics + blockchain)
-
-TRADE VERTICAL EXPANSION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-The platform is designed for multi-vertical expansion:
-
-Platform          Domain               Market Size    Status
-─────────────────────────────────────────────────────────────
-PaintPros         paintpros.io         $46.5B         Live
-RoofPros          roofpros.io          $56B           Coming Soon
-HVACPros          hvacpros.io          $130B          Coming Soon
-ElectricPros      electricpros.io      $200B          Coming Soon
-PlumbPros         plumbpros.io         $130B          Coming Soon
-LandscapePros     landscapepros.io     $130B          Coming Soon
-BuildPros         buildpros.io         $1.5T          Coming Soon
-
-Combined TAM: $2.2T+ across all trade verticals
-Each vertical shares core infrastructure: booking, CRM, crew management, 
-payments, documents, and blockchain verification.
+PaintPros.io: $349/mo + $5,000 setup (all-inclusive platform)
 
 DARKWAVE STUDIOS ECOSYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -320,8 +289,8 @@ Ecosystem: https://darkwavestudios.io`;
                       ))}
                       <tr className="bg-accent/10 border border-accent/30">
                         <td className="py-3 px-4 font-bold text-accent">PaintPros.io</td>
-                        <td className="py-3 px-4 font-mono font-bold text-green-400">$349-$1,399/mo</td>
-                        <td className="py-3 px-4 text-green-400">$5,000-$15,000</td>
+                        <td className="py-3 px-4 font-mono font-bold text-green-400">$249/mo</td>
+                        <td className="py-3 px-4 text-green-400">$3,500</td>
                         <td className="py-3 px-4 text-xs font-medium text-accent">White-Label Platform</td>
                       </tr>
                     </tbody>
@@ -393,8 +362,8 @@ Ecosystem: https://darkwavestudios.io`;
                         <span className="font-mono text-red-400 font-bold">~$1,500-3,000/mo</span>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className="font-medium text-accent">PaintPros.io Starter</span>
-                        <span className="font-mono text-green-400 font-bold">$349/mo + $5,000 setup</span>
+                        <span className="font-medium text-accent">PaintPros.io</span>
+                        <span className="font-mono text-green-400 font-bold">$249/mo + $3,500 setup</span>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-4">
@@ -508,66 +477,6 @@ Ecosystem: https://darkwavestudios.io`;
               </GlassCard>
             </motion.div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85 }}
-            className="mb-12"
-          >
-            <GlassCard className="p-8" glow>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/30 to-blue-500/30 flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-green-400" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold">Trade Vertical Expansion</h2>
-                  <p className="text-muted-foreground">One platform, multiple $100B+ markets</p>
-                </div>
-              </div>
-
-              <p className="text-muted-foreground mb-6">
-                The platform architecture supports rapid expansion into adjacent trade verticals. Each vertical shares the same core infrastructure (booking, CRM, crew management, payments, blockchain) but features trade-specific services, estimators, and branding.
-              </p>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
-                {TRADE_VERTICALS.map((vertical) => (
-                  <div
-                    key={vertical.name}
-                    className={`rounded-xl p-3 text-center border ${
-                      vertical.status === "Live" 
-                        ? "bg-green-500/10 border-green-500/30" 
-                        : "bg-white/5 border-border dark:border-white/10"
-                    }`}
-                    data-testid={`card-vertical-${vertical.name.toLowerCase()}`}
-                  >
-                    <p className="font-bold text-sm">{vertical.name}</p>
-                    <p className="text-xs text-muted-foreground font-mono">{vertical.domain}</p>
-                    <p className={`text-xs mt-1 ${vertical.status === "Live" ? "text-green-400" : "text-muted-foreground"}`}>
-                      {vertical.status}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/20">
-                <div className="grid md:grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-3xl font-bold text-green-400">$2.2T+</p>
-                    <p className="text-xs text-muted-foreground">Combined TAM</p>
-                  </div>
-                  <div>
-                    <p className="text-3xl font-bold text-blue-400">2M+</p>
-                    <p className="text-xs text-muted-foreground">Target Contractors</p>
-                  </div>
-                  <div>
-                    <p className="text-3xl font-bold text-purple-400">7</p>
-                    <p className="text-xs text-muted-foreground">Trade Verticals</p>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

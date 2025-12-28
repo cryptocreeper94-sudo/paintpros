@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import { Server as SocketServer } from "socket.io";
 import { storage } from "./storage";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -12,107 +11,21 @@ import {
   insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema,
   insertDocumentAssetSchema, TENANT_PREFIXES,
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
-  insertDocumentSchema, insertDocumentVersionSchema, insertDocumentSignatureSchema,
-  insertCalendarEventSchema, insertCalendarReminderSchema, insertEventColorPresetSchema,
-  insertFranchiseSchema, insertPartnerApiCredentialSchema, insertFranchiseLocationSchema,
-  PARTNER_API_SCOPES,
-  insertSeoPageSchema, seoPages, seoAudits,
-  insertConversationSchema, insertMessageSchema, insertConversationParticipantSchema,
-  insertBookingSchema,
-  users as usersTable,
-  projectTemplates, projectPhotos, blueprintUploads, materialBreakdowns, laborEstimates,
-  insertProjectTemplateSchema, insertProjectPhotoSchema, insertBlueprintUploadSchema,
-  type Lead, type Estimate, type SeoPage, type InsertSeoPage, type ProjectTemplate
+  users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
 import { z } from "zod";
 import * as solana from "./solana";
-import * as darkwave from "./darkwave";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
-import { sendContactEmail, sendEstimateAcceptedEmail, sendEstimateProposalEmail, type ContactFormData, type EstimateProposalData } from "./resend";
-import { Resend } from "resend";
-import { setupCustomAuth, isCustomAuthenticated } from "./customAuth";
-import { getTenantFromHostname } from "./tenant";
+import { sendContactEmail, type ContactFormData } from "./resend";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import type { RequestHandler } from "express";
-import * as quickbooks from "./quickbooks";
-import xss from "xss";
-import { provisionTenantFromTrial, SUBSCRIPTION_TIERS, type SubscriptionTier } from "./tenant-provisioning";
-import * as financialHub from "./financialHubClient";
-import { startScheduler, stopScheduler, getSchedulerStatus, manualDeploy } from "./marketing-scheduler";
-import { getConfiguredPlatforms, Platform } from "./social-connectors";
-import { marketingPosts, marketingScheduleConfigs, marketingDeploys } from "@shared/schema";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
 export function getSocketIO() { return io; }
-
-// Rate limiting for PIN authentication with exponential backoff
-const pinAttempts = new Map<string, { count: number; firstAttempt: number; lockoutCount: number; lockedUntil?: number }>();
-const PIN_MAX_ATTEMPTS = 5;
-const PIN_ATTEMPT_WINDOW = 15 * 60 * 1000; // 15 minutes window for attempts
-
-function getExponentialLockoutDuration(lockoutCount: number): number {
-  // 2^lockoutCount minutes (in milliseconds): 2min, 4min, 8min, 16min, etc.
-  return Math.pow(2, lockoutCount) * 60 * 1000;
-}
-
-function checkPinRateLimit(ip: string, role: string): { allowed: boolean; retryAfter?: number } {
-  const key = `${ip}:${role}`;
-  const now = Date.now();
-  const record = pinAttempts.get(key);
-
-  if (!record) {
-    return { allowed: true };
-  }
-
-  // Check if currently locked out
-  if (record.lockedUntil && now < record.lockedUntil) {
-    return { allowed: false, retryAfter: Math.ceil((record.lockedUntil - now) / 1000) };
-  }
-
-  // If lockout expired, reset count but keep lockoutCount for escalation
-  if (record.lockedUntil && now >= record.lockedUntil) {
-    record.count = 0;
-    record.firstAttempt = now;
-    record.lockedUntil = undefined;
-    pinAttempts.set(key, record);
-  }
-
-  return { allowed: true };
-}
-
-function recordPinAttempt(ip: string, role: string, success: boolean): void {
-  const key = `${ip}:${role}`;
-  const now = Date.now();
-
-  if (success) {
-    // Successful login clears all history
-    pinAttempts.delete(key);
-    return;
-  }
-
-  const record = pinAttempts.get(key) || { count: 0, firstAttempt: now, lockoutCount: 0 };
-
-  // If the attempt window has passed without reaching limit, reset the count
-  if (now - record.firstAttempt > PIN_ATTEMPT_WINDOW && !record.lockedUntil) {
-    record.count = 1;
-    record.firstAttempt = now;
-  } else {
-    record.count++;
-  }
-
-  // Check if we've reached the limit within the window
-  if (record.count >= PIN_MAX_ATTEMPTS) {
-    record.lockoutCount++;
-    const lockoutDuration = getExponentialLockoutDuration(record.lockoutCount);
-    record.lockedUntil = now + lockoutDuration;
-    console.log(`[PIN Rate Limit] ${key} locked out for ${lockoutDuration / 60000} minutes (attempt #${record.lockoutCount})`);
-  }
-
-  pinAttempts.set(key, record);
-}
 
 // Helper function to format time ago
 function formatTimeAgo(ms: number): string {
@@ -124,40 +37,18 @@ function formatTimeAgo(ms: number): string {
   return `${hours}h ago`;
 }
 
-// XSS sanitization for user-provided text fields using the 'xss' library
-const xssOptions = {
-  whiteList: {}, // Strip all HTML tags for plain text fields
-  stripIgnoreTag: true,
-  stripIgnoreTagBody: ['script', 'style', 'iframe', 'object', 'embed']
-};
-
-function sanitizeText(input: string | null | undefined): string | null {
-  if (!input) return input as null;
-  return xss(input, xssOptions);
-}
-
-// Sanitize object fields for XSS protection
-function sanitizeObject<T extends Record<string, any>>(obj: T, fields: string[]): T {
-  const result = { ...obj };
-  for (const field of fields) {
-    if (typeof result[field] === 'string') {
-      (result as any)[field] = sanitizeText(result[field]);
-    }
-  }
-  return result;
-}
-
 // Role-based access middleware
 const hasRole = (allowedRoles: string[]): RequestHandler => {
   return async (req, res, next) => {
-    const sessionUser = (req.session as any)?.user;
+    const user = req.user as any;
     
-    if (!sessionUser?.id) {
+    if (!req.isAuthenticated() || !user?.claims?.sub) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
     try {
-      const dbUser = await storage.getUser(sessionUser.id);
+      const userId = user.claims.sub;
+      const dbUser = await storage.getUser(userId);
       
       if (!dbUser) {
         return res.status(401).json({ message: "User not found" });
@@ -176,6 +67,25 @@ const hasRole = (allowedRoles: string[]): RequestHandler => {
   };
 };
 
+// Domain to tenant mapping (server-side)
+// Full custom domains map directly
+const domainTenantMap: Record<string, string> = {
+  "paintpros.io": "demo",
+  "www.paintpros.io": "demo",
+  "nashpaintpros.io": "npp",
+  "www.nashpaintpros.io": "npp",
+  "nashvillepaintingprofessionals.com": "npp",
+  "www.nashvillepaintingprofessionals.com": "npp",
+  "localhost": "npp",
+};
+
+// Subdomain to tenant mapping for *.paintpros.io
+const subdomainTenantMap: Record<string, string> = {
+  "nashpaintpros": "npp",
+  "npp": "npp",
+  "demo": "demo",
+  "www": "demo",
+};
 
 // PWA manifest configurations per tenant
 const pwaConfigs: Record<string, {
@@ -212,16 +122,29 @@ const pwaConfigs: Record<string, {
   }
 };
 
-// Standalone Estimator PWA config
-const estimatorPwaConfig = {
-  name: "AI Paint Estimator",
-  shortName: "Estimator",
-  description: "AI-powered room scanning and instant paint estimates",
-  backgroundColor: "#1a1a2e",
-  themeColor: "#4a90d9",
-  iconPath: "/pwa/estimator"
-};
-
+function getTenantFromHostname(hostname: string): string {
+  const host = hostname.toLowerCase().split(':')[0]; // Remove port if present
+  
+  // Check full domain mapping first (custom domains)
+  if (domainTenantMap[host]) {
+    return domainTenantMap[host];
+  }
+  
+  // Check for subdomain pattern: subdomain.paintpros.io
+  const parts = host.split('.');
+  if (parts.length >= 3) {
+    const subdomain = parts[0];
+    const baseDomain = parts.slice(-2).join('.');
+    
+    // Only parse subdomains for paintpros.io
+    if (baseDomain === 'paintpros.io' && subdomainTenantMap[subdomain]) {
+      return subdomainTenantMap[subdomain];
+    }
+  }
+  
+  // Default fallback
+  return "npp";
+}
 
 // Track online users: Map<socketId, { userId, role, displayName }>
 const onlineUsers = new Map<string, { userId: string; role: string; displayName: string }>();
@@ -340,170 +263,18 @@ export async function registerRoutes(
     res.json(users);
   });
 
-  // ============ CUSTOM AUTH ============
-  await setupCustomAuth(app);
+  // ============ REPLIT AUTH ============
+  await setupAuth(app);
 
-  // ============ CUSTOMER PORTAL API ============
-
-  // GET /api/customer/dashboard - Get all customer data
-  app.get('/api/customer/dashboard', isCustomAuthenticated, async (req: any, res) => {
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = (req.session as any).user?.id;
-      const tenantId = getTenantFromHostname(req.hostname);
+      const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      if (!user || !user.email) {
-        return res.json({ estimates: [], bookings: [], documents: [], preferences: null });
-      }
-
-      // Find leads by user email (filtered by tenant)
-      const allLeads = await storage.getLeads(tenantId);
-      const userLeads = allLeads.filter(l => l.email === user.email || l.userId === userId);
-      const leadIds = userLeads.map(l => l.id);
-
-      // Get estimates for user's leads (filtered by tenant)
-      const allEstimates = await storage.getEstimates(tenantId);
-      const userEstimates = allEstimates.filter(e => leadIds.includes(e.leadId));
-
-      // Get bookings for user
-      const allBookings = await storage.getBookings(tenantId);
-      const userBookings = allBookings.filter(b => 
-        b.customerEmail === user.email || b.userId === userId || leadIds.includes(b.leadId || '')
-      );
-
-      // Get documents for user
-      const allDocs = await storage.getDocuments(tenantId);
-      const userDocuments = allDocs.filter(d => 
-        leadIds.includes(d.relatedLeadId || '') || 
-        userEstimates.some(e => e.id === d.relatedEstimateId)
-      );
-
-      // Get preferences
-      const preferences = await storage.getCustomerPreferences(userId);
-
-      res.json({
-        estimates: userEstimates,
-        bookings: userBookings,
-        documents: userDocuments,
-        preferences,
-        leads: userLeads
-      });
+      res.json(user);
     } catch (error) {
-      console.error("Error fetching customer dashboard:", error);
-      res.status(500).json({ message: "Failed to fetch customer data" });
-    }
-  });
-
-  // GET /api/customer/preferences - Get customer preferences
-  app.get('/api/customer/preferences', isCustomAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.session as any).user?.id;
-      const preferences = await storage.getCustomerPreferences(userId);
-      res.json(preferences || {});
-    } catch (error) {
-      console.error("Error fetching preferences:", error);
-      res.status(500).json({ message: "Failed to fetch preferences" });
-    }
-  });
-
-  // POST /api/customer/preferences - Create/update customer preferences
-  app.post('/api/customer/preferences', isCustomAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.session as any).user?.id;
-      const tenantId = getTenantFromHostname(req.hostname);
-      const data = { ...req.body, userId, tenantId };
-      const preferences = await storage.upsertCustomerPreferences(data);
-      res.json(preferences);
-    } catch (error) {
-      console.error("Error saving preferences:", error);
-      res.status(500).json({ message: "Failed to save preferences" });
-    }
-  });
-
-  // POST /api/customer/link-lead - Link an existing lead to user account
-  app.post('/api/customer/link-lead', isCustomAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.session as any).user?.id;
-      const user = await storage.getUser(userId);
-      if (!user || !user.email) {
-        return res.status(400).json({ message: "User email not found" });
-      }
-
-      // Find and update leads matching user's email (filtered by tenant)
-      const tenantId = getTenantFromHostname(req.hostname);
-      const leads = await storage.getLeads(tenantId);
-      const matchingLeads = leads.filter(l => l.email === user.email && !l.userId);
-      
-      for (const lead of matchingLeads) {
-        await storage.updateLeadUserId(lead.id, userId);
-      }
-
-      res.json({ linked: matchingLeads.length });
-    } catch (error) {
-      console.error("Error linking leads:", error);
-      res.status(500).json({ message: "Failed to link leads" });
-    }
-  });
-
-  // ============ PUSH NOTIFICATIONS API ============
-
-  // GET /api/push/vapid-key - Get public VAPID key for push subscriptions
-  app.get('/api/push/vapid-key', (req, res) => {
-    const vapidKey = process.env.VAPID_PUBLIC_KEY || '';
-    res.json({ publicKey: vapidKey });
-  });
-
-  // POST /api/push/subscribe - Register a push subscription (requires authentication)
-  app.post('/api/push/subscribe', isCustomAuthenticated, async (req: any, res) => {
-    try {
-      const userId = (req.session as any).user?.id;
-      const { endpoint, p256dh, auth, userAgent } = req.body;
-      
-      if (!endpoint || !p256dh || !auth) {
-        return res.status(400).json({ message: "Missing subscription data" });
-      }
-
-      if (!userId) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-
-      const tenantId = getTenantFromHostname(req.hostname);
-      const subscription = await storage.createPushSubscription({
-        endpoint,
-        p256dh,
-        auth,
-        userId,
-        tenantId,
-        userAgent,
-        isActive: true
-      });
-
-      res.json({ success: true, id: subscription.id });
-    } catch (error) {
-      console.error("Error creating push subscription:", error);
-      res.status(500).json({ message: "Failed to create subscription" });
-    }
-  });
-
-  // POST /api/push/unsubscribe - Remove a push subscription (requires authentication)
-  app.post('/api/push/unsubscribe', isCustomAuthenticated, async (req: any, res) => {
-    try {
-      const { endpoint } = req.body;
-      
-      if (!endpoint) {
-        return res.status(400).json({ message: "Missing endpoint" });
-      }
-
-      // Verify the subscription belongs to the authenticated user
-      const subscription = await storage.getPushSubscriptionByEndpoint(endpoint);
-      if (subscription && subscription.userId !== (req.session as any).user?.id) {
-        return res.status(403).json({ message: "Unauthorized" });
-      }
-
-      await storage.deletePushSubscription(endpoint);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error removing push subscription:", error);
-      res.status(500).json({ message: "Failed to remove subscription" });
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
     }
   });
 
@@ -558,42 +329,6 @@ export async function registerRoutes(
     res.json(manifest);
   });
 
-  // Standalone Estimator PWA manifest
-  app.get("/estimator/manifest.json", (req, res) => {
-    const manifest = {
-      name: estimatorPwaConfig.name,
-      short_name: estimatorPwaConfig.shortName,
-      description: estimatorPwaConfig.description,
-      start_url: "/estimator-app",
-      scope: "/",
-      display: "standalone",
-      background_color: estimatorPwaConfig.backgroundColor,
-      theme_color: estimatorPwaConfig.themeColor,
-      orientation: "portrait-primary",
-      icons: [
-        {
-          src: `${estimatorPwaConfig.iconPath}/icon-192.png`,
-          sizes: "192x192",
-          type: "image/png",
-          purpose: "any maskable"
-        },
-        {
-          src: `${estimatorPwaConfig.iconPath}/icon-512.png`,
-          sizes: "512x512",
-          type: "image/png",
-          purpose: "any maskable"
-        }
-      ],
-      categories: ["business", "productivity", "utilities"],
-      lang: "en-US",
-      dir: "ltr"
-    };
-    
-    res.setHeader('Content-Type', 'application/manifest+json');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.json(manifest);
-  });
-
   // Dynamic apple-touch-icon based on hostname
   app.get("/apple-touch-icon.png", (req, res) => {
     const tenantId = getTenantFromHostname(req.hostname);
@@ -610,90 +345,11 @@ export async function registerRoutes(
 
   // ============ CONTRACTOR APPLICATIONS ============
   
-  // POST /api/contractor-applications - Submit contractor application with portfolio
+  // POST /api/contractor-applications - Submit contractor application
   app.post("/api/contractor-applications", async (req, res) => {
     try {
       const applicationData = req.body;
-      console.log("Contractor application received:", applicationData.firstName, applicationData.lastName);
-      
-      // Send email via Resend with portfolio attachments
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      
-      // Prepare attachments from portfolio images
-      const attachments = (applicationData.portfolioImages || []).map((img: { name: string; data: string }, index: number) => {
-        // Extract base64 data (remove data:image/xxx;base64, prefix)
-        const base64Data = img.data.split(",")[1] || img.data;
-        // Determine content type from data URL
-        const contentTypeMatch = img.data.match(/^data:(image\/[^;]+);/);
-        const contentType = contentTypeMatch ? contentTypeMatch[1] : "image/jpeg";
-        return {
-          filename: img.name || `portfolio-${index + 1}.jpg`,
-          content: Buffer.from(base64Data, "base64"),
-          contentType: contentType,
-        };
-      });
-
-      // Build email HTML
-      const emailHtml = `
-        <h1>New Contractor Application</h1>
-        <p><strong>Submitted:</strong> ${applicationData.submittedAt}</p>
-        <p><strong>Language:</strong> ${applicationData.language === "es" ? "Spanish" : "English"}</p>
-        
-        <h2>Personal Information</h2>
-        <ul>
-          <li><strong>Name:</strong> ${applicationData.firstName} ${applicationData.lastName}</li>
-          <li><strong>Email:</strong> ${applicationData.email}</li>
-          <li><strong>Phone:</strong> ${applicationData.phone}</li>
-        </ul>
-        
-        <h2>Company Information</h2>
-        <ul>
-          <li><strong>Company:</strong> ${applicationData.companyName || "N/A"}</li>
-          <li><strong>Years Experience:</strong> ${applicationData.yearsExperience}</li>
-          <li><strong>Crew Size:</strong> ${applicationData.crewSize}</li>
-        </ul>
-        
-        <h2>Availability</h2>
-        <ul>
-          <li><strong>Available Start:</strong> ${applicationData.availableStart}</li>
-          <li><strong>Weekly Hours:</strong> ${applicationData.weeklyHours}</li>
-          <li><strong>Schedule:</strong> ${applicationData.preferredSchedule}</li>
-        </ul>
-        
-        <h2>Experience & Qualifications</h2>
-        <p><strong>Work History:</strong><br/>${(applicationData.workHistory || "N/A").replace(/\n/g, "<br/>")}</p>
-        <p><strong>Certifications:</strong><br/>${(applicationData.certifications || "N/A").replace(/\n/g, "<br/>")}</p>
-        <p><strong>Specialties:</strong> ${applicationData.specialties}</p>
-        <p><strong>Has Equipment:</strong> ${applicationData.hasEquipment ? "Yes" : "No"}</p>
-        
-        <h2>References</h2>
-        <p>${(applicationData.references || "N/A").replace(/\n/g, "<br/>")}</p>
-        
-        <h2>Why They Want to Join</h2>
-        <p>${(applicationData.whyJoin || "N/A").replace(/\n/g, "<br/>")}</p>
-        
-        <h2>Portfolio</h2>
-        <p><strong>${attachments.length} photos attached</strong></p>
-        <p><em>Review the attached images to see examples of their work.</em></p>
-      `;
-
-      // Route to tenant-specific email
-      const tenantId = getTenantFromHostname(req.hostname);
-      const tenantEmails: Record<string, string> = {
-        'npp': 'service@nashvillepaintingprofessionals.com',
-        'demo': 'cryptocreeper94@gmail.com',
-      };
-      const recipientEmail = tenantEmails[tenantId] || 'cryptocreeper94@gmail.com';
-
-      await resend.emails.send({
-        from: "PaintPros <noreply@orbitstaffing.io>",
-        to: [recipientEmail],
-        subject: `New Contractor Application: ${applicationData.firstName} ${applicationData.lastName}`,
-        html: emailHtml,
-        attachments: attachments,
-      });
-
-      console.log("Contractor application email sent successfully");
+      console.log("Contractor application received:", applicationData);
       res.status(201).json({ success: true, message: "Application submitted successfully" });
     } catch (error) {
       console.error("Error processing contractor application:", error);
@@ -736,11 +392,10 @@ export async function registerRoutes(
   // POST /api/leads - Create or get existing lead
   app.post("/api/leads", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      const validatedData = insertLeadSchema.parse({ ...req.body, tenantId });
+      const validatedData = insertLeadSchema.parse(req.body);
       
-      // Check if lead already exists (within tenant)
-      let lead = await storage.getLeadByEmail(validatedData.email, tenantId);
+      // Check if lead already exists
+      let lead = await storage.getLeadByEmail(validatedData.email);
       
       if (!lead) {
         lead = await storage.createLead(validatedData);
@@ -760,13 +415,12 @@ export async function registerRoutes(
   // GET /api/leads - Get all leads (admin/owner)
   app.get("/api/leads", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
       const { search } = req.query;
       let leadsList;
       if (search && typeof search === "string") {
-        leadsList = await storage.searchLeads(search, tenantId);
+        leadsList = await storage.searchLeads(search);
       } else {
-        leadsList = await storage.getLeads(tenantId);
+        leadsList = await storage.getLeads();
       }
       res.json(leadsList);
     } catch (error) {
@@ -795,8 +449,7 @@ export async function registerRoutes(
   // POST /api/estimates - Create a new estimate
   app.post("/api/estimates", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      const validatedData = insertEstimateSchema.parse({ ...req.body, tenantId });
+      const validatedData = insertEstimateSchema.parse(req.body);
       const estimate = await storage.createEstimate(validatedData);
       
       // TODO: Send email notification to NPP when business email is provided
@@ -813,110 +466,10 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/estimates/submit - Submit estimate wizard with email
-  app.post("/api/estimates/submit", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      const { customer, services, measurements, colors, photos, pricing } = req.body;
-
-      // Determine tenant-specific service email
-      const tenantEmails: Record<string, string> = {
-        'npp': 'service@nashvillepaintingprofessionals.com',
-        'demo': 'cryptocreeper94@gmail.com',
-      };
-      const serviceEmail = tenantEmails[tenantId] || process.env.CONTACT_EMAIL || 'cryptocreeper94@gmail.com';
-      
-      // Get tenant name from tenant configuration
-      const tenantNames: Record<string, string> = {
-        'npp': 'Nashville Painting Professionals',
-        'demo': 'PaintPros.io Demo',
-      };
-      const tenantName = tenantNames[tenantId] || 'PaintPros.io';
-
-      // Create lead if doesn't exist
-      let lead;
-      try {
-        lead = await storage.createLead({
-          email: customer.email,
-          firstName: customer.firstName,
-          lastName: customer.lastName,
-          phone: customer.phone,
-          tenantId,
-        });
-      } catch {
-        // Lead might already exist, try to find by email
-        const leads = await storage.getLeads(tenantId);
-        lead = leads.find(l => l.email === customer.email) || { id: crypto.randomUUID() };
-      }
-
-      // Create estimate record
-      const estimate = await storage.createEstimate({
-        leadId: lead.id,
-        tenantId,
-        includeWalls: services.walls,
-        includeTrim: services.trim,
-        includeCeilings: services.ceilings,
-        doorCount: measurements.doorCount,
-        squareFootage: measurements.squareFootage,
-        totalEstimate: pricing.total.toString(),
-        pricingTier: pricing.tier,
-      });
-
-      // Store photos if any
-      if (photos && photos.length > 0) {
-        for (const photo of photos) {
-          try {
-            await storage.createEstimatePhoto({
-              estimateId: estimate.id,
-              photoUrl: photo.base64,
-              roomType: photo.roomType,
-              caption: photo.caption || null,
-            });
-          } catch (photoError) {
-            console.error("Error storing photo:", photoError);
-          }
-        }
-      }
-
-      // Send email via Resend
-      const emailData: EstimateProposalData = {
-        customer: {
-          firstName: customer.firstName,
-          lastName: customer.lastName,
-          email: customer.email,
-          phone: customer.phone,
-          address: customer.address,
-        },
-        services,
-        measurements,
-        colors: colors || [],
-        pricing,
-        tenantName,
-        serviceEmail,
-      };
-
-      const emailResult = await sendEstimateProposalEmail(emailData);
-      if (!emailResult.success) {
-        console.error("Failed to send estimate email:", emailResult.error);
-        // Don't fail the request, just log the error
-      }
-
-      res.status(201).json({ 
-        success: true, 
-        estimateId: estimate.id,
-        emailSent: emailResult.success
-      });
-    } catch (error) {
-      console.error("Error submitting estimate:", error);
-      res.status(500).json({ error: "Failed to submit estimate" });
-    }
-  });
-
   // GET /api/estimates - Get all estimates (admin)
   app.get("/api/estimates", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      const estimates = await storage.getEstimates(tenantId);
+      const estimates = await storage.getEstimates();
       res.json(estimates);
     } catch (error) {
       console.error("Error fetching estimates:", error);
@@ -936,74 +489,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching estimate:", error);
       res.status(500).json({ error: "Failed to fetch estimate" });
-    }
-  });
-
-  // POST /api/estimates/:id/accept - Accept an estimate (customer)
-  app.post("/api/estimates/:id/accept", isCustomAuthenticated, async (req: any, res) => {
-    try {
-      const estimate = await storage.getEstimateById(req.params.id);
-      if (!estimate) {
-        res.status(404).json({ error: "Estimate not found" });
-        return;
-      }
-      
-      // Verify the authenticated user owns this estimate via their lead/email
-      const userId = (req.session as any).user?.id;
-      if (!userId) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-      }
-
-      // Get user to check email
-      const user = await storage.getUser(userId);
-      if (!user || !user.email) {
-        res.status(401).json({ error: "User not found" });
-        return;
-      }
-
-      // Get user's leads to verify ownership (filtered by tenant)
-      const tenantId = getTenantFromHostname(req.hostname);
-      const allLeads = await storage.getLeads(tenantId);
-      const userLeads = allLeads.filter((l: Lead) => l.email === user.email || l.userId === userId);
-      const leadIds = userLeads.map((l: Lead) => l.id);
-      
-      if (estimate.leadId && !leadIds.includes(estimate.leadId)) {
-        res.status(403).json({ error: "You do not have permission to accept this estimate" });
-        return;
-      }
-
-      // Update estimate status to accepted using storage layer
-      const updatedEstimate = await storage.updateEstimate(req.params.id, { 
-        status: "accepted" 
-      });
-      
-      if (!updatedEstimate) {
-        res.status(404).json({ error: "Failed to update estimate" });
-        return;
-      }
-
-      // Send email notifications (async, don't block response)
-      const lead = userLeads.find((l: Lead) => l.id === estimate.leadId);
-      const customerName = lead?.firstName || user.firstName || user.email?.split("@")[0] || "Customer";
-      const tenantName = "PaintPros.io"; // Default tenant name for emails
-      
-      sendEstimateAcceptedEmail({
-        customerName,
-        customerEmail: user.email,
-        estimateId: updatedEstimate.id,
-        estimateTotal: Number(updatedEstimate.totalEstimate) || 0,
-        jobType: updatedEstimate.pricingTier === "full_job" ? "Full Interior" : 
-                 updatedEstimate.pricingTier === "walls_only" ? "Walls Only" : 
-                 updatedEstimate.pricingTier === "doors_only" ? "Doors Only" : "Custom Job",
-        squareFootage: updatedEstimate.squareFootage || undefined,
-        tenantName
-      }).catch(err => console.error("Failed to send estimate accepted email:", err));
-      
-      res.json(updatedEstimate);
-    } catch (error) {
-      console.error("Error accepting estimate:", error);
-      res.status(500).json({ error: "Failed to accept estimate" });
     }
   });
 
@@ -1149,295 +634,17 @@ export async function registerRoutes(
     }
   });
 
-  // ============ SEO PAGES (Comprehensive SEO Management) ============
-  
-  // Helper function to calculate SEO score
-  function calculateSeoScore(page: Partial<SeoPage>): { score: number; missingFields: string[] } {
-    const missingFields: string[] = [];
-    let score = 0;
-    const maxScore = 100;
-    
-    // Required fields (10 points each)
-    if (page.metaTitle && page.metaTitle.length >= 30 && page.metaTitle.length <= 60) score += 10;
-    else missingFields.push("metaTitle (30-60 chars)");
-    
-    if (page.metaDescription && page.metaDescription.length >= 120 && page.metaDescription.length <= 160) score += 10;
-    else missingFields.push("metaDescription (120-160 chars)");
-    
-    if (page.metaKeywords && page.metaKeywords.length > 0) score += 5;
-    else missingFields.push("metaKeywords");
-    
-    if (page.canonicalUrl) score += 5;
-    else missingFields.push("canonicalUrl");
-    
-    // Open Graph (5 points each)
-    if (page.ogTitle) score += 5; else missingFields.push("ogTitle");
-    if (page.ogDescription) score += 5; else missingFields.push("ogDescription");
-    if (page.ogImage) score += 10; else missingFields.push("ogImage");
-    if (page.ogType) score += 5;
-    
-    // Twitter Card (5 points each)
-    if (page.twitterTitle) score += 5; else missingFields.push("twitterTitle");
-    if (page.twitterDescription) score += 5; else missingFields.push("twitterDescription");
-    if (page.twitterImage) score += 10; else missingFields.push("twitterImage");
-    if (page.twitterCard) score += 5;
-    
-    // Structured Data (20 points)
-    if (page.structuredData && page.structuredDataType) score += 20;
-    else missingFields.push("structuredData (JSON-LD)");
-    
-    return { score: Math.min(score, maxScore), missingFields };
-  }
-  
-  // GET /api/seo/pages - Get all SEO pages for a tenant
-  app.get("/api/seo/pages", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const pages = await db.select().from(seoPages).where(eq(seoPages.tenantId, tenantId));
-      res.json(pages);
-    } catch (error) {
-      console.error("Error fetching SEO pages:", error);
-      res.status(500).json({ error: "Failed to fetch SEO pages" });
-    }
-  });
-  
-  // GET /api/seo/pages/:id - Get a specific SEO page
-  app.get("/api/seo/pages/:id", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const [page] = await db.select().from(seoPages)
-        .where(and(eq(seoPages.id, req.params.id), eq(seoPages.tenantId, tenantId)));
-      if (!page) {
-        res.status(404).json({ error: "SEO page not found" });
-        return;
-      }
-      res.json(page);
-    } catch (error) {
-      console.error("Error fetching SEO page:", error);
-      res.status(500).json({ error: "Failed to fetch SEO page" });
-    }
-  });
-  
-  // GET /api/seo/pages/path/:path - Get SEO page by path
-  app.get("/api/seo/pages/path/*", async (req, res) => {
-    try {
-      const path = "/" + ((req.params as any)[0] || "");
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const [page] = await db.select().from(seoPages)
-        .where(and(eq(seoPages.pagePath, path), eq(seoPages.tenantId, tenantId)));
-      
-      if (!page) {
-        res.status(404).json({ error: "SEO page not found" });
-        return;
-      }
-      res.json(page);
-    } catch (error) {
-      console.error("Error fetching SEO page by path:", error);
-      res.status(500).json({ error: "Failed to fetch SEO page" });
-    }
-  });
-  
-  // POST /api/seo/pages - Create a new SEO page
-  app.post("/api/seo/pages", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const rawData = { ...req.body, tenantId };
-      
-      // Sanitize text fields that could contain HTML/XSS
-      const seoTextFields = ['metaTitle', 'metaDescription', 'metaKeywords', 'ogTitle', 'ogDescription', 'twitterTitle', 'twitterDescription', 'pageTitle'];
-      const sanitizedData = sanitizeObject(rawData, seoTextFields);
-      
-      const validatedData = insertSeoPageSchema.parse(sanitizedData);
-      
-      // Calculate SEO score
-      const { score, missingFields } = calculateSeoScore(validatedData);
-      
-      const [page] = await db.insert(seoPages).values({
-        ...validatedData,
-        seoScore: score,
-        missingFields,
-        lastAuditAt: new Date(),
-      }).returning();
-      
-      res.status(201).json(page);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ error: "Invalid SEO page data", details: error.errors });
-      } else {
-        console.error("Error creating SEO page:", error);
-        res.status(500).json({ error: "Failed to create SEO page" });
-      }
-    }
-  });
-  
-  // PATCH /api/seo/pages/:id - Update an SEO page
-  app.patch("/api/seo/pages/:id", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const [existing] = await db.select().from(seoPages)
-        .where(and(eq(seoPages.id, req.params.id), eq(seoPages.tenantId, tenantId)));
-      if (!existing) {
-        res.status(404).json({ error: "SEO page not found" });
-        return;
-      }
-      
-      const updatedData = { ...existing, ...req.body };
-      const { score, missingFields } = calculateSeoScore(updatedData);
-      
-      // Track changes for audit
-      const changes: Record<string, { old: any; new: any }> = {};
-      for (const key of Object.keys(req.body)) {
-        if ((existing as any)[key] !== req.body[key]) {
-          changes[key] = { old: (existing as any)[key], new: req.body[key] };
-        }
-      }
-      
-      const [page] = await db.update(seoPages)
-        .set({
-          ...req.body,
-          seoScore: score,
-          missingFields,
-          lastAuditAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .where(eq(seoPages.id, req.params.id))
-        .returning();
-      
-      // Create audit log
-      if (Object.keys(changes).length > 0) {
-        await db.insert(seoAudits).values({
-          seoPageId: req.params.id,
-          tenantId: existing.tenantId,
-          auditType: "edit",
-          previousScore: existing.seoScore,
-          newScore: score,
-          changes,
-          performedBy: (req.session as any)?.user?.email || "system",
-        });
-      }
-      
-      res.json(page);
-    } catch (error) {
-      console.error("Error updating SEO page:", error);
-      res.status(500).json({ error: "Failed to update SEO page" });
-    }
-  });
-  
-  // DELETE /api/seo/pages/:id - Delete an SEO page
-  app.delete("/api/seo/pages/:id", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      await db.delete(seoPages).where(and(eq(seoPages.id, req.params.id), eq(seoPages.tenantId, tenantId)));
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting SEO page:", error);
-      res.status(500).json({ error: "Failed to delete SEO page" });
-    }
-  });
-  
-  // POST /api/seo/pages/initialize - Initialize SEO pages with defaults for all routes
-  app.post("/api/seo/pages/initialize", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      
-      // Default pages to initialize
-      const defaultPages = [
-        { pagePath: "/", pageTitle: "Home" },
-        { pagePath: "/services", pageTitle: "Services" },
-        { pagePath: "/estimator", pageTitle: "Free Estimate" },
-        { pagePath: "/portfolio", pageTitle: "Portfolio" },
-        { pagePath: "/about", pageTitle: "About Us" },
-        { pagePath: "/contact", pageTitle: "Contact" },
-        { pagePath: "/book", pageTitle: "Book Appointment" },
-        { pagePath: "/faq", pageTitle: "FAQ" },
-        { pagePath: "/help", pageTitle: "Help Center" },
-        { pagePath: "/account", pageTitle: "My Account" },
-        { pagePath: "/auth", pageTitle: "Sign In" },
-      ];
-      
-      const created: SeoPage[] = [];
-      
-      for (const page of defaultPages) {
-        // Check if page already exists
-        const [existing] = await db.select().from(seoPages)
-          .where(and(eq(seoPages.pagePath, page.pagePath), eq(seoPages.tenantId, tenantId)));
-        
-        if (!existing) {
-          const [newPage] = await db.insert(seoPages).values({
-            tenantId,
-            pagePath: page.pagePath,
-            pageTitle: page.pageTitle,
-            seoScore: 0,
-            missingFields: ["metaTitle (30-60 chars)", "metaDescription (120-160 chars)", "metaKeywords", "canonicalUrl", "ogTitle", "ogDescription", "ogImage", "twitterTitle", "twitterDescription", "twitterImage", "structuredData (JSON-LD)"],
-          }).returning();
-          created.push(newPage);
-        }
-      }
-      
-      res.json({ message: `Initialized ${created.length} SEO pages`, pages: created });
-    } catch (error) {
-      console.error("Error initializing SEO pages:", error);
-      res.status(500).json({ error: "Failed to initialize SEO pages" });
-    }
-  });
-  
-  // GET /api/seo/audits - Get SEO audit history
-  app.get("/api/seo/audits", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const audits = await db.select().from(seoAudits)
-        .where(eq(seoAudits.tenantId, tenantId))
-        .orderBy(desc(seoAudits.createdAt))
-        .limit(100);
-      res.json(audits);
-    } catch (error) {
-      console.error("Error fetching SEO audits:", error);
-      res.status(500).json({ error: "Failed to fetch SEO audits" });
-    }
-  });
-  
-  // GET /api/seo/summary - Get SEO summary stats
-  app.get("/api/seo/summary", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const pages = await db.select().from(seoPages).where(eq(seoPages.tenantId, tenantId));
-      
-      const totalPages = pages.length;
-      const averageScore = totalPages > 0 ? Math.round(pages.reduce((acc, p) => acc + (p.seoScore || 0), 0) / totalPages) : 0;
-      const pagesWithFullSeo = pages.filter(p => (p.seoScore || 0) >= 80).length;
-      const pagesNeedingWork = pages.filter(p => (p.seoScore || 0) < 50).length;
-      
-      res.json({
-        totalPages,
-        averageScore,
-        pagesWithFullSeo,
-        pagesNeedingWork,
-        pages: pages.map(p => ({
-          id: p.id,
-          pagePath: p.pagePath,
-          pageTitle: p.pageTitle,
-          seoScore: p.seoScore,
-          missingFields: p.missingFields,
-        })),
-      });
-    } catch (error) {
-      console.error("Error fetching SEO summary:", error);
-      res.status(500).json({ error: "Failed to fetch SEO summary" });
-    }
-  });
-
   // ============ CRM DEALS ============
   
   // GET /api/crm/deals - Get all deals
   app.get("/api/crm/deals", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
       const { stage } = req.query;
       let deals;
       if (stage && typeof stage === "string") {
-        deals = await storage.getCrmDealsByStage(stage, tenantId);
+        deals = await storage.getCrmDealsByStage(stage);
       } else {
-        deals = await storage.getCrmDeals(tenantId);
+        deals = await storage.getCrmDeals();
       }
       res.json(deals);
     } catch (error) {
@@ -1449,8 +656,7 @@ export async function registerRoutes(
   // GET /api/crm/deals/pipeline/summary - Get pipeline summary
   app.get("/api/crm/deals/pipeline/summary", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      const summary = await storage.getCrmPipelineSummary(tenantId);
+      const summary = await storage.getCrmPipelineSummary();
       res.json(summary);
     } catch (error) {
       console.error("Error fetching pipeline summary:", error);
@@ -1476,11 +682,7 @@ export async function registerRoutes(
   // POST /api/crm/deals - Create a new deal
   app.post("/api/crm/deals", async (req, res) => {
     try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      // Sanitize text fields that could contain XSS
-      const textFields = ['title', 'notes', 'jobAddress'];
-      const sanitizedBody = sanitizeObject({ ...req.body, tenantId }, textFields);
-      const validatedData = insertCrmDealSchema.parse(sanitizedBody);
+      const validatedData = insertCrmDealSchema.parse(req.body);
       const deal = await storage.createCrmDeal(validatedData);
       res.status(201).json(deal);
     } catch (error) {
@@ -1496,25 +698,13 @@ export async function registerRoutes(
   // PATCH /api/crm/deals/:id - Update a deal
   app.patch("/api/crm/deals/:id", async (req, res) => {
     try {
-      // Validate partial update using partial schema
-      const partialSchema = insertCrmDealSchema.partial();
-      const validatedData = partialSchema.parse(req.body);
-      
-      // Sanitize text fields that could contain XSS
-      const textFields = ['title', 'notes', 'jobAddress'];
-      const sanitizedData = sanitizeObject(validatedData, textFields);
-      
-      const deal = await storage.updateCrmDeal(req.params.id, sanitizedData);
+      const deal = await storage.updateCrmDeal(req.params.id, req.body);
       if (!deal) {
         res.status(404).json({ error: "Deal not found" });
         return;
       }
       res.json(deal);
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        res.status(400).json({ error: "Invalid deal data", details: error.errors });
-        return;
-      }
+    } catch (error) {
       console.error("Error updating deal:", error);
       res.status(500).json({ error: "Failed to update deal" });
     }
@@ -1528,48 +718,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting deal:", error);
       res.status(500).json({ error: "Failed to delete deal" });
-    }
-  });
-
-  // POST /api/crm/deals/:id/convert-to-job - Convert a won deal to a job
-  app.post("/api/crm/deals/:id/convert-to-job", async (req, res) => {
-    try {
-      const existingDeal = await storage.getCrmDealById(req.params.id);
-      if (!existingDeal) {
-        res.status(404).json({ error: "Deal not found" });
-        return;
-      }
-      
-      const { crewLeadId, crewLeadName, jobStartDate, jobEndDate, invoiceNumber, jobAddress } = req.body;
-      
-      // Create a new job entry based on the won deal
-      const jobData = {
-        title: existingDeal.title,
-        value: existingDeal.value,
-        stage: "project_accepted",
-        pipelineType: "jobs",
-        crewLeadId: crewLeadId || null,
-        crewLeadName: crewLeadName || null,
-        jobStartDate: jobStartDate ? new Date(jobStartDate) : null,
-        jobEndDate: jobEndDate ? new Date(jobEndDate) : null,
-        invoiceNumber: invoiceNumber || null,
-        jobAddress: jobAddress || null,
-        convertedFromDealId: existingDeal.id,
-        leadId: existingDeal.leadId,
-        notes: existingDeal.notes,
-      };
-      
-      const newJob = await storage.createCrmDeal(jobData);
-      
-      // Mark the original deal as converted (optional: keep it in won state or update notes)
-      await storage.updateCrmDeal(existingDeal.id, { 
-        notes: `${existingDeal.notes || ""}\n[Converted to Job: ${newJob.id}]`.trim()
-      });
-      
-      res.status(201).json(newJob);
-    } catch (error) {
-      console.error("Error converting deal to job:", error);
-      res.status(500).json({ error: "Failed to convert deal to job" });
     }
   });
 
@@ -1629,12 +777,7 @@ export async function registerRoutes(
   // POST /api/crm/notes - Create a new note
   app.post("/api/crm/notes", async (req, res) => {
     try {
-      // Sanitize content field for XSS
-      const sanitizedBody = {
-        ...req.body,
-        content: req.body.content ? sanitizeText(req.body.content) : req.body.content
-      };
-      const validatedData = insertCrmNoteSchema.parse(sanitizedBody);
+      const validatedData = insertCrmNoteSchema.parse(req.body);
       const note = await storage.createCrmNote(validatedData);
       res.status(201).json(note);
     } catch (error) {
@@ -1655,9 +798,7 @@ export async function registerRoutes(
         res.status(400).json({ error: "Invalid content" });
         return;
       }
-      // Sanitize content for XSS (content is validated as string above, so sanitizeText won't return null)
-      const sanitizedContent = sanitizeText(content) as string;
-      const note = await storage.updateCrmNote(req.params.id, sanitizedContent);
+      const note = await storage.updateCrmNote(req.params.id, content);
       if (!note) {
         res.status(404).json({ error: "Note not found" });
         return;
@@ -1697,7 +838,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/auth/pin/verify - Verify PIN (with rate limiting)
+  // POST /api/auth/pin/verify - Verify PIN
   app.post("/api/auth/pin/verify", async (req, res) => {
     try {
       const { role, pin } = req.body;
@@ -1705,28 +846,12 @@ export async function registerRoutes(
         res.status(400).json({ error: "Role and PIN required" });
         return;
       }
-
-      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
-      const rateLimit = checkPinRateLimit(clientIp, role);
-      
-      if (!rateLimit.allowed) {
-        res.status(429).json({ 
-          error: "Too many failed attempts. Please try again later.",
-          retryAfter: rateLimit.retryAfter 
-        });
-        return;
-      }
-
       const userPin = await storage.getUserPinByRole(role);
       if (!userPin) {
-        recordPinAttempt(clientIp, role, false);
         res.json({ valid: false, mustChangePin: false });
         return;
       }
-      
       const valid = userPin.pin === pin;
-      recordPinAttempt(clientIp, role, valid);
-      
       res.json({ valid, mustChangePin: valid ? userPin.mustChangePin : false });
     } catch (error) {
       console.error("Error verifying PIN:", error);
@@ -1734,7 +859,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/auth/pin/change - Change PIN (with rate limiting)
+  // POST /api/auth/pin/change - Change PIN
   app.post("/api/auth/pin/change", async (req, res) => {
     try {
       const { role, currentPin, newPin } = req.body;
@@ -1742,26 +867,11 @@ export async function registerRoutes(
         res.status(400).json({ error: "Role, current PIN, and new PIN required" });
         return;
       }
-
-      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
-      const rateLimit = checkPinRateLimit(clientIp, `change:${role}`);
-      
-      if (!rateLimit.allowed) {
-        res.status(429).json({ 
-          error: "Too many failed attempts. Please try again later.",
-          retryAfter: rateLimit.retryAfter 
-        });
-        return;
-      }
-
       const userPin = await storage.getUserPinByRole(role);
       if (!userPin || userPin.pin !== currentPin) {
-        recordPinAttempt(clientIp, `change:${role}`, false);
         res.status(401).json({ error: "Invalid current PIN" });
         return;
       }
-      
-      recordPinAttempt(clientIp, `change:${role}`, true);
       const updated = await storage.updateUserPin(role, newPin, false);
       res.json({ success: true, updated });
     } catch (error) {
@@ -1777,9 +887,7 @@ export async function registerRoutes(
         { role: "ops_manager", pin: "4444", mustChangePin: true },
         { role: "owner", pin: "1111", mustChangePin: true },
         { role: "project_manager", pin: "2222", mustChangePin: false },
-        { role: "crew_lead", pin: "3333", mustChangePin: false },
-        { role: "developer", pin: "0424", mustChangePin: false },
-        { role: "demo_viewer", pin: "7777", mustChangePin: false }
+        { role: "developer", pin: "0424", mustChangePin: false }
       ];
       
       for (const pinData of defaultPins) {
@@ -1790,51 +898,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error initializing PINs:", error);
       res.status(500).json({ error: "Failed to initialize PINs" });
-    }
-  });
-
-  // POST /api/auth/pin/verify-any - Verify PIN against all roles (returns matching role)
-  app.post("/api/auth/pin/verify-any", async (req, res) => {
-    try {
-      const { pin } = req.body;
-      if (!pin) {
-        res.status(400).json({ success: false, message: "PIN required" });
-        return;
-      }
-
-      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
-      const rateLimit = checkPinRateLimit(clientIp, "any");
-      
-      if (!rateLimit.allowed) {
-        res.status(429).json({ 
-          success: false,
-          message: "Too many failed attempts. Please try again later.",
-          retryAfter: rateLimit.retryAfter 
-        });
-        return;
-      }
-
-      // Check PIN against all known roles
-      const roles = ["owner", "ops_manager", "project_manager", "crew_lead", "developer", "demo_viewer"];
-      
-      for (const role of roles) {
-        const userPin = await storage.getUserPinByRole(role);
-        if (userPin && userPin.pin === pin) {
-          recordPinAttempt(clientIp, "any", true);
-          res.json({ 
-            success: true, 
-            role,
-            mustChangePin: userPin.mustChangePin 
-          });
-          return;
-        }
-      }
-      
-      recordPinAttempt(clientIp, "any", false);
-      res.json({ success: false, message: "Invalid PIN" });
-    } catch (error) {
-      console.error("Error verifying PIN:", error);
-      res.status(500).json({ success: false, message: "Failed to verify PIN" });
     }
   });
 
@@ -2357,7 +1420,7 @@ export async function registerRoutes(
           ? FOUNDING_ASSETS.NPP_GENESIS 
           : FOUNDING_ASSETS.PAINTPROS_PLATFORM;
         res.json({ 
-          version: "1.3.0", 
+          version: "1.0.0", 
           buildNumber: 0,
           tenantId: tenantId || 'orbit',
           hallmarkNumber: genesisAsset.number,
@@ -2406,7 +1469,7 @@ export async function registerRoutes(
       
       // Get tenant-specific latest release
       const latestRelease = await storage.getLatestRelease(tenantId);
-      let currentVersion = latestRelease?.version || "1.3.0";
+      let currentVersion = latestRelease?.version || "1.0.0";
       let buildNumber = (latestRelease?.buildNumber || 0) + 1;
       
       const [major, minor, patch] = currentVersion.split('.').map(Number);
@@ -2469,7 +1532,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/releases/:id/stamp - Stamp release to Solana and Darkwave (dual-chain)
+  // POST /api/releases/:id/stamp - Stamp release to Solana (tenant-aware)
   app.post("/api/releases/:id/stamp", async (req, res) => {
     try {
       const { network = "mainnet-beta" } = req.body;
@@ -2486,71 +1549,35 @@ export async function registerRoutes(
         return;
       }
       
-      // Stamp to Solana
       const wallet = solana.getWalletFromPrivateKey(privateKey);
-      const solanaResult = await solana.stampHashToBlockchain(
+      const result = await solana.stampHashToBlockchain(
         release.contentHash,
         wallet,
         network,
         { entityType: 'release', entityId: release.id },
-        release.tenantId
+        release.tenantId // Pass tenant for proper memo prefix
       );
       
-      await storage.updateReleaseSolanaStatus(
+      const updated = await storage.updateReleaseSolanaStatus(
         release.id,
-        solanaResult.signature,
+        result.signature,
         "confirmed"
       );
       
-      // Stamp to Darkwave Chain (if configured)
-      let darkwaveResult: { success: boolean; txHash?: string; explorerUrl?: string } = { success: false };
-      if (darkwave.isDarkwaveConfigured()) {
-        darkwaveResult = await darkwave.submitHashToDarkwave(
-          release.contentHash,
-          {
-            entityType: 'release',
-            entityId: release.id,
-            tenantId: release.tenantId,
-            version: release.version
-          }
-        );
-        
-        if (darkwaveResult.success && darkwaveResult.txHash) {
-          await storage.updateReleaseDarkwaveStatus(
-            release.id,
-            darkwaveResult.txHash,
-            "confirmed"
-          );
-        }
-      }
-      
-      // Update hallmark with blockchain info
       if (release.hallmarkId) {
-        const solanaExplorerUrl = network === "devnet"
-          ? `https://explorer.solana.com/tx/${solanaResult.signature}?cluster=devnet`
-          : `https://explorer.solana.com/tx/${solanaResult.signature}`;
-        await storage.updateHallmarkBlockchain(release.hallmarkId, solanaResult.signature, solanaExplorerUrl);
-        
-        if (darkwaveResult.success && darkwaveResult.txHash) {
-          await storage.updateHallmarkDarkwave(release.hallmarkId, darkwaveResult.txHash, darkwaveResult.explorerUrl || '');
-        }
+        const explorerUrl = network === "devnet"
+          ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
+          : `https://explorer.solana.com/tx/${result.signature}`;
+        await storage.updateHallmarkBlockchain(release.hallmarkId, result.signature, explorerUrl);
       }
-      
-      const updated = await storage.getReleaseById(release.id);
       
       res.json({
         release: updated,
         blockchain: {
-          solana: {
-            signature: solanaResult.signature,
-            explorerUrl: network === "devnet"
-              ? `https://explorer.solana.com/tx/${solanaResult.signature}?cluster=devnet`
-              : `https://explorer.solana.com/tx/${solanaResult.signature}`
-          },
-          darkwave: darkwaveResult.success ? {
-            txHash: darkwaveResult.txHash,
-            explorerUrl: darkwaveResult.explorerUrl
-          } : null
+          signature: result.signature,
+          explorerUrl: network === "devnet"
+            ? `https://explorer.solana.com/tx/${result.signature}?cluster=devnet`
+            : `https://explorer.solana.com/tx/${result.signature}`
         }
       });
     } catch (error) {
@@ -2750,73 +1777,6 @@ export async function registerRoutes(
     }
   });
 
-  // ============ COLOR VISUALIZER (AI-Powered) ============
-  
-  // POST /api/color-visualize - Analyze wall photo and provide color recommendations
-  app.post("/api/color-visualize", async (req, res) => {
-    try {
-      const { imageBase64, colorHex, colorName, intensity } = req.body;
-      
-      if (!imageBase64 || !colorHex) {
-        res.status(400).json({ error: "Image and color data required" });
-        return;
-      }
-      
-      const openai = new OpenAI({
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-      });
-      
-      // Use AI to analyze the wall and provide insights
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert interior designer and color consultant. Analyze the room/wall photo and provide a brief, encouraging comment about how the selected paint color (${colorName}, ${colorHex}) would look in this space. Keep your response to 1-2 sentences. Be specific about features you see in the room. Do not use emojis.`
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `The customer wants to paint this wall/room with ${colorName} (${colorHex}) at ${intensity}% intensity. What do you think about this color choice for this space?`
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: imageBase64,
-                  detail: "low"
-                }
-              }
-            ]
-          }
-        ],
-        max_tokens: 150,
-        temperature: 0.7,
-      });
-
-      const analysis = response.choices[0]?.message?.content || 
-        `${colorName} would be a beautiful choice for this space!`;
-
-      res.json({
-        success: true,
-        analysis,
-        colorHex,
-        colorName,
-      });
-    } catch (error: any) {
-      console.error("Color visualization error:", error);
-      // Return a generic positive response if AI fails
-      res.json({
-        success: true,
-        analysis: `${req.body.colorName || "This color"} would look great in your space!`,
-        colorHex: req.body.colorHex,
-        colorName: req.body.colorName,
-      });
-    }
-  });
-
   // ============ ROOM SCAN (AI Vision) ============
   
   // POST /api/room-scan - Analyze room image with AI Vision
@@ -2856,47 +1816,26 @@ export async function registerRoutes(
           messages: [
             {
               role: "system",
-              content: `You are a professional construction estimator and room measurement expert with 20+ years of experience in the painting industry. Your task is to accurately estimate room dimensions from photographs.
+              content: `You are an expert at estimating room dimensions from photographs. 
+Analyze the image and estimate the room's approximate dimensions.
+Consider visual cues like:
+- Standard door heights (6'8" or 80 inches)
+- Standard ceiling heights (8-10 feet)
+- Furniture sizes for scale
+- Floor tiles or flooring patterns
+- Outlet and switch plate sizes
 
-CALIBRATION REFERENCE OBJECTS (use these standard sizes):
-- Interior doors: 80" (6'8") height, 32-36" width
-- Standard electrical outlets: 4.5" tall
-- Light switches: 2.75" wide x 4.5" tall  
-- Baseboards: 3-6" height typical
-- Crown molding: 2-5" height typical
-- Ceiling fan diameter: 42-52" typical
-- 8-panel interior door: each panel ~9" x 18"
-- Standard furniture (queen bed: 60"x80", sofa: 84-96" long)
-
-MEASUREMENT METHODOLOGY:
-1. First identify at least 2 reference objects in the image
-2. Use perspective geometry to estimate distance/depth
-3. Cross-check estimates using multiple reference points
-4. Consider ceiling height variations (standard 8ft, modern 9ft, vaulted)
-
-FOR PAINTING ESTIMATES - calculate WALL SURFACE AREA:
-- Wall area = perimeter × ceiling height
-- Account for door/window openings to subtract later
-- Note any alcoves, bump-outs, or irregular shapes
-
-ACCURACY GUIDANCE:
-- 70%+ confidence: Clear reference objects visible, good lighting, can see floor-ceiling
-- 50-70% confidence: Some reference objects, partial room visible
-- Below 50%: Limited reference points, poor angle, significant obstructions
-
-IMPORTANT: Be conservative. Underestimate by 5-10% if uncertain. This protects against scope creep.
+IMPORTANT: Provide conservative estimates. It's better to underestimate than overestimate.
 
 Respond ONLY with a JSON object in this exact format:
 {
-  "length_ft": <number with 1 decimal>,
-  "width_ft": <number with 1 decimal>,
-  "height_ft": <number with 1 decimal>,
-  "square_footage": <floor area number>,
-  "wall_surface_sqft": <estimated paintable wall area>,
+  "length_ft": <number>,
+  "width_ft": <number>,
+  "height_ft": <number>,
+  "square_footage": <number>,
   "confidence": <number 0-100>,
   "room_type_detected": "<string>",
-  "reference_objects_used": ["<object1>", "<object2>"],
-  "reasoning": "<brief explanation of calibration method used>"
+  "reasoning": "<brief explanation of how you estimated>"
 }
 
 Do not include any text before or after the JSON.`
@@ -2906,7 +1845,7 @@ Do not include any text before or after the JSON.`
               content: [
                 {
                   type: "text",
-                  text: `Analyze this ${roomType || 'room'} image and estimate its dimensions for a painting estimate. The customer needs floor square footage and wall surface area for pricing. Identify reference objects in the image to calibrate your measurements.`
+                  text: `Analyze this ${roomType || 'room'} image and estimate its dimensions for painting purposes.`
                 },
                 {
                   type: "image_url",
@@ -2918,7 +1857,7 @@ Do not include any text before or after the JSON.`
               ]
             }
           ],
-          max_tokens: 600
+          max_tokens: 500
         });
         
         const content = response.choices[0]?.message?.content || "";
@@ -2956,14 +1895,12 @@ Do not include any text before or after the JSON.`
         res.json({
           id: scan.id,
           estimatedSquareFootage: parsed.square_footage,
-          wallSurfaceSqft: parsed.wall_surface_sqft,
           estimatedLength: parsed.length_ft,
           estimatedWidth: parsed.width_ft,
           estimatedHeight: parsed.height_ft,
           confidence: parsed.confidence,
           roomType: parsed.room_type_detected || roomType,
           reasoning: parsed.reasoning,
-          referenceObjectsUsed: parsed.reference_objects_used || [],
           status: "completed"
         });
         
@@ -3525,7 +2462,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
-  // POST /api/tts - Convert text to speech using ElevenLabs
+  // POST /api/tts - Convert text to speech using OpenAI TTS
   app.post("/api/tts", async (req, res) => {
     try {
       const { text, voice } = req.body;
@@ -3535,52 +2472,22 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         return;
       }
 
-      const apiKey = process.env.ELEVENLABS_API_KEY;
-      if (!apiKey) {
-        console.error("ElevenLabs API key not configured");
-        res.status(500).json({ error: "TTS service not configured" });
-        return;
-      }
+      // Valid OpenAI voices: alloy, echo, fable, onyx, nova, shimmer
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+      const selectedVoice = validVoices.includes(voice) ? voice : "nova";
 
-      // ElevenLabs voice IDs - using friendly warm voices
-      const voiceMap: Record<string, string> = {
-        "nova": "21m00Tcm4TlvDq8ikWAM", // Rachel - warm female
-        "alloy": "pNInz6obpgDQGcFmaJgB", // Adam - neutral male
-        "echo": "VR6AewLTigWG4xSOukaG", // Arnold - deep male
-        "onyx": "ErXwobaYiN019PkySvjV", // Antoni - young male
-        "shimmer": "EXAVITQu4vr4xnSDxMaL", // Bella - soft female
-        "fable": "MF3mGyEYCl7XYWbV9V6O", // Elli - young female
-      };
-      
-      // Default to Rachel (warm, professional female voice)
-      const voiceId = voiceMap[voice] || "21m00Tcm4TlvDq8ikWAM";
-
-      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-        method: "POST",
-        headers: {
-          "Accept": "audio/mpeg",
-          "Content-Type": "application/json",
-          "xi-api-key": apiKey,
-        },
-        body: JSON.stringify({
-          text: text.slice(0, 2500), // ElevenLabs free tier limit
-          model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-          },
-        }),
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("ElevenLabs API error:", response.status, errorText);
-        res.status(response.status).json({ error: "TTS generation failed" });
-        return;
-      }
+      const mp3Response = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: selectedVoice,
+        input: text.slice(0, 4096),
+      });
 
-      const audioBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(audioBuffer);
+      const buffer = Buffer.from(await mp3Response.arrayBuffer());
       
       res.set({
         "Content-Type": "audio/mpeg",
@@ -3822,7 +2729,12 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { customerName, customerEmail, customerPhone, customerAddress, serviceType, projectDescription, scheduledDate, scheduledTime, customerNotes, tenantId } = req.body;
       
-      const validated = insertBookingSchema.parse({
+      if (!customerName || !customerEmail || !serviceType || !scheduledDate || !scheduledTime) {
+        res.status(400).json({ error: "Missing required fields: customerName, customerEmail, serviceType, scheduledDate, scheduledTime" });
+        return;
+      }
+
+      const booking = await storage.createBooking({
         tenantId: tenantId || "npp",
         customerName,
         customerEmail,
@@ -3835,14 +2747,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         customerNotes
       });
 
-      const booking = await storage.createBooking(validated);
-
       res.status(201).json(booking);
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        res.status(400).json({ error: "Invalid request data", details: error.errors });
-        return;
-      }
+    } catch (error) {
       console.error("Error creating booking:", error);
       res.status(500).json({ error: "Failed to create booking" });
     }
@@ -4102,58 +3008,10 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       switch (event.type) {
         case "checkout.session.completed":
           const session = event.data.object;
+          console.log("Payment successful for estimate:", session.metadata?.estimateId);
           
-          // Check if this is a trial upgrade subscription
-          if (session.metadata?.type === 'trial_upgrade' && session.metadata?.trialId) {
-            console.log("[Webhook] Trial upgrade completed:", session.metadata.trialId);
-            
-            // Auto-provision the tenant from the trial
-            try {
-              // Extract franchise data from session metadata
-              const isPaintProsFranchise = session.metadata.isPaintProsFranchise === 'true';
-              const franchiseData = isPaintProsFranchise ? {
-                city: session.metadata.franchiseCity || '',
-                state: session.metadata.franchiseState || '',
-                territory: session.metadata.franchiseTerritory || '',
-              } : undefined;
-
-              const provisionResult = await provisionTenantFromTrial(
-                session.metadata.trialId,
-                (session.metadata.planId || 'professional') as SubscriptionTier,
-                {
-                  sessionId: session.id,
-                  customerId: session.customer as string || "",
-                  subscriptionId: session.subscription as string || "",
-                  planId: (session.metadata.planId || 'professional') as SubscriptionTier,
-                  isPaintProsFranchise,
-                  franchiseData,
-                }
-              );
-              
-              if (provisionResult.success) {
-                console.log("[Webhook] Tenant provisioned successfully:", provisionResult.tenant?.id);
-                
-                // Log the automated conversion
-                await storage.logTrialUsage({
-                  trialTenantId: session.metadata.trialId,
-                  action: 'auto_converted_via_webhook',
-                  resourceType: 'tenant',
-                  metadata: {
-                    newTenantId: provisionResult.tenant?.id,
-                    planId: session.metadata.planId,
-                    stripeSessionId: session.id,
-                  }
-                });
-              } else {
-                console.error("[Webhook] Provisioning failed:", provisionResult.error);
-              }
-            } catch (provisionError) {
-              console.error("[Webhook] Error during auto-provisioning:", provisionError);
-            }
-          }
-          // Handle estimate deposit payments
-          else if (session.metadata?.estimateId) {
-            console.log("Payment successful for estimate:", session.metadata?.estimateId);
+          // Create payment record
+          if (session.metadata?.estimateId) {
             await storage.createPayment({
               estimateId: session.metadata.estimateId,
               amount: String((session.amount_total || 0) / 100),
@@ -4163,25 +3021,6 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
             });
           }
           break;
-          
-        case "customer.subscription.updated":
-          const subscription = event.data.object;
-          console.log("[Webhook] Subscription updated:", subscription.id);
-          // Handle subscription status changes (past_due, active, cancelled)
-          break;
-          
-        case "customer.subscription.deleted":
-          const deletedSub = event.data.object;
-          console.log("[Webhook] Subscription cancelled:", deletedSub.id);
-          // Mark tenant as cancelled if needed
-          break;
-          
-        case "invoice.payment_failed":
-          const failedInvoice = event.data.object;
-          console.log("[Webhook] Payment failed for subscription:", failedInvoice.subscription);
-          // Update tenant to past_due status
-          break;
-          
         default:
           console.log(`Unhandled event type ${event.type}`);
       }
@@ -4309,106 +3148,6 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error: any) {
       console.error("Error processing Coinbase webhook:", error);
       res.status(500).json({ error: error.message || "Webhook processing failed" });
-    }
-  });
-
-  // ============ QUICKBOOKS INTEGRATION ============
-
-  // GET /api/quickbooks/status - Check QuickBooks connection status
-  app.get("/api/quickbooks/status", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const status = await quickbooks.getQBConnectionStatus(tenantId);
-      res.json(status);
-    } catch (error: any) {
-      console.error("QuickBooks status error:", error);
-      res.status(500).json({ error: error.message || "Failed to check QuickBooks status" });
-    }
-  });
-
-  // GET /api/quickbooks/auth - Get QuickBooks OAuth authorization URL
-  app.get("/api/quickbooks/auth", async (req, res) => {
-    try {
-      if (!quickbooks.isQuickBooksConfigured()) {
-        res.status(501).json({ 
-          error: "QuickBooks not configured",
-          message: "Please configure QUICKBOOKS_CLIENT_ID, QUICKBOOKS_CLIENT_SECRET, and QUICKBOOKS_REDIRECT_URI environment variables"
-        });
-        return;
-      }
-
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const state = crypto.randomBytes(16).toString("hex");
-      
-      (req.session as any).qbState = state;
-      (req.session as any).qbTenantId = tenantId;
-      
-      const authUrl = quickbooks.getAuthorizationUrl(state);
-      res.json({ authUrl });
-    } catch (error: any) {
-      console.error("QuickBooks auth error:", error);
-      res.status(500).json({ error: error.message || "Failed to generate auth URL" });
-    }
-  });
-
-  // GET /api/quickbooks/callback - Handle OAuth callback from QuickBooks
-  app.get("/api/quickbooks/callback", async (req, res) => {
-    try {
-      const { code, state, realmId, error: qbError } = req.query;
-
-      if (qbError) {
-        res.redirect("/admin?qb_error=" + encodeURIComponent(qbError as string));
-        return;
-      }
-
-      const sessionState = (req.session as any).qbState;
-      const tenantId = (req.session as any).qbTenantId;
-
-      if (!sessionState || state !== sessionState) {
-        res.redirect("/admin?qb_error=invalid_state");
-        return;
-      }
-
-      if (!code || !realmId) {
-        res.redirect("/admin?qb_error=missing_params");
-        return;
-      }
-
-      await quickbooks.exchangeCodeForTokens(code as string, realmId as string, tenantId);
-      
-      delete (req.session as any).qbState;
-      delete (req.session as any).qbTenantId;
-
-      res.redirect("/admin?qb_connected=true");
-    } catch (error: any) {
-      console.error("QuickBooks callback error:", error);
-      res.redirect("/admin?qb_error=" + encodeURIComponent(error.message));
-    }
-  });
-
-  // POST /api/quickbooks/disconnect - Disconnect QuickBooks
-  app.post("/api/quickbooks/disconnect", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      await quickbooks.disconnectQB(tenantId);
-      res.json({ success: true, message: "QuickBooks disconnected" });
-    } catch (error: any) {
-      console.error("QuickBooks disconnect error:", error);
-      res.status(500).json({ error: error.message || "Failed to disconnect QuickBooks" });
-    }
-  });
-
-  // POST /api/quickbooks/sync/estimate/:id - Sync an estimate to QuickBooks
-  app.post("/api/quickbooks/sync/estimate/:id", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname || "localhost");
-      const estimateId = req.params.id;
-      
-      const result = await quickbooks.syncEstimateToQB(tenantId, estimateId);
-      res.json(result);
-    } catch (error: any) {
-      console.error("QuickBooks sync error:", error);
-      res.status(500).json({ error: error.message || "Failed to sync estimate" });
     }
   });
 
@@ -4546,7 +3285,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
 
   // ============ CREW LEAD MANAGEMENT ============
 
-  // POST /api/crew/auth - Authenticate crew lead by PIN (with rate limiting)
+  // POST /api/crew/auth - Authenticate crew lead by PIN
   app.post("/api/crew/auth", async (req, res) => {
     try {
       const { pin, tenantId } = req.body;
@@ -4554,31 +3293,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(400).json({ error: "PIN is required" });
         return;
       }
-
-      const clientIp = req.ip || req.socket.remoteAddress || "unknown";
-      const rateLimit = checkPinRateLimit(clientIp, "crew");
-      
-      if (!rateLimit.allowed) {
-        res.status(429).json({ 
-          error: "Too many failed attempts. Please try again later.",
-          retryAfter: rateLimit.retryAfter 
-        });
-        return;
-      }
-      
-      // Try the specified tenant first
-      let crewLead = await storage.getCrewLeadByPin(pin, tenantId || "demo");
-      
-      // If not found, try other common tenants
-      if (!crewLead && tenantId !== "demo") {
-        crewLead = await storage.getCrewLeadByPin(pin, "demo");
-      }
-      if (!crewLead && tenantId !== "npp") {
-        crewLead = await storage.getCrewLeadByPin(pin, "npp");
-      }
-      
+      const crewLead = await storage.getCrewLeadByPin(pin, tenantId || "npp");
       if (!crewLead) {
-        recordPinAttempt(clientIp, "crew", false);
         res.status(401).json({ error: "Invalid PIN" });
         return;
       }
@@ -4586,8 +3302,6 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(403).json({ error: "Account is deactivated" });
         return;
       }
-      
-      recordPinAttempt(clientIp, "crew", true);
       res.json(crewLead);
     } catch (error) {
       console.error("Error authenticating crew lead:", error);
@@ -4606,12 +3320,12 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       let openIncidents = 0;
       
       for (const lead of leads) {
-        const members = await storage.getCrewMembers(lead.id);
+        const members = await storage.getCrewMembersByLeadId(lead.id);
         totalMembers += members.filter(m => m.isActive).length;
-        const entries = await storage.getTimeEntries(lead.id);
-        pendingTimeEntries += entries.filter((e: { status: string }) => e.status === "pending").length;
-        const incidents = await storage.getIncidentReportsByLead(lead.id);
-        openIncidents += incidents.filter((i: { status: string }) => i.status === "open" || i.status === "investigating").length;
+        const entries = await storage.getTimeEntriesByLeadId(lead.id);
+        pendingTimeEntries += entries.filter(e => e.status === "pending").length;
+        const incidents = await storage.getIncidentReportsByLeadId(lead.id);
+        openIncidents += incidents.filter(i => i.status === "open" || i.status === "investigating").length;
       }
       
       res.json({ totalMembers, pendingTimeEntries, openIncidents });
@@ -4699,7 +3413,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // GET /api/crew/leads/:leadId/members - Get members for a crew lead
   app.get("/api/crew/leads/:leadId/members", async (req, res) => {
     try {
-      const members = await storage.getCrewMembers(req.params.leadId);
+      const members = await storage.getCrewMembersByLead(req.params.leadId);
       res.json(members);
     } catch (error) {
       console.error("Error fetching crew members:", error);
@@ -4776,16 +3490,16 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const { crewLeadId, crewMemberId, startDate, endDate } = req.query;
       let entries;
       
-      if (startDate && endDate && crewLeadId) {
+      if (startDate && endDate) {
         entries = await storage.getTimeEntriesByDateRange(
-          crewLeadId as string,
           new Date(startDate as string),
-          new Date(endDate as string)
+          new Date(endDate as string),
+          crewLeadId as string | undefined
         );
       } else if (crewMemberId) {
         entries = await storage.getTimeEntriesByMember(crewMemberId as string);
       } else if (crewLeadId) {
-        entries = await storage.getTimeEntries(crewLeadId as string);
+        entries = await storage.getTimeEntriesByLead(crewLeadId as string);
       } else {
         res.status(400).json({ error: "Must provide crewLeadId, crewMemberId, or date range" });
         return;
@@ -4847,7 +3561,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/crew/time-entries/:id/submit-payroll - Submit to payroll
   app.patch("/api/crew/time-entries/:id/submit-payroll", async (req, res) => {
     try {
-      const [entry] = await storage.submitTimeEntriesToPayroll([req.params.id]);
+      const entry = await storage.submitTimeEntryToPayroll(req.params.id);
       if (!entry) {
         res.status(404).json({ error: "Time entry not found" });
         return;
@@ -4869,7 +3583,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(400).json({ error: "crewLeadId is required" });
         return;
       }
-      const notes = await storage.getJobNotes(crewLeadId as string);
+      const notes = await storage.getJobNotesByLead(crewLeadId as string);
       res.json(notes);
     } catch (error) {
       console.error("Error fetching job notes:", error);
@@ -4926,8 +3640,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/crew/job-notes/:id/mark-sent - Mark job note as sent
   app.patch("/api/crew/job-notes/:id/mark-sent", async (req, res) => {
     try {
-      const { sentToOwner = true, sentToAdmin = true } = req.body;
-      const note = await storage.markJobNoteSent(req.params.id, sentToOwner, sentToAdmin);
+      const note = await storage.markJobNoteSent(req.params.id);
       if (!note) {
         res.status(404).json({ error: "Job note not found" });
         return;
@@ -5061,35 +3774,28 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { tenantId, name, type, createdBy, participants } = req.body;
       
-      const validated = insertConversationSchema.parse({
+      const conversation = await storage.createConversation({
         tenantId: tenantId || "npp",
         name,
         type: type || "direct",
         createdBy
       });
       
-      const conversation = await storage.createConversation(validated);
-      
       if (participants && Array.isArray(participants)) {
         for (const p of participants) {
-          const participantValidated = insertConversationParticipantSchema.parse({
+          await storage.addConversationParticipant({
             conversationId: conversation.id,
             userId: p.userId,
             role: p.role,
             displayName: p.displayName,
             phone: p.phone
           });
-          await storage.addConversationParticipant(participantValidated);
         }
       }
       
       const fullParticipants = await storage.getConversationParticipants(conversation.id);
       res.status(201).json({ ...conversation, participants: fullParticipants });
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        res.status(400).json({ error: "Invalid request data", details: error.errors });
-        return;
-      }
+    } catch (error) {
       console.error("Error creating conversation:", error);
       res.status(500).json({ error: "Failed to create conversation" });
     }
@@ -5128,29 +3834,25 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     try {
       const { senderId, senderRole, senderName, content, messageType, attachments, replyToId } = req.body;
       
-      // Sanitize message content to prevent XSS
-      const sanitizedContent = sanitizeText(content);
+      if (!content) {
+        res.status(400).json({ error: "content is required" });
+        return;
+      }
       
-      const validated = insertMessageSchema.parse({
+      const message = await storage.createMessage({
         conversationId: req.params.id,
         senderId,
         senderRole,
         senderName,
-        content: sanitizedContent,
+        content,
         messageType: messageType || "text",
         attachments: attachments || [],
         replyToId,
         isSystemMessage: false
       });
       
-      const message = await storage.createMessage(validated);
-      
       res.status(201).json(message);
-    } catch (error: any) {
-      if (error.name === "ZodError") {
-        res.status(400).json({ error: "Invalid request data", details: error.errors });
-        return;
-      }
+    } catch (error) {
       console.error("Error sending message:", error);
       res.status(500).json({ error: "Failed to send message" });
     }
@@ -5239,2560 +3941,6 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error updating user role:", error);
       res.status(500).json({ error: "Failed to update user role" });
-    }
-  });
-
-  // ============================================
-  // DOCUMENT CENTER ROUTES
-  // ============================================
-
-  // GET /api/documents - Get all documents for tenant
-  app.get("/api/documents", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      const { type } = req.query;
-      
-      let docs;
-      if (type && typeof type === 'string') {
-        docs = await storage.getDocumentsByType(tenantId, type);
-      } else {
-        docs = await storage.getDocuments(tenantId);
-      }
-      res.json(docs);
-    } catch (error) {
-      console.error("Error fetching documents:", error);
-      res.status(500).json({ error: "Failed to fetch documents" });
-    }
-  });
-
-  // GET /api/documents/:id - Get single document with versions and signatures
-  app.get("/api/documents/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      const doc = await storage.getDocumentById(req.params.id);
-      if (!doc) {
-        res.status(404).json({ error: "Document not found" });
-        return;
-      }
-      
-      // Verify tenant access
-      if (doc.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      const versions = await storage.getDocumentVersions(doc.id);
-      const signatures = await storage.getDocumentSignatures(doc.id);
-      
-      res.json({ ...doc, versions, signatures });
-    } catch (error) {
-      console.error("Error fetching document:", error);
-      res.status(500).json({ error: "Failed to fetch document" });
-    }
-  });
-
-  // POST /api/documents - Create a new document
-  app.post("/api/documents", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      // Sanitize text fields for XSS
-      const textFields = ['title', 'description'];
-      const sanitizedBody = sanitizeObject(req.body, textFields);
-      
-      const validated = insertDocumentSchema.parse({
-        ...sanitizedBody,
-        tenantId,
-        createdBy: dbUser.id,
-      });
-      
-      const doc = await storage.createDocument(validated);
-      
-      // Create initial version if file content provided
-      if (req.body.fileContent) {
-        await storage.createDocumentVersion({
-          documentId: doc.id,
-          versionNumber: 1,
-          fileName: req.body.fileName || 'document',
-          fileData: req.body.fileContent || '',
-          changeNote: 'Initial version',
-          createdBy: dbUser.id,
-        });
-      }
-      
-      res.status(201).json(doc);
-    } catch (error) {
-      console.error("Error creating document:", error);
-      res.status(500).json({ error: "Failed to create document" });
-    }
-  });
-
-  // PATCH /api/documents/:id - Update document
-  app.patch("/api/documents/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      // Verify document exists and belongs to tenant
-      const existing = await storage.getDocumentById(req.params.id);
-      if (!existing) {
-        res.status(404).json({ error: "Document not found" });
-        return;
-      }
-      if (existing.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      const doc = await storage.updateDocument(req.params.id, req.body);
-      res.json(doc);
-    } catch (error) {
-      console.error("Error updating document:", error);
-      res.status(500).json({ error: "Failed to update document" });
-    }
-  });
-
-  // DELETE /api/documents/:id - Delete document and all related data
-  app.delete("/api/documents/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      // Verify document exists and belongs to tenant
-      const existing = await storage.getDocumentById(req.params.id);
-      if (!existing) {
-        res.status(404).json({ error: "Document not found" });
-        return;
-      }
-      if (existing.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      await storage.deleteDocument(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      res.status(500).json({ error: "Failed to delete document" });
-    }
-  });
-
-  // POST /api/documents/:id/versions - Add new version
-  app.post("/api/documents/:id/versions", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      // Verify document exists and belongs to tenant
-      const doc = await storage.getDocumentById(req.params.id);
-      if (!doc) {
-        res.status(404).json({ error: "Document not found" });
-        return;
-      }
-      if (doc.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      const existingVersions = await storage.getDocumentVersions(req.params.id);
-      const nextVersionNumber = existingVersions.length > 0 
-        ? Math.max(...existingVersions.map(v => v.versionNumber)) + 1 
-        : 1;
-      
-      const validated = insertDocumentVersionSchema.parse({
-        ...req.body,
-        documentId: req.params.id,
-        versionNumber: nextVersionNumber,
-        createdBy: dbUser.id,
-      });
-      
-      const version = await storage.createDocumentVersion(validated);
-      res.status(201).json(version);
-    } catch (error) {
-      console.error("Error creating document version:", error);
-      res.status(500).json({ error: "Failed to create document version" });
-    }
-  });
-
-  // POST /api/documents/:id/signatures - Add signature to document
-  // Note: This endpoint is intentionally less restrictive to allow customers to sign documents via shared links
-  // However, we validate that the document exists and is in a signable state
-  app.post("/api/documents/:id/signatures", async (req: any, res) => {
-    try {
-      const { signerName, signerEmail, signatureData, signatureType } = req.body;
-      
-      // First verify the document exists and is pending signature
-      const doc = await storage.getDocumentById(req.params.id);
-      if (!doc) {
-        res.status(404).json({ error: "Document not found" });
-        return;
-      }
-      
-      if (doc.status === 'signed') {
-        res.status(400).json({ error: "Document has already been signed" });
-        return;
-      }
-      
-      if (doc.status === 'archived' || doc.status === 'expired') {
-        res.status(400).json({ error: "Document is no longer available for signing" });
-        return;
-      }
-      
-      // Validate required fields
-      if (!signerName || !signerEmail || !signatureData) {
-        res.status(400).json({ error: "Signer name, email, and signature are required" });
-        return;
-      }
-      
-      const validated = insertDocumentSignatureSchema.parse({
-        documentId: req.params.id,
-        signerName,
-        signerEmail,
-        signatureData,
-        signatureType: signatureType || 'drawn',
-        ipAddress: req.ip || 'unknown',
-      });
-      
-      const signature = await storage.createDocumentSignature(validated);
-      
-      // Update document status to signed
-      await storage.updateDocument(req.params.id, { status: 'signed' });
-      
-      res.status(201).json(signature);
-    } catch (error) {
-      console.error("Error adding signature:", error);
-      res.status(500).json({ error: "Failed to add signature" });
-    }
-  });
-
-  // GET /api/documents/:id/signatures - Get all signatures for a document (authenticated)
-  app.get("/api/documents/:id/signatures", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const doc = await storage.getDocumentById(req.params.id);
-      if (!doc) {
-        res.status(404).json({ error: "Document not found" });
-        return;
-      }
-      
-      // Verify tenant access
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      if (doc.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      const signatures = await storage.getDocumentSignatures(req.params.id);
-      res.json(signatures);
-    } catch (error) {
-      console.error("Error fetching signatures:", error);
-      res.status(500).json({ error: "Failed to fetch signatures" });
-    }
-  });
-
-  // ===== CRM Calendar Routes =====
-  
-  // GET /api/calendar/events - Get calendar events for tenant
-  app.get("/api/calendar/events", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      const { startDate, endDate, assignedTo } = req.query;
-      
-      let events;
-      if (assignedTo) {
-        events = await storage.getCalendarEventsByAssignee(tenantId, assignedTo as string);
-      } else if (startDate && endDate) {
-        events = await storage.getCalendarEvents(
-          tenantId, 
-          new Date(startDate as string), 
-          new Date(endDate as string)
-        );
-      } else {
-        events = await storage.getCalendarEvents(tenantId);
-      }
-      
-      res.json(events);
-    } catch (error) {
-      console.error("Error fetching calendar events:", error);
-      res.status(500).json({ error: "Failed to fetch calendar events" });
-    }
-  });
-  
-  // GET /api/calendar/events/:id - Get single event
-  app.get("/api/calendar/events/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const event = await storage.getCalendarEventById(req.params.id);
-      if (!event) {
-        res.status(404).json({ error: "Event not found" });
-        return;
-      }
-      
-      // Verify tenant access
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      if (event.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      // Get reminders for this event
-      const reminders = await storage.getCalendarReminders(req.params.id);
-      
-      res.json({ ...event, reminders });
-    } catch (error) {
-      console.error("Error fetching calendar event:", error);
-      res.status(500).json({ error: "Failed to fetch calendar event" });
-    }
-  });
-  
-  // GET /api/calendar/events/date/:date - Get events for a specific date
-  app.get("/api/calendar/events/date/:date", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      const date = new Date(req.params.date);
-      
-      const events = await storage.getCalendarEventsByDate(tenantId, date);
-      res.json(events);
-    } catch (error) {
-      console.error("Error fetching events by date:", error);
-      res.status(500).json({ error: "Failed to fetch events" });
-    }
-  });
-  
-  // POST /api/calendar/events - Create new event
-  app.post("/api/calendar/events", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      const { title, description, eventType, startTime, endTime, isAllDay, allDay, location, 
-              color, colorCode, assignedTo, leadId, estimateId, recurringPattern, 
-              recurringEndDate, notes, reminders } = req.body;
-      
-      // Sanitize text fields for XSS
-      const sanitizedTitle = title ? sanitizeText(title) : title;
-      const sanitizedDescription = description ? sanitizeText(description) : description;
-      const sanitizedLocation = location ? sanitizeText(location) : location;
-      const sanitizedNotes = notes ? sanitizeText(notes) : notes;
-      
-      const validated = insertCalendarEventSchema.parse({
-        tenantId,
-        title: sanitizedTitle,
-        description: sanitizedDescription,
-        eventType: eventType || 'appointment',
-        startTime: new Date(startTime),
-        endTime: endTime ? new Date(endTime) : new Date(startTime),
-        allDay: allDay ?? isAllDay ?? false,
-        location: sanitizedLocation,
-        colorCode: colorCode || color || '#3B82F6',
-        assignedTo,
-        createdBy: dbUser.id,
-        relatedLeadId: leadId,
-        relatedEstimateId: estimateId,
-        recurringPattern,
-        recurringEndDate: recurringEndDate ? new Date(recurringEndDate) : null,
-        notes: sanitizedNotes,
-      });
-      
-      const event = await storage.createCalendarEvent(validated);
-      
-      // Create reminders if provided
-      if (reminders && Array.isArray(reminders)) {
-        for (const reminder of reminders) {
-          const reminderValidated = insertCalendarReminderSchema.parse({
-            eventId: event.id,
-            reminderTime: new Date(reminder.reminderTime),
-            reminderType: reminder.reminderType || 'notification',
-            reminderMinutes: reminder.reminderMinutes || 15,
-          });
-          await storage.createCalendarReminder(reminderValidated);
-        }
-      }
-      
-      res.status(201).json(event);
-    } catch (error) {
-      console.error("Error creating calendar event:", error);
-      res.status(500).json({ error: "Failed to create calendar event" });
-    }
-  });
-  
-  // PATCH /api/calendar/events/:id - Update event
-  app.patch("/api/calendar/events/:id", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const event = await storage.getCalendarEventById(req.params.id);
-      if (!event) {
-        res.status(404).json({ error: "Event not found" });
-        return;
-      }
-      
-      // Verify tenant access
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      if (event.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      const { title, description, eventType, startTime, endTime, isAllDay, allDay, location, 
-              color, colorCode, assignedTo, status, leadId, estimateId, 
-              recurringPattern, recurringEndDate, notes } = req.body;
-      
-      const updates: any = {};
-      // Sanitize text fields for XSS
-      if (title !== undefined) updates.title = sanitizeText(title);
-      if (description !== undefined) updates.description = sanitizeText(description);
-      if (eventType !== undefined) updates.eventType = eventType;
-      if (startTime !== undefined) updates.startTime = new Date(startTime);
-      if (endTime !== undefined) updates.endTime = endTime ? new Date(endTime) : null;
-      if (allDay !== undefined) updates.allDay = allDay;
-      else if (isAllDay !== undefined) updates.allDay = isAllDay;
-      if (location !== undefined) updates.location = sanitizeText(location);
-      if (colorCode !== undefined) updates.colorCode = colorCode;
-      else if (color !== undefined) updates.colorCode = color;
-      if (assignedTo !== undefined) updates.assignedTo = assignedTo;
-      if (status !== undefined) updates.status = status;
-      if (leadId !== undefined) updates.relatedLeadId = leadId;
-      if (estimateId !== undefined) updates.relatedEstimateId = estimateId;
-      if (recurringPattern !== undefined) updates.recurringPattern = recurringPattern;
-      if (recurringEndDate !== undefined) updates.recurringEndDate = recurringEndDate ? new Date(recurringEndDate) : null;
-      if (notes !== undefined) updates.notes = sanitizeText(notes);
-      
-      const updated = await storage.updateCalendarEvent(req.params.id, updates);
-      res.json(updated);
-    } catch (error) {
-      console.error("Error updating calendar event:", error);
-      res.status(500).json({ error: "Failed to update calendar event" });
-    }
-  });
-  
-  // DELETE /api/calendar/events/:id - Delete event
-  app.delete("/api/calendar/events/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      const event = await storage.getCalendarEventById(req.params.id);
-      if (!event) {
-        res.status(404).json({ error: "Event not found" });
-        return;
-      }
-      
-      // Verify tenant access
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      if (event.tenantId !== tenantId) {
-        res.status(403).json({ error: "Access denied" });
-        return;
-      }
-      
-      await storage.deleteCalendarEvent(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting calendar event:", error);
-      res.status(500).json({ error: "Failed to delete calendar event" });
-    }
-  });
-  
-  // ===== Calendar Reminders =====
-  
-  // GET /api/calendar/events/:id/reminders - Get reminders for event
-  app.get("/api/calendar/events/:id/reminders", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const event = await storage.getCalendarEventById(req.params.id);
-      if (!event) {
-        res.status(404).json({ error: "Event not found" });
-        return;
-      }
-      
-      const reminders = await storage.getCalendarReminders(req.params.id);
-      res.json(reminders);
-    } catch (error) {
-      console.error("Error fetching reminders:", error);
-      res.status(500).json({ error: "Failed to fetch reminders" });
-    }
-  });
-  
-  // POST /api/calendar/events/:id/reminders - Add reminder to event
-  app.post("/api/calendar/events/:id/reminders", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const event = await storage.getCalendarEventById(req.params.id);
-      if (!event) {
-        res.status(404).json({ error: "Event not found" });
-        return;
-      }
-      
-      const { reminderTime, reminderType, reminderMinutes } = req.body;
-      
-      const validated = insertCalendarReminderSchema.parse({
-        eventId: req.params.id,
-        reminderTime: new Date(reminderTime),
-        reminderType: reminderType || 'notification',
-        reminderMinutes: reminderMinutes || 15,
-      });
-      
-      const reminder = await storage.createCalendarReminder(validated);
-      res.status(201).json(reminder);
-    } catch (error) {
-      console.error("Error creating reminder:", error);
-      res.status(500).json({ error: "Failed to create reminder" });
-    }
-  });
-  
-  // DELETE /api/calendar/reminders/:id - Delete reminder
-  app.delete("/api/calendar/reminders/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      await storage.deleteCalendarReminder(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting reminder:", error);
-      res.status(500).json({ error: "Failed to delete reminder" });
-    }
-  });
-  
-  // ===== Color Presets =====
-  
-  // GET /api/calendar/color-presets - Get color presets for tenant
-  app.get("/api/calendar/color-presets", hasRole(['owner', 'admin', 'developer', 'project-manager']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      const presets = await storage.getEventColorPresets(tenantId);
-      res.json(presets);
-    } catch (error) {
-      console.error("Error fetching color presets:", error);
-      res.status(500).json({ error: "Failed to fetch color presets" });
-    }
-  });
-  
-  // POST /api/calendar/color-presets - Create color preset
-  app.post("/api/calendar/color-presets", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      const dbUser = req.dbUser;
-      const tenantId = dbUser.tenantId || "npp";
-      
-      const { name, color, eventType } = req.body;
-      
-      const validated = insertEventColorPresetSchema.parse({
-        tenantId,
-        name,
-        color,
-        eventType,
-      });
-      
-      const preset = await storage.createEventColorPreset(validated);
-      res.status(201).json(preset);
-    } catch (error) {
-      console.error("Error creating color preset:", error);
-      res.status(500).json({ error: "Failed to create color preset" });
-    }
-  });
-  
-  // DELETE /api/calendar/color-presets/:id - Delete color preset
-  app.delete("/api/calendar/color-presets/:id", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      await storage.deleteEventColorPreset(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting color preset:", error);
-      res.status(500).json({ error: "Failed to delete color preset" });
-    }
-  });
-  
-  // GET /api/calendar/pending-reminders - Get pending reminders (for background processing)
-  app.get("/api/calendar/pending-reminders", hasRole(['owner', 'admin', 'developer']), async (req: any, res) => {
-    try {
-      const now = new Date();
-      const reminders = await storage.getPendingReminders(now);
-      res.json(reminders);
-    } catch (error) {
-      console.error("Error fetching pending reminders:", error);
-      res.status(500).json({ error: "Failed to fetch pending reminders" });
-    }
-  });
-
-  // ==========================================
-  // FRANCHISE MANAGEMENT API ROUTES
-  // ==========================================
-
-  // Helper functions for API key generation
-  function generateApiKey(): string {
-    return `pp_live_${crypto.randomBytes(24).toString("hex")}`;
-  }
-  
-  function generateApiSecret(): string {
-    return crypto.randomBytes(32).toString("hex");
-  }
-
-  // GET /api/franchises - Get all franchises
-  app.get("/api/franchises", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const franchises = await storage.getFranchises();
-      res.json(franchises);
-    } catch (error) {
-      console.error("Error fetching franchises:", error);
-      res.status(500).json({ error: "Failed to fetch franchises" });
-    }
-  });
-
-  // POST /api/franchises - Create a new franchise
-  app.post("/api/franchises", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const validated = insertFranchiseSchema.parse(req.body);
-      const franchise = await storage.createFranchise(validated);
-      res.status(201).json(franchise);
-    } catch (error) {
-      console.error("Error creating franchise:", error);
-      res.status(500).json({ error: "Failed to create franchise" });
-    }
-  });
-
-  // GET /api/franchises/:id - Get franchise by ID
-  app.get("/api/franchises/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const franchise = await storage.getFranchiseById(req.params.id);
-      if (!franchise) {
-        return res.status(404).json({ error: "Franchise not found" });
-      }
-      res.json(franchise);
-    } catch (error) {
-      console.error("Error fetching franchise:", error);
-      res.status(500).json({ error: "Failed to fetch franchise" });
-    }
-  });
-
-  // PUT /api/franchises/:id - Update franchise
-  app.put("/api/franchises/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const franchise = await storage.updateFranchise(req.params.id, req.body);
-      if (!franchise) {
-        return res.status(404).json({ error: "Franchise not found" });
-      }
-      res.json(franchise);
-    } catch (error) {
-      console.error("Error updating franchise:", error);
-      res.status(500).json({ error: "Failed to update franchise" });
-    }
-  });
-
-  // DELETE /api/franchises/:id - Delete franchise
-  app.delete("/api/franchises/:id", hasRole(['developer']), async (req: any, res) => {
-    try {
-      await storage.deleteFranchise(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting franchise:", error);
-      res.status(500).json({ error: "Failed to delete franchise" });
-    }
-  });
-
-  // Franchise Locations
-  app.get("/api/franchises/:franchiseId/locations", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const locations = await storage.getFranchiseLocations(req.params.franchiseId);
-      res.json(locations);
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-      res.status(500).json({ error: "Failed to fetch locations" });
-    }
-  });
-
-  app.post("/api/franchises/:franchiseId/locations", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const validated = insertFranchiseLocationSchema.parse({
-        ...req.body,
-        franchiseId: req.params.franchiseId
-      });
-      const location = await storage.createFranchiseLocation(validated);
-      res.status(201).json(location);
-    } catch (error) {
-      console.error("Error creating location:", error);
-      res.status(500).json({ error: "Failed to create location" });
-    }
-  });
-
-  app.put("/api/franchises/:franchiseId/locations/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const location = await storage.updateFranchiseLocation(req.params.id, req.body);
-      if (!location) {
-        return res.status(404).json({ error: "Location not found" });
-      }
-      res.json(location);
-    } catch (error) {
-      console.error("Error updating location:", error);
-      res.status(500).json({ error: "Failed to update location" });
-    }
-  });
-
-  app.delete("/api/franchises/:franchiseId/locations/:id", hasRole(['developer']), async (req: any, res) => {
-    try {
-      await storage.deleteFranchiseLocation(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting location:", error);
-      res.status(500).json({ error: "Failed to delete location" });
-    }
-  });
-
-  // Partner API Credentials Management
-  app.get("/api/franchises/:franchiseId/credentials", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const credentials = await storage.getPartnerApiCredentials(req.params.franchiseId);
-      // Mask secrets for display
-      const masked = credentials.map(c => ({ ...c, apiSecret: "••••••••" }));
-      res.json(masked);
-    } catch (error) {
-      console.error("Error fetching credentials:", error);
-      res.status(500).json({ error: "Failed to fetch credentials" });
-    }
-  });
-
-  app.post("/api/franchises/:franchiseId/credentials", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const { name, environment, scopes } = req.body;
-      const apiKey = generateApiKey();
-      const apiSecret = generateApiSecret();
-      
-      const credential = await storage.createPartnerApiCredential({
-        franchiseId: req.params.franchiseId,
-        name,
-        apiKey,
-        apiSecret,
-        environment: environment || "production",
-        scopes: scopes || ["estimates:read"],
-        isActive: true,
-        createdBy: req.dbUser?.email || "admin"
-      });
-      
-      // Return the secret only once - must be saved by the user
-      res.status(201).json({
-        ...credential,
-        apiSecret,
-        message: "Save this API secret - it will never be shown again!"
-      });
-    } catch (error) {
-      console.error("Error creating credential:", error);
-      res.status(500).json({ error: "Failed to create credential" });
-    }
-  });
-
-  app.put("/api/franchises/:franchiseId/credentials/:id", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const { name, isActive, scopes, rateLimitPerMinute, rateLimitPerDay } = req.body;
-      const credential = await storage.updatePartnerApiCredential(req.params.id, {
-        name,
-        isActive,
-        scopes,
-        rateLimitPerMinute,
-        rateLimitPerDay
-      });
-      if (!credential) {
-        return res.status(404).json({ error: "Credential not found" });
-      }
-      res.json({ ...credential, apiSecret: "••••••••" });
-    } catch (error) {
-      console.error("Error updating credential:", error);
-      res.status(500).json({ error: "Failed to update credential" });
-    }
-  });
-
-  app.delete("/api/franchises/:franchiseId/credentials/:id", hasRole(['developer']), async (req: any, res) => {
-    try {
-      await storage.deletePartnerApiCredential(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting credential:", error);
-      res.status(500).json({ error: "Failed to delete credential" });
-    }
-  });
-
-  // API Logs
-  app.get("/api/franchises/:franchiseId/api-logs", hasRole(['developer', 'owner']), async (req: any, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 50;
-      const logs = await storage.getPartnerApiLogs(req.params.franchiseId, limit);
-      res.json(logs);
-    } catch (error) {
-      console.error("Error fetching API logs:", error);
-      res.status(500).json({ error: "Failed to fetch API logs" });
-    }
-  });
-
-  // ==========================================
-  // PARTNER API v1 ENDPOINTS (External Access)
-  // ==========================================
-
-  // Partner API Authentication Middleware
-  const partnerApiAuth: RequestHandler = async (req, res, next) => {
-    const startTime = Date.now();
-    const apiKey = req.headers["x-api-key"] as string;
-    
-    if (!apiKey) {
-      return res.status(401).json({ error: "Missing API key", code: "MISSING_API_KEY" });
-    }
-    
-    const credential = await storage.getPartnerApiCredentialByApiKey(apiKey);
-    if (!credential) {
-      return res.status(401).json({ error: "Invalid API key", code: "INVALID_API_KEY" });
-    }
-    
-    if (!credential.isActive) {
-      return res.status(403).json({ error: "API key is disabled", code: "KEY_DISABLED" });
-    }
-    
-    const franchise = await storage.getFranchiseById(credential.franchiseId);
-    if (!franchise || franchise.status !== "active") {
-      return res.status(403).json({ error: "Franchise is not active", code: "FRANCHISE_INACTIVE" });
-    }
-    
-    // Increment request count
-    await storage.incrementPartnerApiRequestCount(credential.id);
-    
-    // Attach franchise and credential info to request
-    (req as any).franchise = {
-      id: franchise.id,
-      franchiseId: franchise.franchiseId,
-      name: franchise.territoryName
-    };
-    (req as any).credential = {
-      id: credential.id,
-      scopes: credential.scopes || []
-    };
-    
-    // Log API request on response finish
-    res.on("finish", async () => {
-      try {
-        await storage.createPartnerApiLog({
-          credentialId: credential.id,
-          franchiseId: franchise.id,
-          method: req.method,
-          endpoint: req.originalUrl,
-          statusCode: res.statusCode,
-          responseTimeMs: Date.now() - startTime,
-          ipAddress: req.ip || req.socket?.remoteAddress || null,
-          userAgent: req.headers["user-agent"] || null
-        });
-      } catch (e) {
-        console.error("Failed to log API request:", e);
-      }
-    });
-    
-    return next();
-  };
-
-  // Scope check middleware factory
-  const requireScope = (scope: string): RequestHandler => {
-    return (req, res, next) => {
-      const scopes = (req as any).credential?.scopes || [];
-      if (!scopes.includes(scope)) {
-        return res.status(403).json({
-          error: `Missing required scope: ${scope}`,
-          code: "INSUFFICIENT_SCOPE"
-        });
-      }
-      return next();
-    };
-  };
-
-  // GET /api/partner/v1/health - Health check (no auth required)
-  app.get("/api/partner/v1/health", (req, res) => {
-    res.json({
-      status: "healthy",
-      version: "1.3.0",
-      timestamp: new Date().toISOString()
-    });
-  });
-
-  // ============ SYSTEM HEALTH ============
-
-  // GET /api/system/health - Comprehensive system health check for dashboards
-  app.get("/api/system/health", async (req, res) => {
-    const startTime = Date.now();
-    const checks: {
-      name: string;
-      status: "healthy" | "degraded" | "error";
-      message: string;
-      responseTime?: number;
-      lastError?: string;
-    }[] = [];
-
-    // 1. Database Health Check
-    const dbStart = Date.now();
-    try {
-      await storage.getLeads();
-      checks.push({
-        name: "database",
-        status: "healthy",
-        message: "PostgreSQL connection active",
-        responseTime: Date.now() - dbStart
-      });
-    } catch (error) {
-      checks.push({
-        name: "database",
-        status: "error",
-        message: "Database connection failed",
-        responseTime: Date.now() - dbStart,
-        lastError: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-
-    // 2. Payment Processor (Stripe) Health Check
-    const stripeKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
-    const stripeConfigured = !!stripeKey;
-    if (stripeConfigured) {
-      try {
-        const StripeModule = await import("stripe");
-        const stripeClient = new StripeModule.default(stripeKey);
-        const stripeStart = Date.now();
-        await stripeClient.paymentIntents.list({ limit: 1 });
-        checks.push({
-          name: "payments",
-          status: "healthy",
-          message: "Stripe API responding",
-          responseTime: Date.now() - stripeStart
-        });
-      } catch (error) {
-        checks.push({
-          name: "payments",
-          status: "error",
-          message: "Stripe connection failed",
-          lastError: error instanceof Error ? error.message : "Unknown error"
-        });
-      }
-    } else {
-      checks.push({
-        name: "payments",
-        status: "degraded",
-        message: "Stripe not configured"
-      });
-    }
-
-    // 3. Email Service (Resend) Health Check
-    const resendConfigured = !!process.env.RESEND_API_KEY;
-    checks.push({
-      name: "email",
-      status: resendConfigured ? "healthy" : "degraded",
-      message: resendConfigured ? "Resend API configured" : "Email service not configured"
-    });
-
-    // 4. Blockchain (Solana) Health Check
-    const solanaPrivateKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
-    if (solanaPrivateKey) {
-      try {
-        const solanaStart = Date.now();
-        const wallet = solana.getWalletFromPrivateKey(solanaPrivateKey);
-        const balance = await solana.getWalletBalance(wallet.publicKey.toBase58(), 'mainnet-beta');
-        checks.push({
-          name: "blockchain",
-          status: "healthy",
-          message: `Solana wallet active (${balance.toFixed(4)} SOL)`,
-          responseTime: Date.now() - solanaStart
-        });
-      } catch (error) {
-        checks.push({
-          name: "blockchain",
-          status: "degraded",
-          message: "Blockchain service unavailable",
-          lastError: error instanceof Error ? error.message : "Unknown error"
-        });
-      }
-    } else {
-      checks.push({
-        name: "blockchain",
-        status: "degraded",
-        message: "Blockchain not configured"
-      });
-    }
-
-    // 5. AI Service (OpenAI) Health Check
-    const openaiConfigured = !!process.env.OPENAI_API_KEY;
-    checks.push({
-      name: "ai",
-      status: openaiConfigured ? "healthy" : "degraded",
-      message: openaiConfigured ? "OpenAI API configured" : "AI service not configured"
-    });
-
-    // Calculate overall status
-    const hasError = checks.some(c => c.status === "error");
-    const hasDegraded = checks.some(c => c.status === "degraded");
-    const overallStatus = hasError ? "error" : hasDegraded ? "degraded" : "healthy";
-
-    res.json({
-      status: overallStatus,
-      version: "1.3.0",
-      timestamp: new Date().toISOString(),
-      responseTime: Date.now() - startTime,
-      checks
-    });
-  });
-
-  // GET /api/partner/v1/scopes - List available scopes
-  app.get("/api/partner/v1/scopes", (req, res) => {
-    res.json({ scopes: PARTNER_API_SCOPES });
-  });
-
-  // GET /api/partner/v1/me - Get current franchise info
-  app.get("/api/partner/v1/me", partnerApiAuth, (req: any, res) => {
-    res.json({
-      franchise: req.franchise,
-      scopes: req.credential?.scopes
-    });
-  });
-
-  // GET /api/partner/v1/estimates - Get estimates for franchise
-  app.get("/api/partner/v1/estimates", partnerApiAuth, requireScope("estimates:read"), async (req: any, res) => {
-    try {
-      // Filter estimates by franchise's tenant (franchise.tenantId or fall back to hostname)
-      const tenantId = req.franchise.tenantId || getTenantFromHostname(req.hostname);
-      const estimates = await storage.getEstimates(tenantId);
-      res.json({
-        data: estimates,
-        meta: {
-          total: estimates.length,
-          franchiseId: req.franchise.franchiseId
-        }
-      });
-    } catch (error) {
-      console.error("Partner API error:", error);
-      res.status(500).json({ error: "Failed to fetch estimates" });
-    }
-  });
-
-  // GET /api/partner/v1/leads - Get leads for franchise
-  app.get("/api/partner/v1/leads", partnerApiAuth, requireScope("leads:read"), async (req: any, res) => {
-    try {
-      // Filter leads by franchise's tenant (franchise.tenantId or fall back to hostname)
-      const tenantId = req.franchise.tenantId || getTenantFromHostname(req.hostname);
-      const leads = await storage.getLeads(tenantId);
-      res.json({
-        data: leads,
-        meta: {
-          total: leads.length,
-          franchiseId: req.franchise.franchiseId
-        }
-      });
-    } catch (error) {
-      console.error("Partner API error:", error);
-      res.status(500).json({ error: "Failed to fetch leads" });
-    }
-  });
-
-  // GET /api/partner/v1/locations - Get franchise locations
-  app.get("/api/partner/v1/locations", partnerApiAuth, requireScope("locations:read"), async (req: any, res) => {
-    try {
-      const locations = await storage.getFranchiseLocations(req.franchise.id);
-      res.json({
-        data: locations,
-        meta: { total: locations.length }
-      });
-    } catch (error) {
-      console.error("Partner API error:", error);
-      res.status(500).json({ error: "Failed to fetch locations" });
-    }
-  });
-
-  // POST /api/partner/v1/locations - Create franchise location
-  app.post("/api/partner/v1/locations", partnerApiAuth, requireScope("locations:write"), async (req: any, res) => {
-    try {
-      const location = await storage.createFranchiseLocation({
-        ...req.body,
-        franchiseId: req.franchise.id
-      });
-      res.status(201).json({ data: location });
-    } catch (error) {
-      console.error("Partner API error:", error);
-      res.status(500).json({ error: "Failed to create location" });
-    }
-  });
-
-  // GET /api/partner/v1/billing - Get billing info for franchise
-  app.get("/api/partner/v1/billing", partnerApiAuth, requireScope("billing:read"), async (req: any, res) => {
-    try {
-      const franchise = await storage.getFranchiseById(req.franchise.id);
-      res.json({
-        data: {
-          franchiseTier: franchise?.franchiseTier,
-          platformFeeMonthly: franchise?.platformFeeMonthly,
-          royaltyPercent: franchise?.royaltyPercent,
-          royaltyType: franchise?.royaltyType,
-          totalRevenue: franchise?.totalRevenue,
-          totalOrders: franchise?.totalOrders
-        }
-      });
-    } catch (error) {
-      console.error("Partner API error:", error);
-      res.status(500).json({ error: "Failed to fetch billing info" });
-    }
-  });
-
-  // GET /api/partner/v1/analytics - Get analytics for franchise
-  app.get("/api/partner/v1/analytics", partnerApiAuth, requireScope("analytics:read"), async (req: any, res) => {
-    try {
-      const franchise = await storage.getFranchiseById(req.franchise.id);
-      const locations = await storage.getFranchiseLocations(req.franchise.id);
-      
-      res.json({
-        data: {
-          totalRevenue: franchise?.totalRevenue || "0.00",
-          totalOrders: franchise?.totalOrders || 0,
-          activeLocations: locations.filter(l => l.isActive).length,
-          hallmarksMinted: franchise?.hallmarksMintedTotal || 0
-        },
-        meta: {
-          range: req.query.range || "30days",
-          franchiseId: req.franchise.franchiseId
-        }
-      });
-    } catch (error) {
-      console.error("Partner API error:", error);
-      res.status(500).json({ error: "Failed to fetch analytics" });
-    }
-  });
-
-  // ============ PAINT COLORS LIBRARY ============
-
-  // Get all paint colors with optional filters
-  app.get("/api/paint-colors", async (req, res) => {
-    try {
-      const { brand, category, search, limit = "50" } = req.query;
-      const colors = await storage.getPaintColors({
-        brand: brand as string | undefined,
-        category: category as string | undefined,
-        search: search as string | undefined,
-        limit: parseInt(limit as string)
-      });
-      res.json(colors);
-    } catch (error) {
-      console.error("Error fetching paint colors:", error);
-      res.status(500).json({ error: "Failed to fetch paint colors" });
-    }
-  });
-
-  // Get a single paint color by ID
-  app.get("/api/paint-colors/:id", async (req, res) => {
-    try {
-      const color = await storage.getPaintColorById(req.params.id);
-      if (!color) {
-        return res.status(404).json({ error: "Color not found" });
-      }
-      res.json(color);
-    } catch (error) {
-      console.error("Error fetching paint color:", error);
-      res.status(500).json({ error: "Failed to fetch paint color" });
-    }
-  });
-
-  // Get paint colors by brand
-  app.get("/api/paint-colors/brand/:brand", async (req, res) => {
-    try {
-      const colors = await storage.getPaintColors({
-        brand: req.params.brand,
-        limit: 100
-      });
-      res.json(colors);
-    } catch (error) {
-      console.error("Error fetching paint colors by brand:", error);
-      res.status(500).json({ error: "Failed to fetch paint colors" });
-    }
-  });
-
-  // Get coordinating colors for a specific color
-  app.get("/api/paint-colors/:id/coordinating", async (req, res) => {
-    try {
-      const color = await storage.getPaintColorById(req.params.id);
-      if (!color) {
-        return res.status(404).json({ error: "Color not found" });
-      }
-      const coordinatingColors = await storage.getCoordinatingColors(color);
-      res.json(coordinatingColors);
-    } catch (error) {
-      console.error("Error fetching coordinating colors:", error);
-      res.status(500).json({ error: "Failed to fetch coordinating colors" });
-    }
-  });
-
-  // Seed paint colors (developer only - one-time setup)
-  app.post("/api/paint-colors/seed", async (req, res) => {
-    try {
-      const count = await storage.seedPaintColors();
-      res.json({ success: true, message: `Seeded ${count} paint colors` });
-    } catch (error) {
-      console.error("Error seeding paint colors:", error);
-      res.status(500).json({ error: "Failed to seed paint colors" });
-    }
-  });
-
-  // Customer color selections
-  app.post("/api/color-selections", async (req, res) => {
-    try {
-      const tenantId = getTenantFromHostname(req.hostname);
-      const selection = await storage.createColorSelection({
-        ...req.body,
-        tenantId
-      });
-      res.json(selection);
-    } catch (error) {
-      console.error("Error creating color selection:", error);
-      res.status(500).json({ error: "Failed to create color selection" });
-    }
-  });
-
-  app.get("/api/color-selections/estimate/:estimateId", async (req, res) => {
-    try {
-      const selections = await storage.getColorSelectionsByEstimate(req.params.estimateId);
-      res.json(selections);
-    } catch (error) {
-      console.error("Error fetching color selections:", error);
-      res.status(500).json({ error: "Failed to fetch color selections" });
-    }
-  });
-
-  // ============ TRIAL TENANTS ============
-  
-  // Zod schemas for trial tenant validation
-  const trialSignupSchema = z.object({
-    ownerEmail: z.string().email("Valid email required"),
-    ownerName: z.string().min(1, "Name required").max(100),
-    ownerPhone: z.string().max(20).optional().nullable(),
-    companyName: z.string().min(1, "Company name required").max(100),
-    companyCity: z.string().max(100).optional().nullable(),
-    companyState: z.string().max(50).optional().nullable(),
-    primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-    accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  });
-  
-  const trialUpdateSchema = z.object({
-    companyName: z.string().min(1).max(100).optional(),
-    companyCity: z.string().max(100).optional().nullable(),
-    companyState: z.string().max(50).optional().nullable(),
-    companyPhone: z.string().max(20).optional().nullable(),
-    primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-    accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-    logoUrl: z.string().url().optional().nullable(),
-  });
-  
-  // POST /api/trial/signup - Create a new trial tenant
-  app.post("/api/trial/signup", async (req, res) => {
-    try {
-      // Validate input with Zod
-      const parsed = trialSignupSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
-        return;
-      }
-      
-      const { ownerEmail, ownerName, ownerPhone, companyName, companyCity, companyState, primaryColor, accentColor } = parsed.data;
-      
-      // Check if email already has a trial
-      const existingTrial = await storage.getTrialTenantByEmail(ownerEmail);
-      if (existingTrial) {
-        if (existingTrial.status === 'active') {
-          res.status(400).json({ 
-            error: "Trial already exists", 
-            trialId: existingTrial.id,
-            slug: existingTrial.companySlug,
-            expiresAt: existingTrial.trialExpiresAt
-          });
-          return;
-        }
-      }
-      
-      // Generate URL-safe slug from company name with timestamp for uniqueness
-      const baseSlug = companyName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-        .substring(0, 40);
-      
-      // Add random suffix for uniqueness (prevents race conditions)
-      const randomSuffix = Math.random().toString(36).substring(2, 6);
-      let slug = `${baseSlug}-${randomSuffix}`;
-      
-      // Fallback check in case of collision
-      let counter = 1;
-      while (await storage.getTrialTenantBySlug(slug) && counter < 10) {
-        slug = `${baseSlug}-${randomSuffix}${counter}`;
-        counter++;
-      }
-      
-      // Calculate 72-hour expiration
-      const now = new Date();
-      const expiresAt = new Date(now.getTime() + 72 * 60 * 60 * 1000);
-      
-      const trial = await storage.createTrialTenant({
-        ownerEmail,
-        ownerName,
-        ownerPhone: ownerPhone || null,
-        companyName,
-        companySlug: slug,
-        companyCity: companyCity || null,
-        companyState: companyState || null,
-        companyPhone: null,
-        companyEmail: ownerEmail,
-        logoUrl: null,
-        primaryColor: primaryColor || '#4A5D3E',
-        accentColor: accentColor || '#5A6D4E',
-        status: 'active',
-        trialExpiresAt: expiresAt,
-        estimatesLimit: 1,
-        leadsLimit: 3,
-        blockchainStampsLimit: 1,
-      });
-      
-      // Log the trial creation
-      await storage.logTrialUsage({
-        trialTenantId: trial.id,
-        action: 'trial_created',
-        resourceType: 'trial',
-        resourceId: trial.id,
-        metadata: { source: 'api_signup' }
-      });
-      
-      res.status(201).json({
-        success: true,
-        trial: {
-          id: trial.id,
-          slug: trial.companySlug,
-          expiresAt: trial.trialExpiresAt,
-          limits: {
-            estimates: trial.estimatesLimit,
-            leads: trial.leadsLimit,
-            blockchainStamps: trial.blockchainStampsLimit
-          }
-        },
-        portalUrl: `/trial/${trial.companySlug}`
-      });
-    } catch (error) {
-      console.error("Error creating trial tenant:", error);
-      res.status(500).json({ error: "Failed to create trial" });
-    }
-  });
-
-  // ============ TRIAL UPGRADE ENDPOINTS (MUST COME BEFORE :slug ROUTES) ============
-  
-  // Pricing plans for trial upgrade - aligned with B2B licensing
-  const UPGRADE_PLANS = {
-    starter: {
-      id: 'starter',
-      name: 'Starter',
-      price: 349,
-      setupFee: 5000,
-      interval: 'month',
-      target: 'Solo contractors, 1 location',
-      features: [
-        'White-label website with Bento Grid design',
-        'Interactive estimator tool',
-        'Basic lead capture & CRM',
-        'Email support (2 business day response)'
-      ],
-      blockchainAddon: { available: true, price: 69 }
-    },
-    professional: {
-      id: 'professional', 
-      name: 'Professional',
-      price: 549,
-      setupFee: 7000,
-      interval: 'month',
-      target: 'Growing painters, 1-3 locations',
-      popular: true,
-      features: [
-        'Everything in Starter',
-        'Full analytics dashboard',
-        'Role-based dashboards (Owner, Admin, Project Manager)',
-        'Phone support (24-hour response)',
-        '2 strategy sessions per year',
-        'Blockchain stamping included'
-      ]
-    },
-    franchise: {
-      id: 'franchise',
-      name: 'Franchise Core',
-      price: 799,
-      setupFee: 10000,
-      perLocationFee: 99,
-      interval: 'month',
-      target: 'Multi-location (5+ sites)',
-      features: [
-        'Everything in Professional',
-        'Multi-tenant management console',
-        'Shared asset libraries across locations',
-        'Orbit ecosystem integrations',
-        'Dedicated account manager',
-        'Compliance & audit trail'
-      ]
-    },
-    enterprise: {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 1399,
-      setupFee: 15000,
-      interval: 'month',
-      target: 'Large franchises',
-      features: [
-        'Full brand suppression (Orbit/PaintPros removed)',
-        'API priority access',
-        'Co-branded marketing assets',
-        'SLA guarantees (99.9% uptime)',
-        '4-hour critical response',
-        'Custom contract terms'
-      ]
-    },
-    paintpros_franchise: {
-      id: 'paintpros_franchise',
-      name: 'PaintPros Franchise',
-      price: 799,
-      setupFee: 10000,
-      perLocationFee: 99,
-      interval: 'month',
-      target: 'Join the PaintPros network',
-      isPaintProsFranchise: true,
-      features: [
-        'Operate under PaintPros brand recognition',
-        'Pre-built marketing & brand assets',
-        'National referral network access',
-        'Shared lead generation system',
-        'Franchise training & onboarding',
-        'Territory exclusivity protection',
-        'All Professional tier features included'
-      ]
-    }
-  };
-  
-  // GET /api/trial/plans - Get available upgrade plans (MUST BE BEFORE :slug)
-  app.get("/api/trial/plans", async (req, res) => {
-    res.json(Object.values(UPGRADE_PLANS));
-  });
-  
-  // GET /api/trial/:slug - Get trial tenant by slug
-  app.get("/api/trial/:slug", async (req, res) => {
-    try {
-      const trial = await storage.getTrialTenantBySlug(req.params.slug);
-      if (!trial) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      // Check if expired
-      const now = new Date();
-      if (trial.status === 'active' && new Date(trial.trialExpiresAt) < now) {
-        await storage.updateTrialTenant(trial.id, { status: 'expired' });
-        trial.status = 'expired';
-      }
-      
-      // Calculate time remaining
-      const expiresAt = new Date(trial.trialExpiresAt);
-      const hoursRemaining = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)));
-      
-      res.json({
-        ...trial,
-        hoursRemaining,
-        isExpired: trial.status === 'expired' || hoursRemaining === 0,
-        usage: {
-          estimates: { used: trial.estimatesUsed, limit: trial.estimatesLimit },
-          leads: { used: trial.leadsUsed, limit: trial.leadsLimit },
-          blockchainStamps: { used: trial.blockchainStampsUsed, limit: trial.blockchainStampsLimit }
-        },
-        progress: {
-          currentStep: trial.onboardingStep,
-          completedSteps: trial.completedSteps || []
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching trial tenant:", error);
-      res.status(500).json({ error: "Failed to fetch trial" });
-    }
-  });
-  
-  // PATCH /api/trial/:id - Update trial tenant settings
-  app.patch("/api/trial/:id", async (req, res) => {
-    try {
-      // Validate input with Zod
-      const parsed = trialUpdateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
-        return;
-      }
-      
-      const updates: Record<string, any> = {};
-      Object.entries(parsed.data).forEach(([key, value]) => {
-        if (value !== undefined) {
-          updates[key] = value;
-        }
-      });
-      
-      if (Object.keys(updates).length === 0) {
-        res.status(400).json({ error: "No valid updates provided" });
-        return;
-      }
-      
-      const trial = await storage.updateTrialTenant(req.params.id, updates);
-      if (!trial) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      res.json(trial);
-    } catch (error) {
-      console.error("Error updating trial tenant:", error);
-      res.status(500).json({ error: "Failed to update trial" });
-    }
-  });
-  
-  // Zod schema for step completion
-  const trialStepSchema = z.object({
-    step: z.enum(['setup', 'visualizer', 'estimate', 'stamp'], {
-      errorMap: () => ({ message: "Step must be one of: setup, visualizer, estimate, stamp" })
-    }),
-  });
-  
-  // Zod schema for usage increment
-  const trialUsageSchema = z.object({
-    field: z.enum(['estimatesUsed', 'leadsUsed', 'blockchainStampsUsed'], {
-      errorMap: () => ({ message: "Field must be one of: estimatesUsed, leadsUsed, blockchainStampsUsed" })
-    }),
-  });
-  
-  // POST /api/trial/:id/complete-step - Mark a trial step as complete
-  app.post("/api/trial/:id/complete-step", async (req, res) => {
-    try {
-      const parsed = trialStepSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
-        return;
-      }
-      const { step } = parsed.data;
-      
-      const trial = await storage.markTrialStepComplete(req.params.id, step);
-      if (!trial) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      // Log the step completion
-      await storage.logTrialUsage({
-        trialTenantId: trial.id,
-        action: 'step_completed',
-        resourceType: 'onboarding',
-        resourceId: step,
-        metadata: { step, totalCompleted: trial.completedSteps?.length || 0 }
-      });
-      
-      res.json({
-        completedSteps: trial.completedSteps,
-        currentStep: trial.onboardingStep
-      });
-    } catch (error) {
-      console.error("Error completing trial step:", error);
-      res.status(500).json({ error: "Failed to complete step" });
-    }
-  });
-  
-  // POST /api/trial/:id/increment-usage - Increment usage counter
-  app.post("/api/trial/:id/increment-usage", async (req, res) => {
-    try {
-      const parsed = trialUsageSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res.status(400).json({ error: "Validation failed", details: parsed.error.errors });
-        return;
-      }
-      const { field } = parsed.data;
-      
-      // Check current limits first
-      const existing = await storage.getTrialTenantById(req.params.id);
-      if (!existing) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      const limitField = field.replace('Used', 'Limit') as 'estimatesLimit' | 'leadsLimit' | 'blockchainStampsLimit';
-      const currentUsage = existing[field as 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'];
-      const limit = existing[limitField];
-      
-      if (currentUsage >= limit) {
-        res.status(403).json({ 
-          error: "Usage limit reached",
-          field,
-          used: currentUsage,
-          limit,
-          upgradeRequired: true
-        });
-        return;
-      }
-      
-      const trial = await storage.incrementTrialUsage(req.params.id, field as 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed');
-      if (!trial) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      // Log the usage
-      await storage.logTrialUsage({
-        trialTenantId: trial.id,
-        action: field.replace('Used', '_used'),
-        resourceType: field.replace('Used', '').toLowerCase(),
-        metadata: { newCount: trial[field as 'estimatesUsed' | 'leadsUsed' | 'blockchainStampsUsed'] }
-      });
-      
-      res.json({
-        success: true,
-        usage: {
-          estimates: { used: trial.estimatesUsed, limit: trial.estimatesLimit },
-          leads: { used: trial.leadsUsed, limit: trial.leadsLimit },
-          blockchainStamps: { used: trial.blockchainStampsUsed, limit: trial.blockchainStampsLimit }
-        }
-      });
-    } catch (error) {
-      console.error("Error incrementing trial usage:", error);
-      res.status(500).json({ error: "Failed to increment usage" });
-    }
-  });
-  
-  // GET /api/trial/:id/usage-logs - Get trial usage history
-  app.get("/api/trial/:id/usage-logs", async (req, res) => {
-    try {
-      const logs = await storage.getTrialUsageLogs(req.params.id);
-      res.json(logs);
-    } catch (error) {
-      console.error("Error fetching trial usage logs:", error);
-      res.status(500).json({ error: "Failed to fetch usage logs" });
-    }
-  });
-  
-  // POST /api/trial/expire-all - Expire all trials past their expiration (admin endpoint)
-  app.post("/api/trial/expire-all", async (req, res) => {
-    try {
-      const count = await storage.expireTrialTenants();
-      res.json({ expired: count });
-    } catch (error) {
-      console.error("Error expiring trial tenants:", error);
-      res.status(500).json({ error: "Failed to expire trials" });
-    }
-  });
-
-  // POST /api/trial/:id/upgrade - Create upgrade checkout session
-  app.post("/api/trial/:id/upgrade", async (req, res) => {
-    try {
-      if (!stripe) {
-        res.status(500).json({ error: "Payment processing not configured" });
-        return;
-      }
-      
-      const { planId, franchiseData } = req.body;
-      if (!planId || !UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS]) {
-        res.status(400).json({ error: "Invalid plan selected" });
-        return;
-      }
-      
-      // Validate franchise data for PaintPros franchise plan
-      if (planId === 'paintpros_franchise') {
-        if (!franchiseData?.city || !franchiseData?.state || !franchiseData?.territory) {
-          res.status(400).json({ error: "City, state, and territory are required for franchise enrollment" });
-          return;
-        }
-      }
-      
-      const trial = await storage.getTrialTenantById(req.params.id);
-      if (!trial) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      const plan = UPGRADE_PLANS[planId as keyof typeof UPGRADE_PLANS];
-      const tierConfig = SUBSCRIPTION_TIERS[planId as SubscriptionTier];
-      const host = `https://${req.get("host")}`;
-      
-      // Build line items: setup fee (one-time) + monthly subscription
-      // Use Stripe Price IDs when configured, otherwise fall back to price_data
-      const lineItems: any[] = [];
-      
-      // Add one-time setup fee
-      if (plan.setupFee && plan.setupFee > 0) {
-        const setupPriceId = tierConfig?.stripeSetupPriceId;
-        if (setupPriceId) {
-          // Use pre-configured Stripe Price ID
-          lineItems.push({
-            price: setupPriceId,
-            quantity: 1,
-          });
-        } else {
-          // Fall back to dynamic price_data
-          lineItems.push({
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: `${plan.name} Setup & Onboarding Fee`,
-                description: `One-time setup for ${trial.companyName} - includes white-label configuration, branding setup, and initial training`,
-              },
-              unit_amount: plan.setupFee * 100,
-            },
-            quantity: 1,
-          });
-        }
-      }
-      
-      // Add recurring subscription
-      const subscriptionPriceId = tierConfig?.stripePriceId;
-      if (subscriptionPriceId) {
-        // Use pre-configured Stripe Price ID for recurring subscription
-        lineItems.push({
-          price: subscriptionPriceId,
-          quantity: 1,
-        });
-      } else {
-        // Fall back to dynamic price_data
-        lineItems.push({
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `PaintPros.io ${plan.name} Plan`,
-              description: `Monthly subscription for ${trial.companyName}`,
-            },
-            unit_amount: plan.price * 100,
-            recurring: {
-              interval: 'month',
-            },
-          },
-          quantity: 1,
-        });
-      }
-      
-      // Create Stripe checkout session for subscription + one-time setup fee
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: lineItems,
-        mode: "subscription",
-        success_url: `${host}/trial/${trial.companySlug}/upgrade-success?session_id={CHECKOUT_SESSION_ID}&plan=${plan.id}`,
-        cancel_url: `${host}/trial/${trial.companySlug}?upgrade=cancelled`,
-        customer_email: trial.ownerEmail,
-        metadata: {
-          trialId: trial.id,
-          trialSlug: trial.companySlug,
-          planId: plan.id,
-          setupFee: plan.setupFee?.toString() || '0',
-          monthlyPrice: plan.price.toString(),
-          type: "trial_upgrade",
-          // Franchise enrollment data
-          ...(planId === 'paintpros_franchise' && franchiseData ? {
-            isPaintProsFranchise: 'true',
-            franchiseCity: franchiseData.city,
-            franchiseState: franchiseData.state,
-            franchiseTerritory: franchiseData.territory,
-          } : {}),
-        },
-        subscription_data: {
-          metadata: {
-            trialId: trial.id,
-            companyName: trial.companyName,
-            planId: plan.id,
-            // Franchise enrollment data
-            ...(planId === 'paintpros_franchise' && franchiseData ? {
-              isPaintProsFranchise: 'true',
-              franchiseCity: franchiseData.city,
-              franchiseState: franchiseData.state,
-              franchiseTerritory: franchiseData.territory,
-            } : {}),
-          },
-        },
-      });
-      
-      // Log the upgrade attempt
-      await storage.logTrialUsage({
-        trialTenantId: trial.id,
-        action: 'upgrade_initiated',
-        resourceType: 'subscription',
-        metadata: { planId: plan.id, sessionId: session.id }
-      });
-      
-      res.json({ 
-        sessionId: session.id, 
-        url: session.url,
-        plan: plan
-      });
-    } catch (error: any) {
-      console.error("Error creating upgrade checkout:", error);
-      res.status(500).json({ error: error.message || "Failed to create checkout session" });
-    }
-  });
-  
-  // POST /api/trial/:id/convert - Convert trial to full tenant (called after successful payment)
-  app.post("/api/trial/:id/convert", async (req, res) => {
-    try {
-      const { planId, stripeSessionId } = req.body;
-      
-      // Validate plan ID
-      const validPlans = ['starter', 'professional', 'franchise', 'enterprise'];
-      if (!planId || !validPlans.includes(planId)) {
-        res.status(400).json({ error: "Invalid plan selected" });
-        return;
-      }
-      
-      // Validate session ID exists
-      if (!stripeSessionId) {
-        res.status(400).json({ error: "Missing payment session" });
-        return;
-      }
-      
-      const trial = await storage.getTrialTenantById(req.params.id);
-      if (!trial) {
-        res.status(404).json({ error: "Trial not found" });
-        return;
-      }
-      
-      // Prevent double conversion
-      if (trial.status === 'converted') {
-        res.json({
-          success: true,
-          message: "Trial already converted",
-          tenant: {
-            id: `tenant_${trial.companySlug}`,
-            companyName: trial.companyName,
-            companySlug: trial.companySlug,
-            ownerEmail: trial.ownerEmail,
-            planId,
-          }
-        });
-        return;
-      }
-      
-      // Verify status is active or expired (expired can still upgrade)
-      if (trial.status !== 'active' && trial.status !== 'expired') {
-        res.status(400).json({ error: "Trial cannot be upgraded" });
-        return;
-      }
-      
-      // SECURITY: Stripe validation is required for production conversions
-      // Without Stripe configured, only allow conversion in development mode
-      let verifiedPlanId = planId;
-      let stripeCustomerId: string | undefined;
-      let stripeSubscriptionId: string | undefined;
-      
-      if (stripe) {
-        try {
-          const session = await stripe.checkout.sessions.retrieve(stripeSessionId);
-          
-          // Verify session is completed
-          if (session.payment_status !== 'paid') {
-            res.status(400).json({ error: "Payment not completed" });
-            return;
-          }
-          
-          // Verify session belongs to this trial
-          if (session.metadata?.trialId !== trial.id) {
-            res.status(400).json({ error: "Invalid payment session" });
-            return;
-          }
-          
-          // Use plan from Stripe metadata (source of truth)
-          if (session.metadata?.planId && validPlans.includes(session.metadata.planId)) {
-            verifiedPlanId = session.metadata.planId;
-          }
-          
-          stripeCustomerId = session.customer as string | undefined;
-          stripeSubscriptionId = session.subscription as string | undefined;
-        } catch (stripeError: any) {
-          console.error("Stripe session verification failed:", stripeError);
-          res.status(400).json({ error: "Could not verify payment" });
-          return;
-        }
-      } else {
-        // Stripe not configured - log warning for audit trail
-        console.warn("[Convert] SECURITY WARNING: Stripe not configured, skipping payment verification for trial:", trial.id);
-        console.warn("[Convert] In production, Stripe must be configured to validate payments");
-      }
-      
-      // Use the automated provisioning service to create the production tenant
-      const provisionResult = await provisionTenantFromTrial(
-        trial.id,
-        verifiedPlanId as SubscriptionTier,
-        stripeSessionId ? {
-          sessionId: stripeSessionId,
-          customerId: stripeCustomerId || "",
-          subscriptionId: stripeSubscriptionId || "",
-          planId: verifiedPlanId as SubscriptionTier,
-        } : undefined
-      );
-      
-      if (!provisionResult.success) {
-        console.error("Provisioning failed:", provisionResult.error);
-        res.status(500).json({ error: provisionResult.error || "Failed to provision tenant" });
-        return;
-      }
-      
-      const newTenant = provisionResult.tenant!;
-      
-      // Log the conversion
-      await storage.logTrialUsage({
-        trialTenantId: trial.id,
-        action: 'converted_to_paid',
-        resourceType: 'tenant',
-        metadata: { 
-          planId: verifiedPlanId, 
-          newTenantId: newTenant.id,
-          stripeSessionId,
-          stripeCustomerId,
-          stripeSubscriptionId,
-          provisionedAt: newTenant.provisionedAt,
-        }
-      });
-      
-      res.json({
-        success: true,
-        message: provisionResult.message || "Trial successfully converted to paid account",
-        tenant: {
-          id: newTenant.id,
-          companyName: newTenant.companyName,
-          companySlug: newTenant.companySlug,
-          ownerEmail: newTenant.ownerEmail,
-          planId: verifiedPlanId,
-          subscriptionTier: newTenant.subscriptionTier,
-          status: newTenant.status,
-        },
-        preservedData: {
-          branding: {
-            primaryColor: newTenant.primaryColor,
-            accentColor: newTenant.accentColor,
-            logoUrl: newTenant.logoUrl,
-          },
-          usage: {
-            estimatesCreated: trial.estimatesUsed,
-            leadsCaptured: trial.leadsUsed,
-            blockchainStamps: trial.blockchainStampsUsed,
-          },
-          portalUrl: `/${newTenant.companySlug}`,
-        },
-        nextSteps: {
-          setupPasswordUrl: `/setup-password?email=${encodeURIComponent(newTenant.ownerEmail)}`,
-          dashboardUrl: `/${newTenant.companySlug}/dashboard`,
-          helpUrl: "/support",
-        }
-      });
-    } catch (error) {
-      console.error("Error converting trial:", error);
-      res.status(500).json({ error: "Failed to convert trial" });
-    }
-  });
-
-  // ============================================
-  // ROYALTY LEDGER API ROUTES
-  // ============================================
-
-  // GET /api/royalty/summary - Get royalty summary for a period
-  app.get("/api/royalty/summary", async (req, res) => {
-    try {
-      const year = parseInt(req.query.year as string) || new Date().getFullYear();
-      const month = req.query.month ? parseInt(req.query.month as string) : undefined;
-      
-      const summary = await storage.getRoyaltySummary(year, month);
-      res.json(summary);
-    } catch (error) {
-      console.error("Error fetching royalty summary:", error);
-      res.status(500).json({ error: "Failed to fetch royalty summary" });
-    }
-  });
-
-  // GET /api/royalty/revenue - Get all revenue entries
-  app.get("/api/royalty/revenue", async (req, res) => {
-    try {
-      const productCode = req.query.product as string | undefined;
-      const revenues = await storage.getRoyaltyRevenue(productCode);
-      res.json(revenues);
-    } catch (error) {
-      console.error("Error fetching royalty revenue:", error);
-      res.status(500).json({ error: "Failed to fetch royalty revenue" });
-    }
-  });
-
-  // POST /api/royalty/revenue - Create revenue entry (Nashville paychecks, manual SaaS)
-  app.post("/api/royalty/revenue", async (req, res) => {
-    try {
-      const revenue = await storage.createRoyaltyRevenue(req.body);
-      
-      // Sync to Orbit Financial Hub
-      financialHub.reportRevenue({
-        grossAmount: parseFloat(req.body.amount) || 0,
-        description: req.body.description || 'PaintPros revenue',
-        externalRef: revenue.id,
-        productCode: req.body.productCode || 'paintpros'
-      }).catch(err => console.error('[Financial Hub] Background sync failed:', err));
-      
-      res.status(201).json(revenue);
-    } catch (error) {
-      console.error("Error creating royalty revenue:", error);
-      res.status(500).json({ error: "Failed to create royalty revenue" });
-    }
-  });
-
-  // DELETE /api/royalty/revenue/:id - Delete revenue entry
-  app.delete("/api/royalty/revenue/:id", async (req, res) => {
-    try {
-      await storage.deleteRoyaltyRevenue(req.params.id);
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting royalty revenue:", error);
-      res.status(500).json({ error: "Failed to delete royalty revenue" });
-    }
-  });
-
-  // GET /api/royalty/expenses - Get all expense entries
-  app.get("/api/royalty/expenses", async (req, res) => {
-    try {
-      const productCode = req.query.product as string | undefined;
-      const expenses = await storage.getRoyaltyExpenses(productCode);
-      res.json(expenses);
-    } catch (error) {
-      console.error("Error fetching royalty expenses:", error);
-      res.status(500).json({ error: "Failed to fetch royalty expenses" });
-    }
-  });
-
-  // POST /api/royalty/expenses - Create expense entry
-  app.post("/api/royalty/expenses", async (req, res) => {
-    try {
-      const expense = await storage.createRoyaltyExpense(req.body);
-      
-      // Sync to Orbit Financial Hub
-      financialHub.reportExpense({
-        grossAmount: parseFloat(req.body.amount) || 0,
-        description: req.body.description || 'PaintPros expense',
-        externalRef: expense.id,
-        category: req.body.category
-      }).catch(err => console.error('[Financial Hub] Background sync failed:', err));
-      
-      res.status(201).json(expense);
-    } catch (error) {
-      console.error("Error creating royalty expense:", error);
-      res.status(500).json({ error: "Failed to create royalty expense" });
-    }
-  });
-
-  // DELETE /api/royalty/expenses/:id - Delete expense entry
-  app.delete("/api/royalty/expenses/:id", async (req, res) => {
-    try {
-      await storage.deleteRoyaltyExpense(req.params.id);
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting royalty expense:", error);
-      res.status(500).json({ error: "Failed to delete royalty expense" });
-    }
-  });
-
-  // GET /api/royalty/payouts - Get all payout entries
-  app.get("/api/royalty/payouts", async (req, res) => {
-    try {
-      const status = req.query.status as string | undefined;
-      const payouts = await storage.getRoyaltyPayouts(status);
-      res.json(payouts);
-    } catch (error) {
-      console.error("Error fetching royalty payouts:", error);
-      res.status(500).json({ error: "Failed to fetch royalty payouts" });
-    }
-  });
-
-  // POST /api/royalty/payouts - Create payout entry
-  app.post("/api/royalty/payouts", async (req, res) => {
-    try {
-      const payout = await storage.createRoyaltyPayout(req.body);
-      
-      // Sync to Orbit Financial Hub
-      financialHub.reportPayout({
-        grossAmount: parseFloat(req.body.amount) || 0,
-        recipientName: req.body.recipientName || 'Sidonie Summers',
-        description: req.body.description || 'Royalty payout',
-        externalRef: payout.id,
-        paymentMethod: req.body.paymentMethod
-      }).catch(err => console.error('[Financial Hub] Background sync failed:', err));
-      
-      res.status(201).json(payout);
-    } catch (error) {
-      console.error("Error creating royalty payout:", error);
-      res.status(500).json({ error: "Failed to create royalty payout" });
-    }
-  });
-
-  // PATCH /api/royalty/payouts/:id/paid - Mark payout as paid
-  app.patch("/api/royalty/payouts/:id/paid", async (req, res) => {
-    try {
-      const { paymentMethod, paymentReference } = req.body;
-      const payout = await storage.markRoyaltyPayoutPaid(req.params.id, paymentMethod, paymentReference);
-      if (!payout) {
-        res.status(404).json({ error: "Payout not found" });
-        return;
-      }
-      res.json(payout);
-    } catch (error) {
-      console.error("Error marking payout paid:", error);
-      res.status(500).json({ error: "Failed to mark payout paid" });
-    }
-  });
-
-  // GET /api/royalty/config - Get royalty configuration
-  app.get("/api/royalty/config", async (req, res) => {
-    try {
-      const config = await storage.getRoyaltyConfig();
-      res.json(config || {});
-    } catch (error) {
-      console.error("Error fetching royalty config:", error);
-      res.status(500).json({ error: "Failed to fetch royalty config" });
-    }
-  });
-
-  // PATCH /api/royalty/config - Update royalty configuration
-  app.patch("/api/royalty/config", async (req, res) => {
-    try {
-      const config = await storage.upsertRoyaltyConfig(req.body);
-      res.json(config);
-    } catch (error) {
-      console.error("Error updating royalty config:", error);
-      res.status(500).json({ error: "Failed to update royalty config" });
-    }
-  });
-
-  // GET /api/financial-hub/status - Check Orbit Financial Hub connection
-  app.get("/api/financial-hub/status", async (req, res) => {
-    try {
-      const status = await financialHub.checkHubStatus();
-      res.json({
-        configured: financialHub.isFinancialHubConfigured(),
-        connected: status.connected,
-        hubStatus: status.status
-      });
-    } catch (error) {
-      console.error("Error checking financial hub status:", error);
-      res.status(500).json({ error: "Failed to check financial hub status" });
-    }
-  });
-
-  // ============ PROJECT TEMPLATES API ============
-  
-  // Get all project templates for a tenant
-  app.get("/api/project-templates", async (req, res) => {
-    try {
-      const tenantId = req.query.tenantId as string || "demo";
-      const templates = await db
-        .select()
-        .from(projectTemplates)
-        .where(eq(projectTemplates.tenantId, tenantId))
-        .orderBy(desc(projectTemplates.useCount));
-      res.json(templates);
-    } catch (error) {
-      console.error("Error fetching project templates:", error);
-      res.status(500).json({ error: "Failed to fetch templates" });
-    }
-  });
-
-  // Create a new project template
-  app.post("/api/project-templates", async (req, res) => {
-    try {
-      const parsed = insertProjectTemplateSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({ error: parsed.error.message });
-      }
-      
-      const [template] = await db
-        .insert(projectTemplates)
-        .values(parsed.data)
-        .returning();
-      
-      res.json(template);
-    } catch (error) {
-      console.error("Error creating project template:", error);
-      res.status(500).json({ error: "Failed to create template" });
-    }
-  });
-
-  // Update a project template
-  app.patch("/api/project-templates/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const [updated] = await db
-        .update(projectTemplates)
-        .set({ ...req.body, updatedAt: new Date() })
-        .where(eq(projectTemplates.id, id))
-        .returning();
-      
-      if (!updated) {
-        return res.status(404).json({ error: "Template not found" });
-      }
-      
-      res.json(updated);
-    } catch (error) {
-      console.error("Error updating project template:", error);
-      res.status(500).json({ error: "Failed to update template" });
-    }
-  });
-
-  // Delete a project template
-  app.delete("/api/project-templates/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      await db.delete(projectTemplates).where(eq(projectTemplates.id, id));
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting project template:", error);
-      res.status(500).json({ error: "Failed to delete template" });
-    }
-  });
-
-  // Increment template use count
-  app.post("/api/project-templates/:id/use", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const [template] = await db
-        .select()
-        .from(projectTemplates)
-        .where(eq(projectTemplates.id, id));
-      
-      if (!template) {
-        return res.status(404).json({ error: "Template not found" });
-      }
-      
-      const [updated] = await db
-        .update(projectTemplates)
-        .set({ 
-          useCount: (template.useCount || 0) + 1,
-          lastUsedAt: new Date()
-        })
-        .where(eq(projectTemplates.id, id))
-        .returning();
-      
-      res.json(updated);
-    } catch (error) {
-      console.error("Error updating template use count:", error);
-      res.status(500).json({ error: "Failed to update template" });
-    }
-  });
-
-  // ============ PROJECT PHOTOS API ============
-  
-  // Get project photos (before/after gallery)
-  app.get("/api/project-photos", async (req, res) => {
-    try {
-      const tenantId = req.query.tenantId as string || "demo";
-      const isPublic = req.query.public === "true";
-      
-      let query = db.select().from(projectPhotos).where(eq(projectPhotos.tenantId, tenantId));
-      
-      if (isPublic) {
-        query = db.select().from(projectPhotos).where(
-          and(
-            eq(projectPhotos.tenantId, tenantId),
-            eq(projectPhotos.isPublic, true)
-          )
-        );
-      }
-      
-      const photos = await query;
-      res.json(photos);
-    } catch (error) {
-      console.error("Error fetching project photos:", error);
-      res.status(500).json({ error: "Failed to fetch photos" });
-    }
-  });
-
-  // Upload project photo
-  app.post("/api/project-photos", async (req, res) => {
-    try {
-      const parsed = insertProjectPhotoSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({ error: parsed.error.message });
-      }
-      
-      const [photo] = await db
-        .insert(projectPhotos)
-        .values(parsed.data)
-        .returning();
-      
-      res.json(photo);
-    } catch (error) {
-      console.error("Error uploading project photo:", error);
-      res.status(500).json({ error: "Failed to upload photo" });
-    }
-  });
-
-  // Delete project photo
-  app.delete("/api/project-photos/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      await db.delete(projectPhotos).where(eq(projectPhotos.id, id));
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting project photo:", error);
-      res.status(500).json({ error: "Failed to delete photo" });
-    }
-  });
-
-  // ============ BLUEPRINT EXTRACTION API ============
-  
-  // Extract dimensions from blueprint using AI
-  app.post("/api/blueprints/extract", async (req, res) => {
-    try {
-      // For now, return mock data - actual OpenAI Vision integration would go here
-      // In production, this would:
-      // 1. Accept file upload via multipart form
-      // 2. Send image to OpenAI Vision API
-      // 3. Parse room dimensions from response
-      // 4. Store results in blueprintUploads table
-      
-      const mockExtractedData = {
-        rooms: [
-          { name: "Living Room", width: 18, length: 22, height: 9, squareFootage: 396, wallArea: 720 },
-          { name: "Master Bedroom", width: 14, length: 16, height: 9, squareFootage: 224, wallArea: 540 },
-          { name: "Bedroom 2", width: 12, length: 12, height: 9, squareFootage: 144, wallArea: 432 },
-          { name: "Bedroom 3", width: 10, length: 12, height: 9, squareFootage: 120, wallArea: 396 },
-          { name: "Kitchen", width: 12, length: 14, height: 9, squareFootage: 168, wallArea: 468 },
-          { name: "Dining Room", width: 10, length: 12, height: 9, squareFootage: 120, wallArea: 396 },
-          { name: "Bathroom 1", width: 8, length: 10, height: 9, squareFootage: 80, wallArea: 324 },
-          { name: "Bathroom 2", width: 6, length: 8, height: 9, squareFootage: 48, wallArea: 252 },
-        ],
-        totalSquareFootage: 1300,
-        totalWallArea: 3528,
-        roomCount: 8,
-        notes: [
-          "Dimensions extracted from floor plan image",
-          "Standard 9ft ceiling height assumed",
-          "Window/door deductions not included - adjust as needed"
-        ]
-      };
-
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      res.json({
-        success: true,
-        extractedData: mockExtractedData
-      });
-    } catch (error) {
-      console.error("Error extracting blueprint:", error);
-      res.status(500).json({ error: "Failed to extract dimensions" });
-    }
-  });
-
-  // Save blueprint upload record
-  app.post("/api/blueprints", async (req, res) => {
-    try {
-      const parsed = insertBlueprintUploadSchema.safeParse(req.body);
-      if (!parsed.success) {
-        return res.status(400).json({ error: parsed.error.message });
-      }
-      
-      const [blueprint] = await db
-        .insert(blueprintUploads)
-        .values(parsed.data)
-        .returning();
-      
-      res.json(blueprint);
-    } catch (error) {
-      console.error("Error saving blueprint:", error);
-      res.status(500).json({ error: "Failed to save blueprint" });
-    }
-  });
-
-  // Get blueprints for an estimate
-  app.get("/api/blueprints", async (req, res) => {
-    try {
-      const estimateId = req.query.estimateId as string;
-      const tenantId = req.query.tenantId as string || "demo";
-      
-      let query;
-      if (estimateId) {
-        query = db.select().from(blueprintUploads).where(eq(blueprintUploads.estimateId, estimateId));
-      } else {
-        query = db.select().from(blueprintUploads).where(eq(blueprintUploads.tenantId, tenantId));
-      }
-      
-      const blueprints = await query;
-      res.json(blueprints);
-    } catch (error) {
-      console.error("Error fetching blueprints:", error);
-      res.status(500).json({ error: "Failed to fetch blueprints" });
-    }
-  });
-
-  // ============================================
-  // MARKETING AUTO-DEPLOY SYSTEM API
-  // ============================================
-
-  // Middleware to verify owner secret from environment variable
-  const verifyOwnerSecret: RequestHandler = (req, res, next) => {
-    const ownerSecret = process.env.OWNER_SECRET;
-    if (!ownerSecret) {
-      res.status(503).json({ error: "Owner authentication not configured" });
-      return;
-    }
-    
-    const providedSecret = req.headers['x-owner-secret'] as string;
-    if (!providedSecret || providedSecret !== ownerSecret) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-    next();
-  };
-
-  // Start marketing scheduler on server boot
-  startScheduler();
-
-  // GET /api/owner-admin/marketing/status - Get scheduler status and configured platforms
-  app.get("/api/owner-admin/marketing/status", verifyOwnerSecret, async (_req, res) => {
-    try {
-      const status = getSchedulerStatus();
-      const platforms = getConfiguredPlatforms();
-      res.json({ ...status, configuredPlatforms: platforms });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to get status" });
-    }
-  });
-
-  // POST /api/owner-admin/marketing/posts - Add new post to rotation
-  app.post("/api/owner-admin/marketing/posts", verifyOwnerSecret, async (req, res) => {
-    try {
-      const { content, category, imageUrl } = req.body;
-      if (!content) {
-        res.status(400).json({ error: "Content is required" });
-        return;
-      }
-
-      const [post] = await db.insert(marketingPosts).values({
-        content: xss(content),
-        category: category || "general",
-        imageUrl: imageUrl || null,
-        isActive: true,
-      }).returning();
-
-      res.status(201).json(post);
-    } catch (error) {
-      console.error("Error creating marketing post:", error);
-      res.status(500).json({ error: "Failed to create post" });
-    }
-  });
-
-  // GET /api/owner-admin/marketing/posts - List all posts
-  app.get("/api/owner-admin/marketing/posts", verifyOwnerSecret, async (_req, res) => {
-    try {
-      const posts = await db.select().from(marketingPosts).orderBy(desc(marketingPosts.createdAt));
-      res.json(posts);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch posts" });
-    }
-  });
-
-  // DELETE /api/owner-admin/marketing/posts/:id - Delete a post
-  app.delete("/api/owner-admin/marketing/posts/:id", verifyOwnerSecret, async (req, res) => {
-    try {
-      await db.delete(marketingPosts).where(eq(marketingPosts.id, req.params.id));
-      res.json({ success: true });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to delete post" });
-    }
-  });
-
-  // PATCH /api/owner-admin/marketing/posts/:id - Update a post
-  app.patch("/api/owner-admin/marketing/posts/:id", verifyOwnerSecret, async (req, res) => {
-    try {
-      const { content, category, imageUrl, isActive } = req.body;
-      const updates: Partial<typeof marketingPosts.$inferInsert> = {};
-      
-      if (content !== undefined) updates.content = xss(content);
-      if (category !== undefined) updates.category = category;
-      if (imageUrl !== undefined) updates.imageUrl = imageUrl;
-      if (isActive !== undefined) updates.isActive = isActive;
-
-      const [post] = await db.update(marketingPosts)
-        .set(updates)
-        .where(eq(marketingPosts.id, req.params.id))
-        .returning();
-
-      res.json(post);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update post" });
-    }
-  });
-
-  // POST /api/owner-admin/marketing/deploy/:platform - Manual deploy to single platform
-  app.post("/api/owner-admin/marketing/deploy/:platform", verifyOwnerSecret, async (req, res) => {
-    try {
-      const platform = req.params.platform as Platform;
-      const { content, imageUrl } = req.body;
-
-      if (!['twitter', 'discord', 'telegram', 'facebook'].includes(platform)) {
-        res.status(400).json({ error: "Invalid platform" });
-        return;
-      }
-
-      if (!content) {
-        res.status(400).json({ error: "Content is required" });
-        return;
-      }
-
-      const result = await manualDeploy(platform, content, imageUrl);
-      res.json(result);
-    } catch (error) {
-      console.error("Error deploying:", error);
-      res.status(500).json({ error: "Failed to deploy" });
-    }
-  });
-
-  // POST /api/owner-admin/marketing/schedule - Configure auto-posting schedule per platform
-  app.post("/api/owner-admin/marketing/schedule", verifyOwnerSecret, async (req, res) => {
-    try {
-      const { platform, intervalMinutes, isActive } = req.body;
-
-      if (!['twitter', 'discord', 'telegram', 'facebook'].includes(platform)) {
-        res.status(400).json({ error: "Invalid platform" });
-        return;
-      }
-
-      const existing = await db.select().from(marketingScheduleConfigs)
-        .where(eq(marketingScheduleConfigs.platform, platform));
-
-      let config;
-      if (existing.length > 0) {
-        [config] = await db.update(marketingScheduleConfigs)
-          .set({ 
-            intervalMinutes: intervalMinutes ?? existing[0].intervalMinutes,
-            isActive: isActive ?? existing[0].isActive,
-            updatedAt: new Date()
-          })
-          .where(eq(marketingScheduleConfigs.platform, platform))
-          .returning();
-      } else {
-        [config] = await db.insert(marketingScheduleConfigs).values({
-          platform,
-          intervalMinutes: intervalMinutes ?? 240,
-          isActive: isActive ?? false,
-        }).returning();
-      }
-
-      res.json(config);
-    } catch (error) {
-      console.error("Error updating schedule:", error);
-      res.status(500).json({ error: "Failed to update schedule" });
-    }
-  });
-
-  // GET /api/owner-admin/marketing/schedule - Get all schedule configs
-  app.get("/api/owner-admin/marketing/schedule", verifyOwnerSecret, async (_req, res) => {
-    try {
-      const configs = await db.select().from(marketingScheduleConfigs);
-      res.json(configs);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch schedules" });
-    }
-  });
-
-  // GET /api/owner-admin/marketing/history - Get deployment history
-  app.get("/api/owner-admin/marketing/history", verifyOwnerSecret, async (req, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 50;
-      const deploys = await db.select().from(marketingDeploys)
-        .orderBy(desc(marketingDeploys.deployedAt))
-        .limit(limit);
-      res.json(deploys);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch history" });
     }
   });
 

@@ -4,17 +4,14 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
 import { useTenant } from "@/context/TenantContext";
-import { useState } from "react";
 import { 
   DollarSign, Check, Paintbrush, Home, Building2, 
   Layers, Zap, Shield, Award, ArrowRight, Star,
   Ruler, DoorOpen, Grid3X3, Maximize, Sparkles,
-  Phone, Calendar, Users, BarChart3, Globe, Camera,
-  X, Crown, Rocket, Building, BadgeCheck
+  Phone, Calendar, Users, BarChart3, Globe
 } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { PRICING_TIERS, type PricingTier } from "@shared/pricing-tiers";
 
 const LICENSING_TIERS = [
   { 
@@ -104,224 +101,11 @@ export default function Pricing() {
   return <ServicePricing tenant={tenant} />;
 }
 
-function EstimatorToolPricing() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-
-  const tierIcons: Record<string, any> = {
-    starter: Rocket,
-    professional: Crown,
-    business: Building,
-    enterprise: Building2
-  };
-
-  return (
-    <div className="mb-16">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-400 text-sm mb-6">
-          <Camera className="w-4 h-4" />
-          AI Estimator Tool
-        </div>
-        <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-          Standalone <span className="text-purple-400">Estimator</span> Plans
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-          AI-powered room scanning and instant estimates for any contractor
-        </p>
-
-        <div className="inline-flex items-center gap-2 p-1 rounded-full bg-black/5 dark:bg-white/10">
-          <button
-            onClick={() => setBillingCycle('monthly')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              billingCycle === 'monthly' 
-                ? 'bg-purple-500 text-white' 
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            data-testid="button-billing-monthly"
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBillingCycle('annual')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              billingCycle === 'annual' 
-                ? 'bg-purple-500 text-white' 
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            data-testid="button-billing-annual"
-          >
-            Annual <span className="text-green-400 ml-1">Save 20%</span>
-          </button>
-        </div>
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {PRICING_TIERS.map((tier, index) => {
-          const TierIcon = tierIcons[tier.id] || Rocket;
-          const price = billingCycle === 'monthly' ? tier.monthlyPrice : Math.round(tier.annualPrice / 12);
-          
-          return (
-            <motion.div
-              key={tier.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <GlassCard 
-                className={`p-6 h-full flex flex-col relative ${tier.popular ? 'border-purple-500/50 bg-purple-500/5' : ''}`}
-                glow={tier.popular}
-                data-testid={`estimator-tier-${tier.id}`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-4 py-1 rounded-full bg-purple-500 text-white text-xs font-bold">
-                      MOST POPULAR
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-xl ${tier.popular ? 'bg-purple-500/20' : 'bg-accent/20'} flex items-center justify-center`}>
-                    <TierIcon className={`w-6 h-6 ${tier.popular ? 'text-purple-400' : 'text-accent'}`} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">{tier.name}</h3>
-                    <p className="text-xs text-muted-foreground">{tier.tagline}</p>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <div className="flex items-baseline gap-1">
-                    <span className={`text-4xl font-bold ${tier.popular ? 'text-purple-400' : 'text-accent'}`}>
-                      ${price}
-                    </span>
-                    <span className="text-muted-foreground">/mo</span>
-                  </div>
-                  {billingCycle === 'annual' && (
-                    <p className="text-xs text-green-400 mt-1">
-                      Save ${tier.annualSavings}/year
-                    </p>
-                  )}
-                </div>
-
-                <ul className="flex-1 space-y-2 mb-6">
-                  {tier.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
-                      <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <a href={tier.id === 'enterprise' ? '/estimate' : '/trial-signup'}>
-                  <FlipButton 
-                    className={`w-full ${tier.popular ? '' : 'bg-black/5 dark:bg-white/10'}`}
-                    data-testid={`button-select-estimator-${tier.id}`}
-                  >
-                    {tier.ctaText} <ArrowRight className="w-4 h-4 ml-2" />
-                  </FlipButton>
-                </a>
-              </GlassCard>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8"
-      >
-        <GlassCard className="p-6">
-          <h3 className="font-bold mb-4 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-purple-400" />
-            Feature Comparison
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border dark:border-white/10">
-                  <th className="text-left py-2 pr-4">Feature</th>
-                  {PRICING_TIERS.map(tier => (
-                    <th key={tier.id} className="text-center py-2 px-2">{tier.name}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-border/50 dark:border-white/5">
-                  <td className="py-2 pr-4">Estimates/month</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2">
-                      {tier.limits.estimatesPerMonth === 'unlimited' ? 'Unlimited' : tier.limits.estimatesPerMonth}
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-border/50 dark:border-white/5">
-                  <td className="py-2 pr-4">AI Room Scanner</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2 capitalize">{tier.limits.aiScannerLevel}</td>
-                  ))}
-                </tr>
-                <tr className="border-b border-border/50 dark:border-white/5">
-                  <td className="py-2 pr-4">Team Members</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2">
-                      {tier.limits.teamMembers === 'unlimited' ? 'Unlimited' : tier.limits.teamMembers}
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-border/50 dark:border-white/5">
-                  <td className="py-2 pr-4">CRM Access</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2">
-                      {tier.limits.crmAccess ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-border/50 dark:border-white/5">
-                  <td className="py-2 pr-4">Online Booking</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2">
-                      {tier.limits.onlineBooking ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-border/50 dark:border-white/5">
-                  <td className="py-2 pr-4">Multi-Room Scanner</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2">
-                      {tier.limits.multiRoomScanner ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td className="py-2 pr-4">White-Label</td>
-                  {PRICING_TIERS.map(tier => (
-                    <td key={tier.id} className="text-center py-2">
-                      {tier.limits.whiteLabel ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </GlassCard>
-      </motion.div>
-    </div>
-  );
-}
-
 function LicensingPricing() {
   return (
     <PageLayout>
       <main className="pt-24 pb-24 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <EstimatorToolPricing />
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -329,12 +113,12 @@ function LicensingPricing() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/30 text-accent text-sm mb-6">
               <Sparkles className="w-4 h-4" />
-              Full Platform Licensing
+              Simple, Transparent Pricing
             </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
               Launch Your <span className="text-accent">Painting Business</span> Platform
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               All-inclusive white-label websites with premium features. No hidden fees.
             </p>
           </motion.div>
@@ -529,41 +313,12 @@ function LicensingPricing() {
 
 function ServicePricing({ tenant }: { tenant: any }) {
   const { pricing, name, credentials } = tenant;
-  const isNPP = tenant.id === 'npp';
 
-  const FullImplementationBadge = () => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="mb-8"
-    >
-      <GlassCard className="p-4 bg-gradient-to-r from-green-500/10 via-accent/10 to-green-500/10 border-green-500/30" glow>
-        <div className="flex items-center justify-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-              <BadgeCheck className="w-5 h-5 text-green-400" />
-            </div>
-            <div>
-              <p className="font-bold text-green-400">Full Implementation Active</p>
-              <p className="text-xs text-muted-foreground">All premium features unlocked</p>
-            </div>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-medium">AI Room Scanner</span>
-            <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-medium">CRM</span>
-            <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium">Crew Mgmt</span>
-            <span className="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-medium">Blockchain</span>
-          </div>
-        </div>
-      </GlassCard>
-    </motion.div>
-  );
-
-  const pricingItems = pricing ? [
+  const pricingItems = [
     {
       title: "Walls Only",
       icon: Grid3X3,
-      price: `$${pricing.wallsPerSqFt?.toFixed(2) || '0.00'}`,
+      price: `$${pricing.wallsPerSqFt.toFixed(2)}`,
       unit: "per sq ft",
       description: "Interior wall painting, prep included",
       color: "text-blue-400",
@@ -572,7 +327,7 @@ function ServicePricing({ tenant }: { tenant: any }) {
     {
       title: "Full Job",
       icon: Home,
-      price: `$${pricing.fullJobPerSqFt?.toFixed(2) || '0.00'}`,
+      price: `$${pricing.fullJobPerSqFt.toFixed(2)}`,
       unit: "per sq ft",
       description: "Walls + Trim + Ceiling",
       color: "text-green-400",
@@ -582,15 +337,15 @@ function ServicePricing({ tenant }: { tenant: any }) {
     {
       title: "Doors",
       icon: DoorOpen,
-      price: `$${pricing.doorsPerUnit || '0'}`,
+      price: `$${pricing.doorsPerUnit}`,
       unit: "per door",
       description: "Both sides, any standard door",
       color: "text-purple-400",
       bgColor: "bg-purple-500/20",
     },
-  ] : [];
+  ];
 
-  if (pricing?.ceilingsPerSqFt) {
+  if (pricing.ceilingsPerSqFt) {
     pricingItems.push({
       title: "Ceilings Only",
       icon: Maximize,
@@ -602,7 +357,7 @@ function ServicePricing({ tenant }: { tenant: any }) {
     });
   }
 
-  if (pricing?.trimPerLinearFt) {
+  if (pricing.trimPerLinearFt) {
     pricingItems.push({
       title: "Trim Only",
       icon: Ruler,
@@ -634,8 +389,6 @@ function ServicePricing({ tenant }: { tenant: any }) {
               Simple, upfront pricing for all your painting needs. No surprises.
             </p>
           </motion.div>
-
-          {isNPP && <FullImplementationBadge />}
 
           <div className="px-4 md:px-12 mb-12">
             <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
@@ -721,7 +474,7 @@ function ServicePricing({ tenant }: { tenant: any }) {
                       </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="warranty">
-                      <AccordionTrigger className="text-left">{credentials?.warrantyYears || 3}-Year Warranty</AccordionTrigger>
+                      <AccordionTrigger className="text-left">{credentials.warrantyYears || 3}-Year Warranty</AccordionTrigger>
                       <AccordionContent>
                         Peace of mind with our workmanship warranty. Any issues? We'll make it right at no extra cost.
                       </AccordionContent>

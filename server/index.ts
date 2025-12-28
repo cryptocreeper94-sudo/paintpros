@@ -1,101 +1,16 @@
 import express, { type Request, Response, NextFunction } from "express";
-import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { storage } from "./storage";
 import * as solana from "./solana";
-import * as darkwave from "./darkwave";
 import * as hallmarkService from "./hallmarkService";
-import { startReminderScheduler } from "./reminder-scheduler";
 
 const app = express();
-
-// Security headers - configured for production use
-app.use(helmet({
-  contentSecurityPolicy: false, // Disabled to allow inline scripts from Vite in dev
-  crossOriginEmbedderPolicy: false, // Allow embedding in Replit iframe
-}));
 const httpServer = createServer(app);
 
 // Track if we've already processed auto-deploy for this instance
 let autoDeployProcessed = false;
-
-/**
- * Ensure default staff PINs exist in the database
- * This runs on every server start to guarantee all PINs work in production
- */
-async function ensureDefaultPins(): Promise<void> {
-  const DEFAULT_PINS = [
-    { role: "ops_manager", pin: "4444", mustChangePin: true },
-    { role: "owner", pin: "1111", mustChangePin: true },
-    { role: "project_manager", pin: "2222", mustChangePin: false },
-    { role: "crew_lead", pin: "3333", mustChangePin: false },
-    { role: "developer", pin: "0424", mustChangePin: false },
-    { role: "demo_viewer", pin: "7777", mustChangePin: false }
-  ];
-
-  for (const pinData of DEFAULT_PINS) {
-    try {
-      await storage.createOrUpdateUserPin(pinData);
-    } catch (error) {
-      console.error(`[seed] Error ensuring PIN for ${pinData.role}:`, error);
-    }
-  }
-  console.log("[seed] Default staff PINs ensured");
-}
-
-/**
- * Ensure paint colors are seeded in the database
- * This runs on every server start to guarantee colors are available
- */
-async function ensurePaintColors(): Promise<void> {
-  try {
-    const colors = await storage.getPaintColors({ limit: 1 });
-    if (colors.length === 0) {
-      console.log("[seed] No paint colors found, seeding database...");
-      const count = await storage.seedPaintColors();
-      console.log(`[seed] Seeded ${count} paint colors successfully`);
-    }
-  } catch (error) {
-    console.error("[seed] Error ensuring paint colors:", error);
-  }
-}
-
-/**
- * Ensure default crew leads exist for all registered tenants
- * This runs on every server start to guarantee PIN 3333 always works
- */
-async function ensureDefaultCrewLeads(): Promise<void> {
-  const DEFAULT_PIN = "3333";
-  const tenants = [
-    { id: 'npp', email: 'crewlead@paintpros.io' },
-    { id: 'demo', email: 'crewlead@demo.paintpros.io' },
-  ];
-  
-  for (const tenant of tenants) {
-    try {
-      // Check if a crew lead with PIN 3333 already exists for this tenant
-      const existing = await storage.getCrewLeadByPin(DEFAULT_PIN, tenant.id);
-      if (!existing) {
-        console.log(`[seed] Creating default crew lead for tenant: ${tenant.id}`);
-        await storage.createCrewLead({
-          tenantId: tenant.id,
-          firstName: "Default",
-          lastName: "Crew Lead",
-          email: tenant.email,
-          phone: "615-555-0100",
-          pin: DEFAULT_PIN,
-          assignedBy: "system",
-          isActive: true,
-        });
-        console.log(`[seed] Default crew lead created for ${tenant.id} with PIN ${DEFAULT_PIN}`);
-      }
-    } catch (error) {
-      console.error(`[seed] Error ensuring crew lead for ${tenant.id}:`, error);
-    }
-  }
-}
 
 // Registered tenants for auto-deploy versioning
 // Both NPP and Demo get AUTO versioning on every publish
@@ -105,10 +20,9 @@ const DEPLOY_TENANTS = [
 ];
 
 /**
- * Automatic Version Bump & Dual-Chain Stamp on Production Deployment
+ * Automatic Version Bump & Solana Stamp on Production Deployment
  * This runs once when the server starts in production mode
  * Bumps versions for ALL registered tenants independently
- * Stamps to both Solana (primary) and Darkwave Chain (secondary)
  */
 async function autoDeployVersionBump(): Promise<void> {
   if (autoDeployProcessed) {
@@ -145,7 +59,7 @@ async function autoDeployVersionBump(): Promise<void> {
       }
       
       // Calculate new version for this tenant
-      let currentVersion = latestRelease?.version || "1.2.5";
+      let currentVersion = latestRelease?.version || "1.0.0";
       let buildNumber = (latestRelease?.buildNumber || 0) + 1;
       
       const [major, minor, patch] = currentVersion.split('.').map(Number);
@@ -210,35 +124,12 @@ async function autoDeployVersionBump(): Promise<void> {
           const explorerUrl = `https://explorer.solana.com/tx/${result.signature}`;
           await storage.updateHallmarkBlockchain(savedHallmark.id, result.signature, explorerUrl);
           
-          console.log(`[auto-deploy][${tenant.id}] Solana SUCCESS! TX: ${result.signature}`);
+          console.log(`[auto-deploy][${tenant.id}] SUCCESS! TX: ${result.signature}`);
         } catch (stampError) {
           console.error(`[auto-deploy][${tenant.id}] Solana stamp failed:`, stampError);
         }
       } else {
-        console.log(`[auto-deploy][${tenant.id}] No Solana wallet - version bumped without Solana stamp`);
-      }
-      
-      // Attempt Darkwave blockchain stamp for this tenant (parallel to Solana)
-      try {
-        console.log(`[auto-deploy][${tenant.id}] Stamping to Darkwave Chain...`);
-        
-        const darkwaveResult = await darkwave.submitHashToDarkwave(contentHash, {
-          entityType: 'release',
-          entityId: release.id,
-          tenantId: tenant.id,
-          version: newVersion,
-        });
-        
-        if (darkwaveResult.success && darkwaveResult.txHash) {
-          await storage.updateReleaseDarkwaveStatus(release.id, darkwaveResult.txHash, "confirmed");
-          const darkwaveExplorerUrl = darkwaveResult.explorerUrl || `https://explorer.darkwave.io/tx/${darkwaveResult.txHash}`;
-          await storage.updateHallmarkDarkwave(savedHallmark.id, darkwaveResult.txHash, darkwaveExplorerUrl);
-          console.log(`[auto-deploy][${tenant.id}] Darkwave SUCCESS! TX: ${darkwaveResult.txHash}`);
-        } else {
-          console.log(`[auto-deploy][${tenant.id}] Darkwave skipped: ${darkwaveResult.error || 'Not configured'}`);
-        }
-      } catch (darkwaveError) {
-        console.error(`[auto-deploy][${tenant.id}] Darkwave stamp failed:`, darkwaveError);
+        console.log(`[auto-deploy][${tenant.id}] No wallet - version bumped without blockchain stamp`);
       }
       
       console.log(`[auto-deploy][${tenant.id}] COMPLETE: v${newVersion} (Build ${buildNumber})`);
@@ -341,21 +232,9 @@ app.use((req, res, next) => {
     async () => {
       log(`serving on port ${port}`);
       
-      // Ensure default staff PINs exist
-      await ensureDefaultPins();
-      
-      // Ensure default crew leads exist for all tenants
-      await ensureDefaultCrewLeads();
-      
-      // Ensure paint colors are seeded
-      await ensurePaintColors();
-      
       // Run automatic version bump on production deployment
       // This happens after server is ready to ensure database connection is established
       await autoDeployVersionBump();
-      
-      // Start the appointment reminder scheduler
-      startReminderScheduler();
     },
   );
 })();

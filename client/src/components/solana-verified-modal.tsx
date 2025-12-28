@@ -1,8 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, ExternalLink, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ExternalLink, Hash, Award, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
+import { FOUNDING_ASSETS } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
 
 interface TenantRelease {
@@ -35,6 +36,10 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
         .catch(() => setLatestRelease(null));
     }
   }, [isOpen, isDemo]);
+  
+  const tenantAsset = isDemo ? FOUNDING_ASSETS.PAINTPROS_PLATFORM : FOUNDING_ASSETS.NPP_GENESIS;
+  const serialNumber = tenantAsset.number;
+  const displaySerial = serialNumber.replace('#', '');
   
   const solscanUrl = latestRelease?.solanaTxSignature 
     ? `https://solscan.io/tx/${latestRelease.solanaTxSignature}`
@@ -119,6 +124,26 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
               </div>
             </GlassCard>
           )}
+
+          {/* Company Badge & Serial - Compact */}
+          <GlassCard className="p-2.5 bg-gradient-to-br from-[#9945FF]/5 to-[#14F195]/5 border-white/10">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white text-[8px] font-bold uppercase tracking-wider">
+                <Award className="w-2.5 h-2.5" />
+                {tenantAsset.badge}
+              </div>
+              <div className="flex items-center gap-1">
+                <Hash className="w-3 h-3 text-muted-foreground" />
+                <span className="font-mono text-xs font-bold text-cyan-700 dark:text-[#14F195]">{displaySerial}</span>
+              </div>
+              {latestRelease?.version && (
+                <div className="flex items-center gap-1 ml-auto">
+                  <span className="text-[9px] text-muted-foreground">v{latestRelease.version}</span>
+                  <CheckCircle2 className="w-2.5 h-2.5 text-[#14F195]" />
+                </div>
+              )}
+            </div>
+          </GlassCard>
 
           <p className="text-[8px] text-muted-foreground/50 text-center">
             Powered by Solana • Fast, secure, eco-friendly

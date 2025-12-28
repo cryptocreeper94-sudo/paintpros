@@ -11,16 +11,10 @@
 **PaintPros.io** is a multi-tenant SaaS platform designed specifically for the painting and home services industry. Built by Orbit, it provides franchise-ready, white-label websites for painting companies with modern design, intelligent estimating tools, comprehensive CRM capabilities, and blockchain-verified documentation.
 
 ### Current Status
-- **Current Version:** v1.2.4 (Nashville Painting Professionals)
-- **Platform Status:** Production-ready with comprehensive feature set
+- **Beta Version:** v1.1.3 (Nashville Painting Professionals)
+- **Platform Status:** Production-ready, actively in beta testing
 - **Blockchain:** Solana mainnet integration complete with opt-in document hashing
 - **Online Booking:** Full consultation booking system with availability management
-- **Appointment Reminders:** Push notifications and email reminders (24h and 1h before)
-- **Help Center:** Interactive feature tour for customers and staff
-- **Customer Portal:** Complete account management with estimate history, job tracking
-- **Document Center:** PDF generation with digital signatures and version tracking
-- **CRM Calendar:** Full scheduling with color-coded events and reminders
-- **Franchise System:** Multi-location management with Partner API
 - **Light/Dark Mode:** Fully optimized theme support with proper contrast
 - **Mobile Experience:** Compact bento grid layout optimized for mobile devices
 - **Cache Control:** Production-ready cache headers for reliable content delivery
@@ -306,7 +300,7 @@ Empower painting professionals with cutting-edge technology that streamlines ope
 
 ## Appendix
 
-### A. Current Feature Status (v1.2.4)
+### A. Current Feature Status (v1.0.4)
 
 | Feature | Status | Notes |
 |---------|--------|-------|
@@ -316,38 +310,30 @@ Empower painting professionals with cutting-edge technology that streamlines ope
 | Lead management | Complete | Full CRM integration |
 | Owner dashboard | Complete | Revenue, SEO tracker, analytics |
 | Admin dashboard | Complete | Lead pipeline, follow-ups, proposals |
-| Project Manager dashboard | Complete | Regional lead management |
-| Developer dashboard | Complete | Blockchain tools, franchise management |
-| Crew Lead dashboard | Complete | Time tracking, job notes, Spanish support |
+| Area Manager dashboard | Complete | Regional lead management |
+| Developer dashboard | Complete | Blockchain tools, version control |
 | Analytics system | Complete | Real-time page tracking |
 | Blockchain stamping | Complete | Solana mainnet integration |
 | Hallmark verification | Complete | ORBIT system with tenant prefixes |
-| Document Center | Complete | PDF generation, digital signatures, version tracking |
+| Document Assets | Complete | Opt-in Solana hashing for estimates |
 | Version tracking | Complete | Per-tenant release management |
 | Online booking system | Complete | 5-step wizard with availability |
-| Appointment reminders | Complete | Push notifications + email (24h/1h) |
-| Customer portal | Complete | Estimate history, job tracking, preferences |
-| Help Center | Complete | Interactive slideshow for customers and staff |
-| CRM Calendar | Complete | Month/week/day views, event reminders |
-| Dual Pipeline | Complete | Sales pipeline + Jobs pipeline (DripJobs-style) |
-| Internal messaging | Complete | Real-time chat, speech-to-text, role badges |
-| Crew management | Complete | Time tracking, job notes, incident reports |
-| Franchise system | Complete | Multi-location, territory licensing, Partner API |
+| Enhanced lead capture | Complete | firstName, lastName, email, phone |
+| Navigation improvements | Complete | Home/Back buttons, modal close buttons |
 | Payment processing | In Progress | Stripe + Crypto |
 | AI room scanning | In Progress | OpenAI Vision |
 
 ### B. Recent Updates (December 2025)
 
-- **v1.2.4:** Help Center with interactive feature tour slideshow
-- **v1.2.3:** Appointment reminders (push + email notifications)
-- **v1.2.2:** Customer portal with estimate acceptance and email notifications
-- **v1.2.1:** Customer account page with job tracking and preferences
-- **v1.2.0:** Franchise Management System with Partner API
-- **v1.1.9:** Terms & Warranty page, mobile header fixes
-- **v1.1.8:** Convert Won Deal to Job, Dashboard Preview modal
-- **v1.1.7:** Dual Pipeline Mode (Sales + Jobs), mobile CRM Calendar
-- **v1.1.6:** CRM Calendar with full scheduling capabilities
-- **v1.1.5:** PDF Document Center with digital signatures
+- **v1.0.4:** Online Booking System with 5-step wizard and availability management
+- **v1.0.4:** Enhanced lead capture (firstName, lastName, email, phone fields)
+- **v1.0.4:** Navigation improvements (Home/Back buttons, modal close buttons)
+- **v1.0.4:** Modal overflow handling and UX polish
+- Document Asset system with opt-in blockchain hashing
+- Tenant-specific hallmark numbering (NPP-000000000-XX format)
+- Solana Verified modal for customer trust
+- Light/dark mode optimizations
+- Version bump automation for deployments
 
 ### C. Roadmap
 
@@ -359,20 +345,18 @@ Empower painting professionals with cutting-edge technology that streamlines ope
 
 **Q1 2025**
 - [x] Production deployment ready
-- [x] CRM Calendar system
-- [x] Document Center with signatures
-- [x] Franchise management
+- [ ] 10 beta clients onboarded
+- [ ] Mobile app (React Native)
+- [ ] Payment processing
 
 **Q2 2025**
-- [x] Customer portal
-- [x] Appointment reminders
-- [x] Help Center / Feature Tour
-- [ ] 10 beta clients onboarded
+- [ ] Google Analytics integration
+- [ ] Advanced reporting
+- [ ] Email marketing integration
 
 **Q3 2025**
-- [ ] Mobile app (React Native)
-- [ ] Payment processing (Stripe + Crypto)
-- [ ] AI room scanning
+- [ ] National marketing launch
+- [ ] Franchise system
 - [ ] API marketplace
 
 ---

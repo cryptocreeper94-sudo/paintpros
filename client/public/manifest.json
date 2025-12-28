@@ -1,20 +1,13 @@
 {
   "name": "Nashville Painting Professionals",
   "short_name": "NPP Painters",
-  "description": "Professional interior & exterior painting services in Nashville, TN. Get instant estimates, book appointments, and manage your projects online.",
+  "description": "Professional interior & exterior painting services in Nashville, TN",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#1a1f1c",
+  "theme_color": "#d4a853",
   "orientation": "portrait-primary",
-  "scope": "/",
-  "id": "/",
   "icons": [
-    {
-      "src": "/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
-    },
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
@@ -28,42 +21,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "productivity", "utilities"],
+  "categories": ["business", "lifestyle"],
   "lang": "en-US",
-  "dir": "ltr",
-  "shortcuts": [
-    {
-      "name": "Get Free Estimate",
-      "short_name": "Estimate",
-      "description": "Get a free instant painting estimate",
-      "url": "/estimator",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Book Appointment",
-      "short_name": "Book",
-      "description": "Schedule your painting service",
-      "url": "/book",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "My Account",
-      "short_name": "Account",
-      "description": "View your account and estimates",
-      "url": "/account",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Help Center",
-      "short_name": "Help",
-      "description": "Get help and support",
-      "url": "/help",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    }
-  ],
-  "prefer_related_applications": false,
-  "handle_links": "preferred",
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  }
+  "dir": "ltr"
 }

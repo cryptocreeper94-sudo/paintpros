@@ -439,7 +439,7 @@ function CrewLeadDashboardContent() {
       <MessagingWidget 
         currentUserId={currentLead?.id || "crew-lead"}
         currentUserRole="crew-lead"
-        currentUserName={currentLead ? `${currentLead.firstName} ${currentLead.lastName}` : t("common.crewLead")}
+        currentUserName={currentLead?.name || t("common.crewLead")}
       />
     </PageLayout>
   );

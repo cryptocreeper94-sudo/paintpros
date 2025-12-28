@@ -3,7 +3,7 @@
 **Prepared by:** Orbit Development Team  
 **Version:** 2.3 | December 15, 2025
 
-**Beta Status:** v1.2.4 (Nashville Painting Professionals - Active)
+**Beta Status:** v1.1.3 (Nashville Painting Professionals - Active)
 
 ---
 
