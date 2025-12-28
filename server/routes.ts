@@ -2289,6 +2289,147 @@ Do not include any text before or after the JSON.`
     }
   });
 
+  // ============ RYAN PROPOSAL SPECIAL ENDPOINT ============
+  
+  // POST /api/proposal-ryan/accept - Accept Ryan's proposal with signature, generate PDF, send email
+  app.post("/api/proposal-ryan/accept", async (req, res) => {
+    try {
+      const { signatureData, signerName, signerEmail } = req.body;
+      
+      if (!signatureData || !signerName) {
+        res.status(400).json({ error: "Signature and name required" });
+        return;
+      }
+      
+      // Import pdf-lib dynamically
+      const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
+      
+      // Create PDF document
+      const pdfDoc = await PDFDocument.create();
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      
+      // Page 1: Proposal Summary
+      const page1 = pdfDoc.addPage([612, 792]); // Letter size
+      const { height } = page1.getSize();
+      
+      // Header
+      page1.drawText('PARTNERSHIP PROPOSAL', { x: 50, y: height - 60, size: 24, font: fontBold, color: rgb(0.1, 0.3, 0.2) });
+      page1.drawText('Nashville Painting Professionals - Murfreesboro Sector', { x: 50, y: height - 85, size: 14, font, color: rgb(0.3, 0.3, 0.3) });
+      
+      // Investment Terms
+      page1.drawText('Investment Structure:', { x: 50, y: height - 130, size: 16, font: fontBold });
+      page1.drawText('Onboarding + Setup: $6,000 (upfront)', { x: 70, y: height - 155, size: 12, font });
+      page1.drawText('Weekly Rate: $2,000/week (up to 90-day period)', { x: 70, y: height - 175, size: 12, font });
+      page1.drawText('Full terms to be discussed for full-time employment.', { x: 70, y: height - 195, size: 12, font });
+      
+      // Services Included
+      page1.drawText('Services Included:', { x: 50, y: height - 240, size: 16, font: fontBold });
+      const services = [
+        'Project Management', 'Marketing & Outreach', 'IT Support', 'Web Development',
+        'SEO Placement', 'Coordination & Oversight', 'Orbit Staffing Integration',
+        'Custom AI Website', 'AI Estimator + Rollie Voice', 'CRM & Lead Management',
+        '24/7 Online Booking', 'Crew Management Tools', 'Document Center'
+      ];
+      services.forEach((service, i) => {
+        page1.drawText(`• ${service}`, { x: 70, y: height - 265 - (i * 18), size: 11, font });
+      });
+      
+      // Signature section
+      page1.drawText('ACCEPTANCE', { x: 50, y: 180, size: 16, font: fontBold });
+      page1.drawText(`Signed by: ${signerName}`, { x: 50, y: 155, size: 12, font });
+      page1.drawText(`Date: ${new Date().toLocaleDateString()}`, { x: 50, y: 135, size: 12, font });
+      
+      // Embed signature image
+      if (signatureData.startsWith('data:image/png')) {
+        const signatureImageBytes = Buffer.from(signatureData.split(',')[1], 'base64');
+        const signatureImage = await pdfDoc.embedPng(signatureImageBytes);
+        const sigDims = signatureImage.scale(0.5);
+        page1.drawImage(signatureImage, { x: 50, y: 50, width: Math.min(sigDims.width, 200), height: Math.min(sigDims.height, 60) });
+      }
+      
+      // Footer
+      page1.drawText('Prepared by Dark Wave Studios, LLC', { x: 50, y: 25, size: 10, font, color: rgb(0.5, 0.5, 0.5) });
+      
+      // Generate PDF bytes
+      const pdfBytes = await pdfDoc.save();
+      const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
+      
+      // Send email if address provided
+      let emailSent = false;
+      if (signerEmail) {
+        try {
+          const { getResendClient } = await import('./resend');
+          const { client, fromEmail } = await getResendClient();
+          
+          await client.emails.send({
+            from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
+            to: [signerEmail],
+            subject: 'Your Signed Proposal - Nashville Painting Professionals Partnership',
+            html: `
+              <h2>Partnership Proposal Accepted</h2>
+              <p>Dear ${signerName},</p>
+              <p>Thank you for accepting the partnership proposal for Nashville Painting Professionals - Murfreesboro Sector expansion.</p>
+              <p>Your signed proposal is attached to this email for your records.</p>
+              <p><strong>Investment Summary:</strong></p>
+              <ul>
+                <li>Onboarding + Setup: $6,000 (upfront)</li>
+                <li>Weekly Rate: $2,000/week (up to 90-day period)</li>
+                <li>Full terms to be discussed for full-time employment</li>
+              </ul>
+              <p>We'll be in touch within 24 hours to begin onboarding.</p>
+              <p>Best regards,<br/>Dark Wave Studios, LLC</p>
+            `,
+            attachments: [{
+              filename: 'NPP-Partnership-Proposal-Signed.pdf',
+              content: pdfBase64
+            }]
+          });
+          emailSent = true;
+        } catch (emailError) {
+          console.error('Failed to send proposal email:', emailError);
+        }
+      }
+      
+      // Also send notification to admin
+      try {
+        const { getResendClient } = await import('./resend');
+        const { client, fromEmail } = await getResendClient();
+        const adminEmail = process.env.CONTACT_EMAIL || 'Cryptocreeper94@gmail.com';
+        
+        await client.emails.send({
+          from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
+          to: [adminEmail],
+          subject: `PROPOSAL ACCEPTED: ${signerName} - NPP Murfreesboro Partnership`,
+          html: `
+            <h2>Proposal Accepted!</h2>
+            <p><strong>Signer:</strong> ${signerName}</p>
+            <p><strong>Email:</strong> ${signerEmail || 'Not provided'}</p>
+            <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+            <p>The signed proposal PDF is attached.</p>
+          `,
+          attachments: [{
+            filename: 'NPP-Partnership-Proposal-Signed.pdf',
+            content: pdfBase64
+          }]
+        });
+      } catch (adminEmailError) {
+        console.error('Failed to send admin notification:', adminEmailError);
+      }
+      
+      res.json({
+        success: true,
+        pdfBase64,
+        emailSent,
+        message: emailSent ? 'Proposal accepted and email sent' : 'Proposal accepted'
+      });
+      
+    } catch (error) {
+      console.error("Error processing proposal acceptance:", error);
+      res.status(500).json({ error: "Failed to process proposal acceptance" });
+    }
+  });
+
   // ============ ESTIMATE FOLLOW-UPS ============
   
   // POST /api/estimates/:id/followups - Schedule follow-up

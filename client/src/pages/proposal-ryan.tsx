@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +25,10 @@ import {
   Clock,
   Percent,
   PenLine,
-  RotateCcw
+  RotateCcw,
+  Download,
+  Mail,
+  Loader2
 } from "lucide-react";
 import SignatureCanvas from "react-signature-canvas";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +37,11 @@ export default function ProposalRyan() {
   const [showSignature, setShowSignature] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [signatureData, setSignatureData] = useState<string | null>(null);
+  const [pdfBase64, setPdfBase64] = useState<string | null>(null);
+  const [signerName, setSignerName] = useState("");
+  const [signerEmail, setSignerEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const sigRef = useRef<SignatureCanvas>(null);
   const { toast } = useToast();
 
@@ -39,7 +49,15 @@ export default function ProposalRyan() {
     sigRef.current?.clear();
   };
 
-  const acceptProposal = () => {
+  const downloadPdf = () => {
+    if (!pdfBase64) return;
+    const link = document.createElement('a');
+    link.href = `data:application/pdf;base64,${pdfBase64}`;
+    link.download = 'NPP-Partnership-Proposal-Signed.pdf';
+    link.click();
+  };
+
+  const acceptProposal = async () => {
     if (sigRef.current?.isEmpty()) {
       toast({
         title: "Signature Required",
@@ -48,16 +66,57 @@ export default function ProposalRyan() {
       });
       return;
     }
+
+    if (!signerName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter your full name.",
+        variant: "destructive",
+      });
+      return;
+    }
     
+    setIsSubmitting(true);
     const dataUrl = sigRef.current?.toDataURL();
-    setSignatureData(dataUrl || null);
-    setAccepted(true);
-    setShowSignature(false);
     
-    toast({
-      title: "Proposal Accepted",
-      description: "Thank you! We'll be in touch shortly to get started.",
-    });
+    try {
+      const response = await fetch('/api/proposal-ryan/accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          signatureData: dataUrl,
+          signerName: signerName.trim(),
+          signerEmail: signerEmail.trim() || null
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setSignatureData(dataUrl || null);
+        setPdfBase64(result.pdfBase64);
+        setEmailSent(result.emailSent);
+        setAccepted(true);
+        setShowSignature(false);
+        
+        toast({
+          title: "Proposal Accepted",
+          description: result.emailSent 
+            ? "A copy has been sent to your email." 
+            : "Thank you! We'll be in touch shortly.",
+        });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process acceptance. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -425,12 +484,32 @@ export default function ProposalRyan() {
               <p className="opacity-90">
                 Thank you for your partnership. We'll be in touch within 24 hours to begin onboarding.
               </p>
+              {emailSent && (
+                <div className="flex items-center justify-center gap-2 text-sm opacity-90">
+                  <Mail className="w-4 h-4" />
+                  <span>A copy has been sent to your email</span>
+                </div>
+              )}
               {signatureData && (
                 <div className="pt-4">
                   <p className="text-sm opacity-75 mb-2">Your signature:</p>
                   <div className="bg-white rounded-lg p-2 inline-block">
                     <img src={signatureData} alt="Signature" className="max-h-20" />
                   </div>
+                </div>
+              )}
+              {pdfBase64 && (
+                <div className="pt-4">
+                  <Button 
+                    variant="secondary" 
+                    size="lg" 
+                    className="gap-2"
+                    onClick={downloadPdf}
+                    data-testid="button-download-pdf"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Signed Proposal
+                  </Button>
                 </div>
               )}
               <p className="text-sm opacity-75 pt-4">Dark Wave Studios, LLC</p>
@@ -467,31 +546,57 @@ export default function ProposalRyan() {
             <DialogHeader>
               <DialogTitle>Accept Proposal</DialogTitle>
               <DialogDescription>
-                Sign below to accept the partnership proposal terms.
+                Enter your details and sign below to accept the partnership proposal.
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg bg-white">
-                <SignatureCanvas
-                  ref={sigRef}
-                  canvasProps={{
-                    className: "w-full h-48 touch-none",
-                    style: { width: "100%", height: "192px" }
-                  }}
-                  penColor="black"
+              <div className="space-y-2">
+                <Label htmlFor="signerName">Full Name *</Label>
+                <Input
+                  id="signerName"
+                  placeholder="Enter your full name"
+                  value={signerName}
+                  onChange={(e) => setSignerName(e.target.value)}
+                  data-testid="input-signer-name"
                 />
               </div>
               
-              <p className="text-xs text-muted-foreground text-center">
-                Use your finger or mouse to sign above
-              </p>
+              <div className="space-y-2">
+                <Label htmlFor="signerEmail">Email (for copy of signed proposal)</Label>
+                <Input
+                  id="signerEmail"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={signerEmail}
+                  onChange={(e) => setSignerEmail(e.target.value)}
+                  data-testid="input-signer-email"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Signature *</Label>
+                <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg bg-white">
+                  <SignatureCanvas
+                    ref={sigRef}
+                    canvasProps={{
+                      className: "w-full h-40 touch-none",
+                      style: { width: "100%", height: "160px" }
+                    }}
+                    penColor="black"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  Use your finger or mouse to sign above
+                </p>
+              </div>
               
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
                   className="flex-1 gap-2"
                   onClick={clearSignature}
+                  disabled={isSubmitting}
                   data-testid="button-clear-signature"
                 >
                   <RotateCcw className="w-4 h-4" />
@@ -500,10 +605,15 @@ export default function ProposalRyan() {
                 <Button 
                   className="flex-1 gap-2"
                   onClick={acceptProposal}
+                  disabled={isSubmitting}
                   data-testid="button-submit-signature"
                 >
-                  <CheckCircle2 className="w-4 h-4" />
-                  Accept
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-4 h-4" />
+                  )}
+                  {isSubmitting ? "Processing..." : "Accept"}
                 </Button>
               </div>
             </div>
