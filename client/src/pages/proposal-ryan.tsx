@@ -124,80 +124,90 @@ export default function ProposalRyan() {
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              The Numbers
+              What You're Leaving on the Table
             </h2>
             
-            <div className="space-y-4">
-              <div>
-                <p className="font-medium text-destructive">Current Cost of Business (Status Quo)</p>
-                <div className="mt-2 overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Expense</th>
-                        <th className="text-right py-2">Monthly</th>
-                        <th className="text-right py-2">Annual</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b">
-                        <td className="py-2">Current Website Provider</td>
-                        <td className="text-right">$3,300</td>
-                        <td className="text-right">$39,600</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2">Manual Estimating (10 hrs/week @ $50/hr)</td>
-                        <td className="text-right">$2,000</td>
-                        <td className="text-right">$24,000</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2">Lost Leads (no 24/7 booking)</td>
-                        <td className="text-right">~$4,000</td>
-                        <td className="text-right">~$48,000</td>
-                      </tr>
-                      <tr className="font-bold">
-                        <td className="py-2">Total Cost of Doing Nothing</td>
-                        <td className="text-right text-destructive">$9,300</td>
-                        <td className="text-right text-destructive">$111,600</td>
-                      </tr>
-                    </tbody>
-                  </table>
+            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+              <p className="font-medium text-destructive mb-3">Every Month Without These Tools:</p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-destructive mt-2 shrink-0" />
+                  <div>
+                    <p className="font-medium">10+ hours/week spent on manual estimates</p>
+                    <p className="text-sm text-muted-foreground">That's time you could spend closing deals or with family</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-destructive mt-2 shrink-0" />
+                  <div>
+                    <p className="font-medium">3-5 jobs lost monthly from no 24/7 booking</p>
+                    <p className="text-sm text-muted-foreground">Customers book with whoever responds first - at 2am, that's not you</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-destructive mt-2 shrink-0" />
+                  <div>
+                    <p className="font-medium">No-shows and forgotten appointments</p>
+                    <p className="text-sm text-muted-foreground">Without automated reminders, customers forget and you waste drive time</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-destructive mt-2 shrink-0" />
+                  <div>
+                    <p className="font-medium">Competitors with AI tools are outpacing you</p>
+                    <p className="text-sm text-muted-foreground">The Murfreesboro market is growing - first movers win</p>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <Separator />
+            <Separator />
 
-              <div>
-                <p className="font-medium text-green-600">Projected Returns with Orbit Partnership</p>
-                <div className="mt-2 overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Improvement</th>
-                        <th className="text-right py-2">Monthly Impact</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b">
-                        <td className="py-2">AI Estimator saves 10+ hours weekly</td>
-                        <td className="text-right text-green-600">+$2,000 saved</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2">Improved lead capture (3 additional jobs/month)</td>
-                        <td className="text-right text-green-600">+$24,000 revenue</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2">Reduced no-shows via automated reminders</td>
-                        <td className="text-right text-green-600">+$2,000 saved</td>
-                      </tr>
-                      <tr className="font-bold">
-                        <td className="py-2">Net Monthly Benefit</td>
-                        <td className="text-right text-green-600">+$28,000</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+            <div>
+              <p className="font-medium text-green-600 mb-3">What You Gain with Orbit Partnership:</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2">Capability</th>
+                      <th className="text-right py-2">Monthly Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b">
+                      <td className="py-2">AI Estimator - instant quotes, no more spreadsheets</td>
+                      <td className="text-right text-green-600">+$2,000 in time saved</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">24/7 Online Booking - capture leads while you sleep</td>
+                      <td className="text-right text-green-600">+$24,000 in new jobs</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Automated reminders - zero no-shows</td>
+                      <td className="text-right text-green-600">+$2,000 saved</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">Crew management - real-time job tracking</td>
+                      <td className="text-right text-green-600">Operational efficiency</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2">SEO placement - customers find YOU first</td>
+                      <td className="text-right text-green-600">Organic lead flow</td>
+                    </tr>
+                    <tr className="font-bold bg-green-600/10">
+                      <td className="py-2">Potential Monthly Impact</td>
+                      <td className="text-right text-green-600">+$28,000+</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <p className="text-sm">
+                <span className="font-bold">The math is simple:</span> One extra job per week from better lead capture 
+                pays for everything. The AI tools, booking system, and crew management are essentially free after that.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -340,17 +350,17 @@ export default function ProposalRyan() {
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
-              Why This Deal Makes Sense
+              Why Act Now
             </h2>
             
             <div className="grid gap-3">
               {[
-                { title: "Eliminate Waste", desc: "Stop paying $111,600/year for an underperforming system" },
-                { title: "Rapid ROI", desc: "Investment pays for itself within 5 weeks" },
-                { title: "Operational Efficiency", desc: "Orbit Staffing integration streamlines bookkeeping" },
-                { title: "Aligned Incentives", desc: "Performance bonuses mean shared success" },
-                { title: "Ecosystem Access", desc: "Founding partner positioning in a growing platform" },
-                { title: "Future Opportunity", desc: "Pathway to deeper investment conversations" },
+                { title: "Murfreesboro is Growing Fast", desc: "New construction and move-ins are creating demand - competitors are gearing up" },
+                { title: "First-Mover Advantage", desc: "Be the first painting company with AI tools in the territory" },
+                { title: "Rapid ROI", desc: "One extra job per week covers your entire investment" },
+                { title: "Operational Efficiency", desc: "Orbit Staffing integration streamlines bookkeeping and payroll" },
+                { title: "Aligned Incentives", desc: "Performance bonuses mean I only win when you win" },
+                { title: "Founding Partner Status", desc: "Priority access to new features, direct input on development" },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                   <ArrowRight className="w-5 h-5 text-primary mt-0.5 shrink-0" />
@@ -366,14 +376,15 @@ export default function ProposalRyan() {
 
         <Card className="bg-primary text-primary-foreground">
           <CardContent className="p-6 text-center space-y-4">
-            <h2 className="text-2xl font-bold">Ready to Move Forward?</h2>
+            <h2 className="text-2xl font-bold">The Window is Open</h2>
             <p className="opacity-90">
-              This is a limited-time founding partner opportunity. The ecosystem is live, 
-              other contractors are already expressing interest, and market timing is critical.
+              Murfreesboro is booming. New homes, new residents, new demand. 
+              Every week without modern tools is another week your competitors are pulling ahead.
+              This founding partner opportunity won't last.
             </p>
             <div className="pt-2">
               <Button variant="secondary" size="lg" className="gap-2" data-testid="button-schedule-call">
-                Schedule a Conversation
+                Let's Talk
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
