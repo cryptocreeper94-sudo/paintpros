@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { storage } from "./storage";
 import * as solana from "./solana";
 import * as hallmarkService from "./hallmarkService";
+import { startScheduler } from "./marketing-scheduler";
 
 const app = express();
 const httpServer = createServer(app);
@@ -235,6 +236,9 @@ app.use((req, res, next) => {
       // Run automatic version bump on production deployment
       // This happens after server is ready to ensure database connection is established
       await autoDeployVersionBump();
+      
+      // Start the marketing scheduler for automated social media posts
+      startScheduler();
     },
   );
 })();
