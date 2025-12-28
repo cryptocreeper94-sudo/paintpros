@@ -9,10 +9,11 @@ import path from 'path';
 export function metaImagesPlugin(): Plugin {
   return {
     name: 'vite-plugin-meta-images',
+    enforce: 'post',
+    apply: 'serve',
     transformIndexHtml(html) {
       const baseUrl = getDeploymentUrl();
       if (!baseUrl) {
-        log('[meta-images] no Replit deployment domain found, skipping meta tag updates');
         return html;
       }
 
