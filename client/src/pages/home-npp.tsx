@@ -260,7 +260,7 @@ export default function HomeNPP() {
                 className="col-span-1"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6 bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl hover:shadow-accent/20">
+                <GlassCard className="h-full p-3 md:p-6  border border-white/20 shadow-xl hover:shadow-accent/20">
                   <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
                     <Shield className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
@@ -283,7 +283,7 @@ export default function HomeNPP() {
                 className="col-span-1"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6 bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl hover:shadow-accent/20">
+                <GlassCard className="h-full p-3 md:p-6  border border-white/20 shadow-xl hover:shadow-accent/20">
                   <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
                     <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
                   </div>
@@ -524,7 +524,7 @@ export default function HomeNPP() {
                 transition={{ delay: 0.1 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
+                <GlassCard className="h-full p-3 md:p-6  text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
                     <Calendar className="w-5 h-5 md:w-8 md:h-8 text-accent" />
                   </div>
@@ -543,7 +543,7 @@ export default function HomeNPP() {
                 transition={{ delay: 0.2 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
+                <GlassCard className="h-full p-3 md:p-6  text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
                     <Brush className="w-5 h-5 md:w-8 md:h-8 text-accent" />
                   </div>
@@ -562,7 +562,7 @@ export default function HomeNPP() {
                 transition={{ delay: 0.3 }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
+                <GlassCard className="h-full p-3 md:p-6  text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
                     <Clock className="w-5 h-5 md:w-8 md:h-8 text-accent" />
                   </div>
@@ -631,7 +631,7 @@ export default function HomeNPP() {
                   transition={{ delay: index * 0.05 }}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <GlassCard className="h-full p-3 md:p-6  shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
                       <sheen.icon className="w-4 h-4 md:w-5 md:h-5 text-accent" />
                     </div>
@@ -716,7 +716,7 @@ export default function HomeNPP() {
                 className="col-span-2 md:col-span-1 order-2 md:order-1"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="p-4 md:p-8 bg-white/90 backdrop-blur-sm shadow-xl border border-gray-100">
+                <GlassCard className="p-4 md:p-8  shadow-xl border border-gray-100">
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mb-3 md:mb-6 shadow-lg shadow-accent/30">
                     <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>
@@ -786,7 +786,7 @@ export default function HomeNPP() {
                   className={index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <GlassCard className="h-full p-3 md:p-6  shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="flex gap-0.5 md:gap-1 mb-2 md:mb-4">
                       {Array.from({ length: testimonial.rating }).map((_, i) => (
                         <Star key={i} className="w-3 h-3 md:w-5 md:h-5 fill-yellow-400 text-yellow-400" />
@@ -841,7 +841,7 @@ export default function HomeNPP() {
                   data-testid="link-resource-colors"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <GlassCard className="h-full p-3 md:p-6  cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
                       <Palette className="w-4 h-4 md:w-5 md:h-5 text-accent" />
                     </div>
@@ -859,7 +859,7 @@ export default function HomeNPP() {
                   data-testid="link-resource-warranty"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <GlassCard className="h-full p-3 md:p-6  cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
                       <Shield className="w-4 h-4 md:w-5 md:h-5 text-accent" />
                     </div>
@@ -877,7 +877,7 @@ export default function HomeNPP() {
                   data-testid="link-resource-faq"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <GlassCard className="h-full p-3 md:p-6 bg-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
+                  <GlassCard className="h-full p-3 md:p-6  cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
                       <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-accent" />
                     </div>
