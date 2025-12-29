@@ -2603,7 +2603,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
-  // POST /api/tts - Convert text to speech using OpenAI TTS
+  // POST /api/tts - Convert text to speech using ElevenLabs (with OpenAI fallback)
   app.post("/api/tts", async (req, res) => {
     try {
       const { text, voice } = req.body;
@@ -2613,7 +2613,56 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         return;
       }
 
-      // Valid OpenAI voices: alloy, echo, fable, onyx, nova, shimmer
+      const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
+      
+      // Try ElevenLabs first if API key is available
+      if (elevenLabsKey) {
+        try {
+          // ElevenLabs voice IDs - using high quality voices
+          // Female: Rachel (warm, professional), Male: Adam (deep, professional)
+          const voiceId = voice === "onyx" 
+            ? "pNInz6obpgDQGcFmaJgB" // Adam - male
+            : "21m00Tcm4TlvDq8ikWAM"; // Rachel - female
+          
+          const elevenLabsResponse = await fetch(
+            `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+            {
+              method: "POST",
+              headers: {
+                "Accept": "audio/mpeg",
+                "Content-Type": "application/json",
+                "xi-api-key": elevenLabsKey,
+              },
+              body: JSON.stringify({
+                text: text.slice(0, 5000),
+                model_id: "eleven_monolingual_v1",
+                voice_settings: {
+                  stability: 0.5,
+                  similarity_boost: 0.75,
+                },
+              }),
+            }
+          );
+
+          if (elevenLabsResponse.ok) {
+            const audioBuffer = await elevenLabsResponse.arrayBuffer();
+            const buffer = Buffer.from(audioBuffer);
+            
+            res.set({
+              "Content-Type": "audio/mpeg",
+              "Content-Length": buffer.length.toString(),
+            });
+            res.send(buffer);
+            return;
+          }
+          
+          console.warn("ElevenLabs TTS failed, falling back to OpenAI");
+        } catch (elevenLabsError) {
+          console.warn("ElevenLabs TTS error, falling back to OpenAI:", elevenLabsError);
+        }
+      }
+
+      // Fallback to OpenAI TTS
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
       const selectedVoice = validVoices.includes(voice) ? voice : "nova";
 
