@@ -120,16 +120,16 @@ export default function ProposalRyan() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-4xl mx-auto p-6 md:p-8 space-y-8">
         
         <div className="text-center space-y-4">
-          <Badge variant="outline" className="text-sm">Strategic Partnership Proposal</Badge>
+          <Badge variant="outline" className="text-sm bg-background/80 backdrop-blur-sm">Strategic Partnership Proposal</Badge>
           <h1 className="text-3xl md:text-4xl font-bold">Nashville Painting Professionals</h1>
           <p className="text-lg text-muted-foreground">Murfreesboro Sector Expansion</p>
         </div>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
@@ -153,7 +153,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary" />
@@ -189,7 +189,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
@@ -222,7 +222,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -314,7 +314,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-primary" />
@@ -347,7 +347,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Percent className="w-5 h-5 text-primary" />
@@ -406,7 +406,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Car className="w-5 h-5 text-primary" />
@@ -448,7 +448,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/85 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
@@ -477,7 +477,7 @@ export default function ProposalRyan() {
         </Card>
 
         {accepted ? (
-          <Card className="bg-green-600 text-white">
+          <Card className="bg-green-600/90 text-white backdrop-blur-sm">
             <CardContent className="p-6 text-center space-y-4">
               <CheckCircle2 className="w-16 h-16 mx-auto" />
               <h2 className="text-2xl font-bold">Proposal Accepted</h2>
@@ -516,7 +516,7 @@ export default function ProposalRyan() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="bg-primary text-primary-foreground">
+          <Card className="bg-primary/90 text-primary-foreground backdrop-blur-sm">
             <CardContent className="p-6 text-center space-y-4">
               <h2 className="text-2xl font-bold">The Window is Open</h2>
               <p className="opacity-90">
