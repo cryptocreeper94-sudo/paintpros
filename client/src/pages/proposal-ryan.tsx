@@ -129,7 +129,7 @@ export default function ProposalRyan() {
           <p className="text-lg text-muted-foreground">Murfreesboro Sector Expansion</p>
         </div>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
@@ -153,7 +153,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary" />
@@ -189,7 +189,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
@@ -222,7 +222,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -314,7 +314,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-primary" />
@@ -347,7 +347,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Percent className="w-5 h-5 text-primary" />
@@ -406,7 +406,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Car className="w-5 h-5 text-primary" />
@@ -448,7 +448,7 @@ export default function ProposalRyan() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/85 backdrop-blur-sm">
+        <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
