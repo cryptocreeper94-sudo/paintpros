@@ -145,7 +145,7 @@ body {
 
 @layer utilities {
   .glass-panel {
-    @apply bg-card/85 dark:bg-black/85 backdrop-blur-sm border border-border dark:border-white/10 shadow-xl;
+    @apply bg-card/95 dark:bg-black/95 backdrop-blur-sm border border-border dark:border-white/10 shadow-xl;
   }
   
   .text-glow {
