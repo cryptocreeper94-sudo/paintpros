@@ -11,6 +11,7 @@ import {
   insertEstimatePhotoSchema, insertEstimatePricingOptionSchema, insertProposalSignatureSchema, insertEstimateFollowupSchema,
   insertDocumentAssetSchema, TENANT_PREFIXES,
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
+  insertEstimatorConfigSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -565,6 +566,79 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating estimate request:", error);
       res.status(500).json({ error: "Failed to update estimate request" });
+    }
+  });
+
+  // ============ ESTIMATOR CONFIGURATIONS ============
+  
+  // GET /api/estimator-config/:tenantId - Get pricing config for a tenant
+  app.get("/api/estimator-config/:tenantId", async (req, res) => {
+    try {
+      const config = await storage.getEstimatorConfig(req.params.tenantId);
+      if (!config) {
+        // Return default config structure if none exists
+        res.json({
+          mode: "lead",
+          tenantId: req.params.tenantId,
+          wallsPerSqFt: "2.50",
+          ceilingsPerSqFt: "1.75",
+          trimPerSqFt: "1.25",
+          wallsAndTrimPerSqFt: "3.50",
+          fullJobPerSqFt: "5.00",
+          doorsPerUnit: "150.00",
+          cabinetDoorsPerUnit: "85.00",
+          cabinetDrawersPerUnit: "45.00",
+          minimumJobAmount: "500.00",
+          exteriorMultiplier: "1.25",
+          commercialMultiplier: "1.15",
+          drywallRepairPerSqFt: "8.00",
+          pressureWashingPerSqFt: "0.25",
+          deckStainingPerSqFt: "4.50",
+          collectPhotos: true,
+          collectColors: true,
+          requireContactInfo: true,
+          notificationEmail: null,
+          exists: false
+        });
+        return;
+      }
+      res.json({ ...config, exists: true });
+    } catch (error) {
+      console.error("Error fetching estimator config:", error);
+      res.status(500).json({ error: "Failed to fetch estimator configuration" });
+    }
+  });
+
+  // POST /api/estimator-config - Create or update estimator config
+  app.post("/api/estimator-config", async (req, res) => {
+    try {
+      const { tenantId, ...configData } = req.body;
+      
+      if (!tenantId) {
+        res.status(400).json({ error: "tenantId is required" });
+        return;
+      }
+
+      // Check if config exists
+      const existing = await storage.getEstimatorConfig(tenantId);
+      
+      if (existing) {
+        // Update existing
+        const updated = await storage.updateEstimatorConfig(tenantId, configData);
+        res.json(updated);
+      } else {
+        // Create new
+        const validated = insertEstimatorConfigSchema.parse({ tenantId, ...configData });
+        const created = await storage.createEstimatorConfig(validated);
+        res.status(201).json(created);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid configuration data", details: error.errors });
+      } else {
+        console.error("Error saving estimator config:", error);
+        res.status(500).json({ error: "Failed to save estimator configuration" });
+      }
     }
   });
 
