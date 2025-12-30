@@ -321,6 +321,7 @@ export interface IStorage {
   
   // Credit Purchases
   createCreditPurchase(data: InsertCreditPurchase): Promise<CreditPurchase>;
+  getCreditPurchaseById(id: string): Promise<CreditPurchase | undefined>;
   getCreditPurchases(tenantId: string): Promise<CreditPurchase[]>;
   updateCreditPurchaseStatus(id: string, status: string, paymentIntentId?: string): Promise<CreditPurchase | undefined>;
 }
@@ -2072,6 +2073,11 @@ export class DatabaseStorage implements IStorage {
   // Credit Purchases
   async createCreditPurchase(data: InsertCreditPurchase): Promise<CreditPurchase> {
     const [result] = await db.insert(creditPurchases).values(data).returning();
+    return result;
+  }
+
+  async getCreditPurchaseById(id: string): Promise<CreditPurchase | undefined> {
+    const [result] = await db.select().from(creditPurchases).where(eq(creditPurchases.id, id));
     return result;
   }
 

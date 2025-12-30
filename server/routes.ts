@@ -23,7 +23,7 @@ import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import type { RequestHandler } from "express";
-import { checkAndDeductCredits, getActionCost } from "./aiCredits";
+import { checkCredits, deductCreditsAfterUsage, getActionCost, CREDIT_PACKS } from "./aiCredits";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -710,22 +710,31 @@ export async function registerRoutes(
   // POST /api/credits/purchase - Create a credit purchase (Stripe checkout)
   app.post("/api/credits/purchase", isAuthenticated, async (req, res) => {
     try {
-      const { tenantId, packType, amountCents } = req.body;
+      const { tenantId, packType } = req.body;
       
-      if (!tenantId || !amountCents) {
-        res.status(400).json({ error: "tenantId and amountCents are required" });
+      if (!tenantId || !packType) {
+        res.status(400).json({ error: "tenantId and packType are required" });
         return;
       }
 
-      // Create a pending purchase record
+      const pack = CREDIT_PACKS[packType as keyof typeof CREDIT_PACKS];
+      if (!pack) {
+        res.status(400).json({ 
+          error: "Invalid pack type. Valid options: starter, value, pro, business",
+          availablePacks: Object.keys(CREDIT_PACKS)
+        });
+        return;
+      }
+
+      const amountCents = pack.amountCents;
+
       const purchase = await storage.createCreditPurchase({
         tenantId,
         amountCents,
-        packType: packType || 'custom',
+        packType,
         paymentStatus: 'pending'
       });
 
-      // Create Stripe checkout session
       const Stripe = await import("stripe");
       const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
       
@@ -743,8 +752,8 @@ export async function registerRoutes(
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `AI Credits - $${amountDollars.toFixed(2)}`,
-              description: `${packType || 'Custom'} credit pack for PaintPros.io`,
+              name: `AI Credits - ${pack.label}`,
+              description: `${pack.label} for PaintPros.io`,
             },
             unit_amount: amountCents,
           },
@@ -755,12 +764,10 @@ export async function registerRoutes(
         cancel_url: `${req.protocol}://${req.get('host')}/credits/cancel`,
         metadata: {
           purchaseId: purchase.id,
-          tenantId,
           type: 'ai_credits'
         }
       });
 
-      // Update purchase with session ID
       await storage.updateCreditPurchaseStatus(purchase.id, 'pending', undefined);
       
       res.json({ 
@@ -802,19 +809,19 @@ export async function registerRoutes(
         const session = event.data.object as any;
         const metadata = session.metadata;
         
-        if (metadata?.type === 'ai_credits' && metadata?.purchaseId && metadata?.tenantId) {
-          // Update purchase status
-          await storage.updateCreditPurchaseStatus(
-            metadata.purchaseId, 
-            'completed',
-            session.payment_intent
-          );
+        if (metadata?.type === 'ai_credits' && metadata?.purchaseId) {
+          const purchase = await storage.getCreditPurchaseById(metadata.purchaseId);
           
-          // Add credits to tenant
-          const purchase = await storage.getCreditPurchases(metadata.tenantId);
-          const thisPurchase = purchase.find(p => p.id === metadata.purchaseId);
-          if (thisPurchase) {
-            await storage.addCredits(metadata.tenantId, thisPurchase.amountCents);
+          if (purchase) {
+            await storage.updateCreditPurchaseStatus(
+              purchase.id, 
+              'completed',
+              session.payment_intent
+            );
+            
+            await storage.addCredits(purchase.tenantId, purchase.amountCents);
+          } else {
+            console.error("Credit purchase not found for purchaseId:", metadata.purchaseId);
           }
         }
       }
@@ -2820,7 +2827,7 @@ Do not include any text before or after the JSON.`
 
       const effectiveTenantId = tenantId || "demo";
       
-      const creditCheck = await checkAndDeductCredits(effectiveTenantId, "chat_response");
+      const creditCheck = await checkCredits(effectiveTenantId, "chat_response");
       if (!creditCheck.success) {
         res.status(402).json({ error: creditCheck.error, insufficientCredits: true });
         return;
@@ -2877,30 +2884,34 @@ Use occasional paint-related puns or references to keep things fun.
 
 IMPORTANT: NEVER use emojis in your responses - text only.`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages.slice(-10),
-        ],
-        max_tokens: 300,
-        temperature: 0.7,
-      });
+      let response;
+      try {
+        response = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages.slice(-10),
+          ],
+          max_tokens: 300,
+          temperature: 0.7,
+        });
+      } catch (aiError) {
+        console.error("OpenAI API error:", aiError);
+        res.status(500).json({ error: "Failed to get AI response. Credits were not charged." });
+        return;
+      }
 
       const assistantMessage = response.choices[0]?.message?.content || 
         "I'm having a little trouble thinking right now. Can you try asking again?";
 
-      await storage.logAiUsage({
-        tenantId: effectiveTenantId,
+      const deductResult = await deductCreditsAfterUsage(effectiveTenantId, "chat_response", {
         userId: userId || null,
-        actionType: "chat_response",
-        costCents: getActionCost("chat_response"),
+        model: "gpt-4o-mini",
         inputTokens: response.usage?.prompt_tokens || null,
         outputTokens: response.usage?.completion_tokens || null,
-        metadata: { model: "gpt-4o-mini" },
       });
 
-      res.json({ message: assistantMessage, newBalance: creditCheck.newBalance });
+      res.json({ message: assistantMessage, newBalance: deductResult.newBalance });
     } catch (error) {
       console.error("Error in chat:", error);
       res.status(500).json({ error: "Failed to get response from Rollie" });
