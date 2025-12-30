@@ -609,8 +609,8 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/estimator-config - Create or update estimator config
-  app.post("/api/estimator-config", async (req, res) => {
+  // POST /api/estimator-config - Create or update estimator config (requires owner/admin auth)
+  app.post("/api/estimator-config", isAuthenticated, hasRole(["owner", "admin", "developer"]), async (req, res) => {
     try {
       const { tenantId, ...configData } = req.body;
       

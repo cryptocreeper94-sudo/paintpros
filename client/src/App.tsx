@@ -51,6 +51,7 @@ import PartnerDashboard from "@/pages/partner-dashboard";
 import ProposalRyan from "@/pages/proposal-ryan";
 import TradeVerticals from "@/pages/trade-verticals";
 import EstimatorApp from "@/pages/estimator-app";
+import EstimatorConfig from "@/pages/estimator-config";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -79,6 +80,7 @@ function Router() {
       <Route path="/estimate" component={Estimate} />
       <Route path="/admin" component={Admin} />
       <Route path="/owner" component={Owner} />
+      <Route path="/estimator-config" component={EstimatorConfig} />
       <Route path="/project-manager" component={ProjectManager} />
       <Route path="/developer" component={Developer} />
       <Route path="/verify/:hallmarkNumber" component={Verify} />

@@ -4,7 +4,7 @@ import { FlipButton } from "@/components/ui/flip-button";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send, Wrench } from "lucide-react";
+import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send, Wrench, Share2, Users } from "lucide-react";
 import { MaterialBreakdown } from "@/components/material-breakdown";
 import { useAccess } from "@/context/AccessContext";
 import { useState, useMemo, useEffect } from "react";
@@ -16,6 +16,25 @@ import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { RoomScannerModal } from "@/components/room-scanner";
 import type { PaintColor } from "@shared/schema";
+
+interface EstimatorConfig {
+  mode: "lead" | "full";
+  wallsPerSqFt: string;
+  ceilingsPerSqFt: string;
+  trimPerSqFt: string;
+  wallsAndTrimPerSqFt: string;
+  fullJobPerSqFt: string;
+  doorsPerUnit: string;
+  cabinetDoorsPerUnit: string;
+  cabinetDrawersPerUnit: string;
+  minimumJobAmount: string;
+  exteriorMultiplier: string;
+  commercialMultiplier: string;
+  collectPhotos: boolean;
+  collectColors: boolean;
+  requireContactInfo: boolean;
+  exists?: boolean;
+}
 
 import wallsImg from "@assets/generated_images/interior_wall_painting.png";
 import trimImg from "@assets/generated_images/trim_and_molding.png";
@@ -45,16 +64,41 @@ export default function Estimate() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
   
-  const PRICING = {
-    wallsOnlyPerSqFt: tenant.pricing.wallsOnlyPerSqFt,
-    trimOnlyPerSqFt: tenant.pricing.trimOnlyPerSqFt,
-    ceilingsOnlyPerSqFt: tenant.pricing.ceilingsOnlyPerSqFt,
-    wallsAndTrimPerSqFt: tenant.pricing.wallsAndTrimPerSqFt,
-    fullJobPerSqFt: tenant.pricing.fullJobPerSqFt,
-    doorsPerUnit: tenant.pricing.doorsPerUnit,
-    cabinetDoorsPerUnit: tenant.pricing.cabinetDoorsPerUnit,
-    cabinetDrawersPerUnit: tenant.pricing.cabinetDrawersPerUnit,
-  };
+  // Fetch estimator config from API
+  const { data: estimatorConfig, isLoading: isConfigLoading } = useQuery<EstimatorConfig>({
+    queryKey: ['/api/estimator-config', tenant.id],
+  });
+  
+  // Determine mode - Lead Mode collects info without showing pricing
+  // Default to tenant's built-in pricing (full mode) while loading to avoid flash
+  const isLeadMode = !isConfigLoading && estimatorConfig?.mode === "lead";
+  const isFullEstimateMode = isConfigLoading || estimatorConfig?.mode === "full" || !estimatorConfig;
+  
+  // Use API config pricing if available, otherwise fall back to tenant pricing
+  const PRICING = useMemo(() => {
+    if (estimatorConfig?.exists && isFullEstimateMode) {
+      return {
+        wallsOnlyPerSqFt: parseFloat(estimatorConfig.wallsPerSqFt) || 2.50,
+        trimOnlyPerSqFt: parseFloat(estimatorConfig.trimPerSqFt) || 1.25,
+        ceilingsOnlyPerSqFt: parseFloat(estimatorConfig.ceilingsPerSqFt) || 1.75,
+        wallsAndTrimPerSqFt: parseFloat(estimatorConfig.wallsAndTrimPerSqFt) || 3.50,
+        fullJobPerSqFt: parseFloat(estimatorConfig.fullJobPerSqFt) || 5.00,
+        doorsPerUnit: parseFloat(estimatorConfig.doorsPerUnit) || 150,
+        cabinetDoorsPerUnit: parseFloat(estimatorConfig.cabinetDoorsPerUnit) || 85,
+        cabinetDrawersPerUnit: parseFloat(estimatorConfig.cabinetDrawersPerUnit) || 45,
+      };
+    }
+    return {
+      wallsOnlyPerSqFt: tenant.pricing.wallsOnlyPerSqFt,
+      trimOnlyPerSqFt: tenant.pricing.trimOnlyPerSqFt,
+      ceilingsOnlyPerSqFt: tenant.pricing.ceilingsOnlyPerSqFt,
+      wallsAndTrimPerSqFt: tenant.pricing.wallsAndTrimPerSqFt,
+      fullJobPerSqFt: tenant.pricing.fullJobPerSqFt,
+      doorsPerUnit: tenant.pricing.doorsPerUnit,
+      cabinetDoorsPerUnit: tenant.pricing.cabinetDoorsPerUnit,
+      cabinetDrawersPerUnit: tenant.pricing.cabinetDrawersPerUnit,
+    };
+  }, [estimatorConfig, tenant.pricing, isFullEstimateMode]);
 
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
@@ -283,7 +327,7 @@ export default function Estimate() {
       case 2: return isStep2Valid;
       case 3: return true; // Photos optional
       case 4: return isStep4Valid;
-      case 5: return estimate.total > 0;
+      case 5: return isLeadMode ? isStep4Valid : estimate.total > 0;
       default: return false;
     }
   };
@@ -914,23 +958,59 @@ export default function Estimate() {
                     )}
 
 
-                    {/* Total */}
-                    <div className="p-6 rounded-xl bg-gradient-to-r from-accent/10 to-accent/5 border-2 border-accent/30">
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-lg font-semibold">Your Estimate</span>
-                        <motion.span 
-                          key={estimate.total}
-                          initial={{ scale: 1.1 }}
-                          animate={{ scale: 1 }}
-                          className="text-4xl font-display font-bold text-accent"
-                        >
-                          ${estimate.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </motion.span>
+                    {/* Estimate Total OR Lead Mode Summary */}
+                    {isLeadMode ? (
+                      <div className="p-6 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                            <Users className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold">Project Summary Ready</h3>
+                            <p className="text-sm text-muted-foreground">Share this with your painting professional</p>
+                          </div>
+                        </div>
+                        <div className="bg-muted/20 rounded-lg p-4 mb-4 space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Square Footage:</span>
+                            <span className="font-medium">{squareFootage.toLocaleString()} sqft</span>
+                          </div>
+                          {doorCount > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Doors:</span>
+                              <span className="font-medium">{doorCount}</span>
+                            </div>
+                          )}
+                          {(cabinetDoors > 0 || cabinetDrawers > 0) && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Cabinet Pieces:</span>
+                              <span className="font-medium">{cabinetDoors + cabinetDrawers}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                          <Share2 className="w-4 h-4" />
+                          <span>Submit to receive your personalized quote</span>
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground text-center border-t border-border/50 pt-4">
-                        This estimate is a guide for discussion purposes only. Final pricing will be confirmed after an in-person consultation.
-                      </p>
-                    </div>
+                    ) : (
+                      <div className="p-6 rounded-xl bg-gradient-to-r from-accent/10 to-accent/5 border-2 border-accent/30">
+                        <div className="flex justify-between items-center mb-4">
+                          <span className="text-lg font-semibold">Your Estimate</span>
+                          <motion.span 
+                            key={estimate.total}
+                            initial={{ scale: 1.1 }}
+                            animate={{ scale: 1 }}
+                            className="text-4xl font-display font-bold text-accent"
+                          >
+                            ${estimate.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </motion.span>
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center border-t border-border/50 pt-4">
+                          This estimate is a guide for discussion purposes only. Final pricing will be confirmed after an in-person consultation.
+                        </p>
+                      </div>
+                    )}
 
                     {/* Pro View - Material & Labor Breakdown (Contractors/Owners only) */}
                     {canAccessProTools && needsSquareFootage && (
@@ -1024,19 +1104,28 @@ export default function Estimate() {
             ) : (
               <FlipButton
                 onClick={handleSubmit}
-                disabled={isSubmitting || estimate.total === 0}
+                disabled={isSubmitting || (!isLeadMode && estimate.total === 0)}
                 className="h-12 min-w-[160px]"
                 data-testid="button-submit-estimate"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
+                    {isLeadMode ? "Sending..." : "Submitting..."}
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Submit Estimate
+                    {isLeadMode ? (
+                      <>
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Request Quote
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Submit Estimate
+                      </>
+                    )}
                   </>
                 )}
               </FlipButton>
