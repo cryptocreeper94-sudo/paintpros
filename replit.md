@@ -27,8 +27,18 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 - **Crew Management System:** Provides a dashboard for crew leads with time tracking, job notes, and incident reporting. Integrated into Admin, Owner, and Developer dashboards.
 - **Internal Messaging System:** A real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges.
 
+### AI Credits System (Prepaid Model)
+The platform uses a prepaid AI credits system for metered AI features:
+- **Subscription Tiers:** `estimator_only` (standalone estimator product) and `full_suite` (complete PaintPros.io platform)
+- **Credit Packs:** Starter ($10/1000 credits), Value ($25/2500 credits), Pro ($50/5000 credits), Business ($100/10000 credits)
+- **AI Action Costs:** Chat response (5 cents), Photo analysis (10 cents), Voice response (8 cents), Document analysis (15 cents)
+- **Security:** Server-side pack validation, credits deducted only after successful AI calls
+- **Database Tables:** `tenant_credits` (balances), `ai_usage_logs` (usage tracking), `credit_purchases` (purchase history)
+- **Stripe Integration:** Checkout flow at `/api/credits/purchase`, webhook at `/api/credits/webhook`
+- **Dashboards:** Credits Dashboard (`/credits`) for all tenants, Subscriber Dashboard (`/subscriber-dashboard`) for estimator-only tenants
+
 ### System Design Choices
-- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, and tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`) and Internal Messaging (`conversations`, `conversation_participants`, `messages`).
+- **Database Schema:** Key tables include `leads`, `estimates`, `seo_tags`, `bookings`, `availability_windows`, `blockchain_stamps`, `page_views`, `document_assets`, `hallmarks`, tables for Crew Management (`crew_leads`, `crew_members`, `time_entries`, `job_notes`, `incident_reports`), Internal Messaging (`conversations`, `conversation_participants`, `messages`), and AI Credits (`tenant_credits`, `ai_usage_logs`, `credit_purchases`).
 - **File Structure:** Organized with `client/src` for frontend components, pages, config, and context; `shared/schema.ts` for database models; and `server/` for data access and API routes.
 
 ## External Dependencies
@@ -50,7 +60,17 @@ The design goal is a premium "Sparkle and Shine" aesthetic with a true Bento Gri
 ## Recent Changes (Changelog)
 
 ### December 2025
-- **v1.1.4** - Current Release
+- **v1.1.5** - Current Release
+  - Implemented prepaid AI credits system with usage-based billing
+  - Added credit packs: Starter ($10), Value ($25), Pro ($50), Business ($100)
+  - Credits Dashboard at `/credits` for balance, purchases, and usage history
+  - Subscriber Dashboard at `/subscriber-dashboard` for estimator-only tenants
+  - Stripe checkout integration for credit purchases with webhook handling
+  - AI middleware checks balance before calls, deducts only after success
+  - Added `subscriptionTier` field to tenant config (estimator_only vs full_suite)
+  - Estimator-only tenant template for standalone product offerings
+
+- **v1.1.4**
   - Added Spanish language support (i18n) for Crew Lead dashboard
   - AI Assistant (Rollie/PaintBuddy) now responds in Spanish when language is set to Spanish
   - Speech recognition supports both English (en-US) and Spanish (es-ES)
