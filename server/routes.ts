@@ -23,6 +23,7 @@ import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import type { RequestHandler } from "express";
+import { checkAndDeductCredits, getActionCost } from "./aiCredits";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -2810,10 +2811,18 @@ Do not include any text before or after the JSON.`
   // POST /api/chat - Chat with Rollie the paint buddy
   app.post("/api/chat", async (req, res) => {
     try {
-      const { messages, tenantName, language } = req.body;
+      const { messages, tenantName, tenantId, language, userId } = req.body;
       
       if (!messages || !Array.isArray(messages)) {
         res.status(400).json({ error: "Messages array required" });
+        return;
+      }
+
+      const effectiveTenantId = tenantId || "demo";
+      
+      const creditCheck = await checkAndDeductCredits(effectiveTenantId, "chat_response");
+      if (!creditCheck.success) {
+        res.status(402).json({ error: creditCheck.error, insufficientCredits: true });
         return;
       }
 
@@ -2881,7 +2890,17 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       const assistantMessage = response.choices[0]?.message?.content || 
         "I'm having a little trouble thinking right now. Can you try asking again?";
 
-      res.json({ message: assistantMessage });
+      await storage.logAiUsage({
+        tenantId: effectiveTenantId,
+        userId: userId || null,
+        actionType: "chat_response",
+        costCents: getActionCost("chat_response"),
+        inputTokens: response.usage?.prompt_tokens || null,
+        outputTokens: response.usage?.completion_tokens || null,
+        metadata: { model: "gpt-4o-mini" },
+      });
+
+      res.json({ message: assistantMessage, newBalance: creditCheck.newBalance });
     } catch (error) {
       console.error("Error in chat:", error);
       res.status(500).json({ error: "Failed to get response from Rollie" });

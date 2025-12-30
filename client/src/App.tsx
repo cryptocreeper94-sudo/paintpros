@@ -52,6 +52,7 @@ import ProposalRyan from "@/pages/proposal-ryan";
 import TradeVerticals from "@/pages/trade-verticals";
 import EstimatorApp from "@/pages/estimator-app";
 import EstimatorConfig from "@/pages/estimator-config";
+import CreditsDashboard from "@/pages/credits-dashboard";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -115,6 +116,7 @@ function Router() {
       <Route path="/trial/:slug/upgrade" component={TrialUpgrade} />
       <Route path="/trial/:slug/upgrade-success" component={TrialUpgradeSuccess} />
       <Route path="/estimator-app" component={EstimatorApp} />
+      <Route path="/credits" component={CreditsDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
