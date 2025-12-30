@@ -121,6 +121,14 @@ const pwaConfigs: Record<string, {
     backgroundColor: "#b49050",
     themeColor: "#d4a853",
     iconPath: "/pwa/paintpros"
+  },
+  estimator: {
+    name: "Paint Estimator",
+    shortName: "Estimator",
+    description: "AI-powered paint project estimator",
+    backgroundColor: "#1a1f1c",
+    themeColor: "#d4a853",
+    iconPath: "/pwa/estimator"
   }
 };
 
