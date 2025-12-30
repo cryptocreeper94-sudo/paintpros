@@ -1,6 +1,11 @@
+export type SubscriptionTier = "estimator_only" | "full_suite";
+
 export interface TenantConfig {
   id: string;
   slug: string;
+  
+  // Subscription tier (determines available features)
+  subscriptionTier: SubscriptionTier;
   
   // Branding
   name: string;
@@ -100,6 +105,7 @@ export interface TenantConfig {
 export const nashvillePaintingProfessionals: TenantConfig = {
   id: "npp",
   slug: "nashville-painting-professionals",
+  subscriptionTier: "full_suite",
   
   name: "Nashville Painting Professionals",
   tagline: "Exceptional Painters. Extraordinary Service.",
@@ -189,6 +195,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
 export const paintProsDemo: TenantConfig = {
   id: "demo",
   slug: "paintpros-demo",
+  subscriptionTier: "full_suite",
   
   name: "PaintPros.io",
   tagline: "The First Solana-Verified Painting Company Software",
@@ -259,6 +266,38 @@ export const paintProsDemo: TenantConfig = {
     bonded: true,
   },
 };
+
+// Estimator-Only Template (for standalone estimator subscribers)
+export const estimatorOnlyTemplate: Partial<TenantConfig> = {
+  subscriptionTier: "estimator_only",
+  features: {
+    estimator: true,
+    portfolio: false,
+    reviews: false,
+    blog: false,
+    onlineBooking: false,
+    aiAssistant: true, // AI included with credits
+  },
+};
+
+// Helper to create an estimator-only tenant from base config
+export function createEstimatorOnlyTenant(
+  baseConfig: Partial<TenantConfig> & { id: string; name: string }
+): TenantConfig {
+  return {
+    ...paintProsDemo, // Use demo as base
+    ...baseConfig,
+    subscriptionTier: "estimator_only",
+    features: {
+      estimator: true,
+      portfolio: false,
+      reviews: false,
+      blog: false,
+      onlineBooking: false,
+      aiAssistant: true,
+    },
+  } as TenantConfig;
+}
 
 // Tenant registry
 export const tenants: Record<string, TenantConfig> = {
