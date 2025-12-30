@@ -642,6 +642,217 @@ export async function registerRoutes(
     }
   });
 
+  // ============ AI CREDITS SYSTEM ============
+  
+  // GET /api/credits/:tenantId - Get credit balance for a tenant
+  app.get("/api/credits/:tenantId", isAuthenticated, async (req, res) => {
+    try {
+      const credits = await storage.getTenantCredits(req.params.tenantId);
+      if (!credits) {
+        res.json({
+          tenantId: req.params.tenantId,
+          balanceCents: 0,
+          totalPurchasedCents: 0,
+          totalUsedCents: 0,
+          lowBalanceThresholdCents: 500,
+          exists: false
+        });
+        return;
+      }
+      res.json({ ...credits, exists: true });
+    } catch (error) {
+      console.error("Error fetching credits:", error);
+      res.status(500).json({ error: "Failed to fetch credits" });
+    }
+  });
+
+  // GET /api/credits/:tenantId/usage - Get usage logs for a tenant
+  app.get("/api/credits/:tenantId/usage", isAuthenticated, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const logs = await storage.getAiUsageLogs(req.params.tenantId, limit);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching usage logs:", error);
+      res.status(500).json({ error: "Failed to fetch usage logs" });
+    }
+  });
+
+  // GET /api/credits/:tenantId/summary - Get usage summary for a tenant
+  app.get("/api/credits/:tenantId/summary", isAuthenticated, async (req, res) => {
+    try {
+      const summary = await storage.getAiUsageSummary(req.params.tenantId);
+      const credits = await storage.getTenantCredits(req.params.tenantId);
+      res.json({
+        ...summary,
+        currentBalanceCents: credits?.balanceCents || 0,
+        lowBalanceThresholdCents: credits?.lowBalanceThresholdCents || 500,
+        isLowBalance: (credits?.balanceCents || 0) < (credits?.lowBalanceThresholdCents || 500)
+      });
+    } catch (error) {
+      console.error("Error fetching usage summary:", error);
+      res.status(500).json({ error: "Failed to fetch usage summary" });
+    }
+  });
+
+  // GET /api/credits/:tenantId/purchases - Get purchase history
+  app.get("/api/credits/:tenantId/purchases", isAuthenticated, async (req, res) => {
+    try {
+      const purchases = await storage.getCreditPurchases(req.params.tenantId);
+      res.json(purchases);
+    } catch (error) {
+      console.error("Error fetching purchases:", error);
+      res.status(500).json({ error: "Failed to fetch purchases" });
+    }
+  });
+
+  // POST /api/credits/purchase - Create a credit purchase (Stripe checkout)
+  app.post("/api/credits/purchase", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, packType, amountCents } = req.body;
+      
+      if (!tenantId || !amountCents) {
+        res.status(400).json({ error: "tenantId and amountCents are required" });
+        return;
+      }
+
+      // Create a pending purchase record
+      const purchase = await storage.createCreditPurchase({
+        tenantId,
+        amountCents,
+        packType: packType || 'custom',
+        paymentStatus: 'pending'
+      });
+
+      // Create Stripe checkout session
+      const Stripe = await import("stripe");
+      const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
+      
+      if (!stripeSecretKey) {
+        res.status(500).json({ error: "Payment processing not configured" });
+        return;
+      }
+
+      const stripe = new Stripe.default(stripeSecretKey);
+      const amountDollars = amountCents / 100;
+      
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `AI Credits - $${amountDollars.toFixed(2)}`,
+              description: `${packType || 'Custom'} credit pack for PaintPros.io`,
+            },
+            unit_amount: amountCents,
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `${req.protocol}://${req.get('host')}/credits/success?session_id={CHECKOUT_SESSION_ID}&purchase_id=${purchase.id}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/credits/cancel`,
+        metadata: {
+          purchaseId: purchase.id,
+          tenantId,
+          type: 'ai_credits'
+        }
+      });
+
+      // Update purchase with session ID
+      await storage.updateCreditPurchaseStatus(purchase.id, 'pending', undefined);
+      
+      res.json({ 
+        sessionId: session.id, 
+        url: session.url,
+        purchaseId: purchase.id 
+      });
+    } catch (error) {
+      console.error("Error creating credit purchase:", error);
+      res.status(500).json({ error: "Failed to create purchase" });
+    }
+  });
+
+  // POST /api/credits/webhook - Handle Stripe webhook for credit purchases
+  app.post("/api/credits/webhook", async (req, res) => {
+    try {
+      const Stripe = await import("stripe");
+      const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+      if (!stripeSecretKey || !webhookSecret) {
+        res.status(500).json({ error: "Webhook not configured" });
+        return;
+      }
+
+      const stripe = new Stripe.default(stripeSecretKey);
+      const sig = req.headers["stripe-signature"];
+
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig as string, webhookSecret);
+      } catch (err) {
+        console.error("Webhook signature verification failed:", err);
+        res.status(400).send("Webhook signature verification failed");
+        return;
+      }
+
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as any;
+        const metadata = session.metadata;
+        
+        if (metadata?.type === 'ai_credits' && metadata?.purchaseId && metadata?.tenantId) {
+          // Update purchase status
+          await storage.updateCreditPurchaseStatus(
+            metadata.purchaseId, 
+            'completed',
+            session.payment_intent
+          );
+          
+          // Add credits to tenant
+          const purchase = await storage.getCreditPurchases(metadata.tenantId);
+          const thisPurchase = purchase.find(p => p.id === metadata.purchaseId);
+          if (thisPurchase) {
+            await storage.addCredits(metadata.tenantId, thisPurchase.amountCents);
+          }
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error("Webhook error:", error);
+      res.status(500).json({ error: "Webhook processing failed" });
+    }
+  });
+
+  // POST /api/credits/add-manual - Manually add credits (admin only)
+  app.post("/api/credits/add-manual", isAuthenticated, hasRole(["admin", "developer"]), async (req, res) => {
+    try {
+      const { tenantId, amountCents, reason } = req.body;
+      
+      if (!tenantId || !amountCents) {
+        res.status(400).json({ error: "tenantId and amountCents are required" });
+        return;
+      }
+
+      const credits = await storage.addCredits(tenantId, amountCents);
+      
+      // Log this as a manual addition
+      await storage.logAiUsage({
+        tenantId,
+        actionType: 'manual_credit_add',
+        costCents: -amountCents, // Negative cost = credit addition
+        balanceAfterCents: credits.balanceCents,
+        metadata: { reason, addedBy: (req.user as any)?.id }
+      });
+
+      res.json(credits);
+    } catch (error) {
+      console.error("Error adding credits:", error);
+      res.status(500).json({ error: "Failed to add credits" });
+    }
+  });
+
   // ============ SEO TAGS ============
   
   // POST /api/seo-tags - Create a new SEO tag
