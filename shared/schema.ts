@@ -2433,3 +2433,67 @@ export const insertMarketingDeploySchema = createInsertSchema(marketingDeploys).
 
 export type InsertMarketingDeploy = z.infer<typeof insertMarketingDeploySchema>;
 export type MarketingDeploy = typeof marketingDeploys.$inferSelect;
+
+
+// ============================================
+// ESTIMATOR CONFIGURATIONS
+// ============================================
+
+// Estimator Configs - Per-tenant pricing configurations
+export const estimatorConfigs = pgTable("estimator_configs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().unique(),
+  
+  // Mode settings
+  mode: text("mode").notNull().default("lead"), // 'lead' = collect info only, 'estimate' = show pricing
+  
+  // Base rates per square foot
+  wallsPerSqFt: decimal("walls_per_sqft", { precision: 8, scale: 2 }).default("2.50"),
+  ceilingsPerSqFt: decimal("ceilings_per_sqft", { precision: 8, scale: 2 }).default("1.75"),
+  trimPerSqFt: decimal("trim_per_sqft", { precision: 8, scale: 2 }).default("1.25"),
+  
+  // Combo rates (discounted when doing multiple surfaces)
+  wallsAndTrimPerSqFt: decimal("walls_and_trim_per_sqft", { precision: 8, scale: 2 }).default("3.50"),
+  fullJobPerSqFt: decimal("full_job_per_sqft", { precision: 8, scale: 2 }).default("5.00"),
+  
+  // Unit pricing
+  doorsPerUnit: decimal("doors_per_unit", { precision: 8, scale: 2 }).default("150.00"),
+  cabinetDoorsPerUnit: decimal("cabinet_doors_per_unit", { precision: 8, scale: 2 }).default("85.00"),
+  cabinetDrawersPerUnit: decimal("cabinet_drawers_per_unit", { precision: 8, scale: 2 }).default("45.00"),
+  
+  // Job minimums
+  minimumJobAmount: decimal("minimum_job_amount", { precision: 8, scale: 2 }).default("500.00"),
+  
+  // Exterior multipliers (percentage increase over interior)
+  exteriorMultiplier: decimal("exterior_multiplier", { precision: 4, scale: 2 }).default("1.25"),
+  
+  // Commercial vs residential
+  commercialMultiplier: decimal("commercial_multiplier", { precision: 4, scale: 2 }).default("1.15"),
+  
+  // Additional services
+  drywallRepairPerSqFt: decimal("drywall_repair_per_sqft", { precision: 8, scale: 2 }).default("8.00"),
+  pressureWashingPerSqFt: decimal("pressure_washing_per_sqft", { precision: 8, scale: 2 }).default("0.25"),
+  deckStainingPerSqFt: decimal("deck_staining_per_sqft", { precision: 8, scale: 2 }).default("4.50"),
+  
+  // Lead capture settings (for lead mode)
+  collectPhotos: boolean("collect_photos").default(true),
+  collectColors: boolean("collect_colors").default(true),
+  requireContactInfo: boolean("require_contact_info").default(true),
+  
+  // Email settings for lead mode
+  notificationEmail: text("notification_email"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_estimator_configs_tenant").on(table.tenantId),
+]);
+
+export const insertEstimatorConfigSchema = createInsertSchema(estimatorConfigs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertEstimatorConfig = z.infer<typeof insertEstimatorConfigSchema>;
+export type EstimatorConfig = typeof estimatorConfigs.$inferSelect;

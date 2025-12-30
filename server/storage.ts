@@ -39,6 +39,7 @@ import {
   type Document, type InsertDocument, documents,
   type DocumentVersion, type InsertDocumentVersion, documentVersions,
   type DocumentSignature, type InsertDocumentSignature, documentSignatures,
+  type EstimatorConfig, type InsertEstimatorConfig, estimatorConfigs,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -296,6 +297,11 @@ export interface IStorage {
   // Document Signatures
   createDocumentSignature(signature: InsertDocumentSignature): Promise<DocumentSignature>;
   getDocumentSignatures(documentId: string): Promise<DocumentSignature[]>;
+  
+  // Estimator Configurations
+  getEstimatorConfig(tenantId: string): Promise<EstimatorConfig | undefined>;
+  createEstimatorConfig(config: InsertEstimatorConfig): Promise<EstimatorConfig>;
+  updateEstimatorConfig(tenantId: string, updates: Partial<InsertEstimatorConfig>): Promise<EstimatorConfig | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1919,6 +1925,26 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(documentSignatures)
       .where(eq(documentSignatures.documentId, documentId))
       .orderBy(desc(documentSignatures.signedAt));
+  }
+
+  // Estimator Configurations
+  async getEstimatorConfig(tenantId: string): Promise<EstimatorConfig | undefined> {
+    const [result] = await db.select().from(estimatorConfigs)
+      .where(eq(estimatorConfigs.tenantId, tenantId));
+    return result;
+  }
+
+  async createEstimatorConfig(config: InsertEstimatorConfig): Promise<EstimatorConfig> {
+    const [result] = await db.insert(estimatorConfigs).values(config).returning();
+    return result;
+  }
+
+  async updateEstimatorConfig(tenantId: string, updates: Partial<InsertEstimatorConfig>): Promise<EstimatorConfig | undefined> {
+    const [result] = await db.update(estimatorConfigs)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(estimatorConfigs.tenantId, tenantId))
+      .returning();
+    return result;
   }
 }
 
