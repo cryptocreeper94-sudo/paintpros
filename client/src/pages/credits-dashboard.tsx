@@ -45,19 +45,18 @@ interface PurchaseLog {
 
 interface CreditPack {
   id: string;
-  name: string;
-  price: number;
-  credits: number;
-  icon: typeof Package;
-  popular?: boolean;
+  label: string;
+  amountCents: number;
+  creditsCents: number;
+  priceFormatted: string;
 }
 
-const creditPacks: CreditPack[] = [
-  { id: "starter", name: "Starter Pack", price: 1000, credits: 1000, icon: Package },
-  { id: "value", name: "Value Pack", price: 2500, credits: 2500, icon: Zap, popular: true },
-  { id: "pro", name: "Pro Pack", price: 5000, credits: 5000, icon: Crown },
-  { id: "business", name: "Business Pack", price: 10000, credits: 10000, icon: Building2 },
-];
+const packIcons: Record<string, typeof Package> = {
+  starter: Package,
+  value: Zap,
+  pro: Crown,
+  business: Building2,
+};
 
 function formatCentsToDollars(cents: number): string {
   return (cents / 100).toLocaleString("en-US", {
@@ -96,23 +95,29 @@ export default function CreditsDashboard() {
     enabled: !!tenant.id,
   });
 
+  const { data: creditPacks, isLoading: packsLoading } = useQuery<CreditPack[]>({
+    queryKey: ['/api/credits/packs'],
+  });
+
   const purchaseMutation = useMutation({
     mutationFn: async (pack: CreditPack) => {
-      return apiRequest('POST', '/api/credits/purchase', {
+      const response = await apiRequest('POST', '/api/credits/purchase', {
         tenantId: tenant.id,
-        packId: pack.id,
-        packName: pack.name,
-        credits: pack.credits,
-        amount: pack.price,
+        packType: pack.id,
       });
+      return response.json();
     },
-    onSuccess: (_, pack) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/credits', tenant.id, 'balance'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/credits', tenant.id, 'purchases'] });
-      toast({
-        title: "Purchase Successful",
-        description: `You've purchased ${pack.credits.toLocaleString()} credits for ${formatCentsToDollars(pack.price)}.`,
-      });
+    onSuccess: async (data, pack) => {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['/api/credits', tenant.id, 'balance'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/credits', tenant.id, 'purchases'] });
+        toast({
+          title: "Purchase Initiated",
+          description: `Processing ${pack.label} purchase...`,
+        });
+      }
       setPurchasingPack(null);
     },
     onError: () => {
@@ -214,52 +219,59 @@ export default function CreditsDashboard() {
             <ShoppingCart className="w-5 h-5" />
             Purchase Credits
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {creditPacks.map((pack) => {
-              const Icon = pack.icon;
-              const isPurchasing = purchasingPack === pack.id;
-              return (
-                <Card 
-                  key={pack.id} 
-                  className={pack.popular ? "border-accent" : ""}
-                  data-testid={`card-pack-${pack.id}`}
-                >
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <Icon className="w-6 h-6 text-accent" />
-                      {pack.popular && (
-                        <Badge variant="default" className="text-xs">Popular</Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-lg">{pack.name}</CardTitle>
-                    <CardDescription>
-                      {pack.credits.toLocaleString()} credits
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="text-3xl font-bold">
-                      {formatCentsToDollars(pack.price)}
-                    </div>
-                    <Button 
-                      className="w-full"
-                      onClick={() => handlePurchase(pack)}
-                      disabled={isPurchasing}
-                      data-testid={`button-buy-${pack.id}`}
-                    >
-                      {isPurchasing ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        "Buy Now"
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          {packsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {(creditPacks || []).map((pack) => {
+                const Icon = packIcons[pack.id] || Package;
+                const isPurchasing = purchasingPack === pack.id;
+                const isPopular = pack.id === "value";
+                return (
+                  <Card 
+                    key={pack.id} 
+                    className={isPopular ? "border-accent" : ""}
+                    data-testid={`card-pack-${pack.id}`}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <Icon className="w-6 h-6 text-accent" />
+                        {isPopular && (
+                          <Badge variant="default" className="text-xs">Popular</Badge>
+                        )}
+                      </div>
+                      <CardTitle className="text-lg">{pack.label}</CardTitle>
+                      <CardDescription>
+                        {(pack.creditsCents || pack.amountCents).toLocaleString()} credits
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="text-3xl font-bold">
+                        {pack.priceFormatted || formatCentsToDollars(pack.amountCents)}
+                      </div>
+                      <Button 
+                        className="w-full"
+                        onClick={() => handlePurchase(pack)}
+                        disabled={isPurchasing}
+                        data-testid={`button-buy-${pack.id}`}
+                      >
+                        {isPurchasing ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          "Buy Now"
+                        )}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

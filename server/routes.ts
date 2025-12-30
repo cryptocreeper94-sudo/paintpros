@@ -645,6 +645,22 @@ export async function registerRoutes(
 
   // ============ AI CREDITS SYSTEM ============
   
+  // GET /api/credits/packs - Get available credit packs (public endpoint)
+  app.get("/api/credits/packs", async (_req, res) => {
+    try {
+      const { CREDIT_PACKS } = await import("./aiCredits");
+      const packs = Object.entries(CREDIT_PACKS).map(([id, pack]) => ({
+        id,
+        ...pack,
+        priceFormatted: `$${(pack.amountCents / 100).toFixed(0)}`
+      }));
+      res.json(packs);
+    } catch (error) {
+      console.error("Error fetching credit packs:", error);
+      res.status(500).json({ error: "Failed to fetch credit packs" });
+    }
+  });
+  
   // GET /api/credits/:tenantId - Get credit balance for a tenant
   app.get("/api/credits/:tenantId", isAuthenticated, async (req, res) => {
     try {
