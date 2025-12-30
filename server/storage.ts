@@ -40,6 +40,9 @@ import {
   type DocumentVersion, type InsertDocumentVersion, documentVersions,
   type DocumentSignature, type InsertDocumentSignature, documentSignatures,
   type EstimatorConfig, type InsertEstimatorConfig, estimatorConfigs,
+  type TenantCredits, type InsertTenantCredits, tenantCredits,
+  type AiUsageLog, type InsertAiUsageLog, aiUsageLogs,
+  type CreditPurchase, type InsertCreditPurchase, creditPurchases,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -302,6 +305,24 @@ export interface IStorage {
   getEstimatorConfig(tenantId: string): Promise<EstimatorConfig | undefined>;
   createEstimatorConfig(config: InsertEstimatorConfig): Promise<EstimatorConfig>;
   updateEstimatorConfig(tenantId: string, updates: Partial<InsertEstimatorConfig>): Promise<EstimatorConfig | undefined>;
+  
+  // AI Credits System
+  getTenantCredits(tenantId: string): Promise<TenantCredits | undefined>;
+  createTenantCredits(data: InsertTenantCredits): Promise<TenantCredits>;
+  updateTenantCredits(tenantId: string, updates: Partial<InsertTenantCredits>): Promise<TenantCredits | undefined>;
+  addCredits(tenantId: string, amountCents: number): Promise<TenantCredits>;
+  deductCredits(tenantId: string, amountCents: number): Promise<TenantCredits | undefined>;
+  
+  // AI Usage Logs
+  logAiUsage(data: InsertAiUsageLog): Promise<AiUsageLog>;
+  getAiUsageLogs(tenantId: string, limit?: number): Promise<AiUsageLog[]>;
+  getAiUsageByDateRange(tenantId: string, startDate: Date, endDate: Date): Promise<AiUsageLog[]>;
+  getAiUsageSummary(tenantId: string): Promise<{ totalCostCents: number; actionCounts: Record<string, number> }>;
+  
+  // Credit Purchases
+  createCreditPurchase(data: InsertCreditPurchase): Promise<CreditPurchase>;
+  getCreditPurchases(tenantId: string): Promise<CreditPurchase[]>;
+  updateCreditPurchaseStatus(id: string, status: string, paymentIntentId?: string): Promise<CreditPurchase | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1943,6 +1964,131 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.update(estimatorConfigs)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(estimatorConfigs.tenantId, tenantId))
+      .returning();
+    return result;
+  }
+
+  // ============ AI CREDITS SYSTEM ============
+  
+  async getTenantCredits(tenantId: string): Promise<TenantCredits | undefined> {
+    const [result] = await db.select().from(tenantCredits)
+      .where(eq(tenantCredits.tenantId, tenantId));
+    return result;
+  }
+
+  async createTenantCredits(data: InsertTenantCredits): Promise<TenantCredits> {
+    const [result] = await db.insert(tenantCredits).values(data).returning();
+    return result;
+  }
+
+  async updateTenantCredits(tenantId: string, updates: Partial<InsertTenantCredits>): Promise<TenantCredits | undefined> {
+    const [result] = await db.update(tenantCredits)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(tenantCredits.tenantId, tenantId))
+      .returning();
+    return result;
+  }
+
+  async addCredits(tenantId: string, amountCents: number): Promise<TenantCredits> {
+    // Get or create tenant credits
+    let credits = await this.getTenantCredits(tenantId);
+    if (!credits) {
+      credits = await this.createTenantCredits({ tenantId, balanceCents: 0, totalPurchasedCents: 0, totalUsedCents: 0 });
+    }
+    
+    const newBalance = (credits.balanceCents || 0) + amountCents;
+    const newTotalPurchased = (credits.totalPurchasedCents || 0) + amountCents;
+    
+    const [result] = await db.update(tenantCredits)
+      .set({ 
+        balanceCents: newBalance,
+        totalPurchasedCents: newTotalPurchased,
+        updatedAt: new Date()
+      })
+      .where(eq(tenantCredits.tenantId, tenantId))
+      .returning();
+    return result;
+  }
+
+  async deductCredits(tenantId: string, amountCents: number): Promise<TenantCredits | undefined> {
+    const credits = await this.getTenantCredits(tenantId);
+    if (!credits || (credits.balanceCents || 0) < amountCents) {
+      return undefined; // Insufficient credits
+    }
+    
+    const newBalance = (credits.balanceCents || 0) - amountCents;
+    const newTotalUsed = (credits.totalUsedCents || 0) + amountCents;
+    
+    const [result] = await db.update(tenantCredits)
+      .set({ 
+        balanceCents: newBalance,
+        totalUsedCents: newTotalUsed,
+        updatedAt: new Date()
+      })
+      .where(eq(tenantCredits.tenantId, tenantId))
+      .returning();
+    return result;
+  }
+
+  // AI Usage Logs
+  async logAiUsage(data: InsertAiUsageLog): Promise<AiUsageLog> {
+    const [result] = await db.insert(aiUsageLogs).values(data).returning();
+    return result;
+  }
+
+  async getAiUsageLogs(tenantId: string, limit: number = 100): Promise<AiUsageLog[]> {
+    return await db.select().from(aiUsageLogs)
+      .where(eq(aiUsageLogs.tenantId, tenantId))
+      .orderBy(desc(aiUsageLogs.createdAt))
+      .limit(limit);
+  }
+
+  async getAiUsageByDateRange(tenantId: string, startDate: Date, endDate: Date): Promise<AiUsageLog[]> {
+    return await db.select().from(aiUsageLogs)
+      .where(and(
+        eq(aiUsageLogs.tenantId, tenantId),
+        sql`${aiUsageLogs.createdAt} >= ${startDate}`,
+        sql`${aiUsageLogs.createdAt} <= ${endDate}`
+      ))
+      .orderBy(desc(aiUsageLogs.createdAt));
+  }
+
+  async getAiUsageSummary(tenantId: string): Promise<{ totalCostCents: number; actionCounts: Record<string, number> }> {
+    const logs = await db.select().from(aiUsageLogs)
+      .where(eq(aiUsageLogs.tenantId, tenantId));
+    
+    let totalCostCents = 0;
+    const actionCounts: Record<string, number> = {};
+    
+    for (const log of logs) {
+      totalCostCents += log.costCents || 0;
+      const actionType = log.actionType || 'unknown';
+      actionCounts[actionType] = (actionCounts[actionType] || 0) + 1;
+    }
+    
+    return { totalCostCents, actionCounts };
+  }
+
+  // Credit Purchases
+  async createCreditPurchase(data: InsertCreditPurchase): Promise<CreditPurchase> {
+    const [result] = await db.insert(creditPurchases).values(data).returning();
+    return result;
+  }
+
+  async getCreditPurchases(tenantId: string): Promise<CreditPurchase[]> {
+    return await db.select().from(creditPurchases)
+      .where(eq(creditPurchases.tenantId, tenantId))
+      .orderBy(desc(creditPurchases.createdAt));
+  }
+
+  async updateCreditPurchaseStatus(id: string, status: string, paymentIntentId?: string): Promise<CreditPurchase | undefined> {
+    const updates: Partial<CreditPurchase> = { paymentStatus: status };
+    if (paymentIntentId) {
+      updates.stripePaymentIntentId = paymentIntentId;
+    }
+    const [result] = await db.update(creditPurchases)
+      .set(updates)
+      .where(eq(creditPurchases.id, id))
       .returning();
     return result;
   }

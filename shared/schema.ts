@@ -2497,3 +2497,110 @@ export const insertEstimatorConfigSchema = createInsertSchema(estimatorConfigs).
 
 export type InsertEstimatorConfig = z.infer<typeof insertEstimatorConfigSchema>;
 export type EstimatorConfig = typeof estimatorConfigs.$inferSelect;
+
+// ============ AI CREDITS SYSTEM ============
+
+// Tenant Credits - Track prepaid credit balance per tenant
+export const tenantCredits = pgTable("tenant_credits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().unique(),
+  
+  // Credit balance in cents (e.g., 2000 = $20.00)
+  balanceCents: integer("balance_cents").notNull().default(0),
+  
+  // Lifetime stats
+  totalPurchasedCents: integer("total_purchased_cents").notNull().default(0),
+  totalUsedCents: integer("total_used_cents").notNull().default(0),
+  
+  // Low balance warning threshold in cents
+  lowBalanceThresholdCents: integer("low_balance_threshold_cents").default(500), // $5.00 default
+  
+  // Stripe customer ID for this tenant
+  stripeCustomerId: text("stripe_customer_id"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tenant_credits_tenant").on(table.tenantId),
+]);
+
+export const insertTenantCreditsSchema = createInsertSchema(tenantCredits).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertTenantCredits = z.infer<typeof insertTenantCreditsSchema>;
+export type TenantCredits = typeof tenantCredits.$inferSelect;
+
+// AI Usage Logs - Track every AI action with cost
+export const aiUsageLogs = pgTable("ai_usage_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  
+  // Action type: 'chat', 'photo_analysis', 'voice_response', 'proposal_generation'
+  actionType: text("action_type").notNull(),
+  
+  // Cost in cents
+  costCents: integer("cost_cents").notNull(),
+  
+  // Details about the action
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  charactersSpoken: integer("characters_spoken"), // For TTS
+  imagesAnalyzed: integer("images_analyzed"),
+  
+  // Model used
+  model: text("model"), // 'gpt-4o', 'gpt-4o-mini', 'elevenlabs-rachel', etc.
+  
+  // Balance after this transaction
+  balanceAfterCents: integer("balance_after_cents"),
+  
+  // Metadata
+  metadata: jsonb("metadata"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_ai_usage_tenant").on(table.tenantId),
+  index("idx_ai_usage_created").on(table.createdAt),
+  index("idx_ai_usage_action_type").on(table.actionType),
+]);
+
+export const insertAiUsageLogSchema = createInsertSchema(aiUsageLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertAiUsageLog = z.infer<typeof insertAiUsageLogSchema>;
+export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
+
+// Credit Purchases - Track credit pack purchases
+export const creditPurchases = pgTable("credit_purchases", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Amount purchased in cents
+  amountCents: integer("amount_cents").notNull(),
+  
+  // Payment details
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeSessionId: text("stripe_session_id"),
+  paymentStatus: text("payment_status").notNull().default("pending"), // 'pending', 'completed', 'failed'
+  
+  // Pack type: 'starter_10', 'value_25', 'pro_50', 'business_100'
+  packType: text("pack_type"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_credit_purchases_tenant").on(table.tenantId),
+  index("idx_credit_purchases_status").on(table.paymentStatus),
+]);
+
+export const insertCreditPurchaseSchema = createInsertSchema(creditPurchases).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCreditPurchase = z.infer<typeof insertCreditPurchaseSchema>;
+export type CreditPurchase = typeof creditPurchases.$inferSelect;
