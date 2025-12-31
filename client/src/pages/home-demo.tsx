@@ -37,6 +37,8 @@ import { SiBitcoin, SiEthereum } from "react-icons/si";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { InvestorSnapshotModal } from "@/components/investor-snapshot-modal";
 import { TradeVerticalSelector } from "@/components/trade-vertical-selector";
+import { EstimatorPromoCard } from "@/components/estimator-promo-card";
+import { PWAStaticBanner } from "@/components/pwa-static-banner";
 
 export default function HomeDemo() {
   const tenant = useTenant();
@@ -107,6 +109,16 @@ export default function HomeDemo() {
               <TradeVerticalSelector />
             </BentoItem>
           )}
+
+          {/* PWA Install Banner */}
+          <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
+            <PWAStaticBanner />
+          </BentoItem>
+
+          {/* AI Estimator Promotion Card - Prominent Placement */}
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
+            <EstimatorPromoCard />
+          </BentoItem>
 
           {/* Award Card - Best Painter 2025 (NPP only) */}
           {tenant.id === "npp" && (

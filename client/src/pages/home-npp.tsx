@@ -29,6 +29,8 @@ import {
 import { motion } from "framer-motion";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { HeroSlideshow } from "@/components/ui/hero-slideshow";
+import { EstimatorPromoCard } from "@/components/estimator-promo-card";
+import { PWAStaticBanner } from "@/components/pwa-static-banner";
 
 // Import images
 import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
@@ -138,6 +140,16 @@ export default function HomeNPP() {
               className="mx-auto block w-full max-w-full object-contain -translate-y-[85px] scale-[2.309]"
             />
           </motion.div>
+        </section>
+
+        {/* PWA Install Banner & Estimator Promo */}
+        <section className="py-6 md:py-10 px-3 md:px-4 bg-white/40">
+          <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
+            <PWAStaticBanner />
+            <div className="max-w-lg mx-auto md:mx-0">
+              <EstimatorPromoCard variant="compact" />
+            </div>
+          </div>
         </section>
 
         {/* HELP SLIDESHOW - See How It Works */}
