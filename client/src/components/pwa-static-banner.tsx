@@ -1,12 +1,14 @@
 import { Download, Smartphone, X } from 'lucide-react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useTenant } from '@/context/TenantContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 export function PWAStaticBanner() {
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
   const tenant = useTenant();
+  const isMobile = useIsMobile();
   const [dismissed, setDismissed] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 
@@ -31,7 +33,7 @@ export function PWAStaticBanner() {
     localStorage.setItem('pwa-static-banner-dismissed', 'true');
   };
 
-  if (dismissed || isInstalled) return null;
+  if (!isMobile || dismissed || isInstalled) return null;
 
   return (
     <div 
