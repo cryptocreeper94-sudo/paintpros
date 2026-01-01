@@ -228,7 +228,7 @@ export default function DemoViewer() {
                   <Eye className="w-3 h-3 mr-1" /> Read-Only Access
                 </Badge>
               </div>
-              <h1 className="text-3xl font-display font-bold">Welcome, Jenn!</h1>
+              <h1 className="text-3xl font-display font-bold">Hey Guys!</h1>
               <p className="text-muted-foreground mt-1">
                 Explore the complete PaintPros.io platform and see how it powers painting businesses.
               </p>

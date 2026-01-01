@@ -4050,9 +4050,9 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       
       if (startDate && endDate) {
         entries = await storage.getTimeEntriesByDateRange(
+          crewLeadId as string || "",
           new Date(startDate as string),
-          new Date(endDate as string),
-          crewLeadId as string | undefined
+          new Date(endDate as string)
         );
       } else if (crewMemberId) {
         entries = await storage.getTimeEntriesByMember(crewMemberId as string);
@@ -4199,7 +4199,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/crew/job-notes/:id/mark-sent - Mark job note as sent
   app.patch("/api/crew/job-notes/:id/mark-sent", async (req, res) => {
     try {
-      const note = await storage.markJobNoteSent(req.params.id);
+      const { sentToOwner = true, sentToAdmin = true } = req.body;
+      const note = await storage.markJobNoteSent(req.params.id, sentToOwner, sentToAdmin);
       if (!note) {
         res.status(404).json({ error: "Job note not found" });
         return;
