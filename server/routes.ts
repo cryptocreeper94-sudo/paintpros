@@ -1176,6 +1176,33 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/auth/pin/verify-any - Verify PIN against all roles (for team login)
+  app.post("/api/auth/pin/verify-any", async (req, res) => {
+    try {
+      const { pin } = req.body;
+      if (!pin) {
+        res.status(400).json({ success: false, message: "PIN required" });
+        return;
+      }
+      
+      // Check all possible roles for this PIN
+      const roles = ["ops_manager", "owner", "project_manager", "developer", "crew_lead", "demo_viewer", "area_manager"];
+      
+      for (const role of roles) {
+        const userPin = await storage.getUserPinByRole(role);
+        if (userPin && userPin.pin === pin) {
+          res.json({ success: true, role, mustChangePin: userPin.mustChangePin });
+          return;
+        }
+      }
+      
+      res.json({ success: false, message: "Invalid PIN" });
+    } catch (error) {
+      console.error("Error verifying PIN:", error);
+      res.status(500).json({ success: false, message: "Failed to verify PIN" });
+    }
+  });
+
   // POST /api/auth/pin/change - Change PIN
   app.post("/api/auth/pin/change", async (req, res) => {
     try {
