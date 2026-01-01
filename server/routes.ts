@@ -3878,12 +3878,12 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       let openIncidents = 0;
       
       for (const lead of leads) {
-        const members = await storage.getCrewMembersByLeadId(lead.id);
-        totalMembers += members.filter(m => m.isActive).length;
-        const entries = await storage.getTimeEntriesByLeadId(lead.id);
-        pendingTimeEntries += entries.filter(e => e.status === "pending").length;
-        const incidents = await storage.getIncidentReportsByLeadId(lead.id);
-        openIncidents += incidents.filter(i => i.status === "open" || i.status === "investigating").length;
+        const members = await storage.getCrewMembers(lead.id);
+        totalMembers += members.filter((m: any) => m.isActive).length;
+        const entries = await storage.getTimeEntries(lead.id);
+        pendingTimeEntries += entries.filter((e: any) => e.status === "pending").length;
+        const incidents = await storage.getIncidentReportsByLead(lead.id);
+        openIncidents += incidents.filter((i: any) => i.status === "open" || i.status === "investigating").length;
       }
       
       res.json({ totalMembers, pendingTimeEntries, openIncidents });
@@ -3971,7 +3971,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // GET /api/crew/leads/:leadId/members - Get members for a crew lead
   app.get("/api/crew/leads/:leadId/members", async (req, res) => {
     try {
-      const members = await storage.getCrewMembersByLead(req.params.leadId);
+      const members = await storage.getCrewMembers(req.params.leadId);
       res.json(members);
     } catch (error) {
       console.error("Error fetching crew members:", error);
@@ -4057,7 +4057,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
       } else if (crewMemberId) {
         entries = await storage.getTimeEntriesByMember(crewMemberId as string);
       } else if (crewLeadId) {
-        entries = await storage.getTimeEntriesByLead(crewLeadId as string);
+        entries = await storage.getTimeEntries(crewLeadId as string);
       } else {
         res.status(400).json({ error: "Must provide crewLeadId, crewMemberId, or date range" });
         return;
@@ -4119,7 +4119,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // PATCH /api/crew/time-entries/:id/submit-payroll - Submit to payroll
   app.patch("/api/crew/time-entries/:id/submit-payroll", async (req, res) => {
     try {
-      const entry = await storage.submitTimeEntryToPayroll(req.params.id);
+      const entries = await storage.submitTimeEntriesToPayroll([req.params.id]);
+      const entry = entries[0];
       if (!entry) {
         res.status(404).json({ error: "Time entry not found" });
         return;
@@ -4141,7 +4142,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         res.status(400).json({ error: "crewLeadId is required" });
         return;
       }
-      const notes = await storage.getJobNotesByLead(crewLeadId as string);
+      const notes = await storage.getJobNotes(crewLeadId as string);
       res.json(notes);
     } catch (error) {
       console.error("Error fetching job notes:", error);
