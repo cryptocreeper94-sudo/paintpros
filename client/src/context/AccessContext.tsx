@@ -1,6 +1,6 @@
-import { createContext, useContext, ReactNode, useState, useCallback } from "react";
+import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react";
 
-export type UserRole = "admin" | "owner" | "project_manager" | "developer" | "demo_viewer" | null;
+export type UserRole = "admin" | "owner" | "project_manager" | "developer" | "demo_viewer" | "crew_lead" | "ops_manager" | null;
 export type AccessMode = "live" | "view_only";
 
 export interface UserAccess {
@@ -24,11 +24,13 @@ interface AccessContextType {
 }
 
 const ACCESS_CONFIG: Record<Exclude<UserRole, null>, { accessMode: AccessMode; userName: string; canViewSalesData: boolean }> = {
-  admin: { accessMode: "live", userName: "Sidonie", canViewSalesData: true },
-  owner: { accessMode: "live", userName: "Ryan", canViewSalesData: false },
+  admin: { accessMode: "live", userName: "Admin", canViewSalesData: true },
+  ops_manager: { accessMode: "live", userName: "Admin", canViewSalesData: true },
+  owner: { accessMode: "live", userName: "Owner", canViewSalesData: false },
   project_manager: { accessMode: "view_only", userName: "Project Manager", canViewSalesData: false },
   developer: { accessMode: "live", userName: "Developer", canViewSalesData: true },
-  demo_viewer: { accessMode: "view_only", userName: "Jenn", canViewSalesData: true },
+  demo_viewer: { accessMode: "view_only", userName: "Demo Viewer", canViewSalesData: true },
+  crew_lead: { accessMode: "view_only", userName: "Crew Lead", canViewSalesData: false },
 };
 
 const defaultUser: UserAccess = {
@@ -39,6 +41,23 @@ const defaultUser: UserAccess = {
   canViewSalesData: false,
 };
 
+const STORAGE_KEY = "paintpros_auth";
+
+function loadStoredAuth(): UserAccess {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.role && ACCESS_CONFIG[parsed.role as Exclude<UserRole, null>]) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
+  return defaultUser;
+}
+
 const AccessContext = createContext<AccessContextType | null>(null);
 
 interface AccessProviderProps {
@@ -46,26 +65,30 @@ interface AccessProviderProps {
 }
 
 export function AccessProvider({ children }: AccessProviderProps) {
-  const [currentUser, setCurrentUser] = useState<UserAccess>(defaultUser);
+  const [currentUser, setCurrentUser] = useState<UserAccess>(() => loadStoredAuth());
 
   const login = useCallback((role: UserRole, userName?: string) => {
     if (!role) {
       setCurrentUser(defaultUser);
+      localStorage.removeItem(STORAGE_KEY);
       return;
     }
 
     const config = ACCESS_CONFIG[role];
-    setCurrentUser({
+    const newUser = {
       role,
       userName: userName || config.userName,
       accessMode: config.accessMode,
       isAuthenticated: true,
       canViewSalesData: config.canViewSalesData,
-    });
+    };
+    setCurrentUser(newUser);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
   }, []);
 
   const logout = useCallback(() => {
     setCurrentUser(defaultUser);
+    localStorage.removeItem(STORAGE_KEY);
   }, []);
 
   const canEdit = useCallback(() => {

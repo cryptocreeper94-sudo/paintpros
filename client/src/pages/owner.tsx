@@ -52,7 +52,9 @@ const TAG_TYPES = [
 export default function Owner() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
-  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
+  const { login, currentUser, canManageSEO, canViewSalesData } = useAccess();
+  const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "owner";
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo || isSessionAuth);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [currentPin, setCurrentPin] = useState(DEFAULT_OWNER_PIN);
@@ -64,7 +66,12 @@ export default function Owner() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const queryClient = useQueryClient();
-  const { login, currentUser, canManageSEO, canViewSalesData } = useAccess();
+
+  useEffect(() => {
+    if (isSessionAuth && !isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [isSessionAuth, isAuthenticated]);
 
   useEffect(() => {
     const initPin = async () => {

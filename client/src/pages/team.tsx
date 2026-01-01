@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/context/TenantContext";
+import { useAccess, type UserRole } from "@/context/AccessContext";
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -53,6 +54,7 @@ const ROLE_ROUTES: Record<string, { route: string; displayName: string; color: s
 export default function Team() {
   const tenant = useTenant();
   const { toast } = useToast();
+  const { login } = useAccess();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [pinValue, setPinValue] = useState("");
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -142,6 +144,7 @@ export default function Team() {
 
       if (response.ok && data.success && data.role) {
         const roleConfig = ROLE_ROUTES[data.role];
+        login(data.role as UserRole, roleConfig?.displayName);
         if (roleConfig) {
           toast({
             title: `Welcome, ${roleConfig.displayName}!`,

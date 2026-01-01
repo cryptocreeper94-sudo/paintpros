@@ -42,11 +42,18 @@ import { useAccess } from "@/context/AccessContext";
 export default function DemoViewer() {
   const [, setLocation] = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const tenant = useTenant();
+  const { login, currentUser } = useAccess();
+  const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "demo_viewer";
+  const [isAuthenticated, setIsAuthenticated] = useState(isSessionAuth);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
-  const tenant = useTenant();
-  const { login } = useAccess();
+
+  useEffect(() => {
+    if (isSessionAuth && !isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [isSessionAuth, isAuthenticated]);
 
   useEffect(() => {
     if (isAuthenticated) {

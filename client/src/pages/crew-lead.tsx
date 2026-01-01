@@ -20,6 +20,7 @@ import { MessagingWidget } from "@/components/messaging-widget";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { LanguageProvider, useTranslation } from "@/context/LanguageContext";
+import { useAccess } from "@/context/AccessContext";
 
 const DEFAULT_PIN = "3333";
 
@@ -34,13 +35,21 @@ export default function CrewLeadDashboard() {
 function CrewLeadDashboardContent() {
   const tenant = useTenant();
   const { t, language, setLanguage } = useTranslation();
+  const { login, currentUser } = useAccess();
   const isDemo = tenant.id === "demo";
-  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
+  const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "crew_lead";
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo || isSessionAuth);
   const [currentLead, setCurrentLead] = useState<CrewLead | null>(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"overview" | "time" | "notes" | "incidents">("overview");
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (isSessionAuth && !isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [isSessionAuth, isAuthenticated]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +72,7 @@ function CrewLeadDashboardContent() {
       const crewLead = await res.json();
       setCurrentLead(crewLead);
       setIsAuthenticated(true);
+      login("crew_lead", crewLead.name ?? "Crew Lead");
     } catch (err) {
       setError(t("login.error.failed"));
       setPin("");

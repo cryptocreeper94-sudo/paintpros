@@ -22,12 +22,19 @@ const DEFAULT_PROJECT_MANAGER_PIN = "2222";
 export default function ProjectManager() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
-  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
+  const { login, currentUser, canViewSalesData } = useAccess();
+  const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "project_manager";
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo || isSessionAuth);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [currentPin, setCurrentPin] = useState(DEFAULT_PROJECT_MANAGER_PIN);
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
-  const { login, currentUser, canViewSalesData } = useAccess();
+
+  useEffect(() => {
+    if (isSessionAuth && !isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [isSessionAuth, isAuthenticated]);
 
   useEffect(() => {
     const initPin = async () => {

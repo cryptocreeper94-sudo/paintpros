@@ -37,6 +37,7 @@ import { FranchiseManagement } from "@/components/franchise-management";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
+import { useAccess } from "@/context/AccessContext";
 
 const DEVELOPER_PIN = "0424";
 
@@ -1267,7 +1268,9 @@ function BusinessRoadmapContent() {
 }
 
 export default function Developer() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { login, currentUser } = useAccess();
+  const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "developer";
+  const [isAuthenticated, setIsAuthenticated] = useState(isSessionAuth);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -1277,6 +1280,12 @@ export default function Developer() {
   const [isStamping, setIsStamping] = useState(false);
   const [stampStatus, setStampStatus] = useState<string | null>(null);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (isSessionAuth && !isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [isSessionAuth, isAuthenticated]);
 
   useEffect(() => {
     fetch('/api/releases/latest')
@@ -1293,6 +1302,7 @@ export default function Developer() {
     e.preventDefault();
     if (pin === DEVELOPER_PIN) {
       setIsAuthenticated(true);
+      login("developer");
       setError("");
     } else {
       setError("Invalid PIN");

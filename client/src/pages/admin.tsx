@@ -40,7 +40,9 @@ const DEFAULT_PIN = "4444";
 export default function Admin() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
-  const [isAuthenticated, setIsAuthenticated] = useState(isDemo);
+  const { login, currentUser, canEdit } = useAccess();
+  const isSessionAuth = currentUser.isAuthenticated && (currentUser.role === "ops_manager" || currentUser.role === "admin");
+  const [isAuthenticated, setIsAuthenticated] = useState(isDemo || isSessionAuth);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +50,12 @@ export default function Admin() {
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const queryClient = useQueryClient();
-  const { login, currentUser, canEdit } = useAccess();
+
+  useEffect(() => {
+    if (isSessionAuth && !isAuthenticated) {
+      setIsAuthenticated(true);
+    }
+  }, [isSessionAuth, isAuthenticated]);
 
   useEffect(() => {
     const initPin = async () => {
