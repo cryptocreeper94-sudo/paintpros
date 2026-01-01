@@ -12,6 +12,49 @@ const httpServer = createServer(app);
 
 // Track if we've already processed auto-deploy for this instance
 let autoDeployProcessed = false;
+let pinsSeeded = false;
+
+/**
+ * Auto-seed default PINs on server startup (runs in both dev and production)
+ * Only creates PINs that don't already exist
+ */
+async function autoSeedDefaultPins(): Promise<void> {
+  if (pinsSeeded) {
+    return;
+  }
+  pinsSeeded = true;
+  
+  try {
+    console.log("[PIN Seeder] Checking and seeding default PINs...");
+    
+    const defaultPins = [
+      { role: "ops_manager", pin: "4444", mustChangePin: true },
+      { role: "owner", pin: "1111", mustChangePin: true },
+      { role: "project_manager", pin: "2222", mustChangePin: false },
+      { role: "developer", pin: "0424", mustChangePin: false },
+      { role: "crew_lead", pin: "3333", mustChangePin: false },
+      { role: "demo_viewer", pin: "7777", mustChangePin: false }
+    ];
+    
+    let seededCount = 0;
+    for (const pinData of defaultPins) {
+      const existing = await storage.getUserPinByRole(pinData.role);
+      if (!existing) {
+        await storage.createOrUpdateUserPin(pinData);
+        seededCount++;
+        console.log(`[PIN Seeder] Created PIN for role: ${pinData.role}`);
+      }
+    }
+    
+    if (seededCount > 0) {
+      console.log(`[PIN Seeder] Seeded ${seededCount} new PINs`);
+    } else {
+      console.log("[PIN Seeder] All PINs already exist");
+    }
+  } catch (error) {
+    console.error("[PIN Seeder] Error seeding PINs:", error);
+  }
+}
 
 // Registered tenants for auto-deploy versioning
 // Both NPP and Demo get AUTO versioning on every publish
@@ -232,6 +275,9 @@ app.use((req, res, next) => {
     },
     async () => {
       log(`serving on port ${port}`);
+      
+      // Seed default PINs if they don't exist (runs in both dev and production)
+      await autoSeedDefaultPins();
       
       // Run automatic version bump on production deployment
       // This happens after server is ready to ensure database connection is established

@@ -1204,7 +1204,9 @@ export async function registerRoutes(
         { role: "ops_manager", pin: "4444", mustChangePin: true },
         { role: "owner", pin: "1111", mustChangePin: true },
         { role: "project_manager", pin: "2222", mustChangePin: false },
-        { role: "developer", pin: "0424", mustChangePin: false }
+        { role: "developer", pin: "0424", mustChangePin: false },
+        { role: "crew_lead", pin: "3333", mustChangePin: false },
+        { role: "demo_viewer", pin: "7777", mustChangePin: false }
       ];
       
       for (const pinData of defaultPins) {
