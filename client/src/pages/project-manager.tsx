@@ -84,6 +84,12 @@ export default function ProjectManager() {
       
       const data = await res.json();
       
+      if (!data.valid) {
+        setError("Invalid PIN");
+        setPin("");
+        return;
+      }
+      
       setCurrentPin(pin);
       setIsAuthenticated(true);
       login("project_manager");

@@ -185,6 +185,12 @@ export default function Owner() {
       
       const data = await res.json();
       
+      if (!data.valid) {
+        setError("Invalid PIN");
+        setPin("");
+        return;
+      }
+      
       setCurrentPin(pin);
       setIsAuthenticated(true);
       login("owner");
