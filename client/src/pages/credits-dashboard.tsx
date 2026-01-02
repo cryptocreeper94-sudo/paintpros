@@ -274,6 +274,11 @@ export default function CreditsDashboard() {
           )}
         </div>
 
+        <div className="text-center text-xs text-muted-foreground mb-6 p-3 rounded-lg bg-muted/30 border border-border">
+          AI credit packs are non-refundable. Credits never expire and remain in your account even if you cancel your subscription.
+          <a href="/terms#refunds" className="text-accent hover:underline ml-1">View full refund policy</a>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card data-testid="card-usage-history">
             <CardHeader>

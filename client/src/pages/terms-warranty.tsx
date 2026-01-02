@@ -1,7 +1,7 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { motion } from "framer-motion";
-import { Shield, FileText, Scale, CreditCard, AlertTriangle, Gavel, ScrollText, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Shield, FileText, Scale, CreditCard, AlertTriangle, Gavel, ScrollText, Clock, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 
 const sections = [
@@ -46,6 +46,13 @@ const sections = [
     icon: ScrollText,
     color: "text-orange-400",
     bgColor: "bg-orange-500/20",
+  },
+  {
+    id: "refunds",
+    title: "Refund Policy",
+    icon: RotateCcw,
+    color: "text-cyan-400",
+    bgColor: "bg-cyan-500/20",
   },
 ];
 
@@ -351,6 +358,79 @@ export default function TermsWarranty() {
               </GlassCard>
             </motion.section>
 
+            <motion.section
+              id="refunds"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <GlassCard className="p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                    <RotateCcw className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-display font-bold">Refund Policy</h2>
+                    <p className="text-sm text-muted-foreground">Subscriptions, Credits & Services</p>
+                  </div>
+                </div>
+
+                <div className="space-y-6 text-sm leading-relaxed">
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">7-Day Money-Back Guarantee (Subscriptions)</h3>
+                    <p className="text-muted-foreground">
+                      New subscribers to any paid plan (Estimator Tool, Full Suite, or Franchise License) may request 
+                      a full refund within 7 days of their initial subscription purchase. This guarantee applies to 
+                      first-time subscriptions only and does not apply to renewals or upgrades.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">Monthly Subscriptions</h3>
+                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                      <li>Cancel anytime through your account dashboard</li>
+                      <li>Access continues until the end of your current billing period</li>
+                      <li>No refunds for partial months after the 7-day guarantee period</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">Annual Subscriptions</h3>
+                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                      <li>Pro-rated refund available within the first 30 days</li>
+                      <li>After 30 days, you may downgrade to monthly at any time</li>
+                      <li>No refunds after 30 days for annual commitments</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">AI Credit Packs</h3>
+                    <p className="text-muted-foreground">
+                      Prepaid AI credit packs are <strong className="text-foreground">non-refundable</strong> once purchased. 
+                      Credits do not expire and can be used at any time. Unused credits remain in your account 
+                      even if your subscription is cancelled.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">Painting Service Deposits</h3>
+                    <p className="text-muted-foreground">
+                      For painting service deposits, please refer to the Termination section above. 
+                      Refunds are processed within 14 business days minus applicable charges for work completed.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
+                    <p className="text-muted-foreground">
+                      <strong className="text-foreground">How to Request a Refund:</strong> Contact our support team 
+                      at support@paintpros.io or through your account dashboard. Please include your account email 
+                      and reason for the refund request. Refunds are processed within 5-10 business days.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.section>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -368,7 +448,7 @@ export default function TermsWarranty() {
                 </p>
               )}
               <p className="text-xs text-muted-foreground/60">
-                Last updated: December 2025
+                Last updated: January 2026
               </p>
             </motion.div>
           </div>

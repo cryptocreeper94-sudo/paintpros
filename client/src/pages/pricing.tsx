@@ -311,6 +311,22 @@ function EstimatorToolPricing() {
           </div>
         </GlassCard>
       </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="mt-6 text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-sm">
+          <Shield className="w-4 h-4 text-green-500" />
+          <span className="text-green-600 dark:text-green-400 font-medium">7-Day Money-Back Guarantee</span>
+          <span className="text-muted-foreground">on all new subscriptions</span>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          <a href="/terms#refunds" className="text-accent hover:underline">View full refund policy</a>
+        </p>
+      </motion.div>
     </div>
   );
 }

@@ -59,8 +59,19 @@ The platform uses a prepaid AI credits system for metered AI features:
 
 ## Recent Changes (Changelog)
 
+### January 2026
+- **v1.1.6** - Current Release
+  - Added comprehensive Refund Policy section to Terms & Warranty page (`/terms#refunds`)
+  - 7-Day Money-Back Guarantee for new subscriptions (Estimator, Full Suite, Franchise)
+  - Monthly subscriptions: Cancel anytime, no partial refunds after 7 days
+  - Annual subscriptions: Pro-rated refund within 30 days
+  - AI Credit Packs: Non-refundable, credits never expire
+  - Refund policy disclaimer added to Credits Dashboard
+  - 7-Day Guarantee badge added to Pricing page
+  - Demo Welcome Modal now includes Trade Vertical business model section with revenue projections
+
 ### December 2025
-- **v1.1.5** - Current Release
+- **v1.1.5**
   - Implemented prepaid AI credits system with usage-based billing
   - Added credit packs: Starter ($10), Value ($25), Pro ($50), Business ($100)
   - Credits Dashboard at `/credits` for balance, purchases, and usage history
