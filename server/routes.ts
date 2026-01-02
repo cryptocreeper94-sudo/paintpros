@@ -21,7 +21,7 @@ import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, type ContactFormData } from "./resend";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated, initAuthBackground } from "./replitAuth";
 import type { RequestHandler } from "express";
 import { checkCredits, deductCreditsAfterUsage, getActionCost, CREDIT_PACKS } from "./aiCredits";
 
@@ -274,7 +274,8 @@ export async function registerRoutes(
   });
 
   // ============ REPLIT AUTH ============
-  await setupAuth(app);
+  // Setup auth routes synchronously (OIDC discovery is deferred until first auth request)
+  setupAuth(app);
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

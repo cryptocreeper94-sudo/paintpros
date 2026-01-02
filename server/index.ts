@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import * as solana from "./solana";
 import * as hallmarkService from "./hallmarkService";
 import { startScheduler } from "./marketing-scheduler";
+import { initAuthBackground } from "./replitAuth";
 
 const app = express();
 const httpServer = createServer(app);
@@ -275,6 +276,12 @@ app.use((req, res, next) => {
     },
     async () => {
       log(`serving on port ${port}`);
+      
+      // Initialize OIDC auth in background (non-blocking)
+      // This runs AFTER the server is listening to pass Cloud Run health checks
+      initAuthBackground().catch(err => {
+        console.error("[Auth] Background init failed (non-fatal):", err);
+      });
       
       // Seed default PINs if they don't exist (runs in both dev and production)
       await autoSeedDefaultPins();
