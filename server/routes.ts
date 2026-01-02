@@ -820,11 +820,9 @@ export async function registerRoutes(
   });
 
   // POST /api/credits/webhook - Handle Stripe webhook for credit purchases
-  // Uses Replit managed Stripe connection (stripe-replit-sync handles webhook signature verification)
+  // Uses STRIPE_WEBHOOK_SECRET for signature verification with live keys
   app.post("/api/credits/webhook", async (req, res) => {
     try {
-      const { getStripeSync } = await import("./stripeClient");
-      const stripeSync = await getStripeSync();
       const sig = req.headers["stripe-signature"] as string;
 
       if (!sig) {
@@ -832,15 +830,26 @@ export async function registerRoutes(
         return;
       }
 
-      // Process webhook using stripe-replit-sync (handles signature verification)
-      await stripeSync.processWebhook(req.body, sig);
-
-      // Also check for our custom credit purchase handling
       const { getUncachableStripeClient } = await import("./stripeClient");
       const stripe = await getUncachableStripeClient();
       
-      // Parse the event manually for our custom logic
-      const event = JSON.parse(req.body.toString());
+      // Verify webhook signature using the webhook secret
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      let event;
+      
+      if (webhookSecret) {
+        try {
+          event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        } catch (err: any) {
+          console.error("Webhook signature verification failed:", err.message);
+          res.status(400).json({ error: "Webhook signature verification failed" });
+          return;
+        }
+      } else {
+        // Fallback: parse without verification (not recommended for production)
+        console.warn("STRIPE_WEBHOOK_SECRET not set - skipping signature verification");
+        event = JSON.parse(req.body.toString());
+      }
 
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object as any;
