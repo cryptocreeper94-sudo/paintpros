@@ -60,7 +60,16 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## Recent Changes (Changelog)
 
 ### January 2026
-- **v1.1.7** - Current Release
+- **v1.1.8** - Current Release
+  - Stripe integration updated to use Dark Wave Studios live business account
+  - Hybrid credential system: Live keys (STRIPE_LIVE_*) take priority, Replit sandbox as fallback
+  - Created all Stripe products and prices with proper price IDs:
+    - AI Credit Packs: Starter ($10), Value ($25), Pro ($50), Business ($100)
+    - Subscriptions: Estimator ($29/mo), Full Suite ($199/mo), Franchise ($499/mo)
+  - Updated checkout to use Stripe price IDs instead of dynamic pricing
+  - Added seed script: `server/scripts/seed-stripe-products.ts`
+
+- **v1.1.7**
   - Migrated Stripe integration to Replit managed connection (`stripe-replit-sync`)
   - Created `server/stripeClient.ts` for centralized Stripe credential management
   - Created `server/webhookHandlers.ts` for managed webhook processing
