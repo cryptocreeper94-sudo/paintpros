@@ -1,11 +1,23 @@
-// Stripe client using Replit managed connection
-// Reference: Replit Stripe Integration (connection:conn_stripe_01KDZTSZNJEGF1EJC4J71GANRV)
+// Stripe client with hybrid credential management
+// Uses STRIPE_LIVE_* secrets for production, Replit managed connection for sandbox
 
 import Stripe from 'stripe';
 
-let connectionSettings: any;
+async function getCredentials(): Promise<{ publishableKey: string; secretKey: string }> {
+  // Check for live keys first (used in production or when explicitly configured)
+  const liveSecretKey = process.env.STRIPE_LIVE_SECRET_KEY;
+  const livePublishableKey = process.env.STRIPE_LIVE_PUBLISHABLE_KEY;
+  
+  // Use live keys if available (these are your Dark Wave Studios business keys)
+  if (liveSecretKey && livePublishableKey) {
+    console.log('[Stripe] Using live business account credentials');
+    return {
+      publishableKey: livePublishableKey,
+      secretKey: liveSecretKey,
+    };
+  }
 
-async function getCredentials() {
+  // Fall back to Replit managed connection (sandbox)
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY
     ? 'repl ' + process.env.REPL_IDENTITY
@@ -13,8 +25,8 @@ async function getCredentials() {
       ? 'depl ' + process.env.WEB_REPL_RENEWAL
       : null;
 
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  if (!xReplitToken || !hostname) {
+    throw new Error('No Stripe credentials found. Please configure STRIPE_LIVE_SECRET_KEY and STRIPE_LIVE_PUBLISHABLE_KEY secrets.');
   }
 
   const connectorName = 'stripe';
@@ -26,25 +38,29 @@ async function getCredentials() {
   url.searchParams.set('connector_names', connectorName);
   url.searchParams.set('environment', targetEnvironment);
 
-  const response = await fetch(url.toString(), {
-    headers: {
-      'Accept': 'application/json',
-      'X_REPLIT_TOKEN': xReplitToken
+  try {
+    const response = await fetch(url.toString(), {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    });
+
+    const data = await response.json();
+    const connectionSettings = data.items?.[0];
+
+    if (connectionSettings?.settings?.publishable && connectionSettings?.settings?.secret) {
+      console.log(`[Stripe] Using Replit managed ${targetEnvironment} connection`);
+      return {
+        publishableKey: connectionSettings.settings.publishable,
+        secretKey: connectionSettings.settings.secret,
+      };
     }
-  });
-
-  const data = await response.json();
-  
-  connectionSettings = data.items?.[0];
-
-  if (!connectionSettings || (!connectionSettings.settings.publishable || !connectionSettings.settings.secret)) {
-    throw new Error(`Stripe ${targetEnvironment} connection not found`);
+  } catch (error) {
+    console.warn('[Stripe] Could not fetch Replit managed connection:', error);
   }
 
-  return {
-    publishableKey: connectionSettings.settings.publishable,
-    secretKey: connectionSettings.settings.secret,
-  };
+  throw new Error('No Stripe credentials available. Please add your Stripe keys.');
 }
 
 // Get a fresh Stripe client - never cache this
