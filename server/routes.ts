@@ -787,21 +787,14 @@ export async function registerRoutes(
         paymentStatus: 'pending'
       });
 
-      // Use Replit managed Stripe connection
+      // Use Stripe with live price IDs
       const { getUncachableStripeClient } = await import("./stripeClient");
       const stripe = await getUncachableStripeClient();
       
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `AI Credits - ${pack.label}`,
-              description: `${pack.label} for PaintPros.io`,
-            },
-            unit_amount: amountCents,
-          },
+          price: pack.priceId,
           quantity: 1,
         }],
         mode: 'payment',
