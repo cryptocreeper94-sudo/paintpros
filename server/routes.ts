@@ -731,6 +731,48 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/stripe/test-checkout - Test Stripe checkout (DEV ONLY)
+  app.post("/api/stripe/test-checkout", async (req, res) => {
+    try {
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
+      
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Test AI Credits - Starter Pack',
+              description: 'Test purchase for PaintPros.io',
+            },
+            unit_amount: 1000, // $10.00
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `${req.protocol}://${req.get('host')}/credits/success?test=true`,
+        cancel_url: `${req.protocol}://${req.get('host')}/credits/cancel`,
+        metadata: {
+          type: 'test_purchase'
+        }
+      });
+
+      res.json({
+        success: true,
+        sessionId: session.id,
+        checkoutUrl: session.url,
+        message: "Checkout session created! Click the URL to test payment."
+      });
+    } catch (error: any) {
+      console.error("Stripe test checkout failed:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message || "Failed to create checkout session"
+      });
+    }
+  });
+
   // GET /api/stripe/status - Test Stripe connection and show account info
   app.get("/api/stripe/status", async (req, res) => {
     try {
