@@ -759,16 +759,9 @@ export async function registerRoutes(
         paymentStatus: 'pending'
       });
 
-      const Stripe = await import("stripe");
-      const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
-      
-      if (!stripeSecretKey) {
-        res.status(500).json({ error: "Payment processing not configured" });
-        return;
-      }
-
-      const stripe = new Stripe.default(stripeSecretKey);
-      const amountDollars = amountCents / 100;
+      // Use Replit managed Stripe connection
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
       
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
