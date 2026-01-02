@@ -731,6 +731,34 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/stripe/status - Test Stripe connection and show account info
+  app.get("/api/stripe/status", async (req, res) => {
+    try {
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
+      
+      // Get the connected account info
+      const account = await stripe.accounts.retrieve();
+      
+      res.json({
+        connected: true,
+        accountName: account.business_profile?.name || account.settings?.dashboard?.display_name || 'Connected Account',
+        accountId: account.id,
+        country: account.country,
+        defaultCurrency: account.default_currency,
+        chargesEnabled: account.charges_enabled,
+        payoutsEnabled: account.payouts_enabled,
+        livemode: (account as any).livemode
+      });
+    } catch (error: any) {
+      console.error("Stripe connection test failed:", error);
+      res.status(500).json({
+        connected: false,
+        error: error.message || "Failed to connect to Stripe"
+      });
+    }
+  });
+
   // POST /api/credits/purchase - Create a credit purchase (Stripe checkout)
   app.post("/api/credits/purchase", isAuthenticated, async (req, res) => {
     try {
