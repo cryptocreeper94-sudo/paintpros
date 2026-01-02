@@ -2302,6 +2302,177 @@ Do not include any text before or after the JSON.`
     }
   });
 
+  // ============ SYSTEM HEALTH ============
+  // Comprehensive health check endpoint for developer dashboard
+  app.get("/api/system/health", async (req, res) => {
+    const startTime = Date.now();
+    const checks: Array<{
+      name: string;
+      status: "healthy" | "degraded" | "error";
+      message: string;
+      responseTime?: number;
+      lastError?: string;
+    }> = [];
+
+    // 1. Database health check
+    const dbStart = Date.now();
+    try {
+      await db.execute("SELECT 1");
+      checks.push({
+        name: "database",
+        status: "healthy",
+        message: "PostgreSQL connected",
+        responseTime: Date.now() - dbStart
+      });
+    } catch (error: any) {
+      checks.push({
+        name: "database",
+        status: "error",
+        message: "Database connection failed",
+        responseTime: Date.now() - dbStart,
+        lastError: error.message
+      });
+    }
+
+    // 2. Stripe/Payments health check
+    const stripeStart = Date.now();
+    try {
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
+      await stripe.balance.retrieve();
+      checks.push({
+        name: "payments",
+        status: "healthy",
+        message: "Stripe API connected",
+        responseTime: Date.now() - stripeStart
+      });
+    } catch (error: any) {
+      const isConfigError = error.message?.includes("No Stripe credentials");
+      checks.push({
+        name: "payments",
+        status: isConfigError ? "degraded" : "error",
+        message: isConfigError ? "Stripe not configured" : "Stripe API error",
+        responseTime: Date.now() - stripeStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
+    // 3. Email (Resend) health check
+    const emailStart = Date.now();
+    try {
+      const resendKey = process.env.RESEND_API_KEY;
+      if (resendKey) {
+        checks.push({
+          name: "email",
+          status: "healthy",
+          message: "Resend API configured",
+          responseTime: Date.now() - emailStart
+        });
+      } else {
+        checks.push({
+          name: "email",
+          status: "degraded",
+          message: "Resend API key not configured",
+          responseTime: Date.now() - emailStart
+        });
+      }
+    } catch (error: any) {
+      checks.push({
+        name: "email",
+        status: "error",
+        message: "Email service error",
+        responseTime: Date.now() - emailStart,
+        lastError: error.message
+      });
+    }
+
+    // 4. Blockchain (Solana) health check
+    const blockchainStart = Date.now();
+    try {
+      const heliusKey = process.env.HELIUS_API_KEY || process.env.HELIUS_RPC_URL;
+      const phantomKey = process.env.PHANTOM_SECRET_KEY || process.env.SOLANA_PRIVATE_KEY;
+      
+      if (heliusKey || phantomKey) {
+        checks.push({
+          name: "blockchain",
+          status: "healthy",
+          message: "Solana wallet configured",
+          responseTime: Date.now() - blockchainStart
+        });
+      } else {
+        checks.push({
+          name: "blockchain",
+          status: "degraded",
+          message: "Blockchain credentials not configured",
+          responseTime: Date.now() - blockchainStart
+        });
+      }
+    } catch (error: any) {
+      checks.push({
+        name: "blockchain",
+        status: "error",
+        message: "Blockchain service error",
+        responseTime: Date.now() - blockchainStart,
+        lastError: error.message
+      });
+    }
+
+    // 5. AI (OpenAI) health check
+    const aiStart = Date.now();
+    try {
+      const openaiKey = process.env.OPENAI_API_KEY;
+      if (openaiKey) {
+        const openai = new OpenAI({ apiKey: openaiKey });
+        await openai.models.list();
+        checks.push({
+          name: "ai",
+          status: "healthy",
+          message: "OpenAI API connected",
+          responseTime: Date.now() - aiStart
+        });
+      } else {
+        checks.push({
+          name: "ai",
+          status: "degraded",
+          message: "OpenAI API key not configured",
+          responseTime: Date.now() - aiStart
+        });
+      }
+    } catch (error: any) {
+      checks.push({
+        name: "ai",
+        status: "error",
+        message: "OpenAI API error",
+        responseTime: Date.now() - aiStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
+    // Determine overall status
+    const hasError = checks.some(c => c.status === "error");
+    const hasDegraded = checks.some(c => c.status === "degraded");
+    const overallStatus = hasError ? "error" : hasDegraded ? "degraded" : "healthy";
+
+    // Get version from latest release
+    let version = "1.0.0";
+    try {
+      const latestRelease = await storage.getLatestRelease("demo");
+      if (latestRelease?.version) {
+        version = latestRelease.version;
+      }
+    } catch (e) {
+      // Use default version
+    }
+
+    res.json({
+      status: overallStatus,
+      version,
+      timestamp: new Date().toISOString(),
+      responseTime: Date.now() - startTime,
+      checks
+    });
+  });
+
   // ============ ANALYTICS ============
 
   // POST /api/analytics/track - Track a page view
