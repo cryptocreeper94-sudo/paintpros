@@ -731,49 +731,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/stripe/test-checkout - Test Stripe checkout (DEV ONLY)
-  app.post("/api/stripe/test-checkout", async (req, res) => {
-    try {
-      const { getUncachableStripeClient } = await import("./stripeClient");
-      const stripe = await getUncachableStripeClient();
-      
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Test AI Credits - Starter Pack',
-              description: 'Test purchase for PaintPros.io',
-            },
-            unit_amount: 1000, // $10.00
-          },
-          quantity: 1,
-        }],
-        mode: 'payment',
-        success_url: `${req.protocol}://${req.get('host')}/credits/success?test=true`,
-        cancel_url: `${req.protocol}://${req.get('host')}/credits/cancel`,
-        metadata: {
-          type: 'test_purchase'
-        }
-      });
-
-      res.json({
-        success: true,
-        sessionId: session.id,
-        checkoutUrl: session.url,
-        message: "Checkout session created! Click the URL to test payment."
-      });
-    } catch (error: any) {
-      console.error("Stripe test checkout failed:", error);
-      res.status(500).json({
-        success: false,
-        error: error.message || "Failed to create checkout session"
-      });
-    }
-  });
-
-  // GET /api/stripe/status - Test Stripe connection and show account info
+  // GET /api/stripe/status - Stripe connection status (admin only)
   app.get("/api/stripe/status", async (req, res) => {
     try {
       const { getUncachableStripeClient } = await import("./stripeClient");
@@ -869,28 +827,27 @@ export async function registerRoutes(
   });
 
   // POST /api/credits/webhook - Handle Stripe webhook for credit purchases
+  // Uses Replit managed Stripe connection (stripe-replit-sync handles webhook signature verification)
   app.post("/api/credits/webhook", async (req, res) => {
     try {
-      const Stripe = await import("stripe");
-      const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
-      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      const { getStripeSync } = await import("./stripeClient");
+      const stripeSync = await getStripeSync();
+      const sig = req.headers["stripe-signature"] as string;
 
-      if (!stripeSecretKey || !webhookSecret) {
-        res.status(500).json({ error: "Webhook not configured" });
+      if (!sig) {
+        res.status(400).json({ error: "Missing stripe-signature header" });
         return;
       }
 
-      const stripe = new Stripe.default(stripeSecretKey);
-      const sig = req.headers["stripe-signature"];
+      // Process webhook using stripe-replit-sync (handles signature verification)
+      await stripeSync.processWebhook(req.body, sig);
 
-      let event;
-      try {
-        event = stripe.webhooks.constructEvent(req.body, sig as string, webhookSecret);
-      } catch (err) {
-        console.error("Webhook signature verification failed:", err);
-        res.status(400).send("Webhook signature verification failed");
-        return;
-      }
+      // Also check for our custom credit purchase handling
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
+      
+      // Parse the event manually for our custom logic
+      const event = JSON.parse(req.body.toString());
 
       if (event.type === 'checkout.session.completed') {
         const session = event.data.object as any;
@@ -3538,19 +3495,13 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   });
 
   // ============ STRIPE PAYMENT ENDPOINTS ============
-  
-  // Initialize Stripe
-  const Stripe = await import("stripe");
-  const stripeSecretKey = process.env.STRIPE_LIVE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
-  const stripe = stripeSecretKey ? new Stripe.default(stripeSecretKey) : null;
+  // Uses Replit managed Stripe connection
 
   // POST /api/payments/stripe/create-checkout-session - Create Stripe checkout session
   app.post("/api/payments/stripe/create-checkout-session", async (req, res) => {
     try {
-      if (!stripe) {
-        res.status(500).json({ error: "Stripe not configured" });
-        return;
-      }
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
 
       const { estimateId, amount, description, customerEmail, successUrl, cancelUrl } = req.body;
 
@@ -3600,30 +3551,23 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   });
 
   // POST /api/payments/stripe/webhook - Handle Stripe webhooks
+  // Uses Replit managed Stripe connection (stripe-replit-sync handles webhook processing)
   app.post("/api/payments/stripe/webhook", async (req, res) => {
     try {
-      if (!stripe) {
-        res.status(500).json({ error: "Stripe not configured" });
+      const { getStripeSync } = await import("./stripeClient");
+      const stripeSync = await getStripeSync();
+      const sig = req.headers["stripe-signature"] as string;
+
+      if (!sig) {
+        res.status(400).json({ error: "Missing stripe-signature header" });
         return;
       }
 
-      const sig = req.headers["stripe-signature"];
-      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      // Process webhook using stripe-replit-sync
+      await stripeSync.processWebhook(req.body, sig);
 
-      let event;
-
-      if (webhookSecret && sig) {
-        try {
-          event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-        } catch (err: any) {
-          console.error("Webhook signature verification failed:", err.message);
-          res.status(400).json({ error: `Webhook Error: ${err.message}` });
-          return;
-        }
-      } else {
-        // For testing without webhook signature
-        event = req.body;
-      }
+      // Parse event for our custom handling
+      const event = JSON.parse(req.body.toString());
 
       // Handle the event
       switch (event.type) {
@@ -3632,7 +3576,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           console.log("Payment successful for estimate:", session.metadata?.estimateId);
           
           // Create payment record
-          if (session.metadata?.estimateId) {
+          if (session.metadata?.estimateId && session.metadata?.type === 'deposit') {
             await storage.createPayment({
               estimateId: session.metadata.estimateId,
               amount: String((session.amount_total || 0) / 100),

@@ -44,7 +44,7 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## External Dependencies
 
 - **Solana/Helius:** Used for blockchain stamping of document hashes (requires `HELIUS_API_KEY` or `HELIUS_RPC_URL`).
-- **Payments:** Stripe and Coinbase Commerce (manual secret configuration).
+- **Payments:** Stripe (Replit managed connection via `stripe-replit-sync`) and Coinbase Commerce.
 - **AI:** OpenAI API (for AI assistant features).
 - **Orbit Ecosystem:** Custom integration via `server/orbit.ts` for payroll sync, staffing, code snippets, and health checks (requires `ORBIT_ECOSYSTEM_API_KEY`, `ORBIT_ECOSYSTEM_API_SECRET`, `ORBIT_ECOSYSTEM_DEV_URL`).
 - **Open-Meteo API:** Provides real-time weather data (no API key required).
@@ -60,7 +60,15 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## Recent Changes (Changelog)
 
 ### January 2026
-- **v1.1.6** - Current Release
+- **v1.1.7** - Current Release
+  - Migrated Stripe integration to Replit managed connection (`stripe-replit-sync`)
+  - Created `server/stripeClient.ts` for centralized Stripe credential management
+  - Created `server/webhookHandlers.ts` for managed webhook processing
+  - All payment routes now use dynamic Replit-managed credentials
+  - Added `/api/stripe/status` endpoint for connection verification
+  - Automatic sandbox-to-live transition when publishing
+
+- **v1.1.6**
   - Added comprehensive Refund Policy section to Terms & Warranty page (`/terms#refunds`)
   - 7-Day Money-Back Guarantee for new subscriptions (Estimator, Full Suite, Franchise)
   - Monthly subscriptions: Cancel anytime, no partial refunds after 7 days
