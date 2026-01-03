@@ -464,17 +464,17 @@ export async function registerRoutes(
       const estimate = await storage.createEstimate(validatedData);
       
       // Send email notification when customer contact info is provided (non-blocking)
+      // Note: Customer info comes from lead, so we fetch it if leadId is provided
       let notificationSent = false;
-      if (validatedData.customerEmail || validatedData.customerPhone) {
+      const leadData = await storage.getLeadById(validatedData.leadId);
+      if (leadData?.email || leadData?.phone) {
         try {
           const result = await sendLeadNotification({
-            customerName: validatedData.customerName || 'Unknown',
-            customerEmail: validatedData.customerEmail || undefined,
-            customerPhone: validatedData.customerPhone || undefined,
-            projectType: validatedData.projectType || 'Painting',
-            estimatedTotal: validatedData.totalCost ? Number(validatedData.totalCost) : undefined,
-            address: validatedData.address || undefined,
-            notes: validatedData.notes || undefined,
+            customerName: leadData.firstName ? `${leadData.firstName} ${leadData.lastName || ''}`.trim() : 'Customer',
+            customerEmail: leadData.email || undefined,
+            customerPhone: leadData.phone || undefined,
+            projectType: validatedData.pricingTier || 'Painting',
+            estimatedTotal: validatedData.totalEstimate ? Number(validatedData.totalEstimate) : undefined,
             tenantName: validatedData.tenantId === 'npp' ? 'Nashville Painting Professionals' : 'PaintPros.io'
           });
           notificationSent = result.success;
@@ -2178,11 +2178,11 @@ export async function registerRoutes(
         return;
       }
       
-      const openaiKey = process.env.OPENAI_API_KEY;
-      if (!openaiKey) {
-        res.status(500).json({ error: "AI service not configured" });
-        return;
-      }
+      // Use Replit AI Integrations (no API key needed)
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
       
       // Create initial scan record (store truncated image reference)
       const scanData = {
@@ -2198,8 +2198,6 @@ export async function registerRoutes(
       await storage.updateRoomScanResult(scan.id, { status: "processing" });
       
       try {
-        const openai = new OpenAI({ apiKey: openaiKey });
-        
         const response = await openai.chat.completions.create({
           model: "gpt-4o",
           messages: [
@@ -2319,6 +2317,241 @@ Do not include any text before or after the JSON.`
     } catch (error) {
       console.error("Error fetching room scans:", error);
       res.status(500).json({ error: "Failed to fetch room scans" });
+    }
+  });
+
+  // ============ CUSTOMER PORTAL (JOBS) ============
+  
+  // POST /api/jobs - Create a new job
+  app.post("/api/jobs", async (req, res) => {
+    try {
+      const job = await storage.createJob(req.body);
+      res.status(201).json(job);
+    } catch (error) {
+      console.error("Error creating job:", error);
+      res.status(500).json({ error: "Failed to create job" });
+    }
+  });
+  
+  // GET /api/jobs - Get all jobs for a tenant
+  app.get("/api/jobs", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const jobsList = await storage.getJobs(tenantId);
+      res.json(jobsList);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      res.status(500).json({ error: "Failed to fetch jobs" });
+    }
+  });
+  
+  // GET /api/jobs/:id - Get job by ID
+  app.get("/api/jobs/:id", async (req, res) => {
+    try {
+      const job = await storage.getJobById(req.params.id);
+      if (!job) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+      }
+      res.json(job);
+    } catch (error) {
+      console.error("Error fetching job:", error);
+      res.status(500).json({ error: "Failed to fetch job" });
+    }
+  });
+  
+  // GET /api/portal/:token - Customer portal access via token
+  app.get("/api/portal/:token", async (req, res) => {
+    try {
+      const job = await storage.getJobByAccessToken(req.params.token);
+      if (!job) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+      }
+      // Get job updates visible to customer
+      const updates = await storage.getJobUpdates(job.id, true);
+      res.json({ job, updates });
+    } catch (error) {
+      console.error("Error fetching portal data:", error);
+      res.status(500).json({ error: "Failed to fetch portal data" });
+    }
+  });
+  
+  // PATCH /api/jobs/:id - Update job
+  app.patch("/api/jobs/:id", async (req, res) => {
+    try {
+      const job = await storage.updateJob(req.params.id, req.body);
+      if (!job) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+      }
+      res.json(job);
+    } catch (error) {
+      console.error("Error updating job:", error);
+      res.status(500).json({ error: "Failed to update job" });
+    }
+  });
+  
+  // POST /api/jobs/:id/updates - Add job update
+  app.post("/api/jobs/:id/updates", async (req, res) => {
+    try {
+      const update = await storage.createJobUpdate({ ...req.body, jobId: req.params.id });
+      res.status(201).json(update);
+    } catch (error) {
+      console.error("Error creating job update:", error);
+      res.status(500).json({ error: "Failed to create job update" });
+    }
+  });
+  
+  // GET /api/jobs/:id/updates - Get job updates
+  app.get("/api/jobs/:id/updates", async (req, res) => {
+    try {
+      const visibleToCustomer = req.query.customerView === "true" ? true : undefined;
+      const updates = await storage.getJobUpdates(req.params.id, visibleToCustomer);
+      res.json(updates);
+    } catch (error) {
+      console.error("Error fetching job updates:", error);
+      res.status(500).json({ error: "Failed to fetch job updates" });
+    }
+  });
+
+  // ============ PORTFOLIO ============
+  
+  // GET /api/portfolio - Get portfolio entries
+  app.get("/api/portfolio", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const publishedOnly = req.query.published === "true";
+      const entries = await storage.getPortfolioEntries(tenantId, publishedOnly);
+      res.json(entries);
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+      res.status(500).json({ error: "Failed to fetch portfolio" });
+    }
+  });
+  
+  // POST /api/portfolio - Create portfolio entry
+  app.post("/api/portfolio", async (req, res) => {
+    try {
+      const entry = await storage.createPortfolioEntry(req.body);
+      res.status(201).json(entry);
+    } catch (error) {
+      console.error("Error creating portfolio entry:", error);
+      res.status(500).json({ error: "Failed to create portfolio entry" });
+    }
+  });
+  
+  // GET /api/portfolio/:id - Get portfolio entry by ID
+  app.get("/api/portfolio/:id", async (req, res) => {
+    try {
+      const entry = await storage.getPortfolioEntryById(req.params.id);
+      if (!entry) {
+        res.status(404).json({ error: "Portfolio entry not found" });
+        return;
+      }
+      res.json(entry);
+    } catch (error) {
+      console.error("Error fetching portfolio entry:", error);
+      res.status(500).json({ error: "Failed to fetch portfolio entry" });
+    }
+  });
+  
+  // PATCH /api/portfolio/:id - Update portfolio entry
+  app.patch("/api/portfolio/:id", async (req, res) => {
+    try {
+      const entry = await storage.updatePortfolioEntry(req.params.id, req.body);
+      if (!entry) {
+        res.status(404).json({ error: "Portfolio entry not found" });
+        return;
+      }
+      res.json(entry);
+    } catch (error) {
+      console.error("Error updating portfolio entry:", error);
+      res.status(500).json({ error: "Failed to update portfolio entry" });
+    }
+  });
+  
+  // DELETE /api/portfolio/:id - Delete portfolio entry
+  app.delete("/api/portfolio/:id", async (req, res) => {
+    try {
+      await storage.deletePortfolioEntry(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting portfolio entry:", error);
+      res.status(500).json({ error: "Failed to delete portfolio entry" });
+    }
+  });
+
+  // ============ REVIEW AUTOMATION ============
+  
+  // GET /api/review-requests - Get review requests
+  app.get("/api/review-requests", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const requests = await storage.getReviewRequests(tenantId);
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching review requests:", error);
+      res.status(500).json({ error: "Failed to fetch review requests" });
+    }
+  });
+  
+  // POST /api/review-requests - Create and send review request
+  app.post("/api/review-requests", async (req, res) => {
+    try {
+      const request = await storage.createReviewRequest(req.body);
+      
+      // Send email if customer email provided
+      if (req.body.customerEmail) {
+        try {
+          const { getResendClient } = await import("./resend");
+          const { client, fromEmail } = await getResendClient();
+          
+          await client.emails.send({
+            from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
+            to: [req.body.customerEmail],
+            subject: `We'd love your feedback! - ${req.body.tenantName || 'PaintPros.io'}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333;">Thank you for choosing us!</h2>
+                <p>Dear ${req.body.customerName},</p>
+                <p>We hope you're enjoying your freshly painted space! Your satisfaction means everything to us.</p>
+                <p>Would you mind taking a moment to share your experience? Your feedback helps us improve and helps other homeowners find quality painters.</p>
+                ${req.body.googleReviewUrl ? `<p><a href="${req.body.googleReviewUrl}" style="background: #4285f4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">Leave a Google Review</a></p>` : ''}
+                <p style="color: #666; font-size: 12px; margin-top: 30px;">Thank you for your business!</p>
+              </div>
+            `
+          });
+          
+          await storage.updateReviewRequest(request.id, { 
+            status: 'sent', 
+            sentAt: new Date(), 
+            sentVia: 'email' 
+          });
+        } catch (emailError) {
+          console.error("Failed to send review request email:", emailError);
+        }
+      }
+      
+      res.status(201).json(request);
+    } catch (error) {
+      console.error("Error creating review request:", error);
+      res.status(500).json({ error: "Failed to create review request" });
+    }
+  });
+  
+  // PATCH /api/review-requests/:id - Update review request
+  app.patch("/api/review-requests/:id", async (req, res) => {
+    try {
+      const request = await storage.updateReviewRequest(req.params.id, req.body);
+      if (!request) {
+        res.status(404).json({ error: "Review request not found" });
+        return;
+      }
+      res.json(request);
+    } catch (error) {
+      console.error("Error updating review request:", error);
+      res.status(500).json({ error: "Failed to update review request" });
     }
   });
 

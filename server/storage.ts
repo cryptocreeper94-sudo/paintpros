@@ -43,6 +43,10 @@ import {
   type TenantCredits, type InsertTenantCredits, tenantCredits,
   type AiUsageLog, type InsertAiUsageLog, aiUsageLogs,
   type CreditPurchase, type InsertCreditPurchase, creditPurchases,
+  type Job, type InsertJob, jobs,
+  type JobUpdate, type InsertJobUpdate, jobUpdates,
+  type ReviewRequest, type InsertReviewRequest, reviewRequests,
+  type PortfolioEntry, type InsertPortfolioEntry, portfolioEntries,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -324,6 +328,29 @@ export interface IStorage {
   getCreditPurchaseById(id: string): Promise<CreditPurchase | undefined>;
   getCreditPurchases(tenantId: string): Promise<CreditPurchase[]>;
   updateCreditPurchaseStatus(id: string, status: string, paymentIntentId?: string): Promise<CreditPurchase | undefined>;
+  
+  // Jobs (Customer Portal)
+  createJob(job: InsertJob): Promise<Job>;
+  getJobById(id: string): Promise<Job | undefined>;
+  getJobByAccessToken(token: string): Promise<Job | undefined>;
+  getJobs(tenantId: string): Promise<Job[]>;
+  updateJob(id: string, updates: Partial<InsertJob>): Promise<Job | undefined>;
+  
+  // Job Updates
+  createJobUpdate(update: InsertJobUpdate): Promise<JobUpdate>;
+  getJobUpdates(jobId: string, visibleToCustomer?: boolean): Promise<JobUpdate[]>;
+  
+  // Review Requests
+  createReviewRequest(request: InsertReviewRequest): Promise<ReviewRequest>;
+  getReviewRequests(tenantId: string): Promise<ReviewRequest[]>;
+  updateReviewRequest(id: string, updates: Partial<InsertReviewRequest>): Promise<ReviewRequest | undefined>;
+  
+  // Portfolio
+  createPortfolioEntry(entry: InsertPortfolioEntry): Promise<PortfolioEntry>;
+  getPortfolioEntries(tenantId: string, publishedOnly?: boolean): Promise<PortfolioEntry[]>;
+  getPortfolioEntryById(id: string): Promise<PortfolioEntry | undefined>;
+  updatePortfolioEntry(id: string, updates: Partial<InsertPortfolioEntry>): Promise<PortfolioEntry | undefined>;
+  deletePortfolioEntry(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2097,6 +2124,108 @@ export class DatabaseStorage implements IStorage {
       .where(eq(creditPurchases.id, id))
       .returning();
     return result;
+  }
+
+  // Jobs (Customer Portal)
+  async createJob(job: InsertJob): Promise<Job> {
+    const jobNumber = `JOB-${Date.now().toString(36).toUpperCase()}`;
+    const [result] = await db.insert(jobs).values({ ...job, jobNumber }).returning();
+    return result;
+  }
+
+  async getJobById(id: string): Promise<Job | undefined> {
+    const [result] = await db.select().from(jobs).where(eq(jobs.id, id));
+    return result;
+  }
+
+  async getJobByAccessToken(token: string): Promise<Job | undefined> {
+    const [result] = await db.select().from(jobs).where(eq(jobs.accessToken, token));
+    return result;
+  }
+
+  async getJobs(tenantId: string): Promise<Job[]> {
+    return await db.select().from(jobs)
+      .where(eq(jobs.tenantId, tenantId))
+      .orderBy(desc(jobs.createdAt));
+  }
+
+  async updateJob(id: string, updates: Partial<InsertJob>): Promise<Job | undefined> {
+    const [result] = await db.update(jobs)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(jobs.id, id))
+      .returning();
+    return result;
+  }
+
+  // Job Updates
+  async createJobUpdate(update: InsertJobUpdate): Promise<JobUpdate> {
+    const [result] = await db.insert(jobUpdates).values(update).returning();
+    return result;
+  }
+
+  async getJobUpdates(jobId: string, visibleToCustomer?: boolean): Promise<JobUpdate[]> {
+    if (visibleToCustomer !== undefined) {
+      return await db.select().from(jobUpdates)
+        .where(and(eq(jobUpdates.jobId, jobId), eq(jobUpdates.visibleToCustomer, visibleToCustomer)))
+        .orderBy(desc(jobUpdates.createdAt));
+    }
+    return await db.select().from(jobUpdates)
+      .where(eq(jobUpdates.jobId, jobId))
+      .orderBy(desc(jobUpdates.createdAt));
+  }
+
+  // Review Requests
+  async createReviewRequest(request: InsertReviewRequest): Promise<ReviewRequest> {
+    const [result] = await db.insert(reviewRequests).values(request).returning();
+    return result;
+  }
+
+  async getReviewRequests(tenantId: string): Promise<ReviewRequest[]> {
+    return await db.select().from(reviewRequests)
+      .where(eq(reviewRequests.tenantId, tenantId))
+      .orderBy(desc(reviewRequests.createdAt));
+  }
+
+  async updateReviewRequest(id: string, updates: Partial<InsertReviewRequest>): Promise<ReviewRequest | undefined> {
+    const [result] = await db.update(reviewRequests)
+      .set(updates)
+      .where(eq(reviewRequests.id, id))
+      .returning();
+    return result;
+  }
+
+  // Portfolio
+  async createPortfolioEntry(entry: InsertPortfolioEntry): Promise<PortfolioEntry> {
+    const [result] = await db.insert(portfolioEntries).values(entry).returning();
+    return result;
+  }
+
+  async getPortfolioEntries(tenantId: string, publishedOnly: boolean = false): Promise<PortfolioEntry[]> {
+    if (publishedOnly) {
+      return await db.select().from(portfolioEntries)
+        .where(and(eq(portfolioEntries.tenantId, tenantId), eq(portfolioEntries.isPublished, true)))
+        .orderBy(desc(portfolioEntries.displayOrder), desc(portfolioEntries.createdAt));
+    }
+    return await db.select().from(portfolioEntries)
+      .where(eq(portfolioEntries.tenantId, tenantId))
+      .orderBy(desc(portfolioEntries.displayOrder), desc(portfolioEntries.createdAt));
+  }
+
+  async getPortfolioEntryById(id: string): Promise<PortfolioEntry | undefined> {
+    const [result] = await db.select().from(portfolioEntries).where(eq(portfolioEntries.id, id));
+    return result;
+  }
+
+  async updatePortfolioEntry(id: string, updates: Partial<InsertPortfolioEntry>): Promise<PortfolioEntry | undefined> {
+    const [result] = await db.update(portfolioEntries)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(portfolioEntries.id, id))
+      .returning();
+    return result;
+  }
+
+  async deletePortfolioEntry(id: string): Promise<void> {
+    await db.delete(portfolioEntries).where(eq(portfolioEntries.id, id));
   }
 }
 
