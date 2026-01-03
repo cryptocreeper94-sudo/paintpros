@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketServer } from "socket.io";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { storage } from "./storage";
 import { db } from "./db";
 import { 
@@ -549,6 +550,21 @@ export async function registerRoutes(
           contractsVerified: 3_456
         }
       });
+    }
+  });
+
+  // GET /api/investor-deck.pdf - Generate and download investor presentation PDF
+  app.get("/api/investor-deck.pdf", async (req, res) => {
+    try {
+      const pdfBuffer = await generateInvestorDeckPDF();
+      
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=PaintPros_Investor_Deck_Q1_2026.pdf");
+      res.setHeader("Content-Length", pdfBuffer.length);
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error("Error generating investor deck PDF:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
     }
   });
 
@@ -8194,4 +8210,278 @@ function getWindDirection(degrees: number): string {
   const directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
   const index = Math.round(degrees / 22.5) % 16;
   return directions[index];
+}
+
+// ============ INVESTOR PDF DECK ============
+
+async function generateInvestorDeckPDF(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  
+  const PAGE_WIDTH = 792; // 11 inches
+  const PAGE_HEIGHT = 612; // 8.5 inches (landscape)
+  const MARGIN = 50;
+  
+  // Color palette
+  const GOLD = rgb(0.85, 0.65, 0.13);
+  const DARK_BG = rgb(0.08, 0.09, 0.11);
+  const WHITE = rgb(1, 1, 1);
+  const GRAY = rgb(0.6, 0.6, 0.6);
+  const GREEN = rgb(0.2, 0.8, 0.4);
+  
+  // Helper to add a new slide
+  const addSlide = (title: string) => {
+    const page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+    // Dark background
+    page.drawRectangle({
+      x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT,
+      color: DARK_BG
+    });
+    // Gold accent bar
+    page.drawRectangle({
+      x: 0, y: PAGE_HEIGHT - 8, width: PAGE_WIDTH, height: 8,
+      color: GOLD
+    });
+    // Title
+    page.drawText(title, {
+      x: MARGIN, y: PAGE_HEIGHT - 60,
+      size: 32, font: helveticaBold, color: WHITE
+    });
+    return page;
+  };
+  
+  // ===== SLIDE 1: Title =====
+  const slide1 = addSlide("");
+  slide1.drawText("PaintPros.io", {
+    x: MARGIN, y: PAGE_HEIGHT - 180,
+    size: 64, font: helveticaBold, color: GOLD
+  });
+  slide1.drawText("The Most Comprehensive Trades Platform Ever Built", {
+    x: MARGIN, y: PAGE_HEIGHT - 240,
+    size: 24, font: helvetica, color: WHITE
+  });
+  slide1.drawText("Investor Presentation  |  Q1 2026", {
+    x: MARGIN, y: PAGE_HEIGHT - 290,
+    size: 16, font: helvetica, color: GRAY
+  });
+  slide1.drawText("Powered by Dark Wave Studios, LLC", {
+    x: MARGIN, y: 60,
+    size: 14, font: helvetica, color: GRAY
+  });
+  
+  // ===== SLIDE 2: Problem =====
+  const slide2 = addSlide("The Problem");
+  const problems = [
+    "300,000+ painting contractors in the U.S. alone",
+    "No modern white-label SaaS solution exists",
+    "Competitors offer generic CRMs - no customer-facing tools",
+    "Fragmented tech stack costs $1,500-3,000/month",
+    "No blockchain verification for documents"
+  ];
+  problems.forEach((p, i) => {
+    slide2.drawText(`•  ${p}`, {
+      x: MARGIN + 20, y: PAGE_HEIGHT - 140 - (i * 45),
+      size: 18, font: helvetica, color: WHITE
+    });
+  });
+  
+  // ===== SLIDE 3: Solution =====
+  const slide3 = addSlide("Our Solution");
+  const solutions = [
+    "White-label branded websites for each contractor",
+    "Customer-facing interactive estimator",
+    "AI-powered proposals, color visualizer, route optimization",
+    "Blockchain document stamping (Solana + Darkwave)",
+    "Complete business suite: CRM, booking, crew management",
+    "Premium Bento Grid UI with Glassmorphism design"
+  ];
+  solutions.forEach((s, i) => {
+    slide3.drawText(`✓  ${s}`, {
+      x: MARGIN + 20, y: PAGE_HEIGHT - 140 - (i * 40),
+      size: 17, font: helvetica, color: GREEN
+    });
+  });
+  
+  // ===== SLIDE 4: Market Opportunity =====
+  const slide4 = addSlide("Market Opportunity");
+  slide4.drawText("$46.5B", {
+    x: MARGIN, y: PAGE_HEIGHT - 150,
+    size: 72, font: helveticaBold, color: GOLD
+  });
+  slide4.drawText("U.S. Painting Services Market", {
+    x: MARGIN, y: PAGE_HEIGHT - 190,
+    size: 20, font: helvetica, color: WHITE
+  });
+  const marketStats = [
+    ["300K+", "Painting Contractors"],
+    ["4.2%", "Residential CAGR"],
+    ["3.8%", "Commercial CAGR"]
+  ];
+  marketStats.forEach((stat, i) => {
+    const xPos = MARGIN + (i * 220);
+    slide4.drawText(stat[0], {
+      x: xPos, y: PAGE_HEIGHT - 280,
+      size: 36, font: helveticaBold, color: GREEN
+    });
+    slide4.drawText(stat[1], {
+      x: xPos, y: PAGE_HEIGHT - 310,
+      size: 14, font: helvetica, color: GRAY
+    });
+  });
+  slide4.drawText("Trade Vertical Expansion: Roofing, HVAC, Electric, Plumbing, Landscaping, General Contracting", {
+    x: MARGIN, y: PAGE_HEIGHT - 380,
+    size: 14, font: helvetica, color: WHITE
+  });
+  slide4.drawText("Combined TAM: $2.2 Trillion+", {
+    x: MARGIN, y: PAGE_HEIGHT - 410,
+    size: 18, font: helveticaBold, color: GOLD
+  });
+  
+  // ===== SLIDE 5: Unit Economics =====
+  const slide5 = addSlide("Unit Economics");
+  const economics = [
+    ["LTV:CAC Ratio", "44:1", "Industry-leading efficiency"],
+    ["Gross Margin", "85%", "Low infrastructure costs"],
+    ["3-Year LTV", "$22,200", "Per customer value"],
+    ["CAC", "$500", "Acquisition cost"],
+    ["ARPU", "$450/mo", "Plus setup fees"]
+  ];
+  economics.forEach((e, i) => {
+    const yPos = PAGE_HEIGHT - 140 - (i * 55);
+    slide5.drawText(e[0], {
+      x: MARGIN, y: yPos,
+      size: 16, font: helvetica, color: GRAY
+    });
+    slide5.drawText(e[1], {
+      x: MARGIN + 180, y: yPos,
+      size: 24, font: helveticaBold, color: GREEN
+    });
+    slide5.drawText(e[2], {
+      x: MARGIN + 320, y: yPos,
+      size: 14, font: helvetica, color: WHITE
+    });
+  });
+  
+  // ===== SLIDE 6: Pricing Tiers =====
+  const slide6 = addSlide("Pricing Model");
+  const tiers = [
+    ["Starter", "$349/mo", "$5,000 setup", "Solo contractors"],
+    ["Professional", "$549/mo", "$7,000 setup", "1-3 locations"],
+    ["Franchise Core", "$799/mo + $99/loc", "$10,000 setup", "5+ sites"],
+    ["Enterprise", "$1,399/mo base", "$15,000 setup", "Large franchises"]
+  ];
+  tiers.forEach((t, i) => {
+    const yPos = PAGE_HEIGHT - 140 - (i * 60);
+    slide6.drawText(t[0], {
+      x: MARGIN, y: yPos,
+      size: 18, font: helveticaBold, color: WHITE
+    });
+    slide6.drawText(t[1], {
+      x: MARGIN + 160, y: yPos,
+      size: 18, font: helveticaBold, color: GOLD
+    });
+    slide6.drawText(t[2], {
+      x: MARGIN + 360, y: yPos,
+      size: 14, font: helvetica, color: GRAY
+    });
+    slide6.drawText(t[3], {
+      x: MARGIN + 500, y: yPos,
+      size: 14, font: helvetica, color: GRAY
+    });
+  });
+  
+  // ===== SLIDE 7: Revenue Projections =====
+  const slide7 = addSlide("Revenue Projections");
+  const projections = [
+    ["Year 1 (2025)", "50 customers", "$564K revenue", "$180K profit"],
+    ["Year 2 (2026)", "200 customers", "$2.28M revenue", "$1M profit"],
+    ["Year 3 (2027)", "500 customers", "$5.2M revenue", "$2.8M profit"]
+  ];
+  projections.forEach((p, i) => {
+    const yPos = PAGE_HEIGHT - 160 - (i * 80);
+    slide7.drawText(p[0], {
+      x: MARGIN, y: yPos,
+      size: 20, font: helveticaBold, color: WHITE
+    });
+    slide7.drawText(p[1], {
+      x: MARGIN + 180, y: yPos,
+      size: 16, font: helvetica, color: GRAY
+    });
+    slide7.drawText(p[2], {
+      x: MARGIN + 340, y: yPos,
+      size: 20, font: helveticaBold, color: GREEN
+    });
+    slide7.drawText(p[3], {
+      x: MARGIN + 520, y: yPos,
+      size: 16, font: helvetica, color: GOLD
+    });
+  });
+  
+  // ===== SLIDE 8: Competitive Advantage =====
+  const slide8 = addSlide("Competitive Advantage");
+  const advantages = [
+    ["White-Label Website", "✓", "✗", "✗"],
+    ["Customer Estimator", "✓", "Partial", "✗"],
+    ["Blockchain Verification", "✓", "✗", "✗"],
+    ["AI Color Visualizer", "✓", "✗", "✗"],
+    ["Multi-Trade Expansion", "✓", "✗", "✗"]
+  ];
+  // Headers
+  slide8.drawText("Feature", { x: MARGIN, y: PAGE_HEIGHT - 130, size: 14, font: helveticaBold, color: GRAY });
+  slide8.drawText("PaintPros", { x: MARGIN + 220, y: PAGE_HEIGHT - 130, size: 14, font: helveticaBold, color: GOLD });
+  slide8.drawText("ServiceTitan", { x: MARGIN + 340, y: PAGE_HEIGHT - 130, size: 14, font: helveticaBold, color: GRAY });
+  slide8.drawText("Jobber", { x: MARGIN + 480, y: PAGE_HEIGHT - 130, size: 14, font: helveticaBold, color: GRAY });
+  
+  advantages.forEach((a, i) => {
+    const yPos = PAGE_HEIGHT - 170 - (i * 40);
+    slide8.drawText(a[0], { x: MARGIN, y: yPos, size: 14, font: helvetica, color: WHITE });
+    slide8.drawText(a[1], { x: MARGIN + 220, y: yPos, size: 14, font: helveticaBold, color: a[1] === "✓" ? GREEN : GRAY });
+    slide8.drawText(a[2], { x: MARGIN + 340, y: yPos, size: 14, font: helvetica, color: a[2] === "✓" ? GREEN : GRAY });
+    slide8.drawText(a[3], { x: MARGIN + 480, y: yPos, size: 14, font: helvetica, color: a[3] === "✓" ? GREEN : GRAY });
+  });
+  
+  // ===== SLIDE 9: Technology Stack =====
+  const slide9 = addSlide("Technology & Differentiators");
+  const tech = [
+    "v1.6.1 Breakthrough Release - 20+ database tables, 40+ API endpoints",
+    "AI Field Operations Autopilot - Route optimization, risk scoring",
+    "Predictive Revenue Intelligence - 90-day cashflow forecasting",
+    "Immersive Site Capture - LiDAR digital twins, AR overlays",
+    "Autonomous Back Office - Auto-invoicing, lien waivers, compliance",
+    "Orbit Workforce Network - AI-vetted subcontractors, shift bidding",
+    "Trust & Growth Layer - Sentiment analysis, milestone NFTs, ESG tracking"
+  ];
+  tech.forEach((t, i) => {
+    slide9.drawText(`•  ${t}`, {
+      x: MARGIN + 20, y: PAGE_HEIGHT - 140 - (i * 38),
+      size: 15, font: helvetica, color: WHITE
+    });
+  });
+  
+  // ===== SLIDE 10: Contact =====
+  const slide10 = addSlide("Investment Opportunity");
+  slide10.drawText("Join us in revolutionizing the $2.2T skilled trades industry", {
+    x: MARGIN, y: PAGE_HEIGHT - 150,
+    size: 20, font: helvetica, color: WHITE
+  });
+  slide10.drawText("Dark Wave Studios, LLC", {
+    x: MARGIN, y: PAGE_HEIGHT - 220,
+    size: 24, font: helveticaBold, color: GOLD
+  });
+  slide10.drawText("Orbit Development Team", {
+    x: MARGIN, y: PAGE_HEIGHT - 260,
+    size: 18, font: helvetica, color: WHITE
+  });
+  slide10.drawText("paintpros.io  |  orbitstaffing.io", {
+    x: MARGIN, y: PAGE_HEIGHT - 300,
+    size: 16, font: helvetica, color: GRAY
+  });
+  slide10.drawText("Contact us through the investor portal on our platform", {
+    x: MARGIN, y: PAGE_HEIGHT - 380,
+    size: 14, font: helvetica, color: WHITE
+  });
+  
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
 }
