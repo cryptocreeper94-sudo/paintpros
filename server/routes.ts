@@ -20,7 +20,7 @@ import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
-import { sendContactEmail, type ContactFormData } from "./resend";
+import { sendContactEmail, sendLeadNotification, type ContactFormData, type LeadNotificationData } from "./resend";
 import { setupAuth, isAuthenticated, initAuthBackground } from "./replitAuth";
 import type { RequestHandler } from "express";
 import { checkCredits, deductCreditsAfterUsage, getActionCost, CREDIT_PACKS } from "./aiCredits";
@@ -463,8 +463,19 @@ export async function registerRoutes(
       const validatedData = insertEstimateSchema.parse(req.body);
       const estimate = await storage.createEstimate(validatedData);
       
-      // TODO: Send email notification to NPP when business email is provided
-      // This is where we would trigger the email alert
+      // Send email notification when customer email is provided
+      if (validatedData.customerEmail || validatedData.customerPhone) {
+        sendLeadNotification({
+          customerName: validatedData.customerName || 'Unknown',
+          customerEmail: validatedData.customerEmail || undefined,
+          customerPhone: validatedData.customerPhone || undefined,
+          projectType: validatedData.projectType || 'Painting',
+          estimatedTotal: validatedData.totalCost ? Number(validatedData.totalCost) : undefined,
+          address: validatedData.address || undefined,
+          notes: validatedData.notes || undefined,
+          tenantName: validatedData.tenantId === 'npp' ? 'Nashville Painting Professionals' : 'PaintPros.io'
+        }).catch(err => console.error('[Email] Lead notification failed:', err));
+      }
       
       res.status(201).json(estimate);
     } catch (error) {
@@ -2357,32 +2368,25 @@ Do not include any text before or after the JSON.`
       });
     }
 
-    // 3. Email (Resend) health check
+    // 3. Email (Resend) health check - uses Replit connector
     const emailStart = Date.now();
     try {
-      const resendKey = process.env.RESEND_API_KEY;
-      if (resendKey) {
-        checks.push({
-          name: "email",
-          status: "healthy",
-          message: "Resend API configured",
-          responseTime: Date.now() - emailStart
-        });
-      } else {
-        checks.push({
-          name: "email",
-          status: "degraded",
-          message: "Resend API key not configured",
-          responseTime: Date.now() - emailStart
-        });
-      }
-    } catch (error: any) {
+      const { getResendClient } = await import("./resend");
+      await getResendClient();
       checks.push({
         name: "email",
-        status: "error",
-        message: "Email service error",
+        status: "healthy",
+        message: "Resend API connected",
+        responseTime: Date.now() - emailStart
+      });
+    } catch (error: any) {
+      const isNotConnected = error.message?.includes("not connected");
+      checks.push({
+        name: "email",
+        status: isNotConnected ? "degraded" : "error",
+        message: isNotConnected ? "Resend connector not configured" : "Email service error",
         responseTime: Date.now() - emailStart,
-        lastError: error.message
+        lastError: error.message?.substring(0, 100)
       });
     }
 
