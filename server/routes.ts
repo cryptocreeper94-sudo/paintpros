@@ -463,21 +463,30 @@ export async function registerRoutes(
       const validatedData = insertEstimateSchema.parse(req.body);
       const estimate = await storage.createEstimate(validatedData);
       
-      // Send email notification when customer email is provided
+      // Send email notification when customer contact info is provided (non-blocking)
+      let notificationSent = false;
       if (validatedData.customerEmail || validatedData.customerPhone) {
-        sendLeadNotification({
-          customerName: validatedData.customerName || 'Unknown',
-          customerEmail: validatedData.customerEmail || undefined,
-          customerPhone: validatedData.customerPhone || undefined,
-          projectType: validatedData.projectType || 'Painting',
-          estimatedTotal: validatedData.totalCost ? Number(validatedData.totalCost) : undefined,
-          address: validatedData.address || undefined,
-          notes: validatedData.notes || undefined,
-          tenantName: validatedData.tenantId === 'npp' ? 'Nashville Painting Professionals' : 'PaintPros.io'
-        }).catch(err => console.error('[Email] Lead notification failed:', err));
+        try {
+          const result = await sendLeadNotification({
+            customerName: validatedData.customerName || 'Unknown',
+            customerEmail: validatedData.customerEmail || undefined,
+            customerPhone: validatedData.customerPhone || undefined,
+            projectType: validatedData.projectType || 'Painting',
+            estimatedTotal: validatedData.totalCost ? Number(validatedData.totalCost) : undefined,
+            address: validatedData.address || undefined,
+            notes: validatedData.notes || undefined,
+            tenantName: validatedData.tenantId === 'npp' ? 'Nashville Painting Professionals' : 'PaintPros.io'
+          });
+          notificationSent = result.success;
+          if (!result.success) {
+            console.warn('[Email] Lead notification failed:', result.error);
+          }
+        } catch (err) {
+          console.error('[Email] Lead notification error:', err);
+        }
       }
       
-      res.status(201).json(estimate);
+      res.status(201).json({ ...estimate, notificationSent });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ error: "Invalid estimate data", details: error.errors });

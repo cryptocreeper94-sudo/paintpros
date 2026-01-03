@@ -60,7 +60,15 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## Recent Changes (Changelog)
 
 ### January 2026
-- **v1.1.8** - Current Release
+- **v1.1.9** - Current Release
+  - Automated email notifications for new estimate requests (via Resend connector)
+  - Enhanced system health endpoint (`/api/system/health`) with real-time checks for:
+    - Database (PostgreSQL), Payments (Stripe), Email (Resend), Blockchain (Solana), AI (OpenAI)
+  - Fixed deployment issue: Server binds port 5000 immediately, OIDC discovery in background
+  - Email health check now properly validates Resend connector status
+  - Lead notifications include customer details, project type, estimated total
+
+- **v1.1.8**
   - Stripe integration updated to use Dark Wave Studios live business account
   - Hybrid credential system: Live keys (STRIPE_LIVE_*) take priority, Replit sandbox as fallback
   - Created all Stripe products and prices with proper price IDs:
