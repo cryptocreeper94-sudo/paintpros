@@ -60,7 +60,24 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## Recent Changes (Changelog)
 
 ### January 2026
-- **v1.2.1** - Current Release
+- **v1.3.0** - Current Release (Mega Feature Update)
+  - **14 NEW Major Features:**
+  - Payment Deposits API (`/api/deposits`) - Collect deposits via Stripe before job starts
+  - Job Costing Analytics API (`/api/job-costing`) - Track labor, materials, overhead per job for profitability
+  - Live Job Photos API (`/api/job-photos`) - Before/after photo uploads with GPS metadata
+  - Inventory Management API (`/api/inventory`, `/api/inventory/transactions`) - Track supplies, low-stock alerts
+  - Subcontractor Management API (`/api/subcontractors`, `/api/subcontractors/assignments`) - Assign subs to jobs
+  - Weather-Aware Scheduling API (`/api/weather-alerts`) - Alerts for rain/cold affecting outdoor jobs
+  - Webhook Integrations API (`/api/webhooks`) - Zapier/Make/n8n integration with event subscriptions
+  - Trade Vertical Templates API (`/api/trade-verticals`) - Multi-trade support (HVAC, Plumbing, Electrical, etc.)
+  - Franchise Reports API (`/api/franchise-reports`) - Aggregated performance metrics for multi-location
+  - Financing Calculator API (`/api/financing-plans`, `/api/financing-plans/calculate`) - Monthly payment estimates
+  - Color Palettes API (`/api/color-palettes`) - Curated paint color recommendations by room/style
+  - Calendar Export API (`/api/calendar/export`, `/api/calendar/ical/:token`) - iCal feeds for Google/Outlook
+  - Route Optimization API (`/api/routes/optimize`) - Nearest-neighbor algorithm for crew efficiency
+  - Database schemas added for all new features with proper indexing
+  
+- **v1.2.1** - Previous Release
   - Added Material Calculator API (`/api/materials/calculate`) - auto-calculate paint gallons from dimensions
   - Added Lead Source Tracking API (`/api/lead-sources`) - track where leads come from for ROI analysis
   - Added Warranty Tracker API (`/api/warranties`) - digital certificates with expiration alerts

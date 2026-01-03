@@ -3081,3 +3081,477 @@ export const insertGpsCheckinSchema = createInsertSchema(gpsCheckins).omit({
 export type InsertGpsCheckin = z.infer<typeof insertGpsCheckinSchema>;
 export type GpsCheckin = typeof gpsCheckins.$inferSelect;
 
+// ============ PAYMENT DEPOSITS ============
+export const paymentDeposits = pgTable("payment_deposits", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  estimateId: varchar("estimate_id", { length: 36 }).references(() => estimates.id),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id),
+  
+  amount: integer("amount").notNull(), // cents
+  depositPercentage: integer("deposit_percentage"), // e.g., 25 for 25%
+  
+  stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 200 }),
+  stripeChargeId: varchar("stripe_charge_id", { length: 200 }),
+  
+  status: varchar("status", { length: 20 }).default("pending"), // pending, paid, refunded, failed
+  paidAt: timestamp("paid_at"),
+  refundedAt: timestamp("refunded_at"),
+  
+  customerEmail: varchar("customer_email", { length: 200 }),
+  customerName: varchar("customer_name", { length: 200 }),
+  
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_deposit_tenant").on(table.tenantId),
+  index("idx_deposit_estimate").on(table.estimateId),
+  index("idx_deposit_job").on(table.jobId),
+]);
+
+export const insertPaymentDepositSchema = createInsertSchema(paymentDeposits).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertPaymentDeposit = z.infer<typeof insertPaymentDepositSchema>;
+export type PaymentDeposit = typeof paymentDeposits.$inferSelect;
+
+// ============ JOB COSTING ============
+export const jobCosting = pgTable("job_costing", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id).notNull(),
+  
+  // Estimated costs (from quote)
+  estimatedLabor: integer("estimated_labor").default(0), // cents
+  estimatedMaterials: integer("estimated_materials").default(0),
+  estimatedTotal: integer("estimated_total").default(0),
+  
+  // Actual costs (tracked)
+  actualLabor: integer("actual_labor").default(0), // cents
+  actualMaterials: integer("actual_materials").default(0),
+  actualTotal: integer("actual_total").default(0),
+  
+  // Labor tracking
+  estimatedHours: real("estimated_hours"),
+  actualHours: real("actual_hours"),
+  laborRate: integer("labor_rate"), // cents per hour
+  
+  // Profit analysis
+  grossProfit: integer("gross_profit"), // cents
+  profitMargin: real("profit_margin"), // percentage
+  
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_job_costing_tenant").on(table.tenantId),
+  index("idx_job_costing_job").on(table.jobId),
+]);
+
+export const insertJobCostingSchema = createInsertSchema(jobCosting).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertJobCosting = z.infer<typeof insertJobCostingSchema>;
+export type JobCosting = typeof jobCosting.$inferSelect;
+
+// ============ JOB PHOTOS (Progress Updates) ============
+export const jobPhotos = pgTable("job_photos", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id).notNull(),
+  
+  photoUrl: text("photo_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  
+  photoType: varchar("photo_type", { length: 30 }).notNull(), // before, during, after, issue
+  caption: text("caption"),
+  
+  uploadedBy: varchar("uploaded_by", { length: 36 }),
+  uploadedByName: varchar("uploaded_by_name", { length: 200 }),
+  
+  isVisibleToCustomer: boolean("is_visible_to_customer").default(true),
+  
+  takenAt: timestamp("taken_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_job_photo_tenant").on(table.tenantId),
+  index("idx_job_photo_job").on(table.jobId),
+]);
+
+export const insertJobPhotoSchema = createInsertSchema(jobPhotos).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertJobPhoto = z.infer<typeof insertJobPhotoSchema>;
+export type JobPhoto = typeof jobPhotos.$inferSelect;
+
+// ============ INVENTORY MANAGEMENT ============
+export const inventoryItems = pgTable("inventory_items", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  name: varchar("name", { length: 200 }).notNull(),
+  sku: varchar("sku", { length: 50 }),
+  category: varchar("category", { length: 50 }).notNull(), // paint, primer, supplies, equipment
+  
+  brand: varchar("brand", { length: 100 }),
+  colorCode: varchar("color_code", { length: 50 }),
+  colorName: varchar("color_name", { length: 100 }),
+  
+  unit: varchar("unit", { length: 20 }).notNull(), // gallon, quart, each, roll
+  quantityInStock: real("quantity_in_stock").default(0),
+  minimumStock: real("minimum_stock").default(0),
+  reorderPoint: real("reorder_point"),
+  
+  costPerUnit: integer("cost_per_unit"), // cents
+  lastPurchaseDate: timestamp("last_purchase_date"),
+  
+  location: varchar("location", { length: 100 }), // warehouse, van, job site
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_inventory_tenant").on(table.tenantId),
+  index("idx_inventory_category").on(table.category),
+]);
+
+export const inventoryTransactions = pgTable("inventory_transactions", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  itemId: varchar("item_id", { length: 36 }).references(() => inventoryItems.id).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id),
+  
+  transactionType: varchar("transaction_type", { length: 20 }).notNull(), // purchase, use, return, adjustment
+  quantity: real("quantity").notNull(),
+  previousQuantity: real("previous_quantity"),
+  newQuantity: real("new_quantity"),
+  
+  unitCost: integer("unit_cost"), // cents
+  totalCost: integer("total_cost"), // cents
+  
+  notes: text("notes"),
+  performedBy: varchar("performed_by", { length: 200 }),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_inv_trans_tenant").on(table.tenantId),
+  index("idx_inv_trans_item").on(table.itemId),
+  index("idx_inv_trans_job").on(table.jobId),
+]);
+
+export const insertInventoryItemSchema = createInsertSchema(inventoryItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertInventoryTransactionSchema = createInsertSchema(inventoryTransactions).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertInventoryItem = z.infer<typeof insertInventoryItemSchema>;
+export type InventoryItem = typeof inventoryItems.$inferSelect;
+export type InsertInventoryTransaction = z.infer<typeof insertInventoryTransactionSchema>;
+export type InventoryTransaction = typeof inventoryTransactions.$inferSelect;
+
+// ============ SUBCONTRACTOR MANAGEMENT ============
+export const subcontractors = pgTable("subcontractors", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  companyName: varchar("company_name", { length: 200 }).notNull(),
+  contactName: varchar("contact_name", { length: 200 }),
+  email: varchar("email", { length: 200 }),
+  phone: varchar("phone", { length: 50 }),
+  
+  specialty: varchar("specialty", { length: 100 }), // exterior, commercial, drywall, etc.
+  licenseNumber: varchar("license_number", { length: 100 }),
+  insuranceExpiry: timestamp("insurance_expiry"),
+  
+  hourlyRate: integer("hourly_rate"), // cents
+  dayRate: integer("day_rate"), // cents
+  
+  rating: real("rating"), // 1-5
+  totalJobs: integer("total_jobs").default(0),
+  
+  notes: text("notes"),
+  isActive: boolean("is_active").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_subcontractor_tenant").on(table.tenantId),
+]);
+
+export const subcontractorAssignments = pgTable("subcontractor_assignments", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  subcontractorId: varchar("subcontractor_id", { length: 36 }).references(() => subcontractors.id).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id).notNull(),
+  
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  
+  agreedRate: integer("agreed_rate"), // cents
+  rateType: varchar("rate_type", { length: 20 }), // hourly, daily, fixed
+  
+  hoursWorked: real("hours_worked"),
+  totalPaid: integer("total_paid"), // cents
+  
+  status: varchar("status", { length: 20 }).default("assigned"), // assigned, in_progress, completed, cancelled
+  notes: text("notes"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_sub_assign_tenant").on(table.tenantId),
+  index("idx_sub_assign_sub").on(table.subcontractorId),
+  index("idx_sub_assign_job").on(table.jobId),
+]);
+
+export const insertSubcontractorSchema = createInsertSchema(subcontractors).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertSubcontractorAssignmentSchema = createInsertSchema(subcontractorAssignments).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertSubcontractor = z.infer<typeof insertSubcontractorSchema>;
+export type Subcontractor = typeof subcontractors.$inferSelect;
+export type InsertSubcontractorAssignment = z.infer<typeof insertSubcontractorAssignmentSchema>;
+export type SubcontractorAssignment = typeof subcontractorAssignments.$inferSelect;
+
+// ============ WEATHER SCHEDULING ============
+export const weatherAlerts = pgTable("weather_alerts", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id),
+  bookingId: varchar("booking_id", { length: 36 }).references(() => bookings.id),
+  
+  alertType: varchar("alert_type", { length: 30 }).notNull(), // rain, extreme_heat, extreme_cold, wind
+  severity: varchar("severity", { length: 20 }).notNull(), // low, medium, high
+  
+  forecastDate: timestamp("forecast_date").notNull(),
+  weatherDescription: text("weather_description"),
+  temperature: real("temperature"),
+  precipitationChance: integer("precipitation_chance"),
+  windSpeed: real("wind_speed"),
+  
+  suggestedAction: varchar("suggested_action", { length: 50 }), // reschedule, monitor, proceed
+  isAcknowledged: boolean("is_acknowledged").default(false),
+  acknowledgedBy: varchar("acknowledged_by", { length: 200 }),
+  acknowledgedAt: timestamp("acknowledged_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_weather_alert_tenant").on(table.tenantId),
+  index("idx_weather_alert_job").on(table.jobId),
+  index("idx_weather_alert_date").on(table.forecastDate),
+]);
+
+export const insertWeatherAlertSchema = createInsertSchema(weatherAlerts).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertWeatherAlert = z.infer<typeof insertWeatherAlertSchema>;
+export type WeatherAlert = typeof weatherAlerts.$inferSelect;
+
+// ============ WEBHOOK INTEGRATIONS (Zapier/Make) ============
+export const webhookSubscriptions = pgTable("webhook_subscriptions", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  name: varchar("name", { length: 100 }).notNull(),
+  url: text("url").notNull(),
+  secret: varchar("secret", { length: 100 }),
+  
+  events: text("events").array(), // lead.created, estimate.signed, job.completed, etc.
+  
+  isActive: boolean("is_active").default(true),
+  lastTriggered: timestamp("last_triggered"),
+  failureCount: integer("failure_count").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_webhook_tenant").on(table.tenantId),
+]);
+
+export const webhookLogs = pgTable("webhook_logs", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  subscriptionId: varchar("subscription_id", { length: 36 }).references(() => webhookSubscriptions.id).notNull(),
+  
+  eventType: varchar("event_type", { length: 50 }).notNull(),
+  payload: jsonb("payload"),
+  
+  responseStatus: integer("response_status"),
+  responseBody: text("response_body"),
+  
+  success: boolean("success").notNull(),
+  errorMessage: text("error_message"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_webhook_log_sub").on(table.subscriptionId),
+]);
+
+export const insertWebhookSubscriptionSchema = createInsertSchema(webhookSubscriptions).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertWebhookLogSchema = createInsertSchema(webhookLogs).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertWebhookSubscription = z.infer<typeof insertWebhookSubscriptionSchema>;
+export type WebhookSubscription = typeof webhookSubscriptions.$inferSelect;
+export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
+export type WebhookLog = typeof webhookLogs.$inferSelect;
+
+// ============ TRADE VERTICALS ============
+export const tradeVerticals = pgTable("trade_verticals", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  
+  name: varchar("name", { length: 100 }).notNull(), // painting, hvac, roofing, plumbing, electrical
+  displayName: varchar("display_name", { length: 100 }).notNull(),
+  icon: varchar("icon", { length: 50 }),
+  
+  defaultServices: jsonb("default_services"), // array of service templates
+  defaultPricing: jsonb("default_pricing"), // pricing structure template
+  estimatorFields: jsonb("estimator_fields"), // custom fields for estimator
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTradeVerticalSchema = createInsertSchema(tradeVerticals).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertTradeVertical = z.infer<typeof insertTradeVerticalSchema>;
+export type TradeVertical = typeof tradeVerticals.$inferSelect;
+
+// ============ FRANCHISE REPORTS ============
+export const franchiseReports = pgTable("franchise_reports", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  locationId: varchar("location_id", { length: 36 }).references(() => franchiseLocations.id),
+  
+  reportPeriod: varchar("report_period", { length: 20 }).notNull(), // 2026-01, 2026-Q1, 2026
+  periodType: varchar("period_type", { length: 20 }).notNull(), // monthly, quarterly, yearly
+  
+  revenue: integer("revenue").default(0), // cents
+  expenses: integer("expenses").default(0),
+  profit: integer("profit").default(0),
+  
+  leadsGenerated: integer("leads_generated").default(0),
+  estimatesSent: integer("estimates_sent").default(0),
+  jobsCompleted: integer("jobs_completed").default(0),
+  
+  avgTicket: integer("avg_ticket").default(0), // cents
+  closeRate: real("close_rate"),
+  customerSatisfaction: real("customer_satisfaction"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_franchise_report_tenant").on(table.tenantId),
+  index("idx_franchise_report_location").on(table.locationId),
+  index("idx_franchise_report_period").on(table.reportPeriod),
+]);
+
+export const insertFranchiseReportSchema = createInsertSchema(franchiseReports).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertFranchiseReport = z.infer<typeof insertFranchiseReportSchema>;
+export type FranchiseReport = typeof franchiseReports.$inferSelect;
+
+// ============ FINANCING OPTIONS ============
+export const financingPlans = pgTable("financing_plans", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  
+  termMonths: integer("term_months").notNull(), // 6, 12, 18, 24
+  interestRate: real("interest_rate").notNull(), // APR percentage
+  minAmount: integer("min_amount"), // cents
+  maxAmount: integer("max_amount"), // cents
+  
+  provider: varchar("provider", { length: 50 }), // internal, affirm, klarna
+  providerPlanId: varchar("provider_plan_id", { length: 100 }),
+  
+  isActive: boolean("is_active").default(true),
+  displayOrder: integer("display_order").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_financing_tenant").on(table.tenantId),
+]);
+
+export const insertFinancingPlanSchema = createInsertSchema(financingPlans).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertFinancingPlan = z.infer<typeof insertFinancingPlanSchema>;
+export type FinancingPlan = typeof financingPlans.$inferSelect;
+
+// ============ COLOR PALETTES ============
+export const colorPalettes = pgTable("color_palettes", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  name: varchar("name", { length: 100 }).notNull(),
+  brand: varchar("brand", { length: 100 }), // sherwin-williams, benjamin-moore, behr
+  
+  colors: jsonb("colors").notNull(), // array of {name, code, hex, category}
+  
+  roomType: varchar("room_type", { length: 50 }), // living_room, bedroom, kitchen, exterior
+  style: varchar("style", { length: 50 }), // modern, traditional, coastal, farmhouse
+  
+  isPublic: boolean("is_public").default(false),
+  usageCount: integer("usage_count").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_palette_tenant").on(table.tenantId),
+  index("idx_palette_brand").on(table.brand),
+]);
+
+export const insertColorPaletteSchema = createInsertSchema(colorPalettes).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertColorPalette = z.infer<typeof insertColorPaletteSchema>;
+export type ColorPalette = typeof colorPalettes.$inferSelect;
+
+// ============ CALENDAR EXPORTS ============
+export const calendarExports = pgTable("calendar_exports", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  userId: varchar("user_id", { length: 36 }),
+  
+  exportToken: varchar("export_token", { length: 100 }).notNull(),
+  calendarType: varchar("calendar_type", { length: 30 }).notNull(), // bookings, jobs, all
+  
+  lastAccessed: timestamp("last_accessed"),
+  accessCount: integer("access_count").default(0),
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_cal_export_tenant").on(table.tenantId),
+  index("idx_cal_export_token").on(table.exportToken),
+]);
+
+export const insertCalendarExportSchema = createInsertSchema(calendarExports).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertCalendarExport = z.infer<typeof insertCalendarExportSchema>;
+export type CalendarExport = typeof calendarExports.$inferSelect;
+

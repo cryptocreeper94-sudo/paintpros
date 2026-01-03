@@ -15,6 +15,12 @@ import {
   insertJobSchema, insertJobUpdateSchema, insertReviewRequestSchema, insertPortfolioEntrySchema,
   insertMaterialCalculationSchema, insertLeadSourceSchema, insertWarrantySchema,
   insertFollowupSequenceSchema, insertFollowupStepSchema, insertReferralProgramSchema, insertGpsCheckinSchema,
+  insertPaymentDepositSchema, insertJobCostingSchema, insertJobPhotoSchema,
+  insertInventoryItemSchema, insertInventoryTransactionSchema,
+  insertSubcontractorSchema, insertSubcontractorAssignmentSchema,
+  insertWeatherAlertSchema, insertWebhookSubscriptionSchema,
+  insertTradeVerticalSchema, insertFranchiseReportSchema, insertFinancingPlanSchema,
+  insertColorPaletteSchema, insertCalendarExportSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -2968,6 +2974,454 @@ Do not include any text before or after the JSON.`
       console.error("Error processing voice estimate:", error);
       res.status(500).json({ error: "Failed to process voice estimate" });
     }
+  });
+
+  // ============ PAYMENT DEPOSITS ============
+  
+  app.post("/api/deposits", async (req, res) => {
+    try {
+      const validated = insertPaymentDepositSchema.parse(req.body);
+      const deposit = await storage.createPaymentDeposit(validated);
+      res.status(201).json(deposit);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create deposit" });
+    }
+  });
+  
+  app.get("/api/deposits", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const deposits = await storage.getPaymentDeposits(tenantId);
+    res.json(deposits);
+  });
+  
+  app.patch("/api/deposits/:id", async (req, res) => {
+    const deposit = await storage.updatePaymentDeposit(req.params.id, req.body);
+    if (!deposit) return res.status(404).json({ error: "Deposit not found" });
+    res.json(deposit);
+  });
+
+  // ============ JOB COSTING ============
+  
+  app.post("/api/job-costing", async (req, res) => {
+    try {
+      const validated = insertJobCostingSchema.parse(req.body);
+      const costing = await storage.createJobCosting(validated);
+      res.status(201).json(costing);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create job costing" });
+    }
+  });
+  
+  app.get("/api/job-costing", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const costings = await storage.getJobCostings(tenantId);
+    res.json(costings);
+  });
+  
+  app.get("/api/job-costing/job/:jobId", async (req, res) => {
+    const costing = await storage.getJobCostingByJobId(req.params.jobId);
+    if (!costing) return res.status(404).json({ error: "Job costing not found" });
+    res.json(costing);
+  });
+  
+  app.patch("/api/job-costing/:id", async (req, res) => {
+    const costing = await storage.updateJobCosting(req.params.id, req.body);
+    if (!costing) return res.status(404).json({ error: "Job costing not found" });
+    res.json(costing);
+  });
+
+  // ============ JOB PHOTOS ============
+  
+  app.post("/api/job-photos", async (req, res) => {
+    try {
+      const validated = insertJobPhotoSchema.parse(req.body);
+      const photo = await storage.createJobPhoto(validated);
+      res.status(201).json(photo);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to upload photo" });
+    }
+  });
+  
+  app.get("/api/job-photos/:jobId", async (req, res) => {
+    const photos = await storage.getJobPhotos(req.params.jobId);
+    res.json(photos);
+  });
+  
+  app.delete("/api/job-photos/:id", async (req, res) => {
+    await storage.deleteJobPhoto(req.params.id);
+    res.status(204).send();
+  });
+
+  // ============ INVENTORY ============
+  
+  app.post("/api/inventory", async (req, res) => {
+    try {
+      const validated = insertInventoryItemSchema.parse(req.body);
+      const item = await storage.createInventoryItem(validated);
+      res.status(201).json(item);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create inventory item" });
+    }
+  });
+  
+  app.get("/api/inventory", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const items = await storage.getInventoryItems(tenantId);
+    res.json(items);
+  });
+  
+  app.patch("/api/inventory/:id", async (req, res) => {
+    const item = await storage.updateInventoryItem(req.params.id, req.body);
+    if (!item) return res.status(404).json({ error: "Item not found" });
+    res.json(item);
+  });
+  
+  app.post("/api/inventory/transactions", async (req, res) => {
+    try {
+      const validated = insertInventoryTransactionSchema.parse(req.body);
+      const transaction = await storage.createInventoryTransaction(validated);
+      // Update inventory quantity
+      const item = await storage.updateInventoryItem(validated.itemId, {
+        quantityInStock: validated.newQuantity || 0,
+      });
+      res.status(201).json({ transaction, item });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create transaction" });
+    }
+  });
+  
+  app.get("/api/inventory/transactions", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const transactions = await storage.getInventoryTransactions(tenantId);
+    res.json(transactions);
+  });
+
+  // ============ SUBCONTRACTORS ============
+  
+  app.post("/api/subcontractors", async (req, res) => {
+    try {
+      const validated = insertSubcontractorSchema.parse(req.body);
+      const sub = await storage.createSubcontractor(validated);
+      res.status(201).json(sub);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create subcontractor" });
+    }
+  });
+  
+  app.get("/api/subcontractors", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const subs = await storage.getSubcontractors(tenantId);
+    res.json(subs);
+  });
+  
+  app.patch("/api/subcontractors/:id", async (req, res) => {
+    const sub = await storage.updateSubcontractor(req.params.id, req.body);
+    if (!sub) return res.status(404).json({ error: "Subcontractor not found" });
+    res.json(sub);
+  });
+  
+  app.post("/api/subcontractors/assignments", async (req, res) => {
+    try {
+      const validated = insertSubcontractorAssignmentSchema.parse(req.body);
+      const assignment = await storage.createSubcontractorAssignment(validated);
+      res.status(201).json(assignment);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create assignment" });
+    }
+  });
+  
+  app.get("/api/subcontractors/assignments/:jobId", async (req, res) => {
+    const assignments = await storage.getSubcontractorAssignments(req.params.jobId);
+    res.json(assignments);
+  });
+
+  // ============ WEATHER ALERTS ============
+  
+  app.post("/api/weather-alerts", async (req, res) => {
+    try {
+      const validated = insertWeatherAlertSchema.parse(req.body);
+      const alert = await storage.createWeatherAlert(validated);
+      res.status(201).json(alert);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create weather alert" });
+    }
+  });
+  
+  app.get("/api/weather-alerts", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const alerts = await storage.getWeatherAlerts(tenantId);
+    res.json(alerts);
+  });
+  
+  app.post("/api/weather-alerts/:id/acknowledge", async (req, res) => {
+    const { acknowledgedBy } = req.body;
+    const alert = await storage.acknowledgeWeatherAlert(req.params.id, acknowledgedBy);
+    if (!alert) return res.status(404).json({ error: "Alert not found" });
+    res.json(alert);
+  });
+
+  // ============ WEBHOOKS (Zapier/Make) ============
+  
+  app.post("/api/webhooks", async (req, res) => {
+    try {
+      const secret = crypto.randomBytes(32).toString("hex");
+      const validated = insertWebhookSubscriptionSchema.parse({ ...req.body, secret });
+      const subscription = await storage.createWebhookSubscription(validated);
+      res.status(201).json(subscription);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create webhook" });
+    }
+  });
+  
+  app.get("/api/webhooks", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const webhooks = await storage.getWebhookSubscriptions(tenantId);
+    res.json(webhooks);
+  });
+  
+  app.delete("/api/webhooks/:id", async (req, res) => {
+    await storage.deleteWebhookSubscription(req.params.id);
+    res.status(204).send();
+  });
+
+  // ============ TRADE VERTICALS ============
+  
+  app.post("/api/trade-verticals", async (req, res) => {
+    try {
+      const validated = insertTradeVerticalSchema.parse(req.body);
+      const vertical = await storage.createTradeVertical(validated);
+      res.status(201).json(vertical);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create trade vertical" });
+    }
+  });
+  
+  app.get("/api/trade-verticals", async (req, res) => {
+    const verticals = await storage.getTradeVerticals();
+    res.json(verticals);
+  });
+
+  // ============ FRANCHISE REPORTS ============
+  
+  app.post("/api/franchise-reports", async (req, res) => {
+    try {
+      const validated = insertFranchiseReportSchema.parse(req.body);
+      const report = await storage.createFranchiseReport(validated);
+      res.status(201).json(report);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create report" });
+    }
+  });
+  
+  app.get("/api/franchise-reports", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const reports = await storage.getFranchiseReports(tenantId);
+    res.json(reports);
+  });
+
+  // ============ FINANCING PLANS ============
+  
+  app.post("/api/financing-plans", async (req, res) => {
+    try {
+      const validated = insertFinancingPlanSchema.parse(req.body);
+      const plan = await storage.createFinancingPlan(validated);
+      res.status(201).json(plan);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create financing plan" });
+    }
+  });
+  
+  app.get("/api/financing-plans", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const plans = await storage.getFinancingPlans(tenantId);
+    res.json(plans);
+  });
+  
+  // Calculate monthly payment
+  app.get("/api/financing-plans/calculate", async (req, res) => {
+    const { amount, termMonths, interestRate } = req.query;
+    const principal = Number(amount) || 0;
+    const months = Number(termMonths) || 12;
+    const rate = (Number(interestRate) || 0) / 100 / 12;
+    
+    let monthlyPayment = 0;
+    if (rate > 0) {
+      monthlyPayment = principal * (rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1);
+    } else {
+      monthlyPayment = principal / months;
+    }
+    
+    res.json({
+      principal,
+      termMonths: months,
+      interestRate: Number(interestRate) || 0,
+      monthlyPayment: Math.round(monthlyPayment),
+      totalPayment: Math.round(monthlyPayment * months),
+      totalInterest: Math.round((monthlyPayment * months) - principal),
+    });
+  });
+
+  // ============ COLOR PALETTES ============
+  
+  app.post("/api/color-palettes", async (req, res) => {
+    try {
+      const validated = insertColorPaletteSchema.parse(req.body);
+      const palette = await storage.createColorPalette(validated);
+      res.status(201).json(palette);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create palette" });
+    }
+  });
+  
+  app.get("/api/color-palettes", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const palettes = await storage.getColorPalettes(tenantId);
+    res.json(palettes);
+  });
+
+  // ============ CALENDAR EXPORTS (iCal) ============
+  
+  app.post("/api/calendar/export", async (req, res) => {
+    try {
+      const exportToken = crypto.randomBytes(32).toString("hex");
+      const validated = insertCalendarExportSchema.parse({ ...req.body, exportToken });
+      const calExport = await storage.createCalendarExport(validated);
+      const baseUrl = process.env.REPLIT_DOMAINS?.split(",")[0] || "localhost:5000";
+      res.status(201).json({
+        ...calExport,
+        icalUrl: `https://${baseUrl}/api/calendar/ical/${exportToken}`,
+      });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create calendar export" });
+    }
+  });
+  
+  app.get("/api/calendar/ical/:token", async (req, res) => {
+    const calExport = await storage.getCalendarExportByToken(req.params.token);
+    if (!calExport) return res.status(404).json({ error: "Calendar not found" });
+    
+    // Generate iCal format
+    const now = new Date();
+    const ical = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//PaintPros//Calendar//EN",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      `X-WR-CALNAME:PaintPros ${calExport.calendarType}`,
+      "END:VCALENDAR",
+    ].join("\r\n");
+    
+    res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="paintpros-${calExport.calendarType}.ics"`);
+    res.send(ical);
+  });
+
+  // ============ ROUTE OPTIMIZATION ============
+  
+  // Simple distance calculation between two points
+  app.post("/api/routes/optimize", async (req, res) => {
+    const { jobs } = req.body; // Array of {id, lat, lng, address}
+    if (!jobs || jobs.length === 0) {
+      res.json({ optimizedOrder: [], totalDistance: 0 });
+      return;
+    }
+    
+    // Simple nearest-neighbor algorithm
+    const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      const R = 3959; // Earth's radius in miles
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    };
+    
+    const optimized = [jobs[0]];
+    const remaining = jobs.slice(1);
+    let totalDistance = 0;
+    
+    while (remaining.length > 0) {
+      const current = optimized[optimized.length - 1];
+      let nearestIdx = 0;
+      let nearestDist = Infinity;
+      
+      remaining.forEach((job: any, idx: number) => {
+        const dist = haversineDistance(current.lat, current.lng, job.lat, job.lng);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestIdx = idx;
+        }
+      });
+      
+      totalDistance += nearestDist;
+      optimized.push(remaining[nearestIdx]);
+      remaining.splice(nearestIdx, 1);
+    }
+    
+    res.json({
+      optimizedOrder: optimized.map((j: any) => j.id),
+      jobs: optimized,
+      totalDistance: Math.round(totalDistance * 10) / 10,
+      estimatedTime: Math.round(totalDistance * 2), // ~30 mph average
+    });
   });
 
   // ============ SYSTEM HEALTH ============

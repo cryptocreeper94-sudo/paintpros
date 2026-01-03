@@ -56,6 +56,21 @@ import {
   type ReferralProgram, type InsertReferralProgram, referralProgram,
   type ReferralTracking, type InsertReferralTracking, referralTracking,
   type GpsCheckin, type InsertGpsCheckin, gpsCheckins,
+  type PaymentDeposit, type InsertPaymentDeposit, paymentDeposits,
+  type JobCosting, type InsertJobCosting, jobCosting,
+  type JobPhoto, type InsertJobPhoto, jobPhotos,
+  type InventoryItem, type InsertInventoryItem, inventoryItems,
+  type InventoryTransaction, type InsertInventoryTransaction, inventoryTransactions,
+  type Subcontractor, type InsertSubcontractor, subcontractors,
+  type SubcontractorAssignment, type InsertSubcontractorAssignment, subcontractorAssignments,
+  type WeatherAlert, type InsertWeatherAlert, weatherAlerts,
+  type WebhookSubscription, type InsertWebhookSubscription, webhookSubscriptions,
+  type WebhookLog, type InsertWebhookLog, webhookLogs,
+  type TradeVertical, type InsertTradeVertical, tradeVerticals,
+  type FranchiseReport, type InsertFranchiseReport, franchiseReports,
+  type FinancingPlan, type InsertFinancingPlan, financingPlans,
+  type ColorPalette, type InsertColorPalette, colorPalettes,
+  type CalendarExport, type InsertCalendarExport, calendarExports,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -399,6 +414,69 @@ export interface IStorage {
   createGpsCheckin(checkin: InsertGpsCheckin): Promise<GpsCheckin>;
   getGpsCheckins(jobId: string): Promise<GpsCheckin[]>;
   getGpsCheckinsByMember(crewMemberId: string): Promise<GpsCheckin[]>;
+  
+  // Payment Deposits
+  createPaymentDeposit(deposit: InsertPaymentDeposit): Promise<PaymentDeposit>;
+  getPaymentDeposits(tenantId: string): Promise<PaymentDeposit[]>;
+  getPaymentDepositById(id: string): Promise<PaymentDeposit | undefined>;
+  updatePaymentDeposit(id: string, updates: Partial<InsertPaymentDeposit>): Promise<PaymentDeposit | undefined>;
+  
+  // Job Costing
+  createJobCosting(costing: InsertJobCosting): Promise<JobCosting>;
+  getJobCostingByJobId(jobId: string): Promise<JobCosting | undefined>;
+  updateJobCosting(id: string, updates: Partial<InsertJobCosting>): Promise<JobCosting | undefined>;
+  getJobCostings(tenantId: string): Promise<JobCosting[]>;
+  
+  // Job Photos
+  createJobPhoto(photo: InsertJobPhoto): Promise<JobPhoto>;
+  getJobPhotos(jobId: string): Promise<JobPhoto[]>;
+  deleteJobPhoto(id: string): Promise<void>;
+  
+  // Inventory
+  createInventoryItem(item: InsertInventoryItem): Promise<InventoryItem>;
+  getInventoryItems(tenantId: string): Promise<InventoryItem[]>;
+  updateInventoryItem(id: string, updates: Partial<InsertInventoryItem>): Promise<InventoryItem | undefined>;
+  createInventoryTransaction(transaction: InsertInventoryTransaction): Promise<InventoryTransaction>;
+  getInventoryTransactions(tenantId: string): Promise<InventoryTransaction[]>;
+  
+  // Subcontractors
+  createSubcontractor(sub: InsertSubcontractor): Promise<Subcontractor>;
+  getSubcontractors(tenantId: string): Promise<Subcontractor[]>;
+  updateSubcontractor(id: string, updates: Partial<InsertSubcontractor>): Promise<Subcontractor | undefined>;
+  createSubcontractorAssignment(assignment: InsertSubcontractorAssignment): Promise<SubcontractorAssignment>;
+  getSubcontractorAssignments(jobId: string): Promise<SubcontractorAssignment[]>;
+  
+  // Weather Alerts
+  createWeatherAlert(alert: InsertWeatherAlert): Promise<WeatherAlert>;
+  getWeatherAlerts(tenantId: string): Promise<WeatherAlert[]>;
+  acknowledgeWeatherAlert(id: string, acknowledgedBy: string): Promise<WeatherAlert | undefined>;
+  
+  // Webhooks
+  createWebhookSubscription(subscription: InsertWebhookSubscription): Promise<WebhookSubscription>;
+  getWebhookSubscriptions(tenantId: string): Promise<WebhookSubscription[]>;
+  updateWebhookSubscription(id: string, updates: Partial<InsertWebhookSubscription>): Promise<WebhookSubscription | undefined>;
+  deleteWebhookSubscription(id: string): Promise<void>;
+  createWebhookLog(log: InsertWebhookLog): Promise<WebhookLog>;
+  
+  // Trade Verticals
+  createTradeVertical(vertical: InsertTradeVertical): Promise<TradeVertical>;
+  getTradeVerticals(): Promise<TradeVertical[]>;
+  
+  // Franchise Reports
+  createFranchiseReport(report: InsertFranchiseReport): Promise<FranchiseReport>;
+  getFranchiseReports(tenantId: string): Promise<FranchiseReport[]>;
+  
+  // Financing Plans
+  createFinancingPlan(plan: InsertFinancingPlan): Promise<FinancingPlan>;
+  getFinancingPlans(tenantId: string): Promise<FinancingPlan[]>;
+  
+  // Color Palettes
+  createColorPalette(palette: InsertColorPalette): Promise<ColorPalette>;
+  getColorPalettes(tenantId: string): Promise<ColorPalette[]>;
+  
+  // Calendar Exports
+  createCalendarExport(exportData: InsertCalendarExport): Promise<CalendarExport>;
+  getCalendarExportByToken(token: string): Promise<CalendarExport | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2435,6 +2513,224 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(gpsCheckins)
       .where(eq(gpsCheckins.crewMemberId, crewMemberId))
       .orderBy(desc(gpsCheckins.timestamp));
+  }
+
+  // Payment Deposits
+  async createPaymentDeposit(deposit: InsertPaymentDeposit): Promise<PaymentDeposit> {
+    const [result] = await db.insert(paymentDeposits).values(deposit).returning();
+    return result;
+  }
+
+  async getPaymentDeposits(tenantId: string): Promise<PaymentDeposit[]> {
+    return await db.select().from(paymentDeposits)
+      .where(eq(paymentDeposits.tenantId, tenantId))
+      .orderBy(desc(paymentDeposits.createdAt));
+  }
+
+  async getPaymentDepositById(id: string): Promise<PaymentDeposit | undefined> {
+    const [result] = await db.select().from(paymentDeposits).where(eq(paymentDeposits.id, id));
+    return result;
+  }
+
+  async updatePaymentDeposit(id: string, updates: Partial<InsertPaymentDeposit>): Promise<PaymentDeposit | undefined> {
+    const [result] = await db.update(paymentDeposits).set(updates).where(eq(paymentDeposits.id, id)).returning();
+    return result;
+  }
+
+  // Job Costing
+  async createJobCosting(costing: InsertJobCosting): Promise<JobCosting> {
+    const [result] = await db.insert(jobCosting).values(costing).returning();
+    return result;
+  }
+
+  async getJobCostingByJobId(jobId: string): Promise<JobCosting | undefined> {
+    const [result] = await db.select().from(jobCosting).where(eq(jobCosting.jobId, jobId));
+    return result;
+  }
+
+  async updateJobCosting(id: string, updates: Partial<InsertJobCosting>): Promise<JobCosting | undefined> {
+    const [result] = await db.update(jobCosting)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(jobCosting.id, id))
+      .returning();
+    return result;
+  }
+
+  async getJobCostings(tenantId: string): Promise<JobCosting[]> {
+    return await db.select().from(jobCosting).where(eq(jobCosting.tenantId, tenantId));
+  }
+
+  // Job Photos
+  async createJobPhoto(photo: InsertJobPhoto): Promise<JobPhoto> {
+    const [result] = await db.insert(jobPhotos).values(photo).returning();
+    return result;
+  }
+
+  async getJobPhotos(jobId: string): Promise<JobPhoto[]> {
+    return await db.select().from(jobPhotos)
+      .where(eq(jobPhotos.jobId, jobId))
+      .orderBy(desc(jobPhotos.createdAt));
+  }
+
+  async deleteJobPhoto(id: string): Promise<void> {
+    await db.delete(jobPhotos).where(eq(jobPhotos.id, id));
+  }
+
+  // Inventory
+  async createInventoryItem(item: InsertInventoryItem): Promise<InventoryItem> {
+    const [result] = await db.insert(inventoryItems).values(item).returning();
+    return result;
+  }
+
+  async getInventoryItems(tenantId: string): Promise<InventoryItem[]> {
+    return await db.select().from(inventoryItems).where(eq(inventoryItems.tenantId, tenantId));
+  }
+
+  async updateInventoryItem(id: string, updates: Partial<InsertInventoryItem>): Promise<InventoryItem | undefined> {
+    const [result] = await db.update(inventoryItems)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(inventoryItems.id, id))
+      .returning();
+    return result;
+  }
+
+  async createInventoryTransaction(transaction: InsertInventoryTransaction): Promise<InventoryTransaction> {
+    const [result] = await db.insert(inventoryTransactions).values(transaction).returning();
+    return result;
+  }
+
+  async getInventoryTransactions(tenantId: string): Promise<InventoryTransaction[]> {
+    return await db.select().from(inventoryTransactions)
+      .where(eq(inventoryTransactions.tenantId, tenantId))
+      .orderBy(desc(inventoryTransactions.createdAt));
+  }
+
+  // Subcontractors
+  async createSubcontractor(sub: InsertSubcontractor): Promise<Subcontractor> {
+    const [result] = await db.insert(subcontractors).values(sub).returning();
+    return result;
+  }
+
+  async getSubcontractors(tenantId: string): Promise<Subcontractor[]> {
+    return await db.select().from(subcontractors).where(eq(subcontractors.tenantId, tenantId));
+  }
+
+  async updateSubcontractor(id: string, updates: Partial<InsertSubcontractor>): Promise<Subcontractor | undefined> {
+    const [result] = await db.update(subcontractors)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(subcontractors.id, id))
+      .returning();
+    return result;
+  }
+
+  async createSubcontractorAssignment(assignment: InsertSubcontractorAssignment): Promise<SubcontractorAssignment> {
+    const [result] = await db.insert(subcontractorAssignments).values(assignment).returning();
+    return result;
+  }
+
+  async getSubcontractorAssignments(jobId: string): Promise<SubcontractorAssignment[]> {
+    return await db.select().from(subcontractorAssignments)
+      .where(eq(subcontractorAssignments.jobId, jobId));
+  }
+
+  // Weather Alerts
+  async createWeatherAlert(alert: InsertWeatherAlert): Promise<WeatherAlert> {
+    const [result] = await db.insert(weatherAlerts).values(alert).returning();
+    return result;
+  }
+
+  async getWeatherAlerts(tenantId: string): Promise<WeatherAlert[]> {
+    return await db.select().from(weatherAlerts)
+      .where(eq(weatherAlerts.tenantId, tenantId))
+      .orderBy(desc(weatherAlerts.createdAt));
+  }
+
+  async acknowledgeWeatherAlert(id: string, acknowledgedBy: string): Promise<WeatherAlert | undefined> {
+    const [result] = await db.update(weatherAlerts)
+      .set({ isAcknowledged: true, acknowledgedBy, acknowledgedAt: new Date() })
+      .where(eq(weatherAlerts.id, id))
+      .returning();
+    return result;
+  }
+
+  // Webhooks
+  async createWebhookSubscription(subscription: InsertWebhookSubscription): Promise<WebhookSubscription> {
+    const [result] = await db.insert(webhookSubscriptions).values(subscription).returning();
+    return result;
+  }
+
+  async getWebhookSubscriptions(tenantId: string): Promise<WebhookSubscription[]> {
+    return await db.select().from(webhookSubscriptions).where(eq(webhookSubscriptions.tenantId, tenantId));
+  }
+
+  async updateWebhookSubscription(id: string, updates: Partial<InsertWebhookSubscription>): Promise<WebhookSubscription | undefined> {
+    const [result] = await db.update(webhookSubscriptions).set(updates).where(eq(webhookSubscriptions.id, id)).returning();
+    return result;
+  }
+
+  async deleteWebhookSubscription(id: string): Promise<void> {
+    await db.delete(webhookSubscriptions).where(eq(webhookSubscriptions.id, id));
+  }
+
+  async createWebhookLog(log: InsertWebhookLog): Promise<WebhookLog> {
+    const [result] = await db.insert(webhookLogs).values(log).returning();
+    return result;
+  }
+
+  // Trade Verticals
+  async createTradeVertical(vertical: InsertTradeVertical): Promise<TradeVertical> {
+    const [result] = await db.insert(tradeVerticals).values(vertical).returning();
+    return result;
+  }
+
+  async getTradeVerticals(): Promise<TradeVertical[]> {
+    return await db.select().from(tradeVerticals).where(eq(tradeVerticals.isActive, true));
+  }
+
+  // Franchise Reports
+  async createFranchiseReport(report: InsertFranchiseReport): Promise<FranchiseReport> {
+    const [result] = await db.insert(franchiseReports).values(report).returning();
+    return result;
+  }
+
+  async getFranchiseReports(tenantId: string): Promise<FranchiseReport[]> {
+    return await db.select().from(franchiseReports)
+      .where(eq(franchiseReports.tenantId, tenantId))
+      .orderBy(desc(franchiseReports.createdAt));
+  }
+
+  // Financing Plans
+  async createFinancingPlan(plan: InsertFinancingPlan): Promise<FinancingPlan> {
+    const [result] = await db.insert(financingPlans).values(plan).returning();
+    return result;
+  }
+
+  async getFinancingPlans(tenantId: string): Promise<FinancingPlan[]> {
+    return await db.select().from(financingPlans)
+      .where(and(eq(financingPlans.tenantId, tenantId), eq(financingPlans.isActive, true)))
+      .orderBy(financingPlans.displayOrder);
+  }
+
+  // Color Palettes
+  async createColorPalette(palette: InsertColorPalette): Promise<ColorPalette> {
+    const [result] = await db.insert(colorPalettes).values(palette).returning();
+    return result;
+  }
+
+  async getColorPalettes(tenantId: string): Promise<ColorPalette[]> {
+    return await db.select().from(colorPalettes).where(eq(colorPalettes.tenantId, tenantId));
+  }
+
+  // Calendar Exports
+  async createCalendarExport(exportData: InsertCalendarExport): Promise<CalendarExport> {
+    const [result] = await db.insert(calendarExports).values(exportData).returning();
+    return result;
+  }
+
+  async getCalendarExportByToken(token: string): Promise<CalendarExport | undefined> {
+    const [result] = await db.select().from(calendarExports)
+      .where(and(eq(calendarExports.exportToken, token), eq(calendarExports.isActive, true)));
+    return result;
   }
 }
 
