@@ -56,6 +56,7 @@ import CreditsDashboard from "@/pages/credits-dashboard";
 import CreditsSuccess from "@/pages/credits-success";
 import CreditsCancel from "@/pages/credits-cancel";
 import SubscriberDashboard from "@/pages/subscriber-dashboard";
+import InvestorDemo from "@/pages/investor-demo";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -91,6 +92,7 @@ function Router() {
       <Route path="/pay/:estimateId" component={Pay} />
       <Route path="/proposal/:id/sign" component={ProposalSign} />
       <Route path="/investors" component={Investors} />
+      <Route path="/investor-demo" component={InvestorDemo} />
       <Route path="/partnership-proposal" component={PartnershipProposal} />
       <Route path="/ip-agreement" component={IPAgreement} />
       <Route path="/royalty-dashboard" component={RoyaltyDashboard} />
