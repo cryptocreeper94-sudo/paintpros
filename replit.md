@@ -60,7 +60,19 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## Recent Changes (Changelog)
 
 ### January 2026
-- **v1.2.0** - Current Release
+- **v1.2.1** - Current Release
+  - Added Material Calculator API (`/api/materials/calculate`) - auto-calculate paint gallons from dimensions
+  - Added Lead Source Tracking API (`/api/lead-sources`) - track where leads come from for ROI analysis
+  - Added Warranty Tracker API (`/api/warranties`) - digital certificates with expiration alerts
+  - Added Follow-up Sequences API (`/api/followup-sequences`) - configurable email drip campaigns
+  - Added Referral Program API (`/api/referrals`) - shareable codes with conversion tracking
+  - Added Voice-to-Estimate API (`/api/voice-estimate`) - GPT-4o transcript parsing to structured estimates
+  - Added GPS Check-in API (`/api/gps-checkins`) - verify crew arrival at job sites
+  - Added QR Code Generator API (`/api/qr-code`) - URLs for yard signs (frontend renders with qrcode.react)
+  - Database schemas: materialCalculations, leadSources, warranties, followupSequences/Steps/Logs, referralProgram/Tracking, gpsCheckins
+  - Push Notification foundation: Schema exists, VAPID keys configured (service worker pending)
+
+- **v1.2.0**
   - Added Customer Portal API (`/api/jobs`, `/api/portal/:token`) - token-based job tracking for customers
   - Added Portfolio Builder API (`/api/portfolio`) - CRUD for before/after project photos
   - Added Review Automation API (`/api/review-requests`) - automated email requests via Resend
