@@ -2604,3 +2604,201 @@ export const insertCreditPurchaseSchema = createInsertSchema(creditPurchases).om
 
 export type InsertCreditPurchase = z.infer<typeof insertCreditPurchaseSchema>;
 export type CreditPurchase = typeof creditPurchases.$inferSelect;
+
+// ============ CUSTOMER PORTAL & JOB TRACKING ============
+
+// Jobs - Track active jobs for customer portal
+export const jobs = pgTable("jobs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  proposalId: varchar("proposal_id").references(() => proposals.id),
+  leadId: varchar("lead_id").references(() => leads.id),
+  
+  // Job details
+  jobNumber: text("job_number").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  address: text("address"),
+  
+  // Customer info
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"),
+  
+  // Access token for customer portal (no login required)
+  accessToken: text("access_token").notNull().default(sql`gen_random_uuid()`),
+  
+  // Schedule
+  scheduledStartDate: timestamp("scheduled_start_date"),
+  scheduledEndDate: timestamp("scheduled_end_date"),
+  actualStartDate: timestamp("actual_start_date"),
+  actualEndDate: timestamp("actual_end_date"),
+  
+  // Status
+  status: text("status").notNull().default("scheduled"), // 'scheduled', 'in_progress', 'paused', 'completed', 'cancelled'
+  progressPercent: integer("progress_percent").default(0),
+  
+  // Crew assignment
+  crewLeadId: varchar("crew_lead_id").references(() => crewLeads.id),
+  
+  // Financials
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }),
+  depositAmount: decimal("deposit_amount", { precision: 10, scale: 2 }),
+  depositPaid: boolean("deposit_paid").default(false),
+  balanceDue: decimal("balance_due", { precision: 10, scale: 2 }),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_jobs_tenant").on(table.tenantId),
+  index("idx_jobs_status").on(table.status),
+  index("idx_jobs_access_token").on(table.accessToken),
+]);
+
+export const insertJobSchema = createInsertSchema(jobs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  accessToken: true,
+});
+
+export type InsertJob = z.infer<typeof insertJobSchema>;
+export type Job = typeof jobs.$inferSelect;
+
+// Job Updates - Status updates visible in customer portal
+export const jobUpdates = pgTable("job_updates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  jobId: varchar("job_id").references(() => jobs.id).notNull(),
+  
+  // Update content
+  title: text("title").notNull(),
+  message: text("message"),
+  updateType: text("update_type").notNull(), // 'status_change', 'progress', 'photo', 'note', 'schedule_change'
+  
+  // Optional photo
+  photoUrl: text("photo_url"),
+  
+  // Progress update
+  progressPercent: integer("progress_percent"),
+  
+  // Who posted
+  postedBy: text("posted_by"), // 'crew_lead', 'admin', 'system'
+  postedByName: text("posted_by_name"),
+  
+  // Visibility
+  visibleToCustomer: boolean("visible_to_customer").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_job_updates_job").on(table.jobId),
+]);
+
+export const insertJobUpdateSchema = createInsertSchema(jobUpdates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertJobUpdate = z.infer<typeof insertJobUpdateSchema>;
+export type JobUpdate = typeof jobUpdates.$inferSelect;
+
+// ============ REVIEW AUTOMATION ============
+
+// Review Requests - Track automated review requests
+export const reviewRequests = pgTable("review_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  jobId: varchar("job_id").references(() => jobs.id),
+  
+  // Customer info
+  customerName: text("customer_name").notNull(),
+  customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"),
+  
+  // Request status
+  status: text("status").notNull().default("pending"), // 'pending', 'sent', 'opened', 'completed', 'declined'
+  
+  // Delivery
+  sentVia: text("sent_via"), // 'email', 'sms', 'both'
+  sentAt: timestamp("sent_at"),
+  openedAt: timestamp("opened_at"),
+  completedAt: timestamp("completed_at"),
+  
+  // Review links
+  googleReviewUrl: text("google_review_url"),
+  yelpReviewUrl: text("yelp_review_url"),
+  facebookReviewUrl: text("facebook_review_url"),
+  
+  // If they left a review
+  reviewRating: integer("review_rating"), // 1-5
+  reviewPlatform: text("review_platform"), // 'google', 'yelp', 'facebook'
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_review_requests_tenant").on(table.tenantId),
+  index("idx_review_requests_job").on(table.jobId),
+  index("idx_review_requests_status").on(table.status),
+]);
+
+export const insertReviewRequestSchema = createInsertSchema(reviewRequests).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertReviewRequest = z.infer<typeof insertReviewRequestSchema>;
+export type ReviewRequest = typeof reviewRequests.$inferSelect;
+
+// ============ PORTFOLIO SYSTEM ============
+
+// Portfolio Entries - Before/after photo showcase
+export const portfolioEntries = pgTable("portfolio_entries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  jobId: varchar("job_id").references(() => jobs.id),
+  
+  // Project info
+  title: text("title").notNull(),
+  description: text("description"),
+  projectType: text("project_type"), // 'interior', 'exterior', 'commercial', 'residential'
+  
+  // Photos
+  beforePhotoUrl: text("before_photo_url"),
+  afterPhotoUrl: text("after_photo_url"),
+  
+  // AI-enhanced versions
+  beforeEnhancedUrl: text("before_enhanced_url"),
+  afterEnhancedUrl: text("after_enhanced_url"),
+  
+  // Additional photos (JSON array of URLs)
+  additionalPhotos: jsonb("additional_photos"),
+  
+  // Details
+  colorUsed: text("color_used"),
+  brandUsed: text("brand_used"),
+  completionDate: timestamp("completion_date"),
+  
+  // Display settings
+  isFeatured: boolean("is_featured").default(false),
+  displayOrder: integer("display_order").default(0),
+  isPublished: boolean("is_published").default(false),
+  
+  // Customer testimonial (optional)
+  customerTestimonial: text("customer_testimonial"),
+  customerName: text("customer_name"),
+  customerCity: text("customer_city"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_portfolio_tenant").on(table.tenantId),
+  index("idx_portfolio_featured").on(table.isFeatured),
+  index("idx_portfolio_published").on(table.isPublished),
+]);
+
+export const insertPortfolioEntrySchema = createInsertSchema(portfolioEntries).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertPortfolioEntry = z.infer<typeof insertPortfolioEntrySchema>;
+export type PortfolioEntry = typeof portfolioEntries.$inferSelect;
