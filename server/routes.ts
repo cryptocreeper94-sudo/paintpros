@@ -12,6 +12,7 @@ import {
   insertDocumentAssetSchema, TENANT_PREFIXES,
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
   insertEstimatorConfigSchema,
+  insertJobSchema, insertJobUpdateSchema, insertReviewRequestSchema, insertPortfolioEntrySchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -2325,9 +2326,14 @@ Do not include any text before or after the JSON.`
   // POST /api/jobs - Create a new job
   app.post("/api/jobs", async (req, res) => {
     try {
-      const job = await storage.createJob(req.body);
+      const validated = insertJobSchema.parse(req.body);
+      const job = await storage.createJob(validated);
       res.status(201).json(job);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid job data", details: error.errors });
+        return;
+      }
       console.error("Error creating job:", error);
       res.status(500).json({ error: "Failed to create job" });
     }
@@ -2395,9 +2401,14 @@ Do not include any text before or after the JSON.`
   // POST /api/jobs/:id/updates - Add job update
   app.post("/api/jobs/:id/updates", async (req, res) => {
     try {
-      const update = await storage.createJobUpdate({ ...req.body, jobId: req.params.id });
+      const validated = insertJobUpdateSchema.parse({ ...req.body, jobId: req.params.id });
+      const update = await storage.createJobUpdate(validated);
       res.status(201).json(update);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid update data", details: error.errors });
+        return;
+      }
       console.error("Error creating job update:", error);
       res.status(500).json({ error: "Failed to create job update" });
     }
@@ -2433,9 +2444,14 @@ Do not include any text before or after the JSON.`
   // POST /api/portfolio - Create portfolio entry
   app.post("/api/portfolio", async (req, res) => {
     try {
-      const entry = await storage.createPortfolioEntry(req.body);
+      const validated = insertPortfolioEntrySchema.parse(req.body);
+      const entry = await storage.createPortfolioEntry(validated);
       res.status(201).json(entry);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid portfolio data", details: error.errors });
+        return;
+      }
       console.error("Error creating portfolio entry:", error);
       res.status(500).json({ error: "Failed to create portfolio entry" });
     }
@@ -2499,7 +2515,8 @@ Do not include any text before or after the JSON.`
   // POST /api/review-requests - Create and send review request
   app.post("/api/review-requests", async (req, res) => {
     try {
-      const request = await storage.createReviewRequest(req.body);
+      const validated = insertReviewRequestSchema.parse(req.body);
+      const request = await storage.createReviewRequest(validated);
       
       // Send email if customer email provided
       if (req.body.customerEmail) {
@@ -2534,7 +2551,11 @@ Do not include any text before or after the JSON.`
       }
       
       res.status(201).json(request);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid review request data", details: error.errors });
+        return;
+      }
       console.error("Error creating review request:", error);
       res.status(500).json({ error: "Failed to create review request" });
     }

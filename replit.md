@@ -60,7 +60,15 @@ The platform uses a prepaid AI credits system for metered AI features:
 ## Recent Changes (Changelog)
 
 ### January 2026
-- **v1.1.9** - Current Release
+- **v1.2.0** - Current Release
+  - Added Customer Portal API (`/api/jobs`, `/api/portal/:token`) - token-based job tracking for customers
+  - Added Portfolio Builder API (`/api/portfolio`) - CRUD for before/after project photos
+  - Added Review Automation API (`/api/review-requests`) - automated email requests via Resend
+  - Storage methods implemented for jobs, jobUpdates, reviewRequests, portfolioEntries
+  - E-signatures already complete via react-signature-canvas in proposal-sign.tsx and document-center.tsx
+  - **Note:** Twilio SMS integration was proposed but dismissed by user - can be added later if needed
+
+- **v1.1.9**
   - Automated email notifications for new estimate requests (via Resend connector)
   - Enhanced system health endpoint (`/api/system/health`) with real-time checks for:
     - Database (PostgreSQL), Payments (Stripe), Email (Resend), Blockchain (Solana), AI (OpenAI)
