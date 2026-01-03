@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, boolean, decimal, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, boolean, decimal, jsonb, index, real } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -2802,3 +2802,282 @@ export const insertPortfolioEntrySchema = createInsertSchema(portfolioEntries).o
 
 export type InsertPortfolioEntry = z.infer<typeof insertPortfolioEntrySchema>;
 export type PortfolioEntry = typeof portfolioEntries.$inferSelect;
+
+// ============ MATERIAL CALCULATIONS ============
+export const materialCalculations = pgTable("material_calculations", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  leadId: varchar("lead_id", { length: 36 }).references(() => leads.id),
+  estimateId: varchar("estimate_id", { length: 36 }).references(() => estimates.id),
+  
+  // Room details
+  roomName: varchar("room_name", { length: 100 }),
+  squareFeet: integer("square_feet"),
+  ceilingHeight: integer("ceiling_height").default(9),
+  
+  // Calculated materials
+  paintGallons: real("paint_gallons"),
+  primerGallons: real("primer_gallons"),
+  coatsNeeded: integer("coats_needed").default(2),
+  
+  // Paint specifications
+  paintType: varchar("paint_type", { length: 50 }), // interior, exterior
+  finishType: varchar("finish_type", { length: 50 }), // flat, eggshell, satin, semi-gloss, gloss
+  brandRecommendation: varchar("brand_recommendation", { length: 100 }),
+  colorCode: varchar("color_code", { length: 50 }),
+  
+  // Cost estimates
+  estimatedMaterialCost: integer("estimated_material_cost"), // cents
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_material_calc_tenant").on(table.tenantId),
+  index("idx_material_calc_lead").on(table.leadId),
+]);
+
+export const insertMaterialCalculationSchema = createInsertSchema(materialCalculations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertMaterialCalculation = z.infer<typeof insertMaterialCalculationSchema>;
+export type MaterialCalculation = typeof materialCalculations.$inferSelect;
+
+// ============ LEAD SOURCES ============
+export const leadSources = pgTable("lead_sources", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  name: varchar("name", { length: 100 }).notNull(), // Google, Facebook, Referral, Yard Sign, etc.
+  category: varchar("category", { length: 50 }), // digital, referral, signage, other
+  trackingCode: varchar("tracking_code", { length: 50 }), // UTM or custom code
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_lead_source_tenant").on(table.tenantId),
+]);
+
+export const insertLeadSourceSchema = createInsertSchema(leadSources).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertLeadSource = z.infer<typeof insertLeadSourceSchema>;
+export type LeadSource = typeof leadSources.$inferSelect;
+
+// ============ WARRANTIES ============
+export const warranties = pgTable("warranties", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id),
+  leadId: varchar("lead_id", { length: 36 }).references(() => leads.id),
+  
+  warrantyNumber: varchar("warranty_number", { length: 50 }),
+  warrantyType: varchar("warranty_type", { length: 50 }), // labor, materials, full
+  durationYears: integer("duration_years").default(2),
+  
+  startDate: timestamp("start_date"),
+  expirationDate: timestamp("expiration_date"),
+  
+  customerName: varchar("customer_name", { length: 200 }),
+  customerEmail: varchar("customer_email", { length: 200 }),
+  customerPhone: varchar("customer_phone", { length: 50 }),
+  propertyAddress: text("property_address"),
+  
+  coverageDetails: text("coverage_details"),
+  exclusions: text("exclusions"),
+  
+  // Blockchain verification
+  blockchainTxSignature: varchar("blockchain_tx_signature", { length: 200 }),
+  hallmarkId: varchar("hallmark_id", { length: 36 }),
+  
+  // Reminder tracking
+  reminderSent30Days: boolean("reminder_sent_30_days").default(false),
+  reminderSent7Days: boolean("reminder_sent_7_days").default(false),
+  
+  status: varchar("status", { length: 20 }).default("active"), // active, expired, claimed
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_warranty_tenant").on(table.tenantId),
+  index("idx_warranty_job").on(table.jobId),
+  index("idx_warranty_expiration").on(table.expirationDate),
+]);
+
+export const insertWarrantySchema = createInsertSchema(warranties).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertWarranty = z.infer<typeof insertWarrantySchema>;
+export type Warranty = typeof warranties.$inferSelect;
+
+// ============ FOLLOW-UP SEQUENCES ============
+export const followupSequences = pgTable("followup_sequences", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  name: varchar("name", { length: 100 }).notNull(),
+  triggerType: varchar("trigger_type", { length: 50 }).notNull(), // estimate_sent, no_response, proposal_viewed
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_followup_seq_tenant").on(table.tenantId),
+]);
+
+export const followupSteps = pgTable("followup_steps", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  sequenceId: varchar("sequence_id", { length: 36 }).references(() => followupSequences.id).notNull(),
+  
+  stepOrder: integer("step_order").notNull(),
+  delayDays: integer("delay_days").notNull(), // days after trigger
+  
+  channel: varchar("channel", { length: 20 }).notNull(), // email, sms
+  subject: varchar("subject", { length: 200 }),
+  content: text("content").notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_followup_step_sequence").on(table.sequenceId),
+]);
+
+export const followupLogs = pgTable("followup_logs", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  sequenceId: varchar("sequence_id", { length: 36 }).references(() => followupSequences.id),
+  stepId: varchar("step_id", { length: 36 }).references(() => followupSteps.id),
+  leadId: varchar("lead_id", { length: 36 }).references(() => leads.id),
+  
+  status: varchar("status", { length: 20 }).notNull(), // pending, sent, failed, cancelled
+  sentAt: timestamp("sent_at"),
+  scheduledFor: timestamp("scheduled_for"),
+  errorMessage: text("error_message"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_followup_log_tenant").on(table.tenantId),
+  index("idx_followup_log_lead").on(table.leadId),
+  index("idx_followup_log_scheduled").on(table.scheduledFor),
+]);
+
+export const insertFollowupSequenceSchema = createInsertSchema(followupSequences).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertFollowupStepSchema = createInsertSchema(followupSteps).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertFollowupLogSchema = createInsertSchema(followupLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertFollowupSequence = z.infer<typeof insertFollowupSequenceSchema>;
+export type FollowupSequence = typeof followupSequences.$inferSelect;
+export type InsertFollowupStep = z.infer<typeof insertFollowupStepSchema>;
+export type FollowupStep = typeof followupSteps.$inferSelect;
+export type InsertFollowupLog = z.infer<typeof insertFollowupLogSchema>;
+export type FollowupLog = typeof followupLogs.$inferSelect;
+
+// ============ REFERRAL PROGRAM ============
+export const referralProgram = pgTable("referral_program", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  referrerName: varchar("referrer_name", { length: 200 }).notNull(),
+  referrerEmail: varchar("referrer_email", { length: 200 }),
+  referrerPhone: varchar("referrer_phone", { length: 50 }),
+  
+  referralCode: varchar("referral_code", { length: 20 }).notNull(),
+  referralLink: text("referral_link"),
+  
+  // Stats
+  totalReferrals: integer("total_referrals").default(0),
+  successfulReferrals: integer("successful_referrals").default(0),
+  
+  // Rewards
+  rewardType: varchar("reward_type", { length: 50 }), // cash, discount, gift_card
+  rewardAmount: integer("reward_amount"), // cents or percentage
+  totalEarned: integer("total_earned").default(0), // cents
+  
+  status: varchar("status", { length: 20 }).default("active"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_referral_tenant").on(table.tenantId),
+  index("idx_referral_code").on(table.referralCode),
+]);
+
+export const referralTracking = pgTable("referral_tracking", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  referralProgramId: varchar("referral_program_id", { length: 36 }).references(() => referralProgram.id),
+  leadId: varchar("lead_id", { length: 36 }).references(() => leads.id),
+  
+  status: varchar("status", { length: 20 }).default("pending"), // pending, converted, rewarded
+  convertedAt: timestamp("converted_at"),
+  rewardPaidAt: timestamp("reward_paid_at"),
+  rewardAmount: integer("reward_amount"), // cents
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_referral_track_program").on(table.referralProgramId),
+  index("idx_referral_track_lead").on(table.leadId),
+]);
+
+export const insertReferralProgramSchema = createInsertSchema(referralProgram).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertReferralTrackingSchema = createInsertSchema(referralTracking).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertReferralProgram = z.infer<typeof insertReferralProgramSchema>;
+export type ReferralProgram = typeof referralProgram.$inferSelect;
+export type InsertReferralTracking = z.infer<typeof insertReferralTrackingSchema>;
+export type ReferralTracking = typeof referralTracking.$inferSelect;
+
+// ============ GPS CHECK-INS ============
+export const gpsCheckins = pgTable("gps_checkins", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => jobs.id),
+  crewMemberId: varchar("crew_member_id", { length: 36 }).references(() => crewMembers.id),
+  
+  checkinType: varchar("checkin_type", { length: 20 }).notNull(), // arrival, departure
+  
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  accuracy: real("accuracy"), // meters
+  
+  // Verification
+  distanceFromJobSite: real("distance_from_job_site"), // meters
+  isWithinRadius: boolean("is_within_radius"),
+  verificationRadius: integer("verification_radius").default(100), // meters
+  
+  // Photo verification (optional)
+  photoUrl: text("photo_url"),
+  
+  deviceInfo: text("device_info"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_gps_checkin_tenant").on(table.tenantId),
+  index("idx_gps_checkin_job").on(table.jobId),
+  index("idx_gps_checkin_member").on(table.crewMemberId),
+]);
+
+export const insertGpsCheckinSchema = createInsertSchema(gpsCheckins).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertGpsCheckin = z.infer<typeof insertGpsCheckinSchema>;
+export type GpsCheckin = typeof gpsCheckins.$inferSelect;
+

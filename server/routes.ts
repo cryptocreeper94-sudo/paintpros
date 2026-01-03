@@ -13,6 +13,8 @@ import {
   insertCrewLeadSchema, insertCrewMemberSchema, insertTimeEntrySchema, insertJobNoteSchema, insertIncidentReportSchema,
   insertEstimatorConfigSchema,
   insertJobSchema, insertJobUpdateSchema, insertReviewRequestSchema, insertPortfolioEntrySchema,
+  insertMaterialCalculationSchema, insertLeadSourceSchema, insertWarrantySchema,
+  insertFollowupSequenceSchema, insertFollowupStepSchema, insertReferralProgramSchema, insertGpsCheckinSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -2573,6 +2575,398 @@ Do not include any text before or after the JSON.`
     } catch (error) {
       console.error("Error updating review request:", error);
       res.status(500).json({ error: "Failed to update review request" });
+    }
+  });
+
+  // ============ MATERIAL CALCULATOR ============
+  
+  // POST /api/materials/calculate - Calculate paint materials needed
+  app.post("/api/materials/calculate", async (req, res) => {
+    try {
+      const { squareFeet, ceilingHeight = 9, coatsNeeded = 2, includesPrimer = true } = req.body;
+      
+      // Standard coverage: 350-400 sq ft per gallon
+      const coveragePerGallon = 375;
+      const wallArea = squareFeet * (ceilingHeight / 9); // Adjust for ceiling height
+      const paintGallons = Math.ceil((wallArea * coatsNeeded) / coveragePerGallon);
+      const primerGallons = includesPrimer ? Math.ceil(wallArea / 400) : 0;
+      
+      // Save calculation if tenantId provided
+      if (req.body.tenantId) {
+        const validated = insertMaterialCalculationSchema.parse({
+          ...req.body,
+          paintGallons,
+          primerGallons,
+        });
+        await storage.createMaterialCalculation(validated);
+      }
+      
+      res.json({
+        paintGallons,
+        primerGallons,
+        totalGallons: paintGallons + primerGallons,
+        coverageUsed: coveragePerGallon,
+        wallArea,
+      });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error calculating materials:", error);
+      res.status(500).json({ error: "Failed to calculate materials" });
+    }
+  });
+  
+  // GET /api/materials - Get saved calculations
+  app.get("/api/materials", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const calculations = await storage.getMaterialCalculations(tenantId);
+      res.json(calculations);
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+      res.status(500).json({ error: "Failed to fetch materials" });
+    }
+  });
+
+  // ============ LEAD SOURCES ============
+  
+  // GET /api/lead-sources - Get lead sources
+  app.get("/api/lead-sources", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const sources = await storage.getLeadSources(tenantId);
+      res.json(sources);
+    } catch (error) {
+      console.error("Error fetching lead sources:", error);
+      res.status(500).json({ error: "Failed to fetch lead sources" });
+    }
+  });
+  
+  // POST /api/lead-sources - Create lead source
+  app.post("/api/lead-sources", async (req, res) => {
+    try {
+      const validated = insertLeadSourceSchema.parse(req.body);
+      const source = await storage.createLeadSource(validated);
+      res.status(201).json(source);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error creating lead source:", error);
+      res.status(500).json({ error: "Failed to create lead source" });
+    }
+  });
+
+  // ============ WARRANTIES ============
+  
+  // GET /api/warranties - Get warranties
+  app.get("/api/warranties", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const warrantyList = await storage.getWarranties(tenantId);
+      res.json(warrantyList);
+    } catch (error) {
+      console.error("Error fetching warranties:", error);
+      res.status(500).json({ error: "Failed to fetch warranties" });
+    }
+  });
+  
+  // POST /api/warranties - Create warranty
+  app.post("/api/warranties", async (req, res) => {
+    try {
+      const validated = insertWarrantySchema.parse(req.body);
+      const warranty = await storage.createWarranty(validated);
+      res.status(201).json(warranty);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error creating warranty:", error);
+      res.status(500).json({ error: "Failed to create warranty" });
+    }
+  });
+  
+  // GET /api/warranties/:id - Get warranty by ID
+  app.get("/api/warranties/:id", async (req, res) => {
+    try {
+      const warranty = await storage.getWarrantyById(req.params.id);
+      if (!warranty) {
+        res.status(404).json({ error: "Warranty not found" });
+        return;
+      }
+      res.json(warranty);
+    } catch (error) {
+      console.error("Error fetching warranty:", error);
+      res.status(500).json({ error: "Failed to fetch warranty" });
+    }
+  });
+  
+  // GET /api/warranties/expiring/:days - Get expiring warranties
+  app.get("/api/warranties/expiring/:days", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const days = parseInt(req.params.days) || 30;
+      const expiring = await storage.getExpiringWarranties(tenantId, days);
+      res.json(expiring);
+    } catch (error) {
+      console.error("Error fetching expiring warranties:", error);
+      res.status(500).json({ error: "Failed to fetch expiring warranties" });
+    }
+  });
+
+  // ============ FOLLOW-UP SEQUENCES ============
+  
+  // GET /api/followup-sequences - Get sequences
+  app.get("/api/followup-sequences", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const sequences = await storage.getFollowupSequences(tenantId);
+      res.json(sequences);
+    } catch (error) {
+      console.error("Error fetching sequences:", error);
+      res.status(500).json({ error: "Failed to fetch sequences" });
+    }
+  });
+  
+  // POST /api/followup-sequences - Create sequence
+  app.post("/api/followup-sequences", async (req, res) => {
+    try {
+      const validated = insertFollowupSequenceSchema.parse(req.body);
+      const sequence = await storage.createFollowupSequence(validated);
+      res.status(201).json(sequence);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error creating sequence:", error);
+      res.status(500).json({ error: "Failed to create sequence" });
+    }
+  });
+  
+  // POST /api/followup-sequences/:id/steps - Add step
+  app.post("/api/followup-sequences/:id/steps", async (req, res) => {
+    try {
+      const validated = insertFollowupStepSchema.parse({ ...req.body, sequenceId: req.params.id });
+      const step = await storage.createFollowupStep(validated);
+      res.status(201).json(step);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error creating step:", error);
+      res.status(500).json({ error: "Failed to create step" });
+    }
+  });
+  
+  // GET /api/followup-sequences/:id/steps - Get steps
+  app.get("/api/followup-sequences/:id/steps", async (req, res) => {
+    try {
+      const steps = await storage.getFollowupSteps(req.params.id);
+      res.json(steps);
+    } catch (error) {
+      console.error("Error fetching steps:", error);
+      res.status(500).json({ error: "Failed to fetch steps" });
+    }
+  });
+
+  // ============ REFERRAL PROGRAM ============
+  
+  // GET /api/referrals - Get referral programs
+  app.get("/api/referrals", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const programs = await storage.getReferralPrograms(tenantId);
+      res.json(programs);
+    } catch (error) {
+      console.error("Error fetching referrals:", error);
+      res.status(500).json({ error: "Failed to fetch referrals" });
+    }
+  });
+  
+  // POST /api/referrals - Create referral program
+  app.post("/api/referrals", async (req, res) => {
+    try {
+      // Generate unique referral code
+      const referralCode = `REF-${Date.now().toString(36).toUpperCase()}`;
+      const validated = insertReferralProgramSchema.parse({ ...req.body, referralCode });
+      const program = await storage.createReferralProgram(validated);
+      res.status(201).json(program);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error creating referral:", error);
+      res.status(500).json({ error: "Failed to create referral" });
+    }
+  });
+  
+  // GET /api/referrals/code/:code - Get referral by code
+  app.get("/api/referrals/code/:code", async (req, res) => {
+    try {
+      const program = await storage.getReferralByCode(req.params.code);
+      if (!program) {
+        res.status(404).json({ error: "Referral code not found" });
+        return;
+      }
+      res.json(program);
+    } catch (error) {
+      console.error("Error fetching referral:", error);
+      res.status(500).json({ error: "Failed to fetch referral" });
+    }
+  });
+  
+  // POST /api/referrals/:id/track - Track referral conversion
+  app.post("/api/referrals/:id/track", async (req, res) => {
+    try {
+      const tracking = await storage.createReferralTracking({
+        referralProgramId: req.params.id,
+        leadId: req.body.leadId,
+        status: "pending",
+      });
+      
+      // Increment total referrals count
+      const program = await storage.getReferralPrograms(req.body.tenantId || "demo");
+      const currentProgram = program.find(p => p.id === req.params.id);
+      if (currentProgram) {
+        await storage.updateReferralProgram(req.params.id, {
+          totalReferrals: (currentProgram.totalReferrals || 0) + 1,
+        });
+      }
+      
+      res.status(201).json(tracking);
+    } catch (error) {
+      console.error("Error tracking referral:", error);
+      res.status(500).json({ error: "Failed to track referral" });
+    }
+  });
+
+  // ============ GPS CHECK-INS ============
+  
+  // POST /api/gps-checkins - Create GPS check-in
+  app.post("/api/gps-checkins", async (req, res) => {
+    try {
+      const validated = insertGpsCheckinSchema.parse(req.body);
+      
+      // Calculate distance from job site if job coordinates available
+      // For now, just store the check-in
+      const checkin = await storage.createGpsCheckin(validated);
+      res.status(201).json(checkin);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      console.error("Error creating check-in:", error);
+      res.status(500).json({ error: "Failed to create check-in" });
+    }
+  });
+  
+  // GET /api/gps-checkins/job/:jobId - Get check-ins for job
+  app.get("/api/gps-checkins/job/:jobId", async (req, res) => {
+    try {
+      const checkins = await storage.getGpsCheckins(req.params.jobId);
+      res.json(checkins);
+    } catch (error) {
+      console.error("Error fetching check-ins:", error);
+      res.status(500).json({ error: "Failed to fetch check-ins" });
+    }
+  });
+  
+  // GET /api/gps-checkins/member/:memberId - Get check-ins for crew member
+  app.get("/api/gps-checkins/member/:memberId", async (req, res) => {
+    try {
+      const checkins = await storage.getGpsCheckinsByMember(req.params.memberId);
+      res.json(checkins);
+    } catch (error) {
+      console.error("Error fetching check-ins:", error);
+      res.status(500).json({ error: "Failed to fetch check-ins" });
+    }
+  });
+
+  // ============ QR CODE GENERATOR ============
+  
+  // GET /api/qr-code - Generate QR code data (frontend renders with qrcode.react)
+  app.get("/api/qr-code", async (req, res) => {
+    try {
+      const { type, id, tenantId } = req.query;
+      const baseUrl = process.env.REPLIT_DOMAINS?.split(",")[0] || "paintpros.io";
+      
+      let url = `https://${baseUrl}`;
+      let content = "";
+      
+      switch (type) {
+        case "portfolio":
+          url += `/portfolio?tenant=${tenantId || "demo"}`;
+          content = "View our project portfolio";
+          break;
+        case "reviews":
+          url += `/reviews?tenant=${tenantId || "demo"}`;
+          content = "Leave us a review";
+          break;
+        case "estimate":
+          url += `/estimate?tenant=${tenantId || "demo"}&ref=yard-sign`;
+          content = "Get a free estimate";
+          break;
+        case "referral":
+          url += `/ref/${id}`;
+          content = "Referral link";
+          break;
+        default:
+          url += `/?tenant=${tenantId || "demo"}`;
+          content = "Visit our website";
+      }
+      
+      res.json({ url, content, type });
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      res.status(500).json({ error: "Failed to generate QR code" });
+    }
+  });
+
+  // ============ VOICE-TO-ESTIMATE ============
+  
+  // POST /api/voice-estimate - Process voice description into estimate
+  app.post("/api/voice-estimate", async (req, res) => {
+    try {
+      const { transcript, tenantId } = req.body;
+      
+      if (!transcript) {
+        res.status(400).json({ error: "Transcript required" });
+        return;
+      }
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a painting estimate assistant. Extract job details from the voice description and return structured JSON with:
+              - customerName (if mentioned)
+              - projectType (interior/exterior)
+              - rooms (array of room names and estimated sizes)
+              - surfaces (walls, ceiling, trim, doors)
+              - specialRequests (any special work mentioned)
+              - urgency (normal/rush if mentioned)
+              Return only valid JSON.`
+          },
+          { role: "user", content: transcript }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      res.json(parsed);
+    } catch (error) {
+      console.error("Error processing voice estimate:", error);
+      res.status(500).json({ error: "Failed to process voice estimate" });
     }
   });
 

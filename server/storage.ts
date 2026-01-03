@@ -47,6 +47,15 @@ import {
   type JobUpdate, type InsertJobUpdate, jobUpdates,
   type ReviewRequest, type InsertReviewRequest, reviewRequests,
   type PortfolioEntry, type InsertPortfolioEntry, portfolioEntries,
+  type MaterialCalculation, type InsertMaterialCalculation, materialCalculations,
+  type LeadSource, type InsertLeadSource, leadSources,
+  type Warranty, type InsertWarranty, warranties,
+  type FollowupSequence, type InsertFollowupSequence, followupSequences,
+  type FollowupStep, type InsertFollowupStep, followupSteps,
+  type FollowupLog, type InsertFollowupLog, followupLogs,
+  type ReferralProgram, type InsertReferralProgram, referralProgram,
+  type ReferralTracking, type InsertReferralTracking, referralTracking,
+  type GpsCheckin, type InsertGpsCheckin, gpsCheckins,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -351,6 +360,45 @@ export interface IStorage {
   getPortfolioEntryById(id: string): Promise<PortfolioEntry | undefined>;
   updatePortfolioEntry(id: string, updates: Partial<InsertPortfolioEntry>): Promise<PortfolioEntry | undefined>;
   deletePortfolioEntry(id: string): Promise<void>;
+  
+  // Material Calculations
+  createMaterialCalculation(calc: InsertMaterialCalculation): Promise<MaterialCalculation>;
+  getMaterialCalculations(tenantId: string): Promise<MaterialCalculation[]>;
+  getMaterialCalculationsByLead(leadId: string): Promise<MaterialCalculation[]>;
+  
+  // Lead Sources
+  createLeadSource(source: InsertLeadSource): Promise<LeadSource>;
+  getLeadSources(tenantId: string): Promise<LeadSource[]>;
+  updateLeadSource(id: string, updates: Partial<InsertLeadSource>): Promise<LeadSource | undefined>;
+  
+  // Warranties
+  createWarranty(warranty: InsertWarranty): Promise<Warranty>;
+  getWarranties(tenantId: string): Promise<Warranty[]>;
+  getWarrantyById(id: string): Promise<Warranty | undefined>;
+  updateWarranty(id: string, updates: Partial<InsertWarranty>): Promise<Warranty | undefined>;
+  getExpiringWarranties(tenantId: string, daysAhead: number): Promise<Warranty[]>;
+  
+  // Follow-up Sequences
+  createFollowupSequence(sequence: InsertFollowupSequence): Promise<FollowupSequence>;
+  getFollowupSequences(tenantId: string): Promise<FollowupSequence[]>;
+  createFollowupStep(step: InsertFollowupStep): Promise<FollowupStep>;
+  getFollowupSteps(sequenceId: string): Promise<FollowupStep[]>;
+  createFollowupLog(log: InsertFollowupLog): Promise<FollowupLog>;
+  getPendingFollowups(tenantId: string): Promise<FollowupLog[]>;
+  updateFollowupLog(id: string, updates: Partial<InsertFollowupLog>): Promise<FollowupLog | undefined>;
+  
+  // Referral Program
+  createReferralProgram(program: InsertReferralProgram): Promise<ReferralProgram>;
+  getReferralPrograms(tenantId: string): Promise<ReferralProgram[]>;
+  getReferralByCode(code: string): Promise<ReferralProgram | undefined>;
+  updateReferralProgram(id: string, updates: Partial<InsertReferralProgram>): Promise<ReferralProgram | undefined>;
+  createReferralTracking(tracking: InsertReferralTracking): Promise<ReferralTracking>;
+  getReferralTrackings(programId: string): Promise<ReferralTracking[]>;
+  
+  // GPS Check-ins
+  createGpsCheckin(checkin: InsertGpsCheckin): Promise<GpsCheckin>;
+  getGpsCheckins(jobId: string): Promise<GpsCheckin[]>;
+  getGpsCheckinsByMember(crewMemberId: string): Promise<GpsCheckin[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2226,6 +2274,167 @@ export class DatabaseStorage implements IStorage {
 
   async deletePortfolioEntry(id: string): Promise<void> {
     await db.delete(portfolioEntries).where(eq(portfolioEntries.id, id));
+  }
+
+  // Material Calculations
+  async createMaterialCalculation(calc: InsertMaterialCalculation): Promise<MaterialCalculation> {
+    const [result] = await db.insert(materialCalculations).values(calc).returning();
+    return result;
+  }
+
+  async getMaterialCalculations(tenantId: string): Promise<MaterialCalculation[]> {
+    return await db.select().from(materialCalculations)
+      .where(eq(materialCalculations.tenantId, tenantId))
+      .orderBy(desc(materialCalculations.createdAt));
+  }
+
+  async getMaterialCalculationsByLead(leadId: string): Promise<MaterialCalculation[]> {
+    return await db.select().from(materialCalculations)
+      .where(eq(materialCalculations.leadId, leadId));
+  }
+
+  // Lead Sources
+  async createLeadSource(source: InsertLeadSource): Promise<LeadSource> {
+    const [result] = await db.insert(leadSources).values(source).returning();
+    return result;
+  }
+
+  async getLeadSources(tenantId: string): Promise<LeadSource[]> {
+    return await db.select().from(leadSources)
+      .where(eq(leadSources.tenantId, tenantId));
+  }
+
+  async updateLeadSource(id: string, updates: Partial<InsertLeadSource>): Promise<LeadSource | undefined> {
+    const [result] = await db.update(leadSources).set(updates).where(eq(leadSources.id, id)).returning();
+    return result;
+  }
+
+  // Warranties
+  async createWarranty(warranty: InsertWarranty): Promise<Warranty> {
+    const warrantyNumber = `WTY-${Date.now().toString(36).toUpperCase()}`;
+    const [result] = await db.insert(warranties).values({ ...warranty, warrantyNumber }).returning();
+    return result;
+  }
+
+  async getWarranties(tenantId: string): Promise<Warranty[]> {
+    return await db.select().from(warranties)
+      .where(eq(warranties.tenantId, tenantId))
+      .orderBy(desc(warranties.createdAt));
+  }
+
+  async getWarrantyById(id: string): Promise<Warranty | undefined> {
+    const [result] = await db.select().from(warranties).where(eq(warranties.id, id));
+    return result;
+  }
+
+  async updateWarranty(id: string, updates: Partial<InsertWarranty>): Promise<Warranty | undefined> {
+    const [result] = await db.update(warranties)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(warranties.id, id))
+      .returning();
+    return result;
+  }
+
+  async getExpiringWarranties(tenantId: string, daysAhead: number): Promise<Warranty[]> {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + daysAhead);
+    return await db.select().from(warranties)
+      .where(and(
+        eq(warranties.tenantId, tenantId),
+        eq(warranties.status, 'active'),
+        sql`${warranties.expirationDate} <= ${futureDate}`
+      ));
+  }
+
+  // Follow-up Sequences
+  async createFollowupSequence(sequence: InsertFollowupSequence): Promise<FollowupSequence> {
+    const [result] = await db.insert(followupSequences).values(sequence).returning();
+    return result;
+  }
+
+  async getFollowupSequences(tenantId: string): Promise<FollowupSequence[]> {
+    return await db.select().from(followupSequences)
+      .where(eq(followupSequences.tenantId, tenantId));
+  }
+
+  async createFollowupStep(step: InsertFollowupStep): Promise<FollowupStep> {
+    const [result] = await db.insert(followupSteps).values(step).returning();
+    return result;
+  }
+
+  async getFollowupSteps(sequenceId: string): Promise<FollowupStep[]> {
+    return await db.select().from(followupSteps)
+      .where(eq(followupSteps.sequenceId, sequenceId))
+      .orderBy(followupSteps.stepOrder);
+  }
+
+  async createFollowupLog(log: InsertFollowupLog): Promise<FollowupLog> {
+    const [result] = await db.insert(followupLogs).values(log).returning();
+    return result;
+  }
+
+  async getPendingFollowups(tenantId: string): Promise<FollowupLog[]> {
+    return await db.select().from(followupLogs)
+      .where(and(
+        eq(followupLogs.tenantId, tenantId),
+        eq(followupLogs.status, 'pending'),
+        sql`${followupLogs.scheduledFor} <= NOW()`
+      ));
+  }
+
+  async updateFollowupLog(id: string, updates: Partial<InsertFollowupLog>): Promise<FollowupLog | undefined> {
+    const [result] = await db.update(followupLogs).set(updates).where(eq(followupLogs.id, id)).returning();
+    return result;
+  }
+
+  // Referral Program
+  async createReferralProgram(program: InsertReferralProgram): Promise<ReferralProgram> {
+    const [result] = await db.insert(referralProgram).values(program).returning();
+    return result;
+  }
+
+  async getReferralPrograms(tenantId: string): Promise<ReferralProgram[]> {
+    return await db.select().from(referralProgram)
+      .where(eq(referralProgram.tenantId, tenantId));
+  }
+
+  async getReferralByCode(code: string): Promise<ReferralProgram | undefined> {
+    const [result] = await db.select().from(referralProgram)
+      .where(eq(referralProgram.referralCode, code));
+    return result;
+  }
+
+  async updateReferralProgram(id: string, updates: Partial<InsertReferralProgram>): Promise<ReferralProgram | undefined> {
+    const [result] = await db.update(referralProgram).set(updates).where(eq(referralProgram.id, id)).returning();
+    return result;
+  }
+
+  async createReferralTracking(tracking: InsertReferralTracking): Promise<ReferralTracking> {
+    const [result] = await db.insert(referralTracking).values(tracking).returning();
+    return result;
+  }
+
+  async getReferralTrackings(programId: string): Promise<ReferralTracking[]> {
+    return await db.select().from(referralTracking)
+      .where(eq(referralTracking.referralProgramId, programId));
+  }
+
+  // GPS Check-ins
+  async createGpsCheckin(checkin: InsertGpsCheckin): Promise<GpsCheckin> {
+    const [result] = await db.insert(gpsCheckins).values(checkin).returning();
+    return result;
+  }
+
+  async getGpsCheckins(jobId: string): Promise<GpsCheckin[]> {
+    return await db.select().from(gpsCheckins)
+      .where(eq(gpsCheckins.jobId, jobId))
+      .orderBy(desc(gpsCheckins.timestamp));
+  }
+
+  async getGpsCheckinsByMember(crewMemberId: string): Promise<GpsCheckin[]> {
+    return await db.select().from(gpsCheckins)
+      .where(eq(gpsCheckins.crewMemberId, crewMemberId))
+      .orderBy(desc(gpsCheckins.timestamp));
   }
 }
 
