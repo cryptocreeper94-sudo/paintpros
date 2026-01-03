@@ -4342,3 +4342,451 @@ export const insertSkillMatchingSchema = createInsertSchema(skillMatchings).omit
 export type InsertSkillMatching = z.infer<typeof insertSkillMatchingSchema>;
 export type SkillMatching = typeof skillMatchings.$inferSelect;
 
+// ============ PHASE 2: BREAKTHROUGH MODULES ============
+
+// AI Field Operations Autopilot - Dynamic Routing
+export const routeOptimizations = pgTable("route_optimizations", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  routeDate: timestamp("route_date").notNull(),
+  crewId: varchar("crew_id", { length: 36 }),
+  optimizedRoute: text("optimized_route"),
+  totalMiles: real("total_miles"),
+  totalMinutes: integer("total_minutes"),
+  fuelSavings: integer("fuel_savings"),
+  jobSequence: text("job_sequence"),
+  weatherAdjustments: text("weather_adjustments"),
+  constraints: text("constraints"),
+  optimizationScore: real("optimization_score"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_route_opt_tenant").on(table.tenantId)]);
+
+export const insertRouteOptimizationSchema = createInsertSchema(routeOptimizations).omit({ id: true, createdAt: true });
+export type InsertRouteOptimization = z.infer<typeof insertRouteOptimizationSchema>;
+export type RouteOptimization = typeof routeOptimizations.$inferSelect;
+
+// Job Risk Scoring
+export const jobRiskScores = pgTable("job_risk_scores", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  overallRisk: integer("overall_risk"),
+  weatherRisk: integer("weather_risk"),
+  scopeCreepRisk: integer("scope_creep_risk"),
+  paymentRisk: integer("payment_risk"),
+  scheduleRisk: integer("schedule_risk"),
+  safetyRisk: integer("safety_risk"),
+  mitigationPlan: text("mitigation_plan"),
+  riskFactors: text("risk_factors"),
+  aiRecommendations: text("ai_recommendations"),
+  lastAssessed: timestamp("last_assessed").defaultNow().notNull(),
+}, (table) => [index("idx_job_risk_tenant").on(table.tenantId)]);
+
+export const insertJobRiskScoreSchema = createInsertSchema(jobRiskScores).omit({ id: true, lastAssessed: true });
+export type InsertJobRiskScore = z.infer<typeof insertJobRiskScoreSchema>;
+export type JobRiskScore = typeof jobRiskScores.$inferSelect;
+
+// Materials Just-In-Time
+export const materialsOrders = pgTable("materials_orders", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  vendorId: varchar("vendor_id", { length: 36 }),
+  vendorName: varchar("vendor_name", { length: 200 }),
+  items: text("items"),
+  totalCost: integer("total_cost"),
+  deliveryDate: timestamp("delivery_date"),
+  deliveryWindow: varchar("delivery_window", { length: 50 }),
+  status: varchar("status", { length: 30 }).default("pending"),
+  autoOrdered: boolean("auto_ordered").default(false),
+  poNumber: varchar("po_number", { length: 50 }),
+  trackingNumber: varchar("tracking_number", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_materials_orders_tenant").on(table.tenantId)]);
+
+export const insertMaterialsOrderSchema = createInsertSchema(materialsOrders).omit({ id: true, createdAt: true });
+export type InsertMaterialsOrder = z.infer<typeof insertMaterialsOrderSchema>;
+export type MaterialsOrder = typeof materialsOrders.$inferSelect;
+
+// Predictive Revenue Intelligence
+export const cashflowForecasts = pgTable("cashflow_forecasts", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  forecastPeriod: varchar("forecast_period", { length: 20 }).notNull(),
+  predictedRevenue: integer("predicted_revenue"),
+  predictedExpenses: integer("predicted_expenses"),
+  predictedCashflow: integer("predicted_cashflow"),
+  confidence: real("confidence"),
+  pipelineValue: integer("pipeline_value"),
+  arOutstanding: integer("ar_outstanding"),
+  apOutstanding: integer("ap_outstanding"),
+  recommendations: text("recommendations"),
+  modelVersion: varchar("model_version", { length: 20 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_cashflow_tenant").on(table.tenantId)]);
+
+export const insertCashflowForecastSchema = createInsertSchema(cashflowForecasts).omit({ id: true, createdAt: true });
+export type InsertCashflowForecast = z.infer<typeof insertCashflowForecastSchema>;
+export type CashflowForecast = typeof cashflowForecasts.$inferSelect;
+
+// Pricing Elasticity Analysis
+export const pricingAnalyses = pgTable("pricing_analyses", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  serviceType: varchar("service_type", { length: 100 }).notNull(),
+  currentPrice: integer("current_price"),
+  optimalPrice: integer("optimal_price"),
+  elasticity: real("elasticity"),
+  expectedDemandChange: real("expected_demand_change"),
+  expectedRevenueChange: integer("expected_revenue_change"),
+  competitorPricing: text("competitor_pricing"),
+  marketPosition: varchar("market_position", { length: 30 }),
+  recommendation: text("recommendation"),
+  analyzedAt: timestamp("analyzed_at").defaultNow().notNull(),
+}, (table) => [index("idx_pricing_tenant").on(table.tenantId)]);
+
+export const insertPricingAnalysisSchema = createInsertSchema(pricingAnalyses).omit({ id: true, analyzedAt: true });
+export type InsertPricingAnalysis = z.infer<typeof insertPricingAnalysisSchema>;
+export type PricingAnalysis = typeof pricingAnalyses.$inferSelect;
+
+// Marketing Mix Optimization
+export const marketingOptimizations = pgTable("marketing_optimizations", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
+  totalBudget: integer("total_budget"),
+  channelAllocations: text("channel_allocations"),
+  expectedRoi: real("expected_roi"),
+  historicalPerformance: text("historical_performance"),
+  recommendations: text("recommendations"),
+  optimizedAllocations: text("optimized_allocations"),
+  projectedLeads: integer("projected_leads"),
+  projectedCostPerLead: integer("projected_cost_per_lead"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_marketing_opt_tenant").on(table.tenantId)]);
+
+export const insertMarketingOptimizationSchema = createInsertSchema(marketingOptimizations).omit({ id: true, createdAt: true });
+export type InsertMarketingOptimization = z.infer<typeof insertMarketingOptimizationSchema>;
+export type MarketingOptimization = typeof marketingOptimizations.$inferSelect;
+
+// Immersive Site Capture - Digital Twins
+export const siteScans = pgTable("site_scans", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  propertyAddress: text("property_address"),
+  scanType: varchar("scan_type", { length: 30 }),
+  pointCloudUrl: text("point_cloud_url"),
+  meshModelUrl: text("mesh_model_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  totalSqft: real("total_sqft"),
+  roomCount: integer("room_count"),
+  measurements: text("measurements"),
+  scanDuration: integer("scan_duration"),
+  processingStatus: varchar("processing_status", { length: 30 }).default("pending"),
+  accuracy: real("accuracy"),
+  deviceInfo: varchar("device_info", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_site_scans_tenant").on(table.tenantId)]);
+
+export const insertSiteScanSchema = createInsertSchema(siteScans).omit({ id: true, createdAt: true });
+export type InsertSiteScan = z.infer<typeof insertSiteScanSchema>;
+export type SiteScan = typeof siteScans.$inferSelect;
+
+// AR Overlays for Sites
+export const arOverlays = pgTable("ar_overlays", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  scanId: varchar("scan_id", { length: 36 }),
+  overlayType: varchar("overlay_type", { length: 50 }),
+  colorSelections: text("color_selections"),
+  annotations: text("annotations"),
+  previewImageUrl: text("preview_image_url"),
+  sharedWithCustomer: boolean("shared_with_customer").default(false),
+  customerApproved: boolean("customer_approved").default(false),
+  approvedAt: timestamp("approved_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_ar_overlays_tenant").on(table.tenantId)]);
+
+export const insertArOverlaySchema = createInsertSchema(arOverlays).omit({ id: true, createdAt: true });
+export type InsertArOverlay = z.infer<typeof insertArOverlaySchema>;
+export type ArOverlay = typeof arOverlays.$inferSelect;
+
+// Autonomous Back Office - Auto Invoices
+export const autoInvoices = pgTable("auto_invoices", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  customerId: varchar("customer_id", { length: 36 }),
+  customerEmail: varchar("customer_email", { length: 200 }),
+  invoiceNumber: varchar("invoice_number", { length: 50 }),
+  lineItems: text("line_items"),
+  subtotal: integer("subtotal"),
+  taxAmount: integer("tax_amount"),
+  totalAmount: integer("total_amount"),
+  dueDate: timestamp("due_date"),
+  status: varchar("status", { length: 30 }).default("draft"),
+  autoGenerated: boolean("auto_generated").default(true),
+  sentAt: timestamp("sent_at"),
+  paidAt: timestamp("paid_at"),
+  stripeInvoiceId: varchar("stripe_invoice_id", { length: 100 }),
+  quickbooksId: varchar("quickbooks_id", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_auto_invoices_tenant").on(table.tenantId)]);
+
+export const insertAutoInvoiceSchema = createInsertSchema(autoInvoices).omit({ id: true, createdAt: true });
+export type InsertAutoInvoice = z.infer<typeof insertAutoInvoiceSchema>;
+export type AutoInvoice = typeof autoInvoices.$inferSelect;
+
+// Lien Waivers
+export const lienWaivers = pgTable("lien_waivers", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  waiverType: varchar("waiver_type", { length: 50 }),
+  amount: integer("amount"),
+  throughDate: timestamp("through_date"),
+  signerName: varchar("signer_name", { length: 200 }),
+  signerTitle: varchar("signer_title", { length: 100 }),
+  signature: text("signature"),
+  signedAt: timestamp("signed_at"),
+  documentUrl: text("document_url"),
+  blockchainTxId: varchar("blockchain_tx_id", { length: 100 }),
+  status: varchar("status", { length: 30 }).default("pending"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_lien_waivers_tenant").on(table.tenantId)]);
+
+export const insertLienWaiverSchema = createInsertSchema(lienWaivers).omit({ id: true, createdAt: true });
+export type InsertLienWaiver = z.infer<typeof insertLienWaiverSchema>;
+export type LienWaiver = typeof lienWaivers.$inferSelect;
+
+// Compliance Deadlines
+export const complianceDeadlines = pgTable("compliance_deadlines", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  complianceType: varchar("compliance_type", { length: 100 }).notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  dueDate: timestamp("due_date").notNull(),
+  reminderDays: integer("reminder_days").default(7),
+  status: varchar("status", { length: 30 }).default("pending"),
+  completedAt: timestamp("completed_at"),
+  documentUrl: text("document_url"),
+  assignedTo: varchar("assigned_to", { length: 100 }),
+  priority: varchar("priority", { length: 20 }).default("medium"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_compliance_tenant").on(table.tenantId)]);
+
+export const insertComplianceDeadlineSchema = createInsertSchema(complianceDeadlines).omit({ id: true, createdAt: true });
+export type InsertComplianceDeadline = z.infer<typeof insertComplianceDeadlineSchema>;
+export type ComplianceDeadline = typeof complianceDeadlines.$inferSelect;
+
+// AP/AR Reconciliation
+export const reconciliationRecords = pgTable("reconciliation_records", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  recordType: varchar("record_type", { length: 20 }).notNull(),
+  invoiceId: varchar("invoice_id", { length: 36 }),
+  vendorId: varchar("vendor_id", { length: 36 }),
+  amount: integer("amount").notNull(),
+  dueDate: timestamp("due_date"),
+  paidDate: timestamp("paid_date"),
+  status: varchar("status", { length: 30 }).default("pending"),
+  matchedPaymentId: varchar("matched_payment_id", { length: 100 }),
+  discrepancy: integer("discrepancy"),
+  notes: text("notes"),
+  autoReconciled: boolean("auto_reconciled").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_reconciliation_tenant").on(table.tenantId)]);
+
+export const insertReconciliationRecordSchema = createInsertSchema(reconciliationRecords).omit({ id: true, createdAt: true });
+export type InsertReconciliationRecord = z.infer<typeof insertReconciliationRecordSchema>;
+export type ReconciliationRecord = typeof reconciliationRecords.$inferSelect;
+
+// Orbit Workforce Network - Subcontractors
+export const subcontractorProfiles = pgTable("subcontractor_profiles", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  companyName: varchar("company_name", { length: 200 }).notNull(),
+  contactName: varchar("contact_name", { length: 200 }),
+  email: varchar("email", { length: 200 }),
+  phone: varchar("phone", { length: 30 }),
+  services: text("services"),
+  serviceArea: text("service_area"),
+  hourlyRate: integer("hourly_rate"),
+  insuranceVerified: boolean("insurance_verified").default(false),
+  licenseVerified: boolean("license_verified").default(false),
+  backgroundCheckDate: timestamp("background_check_date"),
+  overallRating: real("overall_rating"),
+  totalJobs: integer("total_jobs").default(0),
+  onTimeRate: real("on_time_rate"),
+  qualityScore: real("quality_score"),
+  vetted: boolean("vetted").default(false),
+  vettedAt: timestamp("vetted_at"),
+  credentialLedgerHash: varchar("credential_ledger_hash", { length: 100 }),
+  status: varchar("status", { length: 30 }).default("pending"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_subcontractor_profiles_tenant").on(table.tenantId)]);
+
+export const insertSubcontractorProfileSchema = createInsertSchema(subcontractorProfiles).omit({ id: true, createdAt: true });
+export type InsertSubcontractorProfile = z.infer<typeof insertSubcontractorProfileSchema>;
+export type SubcontractorProfile = typeof subcontractorProfiles.$inferSelect;
+
+// Shift Bidding
+export const shiftBids = pgTable("shift_bids", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  shiftDate: timestamp("shift_date").notNull(),
+  shiftStart: varchar("shift_start", { length: 10 }),
+  shiftEnd: varchar("shift_end", { length: 10 }),
+  requiredSkills: text("required_skills"),
+  budgetMin: integer("budget_min"),
+  budgetMax: integer("budget_max"),
+  biddingEnds: timestamp("bidding_ends"),
+  selectedBidderId: varchar("selected_bidder_id", { length: 36 }),
+  selectedBidAmount: integer("selected_bid_amount"),
+  status: varchar("status", { length: 30 }).default("open"),
+  totalBids: integer("total_bids").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_shift_bids_tenant").on(table.tenantId)]);
+
+export const insertShiftBidSchema = createInsertSchema(shiftBids).omit({ id: true, createdAt: true });
+export type InsertShiftBid = z.infer<typeof insertShiftBidSchema>;
+export type ShiftBid = typeof shiftBids.$inferSelect;
+
+// Bid Submissions
+export const bidSubmissions = pgTable("bid_submissions", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  shiftBidId: varchar("shift_bid_id", { length: 36 }).notNull(),
+  subcontractorId: varchar("subcontractor_id", { length: 36 }).notNull(),
+  bidAmount: integer("bid_amount").notNull(),
+  notes: text("notes"),
+  availability: varchar("availability", { length: 50 }),
+  estimatedCompletionHours: real("estimated_completion_hours"),
+  status: varchar("status", { length: 30 }).default("submitted"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_bid_submissions_shift").on(table.shiftBidId)]);
+
+export const insertBidSubmissionSchema = createInsertSchema(bidSubmissions).omit({ id: true, createdAt: true });
+export type InsertBidSubmission = z.infer<typeof insertBidSubmissionSchema>;
+export type BidSubmission = typeof bidSubmissions.$inferSelect;
+
+// Trust & Growth Layer - Customer Sentiment
+export const customerSentiments = pgTable("customer_sentiments", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  customerId: varchar("customer_id", { length: 36 }),
+  customerEmail: varchar("customer_email", { length: 200 }),
+  sourceType: varchar("source_type", { length: 30 }),
+  sourceContent: text("source_content"),
+  sentimentScore: real("sentiment_score"),
+  sentimentLabel: varchar("sentiment_label", { length: 30 }),
+  emotions: text("emotions"),
+  keyTopics: text("key_topics"),
+  actionRequired: boolean("action_required").default(false),
+  urgency: varchar("urgency", { length: 20 }),
+  aiAnalysis: text("ai_analysis"),
+  analyzedAt: timestamp("analyzed_at").defaultNow().notNull(),
+}, (table) => [index("idx_sentiment_tenant").on(table.tenantId)]);
+
+export const insertCustomerSentimentSchema = createInsertSchema(customerSentiments).omit({ id: true, analyzedAt: true });
+export type InsertCustomerSentiment = z.infer<typeof insertCustomerSentimentSchema>;
+export type CustomerSentiment = typeof customerSentiments.$inferSelect;
+
+// Milestone NFTs
+export const milestoneNfts = pgTable("milestone_nfts", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  milestoneType: varchar("milestone_type", { length: 50 }).notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  metadata: text("metadata"),
+  mintAddress: varchar("mint_address", { length: 100 }),
+  blockchainTxId: varchar("blockchain_tx_id", { length: 100 }),
+  ownerWallet: varchar("owner_wallet", { length: 100 }),
+  minted: boolean("minted").default(false),
+  mintedAt: timestamp("minted_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_milestone_nfts_tenant").on(table.tenantId)]);
+
+export const insertMilestoneNftSchema = createInsertSchema(milestoneNfts).omit({ id: true, createdAt: true });
+export type InsertMilestoneNft = z.infer<typeof insertMilestoneNftSchema>;
+export type MilestoneNft = typeof milestoneNfts.$inferSelect;
+
+// ESG/Green Materials Tracking
+export const esgTracking = pgTable("esg_tracking", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  materialName: varchar("material_name", { length: 200 }).notNull(),
+  brand: varchar("brand", { length: 100 }),
+  ecoRating: varchar("eco_rating", { length: 20 }),
+  vocLevel: varchar("voc_level", { length: 30 }),
+  recyclable: boolean("recyclable").default(false),
+  certifications: text("certifications"),
+  carbonFootprint: real("carbon_footprint"),
+  quantity: real("quantity"),
+  unit: varchar("unit", { length: 20 }),
+  sustainabilityScore: integer("sustainability_score"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_esg_tracking_tenant").on(table.tenantId)]);
+
+export const insertEsgTrackingSchema = createInsertSchema(esgTracking).omit({ id: true, createdAt: true });
+export type InsertEsgTracking = z.infer<typeof insertEsgTrackingSchema>;
+export type EsgTracking = typeof esgTracking.$inferSelect;
+
+// Embedded Financing
+export const financingApplications = pgTable("financing_applications", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  customerId: varchar("customer_id", { length: 36 }),
+  customerEmail: varchar("customer_email", { length: 200 }).notNull(),
+  customerName: varchar("customer_name", { length: 200 }),
+  estimateId: varchar("estimate_id", { length: 36 }),
+  requestedAmount: integer("requested_amount").notNull(),
+  approvedAmount: integer("approved_amount"),
+  interestRate: real("interest_rate"),
+  termMonths: integer("term_months"),
+  monthlyPayment: integer("monthly_payment"),
+  prequalStatus: varchar("prequal_status", { length: 30 }).default("pending"),
+  applicationStatus: varchar("application_status", { length: 30 }).default("pending"),
+  lenderPartner: varchar("lender_partner", { length: 100 }),
+  externalApplicationId: varchar("external_application_id", { length: 100 }),
+  approvedAt: timestamp("approved_at"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_financing_apps_tenant").on(table.tenantId)]);
+
+export const insertFinancingApplicationSchema = createInsertSchema(financingApplications).omit({ id: true, createdAt: true });
+export type InsertFinancingApplication = z.infer<typeof insertFinancingApplicationSchema>;
+export type FinancingApplication = typeof financingApplications.$inferSelect;
+
+// Franchise Analytics (White-label)
+export const franchiseAnalytics = pgTable("franchise_analytics", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  reportPeriod: varchar("report_period", { length: 20 }).notNull(),
+  totalRevenue: integer("total_revenue"),
+  totalJobs: integer("total_jobs"),
+  avgJobValue: integer("avg_job_value"),
+  conversionRate: real("conversion_rate"),
+  customerSatisfaction: real("customer_satisfaction"),
+  employeeCount: integer("employee_count"),
+  marketingSpend: integer("marketing_spend"),
+  costPerLead: integer("cost_per_lead"),
+  topServices: text("top_services"),
+  growthRate: real("growth_rate"),
+  benchmarkComparison: text("benchmark_comparison"),
+  insights: text("insights"),
+  generatedAt: timestamp("generated_at").defaultNow().notNull(),
+}, (table) => [index("idx_franchise_analytics_tenant").on(table.tenantId)]);
+
+export const insertFranchiseAnalyticsSchema = createInsertSchema(franchiseAnalytics).omit({ id: true, generatedAt: true });
+export type InsertFranchiseAnalytics = z.infer<typeof insertFranchiseAnalyticsSchema>;
+export type FranchiseAnalytics = typeof franchiseAnalytics.$inferSelect;
+

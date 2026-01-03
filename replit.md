@@ -49,6 +49,40 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **Radix UI:** For accessible UI components.
 - **Drizzle:** For database schema definition.
 
+## v1.6.1 - Breakthrough Modules (20+ Tables, 40+ Endpoints)
+
+### Module 1: AI Field Operations Autopilot
+- **Dynamic Route Optimization** (`POST /api/routes/optimize`, `GET /api/routes/optimizations`) - AI-powered crew route optimization with weather-aware scheduling
+- **Job Risk Scoring** (`POST /api/jobs/risk-score`, `GET /api/jobs/risks`) - 6-dimension risk analysis (weather, scope creep, payment, schedule, safety, overall)
+- **Just-In-Time Materials** (`POST /api/materials/order`, `GET /api/materials/orders`) - Auto-ordering materials with delivery windows
+
+### Module 2: Predictive Revenue Intelligence
+- **90-Day Cashflow Forecasting** (`POST /api/cashflow/forecast`, `GET /api/cashflow/forecasts`) - AI-driven revenue/expense predictions with confidence scores
+- **Pricing Elasticity Analysis** (`POST /api/pricing/analyze`, `GET /api/pricing/analyses`) - Optimal pricing recommendations with elasticity coefficients
+- **Marketing Mix Optimization** (`POST /api/marketing/optimize`, `GET /api/marketing/optimizations`) - Budget allocation with projected ROI
+
+### Module 3: Immersive Site Capture
+- **Digital Twins** (`POST /api/scans`, `GET /api/scans`, `PATCH /api/scans/:id`) - LiDAR/photogrammetry site scan storage
+- **AR Overlays** (`POST /api/ar/overlays`, `GET /api/ar/overlays`) - Color visualization overlays for customer approval
+
+### Module 4: Autonomous Back Office
+- **Auto-Invoicing** (`POST /api/invoices/auto-generate`, `GET /api/invoices/auto`, `PATCH /api/invoices/auto/:id`) - 90% automated invoice generation with tax calculation
+- **Lien Waivers** (`POST /api/lien-waivers`, `GET /api/lien-waivers`, `POST /api/lien-waivers/:id/sign`) - Digital signing with blockchain stamping
+- **Compliance Tracking** (`POST /api/compliance/deadlines`, `GET /api/compliance/deadlines`) - License/permit deadline management
+- **AP/AR Reconciliation** (`POST /api/reconciliation`, `GET /api/reconciliation`) - Auto-matching payments to invoices
+
+### Module 5: Orbit Workforce Network
+- **Subcontractor Marketplace** (`POST /api/workforce/subcontractors`, `GET /api/workforce/subcontractors`, `PATCH /api/workforce/subcontractors/:id`) - Vetted subcontractor profiles
+- **AI Vetting** (`POST /api/workforce/vet`) - AI-powered credential verification and quality scoring
+- **Shift Bidding** (`POST /api/workforce/shifts`, `GET /api/workforce/shifts`, `POST /api/workforce/shifts/:id/bid`, `POST /api/workforce/shifts/:id/select`) - Competitive bid system
+
+### Module 6: Trust & Growth Layer
+- **Sentiment Analysis** (`POST /api/sentiment/analyze`, `GET /api/sentiment`) - Real-time customer emotion detection with urgency flags
+- **Milestone NFTs** (`POST /api/milestones/nft`, `GET /api/milestones/nfts`, `POST /api/milestones/nft/:id/mint`) - Solana blockchain achievement tokens
+- **ESG Tracking** (`POST /api/esg/track`, `GET /api/esg`, `GET /api/esg/report`) - Green materials and sustainability scoring
+- **Embedded Financing** (`POST /api/financing/apply`, `GET /api/financing/applications`, `POST /api/financing/prequalify`) - Pre-qualification with instant approval (<$50k)
+- **Franchise Analytics** (`POST /api/franchise/analytics/generate`, `GET /api/franchise/analytics`) - White-label performance metrics
+
 ## Competition-Destroying Features (v1.6.0)
 
 ### AI-Powered Features (GPT-4o)

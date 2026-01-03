@@ -104,6 +104,26 @@ import {
   type ArColorPreview, type InsertArColorPreview, arColorPreviews,
   type CrewSkill, type InsertCrewSkill, crewSkills,
   type SkillMatching, type InsertSkillMatching, skillMatchings,
+  type RouteOptimization, type InsertRouteOptimization, routeOptimizations,
+  type JobRiskScore, type InsertJobRiskScore, jobRiskScores,
+  type MaterialsOrder, type InsertMaterialsOrder, materialsOrders,
+  type CashflowForecast, type InsertCashflowForecast, cashflowForecasts,
+  type PricingAnalysis, type InsertPricingAnalysis, pricingAnalyses,
+  type MarketingOptimization, type InsertMarketingOptimization, marketingOptimizations,
+  type SiteScan, type InsertSiteScan, siteScans,
+  type ArOverlay, type InsertArOverlay, arOverlays,
+  type AutoInvoice, type InsertAutoInvoice, autoInvoices,
+  type LienWaiver, type InsertLienWaiver, lienWaivers,
+  type ComplianceDeadline, type InsertComplianceDeadline, complianceDeadlines,
+  type ReconciliationRecord, type InsertReconciliationRecord, reconciliationRecords,
+  type SubcontractorProfile, type InsertSubcontractorProfile, subcontractorProfiles,
+  type ShiftBid, type InsertShiftBid, shiftBids,
+  type BidSubmission, type InsertBidSubmission, bidSubmissions,
+  type CustomerSentiment, type InsertCustomerSentiment, customerSentiments,
+  type MilestoneNft, type InsertMilestoneNft, milestoneNfts,
+  type EsgTracking, type InsertEsgTracking, esgTracking,
+  type FinancingApplication, type InsertFinancingApplication, financingApplications,
+  type FranchiseAnalytics, type InsertFranchiseAnalytics, franchiseAnalytics,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -649,6 +669,96 @@ export interface IStorage {
   createSkillMatching(matching: InsertSkillMatching): Promise<SkillMatching>;
   getSkillMatchings(tenantId: string): Promise<SkillMatching[]>;
   getSkillMatchingByJob(jobId: string): Promise<SkillMatching | undefined>;
+  
+  // Route Optimization
+  createRouteOptimization(route: InsertRouteOptimization): Promise<RouteOptimization>;
+  getRouteOptimizations(tenantId: string): Promise<RouteOptimization[]>;
+  
+  // Job Risk Scores
+  createJobRiskScore(risk: InsertJobRiskScore): Promise<JobRiskScore>;
+  getJobRiskScores(tenantId: string): Promise<JobRiskScore[]>;
+  getJobRiskScore(jobId: string): Promise<JobRiskScore | undefined>;
+  
+  // Materials Orders
+  createMaterialsOrder(order: InsertMaterialsOrder): Promise<MaterialsOrder>;
+  getMaterialsOrders(tenantId: string): Promise<MaterialsOrder[]>;
+  updateMaterialsOrder(id: string, updates: Partial<InsertMaterialsOrder>): Promise<MaterialsOrder | undefined>;
+  
+  // Cashflow Forecasts
+  createCashflowForecast(forecast: InsertCashflowForecast): Promise<CashflowForecast>;
+  getCashflowForecasts(tenantId: string): Promise<CashflowForecast[]>;
+  
+  // Pricing Analysis
+  createPricingAnalysis(analysis: InsertPricingAnalysis): Promise<PricingAnalysis>;
+  getPricingAnalyses(tenantId: string): Promise<PricingAnalysis[]>;
+  
+  // Marketing Optimization
+  createMarketingOptimization(opt: InsertMarketingOptimization): Promise<MarketingOptimization>;
+  getMarketingOptimizations(tenantId: string): Promise<MarketingOptimization[]>;
+  
+  // Site Scans
+  createSiteScan(scan: InsertSiteScan): Promise<SiteScan>;
+  getSiteScans(tenantId: string): Promise<SiteScan[]>;
+  updateSiteScan(id: string, updates: Partial<InsertSiteScan>): Promise<SiteScan | undefined>;
+  
+  // AR Overlays
+  createArOverlay(overlay: InsertArOverlay): Promise<ArOverlay>;
+  getArOverlays(tenantId: string): Promise<ArOverlay[]>;
+  
+  // Auto Invoices
+  createAutoInvoice(invoice: InsertAutoInvoice): Promise<AutoInvoice>;
+  getAutoInvoices(tenantId: string): Promise<AutoInvoice[]>;
+  updateAutoInvoice(id: string, updates: Partial<InsertAutoInvoice>): Promise<AutoInvoice | undefined>;
+  
+  // Lien Waivers
+  createLienWaiver(waiver: InsertLienWaiver): Promise<LienWaiver>;
+  getLienWaivers(tenantId: string): Promise<LienWaiver[]>;
+  updateLienWaiver(id: string, updates: Partial<InsertLienWaiver>): Promise<LienWaiver | undefined>;
+  
+  // Compliance Deadlines
+  createComplianceDeadline(deadline: InsertComplianceDeadline): Promise<ComplianceDeadline>;
+  getComplianceDeadlines(tenantId: string): Promise<ComplianceDeadline[]>;
+  updateComplianceDeadline(id: string, updates: Partial<InsertComplianceDeadline>): Promise<ComplianceDeadline | undefined>;
+  
+  // Reconciliation Records
+  createReconciliationRecord(record: InsertReconciliationRecord): Promise<ReconciliationRecord>;
+  getReconciliationRecords(tenantId: string): Promise<ReconciliationRecord[]>;
+  
+  // Subcontractor Profiles
+  createSubcontractorProfile(profile: InsertSubcontractorProfile): Promise<SubcontractorProfile>;
+  getSubcontractorProfiles(tenantId: string): Promise<SubcontractorProfile[]>;
+  updateSubcontractorProfile(id: string, updates: Partial<InsertSubcontractorProfile>): Promise<SubcontractorProfile | undefined>;
+  
+  // Shift Bids
+  createShiftBid(bid: InsertShiftBid): Promise<ShiftBid>;
+  getShiftBids(tenantId: string): Promise<ShiftBid[]>;
+  updateShiftBid(id: string, updates: Partial<InsertShiftBid>): Promise<ShiftBid | undefined>;
+  
+  // Bid Submissions
+  createBidSubmission(submission: InsertBidSubmission): Promise<BidSubmission>;
+  getBidSubmissions(shiftBidId: string): Promise<BidSubmission[]>;
+  
+  // Customer Sentiments
+  createCustomerSentiment(sentiment: InsertCustomerSentiment): Promise<CustomerSentiment>;
+  getCustomerSentiments(tenantId: string): Promise<CustomerSentiment[]>;
+  
+  // Milestone NFTs
+  createMilestoneNft(nft: InsertMilestoneNft): Promise<MilestoneNft>;
+  getMilestoneNfts(tenantId: string): Promise<MilestoneNft[]>;
+  updateMilestoneNft(id: string, updates: Partial<InsertMilestoneNft>): Promise<MilestoneNft | undefined>;
+  
+  // ESG Tracking
+  createEsgTracking(esg: InsertEsgTracking): Promise<EsgTracking>;
+  getEsgTracking(tenantId: string): Promise<EsgTracking[]>;
+  
+  // Financing Applications
+  createFinancingApplication(app: InsertFinancingApplication): Promise<FinancingApplication>;
+  getFinancingApplications(tenantId: string): Promise<FinancingApplication[]>;
+  updateFinancingApplication(id: string, updates: Partial<InsertFinancingApplication>): Promise<FinancingApplication | undefined>;
+  
+  // Franchise Analytics
+  createFranchiseAnalytics(analytics: InsertFranchiseAnalytics): Promise<FranchiseAnalytics>;
+  getFranchiseAnalytics(tenantId: string): Promise<FranchiseAnalytics[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -3326,6 +3436,226 @@ export class DatabaseStorage implements IStorage {
   async getSkillMatchingByJob(jobId: string): Promise<SkillMatching | undefined> {
     const [result] = await db.select().from(skillMatchings).where(eq(skillMatchings.jobId, jobId));
     return result;
+  }
+
+  // Route Optimization
+  async createRouteOptimization(route: InsertRouteOptimization): Promise<RouteOptimization> {
+    const [result] = await db.insert(routeOptimizations).values(route).returning();
+    return result;
+  }
+  async getRouteOptimizations(tenantId: string): Promise<RouteOptimization[]> {
+    return await db.select().from(routeOptimizations).where(eq(routeOptimizations.tenantId, tenantId)).orderBy(desc(routeOptimizations.routeDate));
+  }
+
+  // Job Risk Scores
+  async createJobRiskScore(risk: InsertJobRiskScore): Promise<JobRiskScore> {
+    const [result] = await db.insert(jobRiskScores).values(risk).returning();
+    return result;
+  }
+  async getJobRiskScores(tenantId: string): Promise<JobRiskScore[]> {
+    return await db.select().from(jobRiskScores).where(eq(jobRiskScores.tenantId, tenantId)).orderBy(desc(jobRiskScores.overallRisk));
+  }
+  async getJobRiskScore(jobId: string): Promise<JobRiskScore | undefined> {
+    const [result] = await db.select().from(jobRiskScores).where(eq(jobRiskScores.jobId, jobId));
+    return result;
+  }
+
+  // Materials Orders
+  async createMaterialsOrder(order: InsertMaterialsOrder): Promise<MaterialsOrder> {
+    const [result] = await db.insert(materialsOrders).values(order).returning();
+    return result;
+  }
+  async getMaterialsOrders(tenantId: string): Promise<MaterialsOrder[]> {
+    return await db.select().from(materialsOrders).where(eq(materialsOrders.tenantId, tenantId)).orderBy(desc(materialsOrders.createdAt));
+  }
+  async updateMaterialsOrder(id: string, updates: Partial<InsertMaterialsOrder>): Promise<MaterialsOrder | undefined> {
+    const [result] = await db.update(materialsOrders).set(updates).where(eq(materialsOrders.id, id)).returning();
+    return result;
+  }
+
+  // Cashflow Forecasts
+  async createCashflowForecast(forecast: InsertCashflowForecast): Promise<CashflowForecast> {
+    const [result] = await db.insert(cashflowForecasts).values(forecast).returning();
+    return result;
+  }
+  async getCashflowForecasts(tenantId: string): Promise<CashflowForecast[]> {
+    return await db.select().from(cashflowForecasts).where(eq(cashflowForecasts.tenantId, tenantId)).orderBy(desc(cashflowForecasts.createdAt));
+  }
+
+  // Pricing Analysis
+  async createPricingAnalysis(analysis: InsertPricingAnalysis): Promise<PricingAnalysis> {
+    const [result] = await db.insert(pricingAnalyses).values(analysis).returning();
+    return result;
+  }
+  async getPricingAnalyses(tenantId: string): Promise<PricingAnalysis[]> {
+    return await db.select().from(pricingAnalyses).where(eq(pricingAnalyses.tenantId, tenantId)).orderBy(desc(pricingAnalyses.analyzedAt));
+  }
+
+  // Marketing Optimization
+  async createMarketingOptimization(opt: InsertMarketingOptimization): Promise<MarketingOptimization> {
+    const [result] = await db.insert(marketingOptimizations).values(opt).returning();
+    return result;
+  }
+  async getMarketingOptimizations(tenantId: string): Promise<MarketingOptimization[]> {
+    return await db.select().from(marketingOptimizations).where(eq(marketingOptimizations.tenantId, tenantId)).orderBy(desc(marketingOptimizations.createdAt));
+  }
+
+  // Site Scans
+  async createSiteScan(scan: InsertSiteScan): Promise<SiteScan> {
+    const [result] = await db.insert(siteScans).values(scan).returning();
+    return result;
+  }
+  async getSiteScans(tenantId: string): Promise<SiteScan[]> {
+    return await db.select().from(siteScans).where(eq(siteScans.tenantId, tenantId)).orderBy(desc(siteScans.createdAt));
+  }
+  async updateSiteScan(id: string, updates: Partial<InsertSiteScan>): Promise<SiteScan | undefined> {
+    const [result] = await db.update(siteScans).set(updates).where(eq(siteScans.id, id)).returning();
+    return result;
+  }
+
+  // AR Overlays
+  async createArOverlay(overlay: InsertArOverlay): Promise<ArOverlay> {
+    const [result] = await db.insert(arOverlays).values(overlay).returning();
+    return result;
+  }
+  async getArOverlays(tenantId: string): Promise<ArOverlay[]> {
+    return await db.select().from(arOverlays).where(eq(arOverlays.tenantId, tenantId)).orderBy(desc(arOverlays.createdAt));
+  }
+
+  // Auto Invoices
+  async createAutoInvoice(invoice: InsertAutoInvoice): Promise<AutoInvoice> {
+    const [result] = await db.insert(autoInvoices).values(invoice).returning();
+    return result;
+  }
+  async getAutoInvoices(tenantId: string): Promise<AutoInvoice[]> {
+    return await db.select().from(autoInvoices).where(eq(autoInvoices.tenantId, tenantId)).orderBy(desc(autoInvoices.createdAt));
+  }
+  async updateAutoInvoice(id: string, updates: Partial<InsertAutoInvoice>): Promise<AutoInvoice | undefined> {
+    const [result] = await db.update(autoInvoices).set(updates).where(eq(autoInvoices.id, id)).returning();
+    return result;
+  }
+
+  // Lien Waivers
+  async createLienWaiver(waiver: InsertLienWaiver): Promise<LienWaiver> {
+    const [result] = await db.insert(lienWaivers).values(waiver).returning();
+    return result;
+  }
+  async getLienWaivers(tenantId: string): Promise<LienWaiver[]> {
+    return await db.select().from(lienWaivers).where(eq(lienWaivers.tenantId, tenantId)).orderBy(desc(lienWaivers.createdAt));
+  }
+  async updateLienWaiver(id: string, updates: Partial<InsertLienWaiver>): Promise<LienWaiver | undefined> {
+    const [result] = await db.update(lienWaivers).set(updates).where(eq(lienWaivers.id, id)).returning();
+    return result;
+  }
+
+  // Compliance Deadlines
+  async createComplianceDeadline(deadline: InsertComplianceDeadline): Promise<ComplianceDeadline> {
+    const [result] = await db.insert(complianceDeadlines).values(deadline).returning();
+    return result;
+  }
+  async getComplianceDeadlines(tenantId: string): Promise<ComplianceDeadline[]> {
+    return await db.select().from(complianceDeadlines).where(eq(complianceDeadlines.tenantId, tenantId)).orderBy(complianceDeadlines.dueDate);
+  }
+  async updateComplianceDeadline(id: string, updates: Partial<InsertComplianceDeadline>): Promise<ComplianceDeadline | undefined> {
+    const [result] = await db.update(complianceDeadlines).set(updates).where(eq(complianceDeadlines.id, id)).returning();
+    return result;
+  }
+
+  // Reconciliation Records
+  async createReconciliationRecord(record: InsertReconciliationRecord): Promise<ReconciliationRecord> {
+    const [result] = await db.insert(reconciliationRecords).values(record).returning();
+    return result;
+  }
+  async getReconciliationRecords(tenantId: string): Promise<ReconciliationRecord[]> {
+    return await db.select().from(reconciliationRecords).where(eq(reconciliationRecords.tenantId, tenantId)).orderBy(desc(reconciliationRecords.createdAt));
+  }
+
+  // Subcontractor Profiles
+  async createSubcontractorProfile(profile: InsertSubcontractorProfile): Promise<SubcontractorProfile> {
+    const [result] = await db.insert(subcontractorProfiles).values(profile).returning();
+    return result;
+  }
+  async getSubcontractorProfiles(tenantId: string): Promise<SubcontractorProfile[]> {
+    return await db.select().from(subcontractorProfiles).where(eq(subcontractorProfiles.tenantId, tenantId)).orderBy(desc(subcontractorProfiles.overallRating));
+  }
+  async updateSubcontractorProfile(id: string, updates: Partial<InsertSubcontractorProfile>): Promise<SubcontractorProfile | undefined> {
+    const [result] = await db.update(subcontractorProfiles).set(updates).where(eq(subcontractorProfiles.id, id)).returning();
+    return result;
+  }
+
+  // Shift Bids
+  async createShiftBid(bid: InsertShiftBid): Promise<ShiftBid> {
+    const [result] = await db.insert(shiftBids).values(bid).returning();
+    return result;
+  }
+  async getShiftBids(tenantId: string): Promise<ShiftBid[]> {
+    return await db.select().from(shiftBids).where(eq(shiftBids.tenantId, tenantId)).orderBy(desc(shiftBids.createdAt));
+  }
+  async updateShiftBid(id: string, updates: Partial<InsertShiftBid>): Promise<ShiftBid | undefined> {
+    const [result] = await db.update(shiftBids).set(updates).where(eq(shiftBids.id, id)).returning();
+    return result;
+  }
+
+  // Bid Submissions
+  async createBidSubmission(submission: InsertBidSubmission): Promise<BidSubmission> {
+    const [result] = await db.insert(bidSubmissions).values(submission).returning();
+    return result;
+  }
+  async getBidSubmissions(shiftBidId: string): Promise<BidSubmission[]> {
+    return await db.select().from(bidSubmissions).where(eq(bidSubmissions.shiftBidId, shiftBidId)).orderBy(bidSubmissions.bidAmount);
+  }
+
+  // Customer Sentiments
+  async createCustomerSentiment(sentiment: InsertCustomerSentiment): Promise<CustomerSentiment> {
+    const [result] = await db.insert(customerSentiments).values(sentiment).returning();
+    return result;
+  }
+  async getCustomerSentiments(tenantId: string): Promise<CustomerSentiment[]> {
+    return await db.select().from(customerSentiments).where(eq(customerSentiments.tenantId, tenantId)).orderBy(desc(customerSentiments.analyzedAt));
+  }
+
+  // Milestone NFTs
+  async createMilestoneNft(nft: InsertMilestoneNft): Promise<MilestoneNft> {
+    const [result] = await db.insert(milestoneNfts).values(nft).returning();
+    return result;
+  }
+  async getMilestoneNfts(tenantId: string): Promise<MilestoneNft[]> {
+    return await db.select().from(milestoneNfts).where(eq(milestoneNfts.tenantId, tenantId)).orderBy(desc(milestoneNfts.createdAt));
+  }
+  async updateMilestoneNft(id: string, updates: Partial<InsertMilestoneNft>): Promise<MilestoneNft | undefined> {
+    const [result] = await db.update(milestoneNfts).set(updates).where(eq(milestoneNfts.id, id)).returning();
+    return result;
+  }
+
+  // ESG Tracking
+  async createEsgTracking(esg: InsertEsgTracking): Promise<EsgTracking> {
+    const [result] = await db.insert(esgTracking).values(esg).returning();
+    return result;
+  }
+  async getEsgTracking(tenantId: string): Promise<EsgTracking[]> {
+    return await db.select().from(esgTracking).where(eq(esgTracking.tenantId, tenantId)).orderBy(desc(esgTracking.createdAt));
+  }
+
+  // Financing Applications
+  async createFinancingApplication(app: InsertFinancingApplication): Promise<FinancingApplication> {
+    const [result] = await db.insert(financingApplications).values(app).returning();
+    return result;
+  }
+  async getFinancingApplications(tenantId: string): Promise<FinancingApplication[]> {
+    return await db.select().from(financingApplications).where(eq(financingApplications.tenantId, tenantId)).orderBy(desc(financingApplications.createdAt));
+  }
+  async updateFinancingApplication(id: string, updates: Partial<InsertFinancingApplication>): Promise<FinancingApplication | undefined> {
+    const [result] = await db.update(financingApplications).set(updates).where(eq(financingApplications.id, id)).returning();
+    return result;
+  }
+
+  // Franchise Analytics
+  async createFranchiseAnalytics(analytics: InsertFranchiseAnalytics): Promise<FranchiseAnalytics> {
+    const [result] = await db.insert(franchiseAnalytics).values(analytics).returning();
+    return result;
+  }
+  async getFranchiseAnalytics(tenantId: string): Promise<FranchiseAnalytics[]> {
+    return await db.select().from(franchiseAnalytics).where(eq(franchiseAnalytics.tenantId, tenantId)).orderBy(desc(franchiseAnalytics.generatedAt));
   }
 }
 
