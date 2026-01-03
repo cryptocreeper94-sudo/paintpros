@@ -48,3 +48,26 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **Embla Carousel:** For horizontal carousels.
 - **Radix UI:** For accessible UI components.
 - **Drizzle:** For database schema definition.
+
+## Competition-Destroying Features (v1.6.0)
+
+### AI-Powered Features (GPT-4o)
+1. **AI Proposal Writer** (`/api/proposals/generate`) - Generates professional proposals from estimate data with executive summary, scope, timeline, and terms
+2. **Smart Lead Scoring** (`/api/leads/score`, `/api/leads/score-ai`) - Rule-based and AI-powered lead ranking by conversion likelihood
+3. **Voice-to-Estimate** (`/api/voice-estimate`) - Speak room dimensions, AI extracts measurements and generates quotes
+4. **Follow-up Optimizer** (`/api/followup/optimize`) - AI determines best time/channel for customer contact
+5. **Profit Margin Optimizer** (`/api/profit/analyze`) - AI pricing suggestions based on job type profitability
+6. **Seasonal Demand Forecasting** (`/api/demand/forecast`) - Predict busy/slow periods with staffing recommendations
+
+### Customer Experience Features
+7. **Customer Portal** (`/api/portal/create`, `/api/portal/:token`) - Token-based access for job tracking, photos, change orders (30-day expiry)
+8. **Real-Time Crew GPS** (`/api/crew/location`) - Uber-like crew tracking with ETA, heading, speed
+9. **Digital Tip Jar** (`/api/tips`) - Customers can tip crews with ratings and messages
+10. **Before/After Gallery** (`/api/gallery`, `/api/gallery/public`) - Auto-generate portfolio from job photos
+
+### Business Intelligence Features
+11. **Customer Lifetime Value** (`/api/clv/calculate`) - CLV calculation with churn risk and customer segmentation
+12. **Competitor Intelligence** (`/api/competitors`) - Track competitor pricing and market positioning
+13. **Smart Contracts** (`/api/contracts`, `/api/contracts/:id/sign`, `/api/contracts/:id/stamp`) - Blockchain-signed agreements via Solana
+14. **AR Color Preview** (`/api/ar/previews`, `/api/ar/colors`) - Color visualization API with popular paint palettes
+15. **Crew Skills Matching** (`/api/crew/skills`, `/api/jobs/match-crew`) - Auto-assign crews by certifications and proficiency
