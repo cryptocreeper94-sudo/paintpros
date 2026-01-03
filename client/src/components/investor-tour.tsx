@@ -147,8 +147,11 @@ export function InvestorTour({ isOpen, onClose }: InvestorTourProps) {
           initial={{ opacity: 0, scale: 0.9, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: -10 }}
-          className="fixed z-[9999] w-80 p-5 rounded-xl bg-card border border-border shadow-2xl"
-          style={{ top: position.top, left: position.left }}
+          className="fixed z-[9999] w-[calc(100vw-32px)] sm:w-80 max-w-80 p-4 sm:p-5 rounded-xl bg-card border border-border shadow-2xl left-4 sm:left-auto right-4 sm:right-auto"
+          style={{ 
+            top: position.top,
+            ...(typeof window !== 'undefined' && window.innerWidth >= 640 ? { left: position.left } : {})
+          }}
         >
           <button
             onClick={handleSkip}

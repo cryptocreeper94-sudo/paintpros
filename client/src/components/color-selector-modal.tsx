@@ -43,7 +43,7 @@ export function ColorSelectorModal({ isOpen, onClose }: ColorSelectorModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md bg-background/95 backdrop-blur-xl border-white/10">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/10">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
             <Palette className="w-5 h-5 text-accent" />

@@ -106,7 +106,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[85vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-3 text-xl">
             <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
@@ -132,7 +132,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {features.map((feature, i) => (
                   <div 
                     key={i}
@@ -170,7 +170,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {ecosystemApps.map((app, i) => (
                   <div 
                     key={i}

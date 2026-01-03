@@ -119,41 +119,41 @@ export function ROICalculator({ className }: ROICalculatorProps) {
       </div>
 
       <div className="mt-6 pt-6 border-t border-white/10">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
           <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
             <p className="text-xs text-muted-foreground mb-1">Additional Revenue</p>
-            <p className="text-xl font-bold text-green-400">
+            <p className="text-lg sm:text-xl font-bold text-green-400">
               +${(calculations.additionalRevenue / 1000).toFixed(0)}K
               <span className="text-xs font-normal text-muted-foreground">/yr</span>
             </p>
           </div>
           <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
             <p className="text-xs text-muted-foreground mb-1">Cost Savings</p>
-            <p className="text-xl font-bold text-blue-400">
+            <p className="text-lg sm:text-xl font-bold text-blue-400">
               ${(calculations.totalSavings / 1000).toFixed(0)}K
               <span className="text-xs font-normal text-muted-foreground">/yr</span>
             </p>
           </div>
         </div>
 
-        <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
-          <div className="flex items-center justify-between mb-3">
+        <div className="p-3 sm:p-4 rounded-lg bg-accent/10 border border-accent/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-3">
             <span className="text-sm font-medium">Total Annual Benefit</span>
-            <span className="text-2xl font-bold text-accent">
+            <span className="text-xl sm:text-2xl font-bold text-accent">
               ${(calculations.totalBenefit / 1000).toFixed(0)}K
             </span>
           </div>
           
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-green-400" />
+              <TrendingUp className="w-4 h-4 text-green-400 flex-shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground">ROI</p>
                 <p className="font-bold text-green-400">{calculations.roi.toFixed(0)}%</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-blue-400" />
+              <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground">Payback</p>
                 <p className="font-bold text-blue-400">{calculations.paybackMonths.toFixed(1)} mo</p>

@@ -1,7 +1,10 @@
+import { useEffect } from "react";
+import { useLocation } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
+import { useTenant } from "@/context/TenantContext";
 import { 
   DollarSign, TrendingUp, Users, Building2, Globe, 
   Rocket, Shield, Zap, Copy, CheckCircle, Award,
@@ -53,7 +56,23 @@ const TRADE_VERTICALS = [
 ];
 
 export default function Investors() {
+  const tenant = useTenant();
+  const [, navigate] = useLocation();
   const [copied, setCopied] = useState(false);
+
+  // Restrict investor pages to paintpros.io/demo tenant only
+  const isPaintProsTenant = tenant.id === "demo" || tenant.id === "paintpros";
+  
+  useEffect(() => {
+    if (!isPaintProsTenant) {
+      navigate("/");
+    }
+  }, [isPaintProsTenant, navigate]);
+
+  // Don't render if not paintpros tenant
+  if (!isPaintProsTenant) {
+    return null;
+  }
 
   const copyPricingSheet = () => {
     const content = `PaintPros.io - Investor Pricing Sheet

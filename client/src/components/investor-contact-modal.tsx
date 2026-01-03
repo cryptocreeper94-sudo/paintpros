@@ -62,7 +62,7 @@ export function InvestorContactModal({ isOpen, onClose }: InvestorContactModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Rocket className="w-5 h-5 text-accent" />
@@ -74,21 +74,21 @@ export function InvestorContactModal({ isOpen, onClose }: InvestorContactModalPr
         </DialogHeader>
 
         {submitted ? (
-          <div className="py-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-green-400" />
+          <div className="py-6 sm:py-8 text-center">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 text-green-400" />
             </div>
-            <h3 className="font-display font-bold text-xl mb-2">Message Sent!</h3>
-            <p className="text-muted-foreground mb-6">
+            <h3 className="font-display font-bold text-lg sm:text-xl mb-2">Message Sent!</h3>
+            <p className="text-sm sm:text-base text-muted-foreground mb-6">
               Our investment team will review your inquiry and reach out within 24 hours.
             </p>
-            <Button onClick={handleClose} data-testid="button-close-contact">
+            <Button onClick={handleClose} className="w-full sm:w-auto" data-testid="button-close-contact">
               Close
             </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -157,18 +157,18 @@ export function InvestorContactModal({ isOpen, onClose }: InvestorContactModalPr
               />
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="w-full sm:flex-1"
                 onClick={handleClose}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1"
+                className="w-full sm:flex-1"
                 disabled={submitMutation.isPending}
                 data-testid="button-submit-investor-lead"
               >

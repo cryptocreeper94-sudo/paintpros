@@ -42,7 +42,7 @@ export function SolanaVerifiedModal({ isOpen, onClose }: SolanaVerifiedModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/10">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/10">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-lg font-display">
             <div className="p-2 rounded-lg bg-gradient-to-br from-[#9945FF] to-[#14F195] shadow-[0_0_20px_rgba(20,241,149,0.4)]">

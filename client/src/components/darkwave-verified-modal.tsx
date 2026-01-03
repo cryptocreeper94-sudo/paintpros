@@ -48,7 +48,7 @@ export function DarkwaveVerifiedModal({ isOpen, onClose }: DarkwaveVerifiedModal
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/10">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/10">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-lg font-display">
             <div className="p-2 rounded-lg bg-gradient-to-br from-[#7C3AED] to-[#3B82F6] shadow-[0_0_20px_rgba(124,58,237,0.4)]">

@@ -63,7 +63,7 @@ export function FeatureModal({ open, onOpenChange, type, warrantyYears = 3 }: Fe
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md mx-4 sm:mx-auto bg-background/95 backdrop-blur-xl border-white/20">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/20">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-accent/20 p-3 rounded-xl">

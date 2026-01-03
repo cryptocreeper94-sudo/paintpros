@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { useTenant } from "@/context/TenantContext";
 import {
   TrendingUp, DollarSign, Users, Building2, Globe, Rocket, Shield, Zap,
   Brain, Route, AlertTriangle, Package, BarChart3, PiggyBank, Target,
@@ -176,12 +178,23 @@ function LivePulse() {
 }
 
 export default function InvestorDemo() {
+  const tenant = useTenant();
+  const [, navigate] = useLocation();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [tourOpen, setTourOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+
+  // Restrict investor pages to paintpros.io/demo tenant only
+  const isPaintProsTenant = tenant.id === "demo" || tenant.id === "paintpros";
+  
+  useEffect(() => {
+    if (!isPaintProsTenant) {
+      navigate("/");
+    }
+  }, [isPaintProsTenant, navigate]);
 
   // Fetch live platform metrics
   const { data: liveMetrics } = useQuery<typeof LIVE_METRICS>({
@@ -201,6 +214,7 @@ export default function InvestorDemo() {
 
   // Auto-start tour for first-time visitors
   useEffect(() => {
+    if (!isPaintProsTenant) return;
     const hasSeenTour = localStorage.getItem("investor_tour_seen");
     if (!hasSeenTour) {
       const timer = setTimeout(() => setTourOpen(true), 2000);
@@ -218,6 +232,11 @@ export default function InvestorDemo() {
     const deckUrl = "/api/investor-deck.pdf";
     window.open(deckUrl, "_blank");
   };
+
+  // Don't render if not paintpros tenant
+  if (!isPaintProsTenant) {
+    return null;
+  }
 
   return (
     <PageLayout>
