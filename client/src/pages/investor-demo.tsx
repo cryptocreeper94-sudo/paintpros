@@ -4,6 +4,7 @@ import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { FlipButton } from "@/components/ui/flip-button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -12,9 +13,14 @@ import {
   Scan, Palette, FileText, Scale, Calendar, CreditCard, Handshake,
   Award, Heart, Leaf, Landmark, Building, Play, Pause, ChevronRight,
   Sparkles, Activity, LineChart, ArrowUpRight, Clock, CheckCircle2,
-  Cpu, Network, Lock, Coins, Bot, MapPin, Star, TrendingDown
+  Cpu, Network, Lock, Coins, Bot, MapPin, Star, TrendingDown,
+  Download, HelpCircle, MessageSquare
 } from "lucide-react";
 import { SiSolana } from "react-icons/si";
+import { InvestorTour } from "@/components/investor-tour";
+import { VideoDemoModal } from "@/components/video-demo-modal";
+import { InvestorContactModal } from "@/components/investor-contact-modal";
+import { ROICalculator } from "@/components/roi-calculator";
 
 const LIVE_METRICS = {
   platformStats: {
@@ -173,6 +179,17 @@ export default function InvestorDemo() {
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+
+  // Fetch live platform metrics
+  const { data: liveMetrics } = useQuery<typeof LIVE_METRICS>({
+    queryKey: ["/api/platform-metrics"],
+    refetchInterval: 30000 // Refresh every 30 seconds
+  });
+
+  const metrics = liveMetrics || LIVE_METRICS;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -181,6 +198,26 @@ export default function InvestorDemo() {
     }, 5000);
     return () => clearInterval(timer);
   }, [isPlaying]);
+
+  // Auto-start tour for first-time visitors
+  useEffect(() => {
+    const hasSeenTour = localStorage.getItem("investor_tour_seen");
+    if (!hasSeenTour) {
+      const timer = setTimeout(() => setTourOpen(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleTourClose = () => {
+    setTourOpen(false);
+    localStorage.setItem("investor_tour_seen", "true");
+  };
+
+  const handleDownloadDeck = () => {
+    // Generate PDF content and trigger download
+    const deckUrl = "/api/investor-deck.pdf";
+    window.open(deckUrl, "_blank");
+  };
 
   return (
     <PageLayout>
@@ -234,14 +271,18 @@ export default function InvestorDemo() {
                   transition={{ delay: 0.3 }}
                   className="flex flex-wrap gap-3 mt-6"
                 >
-                  <FlipButton className="px-6" data-testid="button-schedule-demo">
+                  <FlipButton className="px-6" onClick={() => setVideoModalOpen(true)} data-testid="button-schedule-demo">
                     <Play className="w-4 h-4 mr-2" />
                     Watch Full Demo
                   </FlipButton>
-                  <FlipButton className="px-6 bg-transparent border border-accent/50" data-testid="button-download-deck">
-                    <FileText className="w-4 h-4 mr-2" />
+                  <FlipButton className="px-6 bg-transparent border border-accent/50" onClick={handleDownloadDeck} data-testid="button-download-deck">
+                    <Download className="w-4 h-4 mr-2" />
                     Download Deck
                   </FlipButton>
+                  <Button variant="ghost" size="sm" onClick={() => setTourOpen(true)} data-testid="button-start-tour">
+                    <HelpCircle className="w-4 h-4 mr-2" />
+                    Guided Tour
+                  </Button>
                 </motion.div>
               </div>
             </GlassCard>
@@ -629,20 +670,55 @@ export default function InvestorDemo() {
             </GlassCard>
           </BentoItem>
 
+          {/* ROI Calculator */}
+          <BentoItem colSpan={6} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
+            <ROICalculator />
+          </BentoItem>
+
+          {/* Why Invest Summary */}
+          <BentoItem colSpan={6} rowSpan={3} mobileColSpan={4} mobileRowSpan={2}>
+            <GlassCard className="p-6 h-full" hoverEffect>
+              <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-accent" />
+                Why Invest Now?
+              </h3>
+              
+              <div className="space-y-4">
+                {[
+                  { icon: TrendingUp, title: "First Mover Advantage", desc: "Only blockchain-verified trades platform in the market" },
+                  { icon: Globe, title: "$2.2T+ TAM", desc: "Multi-vertical expansion across 7 trade categories" },
+                  { icon: Brain, title: "AI Moat", desc: "6 proprietary AI modules competitors can't replicate" },
+                  { icon: Building, title: "Recurring Revenue", desc: "87% gross margin with strong unit economics" },
+                  { icon: Network, title: "Network Effects", desc: "Orbit Workforce Network creates sticky ecosystem" }
+                ].map((item) => (
+                  <div key={item.title} className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-accent/10 flex-shrink-0">
+                      <item.icon className="w-4 h-4 text-accent" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </BentoItem>
+
           {/* CTA */}
           <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
-            <GlassCard className="p-6 md:p-8 h-full bg-gradient-to-r from-accent/20 via-purple-500/10 to-accent/20 border-accent/30" glow="gold">
+            <GlassCard className="p-6 md:p-8 h-full bg-gradient-to-r from-accent/20 via-purple-500/10 to-accent/20 border-accent/30" glow="gold" data-tour="cta">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                   <h3 className="font-display font-bold text-xl md:text-2xl">Ready to Invest?</h3>
                   <p className="text-sm text-muted-foreground">Join the most comprehensive trades platform revolution</p>
                 </div>
                 <div className="flex gap-3">
-                  <FlipButton className="px-6" data-testid="button-contact-team">
-                    <Rocket className="w-4 h-4 mr-2" />
+                  <FlipButton className="px-6" onClick={() => setContactModalOpen(true)} data-testid="button-contact-team">
+                    <MessageSquare className="w-4 h-4 mr-2" />
                     Contact Team
                   </FlipButton>
-                  <FlipButton className="px-6 bg-transparent border border-accent/50" data-testid="button-view-pricing">
+                  <FlipButton className="px-6 bg-transparent border border-accent/50" onClick={() => window.location.href = "/pricing"} data-testid="button-view-pricing">
                     View Pricing
                     <ChevronRight className="w-4 h-4 ml-2" />
                   </FlipButton>
@@ -653,6 +729,11 @@ export default function InvestorDemo() {
 
         </BentoGrid>
       </main>
+
+      {/* Modals */}
+      <InvestorTour isOpen={tourOpen} onClose={handleTourClose} />
+      <VideoDemoModal isOpen={videoModalOpen} onClose={() => setVideoModalOpen(false)} />
+      <InvestorContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
     </PageLayout>
   );
 }

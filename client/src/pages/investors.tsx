@@ -605,21 +605,19 @@ Ecosystem: https://darkwavestudios.io`;
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
-                  href="mailto:invest@darkwavestudios.io"
+                  href="/investor-demo"
                   className="flex-1"
                 >
-                  <FlipButton className="w-full" data-testid="button-contact-invest">
-                    Contact for Investment <ArrowRight className="w-4 h-4 ml-2" />
+                  <FlipButton className="w-full" data-testid="button-interactive-demo">
+                    Interactive Demo <ArrowRight className="w-4 h-4 ml-2" />
                   </FlipButton>
                 </a>
                 <a
-                  href="https://darkwavestudios.io"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="mailto:invest@darkwavestudios.io"
                   className="flex-1"
                 >
-                  <button className="w-full py-3 px-6 rounded-xl bg-white/5 border border-border dark:border-white/20 hover:bg-black/5 dark:bg-white/10 transition-colors font-medium">
-                    Visit Darkwave Studios
+                  <button className="w-full py-3 px-6 rounded-xl bg-white/5 border border-border dark:border-white/20 hover:bg-black/5 dark:bg-white/10 transition-colors font-medium" data-testid="button-contact-invest">
+                    Contact for Investment
                   </button>
                 </a>
               </div>
