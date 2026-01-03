@@ -88,6 +88,22 @@ import {
   type MarketingChannel, type InsertMarketingChannel, marketingChannels,
   type MarketingAttribution, type InsertMarketingAttribution, marketingAttribution,
   type AccountingExport, type InsertAccountingExport, accountingExports,
+  type AiProposal, type InsertAiProposal, aiProposals,
+  type LeadScore, type InsertLeadScore, leadScores,
+  type VoiceEstimate, type InsertVoiceEstimate, voiceEstimates,
+  type FollowupOptimization, type InsertFollowupOptimization, followupOptimizations,
+  type CustomerPortal, type InsertCustomerPortal, customerPortals,
+  type CrewLocation, type InsertCrewLocation, crewLocations,
+  type CrewTip, type InsertCrewTip, crewTips,
+  type PortfolioGallery, type InsertPortfolioGallery, portfolioGalleries,
+  type ProfitAnalysis, type InsertProfitAnalysis, profitAnalyses,
+  type DemandForecast, type InsertDemandForecast, demandForecasts,
+  type CustomerLifetimeValue, type InsertCustomerLifetimeValue, customerLifetimeValues,
+  type CompetitorData, type InsertCompetitorData, competitorData,
+  type SmartContract, type InsertSmartContract, smartContracts,
+  type ArColorPreview, type InsertArColorPreview, arColorPreviews,
+  type CrewSkill, type InsertCrewSkill, crewSkills,
+  type SkillMatching, type InsertSkillMatching, skillMatchings,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -554,6 +570,85 @@ export interface IStorage {
   // Accounting Export
   createAccountingExport(exportData: InsertAccountingExport): Promise<AccountingExport>;
   getAccountingExports(tenantId: string): Promise<AccountingExport[]>;
+  
+  // AI Proposals
+  createAiProposal(proposal: InsertAiProposal): Promise<AiProposal>;
+  getAiProposals(tenantId: string): Promise<AiProposal[]>;
+  updateAiProposal(id: string, updates: Partial<InsertAiProposal>): Promise<AiProposal | undefined>;
+  
+  // Lead Scoring
+  createLeadScore(score: InsertLeadScore): Promise<LeadScore>;
+  getLeadScores(tenantId: string): Promise<LeadScore[]>;
+  getLeadScore(leadId: string): Promise<LeadScore | undefined>;
+  updateLeadScore(id: string, updates: Partial<InsertLeadScore>): Promise<LeadScore | undefined>;
+  
+  // Voice Estimates
+  createVoiceEstimate(estimate: InsertVoiceEstimate): Promise<VoiceEstimate>;
+  getVoiceEstimates(tenantId: string): Promise<VoiceEstimate[]>;
+  
+  // Follow-up Optimization
+  createFollowupOptimization(optimization: InsertFollowupOptimization): Promise<FollowupOptimization>;
+  getFollowupOptimizations(tenantId: string): Promise<FollowupOptimization[]>;
+  
+  // Customer Portal
+  createCustomerPortal(portal: InsertCustomerPortal): Promise<CustomerPortal>;
+  getCustomerPortalByToken(token: string): Promise<CustomerPortal | undefined>;
+  updateCustomerPortal(id: string, updates: Partial<InsertCustomerPortal>): Promise<CustomerPortal | undefined>;
+  
+  // Crew Locations
+  upsertCrewLocation(location: InsertCrewLocation): Promise<CrewLocation>;
+  getCrewLocations(tenantId: string): Promise<CrewLocation[]>;
+  getCrewLocationByJob(jobId: string): Promise<CrewLocation[]>;
+  
+  // Crew Tips
+  createCrewTip(tip: InsertCrewTip): Promise<CrewTip>;
+  getCrewTips(tenantId: string): Promise<CrewTip[]>;
+  updateCrewTip(id: string, updates: Partial<InsertCrewTip>): Promise<CrewTip | undefined>;
+  
+  // Portfolio Gallery
+  createPortfolioGallery(gallery: InsertPortfolioGallery): Promise<PortfolioGallery>;
+  getPortfolioGalleries(tenantId: string): Promise<PortfolioGallery[]>;
+  getPublicGalleries(tenantId: string): Promise<PortfolioGallery[]>;
+  updatePortfolioGallery(id: string, updates: Partial<InsertPortfolioGallery>): Promise<PortfolioGallery | undefined>;
+  
+  // Profit Analysis
+  createProfitAnalysis(analysis: InsertProfitAnalysis): Promise<ProfitAnalysis>;
+  getProfitAnalyses(tenantId: string): Promise<ProfitAnalysis[]>;
+  
+  // Demand Forecasts
+  createDemandForecast(forecast: InsertDemandForecast): Promise<DemandForecast>;
+  getDemandForecasts(tenantId: string): Promise<DemandForecast[]>;
+  
+  // Customer Lifetime Value
+  createCustomerLifetimeValue(clv: InsertCustomerLifetimeValue): Promise<CustomerLifetimeValue>;
+  getCustomerLifetimeValues(tenantId: string): Promise<CustomerLifetimeValue[]>;
+  getCustomerLifetimeValue(customerEmail: string): Promise<CustomerLifetimeValue | undefined>;
+  updateCustomerLifetimeValue(id: string, updates: Partial<InsertCustomerLifetimeValue>): Promise<CustomerLifetimeValue | undefined>;
+  
+  // Competitor Data
+  createCompetitorData(data: InsertCompetitorData): Promise<CompetitorData>;
+  getCompetitorData(tenantId: string): Promise<CompetitorData[]>;
+  updateCompetitorData(id: string, updates: Partial<InsertCompetitorData>): Promise<CompetitorData | undefined>;
+  
+  // Smart Contracts
+  createSmartContract(contract: InsertSmartContract): Promise<SmartContract>;
+  getSmartContracts(tenantId: string): Promise<SmartContract[]>;
+  getSmartContract(id: string): Promise<SmartContract | undefined>;
+  updateSmartContract(id: string, updates: Partial<InsertSmartContract>): Promise<SmartContract | undefined>;
+  
+  // AR Color Previews
+  createArColorPreview(preview: InsertArColorPreview): Promise<ArColorPreview>;
+  getArColorPreviews(tenantId: string): Promise<ArColorPreview[]>;
+  
+  // Crew Skills
+  createCrewSkill(skill: InsertCrewSkill): Promise<CrewSkill>;
+  getCrewSkills(crewMemberId: string): Promise<CrewSkill[]>;
+  getAllCrewSkills(tenantId: string): Promise<CrewSkill[]>;
+  
+  // Skill Matching
+  createSkillMatching(matching: InsertSkillMatching): Promise<SkillMatching>;
+  getSkillMatchings(tenantId: string): Promise<SkillMatching[]>;
+  getSkillMatchingByJob(jobId: string): Promise<SkillMatching | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -3029,6 +3124,208 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(accountingExports)
       .where(eq(accountingExports.tenantId, tenantId))
       .orderBy(desc(accountingExports.createdAt));
+  }
+
+  // AI Proposals
+  async createAiProposal(proposal: InsertAiProposal): Promise<AiProposal> {
+    const [result] = await db.insert(aiProposals).values(proposal).returning();
+    return result;
+  }
+  async getAiProposals(tenantId: string): Promise<AiProposal[]> {
+    return await db.select().from(aiProposals).where(eq(aiProposals.tenantId, tenantId)).orderBy(desc(aiProposals.createdAt));
+  }
+  async updateAiProposal(id: string, updates: Partial<InsertAiProposal>): Promise<AiProposal | undefined> {
+    const [result] = await db.update(aiProposals).set(updates).where(eq(aiProposals.id, id)).returning();
+    return result;
+  }
+
+  // Lead Scoring
+  async createLeadScore(score: InsertLeadScore): Promise<LeadScore> {
+    const [result] = await db.insert(leadScores).values(score).returning();
+    return result;
+  }
+  async getLeadScores(tenantId: string): Promise<LeadScore[]> {
+    return await db.select().from(leadScores).where(eq(leadScores.tenantId, tenantId)).orderBy(desc(leadScores.score));
+  }
+  async getLeadScore(leadId: string): Promise<LeadScore | undefined> {
+    const [result] = await db.select().from(leadScores).where(eq(leadScores.leadId, leadId));
+    return result;
+  }
+  async updateLeadScore(id: string, updates: Partial<InsertLeadScore>): Promise<LeadScore | undefined> {
+    const [result] = await db.update(leadScores).set(updates).where(eq(leadScores.id, id)).returning();
+    return result;
+  }
+
+  // Voice Estimates
+  async createVoiceEstimate(estimate: InsertVoiceEstimate): Promise<VoiceEstimate> {
+    const [result] = await db.insert(voiceEstimates).values(estimate).returning();
+    return result;
+  }
+  async getVoiceEstimates(tenantId: string): Promise<VoiceEstimate[]> {
+    return await db.select().from(voiceEstimates).where(eq(voiceEstimates.tenantId, tenantId)).orderBy(desc(voiceEstimates.createdAt));
+  }
+
+  // Follow-up Optimization
+  async createFollowupOptimization(optimization: InsertFollowupOptimization): Promise<FollowupOptimization> {
+    const [result] = await db.insert(followupOptimizations).values(optimization).returning();
+    return result;
+  }
+  async getFollowupOptimizations(tenantId: string): Promise<FollowupOptimization[]> {
+    return await db.select().from(followupOptimizations).where(eq(followupOptimizations.tenantId, tenantId)).orderBy(desc(followupOptimizations.createdAt));
+  }
+
+  // Customer Portal
+  async createCustomerPortal(portal: InsertCustomerPortal): Promise<CustomerPortal> {
+    const [result] = await db.insert(customerPortals).values(portal).returning();
+    return result;
+  }
+  async getCustomerPortalByToken(token: string): Promise<CustomerPortal | undefined> {
+    const [result] = await db.select().from(customerPortals).where(eq(customerPortals.accessToken, token));
+    return result;
+  }
+  async updateCustomerPortal(id: string, updates: Partial<InsertCustomerPortal>): Promise<CustomerPortal | undefined> {
+    const [result] = await db.update(customerPortals).set(updates).where(eq(customerPortals.id, id)).returning();
+    return result;
+  }
+
+  // Crew Locations
+  async upsertCrewLocation(location: InsertCrewLocation): Promise<CrewLocation> {
+    const [result] = await db.insert(crewLocations).values(location).returning();
+    return result;
+  }
+  async getCrewLocations(tenantId: string): Promise<CrewLocation[]> {
+    return await db.select().from(crewLocations).where(eq(crewLocations.tenantId, tenantId));
+  }
+  async getCrewLocationByJob(jobId: string): Promise<CrewLocation[]> {
+    return await db.select().from(crewLocations).where(eq(crewLocations.jobId, jobId));
+  }
+
+  // Crew Tips
+  async createCrewTip(tip: InsertCrewTip): Promise<CrewTip> {
+    const [result] = await db.insert(crewTips).values(tip).returning();
+    return result;
+  }
+  async getCrewTips(tenantId: string): Promise<CrewTip[]> {
+    return await db.select().from(crewTips).where(eq(crewTips.tenantId, tenantId)).orderBy(desc(crewTips.createdAt));
+  }
+  async updateCrewTip(id: string, updates: Partial<InsertCrewTip>): Promise<CrewTip | undefined> {
+    const [result] = await db.update(crewTips).set(updates).where(eq(crewTips.id, id)).returning();
+    return result;
+  }
+
+  // Portfolio Gallery
+  async createPortfolioGallery(gallery: InsertPortfolioGallery): Promise<PortfolioGallery> {
+    const [result] = await db.insert(portfolioGalleries).values(gallery).returning();
+    return result;
+  }
+  async getPortfolioGalleries(tenantId: string): Promise<PortfolioGallery[]> {
+    return await db.select().from(portfolioGalleries).where(eq(portfolioGalleries.tenantId, tenantId)).orderBy(desc(portfolioGalleries.createdAt));
+  }
+  async getPublicGalleries(tenantId: string): Promise<PortfolioGallery[]> {
+    return await db.select().from(portfolioGalleries).where(and(eq(portfolioGalleries.tenantId, tenantId), eq(portfolioGalleries.isPublic, true))).orderBy(desc(portfolioGalleries.createdAt));
+  }
+  async updatePortfolioGallery(id: string, updates: Partial<InsertPortfolioGallery>): Promise<PortfolioGallery | undefined> {
+    const [result] = await db.update(portfolioGalleries).set(updates).where(eq(portfolioGalleries.id, id)).returning();
+    return result;
+  }
+
+  // Profit Analysis
+  async createProfitAnalysis(analysis: InsertProfitAnalysis): Promise<ProfitAnalysis> {
+    const [result] = await db.insert(profitAnalyses).values(analysis).returning();
+    return result;
+  }
+  async getProfitAnalyses(tenantId: string): Promise<ProfitAnalysis[]> {
+    return await db.select().from(profitAnalyses).where(eq(profitAnalyses.tenantId, tenantId)).orderBy(desc(profitAnalyses.createdAt));
+  }
+
+  // Demand Forecasts
+  async createDemandForecast(forecast: InsertDemandForecast): Promise<DemandForecast> {
+    const [result] = await db.insert(demandForecasts).values(forecast).returning();
+    return result;
+  }
+  async getDemandForecasts(tenantId: string): Promise<DemandForecast[]> {
+    return await db.select().from(demandForecasts).where(eq(demandForecasts.tenantId, tenantId)).orderBy(desc(demandForecasts.forecastMonth));
+  }
+
+  // Customer Lifetime Value
+  async createCustomerLifetimeValue(clv: InsertCustomerLifetimeValue): Promise<CustomerLifetimeValue> {
+    const [result] = await db.insert(customerLifetimeValues).values(clv).returning();
+    return result;
+  }
+  async getCustomerLifetimeValues(tenantId: string): Promise<CustomerLifetimeValue[]> {
+    return await db.select().from(customerLifetimeValues).where(eq(customerLifetimeValues.tenantId, tenantId)).orderBy(desc(customerLifetimeValues.totalRevenue));
+  }
+  async getCustomerLifetimeValue(customerEmail: string): Promise<CustomerLifetimeValue | undefined> {
+    const [result] = await db.select().from(customerLifetimeValues).where(eq(customerLifetimeValues.customerEmail, customerEmail));
+    return result;
+  }
+  async updateCustomerLifetimeValue(id: string, updates: Partial<InsertCustomerLifetimeValue>): Promise<CustomerLifetimeValue | undefined> {
+    const [result] = await db.update(customerLifetimeValues).set(updates).where(eq(customerLifetimeValues.id, id)).returning();
+    return result;
+  }
+
+  // Competitor Data
+  async createCompetitorData(data: InsertCompetitorData): Promise<CompetitorData> {
+    const [result] = await db.insert(competitorData).values(data).returning();
+    return result;
+  }
+  async getCompetitorData(tenantId: string): Promise<CompetitorData[]> {
+    return await db.select().from(competitorData).where(eq(competitorData.tenantId, tenantId));
+  }
+  async updateCompetitorData(id: string, updates: Partial<InsertCompetitorData>): Promise<CompetitorData | undefined> {
+    const [result] = await db.update(competitorData).set(updates).where(eq(competitorData.id, id)).returning();
+    return result;
+  }
+
+  // Smart Contracts
+  async createSmartContract(contract: InsertSmartContract): Promise<SmartContract> {
+    const [result] = await db.insert(smartContracts).values(contract).returning();
+    return result;
+  }
+  async getSmartContracts(tenantId: string): Promise<SmartContract[]> {
+    return await db.select().from(smartContracts).where(eq(smartContracts.tenantId, tenantId)).orderBy(desc(smartContracts.createdAt));
+  }
+  async getSmartContract(id: string): Promise<SmartContract | undefined> {
+    const [result] = await db.select().from(smartContracts).where(eq(smartContracts.id, id));
+    return result;
+  }
+  async updateSmartContract(id: string, updates: Partial<InsertSmartContract>): Promise<SmartContract | undefined> {
+    const [result] = await db.update(smartContracts).set(updates).where(eq(smartContracts.id, id)).returning();
+    return result;
+  }
+
+  // AR Color Previews
+  async createArColorPreview(preview: InsertArColorPreview): Promise<ArColorPreview> {
+    const [result] = await db.insert(arColorPreviews).values(preview).returning();
+    return result;
+  }
+  async getArColorPreviews(tenantId: string): Promise<ArColorPreview[]> {
+    return await db.select().from(arColorPreviews).where(eq(arColorPreviews.tenantId, tenantId)).orderBy(desc(arColorPreviews.createdAt));
+  }
+
+  // Crew Skills
+  async createCrewSkill(skill: InsertCrewSkill): Promise<CrewSkill> {
+    const [result] = await db.insert(crewSkills).values(skill).returning();
+    return result;
+  }
+  async getCrewSkills(crewMemberId: string): Promise<CrewSkill[]> {
+    return await db.select().from(crewSkills).where(eq(crewSkills.crewMemberId, crewMemberId));
+  }
+  async getAllCrewSkills(tenantId: string): Promise<CrewSkill[]> {
+    return await db.select().from(crewSkills).where(eq(crewSkills.tenantId, tenantId));
+  }
+
+  // Skill Matching
+  async createSkillMatching(matching: InsertSkillMatching): Promise<SkillMatching> {
+    const [result] = await db.insert(skillMatchings).values(matching).returning();
+    return result;
+  }
+  async getSkillMatchings(tenantId: string): Promise<SkillMatching[]> {
+    return await db.select().from(skillMatchings).where(eq(skillMatchings.tenantId, tenantId)).orderBy(desc(skillMatchings.createdAt));
+  }
+  async getSkillMatchingByJob(jobId: string): Promise<SkillMatching | undefined> {
+    const [result] = await db.select().from(skillMatchings).where(eq(skillMatchings.jobId, jobId));
+    return result;
   }
 }
 

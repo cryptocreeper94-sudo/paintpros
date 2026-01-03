@@ -3989,3 +3989,356 @@ export const insertAccountingExportSchema = createInsertSchema(accountingExports
 export type InsertAccountingExport = z.infer<typeof insertAccountingExportSchema>;
 export type AccountingExport = typeof accountingExports.$inferSelect;
 
+// ============ KILLER FEATURES - COMPETITION DESTROYERS ============
+
+// AI-Generated Proposals
+export const aiProposals = pgTable("ai_proposals", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  estimateId: varchar("estimate_id", { length: 36 }),
+  customerName: varchar("customer_name", { length: 200 }).notNull(),
+  projectScope: text("project_scope"),
+  generatedContent: text("generated_content"),
+  executiveSummary: text("executive_summary"),
+  scopeOfWork: text("scope_of_work"),
+  timeline: text("timeline"),
+  investmentBreakdown: text("investment_breakdown"),
+  termsConditions: text("terms_conditions"),
+  aiModel: varchar("ai_model", { length: 50 }).default("gpt-4o"),
+  tokensUsed: integer("tokens_used"),
+  status: varchar("status", { length: 30 }).default("draft"),
+  sentAt: timestamp("sent_at"),
+  viewedAt: timestamp("viewed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_ai_proposals_tenant").on(table.tenantId)]);
+
+export const insertAiProposalSchema = createInsertSchema(aiProposals).omit({ id: true, createdAt: true });
+export type InsertAiProposal = z.infer<typeof insertAiProposalSchema>;
+export type AiProposal = typeof aiProposals.$inferSelect;
+
+// Smart Lead Scoring
+export const leadScores = pgTable("lead_scores", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  leadId: varchar("lead_id", { length: 36 }).notNull(),
+  score: integer("score").default(0),
+  signals: text("signals"),
+  budgetIndicator: integer("budget_indicator"),
+  urgencyIndicator: integer("urgency_indicator"),
+  fitIndicator: integer("fit_indicator"),
+  engagementScore: integer("engagement_score"),
+  responseTimeMinutes: integer("response_time_minutes"),
+  previousCustomer: boolean("previous_customer").default(false),
+  referralSource: varchar("referral_source", { length: 100 }),
+  propertyValue: integer("property_value"),
+  aiPrediction: real("ai_prediction"),
+  lastCalculated: timestamp("last_calculated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_lead_scores_tenant").on(table.tenantId)]);
+
+export const insertLeadScoreSchema = createInsertSchema(leadScores).omit({ id: true, createdAt: true });
+export type InsertLeadScore = z.infer<typeof insertLeadScoreSchema>;
+export type LeadScore = typeof leadScores.$inferSelect;
+
+// Voice-to-Estimate
+export const voiceEstimates = pgTable("voice_estimates", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  audioUrl: text("audio_url"),
+  transcription: text("transcription"),
+  parsedDimensions: text("parsed_dimensions"),
+  extractedServices: text("extracted_services"),
+  estimatedTotal: integer("estimated_total"),
+  confidence: real("confidence"),
+  processingStatus: varchar("processing_status", { length: 30 }).default("pending"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_voice_estimates_tenant").on(table.tenantId)]);
+
+export const insertVoiceEstimateSchema = createInsertSchema(voiceEstimates).omit({ id: true, createdAt: true });
+export type InsertVoiceEstimate = z.infer<typeof insertVoiceEstimateSchema>;
+export type VoiceEstimate = typeof voiceEstimates.$inferSelect;
+
+// Follow-up Optimization
+export const followupOptimizations = pgTable("followup_optimizations", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  leadId: varchar("lead_id", { length: 36 }).notNull(),
+  recommendedChannel: varchar("recommended_channel", { length: 30 }),
+  recommendedTime: timestamp("recommended_time"),
+  recommendedDay: varchar("recommended_day", { length: 20 }),
+  reasoningNotes: text("reasoning_notes"),
+  historicalResponseRate: real("historical_response_rate"),
+  aiConfidence: real("ai_confidence"),
+  wasActioned: boolean("was_actioned").default(false),
+  resultedInResponse: boolean("resulted_in_response"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_followup_opt_tenant").on(table.tenantId)]);
+
+export const insertFollowupOptimizationSchema = createInsertSchema(followupOptimizations).omit({ id: true, createdAt: true });
+export type InsertFollowupOptimization = z.infer<typeof insertFollowupOptimizationSchema>;
+export type FollowupOptimization = typeof followupOptimizations.$inferSelect;
+
+// Customer Portal Access
+export const customerPortals = pgTable("customer_portals", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  customerId: varchar("customer_id", { length: 36 }),
+  customerEmail: varchar("customer_email", { length: 200 }).notNull(),
+  customerName: varchar("customer_name", { length: 200 }),
+  accessToken: varchar("access_token", { length: 100 }).notNull(),
+  tokenExpiry: timestamp("token_expiry"),
+  jobIds: text("job_ids"),
+  canViewProgress: boolean("can_view_progress").default(true),
+  canViewPhotos: boolean("can_view_photos").default(true),
+  canApproveChanges: boolean("can_approve_changes").default(true),
+  canMakePayments: boolean("can_make_payments").default(true),
+  lastAccessed: timestamp("last_accessed"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_customer_portals_tenant").on(table.tenantId)]);
+
+export const insertCustomerPortalSchema = createInsertSchema(customerPortals).omit({ id: true, createdAt: true });
+export type InsertCustomerPortal = z.infer<typeof insertCustomerPortalSchema>;
+export type CustomerPortal = typeof customerPortals.$inferSelect;
+
+// Real-Time Crew GPS
+export const crewLocations = pgTable("crew_locations", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  crewMemberId: varchar("crew_member_id", { length: 36 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  latitude: real("latitude").notNull(),
+  longitude: real("longitude").notNull(),
+  accuracy: real("accuracy"),
+  heading: real("heading"),
+  speed: real("speed"),
+  batteryLevel: integer("battery_level"),
+  isMoving: boolean("is_moving").default(false),
+  etaMinutes: integer("eta_minutes"),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+}, (table) => [index("idx_crew_locations_member").on(table.crewMemberId)]);
+
+export const insertCrewLocationSchema = createInsertSchema(crewLocations).omit({ id: true });
+export type InsertCrewLocation = z.infer<typeof insertCrewLocationSchema>;
+export type CrewLocation = typeof crewLocations.$inferSelect;
+
+// Digital Tip Jar
+export const crewTips = pgTable("crew_tips", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  crewMemberId: varchar("crew_member_id", { length: 36 }),
+  customerId: varchar("customer_id", { length: 36 }),
+  customerName: varchar("customer_name", { length: 200 }),
+  amount: integer("amount").notNull(),
+  paymentMethod: varchar("payment_method", { length: 30 }),
+  stripePaymentId: varchar("stripe_payment_id", { length: 100 }),
+  message: text("message"),
+  rating: integer("rating"),
+  status: varchar("status", { length: 30 }).default("pending"),
+  paidOutAt: timestamp("paid_out_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_crew_tips_tenant").on(table.tenantId)]);
+
+export const insertCrewTipSchema = createInsertSchema(crewTips).omit({ id: true, createdAt: true });
+export type InsertCrewTip = z.infer<typeof insertCrewTipSchema>;
+export type CrewTip = typeof crewTips.$inferSelect;
+
+// Before/After Gallery
+export const portfolioGalleries = pgTable("portfolio_galleries", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  beforePhotoUrl: text("before_photo_url"),
+  afterPhotoUrl: text("after_photo_url"),
+  serviceType: varchar("service_type", { length: 50 }),
+  roomType: varchar("room_type", { length: 50 }),
+  colorUsed: varchar("color_used", { length: 100 }),
+  colorBrand: varchar("color_brand", { length: 100 }),
+  isPublic: boolean("is_public").default(true),
+  isFeatured: boolean("is_featured").default(false),
+  viewCount: integer("view_count").default(0),
+  shareCount: integer("share_count").default(0),
+  customerApproved: boolean("customer_approved").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_portfolio_galleries_tenant").on(table.tenantId)]);
+
+export const insertPortfolioGallerySchema = createInsertSchema(portfolioGalleries).omit({ id: true, createdAt: true });
+export type InsertPortfolioGallery = z.infer<typeof insertPortfolioGallerySchema>;
+export type PortfolioGallery = typeof portfolioGalleries.$inferSelect;
+
+// Profit Margin Optimizer
+export const profitAnalyses = pgTable("profit_analyses", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobType: varchar("job_type", { length: 100 }).notNull(),
+  averageRevenue: integer("average_revenue"),
+  averageCost: integer("average_cost"),
+  averageMargin: real("average_margin"),
+  recommendedAdjustment: real("recommended_adjustment"),
+  marketComparison: varchar("market_comparison", { length: 30 }),
+  aiRecommendation: text("ai_recommendation"),
+  dataPoints: integer("data_points"),
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_profit_analyses_tenant").on(table.tenantId)]);
+
+export const insertProfitAnalysisSchema = createInsertSchema(profitAnalyses).omit({ id: true, createdAt: true });
+export type InsertProfitAnalysis = z.infer<typeof insertProfitAnalysisSchema>;
+export type ProfitAnalysis = typeof profitAnalyses.$inferSelect;
+
+// Seasonal Demand Forecasting
+export const demandForecasts = pgTable("demand_forecasts", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  forecastMonth: varchar("forecast_month", { length: 10 }).notNull(),
+  predictedLeads: integer("predicted_leads"),
+  predictedJobs: integer("predicted_jobs"),
+  predictedRevenue: integer("predicted_revenue"),
+  demandLevel: varchar("demand_level", { length: 20 }),
+  seasonalFactor: real("seasonal_factor"),
+  weatherImpact: real("weather_impact"),
+  historicalComparison: real("historical_comparison"),
+  recommendedCrewSize: integer("recommended_crew_size"),
+  recommendedMarketingSpend: integer("recommended_marketing_spend"),
+  confidence: real("confidence"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_demand_forecasts_tenant").on(table.tenantId)]);
+
+export const insertDemandForecastSchema = createInsertSchema(demandForecasts).omit({ id: true, createdAt: true });
+export type InsertDemandForecast = z.infer<typeof insertDemandForecastSchema>;
+export type DemandForecast = typeof demandForecasts.$inferSelect;
+
+// Customer Lifetime Value
+export const customerLifetimeValues = pgTable("customer_lifetime_values", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  customerId: varchar("customer_id", { length: 36 }),
+  customerEmail: varchar("customer_email", { length: 200 }).notNull(),
+  totalRevenue: integer("total_revenue").default(0),
+  totalJobs: integer("total_jobs").default(0),
+  firstJobDate: timestamp("first_job_date"),
+  lastJobDate: timestamp("last_job_date"),
+  averageJobValue: integer("average_job_value"),
+  referralsGenerated: integer("referrals_generated").default(0),
+  referralValue: integer("referral_value").default(0),
+  predictedFutureValue: integer("predicted_future_value"),
+  churnRisk: real("churn_risk"),
+  segment: varchar("segment", { length: 30 }),
+  nextPredictedPurchase: timestamp("next_predicted_purchase"),
+  calculatedAt: timestamp("calculated_at").defaultNow().notNull(),
+}, (table) => [index("idx_clv_tenant").on(table.tenantId)]);
+
+export const insertCustomerLifetimeValueSchema = createInsertSchema(customerLifetimeValues).omit({ id: true, calculatedAt: true });
+export type InsertCustomerLifetimeValue = z.infer<typeof insertCustomerLifetimeValueSchema>;
+export type CustomerLifetimeValue = typeof customerLifetimeValues.$inferSelect;
+
+// Competitor Intelligence
+export const competitorData = pgTable("competitor_data", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  competitorName: varchar("competitor_name", { length: 200 }).notNull(),
+  serviceArea: varchar("service_area", { length: 100 }),
+  avgPricePerSqft: real("avg_price_per_sqft"),
+  avgInteriorRoom: integer("avg_interior_room"),
+  avgExteriorJob: integer("avg_exterior_job"),
+  reviewScore: real("review_score"),
+  reviewCount: integer("review_count"),
+  responseTime: varchar("response_time", { length: 50 }),
+  uniqueSellingPoints: text("unique_selling_points"),
+  weaknesses: text("weaknesses"),
+  marketShare: real("market_share"),
+  dataSource: varchar("data_source", { length: 100 }),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+}, (table) => [index("idx_competitor_tenant").on(table.tenantId)]);
+
+export const insertCompetitorDataSchema = createInsertSchema(competitorData).omit({ id: true, lastUpdated: true });
+export type InsertCompetitorData = z.infer<typeof insertCompetitorDataSchema>;
+export type CompetitorData = typeof competitorData.$inferSelect;
+
+// Smart Contracts (Blockchain Proposals)
+export const smartContracts = pgTable("smart_contracts", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  proposalId: varchar("proposal_id", { length: 36 }),
+  estimateId: varchar("estimate_id", { length: 36 }),
+  contractHash: varchar("contract_hash", { length: 100 }),
+  blockchainTxId: varchar("blockchain_tx_id", { length: 100 }),
+  customerSignature: text("customer_signature"),
+  customerSignedAt: timestamp("customer_signed_at"),
+  contractorSignature: text("contractor_signature"),
+  contractorSignedAt: timestamp("contractor_signed_at"),
+  terms: text("terms"),
+  paymentSchedule: text("payment_schedule"),
+  changeOrdersAllowed: boolean("change_orders_allowed").default(true),
+  disputeResolution: text("dispute_resolution"),
+  status: varchar("status", { length: 30 }).default("pending"),
+  verifiedOnChain: boolean("verified_on_chain").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_smart_contracts_tenant").on(table.tenantId)]);
+
+export const insertSmartContractSchema = createInsertSchema(smartContracts).omit({ id: true, createdAt: true });
+export type InsertSmartContract = z.infer<typeof insertSmartContractSchema>;
+export type SmartContract = typeof smartContracts.$inferSelect;
+
+// AR Color Preview
+export const arColorPreviews = pgTable("ar_color_previews", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  sessionId: varchar("session_id", { length: 36 }),
+  customerEmail: varchar("customer_email", { length: 200 }),
+  roomPhotoUrl: text("room_photo_url"),
+  selectedColors: text("selected_colors"),
+  previewImageUrl: text("preview_image_url"),
+  savedToFavorites: boolean("saved_to_favorites").default(false),
+  sharedViaEmail: boolean("shared_via_email").default(false),
+  convertedToLead: boolean("converted_to_lead").default(false),
+  leadId: varchar("lead_id", { length: 36 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_ar_previews_tenant").on(table.tenantId)]);
+
+export const insertArColorPreviewSchema = createInsertSchema(arColorPreviews).omit({ id: true, createdAt: true });
+export type InsertArColorPreview = z.infer<typeof insertArColorPreviewSchema>;
+export type ArColorPreview = typeof arColorPreviews.$inferSelect;
+
+// Crew Skills & Certifications
+export const crewSkills = pgTable("crew_skills", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  crewMemberId: varchar("crew_member_id", { length: 36 }).notNull(),
+  skillName: varchar("skill_name", { length: 100 }).notNull(),
+  skillCategory: varchar("skill_category", { length: 50 }),
+  proficiencyLevel: integer("proficiency_level"),
+  certificationName: varchar("certification_name", { length: 200 }),
+  certificationDate: timestamp("certification_date"),
+  expiryDate: timestamp("expiry_date"),
+  verifiedBy: varchar("verified_by", { length: 100 }),
+  documentUrl: text("document_url"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_crew_skills_member").on(table.crewMemberId)]);
+
+export const insertCrewSkillSchema = createInsertSchema(crewSkills).omit({ id: true, createdAt: true });
+export type InsertCrewSkill = z.infer<typeof insertCrewSkillSchema>;
+export type CrewSkill = typeof crewSkills.$inferSelect;
+
+// Crew-Job Skill Matching
+export const skillMatchings = pgTable("skill_matchings", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  requiredSkills: text("required_skills"),
+  recommendedCrewIds: text("recommended_crew_ids"),
+  matchScores: text("match_scores"),
+  assignedCrewId: varchar("assigned_crew_id", { length: 36 }),
+  autoAssigned: boolean("auto_assigned").default(false),
+  overrideReason: text("override_reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [index("idx_skill_matchings_job").on(table.jobId)]);
+
+export const insertSkillMatchingSchema = createInsertSchema(skillMatchings).omit({ id: true, createdAt: true });
+export type InsertSkillMatching = z.infer<typeof insertSkillMatchingSchema>;
+export type SkillMatching = typeof skillMatchings.$inferSelect;
+

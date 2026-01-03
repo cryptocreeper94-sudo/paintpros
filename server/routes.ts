@@ -27,6 +27,11 @@ import {
   insertNpsSurveySchema, insertCrewLeaderboardSchema, insertCrewAchievementSchema,
   insertJobGeofenceSchema, insertGeofenceEventSchema, insertRevenuePredictionSchema,
   insertMarketingChannelSchema, insertMarketingAttributionSchema, insertAccountingExportSchema,
+  insertAiProposalSchema, insertLeadScoreSchema, insertVoiceEstimateSchema,
+  insertFollowupOptimizationSchema, insertCustomerPortalSchema, insertCrewLocationSchema,
+  insertCrewTipSchema, insertPortfolioGallerySchema, insertProfitAnalysisSchema,
+  insertDemandForecastSchema, insertCustomerLifetimeValueSchema, insertCompetitorDataSchema,
+  insertSmartContractSchema, insertArColorPreviewSchema, insertCrewSkillSchema, insertSkillMatchingSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -3986,6 +3991,718 @@ Do not include any text before or after the JSON.`
     } else {
       res.json(estimates);
     }
+  });
+
+  // ============ AI PROPOSAL WRITER ============
+  
+  app.post("/api/proposals/generate", async (req, res) => {
+    try {
+      const { tenantId, estimateId, customerName, projectScope, companyName } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a professional proposal writer for ${companyName || 'a painting company'}. Generate a compelling, professional proposal. Return JSON with:
+              - executiveSummary: 2-3 paragraph executive summary
+              - scopeOfWork: detailed scope with bullet points
+              - timeline: project timeline with milestones
+              - investmentBreakdown: pricing breakdown
+              - termsConditions: standard terms
+              - closingStatement: compelling close`
+          },
+          { role: "user", content: `Customer: ${customerName}\nProject: ${projectScope}` }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const proposal = await storage.createAiProposal({
+        tenantId: tenantId || "demo",
+        estimateId,
+        customerName,
+        projectScope,
+        executiveSummary: parsed.executiveSummary,
+        scopeOfWork: parsed.scopeOfWork,
+        timeline: parsed.timeline,
+        investmentBreakdown: parsed.investmentBreakdown,
+        termsConditions: parsed.termsConditions,
+        generatedContent: JSON.stringify(parsed),
+        tokensUsed: response.usage?.total_tokens,
+      });
+      
+      res.status(201).json({ ...proposal, parsed });
+    } catch (error) {
+      console.error("Proposal generation error:", error);
+      res.status(500).json({ error: "Failed to generate proposal" });
+    }
+  });
+  
+  app.get("/api/proposals", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const proposals = await storage.getAiProposals(tenantId);
+    res.json(proposals);
+  });
+  
+  app.patch("/api/proposals/:id", async (req, res) => {
+    const proposal = await storage.updateAiProposal(req.params.id, req.body);
+    if (!proposal) return res.status(404).json({ error: "Proposal not found" });
+    res.json(proposal);
+  });
+
+  // ============ SMART LEAD SCORING ============
+  
+  app.post("/api/leads/score", async (req, res) => {
+    try {
+      const { tenantId, leadId, leadData } = req.body;
+      
+      // Calculate score based on signals
+      let score = 50; // Base score
+      const signals: string[] = [];
+      
+      if (leadData.budget && leadData.budget > 5000) { score += 15; signals.push("High budget"); }
+      if (leadData.urgency === "immediate") { score += 20; signals.push("Immediate urgency"); }
+      if (leadData.previousCustomer) { score += 25; signals.push("Previous customer"); }
+      if (leadData.referral) { score += 15; signals.push("Referral source"); }
+      if (leadData.responseTime && leadData.responseTime < 30) { score += 10; signals.push("Quick response"); }
+      
+      score = Math.min(100, Math.max(0, score));
+      
+      const leadScore = await storage.createLeadScore({
+        tenantId: tenantId || "demo",
+        leadId,
+        score,
+        signals: JSON.stringify(signals),
+        budgetIndicator: leadData.budget ? Math.min(5, Math.floor(leadData.budget / 2000) + 1) : 3,
+        urgencyIndicator: leadData.urgency === "immediate" ? 5 : leadData.urgency === "soon" ? 3 : 1,
+        previousCustomer: leadData.previousCustomer || false,
+        referralSource: leadData.referral,
+      });
+      
+      res.status(201).json(leadScore);
+    } catch (error) {
+      console.error("Lead scoring error:", error);
+      res.status(500).json({ error: "Failed to score lead" });
+    }
+  });
+  
+  app.get("/api/leads/scores", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const scores = await storage.getLeadScores(tenantId);
+    res.json(scores);
+  });
+  
+  app.post("/api/leads/score-ai", async (req, res) => {
+    try {
+      const { tenantId, leadId, leadData } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `Analyze this lead for a painting company. Return JSON with:
+              - score: 0-100 overall score
+              - conversionProbability: 0-1
+              - signals: array of positive/negative signals
+              - recommendation: next best action`
+          },
+          { role: "user", content: JSON.stringify(leadData) }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const leadScore = await storage.createLeadScore({
+        tenantId: tenantId || "demo",
+        leadId,
+        score: parsed.score || 50,
+        signals: JSON.stringify(parsed.signals),
+        aiPrediction: parsed.conversionProbability,
+      });
+      
+      res.status(201).json({ ...leadScore, recommendation: parsed.recommendation });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to AI score lead" });
+    }
+  });
+
+  // ============ VOICE-TO-ESTIMATE ============
+  
+  app.post("/api/voice-estimate", async (req, res) => {
+    try {
+      const { tenantId, transcription } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `Extract room dimensions and services from this voice transcription. Return JSON with:
+              - rooms: array of {name, length, width, height, sqft}
+              - services: array of services mentioned (interior, exterior, walls, ceiling, trim)
+              - estimatedTotal: rough estimate in cents
+              - confidence: 0-1`
+          },
+          { role: "user", content: transcription }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const estimate = await storage.createVoiceEstimate({
+        tenantId: tenantId || "demo",
+        transcription,
+        parsedDimensions: JSON.stringify(parsed.rooms),
+        extractedServices: JSON.stringify(parsed.services),
+        estimatedTotal: parsed.estimatedTotal,
+        confidence: parsed.confidence,
+        processingStatus: "completed",
+      });
+      
+      res.status(201).json({ ...estimate, parsed });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to process voice estimate" });
+    }
+  });
+  
+  app.get("/api/voice-estimates", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const estimates = await storage.getVoiceEstimates(tenantId);
+    res.json(estimates);
+  });
+
+  // ============ FOLLOW-UP OPTIMIZER ============
+  
+  app.post("/api/followup/optimize", async (req, res) => {
+    try {
+      const { tenantId, leadId, leadHistory } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `Analyze lead engagement and recommend optimal follow-up. Return JSON with:
+              - recommendedChannel: email, sms, or call
+              - recommendedTime: ISO timestamp
+              - recommendedDay: day of week
+              - reasoning: explanation
+              - confidence: 0-1`
+          },
+          { role: "user", content: JSON.stringify(leadHistory || { noHistory: true }) }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const optimization = await storage.createFollowupOptimization({
+        tenantId: tenantId || "demo",
+        leadId,
+        recommendedChannel: parsed.recommendedChannel,
+        recommendedTime: parsed.recommendedTime ? new Date(parsed.recommendedTime) : undefined,
+        recommendedDay: parsed.recommendedDay,
+        reasoningNotes: parsed.reasoning,
+        aiConfidence: parsed.confidence,
+      });
+      
+      res.status(201).json(optimization);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to optimize follow-up" });
+    }
+  });
+  
+  app.get("/api/followup/optimizations", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const optimizations = await storage.getFollowupOptimizations(tenantId);
+    res.json(optimizations);
+  });
+
+  // ============ CUSTOMER PORTAL ============
+  
+  app.post("/api/portal/create", async (req, res) => {
+    try {
+      const accessToken = crypto.randomBytes(32).toString("hex");
+      const tokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      
+      const validated = insertCustomerPortalSchema.parse({
+        ...req.body,
+        accessToken,
+        tokenExpiry,
+      });
+      const portal = await storage.createCustomerPortal(validated);
+      res.status(201).json(portal);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create portal" });
+    }
+  });
+  
+  app.get("/api/portal/:token", async (req, res) => {
+    const portal = await storage.getCustomerPortalByToken(req.params.token);
+    if (!portal) return res.status(404).json({ error: "Portal not found or expired" });
+    if (portal.tokenExpiry && new Date(portal.tokenExpiry) < new Date()) {
+      return res.status(401).json({ error: "Portal access expired" });
+    }
+    // Update last accessed
+    await storage.updateCustomerPortal(portal.id, { lastAccessed: new Date() });
+    res.json(portal);
+  });
+
+  // ============ REAL-TIME CREW GPS ============
+  
+  app.post("/api/crew/location", async (req, res) => {
+    try {
+      const validated = insertCrewLocationSchema.parse(req.body);
+      const location = await storage.upsertCrewLocation(validated);
+      res.status(201).json(location);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to update location" });
+    }
+  });
+  
+  app.get("/api/crew/locations", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const locations = await storage.getCrewLocations(tenantId);
+    res.json(locations);
+  });
+  
+  app.get("/api/crew/locations/job/:jobId", async (req, res) => {
+    const locations = await storage.getCrewLocationByJob(req.params.jobId);
+    res.json(locations);
+  });
+
+  // ============ DIGITAL TIP JAR ============
+  
+  app.post("/api/tips", async (req, res) => {
+    try {
+      const validated = insertCrewTipSchema.parse(req.body);
+      const tip = await storage.createCrewTip(validated);
+      res.status(201).json(tip);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to process tip" });
+    }
+  });
+  
+  app.get("/api/tips", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const tips = await storage.getCrewTips(tenantId);
+    res.json(tips);
+  });
+  
+  app.patch("/api/tips/:id", async (req, res) => {
+    const tip = await storage.updateCrewTip(req.params.id, req.body);
+    if (!tip) return res.status(404).json({ error: "Tip not found" });
+    res.json(tip);
+  });
+
+  // ============ BEFORE/AFTER GALLERY ============
+  
+  app.post("/api/gallery", async (req, res) => {
+    try {
+      const validated = insertPortfolioGallerySchema.parse(req.body);
+      const gallery = await storage.createPortfolioGallery(validated);
+      res.status(201).json(gallery);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create gallery entry" });
+    }
+  });
+  
+  app.get("/api/gallery", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const galleries = await storage.getPortfolioGalleries(tenantId);
+    res.json(galleries);
+  });
+  
+  app.get("/api/gallery/public", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const galleries = await storage.getPublicGalleries(tenantId);
+    res.json(galleries);
+  });
+  
+  app.patch("/api/gallery/:id", async (req, res) => {
+    const gallery = await storage.updatePortfolioGallery(req.params.id, req.body);
+    if (!gallery) return res.status(404).json({ error: "Gallery entry not found" });
+    res.json(gallery);
+  });
+
+  // ============ PROFIT MARGIN OPTIMIZER ============
+  
+  app.post("/api/profit/analyze", async (req, res) => {
+    try {
+      const { tenantId, jobType, historicalData } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `Analyze profitability for a painting company. Return JSON with:
+              - averageMargin: percentage
+              - recommendedAdjustment: percentage price change
+              - marketComparison: below, at, or above market
+              - recommendation: specific advice`
+          },
+          { role: "user", content: JSON.stringify({ jobType, ...historicalData }) }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const analysis = await storage.createProfitAnalysis({
+        tenantId: tenantId || "demo",
+        jobType,
+        averageMargin: parsed.averageMargin,
+        recommendedAdjustment: parsed.recommendedAdjustment,
+        marketComparison: parsed.marketComparison,
+        aiRecommendation: parsed.recommendation,
+      });
+      
+      res.status(201).json(analysis);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to analyze profit" });
+    }
+  });
+  
+  app.get("/api/profit/analyses", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const analyses = await storage.getProfitAnalyses(tenantId);
+    res.json(analyses);
+  });
+
+  // ============ SEASONAL DEMAND FORECASTING ============
+  
+  app.post("/api/demand/forecast", async (req, res) => {
+    try {
+      const { tenantId, month, historicalData } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `Forecast demand for a painting company. Return JSON with:
+              - predictedLeads: number
+              - predictedJobs: number
+              - predictedRevenue: cents
+              - demandLevel: low, medium, high, or peak
+              - seasonalFactor: multiplier
+              - recommendedCrewSize: number
+              - recommendedMarketingSpend: cents`
+          },
+          { role: "user", content: JSON.stringify({ month, historicalData }) }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const forecast = await storage.createDemandForecast({
+        tenantId: tenantId || "demo",
+        forecastMonth: month,
+        predictedLeads: parsed.predictedLeads,
+        predictedJobs: parsed.predictedJobs,
+        predictedRevenue: parsed.predictedRevenue,
+        demandLevel: parsed.demandLevel,
+        seasonalFactor: parsed.seasonalFactor,
+        recommendedCrewSize: parsed.recommendedCrewSize,
+        recommendedMarketingSpend: parsed.recommendedMarketingSpend,
+      });
+      
+      res.status(201).json(forecast);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate forecast" });
+    }
+  });
+  
+  app.get("/api/demand/forecasts", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const forecasts = await storage.getDemandForecasts(tenantId);
+    res.json(forecasts);
+  });
+
+  // ============ CUSTOMER LIFETIME VALUE ============
+  
+  app.post("/api/clv/calculate", async (req, res) => {
+    try {
+      const { tenantId, customerEmail, customerData } = req.body;
+      
+      // Calculate CLV metrics
+      const totalRevenue = customerData.jobs?.reduce((sum: number, j: any) => sum + (j.revenue || 0), 0) || 0;
+      const totalJobs = customerData.jobs?.length || 0;
+      const avgJobValue = totalJobs > 0 ? Math.round(totalRevenue / totalJobs) : 0;
+      
+      // Predict future value (simple model)
+      const predictedFutureValue = Math.round(avgJobValue * 2); // Assume 2 more jobs
+      
+      // Churn risk based on recency
+      const lastJobDate = customerData.lastJobDate ? new Date(customerData.lastJobDate) : null;
+      const daysSinceLastJob = lastJobDate ? Math.floor((Date.now() - lastJobDate.getTime()) / (1000 * 60 * 60 * 24)) : 365;
+      const churnRisk = Math.min(1, daysSinceLastJob / 730); // Max risk at 2 years
+      
+      let segment = "regular";
+      if (totalRevenue > 10000_00) segment = "vip";
+      else if (churnRisk > 0.7) segment = "at-risk";
+      else if (churnRisk > 0.9) segment = "churned";
+      
+      const clv = await storage.createCustomerLifetimeValue({
+        tenantId: tenantId || "demo",
+        customerEmail,
+        totalRevenue,
+        totalJobs,
+        averageJobValue: avgJobValue,
+        predictedFutureValue,
+        churnRisk,
+        segment,
+        firstJobDate: customerData.firstJobDate ? new Date(customerData.firstJobDate) : undefined,
+        lastJobDate: lastJobDate || undefined,
+      });
+      
+      res.status(201).json(clv);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to calculate CLV" });
+    }
+  });
+  
+  app.get("/api/clv", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const clvs = await storage.getCustomerLifetimeValues(tenantId);
+    res.json(clvs);
+  });
+
+  // ============ COMPETITOR INTELLIGENCE ============
+  
+  app.post("/api/competitors", async (req, res) => {
+    try {
+      const validated = insertCompetitorDataSchema.parse(req.body);
+      const competitor = await storage.createCompetitorData(validated);
+      res.status(201).json(competitor);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to add competitor" });
+    }
+  });
+  
+  app.get("/api/competitors", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const competitors = await storage.getCompetitorData(tenantId);
+    res.json(competitors);
+  });
+  
+  app.patch("/api/competitors/:id", async (req, res) => {
+    const competitor = await storage.updateCompetitorData(req.params.id, req.body);
+    if (!competitor) return res.status(404).json({ error: "Competitor not found" });
+    res.json(competitor);
+  });
+
+  // ============ SMART CONTRACTS (BLOCKCHAIN) ============
+  
+  app.post("/api/contracts", async (req, res) => {
+    try {
+      const data = req.body;
+      // Create hash of contract terms
+      const contractHash = crypto.createHash("sha256")
+        .update(JSON.stringify({ terms: data.terms, timestamp: Date.now() }))
+        .digest("hex");
+      
+      const validated = insertSmartContractSchema.parse({
+        ...data,
+        contractHash,
+      });
+      const contract = await storage.createSmartContract(validated);
+      res.status(201).json(contract);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create contract" });
+    }
+  });
+  
+  app.get("/api/contracts", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const contracts = await storage.getSmartContracts(tenantId);
+    res.json(contracts);
+  });
+  
+  app.post("/api/contracts/:id/sign", async (req, res) => {
+    const { signature, signerType } = req.body;
+    const contract = await storage.getSmartContract(req.params.id);
+    if (!contract) return res.status(404).json({ error: "Contract not found" });
+    
+    const updates: any = {};
+    if (signerType === "customer") {
+      updates.customerSignature = signature;
+      updates.customerSignedAt = new Date();
+    } else {
+      updates.contractorSignature = signature;
+      updates.contractorSignedAt = new Date();
+    }
+    
+    // If both signed, mark as active
+    if ((contract.customerSignature || updates.customerSignature) && 
+        (contract.contractorSignature || updates.contractorSignature)) {
+      updates.status = "active";
+    }
+    
+    const updated = await storage.updateSmartContract(req.params.id, updates);
+    res.json(updated);
+  });
+  
+  app.post("/api/contracts/:id/stamp", async (req, res) => {
+    try {
+      const contract = await storage.getSmartContract(req.params.id);
+      if (!contract) return res.status(404).json({ error: "Contract not found" });
+      
+      // Stamp on Solana blockchain
+      const result = await solana.stampDocument(contract.contractHash || "");
+      
+      await storage.updateSmartContract(req.params.id, {
+        blockchainTxId: result.signature,
+        verifiedOnChain: true,
+      });
+      
+      res.json({ success: true, signature: result.signature });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to stamp contract" });
+    }
+  });
+
+  // ============ AR COLOR PREVIEW ============
+  
+  app.post("/api/ar/preview", async (req, res) => {
+    try {
+      const validated = insertArColorPreviewSchema.parse(req.body);
+      const preview = await storage.createArColorPreview(validated);
+      res.status(201).json(preview);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to save preview" });
+    }
+  });
+  
+  app.get("/api/ar/previews", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const previews = await storage.getArColorPreviews(tenantId);
+    res.json(previews);
+  });
+  
+  // Color palette data for AR
+  app.get("/api/ar/colors", async (req, res) => {
+    // Return popular paint colors with hex values
+    res.json({
+      categories: [
+        { name: "Neutrals", colors: [
+          { name: "Swiss Coffee", hex: "#F0E6D3", brand: "Behr" },
+          { name: "Agreeable Gray", hex: "#D1CBC2", brand: "Sherwin-Williams" },
+          { name: "Repose Gray", hex: "#C4C0BA", brand: "Sherwin-Williams" },
+        ]},
+        { name: "Blues", colors: [
+          { name: "Naval", hex: "#283B4F", brand: "Sherwin-Williams" },
+          { name: "Hale Navy", hex: "#3C4A5B", brand: "Benjamin Moore" },
+          { name: "Blue Note", hex: "#4E5E6A", brand: "Benjamin Moore" },
+        ]},
+        { name: "Greens", colors: [
+          { name: "Evergreen Fog", hex: "#8C9484", brand: "Sherwin-Williams" },
+          { name: "Cascade Green", hex: "#6B7F6B", brand: "Benjamin Moore" },
+        ]},
+      ],
+    });
+  });
+
+  // ============ CREW SKILLS MATCHING ============
+  
+  app.post("/api/crew/skills", async (req, res) => {
+    try {
+      const validated = insertCrewSkillSchema.parse(req.body);
+      const skill = await storage.createCrewSkill(validated);
+      res.status(201).json(skill);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to add skill" });
+    }
+  });
+  
+  app.get("/api/crew/skills/:memberId", async (req, res) => {
+    const skills = await storage.getCrewSkills(req.params.memberId);
+    res.json(skills);
+  });
+  
+  app.get("/api/crew/all-skills", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const skills = await storage.getAllCrewSkills(tenantId);
+    res.json(skills);
+  });
+  
+  app.post("/api/jobs/match-crew", async (req, res) => {
+    try {
+      const { tenantId, jobId, requiredSkills } = req.body;
+      
+      // Get all crew skills
+      const allSkills = await storage.getAllCrewSkills(tenantId || "demo");
+      
+      // Calculate match scores
+      const crewScores: Record<string, number> = {};
+      for (const skill of allSkills) {
+        if (requiredSkills.includes(skill.skillName) || requiredSkills.includes(skill.skillCategory)) {
+          crewScores[skill.crewMemberId] = (crewScores[skill.crewMemberId] || 0) + (skill.proficiencyLevel || 1);
+        }
+      }
+      
+      // Sort by score
+      const ranked = Object.entries(crewScores)
+        .sort((a, b) => b[1] - a[1])
+        .map(([id]) => id);
+      
+      const matching = await storage.createSkillMatching({
+        tenantId: tenantId || "demo",
+        jobId,
+        requiredSkills: JSON.stringify(requiredSkills),
+        recommendedCrewIds: JSON.stringify(ranked.slice(0, 5)),
+        matchScores: JSON.stringify(crewScores),
+      });
+      
+      res.status(201).json({ ...matching, rankedCrew: ranked.slice(0, 5), scores: crewScores });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to match crew" });
+    }
+  });
+  
+  app.get("/api/jobs/matchings", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const matchings = await storage.getSkillMatchings(tenantId);
+    res.json(matchings);
   });
 
   // ============ SYSTEM HEALTH ============
