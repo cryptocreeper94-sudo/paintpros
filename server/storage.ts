@@ -71,6 +71,23 @@ import {
   type FinancingPlan, type InsertFinancingPlan, financingPlans,
   type ColorPalette, type InsertColorPalette, colorPalettes,
   type CalendarExport, type InsertCalendarExport, calendarExports,
+  type SchedulingSlot, type InsertSchedulingSlot, schedulingSlots,
+  type CustomerBooking, type InsertCustomerBooking, customerBookings,
+  type PhotoAnalysis, type InsertPhotoAnalysis, photoAnalyses,
+  type ChatSession, type InsertChatSession, chatSessions,
+  type ChatMessage, type InsertChatMessage, chatMessages,
+  type CallTrackingNumber, type InsertCallTrackingNumber, callTrackingNumbers,
+  type CallLog, type InsertCallLog, callLogs,
+  type ReviewResponse, type InsertReviewResponse, reviewResponses,
+  type NpsSurvey, type InsertNpsSurvey, npsSurveys,
+  type CrewLeaderboard, type InsertCrewLeaderboard, crewLeaderboards,
+  type CrewAchievement, type InsertCrewAchievement, crewAchievements,
+  type JobGeofence, type InsertJobGeofence, jobGeofences,
+  type GeofenceEvent, type InsertGeofenceEvent, geofenceEvents,
+  type RevenuePrediction, type InsertRevenuePrediction, revenuePredictions,
+  type MarketingChannel, type InsertMarketingChannel, marketingChannels,
+  type MarketingAttribution, type InsertMarketingAttribution, marketingAttribution,
+  type AccountingExport, type InsertAccountingExport, accountingExports,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -477,6 +494,66 @@ export interface IStorage {
   // Calendar Exports
   createCalendarExport(exportData: InsertCalendarExport): Promise<CalendarExport>;
   getCalendarExportByToken(token: string): Promise<CalendarExport | undefined>;
+  
+  // Self-Scheduling
+  createSchedulingSlot(slot: InsertSchedulingSlot): Promise<SchedulingSlot>;
+  getSchedulingSlots(tenantId: string, date?: Date): Promise<SchedulingSlot[]>;
+  createCustomerBooking(booking: InsertCustomerBooking): Promise<CustomerBooking>;
+  getCustomerBookings(tenantId: string): Promise<CustomerBooking[]>;
+  updateSchedulingSlot(id: string, updates: Partial<InsertSchedulingSlot>): Promise<SchedulingSlot | undefined>;
+  
+  // Photo Analysis
+  createPhotoAnalysis(analysis: InsertPhotoAnalysis): Promise<PhotoAnalysis>;
+  getPhotoAnalyses(tenantId: string): Promise<PhotoAnalysis[]>;
+  
+  // Live Chat
+  createChatSession(session: InsertChatSession): Promise<ChatSession>;
+  getChatSessions(tenantId: string): Promise<ChatSession[]>;
+  updateChatSession(id: string, updates: Partial<InsertChatSession>): Promise<ChatSession | undefined>;
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatMessages(sessionId: string): Promise<ChatMessage[]>;
+  
+  // Call Tracking
+  createCallTrackingNumber(tracking: InsertCallTrackingNumber): Promise<CallTrackingNumber>;
+  getCallTrackingNumbers(tenantId: string): Promise<CallTrackingNumber[]>;
+  createCallLog(log: InsertCallLog): Promise<CallLog>;
+  getCallLogs(tenantId: string): Promise<CallLog[]>;
+  
+  // Review Management
+  createReviewResponse(review: InsertReviewResponse): Promise<ReviewResponse>;
+  getReviewResponses(tenantId: string): Promise<ReviewResponse[]>;
+  updateReviewResponse(id: string, updates: Partial<InsertReviewResponse>): Promise<ReviewResponse | undefined>;
+  
+  // NPS Surveys
+  createNpsSurvey(survey: InsertNpsSurvey): Promise<NpsSurvey>;
+  getNpsSurveys(tenantId: string): Promise<NpsSurvey[]>;
+  updateNpsSurvey(id: string, updates: Partial<InsertNpsSurvey>): Promise<NpsSurvey | undefined>;
+  
+  // Crew Gamification
+  createCrewLeaderboard(entry: InsertCrewLeaderboard): Promise<CrewLeaderboard>;
+  getCrewLeaderboards(tenantId: string, period?: string): Promise<CrewLeaderboard[]>;
+  createCrewAchievement(achievement: InsertCrewAchievement): Promise<CrewAchievement>;
+  getCrewAchievements(crewMemberId: string): Promise<CrewAchievement[]>;
+  
+  // Geofencing
+  createJobGeofence(geofence: InsertJobGeofence): Promise<JobGeofence>;
+  getJobGeofence(jobId: string): Promise<JobGeofence | undefined>;
+  createGeofenceEvent(event: InsertGeofenceEvent): Promise<GeofenceEvent>;
+  getGeofenceEvents(crewMemberId: string): Promise<GeofenceEvent[]>;
+  
+  // Revenue Predictions
+  createRevenuePrediction(prediction: InsertRevenuePrediction): Promise<RevenuePrediction>;
+  getRevenuePredictions(tenantId: string): Promise<RevenuePrediction[]>;
+  
+  // Marketing Attribution
+  createMarketingChannel(channel: InsertMarketingChannel): Promise<MarketingChannel>;
+  getMarketingChannels(tenantId: string): Promise<MarketingChannel[]>;
+  createMarketingAttribution(attribution: InsertMarketingAttribution): Promise<MarketingAttribution>;
+  getMarketingAttributions(tenantId: string): Promise<MarketingAttribution[]>;
+  
+  // Accounting Export
+  createAccountingExport(exportData: InsertAccountingExport): Promise<AccountingExport>;
+  getAccountingExports(tenantId: string): Promise<AccountingExport[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2731,6 +2808,227 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.select().from(calendarExports)
       .where(and(eq(calendarExports.exportToken, token), eq(calendarExports.isActive, true)));
     return result;
+  }
+
+  // Self-Scheduling
+  async createSchedulingSlot(slot: InsertSchedulingSlot): Promise<SchedulingSlot> {
+    const [result] = await db.insert(schedulingSlots).values(slot).returning();
+    return result;
+  }
+
+  async getSchedulingSlots(tenantId: string, date?: Date): Promise<SchedulingSlot[]> {
+    if (date) {
+      return await db.select().from(schedulingSlots)
+        .where(and(eq(schedulingSlots.tenantId, tenantId), eq(schedulingSlots.isAvailable, true)));
+    }
+    return await db.select().from(schedulingSlots)
+      .where(and(eq(schedulingSlots.tenantId, tenantId), eq(schedulingSlots.isAvailable, true)));
+  }
+
+  async createCustomerBooking(booking: InsertCustomerBooking): Promise<CustomerBooking> {
+    const [result] = await db.insert(customerBookings).values(booking).returning();
+    return result;
+  }
+
+  async getCustomerBookings(tenantId: string): Promise<CustomerBooking[]> {
+    return await db.select().from(customerBookings)
+      .where(eq(customerBookings.tenantId, tenantId))
+      .orderBy(desc(customerBookings.createdAt));
+  }
+
+  async updateSchedulingSlot(id: string, updates: Partial<InsertSchedulingSlot>): Promise<SchedulingSlot | undefined> {
+    const [result] = await db.update(schedulingSlots).set(updates).where(eq(schedulingSlots.id, id)).returning();
+    return result;
+  }
+
+  // Photo Analysis
+  async createPhotoAnalysis(analysis: InsertPhotoAnalysis): Promise<PhotoAnalysis> {
+    const [result] = await db.insert(photoAnalyses).values(analysis).returning();
+    return result;
+  }
+
+  async getPhotoAnalyses(tenantId: string): Promise<PhotoAnalysis[]> {
+    return await db.select().from(photoAnalyses)
+      .where(eq(photoAnalyses.tenantId, tenantId))
+      .orderBy(desc(photoAnalyses.createdAt));
+  }
+
+  // Live Chat
+  async createChatSession(session: InsertChatSession): Promise<ChatSession> {
+    const [result] = await db.insert(chatSessions).values(session).returning();
+    return result;
+  }
+
+  async getChatSessions(tenantId: string): Promise<ChatSession[]> {
+    return await db.select().from(chatSessions)
+      .where(eq(chatSessions.tenantId, tenantId))
+      .orderBy(desc(chatSessions.startedAt));
+  }
+
+  async updateChatSession(id: string, updates: Partial<InsertChatSession>): Promise<ChatSession | undefined> {
+    const [result] = await db.update(chatSessions).set(updates).where(eq(chatSessions.id, id)).returning();
+    return result;
+  }
+
+  async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
+    const [result] = await db.insert(chatMessages).values(message).returning();
+    return result;
+  }
+
+  async getChatMessages(sessionId: string): Promise<ChatMessage[]> {
+    return await db.select().from(chatMessages)
+      .where(eq(chatMessages.sessionId, sessionId))
+      .orderBy(chatMessages.createdAt);
+  }
+
+  // Call Tracking
+  async createCallTrackingNumber(tracking: InsertCallTrackingNumber): Promise<CallTrackingNumber> {
+    const [result] = await db.insert(callTrackingNumbers).values(tracking).returning();
+    return result;
+  }
+
+  async getCallTrackingNumbers(tenantId: string): Promise<CallTrackingNumber[]> {
+    return await db.select().from(callTrackingNumbers).where(eq(callTrackingNumbers.tenantId, tenantId));
+  }
+
+  async createCallLog(log: InsertCallLog): Promise<CallLog> {
+    const [result] = await db.insert(callLogs).values(log).returning();
+    return result;
+  }
+
+  async getCallLogs(tenantId: string): Promise<CallLog[]> {
+    return await db.select().from(callLogs)
+      .where(eq(callLogs.tenantId, tenantId))
+      .orderBy(desc(callLogs.calledAt));
+  }
+
+  // Review Management
+  async createReviewResponse(review: InsertReviewResponse): Promise<ReviewResponse> {
+    const [result] = await db.insert(reviewResponses).values(review).returning();
+    return result;
+  }
+
+  async getReviewResponses(tenantId: string): Promise<ReviewResponse[]> {
+    return await db.select().from(reviewResponses)
+      .where(eq(reviewResponses.tenantId, tenantId))
+      .orderBy(desc(reviewResponses.createdAt));
+  }
+
+  async updateReviewResponse(id: string, updates: Partial<InsertReviewResponse>): Promise<ReviewResponse | undefined> {
+    const [result] = await db.update(reviewResponses).set(updates).where(eq(reviewResponses.id, id)).returning();
+    return result;
+  }
+
+  // NPS Surveys
+  async createNpsSurvey(survey: InsertNpsSurvey): Promise<NpsSurvey> {
+    const [result] = await db.insert(npsSurveys).values(survey).returning();
+    return result;
+  }
+
+  async getNpsSurveys(tenantId: string): Promise<NpsSurvey[]> {
+    return await db.select().from(npsSurveys)
+      .where(eq(npsSurveys.tenantId, tenantId))
+      .orderBy(desc(npsSurveys.createdAt));
+  }
+
+  async updateNpsSurvey(id: string, updates: Partial<InsertNpsSurvey>): Promise<NpsSurvey | undefined> {
+    const [result] = await db.update(npsSurveys).set(updates).where(eq(npsSurveys.id, id)).returning();
+    return result;
+  }
+
+  // Crew Gamification
+  async createCrewLeaderboard(entry: InsertCrewLeaderboard): Promise<CrewLeaderboard> {
+    const [result] = await db.insert(crewLeaderboards).values(entry).returning();
+    return result;
+  }
+
+  async getCrewLeaderboards(tenantId: string, period?: string): Promise<CrewLeaderboard[]> {
+    if (period) {
+      return await db.select().from(crewLeaderboards)
+        .where(and(eq(crewLeaderboards.tenantId, tenantId), eq(crewLeaderboards.period, period)))
+        .orderBy(crewLeaderboards.rank);
+    }
+    return await db.select().from(crewLeaderboards)
+      .where(eq(crewLeaderboards.tenantId, tenantId))
+      .orderBy(crewLeaderboards.rank);
+  }
+
+  async createCrewAchievement(achievement: InsertCrewAchievement): Promise<CrewAchievement> {
+    const [result] = await db.insert(crewAchievements).values(achievement).returning();
+    return result;
+  }
+
+  async getCrewAchievements(crewMemberId: string): Promise<CrewAchievement[]> {
+    return await db.select().from(crewAchievements)
+      .where(eq(crewAchievements.crewMemberId, crewMemberId))
+      .orderBy(desc(crewAchievements.earnedAt));
+  }
+
+  // Geofencing
+  async createJobGeofence(geofence: InsertJobGeofence): Promise<JobGeofence> {
+    const [result] = await db.insert(jobGeofences).values(geofence).returning();
+    return result;
+  }
+
+  async getJobGeofence(jobId: string): Promise<JobGeofence | undefined> {
+    const [result] = await db.select().from(jobGeofences).where(eq(jobGeofences.jobId, jobId));
+    return result;
+  }
+
+  async createGeofenceEvent(event: InsertGeofenceEvent): Promise<GeofenceEvent> {
+    const [result] = await db.insert(geofenceEvents).values(event).returning();
+    return result;
+  }
+
+  async getGeofenceEvents(crewMemberId: string): Promise<GeofenceEvent[]> {
+    return await db.select().from(geofenceEvents)
+      .where(eq(geofenceEvents.crewMemberId, crewMemberId))
+      .orderBy(desc(geofenceEvents.triggeredAt));
+  }
+
+  // Revenue Predictions
+  async createRevenuePrediction(prediction: InsertRevenuePrediction): Promise<RevenuePrediction> {
+    const [result] = await db.insert(revenuePredictions).values(prediction).returning();
+    return result;
+  }
+
+  async getRevenuePredictions(tenantId: string): Promise<RevenuePrediction[]> {
+    return await db.select().from(revenuePredictions)
+      .where(eq(revenuePredictions.tenantId, tenantId))
+      .orderBy(desc(revenuePredictions.periodStart));
+  }
+
+  // Marketing Attribution
+  async createMarketingChannel(channel: InsertMarketingChannel): Promise<MarketingChannel> {
+    const [result] = await db.insert(marketingChannels).values(channel).returning();
+    return result;
+  }
+
+  async getMarketingChannels(tenantId: string): Promise<MarketingChannel[]> {
+    return await db.select().from(marketingChannels).where(eq(marketingChannels.tenantId, tenantId));
+  }
+
+  async createMarketingAttribution(attribution: InsertMarketingAttribution): Promise<MarketingAttribution> {
+    const [result] = await db.insert(marketingAttribution).values(attribution).returning();
+    return result;
+  }
+
+  async getMarketingAttributions(tenantId: string): Promise<MarketingAttribution[]> {
+    return await db.select().from(marketingAttribution)
+      .where(eq(marketingAttribution.tenantId, tenantId))
+      .orderBy(desc(marketingAttribution.periodStart));
+  }
+
+  // Accounting Export
+  async createAccountingExport(exportData: InsertAccountingExport): Promise<AccountingExport> {
+    const [result] = await db.insert(accountingExports).values(exportData).returning();
+    return result;
+  }
+
+  async getAccountingExports(tenantId: string): Promise<AccountingExport[]> {
+    return await db.select().from(accountingExports)
+      .where(eq(accountingExports.tenantId, tenantId))
+      .orderBy(desc(accountingExports.createdAt));
   }
 }
 

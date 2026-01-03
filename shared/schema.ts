@@ -3555,3 +3555,437 @@ export const insertCalendarExportSchema = createInsertSchema(calendarExports).om
 export type InsertCalendarExport = z.infer<typeof insertCalendarExportSchema>;
 export type CalendarExport = typeof calendarExports.$inferSelect;
 
+// ============ CUSTOMER SELF-SCHEDULING ============
+export const schedulingSlots = pgTable("scheduling_slots", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  date: timestamp("date").notNull(),
+  startTime: varchar("start_time", { length: 10 }).notNull(), // "09:00"
+  endTime: varchar("end_time", { length: 10 }).notNull(), // "10:00"
+  
+  slotType: varchar("slot_type", { length: 30 }).default("estimate"), // estimate, consultation
+  maxBookings: integer("max_bookings").default(1),
+  currentBookings: integer("current_bookings").default(0),
+  
+  isAvailable: boolean("is_available").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_sched_slot_tenant").on(table.tenantId),
+  index("idx_sched_slot_date").on(table.date),
+]);
+
+export const customerBookings = pgTable("customer_bookings", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  slotId: varchar("slot_id", { length: 36 }).references(() => schedulingSlots.id),
+  
+  customerName: varchar("customer_name", { length: 200 }).notNull(),
+  customerEmail: varchar("customer_email", { length: 200 }).notNull(),
+  customerPhone: varchar("customer_phone", { length: 50 }),
+  
+  serviceType: varchar("service_type", { length: 100 }),
+  projectDescription: text("project_description"),
+  address: text("address"),
+  
+  status: varchar("status", { length: 30 }).default("confirmed"), // confirmed, cancelled, completed
+  confirmationCode: varchar("confirmation_code", { length: 20 }),
+  
+  reminderSent: boolean("reminder_sent").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_cust_booking_tenant").on(table.tenantId),
+  index("idx_cust_booking_slot").on(table.slotId),
+]);
+
+export const insertSchedulingSlotSchema = createInsertSchema(schedulingSlots).omit({ id: true, createdAt: true });
+export const insertCustomerBookingSchema = createInsertSchema(customerBookings).omit({ id: true, createdAt: true });
+export type InsertSchedulingSlot = z.infer<typeof insertSchedulingSlotSchema>;
+export type SchedulingSlot = typeof schedulingSlots.$inferSelect;
+export type InsertCustomerBooking = z.infer<typeof insertCustomerBookingSchema>;
+export type CustomerBooking = typeof customerBookings.$inferSelect;
+
+// ============ AI PHOTO ANALYSIS ============
+export const photoAnalyses = pgTable("photo_analyses", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  imageUrl: text("image_url").notNull(),
+  imageType: varchar("image_type", { length: 30 }), // room, exterior, damage
+  
+  estimatedSqft: integer("estimated_sqft"),
+  roomType: varchar("room_type", { length: 100 }), // bedroom, kitchen, living room
+  surfacesDetected: text("surfaces_detected"), // JSON array: walls, ceiling, trim, doors
+  conditionNotes: text("condition_notes"),
+  colorSuggestions: text("color_suggestions"),
+  
+  aiModel: varchar("ai_model", { length: 50 }),
+  confidence: real("confidence"),
+  rawResponse: text("raw_response"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_photo_analysis_tenant").on(table.tenantId),
+]);
+
+export const insertPhotoAnalysisSchema = createInsertSchema(photoAnalyses).omit({ id: true, createdAt: true });
+export type InsertPhotoAnalysis = z.infer<typeof insertPhotoAnalysisSchema>;
+export type PhotoAnalysis = typeof photoAnalyses.$inferSelect;
+
+// ============ LIVE CHAT WIDGET ============
+export const chatSessions = pgTable("chat_sessions", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  visitorId: varchar("visitor_id", { length: 100 }),
+  visitorName: varchar("visitor_name", { length: 200 }),
+  visitorEmail: varchar("visitor_email", { length: 200 }),
+  visitorPhone: varchar("visitor_phone", { length: 50 }),
+  
+  pageUrl: text("page_url"),
+  referrer: text("referrer"),
+  userAgent: text("user_agent"),
+  
+  status: varchar("status", { length: 30 }).default("active"), // active, closed, converted
+  assignedTo: varchar("assigned_to", { length: 36 }),
+  
+  convertedToLead: boolean("converted_to_lead").default(false),
+  leadId: varchar("lead_id", { length: 36 }),
+  
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  endedAt: timestamp("ended_at"),
+}, (table) => [
+  index("idx_chat_session_tenant").on(table.tenantId),
+  index("idx_chat_session_status").on(table.status),
+]);
+
+export const chatMessages = pgTable("chat_messages", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  sessionId: varchar("session_id", { length: 36 }).references(() => chatSessions.id).notNull(),
+  
+  senderType: varchar("sender_type", { length: 20 }).notNull(), // visitor, agent, bot
+  senderId: varchar("sender_id", { length: 36 }),
+  senderName: varchar("sender_name", { length: 200 }),
+  
+  messageType: varchar("message_type", { length: 30 }).default("text"), // text, image, file
+  content: text("content").notNull(),
+  
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_chat_msg_session").on(table.sessionId),
+]);
+
+export const insertChatSessionSchema = createInsertSchema(chatSessions).omit({ id: true, startedAt: true });
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
+export type InsertChatSession = z.infer<typeof insertChatSessionSchema>;
+export type ChatSession = typeof chatSessions.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+
+// ============ CALL TRACKING ============
+export const callTrackingNumbers = pgTable("call_tracking_numbers", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  phoneNumber: varchar("phone_number", { length: 20 }).notNull(),
+  forwardTo: varchar("forward_to", { length: 20 }).notNull(),
+  
+  source: varchar("source", { length: 100 }).notNull(), // google_ads, facebook, yard_sign, website
+  campaign: varchar("campaign", { length: 200 }),
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_call_track_tenant").on(table.tenantId),
+]);
+
+export const callLogs = pgTable("call_logs", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  trackingNumberId: varchar("tracking_number_id", { length: 36 }).references(() => callTrackingNumbers.id),
+  
+  callerNumber: varchar("caller_number", { length: 20 }),
+  callerName: varchar("caller_name", { length: 200 }),
+  
+  duration: integer("duration"), // seconds
+  status: varchar("status", { length: 30 }), // answered, missed, voicemail
+  recordingUrl: text("recording_url"),
+  
+  source: varchar("source", { length: 100 }),
+  campaign: varchar("campaign", { length: 200 }),
+  
+  convertedToLead: boolean("converted_to_lead").default(false),
+  leadId: varchar("lead_id", { length: 36 }),
+  notes: text("notes"),
+  
+  calledAt: timestamp("called_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_call_log_tenant").on(table.tenantId),
+  index("idx_call_log_source").on(table.source),
+]);
+
+export const insertCallTrackingNumberSchema = createInsertSchema(callTrackingNumbers).omit({ id: true, createdAt: true });
+export const insertCallLogSchema = createInsertSchema(callLogs).omit({ id: true, calledAt: true });
+export type InsertCallTrackingNumber = z.infer<typeof insertCallTrackingNumberSchema>;
+export type CallTrackingNumber = typeof callTrackingNumbers.$inferSelect;
+export type InsertCallLog = z.infer<typeof insertCallLogSchema>;
+export type CallLog = typeof callLogs.$inferSelect;
+
+// ============ REVIEW MANAGEMENT ============
+export const reviewResponses = pgTable("review_responses", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  platform: varchar("platform", { length: 50 }).notNull(), // google, yelp, facebook
+  externalReviewId: varchar("external_review_id", { length: 200 }),
+  
+  reviewerName: varchar("reviewer_name", { length: 200 }),
+  rating: integer("rating"), // 1-5
+  reviewText: text("review_text"),
+  reviewDate: timestamp("review_date"),
+  
+  responseText: text("response_text"),
+  respondedBy: varchar("responded_by", { length: 36 }),
+  respondedAt: timestamp("responded_at"),
+  
+  isAutoResponse: boolean("is_auto_response").default(false),
+  sentiment: varchar("sentiment", { length: 20 }), // positive, neutral, negative
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_review_resp_tenant").on(table.tenantId),
+  index("idx_review_resp_platform").on(table.platform),
+]);
+
+export const insertReviewResponseSchema = createInsertSchema(reviewResponses).omit({ id: true, createdAt: true });
+export type InsertReviewResponse = z.infer<typeof insertReviewResponseSchema>;
+export type ReviewResponse = typeof reviewResponses.$inferSelect;
+
+// ============ NPS SURVEYS ============
+export const npsSurveys = pgTable("nps_surveys", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }),
+  
+  customerName: varchar("customer_name", { length: 200 }),
+  customerEmail: varchar("customer_email", { length: 200 }),
+  
+  score: integer("score"), // 0-10
+  feedback: text("feedback"),
+  
+  category: varchar("category", { length: 30 }), // promoter (9-10), passive (7-8), detractor (0-6)
+  
+  sentAt: timestamp("sent_at"),
+  completedAt: timestamp("completed_at"),
+  
+  followUpSent: boolean("follow_up_sent").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_nps_tenant").on(table.tenantId),
+  index("idx_nps_score").on(table.score),
+]);
+
+export const insertNpsSurveySchema = createInsertSchema(npsSurveys).omit({ id: true, createdAt: true });
+export type InsertNpsSurvey = z.infer<typeof insertNpsSurveySchema>;
+export type NpsSurvey = typeof npsSurveys.$inferSelect;
+
+// ============ CREW GAMIFICATION ============
+export const crewLeaderboards = pgTable("crew_leaderboards", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  crewMemberId: varchar("crew_member_id", { length: 36 }).notNull(),
+  
+  period: varchar("period", { length: 20 }).notNull(), // weekly, monthly, quarterly, yearly
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  
+  jobsCompleted: integer("jobs_completed").default(0),
+  totalRevenue: integer("total_revenue").default(0), // cents
+  avgRating: real("avg_rating"),
+  onTimePercentage: real("on_time_percentage"),
+  
+  pointsEarned: integer("points_earned").default(0),
+  rank: integer("rank"),
+  
+  bonusEarned: integer("bonus_earned").default(0), // cents
+  achievementsBadges: text("achievements_badges"), // JSON array
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_leaderboard_tenant").on(table.tenantId),
+  index("idx_leaderboard_period").on(table.period),
+]);
+
+export const crewAchievements = pgTable("crew_achievements", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  crewMemberId: varchar("crew_member_id", { length: 36 }).notNull(),
+  
+  achievementType: varchar("achievement_type", { length: 50 }).notNull(), // first_job, 10_jobs, perfect_rating
+  achievementName: varchar("achievement_name", { length: 200 }).notNull(),
+  description: text("description"),
+  
+  pointsAwarded: integer("points_awarded").default(0),
+  badgeIcon: varchar("badge_icon", { length: 100 }),
+  
+  earnedAt: timestamp("earned_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_achievement_member").on(table.crewMemberId),
+]);
+
+export const insertCrewLeaderboardSchema = createInsertSchema(crewLeaderboards).omit({ id: true, createdAt: true });
+export const insertCrewAchievementSchema = createInsertSchema(crewAchievements).omit({ id: true, earnedAt: true });
+export type InsertCrewLeaderboard = z.infer<typeof insertCrewLeaderboardSchema>;
+export type CrewLeaderboard = typeof crewLeaderboards.$inferSelect;
+export type InsertCrewAchievement = z.infer<typeof insertCrewAchievementSchema>;
+export type CrewAchievement = typeof crewAchievements.$inferSelect;
+
+// ============ GEOFENCE CLOCK-IN ============
+export const jobGeofences = pgTable("job_geofences", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  jobId: varchar("job_id", { length: 36 }).notNull(),
+  
+  latitude: real("latitude").notNull(),
+  longitude: real("longitude").notNull(),
+  radiusMeters: integer("radius_meters").default(100),
+  
+  address: text("address"),
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_geofence_job").on(table.jobId),
+]);
+
+export const geofenceEvents = pgTable("geofence_events", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  geofenceId: varchar("geofence_id", { length: 36 }).references(() => jobGeofences.id),
+  crewMemberId: varchar("crew_member_id", { length: 36 }).notNull(),
+  
+  eventType: varchar("event_type", { length: 20 }).notNull(), // enter, exit
+  
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  accuracy: real("accuracy"),
+  
+  autoClockAction: varchar("auto_clock_action", { length: 20 }), // clock_in, clock_out
+  timeEntryId: varchar("time_entry_id", { length: 36 }),
+  
+  triggeredAt: timestamp("triggered_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_geofence_event_member").on(table.crewMemberId),
+]);
+
+export const insertJobGeofenceSchema = createInsertSchema(jobGeofences).omit({ id: true, createdAt: true });
+export const insertGeofenceEventSchema = createInsertSchema(geofenceEvents).omit({ id: true, triggeredAt: true });
+export type InsertJobGeofence = z.infer<typeof insertJobGeofenceSchema>;
+export type JobGeofence = typeof jobGeofences.$inferSelect;
+export type InsertGeofenceEvent = z.infer<typeof insertGeofenceEventSchema>;
+export type GeofenceEvent = typeof geofenceEvents.$inferSelect;
+
+// ============ PREDICTIVE ANALYTICS ============
+export const revenuePredictions = pgTable("revenue_predictions", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  predictionPeriod: varchar("prediction_period", { length: 20 }).notNull(), // monthly, quarterly
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  
+  predictedRevenue: integer("predicted_revenue").notNull(), // cents
+  predictedJobs: integer("predicted_jobs"),
+  predictedLeads: integer("predicted_leads"),
+  
+  confidenceLevel: real("confidence_level"), // 0-1
+  factors: text("factors"), // JSON: seasonality, historical trends, pipeline
+  
+  actualRevenue: integer("actual_revenue"), // updated after period ends
+  accuracy: real("accuracy"), // percentage
+  
+  generatedAt: timestamp("generated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_prediction_tenant").on(table.tenantId),
+  index("idx_prediction_period").on(table.periodStart),
+]);
+
+export const insertRevenuePredictionSchema = createInsertSchema(revenuePredictions).omit({ id: true, generatedAt: true });
+export type InsertRevenuePrediction = z.infer<typeof insertRevenuePredictionSchema>;
+export type RevenuePrediction = typeof revenuePredictions.$inferSelect;
+
+// ============ MARKETING ATTRIBUTION ============
+export const marketingChannels = pgTable("marketing_channels", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  channelName: varchar("channel_name", { length: 100 }).notNull(),
+  channelType: varchar("channel_type", { length: 50 }).notNull(), // paid, organic, referral, direct
+  
+  monthlyBudget: integer("monthly_budget").default(0), // cents
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_channel_tenant").on(table.tenantId),
+]);
+
+export const marketingAttribution = pgTable("marketing_attribution", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  channelId: varchar("channel_id", { length: 36 }).references(() => marketingChannels.id),
+  
+  period: varchar("period", { length: 20 }).notNull(), // monthly
+  periodStart: timestamp("period_start").notNull(),
+  
+  leadsGenerated: integer("leads_generated").default(0),
+  estimatesScheduled: integer("estimates_scheduled").default(0),
+  jobsWon: integer("jobs_won").default(0),
+  revenueGenerated: integer("revenue_generated").default(0), // cents
+  
+  spend: integer("spend").default(0), // cents
+  costPerLead: integer("cost_per_lead"),
+  costPerJob: integer("cost_per_job"),
+  roi: real("roi"), // percentage
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_attribution_channel").on(table.channelId),
+  index("idx_attribution_period").on(table.periodStart),
+]);
+
+export const insertMarketingChannelSchema = createInsertSchema(marketingChannels).omit({ id: true, createdAt: true });
+export const insertMarketingAttributionSchema = createInsertSchema(marketingAttribution).omit({ id: true, createdAt: true });
+export type InsertMarketingChannel = z.infer<typeof insertMarketingChannelSchema>;
+export type MarketingChannel = typeof marketingChannels.$inferSelect;
+export type InsertMarketingAttribution = z.infer<typeof insertMarketingAttributionSchema>;
+export type MarketingAttribution = typeof marketingAttribution.$inferSelect;
+
+// ============ QUICKBOOKS EXPORT ============
+export const accountingExports = pgTable("accounting_exports", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  exportType: varchar("export_type", { length: 50 }).notNull(), // invoices, payments, expenses
+  exportFormat: varchar("export_format", { length: 20 }).notNull(), // csv, json, qbo
+  
+  dateRangeStart: timestamp("date_range_start"),
+  dateRangeEnd: timestamp("date_range_end"),
+  
+  recordCount: integer("record_count").default(0),
+  fileUrl: text("file_url"),
+  fileName: varchar("file_name", { length: 200 }),
+  
+  status: varchar("status", { length: 30 }).default("pending"), // pending, processing, completed, failed
+  exportedBy: varchar("exported_by", { length: 36 }),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_accounting_export_tenant").on(table.tenantId),
+]);
+
+export const insertAccountingExportSchema = createInsertSchema(accountingExports).omit({ id: true, createdAt: true });
+export type InsertAccountingExport = z.infer<typeof insertAccountingExportSchema>;
+export type AccountingExport = typeof accountingExports.$inferSelect;
+

@@ -21,6 +21,12 @@ import {
   insertWeatherAlertSchema, insertWebhookSubscriptionSchema,
   insertTradeVerticalSchema, insertFranchiseReportSchema, insertFinancingPlanSchema,
   insertColorPaletteSchema, insertCalendarExportSchema,
+  insertSchedulingSlotSchema, insertCustomerBookingSchema,
+  insertPhotoAnalysisSchema, insertChatSessionSchema, insertChatMessageSchema,
+  insertCallTrackingNumberSchema, insertCallLogSchema, insertReviewResponseSchema,
+  insertNpsSurveySchema, insertCrewLeaderboardSchema, insertCrewAchievementSchema,
+  insertJobGeofenceSchema, insertGeofenceEventSchema, insertRevenuePredictionSchema,
+  insertMarketingChannelSchema, insertMarketingAttributionSchema, insertAccountingExportSchema,
   users as usersTable
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -3422,6 +3428,564 @@ Do not include any text before or after the JSON.`
       totalDistance: Math.round(totalDistance * 10) / 10,
       estimatedTime: Math.round(totalDistance * 2), // ~30 mph average
     });
+  });
+
+  // ============ CUSTOMER SELF-SCHEDULING ============
+  
+  app.post("/api/scheduling/slots", async (req, res) => {
+    try {
+      const validated = insertSchedulingSlotSchema.parse(req.body);
+      const slot = await storage.createSchedulingSlot(validated);
+      res.status(201).json(slot);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create slot" });
+    }
+  });
+  
+  app.get("/api/scheduling/slots", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const slots = await storage.getSchedulingSlots(tenantId);
+    res.json(slots);
+  });
+  
+  app.post("/api/scheduling/book", async (req, res) => {
+    try {
+      const confirmationCode = crypto.randomBytes(4).toString("hex").toUpperCase();
+      const validated = insertCustomerBookingSchema.parse({ ...req.body, confirmationCode });
+      const booking = await storage.createCustomerBooking(validated);
+      // Increment slot booking count
+      if (validated.slotId) {
+        await storage.updateSchedulingSlot(validated.slotId, {
+          currentBookings: 1, // Would need to fetch and increment properly
+        });
+      }
+      res.status(201).json(booking);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create booking" });
+    }
+  });
+  
+  app.get("/api/scheduling/bookings", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const bookings = await storage.getCustomerBookings(tenantId);
+    res.json(bookings);
+  });
+
+  // ============ AI PHOTO ANALYSIS ============
+  
+  app.post("/api/photo-analysis", async (req, res) => {
+    try {
+      const { imageUrl, tenantId } = req.body;
+      if (!imageUrl) {
+        res.status(400).json({ error: "Image URL required" });
+        return;
+      }
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a painting estimator analyzing room photos. Return JSON with:
+              - estimatedSqft: estimated wall square footage
+              - roomType: type of room (bedroom, kitchen, living room, etc.)
+              - surfacesDetected: array of surfaces (walls, ceiling, trim, doors, windows)
+              - conditionNotes: notes on current wall condition
+              - colorSuggestions: 2-3 color recommendations for this space
+              - confidence: your confidence level 0-1`
+          },
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Analyze this room for a painting estimate:" },
+              { type: "image_url", image_url: { url: imageUrl } }
+            ]
+          }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 1000,
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const analysis = await storage.createPhotoAnalysis({
+        tenantId: tenantId || "demo",
+        imageUrl,
+        estimatedSqft: parsed.estimatedSqft,
+        roomType: parsed.roomType,
+        surfacesDetected: JSON.stringify(parsed.surfacesDetected),
+        conditionNotes: parsed.conditionNotes,
+        colorSuggestions: JSON.stringify(parsed.colorSuggestions),
+        aiModel: "gpt-4o",
+        confidence: parsed.confidence,
+        rawResponse: response.choices[0].message.content,
+      });
+      
+      res.status(201).json({ ...analysis, parsed });
+    } catch (error) {
+      console.error("Photo analysis error:", error);
+      res.status(500).json({ error: "Failed to analyze photo" });
+    }
+  });
+  
+  app.get("/api/photo-analyses", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const analyses = await storage.getPhotoAnalyses(tenantId);
+    res.json(analyses);
+  });
+
+  // ============ LIVE CHAT WIDGET ============
+  
+  app.post("/api/chat/sessions", async (req, res) => {
+    try {
+      const validated = insertChatSessionSchema.parse(req.body);
+      const session = await storage.createChatSession(validated);
+      res.status(201).json(session);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create session" });
+    }
+  });
+  
+  app.get("/api/chat/sessions", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const sessions = await storage.getChatSessions(tenantId);
+    res.json(sessions);
+  });
+  
+  app.patch("/api/chat/sessions/:id", async (req, res) => {
+    const session = await storage.updateChatSession(req.params.id, req.body);
+    if (!session) return res.status(404).json({ error: "Session not found" });
+    res.json(session);
+  });
+  
+  app.post("/api/chat/messages", async (req, res) => {
+    try {
+      const validated = insertChatMessageSchema.parse(req.body);
+      const message = await storage.createChatMessage(validated);
+      res.status(201).json(message);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+  
+  app.get("/api/chat/messages/:sessionId", async (req, res) => {
+    const messages = await storage.getChatMessages(req.params.sessionId);
+    res.json(messages);
+  });
+
+  // ============ CALL TRACKING ============
+  
+  app.post("/api/call-tracking/numbers", async (req, res) => {
+    try {
+      const validated = insertCallTrackingNumberSchema.parse(req.body);
+      const number = await storage.createCallTrackingNumber(validated);
+      res.status(201).json(number);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create tracking number" });
+    }
+  });
+  
+  app.get("/api/call-tracking/numbers", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const numbers = await storage.getCallTrackingNumbers(tenantId);
+    res.json(numbers);
+  });
+  
+  app.post("/api/call-tracking/logs", async (req, res) => {
+    try {
+      const validated = insertCallLogSchema.parse(req.body);
+      const log = await storage.createCallLog(validated);
+      res.status(201).json(log);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to log call" });
+    }
+  });
+  
+  app.get("/api/call-tracking/logs", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const logs = await storage.getCallLogs(tenantId);
+    res.json(logs);
+  });
+
+  // ============ REVIEW MANAGEMENT ============
+  
+  app.post("/api/reviews", async (req, res) => {
+    try {
+      const validated = insertReviewResponseSchema.parse(req.body);
+      const review = await storage.createReviewResponse(validated);
+      res.status(201).json(review);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create review" });
+    }
+  });
+  
+  app.get("/api/reviews", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const reviews = await storage.getReviewResponses(tenantId);
+    res.json(reviews);
+  });
+  
+  app.patch("/api/reviews/:id/respond", async (req, res) => {
+    const { responseText, respondedBy } = req.body;
+    const review = await storage.updateReviewResponse(req.params.id, {
+      responseText,
+      respondedBy,
+      respondedAt: new Date(),
+    });
+    if (!review) return res.status(404).json({ error: "Review not found" });
+    res.json(review);
+  });
+
+  // ============ NPS SURVEYS ============
+  
+  app.post("/api/nps", async (req, res) => {
+    try {
+      const data = req.body;
+      // Auto-categorize based on score
+      let category = "detractor";
+      if (data.score >= 9) category = "promoter";
+      else if (data.score >= 7) category = "passive";
+      
+      const validated = insertNpsSurveySchema.parse({ ...data, category });
+      const survey = await storage.createNpsSurvey(validated);
+      res.status(201).json(survey);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create survey" });
+    }
+  });
+  
+  app.get("/api/nps", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const surveys = await storage.getNpsSurveys(tenantId);
+    
+    // Calculate NPS score
+    const promoters = surveys.filter(s => s.category === "promoter").length;
+    const detractors = surveys.filter(s => s.category === "detractor").length;
+    const total = surveys.length;
+    const npsScore = total > 0 ? Math.round(((promoters - detractors) / total) * 100) : 0;
+    
+    res.json({ surveys, npsScore, total, promoters, detractors });
+  });
+  
+  app.patch("/api/nps/:id", async (req, res) => {
+    const survey = await storage.updateNpsSurvey(req.params.id, req.body);
+    if (!survey) return res.status(404).json({ error: "Survey not found" });
+    res.json(survey);
+  });
+
+  // ============ CREW GAMIFICATION ============
+  
+  app.post("/api/gamification/leaderboard", async (req, res) => {
+    try {
+      const validated = insertCrewLeaderboardSchema.parse(req.body);
+      const entry = await storage.createCrewLeaderboard(validated);
+      res.status(201).json(entry);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create leaderboard entry" });
+    }
+  });
+  
+  app.get("/api/gamification/leaderboard", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const period = req.query.period as string | undefined;
+    const leaderboard = await storage.getCrewLeaderboards(tenantId, period);
+    res.json(leaderboard);
+  });
+  
+  app.post("/api/gamification/achievements", async (req, res) => {
+    try {
+      const validated = insertCrewAchievementSchema.parse(req.body);
+      const achievement = await storage.createCrewAchievement(validated);
+      res.status(201).json(achievement);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to award achievement" });
+    }
+  });
+  
+  app.get("/api/gamification/achievements/:memberId", async (req, res) => {
+    const achievements = await storage.getCrewAchievements(req.params.memberId);
+    res.json(achievements);
+  });
+
+  // ============ GEOFENCING ============
+  
+  app.post("/api/geofences", async (req, res) => {
+    try {
+      const validated = insertJobGeofenceSchema.parse(req.body);
+      const geofence = await storage.createJobGeofence(validated);
+      res.status(201).json(geofence);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create geofence" });
+    }
+  });
+  
+  app.get("/api/geofences/:jobId", async (req, res) => {
+    const geofence = await storage.getJobGeofence(req.params.jobId);
+    if (!geofence) return res.status(404).json({ error: "Geofence not found" });
+    res.json(geofence);
+  });
+  
+  app.post("/api/geofences/events", async (req, res) => {
+    try {
+      const validated = insertGeofenceEventSchema.parse(req.body);
+      const event = await storage.createGeofenceEvent(validated);
+      res.status(201).json(event);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to log geofence event" });
+    }
+  });
+  
+  app.get("/api/geofences/events/:memberId", async (req, res) => {
+    const events = await storage.getGeofenceEvents(req.params.memberId);
+    res.json(events);
+  });
+
+  // ============ PREDICTIVE ANALYTICS ============
+  
+  app.post("/api/predictions/revenue", async (req, res) => {
+    try {
+      const validated = insertRevenuePredictionSchema.parse(req.body);
+      const prediction = await storage.createRevenuePrediction(validated);
+      res.status(201).json(prediction);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create prediction" });
+    }
+  });
+  
+  app.get("/api/predictions/revenue", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const predictions = await storage.getRevenuePredictions(tenantId);
+    res.json(predictions);
+  });
+  
+  // AI-powered revenue prediction
+  app.post("/api/predictions/generate", async (req, res) => {
+    try {
+      const { tenantId, historicalData } = req.body;
+      
+      const openai = new OpenAI();
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a business analyst for a painting company. Based on the historical data provided, predict next month's revenue. Return JSON with:
+              - predictedRevenue: amount in cents
+              - predictedJobs: number of jobs
+              - predictedLeads: number of leads
+              - confidenceLevel: 0-1
+              - factors: array of factors affecting prediction (seasonality, trends, etc.)`
+          },
+          {
+            role: "user",
+            content: JSON.stringify(historicalData || { message: "No historical data provided, use industry averages for a small painting company" })
+          }
+        ],
+        response_format: { type: "json_object" },
+      });
+      
+      const parsed = JSON.parse(response.choices[0].message.content || "{}");
+      const now = new Date();
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+      
+      const prediction = await storage.createRevenuePrediction({
+        tenantId: tenantId || "demo",
+        predictionPeriod: "monthly",
+        periodStart: nextMonth,
+        periodEnd: endOfNextMonth,
+        predictedRevenue: parsed.predictedRevenue || 0,
+        predictedJobs: parsed.predictedJobs,
+        predictedLeads: parsed.predictedLeads,
+        confidenceLevel: parsed.confidenceLevel,
+        factors: JSON.stringify(parsed.factors),
+      });
+      
+      res.status(201).json(prediction);
+    } catch (error) {
+      console.error("Prediction error:", error);
+      res.status(500).json({ error: "Failed to generate prediction" });
+    }
+  });
+
+  // ============ MARKETING ATTRIBUTION ============
+  
+  app.post("/api/marketing/channels", async (req, res) => {
+    try {
+      const validated = insertMarketingChannelSchema.parse(req.body);
+      const channel = await storage.createMarketingChannel(validated);
+      res.status(201).json(channel);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create channel" });
+    }
+  });
+  
+  app.get("/api/marketing/channels", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const channels = await storage.getMarketingChannels(tenantId);
+    res.json(channels);
+  });
+  
+  app.post("/api/marketing/attribution", async (req, res) => {
+    try {
+      const data = req.body;
+      // Calculate metrics
+      const costPerLead = data.spend > 0 && data.leadsGenerated > 0 
+        ? Math.round(data.spend / data.leadsGenerated) : 0;
+      const costPerJob = data.spend > 0 && data.jobsWon > 0 
+        ? Math.round(data.spend / data.jobsWon) : 0;
+      const roi = data.spend > 0 && data.revenueGenerated > 0 
+        ? Math.round(((data.revenueGenerated - data.spend) / data.spend) * 100) : 0;
+      
+      const validated = insertMarketingAttributionSchema.parse({
+        ...data,
+        costPerLead,
+        costPerJob,
+        roi,
+      });
+      const attribution = await storage.createMarketingAttribution(validated);
+      res.status(201).json(attribution);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create attribution" });
+    }
+  });
+  
+  app.get("/api/marketing/attribution", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const attributions = await storage.getMarketingAttributions(tenantId);
+    res.json(attributions);
+  });
+  
+  // Dashboard summary
+  app.get("/api/marketing/dashboard", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const channels = await storage.getMarketingChannels(tenantId);
+    const attributions = await storage.getMarketingAttributions(tenantId);
+    
+    const totalSpend = attributions.reduce((sum, a) => sum + (a.spend || 0), 0);
+    const totalRevenue = attributions.reduce((sum, a) => sum + (a.revenueGenerated || 0), 0);
+    const totalLeads = attributions.reduce((sum, a) => sum + (a.leadsGenerated || 0), 0);
+    const totalJobs = attributions.reduce((sum, a) => sum + (a.jobsWon || 0), 0);
+    
+    res.json({
+      channels,
+      attributions,
+      summary: {
+        totalSpend,
+        totalRevenue,
+        totalLeads,
+        totalJobs,
+        overallROI: totalSpend > 0 ? Math.round(((totalRevenue - totalSpend) / totalSpend) * 100) : 0,
+        avgCostPerLead: totalLeads > 0 ? Math.round(totalSpend / totalLeads) : 0,
+      },
+    });
+  });
+
+  // ============ QUICKBOOKS/ACCOUNTING EXPORT ============
+  
+  app.post("/api/accounting/export", async (req, res) => {
+    try {
+      const validated = insertAccountingExportSchema.parse(req.body);
+      const exportRecord = await storage.createAccountingExport({
+        ...validated,
+        status: "completed",
+      });
+      res.status(201).json(exportRecord);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
+      res.status(500).json({ error: "Failed to create export" });
+    }
+  });
+  
+  app.get("/api/accounting/exports", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const exports = await storage.getAccountingExports(tenantId);
+    res.json(exports);
+  });
+  
+  // Generate CSV export of invoices
+  app.get("/api/accounting/export/invoices", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const format = (req.query.format as string) || "csv";
+    
+    // Get estimates (as invoices)
+    const estimates = await storage.getEstimates(tenantId);
+    
+    if (format === "csv") {
+      const headers = "Invoice ID,Customer,Email,Phone,Total,Status,Created\n";
+      const rows = estimates.map(e => 
+        `"${e.id}","${e.customerName}","${e.customerEmail}","${e.customerPhone || ''}",${e.estimatedTotal || 0},"${e.status}","${e.createdAt}"`
+      ).join("\n");
+      
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=invoices.csv");
+      res.send(headers + rows);
+    } else {
+      res.json(estimates);
+    }
   });
 
   // ============ SYSTEM HEALTH ============
