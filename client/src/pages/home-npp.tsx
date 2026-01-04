@@ -150,7 +150,7 @@ export default function HomeNPP() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mx-auto inline-block rounded-full bg-gray-100/40 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
+              className="mx-auto inline-block rounded-full bg-gray-100/55 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
             >
               AI Room Visualizer · Square Footage Scanner · Instant Estimates
             </motion.p>
@@ -172,7 +172,7 @@ export default function HomeNPP() {
         </section>
 
         {/* HELP SLIDESHOW - See How It Works */}
-        <section id="see-how" className="py-12 px-4 bg-white/40">
+        <section id="see-how" className="py-12 px-4 bg-white/55">
           <div className="max-w-5xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -188,7 +188,7 @@ export default function HomeNPP() {
         </section>
 
         {/* TRUST & AWARDS SECTION - Bento Grid */}
-        <section className="py-8 md:py-16 px-3 md:px-4 bg-gray-50/40">
+        <section className="py-8 md:py-16 px-3 md:px-4 bg-gray-50/55">
           <div className="max-w-6xl mx-auto">
             {/* Mobile: 2-column Bento Grid, Desktop: 2-column */}
             <div className="grid grid-cols-2 gap-3 md:gap-8">
@@ -244,7 +244,7 @@ export default function HomeNPP() {
         </section>
 
         {/* SEE HOW SECTION - Our Approach - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -360,7 +360,7 @@ export default function HomeNPP() {
         </section>
 
         {/* SERVICES SECTION - Interior & Exterior - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-white/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -428,7 +428,7 @@ export default function HomeNPP() {
         </section>
 
         {/* DIVE INTO COLOR - Color Library Preview */}
-        <section className="py-20 px-4 bg-gray-50/40 dark:bg-gray-800/40">
+        <section className="py-20 px-4 bg-gray-50/55 dark:bg-gray-800/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -541,7 +541,7 @@ export default function HomeNPP() {
         </section>
 
         {/* WHAT TO EXPECT - Process & Timing - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-white/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -639,7 +639,7 @@ export default function HomeNPP() {
         </section>
 
         {/* COLORS & SHEENS - Educational Content - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -732,7 +732,7 @@ export default function HomeNPP() {
         </section>
 
         {/* END-TO-END COMMUNICATION - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/55">
           <div className="max-w-6xl mx-auto">
             {/* 2-column Bento Grid on mobile */}
             <div className="grid grid-cols-2 gap-3 md:gap-8 items-stretch">
@@ -784,7 +784,7 @@ export default function HomeNPP() {
         </section>
 
         {/* CUSTOMER TESTIMONIALS - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-white/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-white/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -860,7 +860,7 @@ export default function HomeNPP() {
         </section>
 
         {/* RESOURCES HUB - Bento Grid */}
-        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/40">
+        <section className="py-10 md:py-20 px-3 md:px-4 bg-gray-50/55">
           <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
