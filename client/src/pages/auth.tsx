@@ -12,8 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/context/TenantContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
-import { FirebaseLoginButton } from "@/components/firebase-login-button";
-import { Separator } from "@/components/ui/separator";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -187,6 +185,18 @@ export default function AuthPage() {
                   )}
                 />
 
+                <div className="flex items-center justify-end">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="px-0 text-sm text-muted-foreground"
+                    onClick={() => setLocation("/forgot-password")}
+                    data-testid="link-forgot-password"
+                  >
+                    Forgot password?
+                  </Button>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full"
@@ -195,15 +205,6 @@ export default function AuthPage() {
                 >
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
-
-                <div className="relative my-4">
-                  <Separator />
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                    or continue with
-                  </span>
-                </div>
-
-                <FirebaseLoginButton variant="outline" className="w-full" />
               </form>
             </Form>
           ) : (
