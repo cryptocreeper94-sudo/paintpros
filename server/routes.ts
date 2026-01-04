@@ -3720,6 +3720,256 @@ Do not include any text before or after the JSON.`
     }
   });
 
+  // ============ GOOGLE LOCAL SERVICES ADS (LSA) ============
+  
+  const GOOGLE_LSA_SCOPES = [
+    "https://www.googleapis.com/auth/adwords",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ];
+  
+  // Start LSA OAuth flow
+  app.get("/api/google-lsa/auth", (req, res) => {
+    const tenantId = req.query.tenantId as string || "demo";
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    
+    if (!clientId) {
+      res.status(500).json({ error: "Google LSA not configured" });
+      return;
+    }
+    
+    const baseUrl = process.env.REPLIT_DOMAINS?.split(",")[0] || "localhost:5000";
+    const redirectUri = `https://${baseUrl}/api/google-lsa/callback`;
+    
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: GOOGLE_LSA_SCOPES.join(" "),
+      access_type: "offline",
+      prompt: "consent",
+      state: tenantId
+    });
+    
+    res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+  });
+  
+  // LSA OAuth callback
+  app.get("/api/google-lsa/callback", async (req, res) => {
+    const { code, state: tenantId } = req.query;
+    
+    if (!code) {
+      res.status(400).send("Authorization code missing");
+      return;
+    }
+    
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    
+    if (!clientId || !clientSecret) {
+      res.status(500).send("Google LSA not configured");
+      return;
+    }
+    
+    try {
+      const baseUrl = process.env.REPLIT_DOMAINS?.split(",")[0] || "localhost:5000";
+      const redirectUri = `https://${baseUrl}/api/google-lsa/callback`;
+      
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code: code as string,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          grant_type: "authorization_code"
+        })
+      });
+      
+      const tokens = await tokenResponse.json() as any;
+      
+      if (tokens.error) {
+        console.error("LSA Token exchange error:", tokens);
+        res.status(400).send(`OAuth error: ${tokens.error_description || tokens.error}`);
+        return;
+      }
+      
+      const tokenExpiry = new Date(Date.now() + (tokens.expires_in * 1000));
+      
+      // Note: Full LSA integration requires Google Ads API developer token
+      // For now, we store the OAuth connection for future use
+      await storage.createGoogleLsaConnection({
+        tenantId: tenantId as string || "demo",
+        googleAdsCustomerId: "pending-setup",
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        tokenExpiry,
+        isActive: true
+      });
+      
+      res.redirect(`/?lsa_connected=true`);
+    } catch (error) {
+      console.error("Google LSA OAuth error:", error);
+      res.status(500).send("Failed to connect Google LSA");
+    }
+  });
+  
+  // Get LSA connections
+  app.get("/api/google-lsa/connections", async (req, res) => {
+    const tenantId = req.query.tenantId as string || "demo";
+    const connections = await storage.getGoogleLsaConnections(tenantId);
+    const safeConnections = connections.map(c => ({
+      id: c.id,
+      googleAdsCustomerId: c.googleAdsCustomerId,
+      businessName: c.businessName,
+      serviceCategories: c.serviceCategories,
+      weeklyBudget: c.weeklyBudget,
+      lastLeadSync: c.lastLeadSync,
+      totalLeadsImported: c.totalLeadsImported,
+      isActive: c.isActive,
+      createdAt: c.createdAt
+    }));
+    res.json(safeConnections);
+  });
+  
+  // Update LSA connection (e.g., set customer ID after manual setup)
+  app.patch("/api/google-lsa/connections/:id", async (req, res) => {
+    const { googleAdsCustomerId, businessName, serviceCategories, weeklyBudget } = req.body;
+    const connection = await storage.updateGoogleLsaConnection(req.params.id, {
+      googleAdsCustomerId,
+      businessName,
+      serviceCategories,
+      weeklyBudget
+    });
+    if (!connection) {
+      res.status(404).json({ error: "Connection not found" });
+      return;
+    }
+    // Sanitize response - never expose OAuth tokens
+    res.json({
+      id: connection.id,
+      googleAdsCustomerId: connection.googleAdsCustomerId,
+      businessName: connection.businessName,
+      serviceCategories: connection.serviceCategories,
+      weeklyBudget: connection.weeklyBudget,
+      lastLeadSync: connection.lastLeadSync,
+      totalLeadsImported: connection.totalLeadsImported,
+      isActive: connection.isActive,
+      createdAt: connection.createdAt
+    });
+  });
+  
+  // Disconnect LSA
+  app.delete("/api/google-lsa/connections/:id", async (req, res) => {
+    await storage.deleteGoogleLsaConnection(req.params.id);
+    res.json({ success: true });
+  });
+  
+  // Get LSA leads
+  app.get("/api/google-lsa/leads", async (req, res) => {
+    const tenantId = req.query.tenantId as string || "demo";
+    const leads = await storage.getGoogleLsaLeads(tenantId);
+    res.json(leads);
+  });
+  
+  // Sync LSA leads (requires Google Ads API - placeholder for now)
+  app.post("/api/google-lsa/sync-leads", async (req, res) => {
+    const { connectionId } = req.body;
+    
+    const connection = await storage.getGoogleLsaConnectionById(connectionId);
+    if (!connection) {
+      res.status(404).json({ error: "Connection not found" });
+      return;
+    }
+    
+    // Note: Full implementation requires Google Ads API developer token
+    // This is a placeholder that shows the expected response format
+    res.json({
+      message: "LSA lead sync requires Google Ads API developer token",
+      instructions: [
+        "1. Apply for Google Ads API access at developers.google.com/google-ads/api",
+        "2. Get a developer token from your Google Ads Manager account",
+        "3. Add GOOGLE_ADS_DEVELOPER_TOKEN to your secrets",
+        "4. Provide your Google Ads Customer ID in the connection settings"
+      ],
+      connection: {
+        id: connection.id,
+        status: connection.googleAdsCustomerId === "pending-setup" ? "needs_customer_id" : "ready"
+      }
+    });
+  });
+  
+  // Submit lead feedback to Google LSA (v19.1+)
+  app.post("/api/google-lsa/leads/:id/feedback", async (req, res) => {
+    const { rating, comment } = req.body;
+    
+    if (!rating || rating < 1 || rating > 5) {
+      res.status(400).json({ error: "Rating must be 1-5" });
+      return;
+    }
+    
+    const lead = await storage.updateGoogleLsaLead(req.params.id, {
+      feedbackRating: rating,
+      feedbackComment: comment
+    });
+    
+    if (!lead) {
+      res.status(404).json({ error: "Lead not found" });
+      return;
+    }
+    
+    // Note: To actually submit feedback to Google, you'd call:
+    // LocalServicesLeadService.ProvideLeadFeedback() via Google Ads API
+    
+    res.json({
+      success: true,
+      message: "Feedback recorded. Google API submission requires developer token.",
+      lead
+    });
+  });
+  
+  // Convert LSA lead to internal CRM lead
+  app.post("/api/google-lsa/leads/:id/convert", async (req, res) => {
+    const lsaLead = await storage.getGoogleLsaLeadByGoogleId(req.params.id);
+    if (!lsaLead) {
+      res.status(404).json({ error: "LSA lead not found" });
+      return;
+    }
+    
+    if (lsaLead.convertedToLead) {
+      res.status(400).json({ error: "Lead already converted" });
+      return;
+    }
+    
+    try {
+      // Create internal lead
+      const newLead = await storage.createLead({
+        tenantId: lsaLead.tenantId,
+        email: lsaLead.customerEmail || `lsa-${lsaLead.googleLeadId}@imported.local`,
+        name: lsaLead.customerName || "LSA Lead",
+        phone: lsaLead.customerPhone,
+        source: "google_lsa",
+        notes: `Imported from Google Local Services Ads. Category: ${lsaLead.serviceCategory || "N/A"}`
+      });
+      
+      // Update LSA lead with reference
+      await storage.updateGoogleLsaLead(lsaLead.id, {
+        convertedToLead: true,
+        internalLeadId: newLead.id
+      });
+      
+      res.json({
+        success: true,
+        lsaLeadId: lsaLead.id,
+        internalLeadId: newLead.id,
+        lead: newLead
+      });
+    } catch (error) {
+      console.error("LSA lead conversion error:", error);
+      res.status(500).json({ error: "Failed to convert lead" });
+    }
+  });
+
   // ============ ROUTE OPTIMIZATION ============
   
   // Simple distance calculation between two points

@@ -3585,6 +3585,73 @@ export const insertGoogleCalendarConnectionSchema = createInsertSchema(googleCal
 export type InsertGoogleCalendarConnection = z.infer<typeof insertGoogleCalendarConnectionSchema>;
 export type GoogleCalendarConnection = typeof googleCalendarConnections.$inferSelect;
 
+// ============ GOOGLE LOCAL SERVICES ADS (LSA) ============
+export const googleLsaConnections = pgTable("google_lsa_connections", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  googleAdsCustomerId: varchar("google_ads_customer_id", { length: 50 }).notNull(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token"),
+  tokenExpiry: timestamp("token_expiry"),
+  
+  businessName: varchar("business_name", { length: 200 }),
+  serviceCategories: text("service_categories").array(),
+  weeklyBudget: integer("weekly_budget"),
+  
+  lastLeadSync: timestamp("last_lead_sync"),
+  totalLeadsImported: integer("total_leads_imported").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_lsa_tenant").on(table.tenantId),
+  index("idx_lsa_customer_id").on(table.googleAdsCustomerId),
+]);
+
+export const googleLsaLeads = pgTable("google_lsa_leads", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  connectionId: varchar("connection_id", { length: 36 }).references(() => googleLsaConnections.id),
+  
+  googleLeadId: varchar("google_lead_id", { length: 100 }).notNull(),
+  leadType: varchar("lead_type", { length: 30 }), // CALL, MESSAGE, BOOKING
+  
+  customerName: varchar("customer_name", { length: 200 }),
+  customerPhone: varchar("customer_phone", { length: 50 }),
+  customerEmail: varchar("customer_email", { length: 200 }),
+  
+  serviceCategory: varchar("service_category", { length: 100 }),
+  postalCode: varchar("postal_code", { length: 20 }),
+  
+  chargeStatus: varchar("charge_status", { length: 30 }), // CHARGED, CREDITED, NOT_CHARGED
+  disputeStatus: varchar("dispute_status", { length: 30 }),
+  
+  leadCreatedAt: timestamp("lead_created_at"),
+  importedAt: timestamp("imported_at").defaultNow().notNull(),
+  
+  convertedToLead: boolean("converted_to_lead").default(false),
+  internalLeadId: varchar("internal_lead_id", { length: 36 }),
+  
+  feedbackRating: integer("feedback_rating"), // 1-5
+  feedbackComment: text("feedback_comment"),
+}, (table) => [
+  index("idx_lsa_lead_tenant").on(table.tenantId),
+  index("idx_lsa_lead_google_id").on(table.googleLeadId),
+]);
+
+export const insertGoogleLsaConnectionSchema = createInsertSchema(googleLsaConnections).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertGoogleLsaLeadSchema = createInsertSchema(googleLsaLeads).omit({
+  id: true,
+  importedAt: true,
+});
+export type InsertGoogleLsaConnection = z.infer<typeof insertGoogleLsaConnectionSchema>;
+export type GoogleLsaConnection = typeof googleLsaConnections.$inferSelect;
+export type InsertGoogleLsaLead = z.infer<typeof insertGoogleLsaLeadSchema>;
+export type GoogleLsaLead = typeof googleLsaLeads.$inferSelect;
+
 // ============ CUSTOMER SELF-SCHEDULING ============
 export const schedulingSlots = pgTable("scheduling_slots", {
   id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),

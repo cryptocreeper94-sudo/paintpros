@@ -72,6 +72,8 @@ import {
   type ColorPalette, type InsertColorPalette, colorPalettes,
   type CalendarExport, type InsertCalendarExport, calendarExports,
   type GoogleCalendarConnection, type InsertGoogleCalendarConnection, googleCalendarConnections,
+  type GoogleLsaConnection, type InsertGoogleLsaConnection, googleLsaConnections,
+  type GoogleLsaLead, type InsertGoogleLsaLead, googleLsaLeads,
   type SchedulingSlot, type InsertSchedulingSlot, schedulingSlots,
   type CustomerBooking, type InsertCustomerBooking, customerBookings,
   type PhotoAnalysis, type InsertPhotoAnalysis, photoAnalyses,
@@ -538,6 +540,17 @@ export interface IStorage {
   getGoogleCalendarConnectionById(id: string): Promise<GoogleCalendarConnection | undefined>;
   updateGoogleCalendarConnection(id: string, updates: Partial<InsertGoogleCalendarConnection>): Promise<GoogleCalendarConnection | undefined>;
   deleteGoogleCalendarConnection(id: string): Promise<void>;
+  
+  // Google Local Services Ads (LSA)
+  createGoogleLsaConnection(connection: InsertGoogleLsaConnection): Promise<GoogleLsaConnection>;
+  getGoogleLsaConnections(tenantId: string): Promise<GoogleLsaConnection[]>;
+  getGoogleLsaConnectionById(id: string): Promise<GoogleLsaConnection | undefined>;
+  updateGoogleLsaConnection(id: string, updates: Partial<InsertGoogleLsaConnection>): Promise<GoogleLsaConnection | undefined>;
+  deleteGoogleLsaConnection(id: string): Promise<void>;
+  createGoogleLsaLead(lead: InsertGoogleLsaLead): Promise<GoogleLsaLead>;
+  getGoogleLsaLeads(tenantId: string): Promise<GoogleLsaLead[]>;
+  getGoogleLsaLeadByGoogleId(googleLeadId: string): Promise<GoogleLsaLead | undefined>;
+  updateGoogleLsaLead(id: string, updates: Partial<InsertGoogleLsaLead>): Promise<GoogleLsaLead | undefined>;
   
   // Self-Scheduling
   createSchedulingSlot(slot: InsertSchedulingSlot): Promise<SchedulingSlot>;
@@ -3047,6 +3060,53 @@ export class DatabaseStorage implements IStorage {
 
   async deleteGoogleCalendarConnection(id: string): Promise<void> {
     await db.update(googleCalendarConnections).set({ isActive: false }).where(eq(googleCalendarConnections.id, id));
+  }
+
+  // Google Local Services Ads (LSA)
+  async createGoogleLsaConnection(connection: InsertGoogleLsaConnection): Promise<GoogleLsaConnection> {
+    const [result] = await db.insert(googleLsaConnections).values(connection).returning();
+    return result;
+  }
+
+  async getGoogleLsaConnections(tenantId: string): Promise<GoogleLsaConnection[]> {
+    return await db.select().from(googleLsaConnections)
+      .where(and(eq(googleLsaConnections.tenantId, tenantId), eq(googleLsaConnections.isActive, true)))
+      .orderBy(desc(googleLsaConnections.createdAt));
+  }
+
+  async getGoogleLsaConnectionById(id: string): Promise<GoogleLsaConnection | undefined> {
+    const [result] = await db.select().from(googleLsaConnections).where(eq(googleLsaConnections.id, id));
+    return result;
+  }
+
+  async updateGoogleLsaConnection(id: string, updates: Partial<InsertGoogleLsaConnection>): Promise<GoogleLsaConnection | undefined> {
+    const [result] = await db.update(googleLsaConnections).set(updates).where(eq(googleLsaConnections.id, id)).returning();
+    return result;
+  }
+
+  async deleteGoogleLsaConnection(id: string): Promise<void> {
+    await db.update(googleLsaConnections).set({ isActive: false }).where(eq(googleLsaConnections.id, id));
+  }
+
+  async createGoogleLsaLead(lead: InsertGoogleLsaLead): Promise<GoogleLsaLead> {
+    const [result] = await db.insert(googleLsaLeads).values(lead).returning();
+    return result;
+  }
+
+  async getGoogleLsaLeads(tenantId: string): Promise<GoogleLsaLead[]> {
+    return await db.select().from(googleLsaLeads)
+      .where(eq(googleLsaLeads.tenantId, tenantId))
+      .orderBy(desc(googleLsaLeads.importedAt));
+  }
+
+  async getGoogleLsaLeadByGoogleId(googleLeadId: string): Promise<GoogleLsaLead | undefined> {
+    const [result] = await db.select().from(googleLsaLeads).where(eq(googleLsaLeads.googleLeadId, googleLeadId));
+    return result;
+  }
+
+  async updateGoogleLsaLead(id: string, updates: Partial<InsertGoogleLsaLead>): Promise<GoogleLsaLead | undefined> {
+    const [result] = await db.update(googleLsaLeads).set(updates).where(eq(googleLsaLeads.id, id)).returning();
+    return result;
   }
 
   // Self-Scheduling
