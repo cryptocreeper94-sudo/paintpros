@@ -725,7 +725,6 @@ export default function HomeNPP() {
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 <img src={mapImage} alt="Nashville Service Area" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-accent/40 to-transparent" />
               </motion.div>
             </div>
           </div>
