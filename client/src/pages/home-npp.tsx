@@ -39,7 +39,7 @@ import colorWheelImage from "@assets/generated_images/paint_color_wheel_white_bg
 import crewImage from "@assets/generated_images/professional_painting_crew_at_work.png";
 import estimateImage from "@assets/generated_images/painter_consulting_homeowner_estimate.png";
 import solanaLogo from "@assets/solana-logo-transparent.png";
-// import paintersImage from "@assets/generated_images/two_painters_ladder_and_ground.png"; // temporarily hidden
+import paintersImage from "@assets/generated_images/two_painters_ladder_and_ground.png";
 
 interface PaintColor {
   id: number;
@@ -100,7 +100,16 @@ export default function HomeNPP() {
         
         {/* HERO SECTION - Mobile-First Centered Layout */}
         <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50/70 to-white/70 px-4 py-12 pb-[100px] md:py-20 md:pb-20">
-          {/* Desktop painters image - temporarily hidden */}
+          {/* Desktop painters image - z-0 to stay behind text */}
+          <div className="pointer-events-none absolute inset-0 z-0 hidden md:block">
+            <div className="absolute bottom-[135px] right-[-80px] h-[80%] w-[60%]">
+              <img
+                src={paintersImage}
+                alt="Professional painters at work"
+                className="h-full w-full object-contain object-bottom opacity-90"
+              />
+            </div>
+          </div>
 
           {/* Text Content - z-20 to stay above painters */}
           <div className="relative z-20 flex w-full max-w-4xl flex-col items-center space-y-6 text-center md:space-y-8 md:items-start md:text-left md:pl-8">
@@ -147,7 +156,19 @@ export default function HomeNPP() {
             </motion.p>
           </div>
 
-          {/* Mobile painters image - temporarily hidden */}
+          {/* Mobile painters image - centered below content, shifted up visually, behind text */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="absolute bottom-0 left-0 right-0 z-0 w-full md:hidden pointer-events-none"
+          >
+            <img
+              src={paintersImage}
+              alt="Professional painters at work"
+              className="mx-auto block w-full max-w-full object-contain -translate-y-[85px] scale-[2.309]"
+            />
+          </motion.div>
         </section>
 
         {/* HELP SLIDESHOW - See How It Works */}
