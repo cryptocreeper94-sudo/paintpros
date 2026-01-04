@@ -8,6 +8,7 @@ import { TenantProvider } from "@/context/TenantContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AccessProvider } from "@/context/AccessContext";
 import { DemoProvider } from "@/context/DemoContext";
+import { FirebaseAuthProvider } from "@/context/FirebaseAuthContext";
 import { DemoModeBanner } from "@/components/demo-mode-banner";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import NotFound from "@/pages/not-found";
@@ -134,20 +135,22 @@ function App() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <TenantProvider>
-          <DemoProvider>
-            <AccessProvider>
-              <TooltipProvider>
-                <DemoModeBanner />
-                <ScrollToTop />
-                <AnalyticsTracker />
-                <Toaster />
-                <Router />
-                <PaintBuddy />
-              </TooltipProvider>
-            </AccessProvider>
-          </DemoProvider>
-        </TenantProvider>
+        <FirebaseAuthProvider>
+          <TenantProvider>
+            <DemoProvider>
+              <AccessProvider>
+                <TooltipProvider>
+                  <DemoModeBanner />
+                  <ScrollToTop />
+                  <AnalyticsTracker />
+                  <Toaster />
+                  <Router />
+                  <PaintBuddy />
+                </TooltipProvider>
+              </AccessProvider>
+            </DemoProvider>
+          </TenantProvider>
+        </FirebaseAuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

@@ -135,3 +135,7 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - Added Google LSA integration framework with OAuth flow and lead tracking
 - Fixed query key cache invalidation in calendar component
 - Sanitized LSA API responses to prevent OAuth token exposure
+- Integrated Firebase Authentication with Google Sign-In (DarkWave Auth project)
+- Created FirebaseAuthProvider context and FirebaseLoginButton component
+- Added Google Sign-In option to /auth page alongside email/password login
+- PIN system remains unchanged and fully operational
