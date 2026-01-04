@@ -260,9 +260,11 @@ export default function HomeNPP() {
                 className="col-span-1"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6  border border-white/20 shadow-xl hover:shadow-accent/20">
-                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
-                    <Shield className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 border border-white/20 shadow-xl hover:shadow-accent/20 flex flex-col">
+                  <div className="h-10 md:h-16 mb-2 md:mb-4">
+                    <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center shadow-lg shadow-accent/20">
+                      <Shield className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                    </div>
                   </div>
                   <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2">
                     Meticulous Prep
@@ -283,9 +285,11 @@ export default function HomeNPP() {
                 className="col-span-1"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6  border border-white/20 shadow-xl hover:shadow-accent/20">
-                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
-                    <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                <GlassCard className="h-full p-3 md:p-6 border border-white/20 shadow-xl hover:shadow-accent/20 flex flex-col">
+                  <div className="h-10 md:h-16 mb-2 md:mb-4">
+                    <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center shadow-lg shadow-accent/20">
+                      <Brush className="w-4 h-4 md:w-6 md:h-6 text-accent" />
+                    </div>
                   </div>
                   <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2">
                     Pro Painters
@@ -306,20 +310,18 @@ export default function HomeNPP() {
                 className="col-span-2 md:col-span-2"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/80 backdrop-blur-sm border border-accent/20 shadow-xl hover:shadow-accent/30">
-                  <div className="flex items-start gap-3">
+                <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/80 backdrop-blur-sm border border-accent/20 shadow-xl hover:shadow-accent/30 flex flex-col">
+                  <div className="h-10 md:h-16 mb-2 md:mb-4">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-lg shadow-accent/30">
                       <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1">
-                        Perfection in Every Detail
-                      </h3>
-                      <p className="text-[10px] md:text-sm text-gray-600">
-                        From clean lines to flawless finishes, perfection down to the last brushstroke.
-                      </p>
-                    </div>
                   </div>
+                  <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2">
+                    Perfection in Every Detail
+                  </h3>
+                  <p className="text-[10px] md:text-sm text-gray-600 line-clamp-3">
+                    From clean lines to flawless finishes, perfection down to the last brushstroke.
+                  </p>
                 </GlassCard>
               </motion.div>
             </div>
