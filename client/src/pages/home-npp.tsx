@@ -60,8 +60,39 @@ export default function HomeNPP() {
     queryKey: ["/api/paint-colors"],
   });
 
-  const sherwinColors = colors.filter(c => c.brand === "sherwin-williams").slice(0, 6);
-  const benjaminColors = colors.filter(c => c.brand === "benjamin-moore").slice(0, 6);
+  // Get a colorful mix - prioritize accent colors, then mix in others for variety
+  const getSWColors = () => {
+    const swColors = colors.filter(c => c.brand === "sherwin-williams");
+    const accents = swColors.filter(c => c.category === "accent");
+    const cools = swColors.filter(c => c.category === "cool");
+    const warms = swColors.filter(c => c.category === "warm");
+    const neutrals = swColors.filter(c => c.category === "neutral");
+    // Mix: 2 accents, 1 cool, 1 warm, 2 neutrals for variety
+    return [
+      ...accents.slice(0, 2),
+      ...cools.slice(0, 1),
+      ...warms.slice(0, 1),
+      ...neutrals.slice(0, 2)
+    ].slice(0, 6);
+  };
+
+  const getBMColors = () => {
+    const bmColors = colors.filter(c => c.brand === "benjamin-moore");
+    const accents = bmColors.filter(c => c.category === "accent");
+    const cools = bmColors.filter(c => c.category === "cool");
+    const warms = bmColors.filter(c => c.category === "warm");
+    const neutrals = bmColors.filter(c => c.category === "neutral");
+    // Mix: 2 accents, 1 cool, 1 warm, 2 neutrals for variety
+    return [
+      ...accents.slice(0, 2),
+      ...cools.slice(0, 1),
+      ...warms.slice(0, 1),
+      ...neutrals.slice(0, 2)
+    ].slice(0, 6);
+  };
+
+  const sherwinColors = getSWColors();
+  const benjaminColors = getBMColors();
 
   return (
     <PageLayout>
@@ -448,11 +479,16 @@ export default function HomeNPP() {
                 <Link href="/color-library">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    className="flex-shrink-0 w-40 h-[176px] rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:border-accent transition-colors"
+                    className="flex-shrink-0 w-40 h-[176px] rounded-xl overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 cursor-pointer hover:border-accent transition-all hover:shadow-lg"
                   >
-                    <div className="text-center">
-                      <ArrowRight className="w-6 h-6 mx-auto text-gray-400 mb-2" />
-                      <span className="text-sm text-gray-500">See All</span>
+                    <div className="h-24 grid grid-cols-3 grid-rows-2 gap-0.5 p-1">
+                      {colors.filter(c => c.brand === "sherwin-williams" && c.category === "accent").slice(0, 6).map((c, i) => (
+                        <div key={i} className="rounded-sm" style={{ backgroundColor: c.hexValue }} />
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-center gap-2 h-[52px] bg-white/80 dark:bg-gray-900/80">
+                      <span className="text-sm font-medium text-accent">See All Colors</span>
+                      <ArrowRight className="w-4 h-4 text-accent" />
                     </div>
                   </motion.div>
                 </Link>
@@ -486,11 +522,16 @@ export default function HomeNPP() {
                 <Link href="/color-library">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    className="flex-shrink-0 w-40 h-[176px] rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:border-accent transition-colors"
+                    className="flex-shrink-0 w-40 h-[176px] rounded-xl overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 cursor-pointer hover:border-accent transition-all hover:shadow-lg"
                   >
-                    <div className="text-center">
-                      <ArrowRight className="w-6 h-6 mx-auto text-gray-400 mb-2" />
-                      <span className="text-sm text-gray-500">See All</span>
+                    <div className="h-24 grid grid-cols-3 grid-rows-2 gap-0.5 p-1">
+                      {colors.filter(c => c.brand === "benjamin-moore" && c.category === "accent").slice(0, 6).map((c, i) => (
+                        <div key={i} className="rounded-sm" style={{ backgroundColor: c.hexValue }} />
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-center gap-2 h-[52px] bg-white/80 dark:bg-gray-900/80">
+                      <span className="text-sm font-medium text-accent">See All Colors</span>
+                      <ArrowRight className="w-4 h-4 text-accent" />
                     </div>
                   </motion.div>
                 </Link>
