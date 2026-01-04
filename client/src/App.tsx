@@ -34,6 +34,8 @@ import TermsWarranty from "@/pages/terms-warranty";
 import Account from "@/pages/account";
 import Help from "@/pages/help";
 import AuthPage from "@/pages/auth";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import Awards from "@/pages/awards";
 import Team from "@/pages/team";
 import ColorLibrary from "@/pages/color-library";
@@ -109,6 +111,8 @@ function Router() {
       <Route path="/account" component={Account} />
       <Route path="/help" component={Help} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="/awards" component={Awards} />
       <Route path="/team" component={Team} />
       <Route path="/colors" component={ColorLibrary} />
