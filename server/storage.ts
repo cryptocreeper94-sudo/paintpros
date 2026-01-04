@@ -70,6 +70,7 @@ import {
   type FranchiseReport, type InsertFranchiseReport, franchiseReports,
   type FinancingPlan, type InsertFinancingPlan, financingPlans,
   type ColorPalette, type InsertColorPalette, colorPalettes,
+  type PaintColor, paintColors,
   type CalendarExport, type InsertCalendarExport, calendarExports,
   type GoogleCalendarConnection, type InsertGoogleCalendarConnection, googleCalendarConnections,
   type GoogleLsaConnection, type InsertGoogleLsaConnection, googleLsaConnections,
@@ -533,6 +534,10 @@ export interface IStorage {
   // Color Palettes
   createColorPalette(palette: InsertColorPalette): Promise<ColorPalette>;
   getColorPalettes(tenantId: string): Promise<ColorPalette[]>;
+  
+  // Paint Colors
+  getPaintColors(): Promise<PaintColor[]>;
+  getPaintColorsByBrand(brand: string): Promise<PaintColor[]>;
   
   // Calendar Exports
   createCalendarExport(exportData: InsertCalendarExport): Promise<CalendarExport>;
@@ -3059,6 +3064,15 @@ export class DatabaseStorage implements IStorage {
 
   async getColorPalettes(tenantId: string): Promise<ColorPalette[]> {
     return await db.select().from(colorPalettes).where(eq(colorPalettes.tenantId, tenantId));
+  }
+
+  // Paint Colors
+  async getPaintColors(): Promise<PaintColor[]> {
+    return await db.select().from(paintColors);
+  }
+
+  async getPaintColorsByBrand(brand: string): Promise<PaintColor[]> {
+    return await db.select().from(paintColors).where(eq(paintColors.brand, brand));
   }
 
   // Calendar Exports

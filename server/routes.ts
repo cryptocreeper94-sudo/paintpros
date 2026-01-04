@@ -3725,6 +3725,20 @@ Do not include any text before or after the JSON.`
     res.json(palettes);
   });
 
+  // GET /api/paint-colors - Get all paint colors
+  app.get("/api/paint-colors", async (req, res) => {
+    try {
+      const brand = req.query.brand as string;
+      const colors = brand 
+        ? await storage.getPaintColorsByBrand(brand)
+        : await storage.getPaintColors();
+      res.json(colors);
+    } catch (error) {
+      console.error("Error fetching paint colors:", error);
+      res.status(500).json({ error: "Failed to fetch paint colors" });
+    }
+  });
+
   // ============ CALENDAR EXPORTS (iCal) ============
   
   app.post("/api/calendar/export", async (req, res) => {
