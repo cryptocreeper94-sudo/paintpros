@@ -105,3 +105,33 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 13. **Smart Contracts** (`/api/contracts`, `/api/contracts/:id/sign`, `/api/contracts/:id/stamp`) - Blockchain-signed agreements via Solana
 14. **AR Color Preview** (`/api/ar/previews`, `/api/ar/colors`) - Color visualization API with popular paint palettes
 15. **Crew Skills Matching** (`/api/crew/skills`, `/api/jobs/match-crew`) - Auto-assign crews by certifications and proficiency
+
+## v1.6.2 - Google Integrations (January 2026)
+
+### Google Calendar Integration
+- **Multi-tenant OAuth** - Each tenant can connect their own Google Calendar
+- **Calendar Sync** (`POST /api/google-calendar/sync`) - Push bookings and jobs to connected calendars
+- **Connection Management** (`GET/DELETE /api/google-calendar/connections`) - View and manage calendar connections
+- **UI Component** - `GoogleCalendarConnect` component for tenant dashboards with connect/sync/disconnect actions
+
+### Google Local Services Ads (LSA) Integration
+- **LSA OAuth Flow** (`GET /api/google-lsa/auth`, `/api/google-lsa/callback`) - Connect Google Ads accounts
+- **Connection Management** (`GET/PATCH/DELETE /api/google-lsa/connections`) - Manage LSA connections with customer ID setup
+- **Lead Management** (`GET /api/google-lsa/leads`) - View imported LSA leads
+- **Lead Sync** (`POST /api/google-lsa/sync-leads`) - Sync leads from Google LSA (requires Google Ads API developer token)
+- **Lead Feedback** (`POST /api/google-lsa/leads/:id/feedback`) - Submit lead quality feedback (1-5 rating)
+- **Lead Conversion** (`POST /api/google-lsa/leads/:id/convert`) - Convert LSA leads to internal CRM leads
+
+### Database Tables Added
+- `google_calendar_connections` - OAuth tokens and sync settings per tenant
+- `google_lsa_connections` - Google Ads customer IDs and OAuth tokens
+- `google_lsa_leads` - Imported LSA leads with conversion tracking
+
+## Changelog
+
+### January 4, 2026
+- Added Google Calendar multi-tenant OAuth integration
+- Created GoogleCalendarConnect UI component for tenant dashboards
+- Added Google LSA integration framework with OAuth flow and lead tracking
+- Fixed query key cache invalidation in calendar component
+- Sanitized LSA API responses to prevent OAuth token exposure
