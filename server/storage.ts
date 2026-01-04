@@ -71,6 +71,7 @@ import {
   type FinancingPlan, type InsertFinancingPlan, financingPlans,
   type ColorPalette, type InsertColorPalette, colorPalettes,
   type CalendarExport, type InsertCalendarExport, calendarExports,
+  type GoogleCalendarConnection, type InsertGoogleCalendarConnection, googleCalendarConnections,
   type SchedulingSlot, type InsertSchedulingSlot, schedulingSlots,
   type CustomerBooking, type InsertCustomerBooking, customerBookings,
   type PhotoAnalysis, type InsertPhotoAnalysis, photoAnalyses,
@@ -530,6 +531,13 @@ export interface IStorage {
   // Calendar Exports
   createCalendarExport(exportData: InsertCalendarExport): Promise<CalendarExport>;
   getCalendarExportByToken(token: string): Promise<CalendarExport | undefined>;
+  
+  // Google Calendar Connections
+  createGoogleCalendarConnection(connection: InsertGoogleCalendarConnection): Promise<GoogleCalendarConnection>;
+  getGoogleCalendarConnections(tenantId: string): Promise<GoogleCalendarConnection[]>;
+  getGoogleCalendarConnectionById(id: string): Promise<GoogleCalendarConnection | undefined>;
+  updateGoogleCalendarConnection(id: string, updates: Partial<InsertGoogleCalendarConnection>): Promise<GoogleCalendarConnection | undefined>;
+  deleteGoogleCalendarConnection(id: string): Promise<void>;
   
   // Self-Scheduling
   createSchedulingSlot(slot: InsertSchedulingSlot): Promise<SchedulingSlot>;
@@ -2733,7 +2741,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getPendingFollowups(tenantId: string): Promise<FollowupLog[]> {
+  async getPendingFollowupLogs(tenantId: string): Promise<FollowupLog[]> {
     return await db.select().from(followupLogs)
       .where(and(
         eq(followupLogs.tenantId, tenantId),
@@ -3013,6 +3021,32 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.select().from(calendarExports)
       .where(and(eq(calendarExports.exportToken, token), eq(calendarExports.isActive, true)));
     return result;
+  }
+
+  // Google Calendar Connections
+  async createGoogleCalendarConnection(connection: InsertGoogleCalendarConnection): Promise<GoogleCalendarConnection> {
+    const [result] = await db.insert(googleCalendarConnections).values(connection).returning();
+    return result;
+  }
+
+  async getGoogleCalendarConnections(tenantId: string): Promise<GoogleCalendarConnection[]> {
+    return await db.select().from(googleCalendarConnections)
+      .where(and(eq(googleCalendarConnections.tenantId, tenantId), eq(googleCalendarConnections.isActive, true)))
+      .orderBy(desc(googleCalendarConnections.createdAt));
+  }
+
+  async getGoogleCalendarConnectionById(id: string): Promise<GoogleCalendarConnection | undefined> {
+    const [result] = await db.select().from(googleCalendarConnections).where(eq(googleCalendarConnections.id, id));
+    return result;
+  }
+
+  async updateGoogleCalendarConnection(id: string, updates: Partial<InsertGoogleCalendarConnection>): Promise<GoogleCalendarConnection | undefined> {
+    const [result] = await db.update(googleCalendarConnections).set(updates).where(eq(googleCalendarConnections.id, id)).returning();
+    return result;
+  }
+
+  async deleteGoogleCalendarConnection(id: string): Promise<void> {
+    await db.update(googleCalendarConnections).set({ isActive: false }).where(eq(googleCalendarConnections.id, id));
   }
 
   // Self-Scheduling

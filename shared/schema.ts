@@ -3555,6 +3555,36 @@ export const insertCalendarExportSchema = createInsertSchema(calendarExports).om
 export type InsertCalendarExport = z.infer<typeof insertCalendarExportSchema>;
 export type CalendarExport = typeof calendarExports.$inferSelect;
 
+// ============ GOOGLE CALENDAR CONNECTIONS ============
+export const googleCalendarConnections = pgTable("google_calendar_connections", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  userId: varchar("user_id", { length: 36 }),
+  
+  googleEmail: varchar("google_email", { length: 200 }).notNull(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token"),
+  tokenExpiry: timestamp("token_expiry"),
+  
+  calendarId: varchar("calendar_id", { length: 200 }).default("primary"),
+  syncBookings: boolean("sync_bookings").default(true),
+  syncJobs: boolean("sync_jobs").default(true),
+  
+  lastSynced: timestamp("last_synced"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_gcal_tenant").on(table.tenantId),
+  index("idx_gcal_email").on(table.googleEmail),
+]);
+
+export const insertGoogleCalendarConnectionSchema = createInsertSchema(googleCalendarConnections).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertGoogleCalendarConnection = z.infer<typeof insertGoogleCalendarConnectionSchema>;
+export type GoogleCalendarConnection = typeof googleCalendarConnections.$inferSelect;
+
 // ============ CUSTOMER SELF-SCHEDULING ============
 export const schedulingSlots = pgTable("scheduling_slots", {
   id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),

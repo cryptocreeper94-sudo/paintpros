@@ -3534,6 +3534,192 @@ Do not include any text before or after the JSON.`
     res.send(ical);
   });
 
+  // ============ GOOGLE CALENDAR OAUTH ============
+  
+  const GOOGLE_CALENDAR_SCOPES = [
+    "https://www.googleapis.com/auth/calendar.events",
+    "https://www.googleapis.com/auth/calendar.readonly",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ];
+  
+  // Start OAuth flow - redirect user to Google consent
+  app.get("/api/google-calendar/auth", (req, res) => {
+    const tenantId = req.query.tenantId as string || "demo";
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    
+    if (!clientId) {
+      res.status(500).json({ error: "Google Calendar not configured" });
+      return;
+    }
+    
+    const baseUrl = process.env.REPLIT_DOMAINS?.split(",")[0] || "localhost:5000";
+    const redirectUri = `https://${baseUrl}/api/google-calendar/callback`;
+    
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: GOOGLE_CALENDAR_SCOPES.join(" "),
+      access_type: "offline",
+      prompt: "consent",
+      state: tenantId
+    });
+    
+    res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+  });
+  
+  // OAuth callback - exchange code for tokens
+  app.get("/api/google-calendar/callback", async (req, res) => {
+    const { code, state: tenantId } = req.query;
+    
+    if (!code) {
+      res.status(400).send("Authorization code missing");
+      return;
+    }
+    
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    
+    if (!clientId || !clientSecret) {
+      res.status(500).send("Google Calendar not configured");
+      return;
+    }
+    
+    try {
+      const baseUrl = process.env.REPLIT_DOMAINS?.split(",")[0] || "localhost:5000";
+      const redirectUri = `https://${baseUrl}/api/google-calendar/callback`;
+      
+      // Exchange code for tokens
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code: code as string,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          grant_type: "authorization_code"
+        })
+      });
+      
+      const tokens = await tokenResponse.json() as any;
+      
+      if (tokens.error) {
+        console.error("Token exchange error:", tokens);
+        res.status(400).send(`OAuth error: ${tokens.error_description || tokens.error}`);
+        return;
+      }
+      
+      // Get user email
+      const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+        headers: { Authorization: `Bearer ${tokens.access_token}` }
+      });
+      const userInfo = await userInfoRes.json() as any;
+      
+      // Store the connection
+      const tokenExpiry = new Date(Date.now() + (tokens.expires_in * 1000));
+      
+      await storage.createGoogleCalendarConnection({
+        tenantId: tenantId as string || "demo",
+        googleEmail: userInfo.email,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        tokenExpiry,
+        syncBookings: true,
+        syncJobs: true,
+        isActive: true
+      });
+      
+      // Redirect back to dashboard with success message
+      res.redirect(`/?gcal_connected=true&email=${encodeURIComponent(userInfo.email)}`);
+    } catch (error) {
+      console.error("Google Calendar OAuth error:", error);
+      res.status(500).send("Failed to connect Google Calendar");
+    }
+  });
+  
+  // Get connected calendars for a tenant
+  app.get("/api/google-calendar/connections", async (req, res) => {
+    const tenantId = req.query.tenantId as string || "demo";
+    const connections = await storage.getGoogleCalendarConnections(tenantId);
+    // Don't expose tokens
+    const safeConnections = connections.map(c => ({
+      id: c.id,
+      googleEmail: c.googleEmail,
+      calendarId: c.calendarId,
+      syncBookings: c.syncBookings,
+      syncJobs: c.syncJobs,
+      lastSynced: c.lastSynced,
+      isActive: c.isActive,
+      createdAt: c.createdAt
+    }));
+    res.json(safeConnections);
+  });
+  
+  // Disconnect a calendar
+  app.delete("/api/google-calendar/connections/:id", async (req, res) => {
+    await storage.deleteGoogleCalendarConnection(req.params.id);
+    res.json({ success: true });
+  });
+  
+  // Sync bookings to Google Calendar
+  app.post("/api/google-calendar/sync", async (req, res) => {
+    const { connectionId, tenantId } = req.body;
+    
+    const connection = await storage.getGoogleCalendarConnectionById(connectionId);
+    if (!connection) {
+      res.status(404).json({ error: "Connection not found" });
+      return;
+    }
+    
+    try {
+      // Get bookings for the tenant
+      const bookingsList = await storage.getBookings(tenantId || connection.tenantId);
+      
+      let synced = 0;
+      for (const booking of bookingsList.slice(0, 10)) { // Limit to 10 for demo
+        // Create Google Calendar event
+        const event = {
+          summary: `PaintPros Booking: ${booking.customerName}`,
+          description: `Service: ${booking.serviceType}\nPhone: ${booking.customerPhone}\nNotes: ${booking.notes || ""}`,
+          start: {
+            dateTime: new Date(booking.preferredDate).toISOString(),
+            timeZone: "America/New_York"
+          },
+          end: {
+            dateTime: new Date(new Date(booking.preferredDate).getTime() + 2 * 60 * 60 * 1000).toISOString(),
+            timeZone: "America/New_York"
+          },
+          location: booking.address || ""
+        };
+        
+        const eventRes = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${connection.calendarId || "primary"}/events`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${connection.accessToken}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(event)
+          }
+        );
+        
+        if (eventRes.ok) synced++;
+      }
+      
+      // Update last synced
+      await storage.updateGoogleCalendarConnection(connection.id, {
+        lastSynced: new Date()
+      });
+      
+      res.json({ synced, total: bookingsList.length });
+    } catch (error) {
+      console.error("Calendar sync error:", error);
+      res.status(500).json({ error: "Sync failed" });
+    }
+  });
+
   // ============ ROUTE OPTIMIZATION ============
   
   // Simple distance calculation between two points
