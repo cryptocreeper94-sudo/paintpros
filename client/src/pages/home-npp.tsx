@@ -195,7 +195,7 @@ export default function HomeNPP() {
               {/* Award Card - spans full width on mobile for visual impact */}
               <Link href="/awards" className="col-span-2 md:col-span-1">
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
+                  
                   className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group bg-black"
                   data-testid="link-award-section"
                 >
@@ -209,7 +209,7 @@ export default function HomeNPP() {
 
               {/* Award Description Card */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
+                
                 className="col-span-2 md:col-span-1 relative h-auto md:h-80 rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-yellow-100 p-4 md:p-8 flex flex-col justify-between border border-amber-200"
                 data-testid="card-award-description"
               >
@@ -267,9 +267,9 @@ export default function HomeNPP() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, rotateY: 2 }}
+                
                 className="col-span-2 md:col-span-4 relative h-56 md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-lg"
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <img src={estimateImage} alt="Professional estimate consultation" className="w-full h-full object-cover object-center" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent flex items-center">
@@ -289,7 +289,7 @@ export default function HomeNPP() {
                 whileHover={{ scale: 1.05, rotateX: 5, rotateY: -5 }}
                 transition={{ delay: 0.1 }}
                 className="col-span-1"
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6 border border-white/20 shadow-xl hover:shadow-accent/20 flex flex-col">
                   <div className="h-10 md:h-16 mb-2 md:mb-4">
@@ -314,7 +314,7 @@ export default function HomeNPP() {
                 whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
                 transition={{ delay: 0.2 }}
                 className="col-span-1"
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6 border border-white/20 shadow-xl hover:shadow-accent/20 flex flex-col">
                   <div className="h-10 md:h-16 mb-2 md:mb-4">
@@ -339,7 +339,7 @@ export default function HomeNPP() {
                 whileHover={{ scale: 1.03, rotateX: 3 }}
                 transition={{ delay: 0.3 }}
                 className="col-span-2 md:col-span-2"
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/80 backdrop-blur-sm border border-accent/20 shadow-xl hover:shadow-accent/30 flex flex-col">
                   <div className="h-10 md:h-16 mb-2 md:mb-4">
@@ -381,10 +381,10 @@ export default function HomeNPP() {
               {/* Interior */}
               <Link href="/services">
                 <motion.div
-                  whileHover={{ scale: 1.03, rotateY: 3 }}
+                  
                   className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
                   data-testid="link-interior-services"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <img src={interiorImage} alt="Interior Painting" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -404,10 +404,10 @@ export default function HomeNPP() {
               {/* Exterior */}
               <Link href="/services">
                 <motion.div
-                  whileHover={{ scale: 1.03, rotateY: -3 }}
+                  
                   className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
                   data-testid="link-exterior-services"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <img src={exteriorImage} alt="Exterior Painting" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -478,7 +478,7 @@ export default function HomeNPP() {
                 ))}
                 <Link href="/color-library">
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    
                     className="flex-shrink-0 w-40 h-[176px] rounded-xl overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 cursor-pointer hover:border-accent transition-all hover:shadow-lg"
                   >
                     <div className="h-24 grid grid-cols-3 grid-rows-2 gap-0.5 p-1">
@@ -521,7 +521,7 @@ export default function HomeNPP() {
                 ))}
                 <Link href="/color-library">
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    
                     className="flex-shrink-0 w-40 h-[176px] rounded-xl overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 cursor-pointer hover:border-accent transition-all hover:shadow-lg"
                   >
                     <div className="h-24 grid grid-cols-3 grid-rows-2 gap-0.5 p-1">
@@ -565,7 +565,7 @@ export default function HomeNPP() {
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.1 }}
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6  text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -584,7 +584,7 @@ export default function HomeNPP() {
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.2 }}
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6  text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -603,7 +603,7 @@ export default function HomeNPP() {
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.3 }}
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6  text-center shadow-xl hover:shadow-accent/20 border border-gray-100">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -622,7 +622,7 @@ export default function HomeNPP() {
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.05, rotateX: 5 }}
                 transition={{ delay: 0.4 }}
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/90 backdrop-blur-sm text-center shadow-xl hover:shadow-accent/30 border border-accent/20">
                   <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-lg shadow-accent/30">
@@ -670,9 +670,9 @@ export default function HomeNPP() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  whileHover={{ scale: 1.05, rotateY: index % 2 === 0 ? 3 : -3 }}
+                  
                   transition={{ delay: index * 0.05 }}
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <GlassCard className="h-full p-3 md:p-6  shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -719,10 +719,10 @@ export default function HomeNPP() {
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.02, rotateY: -3 }}
+                
                 viewport={{ once: true }}
                 className="col-span-2 md:col-span-1 relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-xl"
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <img src={mapImage} alt="Nashville Service Area" className="w-full h-full object-cover" />
               </motion.div>
@@ -753,10 +753,10 @@ export default function HomeNPP() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.02, rotateY: 3 }}
+                
                 viewport={{ once: true }}
                 className="col-span-2 md:col-span-1 order-2 md:order-1"
-                style={{ transformStyle: 'preserve-3d' }}
+                
               >
                 <GlassCard className="p-4 md:p-8  shadow-xl border border-gray-100">
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mb-3 md:mb-6 shadow-lg shadow-accent/30">
@@ -826,7 +826,7 @@ export default function HomeNPP() {
                   whileHover={{ scale: 1.05, rotateX: 3 }}
                   transition={{ delay: index * 0.1 }}
                   className={index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"}
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <GlassCard className="h-full p-3 md:p-6  shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="flex gap-0.5 md:gap-1 mb-2 md:mb-4">
@@ -879,9 +879,9 @@ export default function HomeNPP() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
               <Link href="/color-library">
                 <motion.div 
-                  whileHover={{ scale: 1.05, rotateY: 3 }} 
+                   
                   data-testid="link-resource-colors"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <GlassCard className="h-full p-3 md:p-6  cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -897,9 +897,9 @@ export default function HomeNPP() {
 
               <Link href="/terms-warranty">
                 <motion.div 
-                  whileHover={{ scale: 1.05, rotateY: -3 }} 
+                   
                   data-testid="link-resource-warranty"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <GlassCard className="h-full p-3 md:p-6  cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -915,9 +915,9 @@ export default function HomeNPP() {
 
               <Link href="/help">
                 <motion.div 
-                  whileHover={{ scale: 1.05, rotateY: 3 }} 
+                   
                   data-testid="link-resource-faq"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <GlassCard className="h-full p-3 md:p-6  cursor-pointer shadow-xl hover:shadow-accent/20 border border-gray-100">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/20">
@@ -933,9 +933,9 @@ export default function HomeNPP() {
 
               <Link href="/services">
                 <motion.div 
-                  whileHover={{ scale: 1.05, rotateY: -3 }} 
+                   
                   data-testid="link-resource-glossary"
-                  style={{ transformStyle: 'preserve-3d' }}
+                  
                 >
                   <GlassCard className="h-full p-3 md:p-6 bg-gradient-to-br from-accent/10 to-white/90 backdrop-blur-sm cursor-pointer shadow-xl hover:shadow-accent/30 border border-accent/20">
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center mb-2 md:mb-4 shadow-lg shadow-accent/30">
@@ -958,9 +958,9 @@ export default function HomeNPP() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.02 }}
+              
               viewport={{ once: true }}
-              style={{ transformStyle: 'preserve-3d' }}
+              
             >
               <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-3 md:mb-6">
                 Ready to Transform Your Space?
