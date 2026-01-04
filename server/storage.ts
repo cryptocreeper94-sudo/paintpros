@@ -139,6 +139,10 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   updateUserRole(id: string, role: string, tenantId?: string): Promise<User | undefined>;
   getUsersByTenant(tenantId: string): Promise<User[]>;
+  setPasswordResetToken(email: string, token: string, expires: Date): Promise<boolean>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
+  updateUserPassword(userId: string, passwordHash: string): Promise<boolean>;
+  clearPasswordResetToken(userId: string): Promise<boolean>;
   
   // Leads
   createLead(lead: InsertLead): Promise<Lead>;
@@ -820,6 +824,39 @@ export class DatabaseStorage implements IStorage {
 
   async getUsersByTenant(tenantId: string): Promise<User[]> {
     return await db.select().from(users).where(eq(users.tenantId, tenantId));
+  }
+
+  async setPasswordResetToken(email: string, token: string, expires: Date): Promise<boolean> {
+    const result = await db.update(users)
+      .set({ passwordResetToken: token, passwordResetExpires: expires, updatedAt: new Date() })
+      .where(eq(users.email, email))
+      .returning();
+    return result.length > 0;
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users)
+      .where(and(
+        eq(users.passwordResetToken, token),
+        sql`${users.passwordResetExpires} > NOW()`
+      ));
+    return user;
+  }
+
+  async updateUserPassword(userId: string, passwordHash: string): Promise<boolean> {
+    const result = await db.update(users)
+      .set({ passwordHash, passwordResetToken: null, passwordResetExpires: null, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return result.length > 0;
+  }
+
+  async clearPasswordResetToken(userId: string): Promise<boolean> {
+    const result = await db.update(users)
+      .set({ passwordResetToken: null, passwordResetExpires: null, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return result.length > 0;
   }
 
   // Leads

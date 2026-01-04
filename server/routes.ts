@@ -1351,6 +1351,239 @@ export async function registerRoutes(
     }
   });
 
+  // ============ EMAIL/PASSWORD AUTH ============
+  
+  // Helper function for password hashing using scrypt
+  const hashPassword = (password: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const salt = crypto.randomBytes(16).toString('hex');
+      crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+        if (err) reject(err);
+        resolve(`${salt}:${derivedKey.toString('hex')}`);
+      });
+    });
+  };
+
+  const verifyPassword = (password: string, hash: string): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      const [salt, key] = hash.split(':');
+      crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+        if (err) reject(err);
+        resolve(crypto.timingSafeEqual(Buffer.from(key, 'hex'), derivedKey));
+      });
+    });
+  };
+
+  // POST /api/auth/register - Create new user account
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, phone } = req.body;
+      
+      if (!email || !password) {
+        res.status(400).json({ error: "Email and password required" });
+        return;
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        res.status(409).json({ error: "An account with this email already exists" });
+        return;
+      }
+
+      // Hash password and create user
+      const passwordHash = await hashPassword(password);
+      const user = await storage.upsertUser({
+        email,
+        passwordHash,
+        firstName,
+        lastName,
+        phone,
+        authProvider: 'email',
+        emailVerified: false,
+      });
+
+      // Set session
+      (req as any).session.userId = user.id;
+      (req as any).session.userEmail = user.email;
+
+      res.status(201).json({ 
+        success: true, 
+        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } 
+      });
+    } catch (error) {
+      console.error("Error registering user:", error);
+      res.status(500).json({ error: "Failed to create account" });
+    }
+  });
+
+  // POST /api/auth/login - Login with email/password
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        res.status(400).json({ error: "Email and password required" });
+        return;
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user || !user.passwordHash) {
+        res.status(401).json({ error: "Invalid email or password" });
+        return;
+      }
+
+      const isValid = await verifyPassword(password, user.passwordHash);
+      if (!isValid) {
+        res.status(401).json({ error: "Invalid email or password" });
+        return;
+      }
+
+      // Set session
+      (req as any).session.userId = user.id;
+      (req as any).session.userEmail = user.email;
+
+      res.json({ 
+        success: true, 
+        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } 
+      });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ error: "Failed to login" });
+    }
+  });
+
+  // POST /api/auth/forgot-password - Request password reset
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        res.status(400).json({ error: "Email required" });
+        return;
+      }
+
+      const user = await storage.getUserByEmail(email);
+      
+      // Always return success to prevent email enumeration
+      if (!user) {
+        res.json({ success: true, message: "If an account exists, a reset link will be sent" });
+        return;
+      }
+
+      // Generate secure token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      await storage.setPasswordResetToken(email, token, expires);
+
+      // Send reset email via Resend
+      try {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        
+        const resetUrl = `${req.protocol}://${req.hostname}/reset-password?token=${token}`;
+        
+        await resend.emails.send({
+          from: 'PaintPros <noreply@paintpros.io>',
+          to: email,
+          subject: 'Reset Your Password',
+          html: `
+            <h2>Password Reset Request</h2>
+            <p>You requested to reset your password. Click the link below to set a new password:</p>
+            <p><a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background: #4a5d23; color: white; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error("Error sending reset email:", emailError);
+        // Still return success to not leak info
+      }
+
+      res.json({ success: true, message: "If an account exists, a reset link will be sent" });
+    } catch (error) {
+      console.error("Error in forgot password:", error);
+      res.status(500).json({ error: "Failed to process request" });
+    }
+  });
+
+  // POST /api/auth/reset-password - Reset password with token
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      
+      if (!token || !password) {
+        res.status(400).json({ error: "Token and new password required" });
+        return;
+      }
+
+      if (password.length < 8) {
+        res.status(400).json({ error: "Password must be at least 8 characters" });
+        return;
+      }
+
+      const user = await storage.getUserByResetToken(token);
+      if (!user) {
+        res.status(400).json({ error: "Invalid or expired reset token" });
+        return;
+      }
+
+      // Hash new password and update
+      const passwordHash = await hashPassword(password);
+      await storage.updateUserPassword(user.id, passwordHash);
+
+      res.json({ success: true, message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ error: "Failed to reset password" });
+    }
+  });
+
+  // GET /api/auth/user - Get current authenticated user
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const session = req as any;
+      if (!session.session?.userId) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      const user = await storage.getUser(session.session.userId);
+      if (!user) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      res.json({ 
+        id: user.id, 
+        email: user.email, 
+        firstName: user.firstName, 
+        lastName: user.lastName,
+        role: user.role 
+      });
+    } catch (error) {
+      console.error("Error getting user:", error);
+      res.status(500).json({ error: "Failed to get user" });
+    }
+  });
+
+  // POST /api/auth/logout - Logout current user
+  app.post("/api/auth/logout", (req, res) => {
+    const session = req as any;
+    if (session.session) {
+      session.session.destroy((err: any) => {
+        if (err) {
+          res.status(500).json({ error: "Failed to logout" });
+          return;
+        }
+        res.json({ success: true });
+      });
+    } else {
+      res.json({ success: true });
+    }
+  });
+
   // ============ USER PINS ============
   
   // GET /api/auth/pin/:role - Check if PIN change is required
