@@ -1,0 +1,206 @@
+============================================================
+NPP REACT CHART IMPLEMENTATION SPEC — COMPLETE ONE-BLOCK HANDOFF
+============================================================
+
+This is a full technical specification for implementing four charts and a Market Overview page for Nashville Painting Professionals (NPP). The NPP agent should use this spec to generate React components, chart code, and page layout. All charts must be pixel-precise, brand-consistent, and programmatically rendered (SVG, Canvas, or Recharts/D3).
+
+============================================================
+SECTION 1 — BRAND THEME TOKENS
+============================================================
+
+Colors (define in /theme/colors.js):
+- background: #FAF7F0 (off-white / cream)
+- textDark: #1F3D2B (dark green)
+- greenLight: #CFE8D5
+- greenMid: #8DBF9A
+- greenDark: #2F6B3F
+- gold: #E8C15C
+
+Typography (define in /theme/typography.js):
+- Title font: "Playfair Display", serif
+- Body font: "Inter", sans-serif
+
+============================================================
+SECTION 2 — DATA MODELS
+============================================================
+
+File: /data/targetAudience.js
+Data:
+- Williamson — 35% — gold
+- Davidson — 30% — greenDark
+- Rutherford — 15% — greenMid
+- Wilson — 10% — greenLight
+- Sumner/Dickson — 10% — greenLight
+
+File: /data/leadSources.js
+Lead Source Breakdown:
+- Google / SEO — 40%
+- Referrals — 25%
+- Social Media — 20%
+- Yard Signs / Local — 10%
+- Other — 5%
+
+Lead Volume Bar Chart:
+- Google / SEO — 400
+- Referrals — 250
+- Social Media — 200
+- Yard Signs / Local — 100
+- Other — 50
+
+File: /data/monthlyLeads.js
+Monthly Leads Trend:
+Jan 40, Feb 45, Mar 60, Apr 70, May 80, Jun 90, Jul 95, Aug 100, Sep 85, Oct 80, Nov 75, Dec 70
+
+============================================================
+SECTION 3 — CHART REQUIREMENTS (DETAILED)
+============================================================
+
+------------------------------------------------------------
+CHART 1 — TARGET AUDIENCE BY COUNTY (PIE CHART)
+------------------------------------------------------------
+
+TITLE: "Target Audience by County"
+FOOTER: "Nashville Painting Professionals"
+
+Slices:
+- Williamson 35% (gold)
+- Davidson 30% (greenDark)
+- Rutherford 15% (greenMid)
+- Wilson 10% (greenLight)
+- Sumner/Dickson 10% (greenLight)
+
+LABEL RULES:
+- All labels must be OUTSIDE the pie.
+- Each label must be TWO LINES:
+  Line 1: County name
+  Line 2: (XX%)
+- Use thin leader lines if needed.
+
+CRITICAL RUTHERFORD PLACEMENT:
+- Rutherford slice is in the UPPER-RIGHT quadrant.
+- Label must be placed to the RIGHT of the pie.
+- The “R” in “Rutherford” must align horizontally with the CENTER of the Rutherford wedge.
+- "(15%)" must be directly under "Rutherford".
+- Label must NOT overlap or touch the pie.
+
+------------------------------------------------------------
+CHART 2 — LEAD SOURCE BREAKDOWN (PIE CHART)
+------------------------------------------------------------
+
+TITLE: "Lead Source Breakdown"
+
+Data:
+- Google / SEO 40%
+- Referrals 25%
+- Social Media 20%
+- Yard Signs / Local 10%
+- Other 5%
+
+RULES:
+- Same style as Chart 1.
+- Labels outside the pie.
+- Two-line labels: Name + (XX%).
+
+------------------------------------------------------------
+CHART 3 — LEAD SOURCES BY VOLUME (BAR CHART)
+------------------------------------------------------------
+
+TITLE: "Lead Sources by Volume"
+
+Data:
+- Google / SEO 400
+- Referrals 250
+- Social Media 200
+- Yard Signs / Local 100
+- Other 50
+
+RULES:
+- Vertical bars.
+- Bars in brand colors.
+- Axes in dark green.
+- Background off-white.
+
+------------------------------------------------------------
+CHART 4 — MONTHLY LEADS TREND (LINE CHART)
+------------------------------------------------------------
+
+TITLE: "Monthly Leads Trend"
+
+Data: Jan–Dec values above.
+
+RULES:
+- Single green line.
+- Circular markers at each point.
+- Optional subtle gridlines.
+
+============================================================
+SECTION 4 — REACT COMPONENT STRUCTURE
+============================================================
+
+Recommended file structure:
+/src
+  /components
+    /charts
+      TargetAudiencePie.jsx
+      LeadSourcePie.jsx
+      LeadVolumeBar.jsx
+      MonthlyLeadsLine.jsx
+    /layout
+      ChartPage.jsx
+  /data
+      targetAudience.js
+      leadSources.js
+      monthlyLeads.js
+  /theme
+      colors.js
+      typography.js
+  /pages
+      MarketOverview.jsx
+
+============================================================
+SECTION 5 — SAMPLE PIE CHART COMPONENT (RECHARTS)
+============================================================
+
+Use this as a template for all charts:
+
+Component: TargetAudiencePie.jsx
+- Import Recharts PieChart, Pie, Cell, Tooltip, Legend.
+- Use theme tokens for colors and fonts.
+- Render title in Playfair Display.
+- Render footer centered.
+- Ensure labels are outside the pie.
+- For Rutherford, manually override label position using label render function.
+
+============================================================
+SECTION 6 — PAGE ASSEMBLY
+============================================================
+
+File: /pages/MarketOverview.jsx
+
+Render in order:
+1. <TargetAudiencePie data={targetAudience} />
+2. <LeadSourcePie data={leadSources} />
+3. <LeadVolumeBar data={leadVolumes} />
+4. <MonthlyLeadsLine data={monthlyLeads} />
+
+Each chart should be wrapped in a container with:
+- background: colors.background
+- padding: 2rem
+- margin-bottom: 3rem
+
+============================================================
+SECTION 7 — PDF EXPORT (OPTIONAL)
+============================================================
+
+If needed, use:
+- html2canvas + jsPDF
+OR
+- react-to-print
+OR
+- server-side PDF generation
+
+But this is optional unless requested.
+
+============================================================
+END OF ONE-BLOCK REACT Handoff
+============================================================
