@@ -229,6 +229,141 @@ export default function Marketing() {
         </div>
       </section>
 
+      {/* SERVICE OFFERINGS & COMMERCIAL EXPANSION */}
+      <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-8">
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <Briefcase className="w-6 h-6" style={{ color: colors.greenDark }} />
+              </div>
+              <h2 
+                className="text-3xl md:text-4xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                Service Offerings
+              </h2>
+            </div>
+
+            {/* Service Grid */}
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              {/* Residential */}
+              <Card className="p-6 border-t-4" style={{ borderTopColor: colors.greenDark }}>
+                <h3 className="text-xl font-bold mb-4" style={{ color: colors.textDark }}>
+                  Residential Services
+                </h3>
+                <p className="mb-4 text-sm" style={{ color: colors.textDark }}>
+                  Our core business serving homeowners in Middle Tennessee's most desirable neighborhoods.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    "Interior Painting",
+                    "Exterior Painting", 
+                    "Cabinet Refinishing",
+                    "Deck & Fence Staining",
+                    "Drywall Repair",
+                    "Color Consultation"
+                  ].map((service, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: colors.greenDark }} />
+                      <span className="text-sm" style={{ color: colors.textDark }}>{service}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: colors.greenLight }}>
+                  <p className="text-sm font-medium" style={{ color: colors.greenDark }}>
+                    Current Mix: ~85% of revenue
+                  </p>
+                </div>
+              </Card>
+
+              {/* Commercial */}
+              <Card className="p-6 border-t-4" style={{ borderTopColor: colors.gold }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-xl font-bold" style={{ color: colors.textDark }}>
+                    Commercial Services
+                  </h3>
+                  <Badge style={{ backgroundColor: colors.gold, color: colors.textDark }}>
+                    Growth Focus
+                  </Badge>
+                </div>
+                <p className="mb-4 text-sm" style={{ color: colors.textDark }}>
+                  Expanding our footprint in the commercial sector with the same premium quality and attention to detail.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    "Office Buildings",
+                    "Retail Spaces",
+                    "Restaurants & Hospitality",
+                    "Medical Facilities",
+                    "Property Management",
+                    "HOA Common Areas"
+                  ].map((service, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: colors.gold }} />
+                      <span className="text-sm" style={{ color: colors.textDark }}>{service}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: colors.gold + "20" }}>
+                  <p className="text-sm font-medium" style={{ color: colors.textDark }}>
+                    Current Mix: ~15% of revenue | Target: 25-30% by Year 2
+                  </p>
+                </div>
+              </Card>
+            </div>
+
+            {/* Commercial Expansion Strategy */}
+            <Card className="p-6" style={{ backgroundColor: colors.background }}>
+              <h3 className="text-xl font-bold mb-4" style={{ color: colors.textDark }}>
+                Commercial Expansion Strategy
+              </h3>
+              <p className="mb-4" style={{ color: colors.textDark }}>
+                The commercial painting market in Middle Tennessee represents a significant growth opportunity. With Nashville's continued development boom, we're strategically positioning NPP to capture a larger share of this market.
+              </p>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-lg" style={{ backgroundColor: "white" }}>
+                  <p className="text-2xl font-bold" style={{ color: colors.greenDark }}>$12.8B</p>
+                  <p className="text-sm" style={{ color: colors.textDark }}>U.S. Commercial Painting Market (2026)</p>
+                </div>
+                <div className="p-4 rounded-lg" style={{ backgroundColor: "white" }}>
+                  <p className="text-2xl font-bold" style={{ color: colors.gold }}>25-30%</p>
+                  <p className="text-sm" style={{ color: colors.textDark }}>Target Commercial Revenue Mix</p>
+                </div>
+                <div className="p-4 rounded-lg" style={{ backgroundColor: "white" }}>
+                  <p className="text-2xl font-bold" style={{ color: colors.greenDark }}>2x</p>
+                  <p className="text-sm" style={{ color: colors.textDark }}>Avg. Commercial Project Value vs Residential</p>
+                </div>
+              </div>
+              <div className="mt-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.textDark }}>Key Initiatives:</h4>
+                <ul className="space-y-2">
+                  {[
+                    "Build relationships with property managers and commercial real estate firms",
+                    "Develop case studies from successful commercial projects",
+                    "Create commercial-specific marketing materials and proposals",
+                    "Establish partnerships with general contractors for new construction",
+                    "Target recurring maintenance contracts for property management companies"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <ArrowRight className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: colors.gold }} />
+                      <span className="text-sm" style={{ color: colors.textDark }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
       {/* TARGET AUDIENCE */}
       <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
         <div className="max-w-5xl mx-auto">
