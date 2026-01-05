@@ -432,16 +432,16 @@ export default function Marketing() {
                   <h3 className="text-center font-serif text-xl mb-4" style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}>
                     Target Audience by County
                   </h3>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
                       <Pie
                         data={countyData}
                         cx="50%"
                         cy="50%"
-                        outerRadius={100}
+                        outerRadius={80}
+                        innerRadius={30}
                         dataKey="value"
-                        label={({ name, value }) => `${name} (${value}%)`}
-                        labelLine={{ stroke: colors.textDark, strokeWidth: 1 }}
+                        label={false}
                       >
                         {countyData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
@@ -450,7 +450,21 @@ export default function Marketing() {
                       <Tooltip formatter={(value: number) => `${value}%`} />
                     </PieChart>
                   </ResponsiveContainer>
-                  <p className="text-center text-sm mt-2" style={{ color: colors.textDark }}>
+                  {/* Legend */}
+                  <div className="grid grid-cols-2 gap-2 mt-4">
+                    {countyData.map((county) => (
+                      <div key={county.name} className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: county.color }}
+                        />
+                        <span className="text-xs" style={{ color: colors.textDark }}>
+                          {county.name} ({county.value}%)
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-center text-xs mt-4" style={{ color: colors.textDark }}>
                     Nashville Painting Professionals
                   </p>
                 </Card>
