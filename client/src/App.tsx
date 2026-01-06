@@ -103,7 +103,7 @@ function Router() {
       <Route path="/partner" component={PartnerDashboard} />
       <Route path="/proposal-ryan" component={ProposalRyan} />
       <Route path="/marketing" component={Marketing} />
-      <Route path="/why-40k-fails" component={Why40kFails} />
+      <Route path="/comparison" component={Why40kFails} />
       <Route path="/compare" component={Compare} />
       <Route path="/trade-verticals" component={TradeVerticals} />
       <Route path="/pricing" component={Pricing} />
