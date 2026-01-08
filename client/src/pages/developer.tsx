@@ -18,7 +18,9 @@ import {
   glowGradients,
   tapEffect 
 } from "@/lib/theme-effects";
-import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History, LayoutGrid, Rows } from "lucide-react";
+import { Code, Database, Server, Terminal, GitBranch, Cpu, Bug, ArrowRight, Zap, MapPin, Palette, X, Sparkles, Coins, Link2, Rocket, Shield, Clock, Globe, Wallet, Hash, CheckCircle, ExternalLink, Copy, RefreshCw, AlertCircle, Loader2, Award, Search, Plus, FileText, ScrollText, Camera, BarChart3, ListTodo, Circle, DollarSign, TrendingUp, Users, Building2, Download, History, LayoutGrid, Rows, Target, Radio, FolderOpen, LineChart, UsersRound, Layers } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
 import { VersionHistory } from "@/components/version-history";
@@ -76,6 +78,197 @@ interface WalletInfo {
   publicKey: string;
   balance: number;
   network: string;
+}
+
+// Step 1 Foundation checklist items with IDs for persistence
+const step1Checklists = {
+  brand: [
+    { id: "tagline_present", label: 'Present official tagline: "We elevate the backdrop of your life."' },
+    { id: "tagline_approve", label: "Approve tagline usage across all marketing materials" },
+    { id: "tagline_letterhead", label: "Tagline placement: Letterhead" },
+    { id: "tagline_social", label: "Tagline placement: Social media headers" },
+    { id: "tagline_website", label: "Tagline placement: Website header/footer (pending contract rules)" },
+    { id: "brand_review", label: "Review brand identity for consistency with premium positioning" },
+  ],
+  website: [
+    { id: "confirm_new_site", label: "Confirm new site as primary marketing engine" },
+    { id: "maintain_legacy", label: "Maintain legacy site for contract duration" },
+  ],
+  wordpress: [
+    { id: "confirm_no_wordpress", label: "Confirm WordPress will not be used for marketing operations" },
+  ],
+  contract: [
+    { id: "confirm_contract", label: "Confirm understanding of contract limitations" },
+    { id: "approve_separate", label: "Approve use of separate marketing site" },
+  ],
+  ai: [
+    { id: "integrate_ai", label: "Integrate AI tools into marketing messaging" },
+    { id: "train_team_ai", label: "Train team on AI tool workflows" },
+  ],
+  radio: [
+    { id: "approve_budget", label: "Approve radio advertising budget range" },
+    { id: "select_stations", label: "Select preferred stations" },
+    { id: "approve_script", label: "Approve script draft" },
+  ],
+  assets: [
+    { id: "upload_logo", label: "Upload logo files" },
+    { id: "upload_colors", label: "Upload color codes" },
+    { id: "upload_fonts", label: "Upload fonts/templates" },
+    { id: "access_facebook", label: "Provide access: Facebook" },
+    { id: "access_instagram", label: "Provide access: Instagram" },
+    { id: "access_google", label: "Provide access: Google Business Profile" },
+    { id: "access_meta", label: "Provide access: Meta Ads Manager" },
+    { id: "access_googleads", label: "Provide access: Google Ads" },
+    { id: "template_social", label: "Begin building templates: Social posts" },
+    { id: "template_flyers", label: "Begin building templates: Flyers" },
+    { id: "template_ads", label: "Begin building templates: Ads" },
+    { id: "template_radio", label: "Begin building templates: Radio scripts" },
+  ],
+  tracking: [
+    { id: "doc_tracking", label: "Document current lead tracking method" },
+    { id: "identify_sources", label: "Identify top-performing lead sources" },
+    { id: "identify_gaps", label: "Identify tracking gaps" },
+    { id: "build_dashboard", label: "Build initial lead tracking dashboard" },
+    { id: "tracking_radio", label: "Assign unique tracking numbers: Radio" },
+    { id: "tracking_social", label: "Assign unique tracking numbers: Social" },
+    { id: "tracking_print", label: "Assign unique tracking numbers: Print" },
+  ],
+  team: [
+    { id: "identify_field", label: "Identify team contacts: Field content capture" },
+    { id: "identify_approvals", label: "Identify team contacts: Approvals" },
+    { id: "identify_updates", label: "Identify team contacts: Project updates" },
+    { id: "confirm_social", label: "Confirm social media support roles" },
+    { id: "build_library", label: "Build shared content library" },
+    { id: "establish_workflow", label: "Establish content submission workflow" },
+  ],
+  deliverables: [
+    { id: "del_tagline", label: "Approved tagline usage" },
+    { id: "del_assets", label: "Complete brand asset library" },
+    { id: "del_contract", label: "Website contract clarity summary" },
+    { id: "del_comparison", label: "Current vs. new site comparison" },
+    { id: "del_ai", label: "AI tools integrated into workflow" },
+    { id: "del_radio", label: "Radio advertising test plan" },
+    { id: "del_tracking", label: "Lead tracking dashboard (initial)" },
+    { id: "del_team", label: "Team collaboration structure" },
+  ],
+};
+
+const checklistSections = [
+  { key: "brand", title: "Brand & Messaging Alignment", icon: Target, week: "Week 1" },
+  { key: "website", title: "Website Comparison", icon: Globe, week: "Week 1" },
+  { key: "wordpress", title: "WordPress Decision", icon: FileText, week: "Week 1" },
+  { key: "contract", title: "Contract Clarity", icon: ScrollText, week: "Week 1" },
+  { key: "ai", title: "AI Tools Integration", icon: Cpu, week: "Week 2" },
+  { key: "radio", title: "Radio Advertising", icon: Radio, week: "Week 2" },
+  { key: "assets", title: "Asset Inventory & Access", icon: FolderOpen, week: "Week 1-2" },
+  { key: "tracking", title: "Lead Tracking Setup", icon: LineChart, week: "Week 2" },
+  { key: "team", title: "Team Collaboration", icon: UsersRound, week: "Week 3-4" },
+  { key: "deliverables", title: "Step 1 Deliverables", icon: Award, week: "Final" },
+];
+
+function Step1FoundationChecklist() {
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  
+  useEffect(() => {
+    const saved = localStorage.getItem("npp_step1_checklist");
+    if (saved) {
+      setCheckedItems(JSON.parse(saved));
+    }
+  }, []);
+
+  const toggleCheck = (id: string) => {
+    const updated = { ...checkedItems, [id]: !checkedItems[id] };
+    setCheckedItems(updated);
+    localStorage.setItem("npp_step1_checklist", JSON.stringify(updated));
+  };
+
+  const getCompletionCount = (items: { id: string; label: string }[]) => {
+    return items.filter(item => checkedItems[item.id]).length;
+  };
+
+  const getTotalCompletion = () => {
+    const allItems = Object.values(step1Checklists).flat();
+    const completed = allItems.filter(item => checkedItems[item.id]).length;
+    return { completed, total: allItems.length };
+  };
+
+  const { completed, total } = getTotalCompletion();
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-accent/20">
+            <Layers className="w-5 h-5 text-accent" />
+          </div>
+          <div>
+            <h3 className="text-lg font-display font-bold">NPP Step 1: Foundation Setup</h3>
+            <p className="text-sm text-muted-foreground italic">"We elevate the backdrop of your life."</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-accent">{progress}%</div>
+          <div className="text-xs text-muted-foreground">{completed}/{total} tasks</div>
+        </div>
+      </div>
+
+      <div className="w-full bg-muted rounded-full h-2">
+        <div 
+          className="bg-accent h-2 rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      <Accordion type="multiple" className="space-y-2">
+        {checklistSections.map((section) => {
+          const items = step1Checklists[section.key as keyof typeof step1Checklists];
+          const sectionCompleted = getCompletionCount(items);
+          const Icon = section.icon;
+          
+          return (
+            <AccordionItem key={section.key} value={section.key} className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline py-3">
+                <div className="flex items-center justify-between w-full pr-4">
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-4 h-4 text-accent" />
+                    <span className="font-medium">{section.title}</span>
+                    <span className="text-xs px-2 py-0.5 rounded bg-muted">{section.week}</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {sectionCompleted}/{items.length}
+                  </span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2 pt-2 pb-3">
+                  {items.map((item) => (
+                    <div 
+                      key={item.id}
+                      className={`flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                        checkedItems[item.id] ? "bg-accent/10" : "hover:bg-muted/50"
+                      }`}
+                      onClick={() => toggleCheck(item.id)}
+                      data-testid={`checkbox-${item.id}`}
+                    >
+                      <Checkbox 
+                        checked={checkedItems[item.id] || false}
+                        onCheckedChange={() => toggleCheck(item.id)}
+                        className="mt-0.5"
+                      />
+                      <span className={`text-sm ${checkedItems[item.id] ? "line-through opacity-60" : ""}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+    </div>
+  );
 }
 
 function SolanaModalContent() {
@@ -2506,6 +2699,15 @@ export default function Developer() {
           <BentoItem colSpan={6} rowSpan={2}>
             <motion.div variants={cardVariants} className="h-full">
               <TradeVerticalsCard showFullDetails={true} />
+            </motion.div>
+          </BentoItem>
+
+          {/* NPP Step 1 Foundation Checklist */}
+          <BentoItem colSpan={12} rowSpan={4}>
+            <motion.div variants={cardVariants} className="h-full">
+              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.accent}`} glow="accent" animatedBorder>
+                <Step1FoundationChecklist />
+              </GlassCard>
             </motion.div>
           </BentoItem>
 
