@@ -26,9 +26,18 @@ const steps = [
   { num: 3, text: "Review & import" },
 ];
 
-export function DripJobsImportCard() {
-  const [isOpen, setIsOpen] = useState(false);
+interface DripJobsImportCardProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+export function DripJobsImportCard({ externalOpen, onExternalOpenChange }: DripJobsImportCardProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const tenant = useTenant();
+  
+  // Use external control if provided, otherwise use internal state
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setIsOpen = onExternalOpenChange || setInternalOpen;
 
   const { data: importHistory = [] } = useQuery<DataImport[]>({
     queryKey: ["/api/imports"],

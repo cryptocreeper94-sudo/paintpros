@@ -51,6 +51,7 @@ export default function Admin() {
   const [showPinChange, setShowPinChange] = useState(false);
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showDripJobsImport, setShowDripJobsImport] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -235,6 +236,7 @@ export default function Admin() {
       <PartnerModal 
         open={showWelcomeModal} 
         onOpenChange={setShowWelcomeModal}
+        onLaunchImport={() => setShowDripJobsImport(true)}
       />
 
       <main className="pt-20 px-4 md:px-6 pb-24">
@@ -469,7 +471,10 @@ export default function Admin() {
                 whileHover={hover3DSubtle}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <DripJobsImportCard />
+                <DripJobsImportCard 
+                  externalOpen={showDripJobsImport}
+                  onExternalOpenChange={setShowDripJobsImport}
+                />
               </motion.div>
             </BentoItem>
 
