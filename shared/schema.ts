@@ -4887,3 +4887,52 @@ export const insertFranchiseAnalyticsSchema = createInsertSchema(franchiseAnalyt
 export type InsertFranchiseAnalytics = z.infer<typeof insertFranchiseAnalyticsSchema>;
 export type FranchiseAnalytics = typeof franchiseAnalytics.$inferSelect;
 
+// ============ DATA IMPORT SYSTEM ============
+// DripJobs and other CRM data import tracking
+
+export const dataImports = pgTable("data_imports", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  sourceSystem: varchar("source_system", { length: 50 }).notNull(),
+  importType: varchar("import_type", { length: 30 }).notNull(),
+  fileName: varchar("file_name", { length: 255 }),
+  totalRows: integer("total_rows").default(0),
+  successCount: integer("success_count").default(0),
+  errorCount: integer("error_count").default(0),
+  skippedCount: integer("skipped_count").default(0),
+  status: varchar("status", { length: 20 }).default("pending").notNull(),
+  fieldMappings: text("field_mappings"),
+  errorLog: text("error_log"),
+  importedBy: varchar("imported_by", { length: 100 }),
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_data_imports_tenant").on(table.tenantId),
+  index("idx_data_imports_status").on(table.status),
+]);
+
+export const insertDataImportSchema = createInsertSchema(dataImports).omit({ id: true, createdAt: true });
+export type InsertDataImport = z.infer<typeof insertDataImportSchema>;
+export type DataImport = typeof dataImports.$inferSelect;
+
+// Individual imported records tracking
+export const importedRecords = pgTable("imported_records", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  importId: varchar("import_id", { length: 36 }).references(() => dataImports.id).notNull(),
+  recordType: varchar("record_type", { length: 30 }).notNull(),
+  sourceId: varchar("source_id", { length: 100 }),
+  targetId: varchar("target_id", { length: 36 }),
+  rawData: text("raw_data"),
+  status: varchar("status", { length: 20 }).default("pending").notNull(),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_imported_records_import").on(table.importId),
+  index("idx_imported_records_source").on(table.sourceId),
+]);
+
+export const insertImportedRecordSchema = createInsertSchema(importedRecords).omit({ id: true, createdAt: true });
+export type InsertImportedRecord = z.infer<typeof insertImportedRecordSchema>;
+export type ImportedRecord = typeof importedRecords.$inferSelect;
+

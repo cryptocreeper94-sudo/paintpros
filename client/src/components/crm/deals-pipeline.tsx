@@ -192,7 +192,7 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
         dealId: convertingDeal.id,
         jobData: {
           ...jobDetails,
-          crewLeadName: selectedCrewLead?.name || jobDetails.crewLeadName,
+          crewLeadName: selectedCrewLead ? `${selectedCrewLead.firstName} ${selectedCrewLead.lastName}` : jobDetails.crewLeadName,
         },
       });
     }
@@ -363,7 +363,7 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
               <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
                 <div className={`w-2 h-2 rounded-full ${stage.color}`} />
                 <span className={`text-[10px] sm:text-xs font-medium ${stage.textColor} truncate`}>
-                  {'shortLabel' in stage ? stage.shortLabel : stage.label}
+                  {(stage as { shortLabel?: string }).shortLabel || stage.label}
                 </span>
               </div>
               <div className="text-lg sm:text-2xl font-bold">{stageDeals.length}</div>
@@ -556,7 +556,7 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
                     <option value="" className="bg-background">Select crew lead...</option>
                     {crewLeads.map(lead => (
                       <option key={lead.id} value={lead.id} className="bg-background">
-                        {lead.name}
+                        {lead.firstName} {lead.lastName}
                       </option>
                     ))}
                   </select>
