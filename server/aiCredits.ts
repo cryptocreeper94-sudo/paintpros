@@ -87,10 +87,23 @@ export async function checkCredits(
     return { success: false, error: `Unknown action type: ${actionType}` };
   }
 
-  const tenantCreditsRecord = await storage.getTenantCredits(tenantId);
+  let tenantCreditsRecord = await storage.getTenantCredits(tenantId);
 
   if (!tenantCreditsRecord) {
-    return { success: false, error: "Tenant credits not found. Please purchase credits to continue." };
+    const knownTenants = ['demo', 'npp'];
+    if (knownTenants.includes(tenantId)) {
+      tenantCreditsRecord = await storage.createTenantCredits({
+        tenantId,
+        balanceCents: 10000,
+        totalPurchasedCents: 10000,
+        totalUsedCents: 0,
+      });
+      console.log(`[AI Credits] Auto-seeded $100 credits for tenant: ${tenantId}`);
+    }
+    
+    if (!tenantCreditsRecord) {
+      return { success: false, error: "Tenant credits not found. Please purchase credits to continue." };
+    }
   }
 
   if (tenantCreditsRecord.balanceCents < cost) {
