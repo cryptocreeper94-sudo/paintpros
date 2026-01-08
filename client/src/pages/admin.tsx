@@ -4,6 +4,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
+import { DripJobsImport } from "@/components/crm/dripjobs-import";
 import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
 import { DocumentCenter } from "@/components/document-center";
@@ -455,6 +456,19 @@ export default function Admin() {
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" hoverEffect={false}>
                   <ActivityTimeline maxHeight="280px" />
                 </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            {/* DripJobs Data Import - CRM Migration Tool */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <motion.div 
+                className="h-full" 
+                variants={cardVariants}
+                custom={5}
+                whileHover={hover3DSubtle}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <DripJobsImport />
               </motion.div>
             </BentoItem>
 

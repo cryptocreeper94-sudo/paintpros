@@ -44,7 +44,7 @@ const TARGET_FIELDS = {
 };
 
 export function DripJobsImport() {
-  const { tenant } = useTenant();
+  const tenant = useTenant();
   const queryClient = useQueryClient();
   
   const [step, setStep] = useState<"upload" | "mapping" | "preview" | "importing" | "complete">("upload");
@@ -75,7 +75,7 @@ export function DripJobsImport() {
 
   const importMutation = useMutation({
     mutationFn: async (payload: { data: ParsedRow[]; fieldMappings: FieldMapping; importType: string; fileName: string }) => {
-      const res = await apiRequest("/api/imports", {
+      const res = await fetch("/api/imports", {
         method: "POST",
         body: JSON.stringify({
           sourceSystem: "dripjobs",
@@ -88,8 +88,10 @@ export function DripJobsImport() {
           "Content-Type": "application/json",
           "x-tenant-id": tenant?.id || "demo",
         },
+        credentials: "include",
       });
-      return res;
+      if (!res.ok) throw new Error("Import failed");
+      return res.json() as Promise<DataImport>;
     },
     onSuccess: (result) => {
       setImportResult(result);
