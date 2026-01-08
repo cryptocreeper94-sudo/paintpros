@@ -784,6 +784,188 @@ export default function Marketing() {
         </div>
       </section>
 
+      {/* STEP 1: FOUNDATION SETUP - Static Display */}
+      <section className="py-20 px-6" style={{ backgroundColor: colors.greenDark }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="text-center mb-12">
+              <Badge 
+                className="mb-4 text-sm px-4 py-2"
+                style={{ backgroundColor: colors.gold, color: colors.textDark }}
+              >
+                NPP_STEP1_FOUNDATION
+              </Badge>
+              <h2 
+                className="text-3xl md:text-5xl font-serif mb-4"
+                style={{ color: "white", fontFamily: "'Playfair Display', serif" }}
+              >
+                Step 1: Foundation Setup
+              </h2>
+              <p className="text-xl italic" style={{ color: colors.greenLight }}>
+                "We elevate the backdrop of your life."
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Step 1 Content Slides */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Card className="p-6 mb-8" style={{ backgroundColor: colors.greenLight }}>
+              <p className="font-medium" style={{ color: colors.greenDark }}>
+                Purpose: Establish the infrastructure for the 12-month marketing campaign.
+              </p>
+            </Card>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              {[
+                "Brand & messaging alignment",
+                "Asset inventory & access",
+                "Website contract clarity",
+                "Current vs. new site comparison",
+                "AI tools integration",
+                "Radio advertising strategy",
+                "Team collaboration",
+                "Weekly/biweekly checklist structure"
+              ].map((item, i) => (
+                <Card key={i} className="p-4 flex items-center gap-3">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: colors.greenDark }} />
+                  <span className="text-sm" style={{ color: colors.textDark }}>{item}</span>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.textDark }}>
+                  Current Site: NashvillePaintingProfessionals.com
+                </h4>
+                <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                  <li>• Traditional brochure-style site</li>
+                  <li>• Limited SEO structure</li>
+                  <li>• No dynamic content or funnel logic</li>
+                  <li>• Not optimized for modern conversion</li>
+                </ul>
+              </Card>
+
+              <Card className="p-6" style={{ backgroundColor: colors.greenLight }}>
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>
+                  New Site: NashPaintPros.io
+                </h4>
+                <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Modern, fast, AI-driven marketing engine
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Built for conversion, SEO, and scalability
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Includes AI tools and automated workflows
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Already outperforming legacy site by 3x
+                  </li>
+                </ul>
+              </Card>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* AI Tools & Radio */}
+      <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>AI Paint Visualizer</h4>
+                <p className="text-sm" style={{ color: colors.textDark }}>
+                  Homeowners preview colors on their actual home photos.
+                </p>
+              </Card>
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>Square Footage Estimate Scanner</h4>
+                <p className="text-sm" style={{ color: colors.textDark }}>
+                  Calculates project size. Bundles all info into a one-click send-to-team package.
+                </p>
+              </Card>
+            </div>
+
+            <Card className="p-6" style={{ backgroundColor: colors.gold + "20" }}>
+              <h4 className="font-bold mb-3" style={{ color: colors.textDark }}>Nashville Radio Advertising</h4>
+              <div className="grid md:grid-cols-3 gap-4 text-sm" style={{ color: colors.textDark }}>
+                <div>
+                  <p className="font-medium">Pricing</p>
+                  <p>$25–$100+ per airing</p>
+                  <p>$200–$5,000/week</p>
+                </div>
+                <div>
+                  <p className="font-medium">Target</p>
+                  <p>Homeowners 30–65</p>
+                </div>
+                <div>
+                  <p className="font-medium">Deliverables</p>
+                  <p>30-sec script, 4-week test</p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Step 1 Deliverables */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h3 
+              className="text-2xl font-serif mb-6"
+              style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+            >
+              Step 1 Deliverables
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                "Approved tagline usage",
+                "Complete brand asset library",
+                "Website contract clarity summary",
+                "Current vs. new site comparison",
+                "AI tools integrated into workflow",
+                "Radio advertising test plan",
+                "Lead tracking dashboard (initial)",
+                "Team collaboration structure"
+              ].map((item, i) => (
+                <Card key={i} className="p-4 flex items-center gap-3" style={{ backgroundColor: colors.greenLight }}>
+                  <Award className="w-4 h-4 flex-shrink-0" style={{ color: colors.gold }} />
+                  <span className="text-sm" style={{ color: colors.textDark }}>{item}</span>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CALL TO ACTION */}
       <section className="py-20 px-6" style={{ backgroundColor: colors.greenDark }}>
         <div className="max-w-4xl mx-auto text-center">
