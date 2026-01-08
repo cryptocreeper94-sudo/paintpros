@@ -9,17 +9,23 @@ import { Shield, Users, Lock, ArrowRight, Sparkles } from "lucide-react";
 import { useAccess } from "@/context/AccessContext";
 import { useTenant } from "@/context/TenantContext";
 
-// Partners page is for Sidonie (ops_manager) and Developer only - NOT owner
+// Unified Partners page - all admin roles enter here, PIN routes to correct dashboard
 const ROLE_ROUTES: Record<string, string> = {
   ops_manager: "/admin",
   developer: "/developer",
+  owner: "/owner",
+  admin: "/admin",
+  project_manager: "/project-manager",
+  crew_lead: "/crew-lead",
 };
-
-const VALID_PARTNER_ROLES = ["ops_manager", "developer"];
 
 const ROLE_LABELS: Record<string, { title: string; description: string }> = {
   ops_manager: { title: "Partner Dashboard", description: "CRM, imports, royalties & more" },
   developer: { title: "Developer Dashboard", description: "System tools & configuration" },
+  owner: { title: "Owner Dashboard", description: "Business overview & financials" },
+  admin: { title: "Admin Dashboard", description: "Full system access" },
+  project_manager: { title: "Project Manager", description: "Job coordination & scheduling" },
+  crew_lead: { title: "Crew Lead", description: "Team management & time tracking" },
 };
 
 export default function Partners() {
@@ -57,12 +63,6 @@ export default function Partners() {
 
       const data = await res.json();
       if (data.success && data.role) {
-        // Only allow partner roles (ops_manager, developer) - not owner
-        if (!VALID_PARTNER_ROLES.includes(data.role)) {
-          setError("This PIN is not authorized for partner access.");
-          setPin("");
-          return;
-        }
         login(data.role);
         const route = ROLE_ROUTES[data.role] || "/admin";
         setLocation(route);
