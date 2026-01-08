@@ -4,6 +4,7 @@ import { Server as SocketServer } from "socket.io";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { storage } from "./storage";
 import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -39,7 +40,8 @@ import {
   insertComplianceDeadlineSchema, insertReconciliationRecordSchema, insertSubcontractorProfileSchema,
   insertShiftBidSchema, insertBidSubmissionSchema, insertCustomerSentimentSchema,
   insertMilestoneNftSchema, insertEsgTrackingSchema, insertFinancingApplicationSchema, insertFranchiseAnalyticsSchema,
-  users as usersTable
+  users as usersTable,
+  dataImports, importedRecords, insertDataImportSchema, insertImportedRecordSchema
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -1349,6 +1351,188 @@ export async function registerRoutes(
       console.error("Error deleting note:", error);
       res.status(500).json({ error: "Failed to delete note" });
     }
+  });
+
+  // ============ DATA IMPORT SYSTEM ============
+  // DripJobs and other CRM data import
+
+  // GET /api/imports - List all imports for tenant
+  app.get("/api/imports", isAuthenticated, async (req, res) => {
+    try {
+      const tenantId = req.headers["x-tenant-id"] as string || "demo";
+      const imports = await db.select().from(dataImports)
+        .where(eq(dataImports.tenantId, tenantId))
+        .orderBy(desc(dataImports.createdAt));
+      res.json(imports);
+    } catch (error) {
+      console.error("Error fetching imports:", error);
+      res.status(500).json({ error: "Failed to fetch imports" });
+    }
+  });
+
+  // GET /api/imports/:id - Get single import with records
+  app.get("/api/imports/:id", isAuthenticated, async (req, res) => {
+    try {
+      const [importJob] = await db.select().from(dataImports)
+        .where(eq(dataImports.id, req.params.id));
+      if (!importJob) {
+        return res.status(404).json({ error: "Import not found" });
+      }
+      const records = await db.select().from(importedRecords)
+        .where(eq(importedRecords.importId, req.params.id));
+      res.json({ ...importJob, records });
+    } catch (error) {
+      console.error("Error fetching import:", error);
+      res.status(500).json({ error: "Failed to fetch import" });
+    }
+  });
+
+  // POST /api/imports - Start a new import
+  app.post("/api/imports", isAuthenticated, async (req, res) => {
+    try {
+      const { sourceSystem, importType, fileName, data, fieldMappings } = req.body;
+      const tenantId = req.headers["x-tenant-id"] as string || "demo";
+      
+      // Create the import job record
+      const [importJob] = await db.insert(dataImports).values({
+        tenantId,
+        sourceSystem: sourceSystem || "dripjobs",
+        importType: importType || "leads",
+        fileName,
+        totalRows: data?.length || 0,
+        status: "processing",
+        fieldMappings: JSON.stringify(fieldMappings || {}),
+        startedAt: new Date(),
+      }).returning();
+
+      // Process each row
+      let successCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+
+      for (const row of data || []) {
+        try {
+          // Map fields based on import type
+          if (importType === "leads") {
+            const leadData = {
+              tenantId,
+              name: row[fieldMappings?.name] || row.name || row["Name"] || row["Customer Name"] || "",
+              email: row[fieldMappings?.email] || row.email || row["Email"] || row["Customer Email"] || "",
+              phone: row[fieldMappings?.phone] || row.phone || row["Phone"] || row["Customer Phone"] || null,
+              source: "dripjobs_import",
+              address: row[fieldMappings?.address] || row.address || row["Address"] || row["Job Address"] || null,
+              notes: row[fieldMappings?.notes] || row.notes || row["Notes"] || null,
+            };
+
+            if (!leadData.name && !leadData.email) {
+              throw new Error("Missing required fields: name or email");
+            }
+
+            const lead = await storage.createLead(leadData);
+            
+            // Track the imported record
+            await db.insert(importedRecords).values({
+              importId: importJob.id,
+              recordType: "lead",
+              sourceId: row.id || row["ID"] || null,
+              targetId: lead.id,
+              rawData: JSON.stringify(row),
+              status: "success",
+            });
+            successCount++;
+          } else if (importType === "deals") {
+            const dealData = {
+              tenantId,
+              title: row[fieldMappings?.title] || row.title || row["Title"] || row["Job Name"] || "",
+              value: String(row[fieldMappings?.value] || row.value || row["Value"] || row["Amount"] || "0"),
+              stage: row[fieldMappings?.stage] || "new_lead",
+              customerName: row[fieldMappings?.customerName] || row.customerName || row["Customer Name"] || "",
+              customerEmail: row[fieldMappings?.customerEmail] || row.customerEmail || row["Email"] || "",
+              customerPhone: row[fieldMappings?.customerPhone] || row.customerPhone || row["Phone"] || null,
+              jobAddress: row[fieldMappings?.jobAddress] || row.jobAddress || row["Address"] || null,
+              notes: row[fieldMappings?.notes] || row.notes || row["Notes"] || null,
+            };
+
+            const deal = await storage.createCrmDeal(dealData);
+            
+            await db.insert(importedRecords).values({
+              importId: importJob.id,
+              recordType: "deal",
+              sourceId: row.id || row["ID"] || null,
+              targetId: deal.id,
+              rawData: JSON.stringify(row),
+              status: "success",
+            });
+            successCount++;
+          }
+        } catch (rowError: any) {
+          errorCount++;
+          errors.push(`Row ${successCount + errorCount}: ${rowError.message}`);
+          
+          await db.insert(importedRecords).values({
+            importId: importJob.id,
+            recordType: importType,
+            rawData: JSON.stringify(row),
+            status: "error",
+            errorMessage: rowError.message,
+          });
+        }
+      }
+
+      // Update the import job with results
+      const [updatedImport] = await db.update(dataImports)
+        .set({
+          successCount,
+          errorCount,
+          status: errorCount === 0 ? "completed" : "completed_with_errors",
+          errorLog: errors.length > 0 ? errors.join("\n") : null,
+          completedAt: new Date(),
+        })
+        .where(eq(dataImports.id, importJob.id))
+        .returning();
+
+      res.status(201).json(updatedImport);
+    } catch (error: any) {
+      console.error("Error processing import:", error);
+      res.status(500).json({ error: "Failed to process import", details: error.message });
+    }
+  });
+
+  // DELETE /api/imports/:id - Delete an import and its records
+  app.delete("/api/imports/:id", isAuthenticated, hasRole(["admin", "developer"]), async (req, res) => {
+    try {
+      await db.delete(importedRecords).where(eq(importedRecords.importId, req.params.id));
+      await db.delete(dataImports).where(eq(dataImports.id, req.params.id));
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting import:", error);
+      res.status(500).json({ error: "Failed to delete import" });
+    }
+  });
+
+  // GET /api/imports/field-mappings/:sourceSystem - Get suggested field mappings
+  app.get("/api/imports/field-mappings/:sourceSystem", async (req, res) => {
+    const mappings: Record<string, any> = {
+      dripjobs: {
+        leads: {
+          name: ["Name", "Customer Name", "Full Name", "Contact Name"],
+          email: ["Email", "Customer Email", "Email Address"],
+          phone: ["Phone", "Customer Phone", "Phone Number", "Mobile"],
+          address: ["Address", "Job Address", "Street Address", "Location"],
+          notes: ["Notes", "Comments", "Description"],
+        },
+        deals: {
+          title: ["Title", "Job Name", "Project Name", "Job Title"],
+          value: ["Value", "Amount", "Price", "Total", "Estimate Amount"],
+          stage: ["Stage", "Status", "Pipeline Stage"],
+          customerName: ["Customer Name", "Name", "Client Name"],
+          customerEmail: ["Email", "Customer Email"],
+          customerPhone: ["Phone", "Customer Phone"],
+          jobAddress: ["Address", "Job Address", "Location"],
+        },
+      },
+    };
+    res.json(mappings[req.params.sourceSystem] || {});
   });
 
   // ============ EMAIL/PASSWORD AUTH ============
