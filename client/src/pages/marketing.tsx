@@ -81,8 +81,8 @@ export default function Marketing() {
       </section>
 
       {/* EXECUTIVE SUMMARY */}
-      <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: "white" }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -162,8 +162,8 @@ export default function Marketing() {
       </section>
 
       {/* MARKET OPPORTUNITY */}
-      <section className="py-20 px-6" style={{ backgroundColor: colors.background }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: colors.background }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -230,8 +230,8 @@ export default function Marketing() {
       </section>
 
       {/* SERVICE OFFERINGS & COMMERCIAL EXPANSION */}
-      <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: "white" }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -365,8 +365,8 @@ export default function Marketing() {
       </section>
 
       {/* TARGET AUDIENCE */}
-      <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: "white" }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -475,8 +475,8 @@ export default function Marketing() {
       </section>
 
       {/* LEAD SOURCES */}
-      <section className="py-20 px-6" style={{ backgroundColor: colors.background }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: colors.background }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -549,8 +549,8 @@ export default function Marketing() {
       </section>
 
       {/* GROWTH PROJECTION */}
-      <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: "white" }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -620,8 +620,8 @@ export default function Marketing() {
       </section>
 
       {/* 12-MONTH CAMPAIGN TIMELINE */}
-      <section className="py-20 px-6" style={{ backgroundColor: colors.background }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: colors.background }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -725,8 +725,8 @@ export default function Marketing() {
       </section>
 
       {/* TEAM ROLES */}
-      <section className="py-20 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: "white" }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -785,8 +785,8 @@ export default function Marketing() {
       </section>
 
       {/* STEP 1: FOUNDATION SETUP - Static Display */}
-      <section className="py-20 px-6" style={{ backgroundColor: colors.greenDark }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="section-padding px-6" style={{ backgroundColor: colors.greenDark }}>
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -815,7 +815,7 @@ export default function Marketing() {
 
       {/* Step 1 Content Slides */}
       <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -888,7 +888,7 @@ export default function Marketing() {
 
       {/* AI Tools & Radio */}
       <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
-        <div className="max-w-5xl mx-auto">
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -933,7 +933,7 @@ export default function Marketing() {
 
       {/* Step 1 Deliverables - Full Explanations */}
       <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
-        <div className="max-w-5xl mx-auto">
+        <div className="content-wide">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1160,7 +1160,7 @@ export default function Marketing() {
       </section>
 
       {/* CALL TO ACTION */}
-      <section className="py-20 px-6" style={{ backgroundColor: colors.greenDark }}>
+      <section className="section-padding px-6" style={{ backgroundColor: colors.greenDark }}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
