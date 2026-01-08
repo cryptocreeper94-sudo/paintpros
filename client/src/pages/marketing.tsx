@@ -931,7 +931,7 @@ export default function Marketing() {
         </div>
       </section>
 
-      {/* Step 1 Deliverables */}
+      {/* Step 1 Deliverables - Full Explanations */}
       <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -940,27 +940,220 @@ export default function Marketing() {
             viewport={{ once: true }}
           >
             <h3 
-              className="text-2xl font-serif mb-6"
+              className="text-2xl font-serif mb-8"
               style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
             >
               Step 1 Deliverables
             </h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                "Approved tagline usage",
-                "Complete brand asset library",
-                "Website contract clarity summary",
-                "Current vs. new site comparison",
-                "AI tools integrated into workflow",
-                "Radio advertising test plan",
-                "Lead tracking dashboard (initial)",
-                "Team collaboration structure"
-              ].map((item, i) => (
-                <Card key={i} className="p-4 flex items-center gap-3" style={{ backgroundColor: colors.greenLight }}>
-                  <Award className="w-4 h-4 flex-shrink-0" style={{ color: colors.gold }} />
-                  <span className="text-sm" style={{ color: colors.textDark }}>{item}</span>
-                </Card>
-              ))}
+            
+            <div className="space-y-6">
+              {/* Approved Tagline Usage */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>Approved Tagline Usage</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      Official confirmation and deployment of NPP's brand tagline: <strong>"We elevate the backdrop of your life."</strong>
+                    </p>
+                    <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
+                      <li>• Approved for use on letterhead, invoices, and proposals</li>
+                      <li>• Integrated into social media headers and bios</li>
+                      <li>• Placement on website header/footer (pending Horton contract rules)</li>
+                      <li>• Incorporated into all marketing materials and radio scripts</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Complete Brand Asset Library */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>Complete Brand Asset Library</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      Centralized collection of all brand materials for consistent marketing execution.
+                    </p>
+                    <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
+                      <li>• Logo files (all formats: PNG, SVG, PDF)</li>
+                      <li>• Official color codes (Dark Green #1F3D2B, Gold #E8C15C, Cream #FAF7F0)</li>
+                      <li>• Typography guidelines (Playfair Display for headers)</li>
+                      <li>• Social media templates, flyer templates, ad templates</li>
+                      <li>• Access credentials for Facebook, Instagram, Google Business Profile, Meta Ads, Google Ads</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Website Contract Clarity Summary */}
+              <Card className="p-6" style={{ backgroundColor: colors.greenLight }}>
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold }}>
+                    <Award className="w-5 h-5" style={{ color: colors.textDark }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.greenDark }}>Website Contract Clarity Summary (Horton Group)</h4>
+                    <p className="text-sm mb-3 font-medium" style={{ color: colors.greenDark }}>
+                      Full understanding of existing contractual obligations and NPP's rights:
+                    </p>
+                    <div className="text-sm space-y-3" style={{ color: colors.textDark }}>
+                      <div>
+                        <p className="font-bold" style={{ color: colors.greenDark }}>What Horton Owns:</p>
+                        <p>The website they built (NashvillePaintingProfessionals.com) and the server it lives on.</p>
+                      </div>
+                      <div>
+                        <p className="font-bold" style={{ color: colors.greenDark }}>What Horton Does NOT Own:</p>
+                        <ul className="ml-4">
+                          <li>• NPP's brand, logo, or intellectual property</li>
+                          <li>• NPP's domain name</li>
+                          <li>• NPP's right to build additional websites</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-bold" style={{ color: colors.greenDark }}>Key Contract Facts:</p>
+                        <ul className="ml-4">
+                          <li>• <strong>No exclusivity clause</strong> - NPP can have multiple web properties</li>
+                          <li>• <strong>No non-compete language</strong> - NPP can work with any vendor</li>
+                          <li>• <strong>No restrictions</strong> on building new marketing sites</li>
+                          <li>• <strong>Only binding obligation:</strong> Remaining financial payments</li>
+                          <li>• Leaving early only removes Horton's support - no litigation risk</li>
+                        </ul>
+                      </div>
+                      <div className="p-3 rounded-lg mt-4" style={{ backgroundColor: "white" }}>
+                        <p className="font-bold" style={{ color: colors.greenDark }}>Bottom Line:</p>
+                        <p>NPP is free to use NashPaintPros.io as the primary marketing engine while maintaining the legacy Horton site for the duration of the contract. There is no legal barrier to this approach.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Current vs. New Site Comparison */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>Current vs. New Site Comparison</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      Documented analysis showing why NashPaintPros.io is the superior marketing platform.
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="font-bold mb-2" style={{ color: colors.textDark }}>Legacy Site Limitations:</p>
+                        <ul style={{ color: colors.textDark }}>
+                          <li>• Static brochure-style design</li>
+                          <li>• No SEO optimization</li>
+                          <li>• No conversion funnels</li>
+                          <li>• WordPress maintenance burden</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-bold mb-2" style={{ color: colors.greenDark }}>New Site Advantages:</p>
+                        <ul style={{ color: colors.textDark }}>
+                          <li>• AI-powered tools (visualizer, scanner)</li>
+                          <li>• Built for SEO and conversions</li>
+                          <li>• 3x performance with zero promotion</li>
+                          <li>• Modern, fast, scalable</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* AI Tools Integrated */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>AI Tools Integrated into Workflow</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      Competitive advantage through technology that no other local painter offers.
+                    </p>
+                    <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
+                      <li>• <strong>AI Paint Visualizer:</strong> Customers preview colors on their actual home photos before committing</li>
+                      <li>• <strong>Square Footage Scanner:</strong> Quick estimate calculations bundled into one-click lead packages</li>
+                      <li>• Team trained on using AI tools in sales process</li>
+                      <li>• Integration into marketing messaging highlighting tech leadership</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Radio Advertising Test Plan */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>Radio Advertising Test Plan</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      4-week pilot campaign to test radio effectiveness in Nashville market.
+                    </p>
+                    <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
+                      <li>• 30-second script featuring official tagline</li>
+                      <li>• Target demographic: Homeowners 30-65</li>
+                      <li>• Budget range: $200-$5,000/week depending on station selection</li>
+                      <li>• Unique tracking phone number assigned for attribution</li>
+                      <li>• Station selection based on audience demographics</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Lead Tracking Dashboard */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>Lead Tracking Dashboard (Initial)</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      Visibility into where leads come from and which channels perform best.
+                    </p>
+                    <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
+                      <li>• Document current lead tracking methods</li>
+                      <li>• Identify top-performing lead sources</li>
+                      <li>• Identify tracking gaps to address</li>
+                      <li>• Unique tracking numbers assigned: Radio, Social, Print</li>
+                      <li>• Initial dashboard build for ongoing visibility</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Team Collaboration Structure */}
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: colors.gold + "30" }}>
+                    <Award className="w-5 h-5" style={{ color: colors.gold }} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-2" style={{ color: colors.textDark }}>Team Collaboration Structure</h4>
+                    <p className="text-sm mb-3" style={{ color: colors.textDark }}>
+                      Clear roles and processes for marketing execution across the team.
+                    </p>
+                    <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
+                      <li>• Identified contacts for: Field content capture, Approvals, Project updates</li>
+                      <li>• Social media support roles confirmed</li>
+                      <li>• Shared content library established</li>
+                      <li>• Content submission workflow documented</li>
+                      <li>• Weekly/biweekly checklist structure for ongoing accountability</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
             </div>
           </motion.div>
         </div>
