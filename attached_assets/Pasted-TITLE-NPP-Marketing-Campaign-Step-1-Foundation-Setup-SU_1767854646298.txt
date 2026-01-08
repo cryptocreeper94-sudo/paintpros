@@ -1,0 +1,188 @@
+TITLE: NPP Marketing Campaign – Step 1: Foundation Setup
+SUBTITLE: “We elevate the backdrop of your life.”
+TAG: NPP_STEP1_FOUNDATION
+
+OBJECTIVE:
+Build a complete Step 1 presentation that outlines the foundational setup for NPP’s 12‑month marketing campaign. The presentation must include: brand alignment, asset access, contract clarity, current vs. new website comparison, AI tools, radio advertising integration, WordPress limitations, and weekly/biweekly checklist structure. All tasks must be displayed with interactive checkboxes visible in both Owner and Admin panels.
+
+FORMAT REQUIREMENTS:
+- Create a structured, slide‑style presentation.
+- Each section must be its own slide or module.
+- Include interactive checkboxes for all tasks.
+- Organize tasks into weekly or biweekly phases.
+- Presentation must be editable in Owner/Admin panels.
+- Use NPP branding and tagline.
+- Tag internally as: NPP_STEP1_FOUNDATION
+
+-----------------------------------------
+SLIDE 1 — INTRODUCTION
+-----------------------------------------
+TITLE: Step 1 – Foundation Setup
+CONTENT:
+- Purpose: Establish the infrastructure for the 12‑month marketing campaign.
+- Focus areas:
+  • Brand & messaging alignment
+  • Asset inventory & access
+  • Website contract clarity
+  • Current vs. new site comparison
+  • AI tools integration
+  • Radio advertising strategy
+  • Team collaboration
+  • Weekly/biweekly checklist structure
+
+-----------------------------------------
+SLIDE 2 — BRAND & MESSAGING ALIGNMENT
+-----------------------------------------
+WEEK 1 TASKS:
+[ ] Present official tagline: “We elevate the backdrop of your life.”
+[ ] Approve tagline usage across all marketing materials.
+[ ] Decide tagline placement:
+    [ ] Letterhead
+    [ ] Social media headers
+    [ ] Website header/footer (pending contract rules)
+[ ] Review brand identity for consistency with premium positioning.
+
+-----------------------------------------
+SLIDE 3 — CURRENT SITE VS. NEW SITE
+-----------------------------------------
+TITLE: Website Performance Comparison
+CONTENT:
+- Current site: NashvillePaintingProfessionals.com
+  • Traditional brochure-style site
+  • Limited SEO structure
+  • No dynamic content or funnel logic
+  • Not optimized for modern conversion
+- New site: NashPaintPros.io
+  • Modern, fast, AI-driven marketing engine
+  • Built for conversion, SEO, and scalability
+  • Includes AI tools and automated workflows
+  • Already outperforming the legacy site by 3× with zero local promotion
+CHECKLIST:
+[ ] Confirm new site as primary marketing engine.
+[ ] Maintain legacy site for contract duration.
+
+-----------------------------------------
+SLIDE 4 — WORDPRESS LIMITATIONS
+-----------------------------------------
+CONTENT:
+- WordPress requires plugins, themes, hosting layers, and security add-ons.
+- High maintenance, high fragility, slow update cycles.
+- Not ideal for rapid marketing iteration.
+- New site avoids these limitations entirely.
+CHECKLIST:
+[ ] Confirm WordPress will not be used for marketing operations.
+
+-----------------------------------------
+SLIDE 5 — CONTRACT CLARITY (HORTON GROUP)
+-----------------------------------------
+CONTENT:
+- Horton owns the site they built and the server it lives on.
+- Horton does NOT own:
+  • NPP’s brand
+  • NPP’s domain
+  • NPP’s right to build additional websites
+- No exclusivity clause.
+- No non-compete language.
+- No restrictions on additional web properties.
+- Only binding obligation: financial (remaining payments).
+- Leaving early only removes support; no litigation risk.
+CHECKLIST:
+[ ] Confirm understanding of contract limitations.
+[ ] Approve use of separate marketing site.
+
+-----------------------------------------
+SLIDE 6 — AI TOOLS INTEGRATION
+-----------------------------------------
+TITLE: AI Tools That Give NPP a Competitive Edge
+CONTENT:
+- AI Paint Visualizer:
+  • Homeowners preview colors on their actual home photos.
+- Square Footage Estimate Scanner:
+  • Calculates project size.
+  • Bundles all info into a one-click send-to-team package.
+BENEFITS:
+- Higher-quality leads
+- Faster quoting
+- Reduced friction
+- Unique competitive advantage
+CHECKLIST:
+[ ] Integrate AI tools into marketing messaging.
+[ ] Train team on AI tool workflows.
+
+-----------------------------------------
+SLIDE 7 — RADIO ADVERTISING STRATEGY
+-----------------------------------------
+TITLE: Nashville Radio Advertising Integration
+CONTENT:
+- Pricing:
+  • $25 per airing (off-peak)
+  • $100+ per airing (prime time)
+  • $200–$5,000 per week depending on station/schedule
+- Target demographic: Homeowners 30–65
+- Deliverables:
+  • 30-second script using tagline
+  • 4-week test campaign proposal
+  • Media kit requests
+CHECKLIST:
+[ ] Approve radio advertising budget range.
+[ ] Select preferred stations.
+[ ] Approve script draft.
+
+-----------------------------------------
+SLIDE 8 — ASSET INVENTORY & ACCESS
+-----------------------------------------
+WEEK 1–2 TASKS:
+[ ] Upload all brand assets:
+    [ ] Logo files
+    [ ] Color codes
+    [ ] Fonts/templates
+[ ] Provide access to:
+    [ ] Facebook
+    [ ] Instagram
+    [ ] Google Business Profile
+    [ ] Meta Ads Manager
+    [ ] Google Ads
+[ ] Begin building templates for:
+    [ ] Social posts
+    [ ] Flyers
+    [ ] Ads
+    [ ] Radio scripts
+
+-----------------------------------------
+SLIDE 9 — LEAD TRACKING SETUP
+-----------------------------------------
+WEEK 2 TASKS:
+[ ] Document current lead tracking method.
+[ ] Identify top-performing lead sources.
+[ ] Identify tracking gaps.
+[ ] Build initial lead tracking dashboard.
+[ ] Assign unique tracking numbers for:
+    [ ] Radio
+    [ ] Social
+    [ ] Print
+
+-----------------------------------------
+SLIDE 10 — TEAM COLLABORATION SETUP
+-----------------------------------------
+WEEK 3–4 TASKS:
+[ ] Identify team contacts for:
+    [ ] Field content capture
+    [ ] Approvals
+    [ ] Project updates
+[ ] Confirm social media support roles.
+[ ] Build shared content library.
+[ ] Establish content submission workflow.
+
+-----------------------------------------
+SLIDE 11 — STEP 1 DELIVERABLES
+-----------------------------------------
+[ ] Approved tagline usage
+[ ] Complete brand asset library
+[ ] Website contract clarity summary
+[ ] Current vs. new site comparison
+[ ] AI tools integrated into workflow
+[ ] Radio advertising test plan
+[ ] Lead tracking dashboard (initial)
+[ ] Team collaboration structure
+
+END OF HANDOFF BLOCK
