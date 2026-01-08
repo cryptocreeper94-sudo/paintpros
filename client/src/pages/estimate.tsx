@@ -88,15 +88,16 @@ export default function Estimate() {
         cabinetDrawersPerUnit: parseFloat(estimatorConfig.cabinetDrawersPerUnit) || 45,
       };
     }
+    // Map tenant pricing properties to estimator pricing format with sensible defaults
     return {
-      wallsOnlyPerSqFt: tenant.pricing.wallsOnlyPerSqFt,
-      trimOnlyPerSqFt: tenant.pricing.trimOnlyPerSqFt,
-      ceilingsOnlyPerSqFt: tenant.pricing.ceilingsOnlyPerSqFt,
-      wallsAndTrimPerSqFt: tenant.pricing.wallsAndTrimPerSqFt,
-      fullJobPerSqFt: tenant.pricing.fullJobPerSqFt,
-      doorsPerUnit: tenant.pricing.doorsPerUnit,
-      cabinetDoorsPerUnit: tenant.pricing.cabinetDoorsPerUnit,
-      cabinetDrawersPerUnit: tenant.pricing.cabinetDrawersPerUnit,
+      wallsOnlyPerSqFt: tenant.pricing.wallsPerSqFt || 2.50,
+      trimOnlyPerSqFt: tenant.pricing.trimPerLinearFt || 1.25,
+      ceilingsOnlyPerSqFt: tenant.pricing.ceilingsPerSqFt || 1.75,
+      wallsAndTrimPerSqFt: (tenant.pricing.wallsPerSqFt || 2.50) + (tenant.pricing.trimPerLinearFt || 1.25),
+      fullJobPerSqFt: tenant.pricing.fullJobPerSqFt || 5.00,
+      doorsPerUnit: tenant.pricing.doorsPerUnit || 150,
+      cabinetDoorsPerUnit: 85,
+      cabinetDrawersPerUnit: 45,
     };
   }, [estimatorConfig, tenant.pricing, isFullEstimateMode]);
 
