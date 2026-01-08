@@ -43,6 +43,9 @@ const TARGET_FIELDS = {
   ],
 };
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_ROWS = 5000;
+
 export function DripJobsImport() {
   const tenant = useTenant();
   const queryClient = useQueryClient();
@@ -55,6 +58,21 @@ export function DripJobsImport() {
   const [fileName, setFileName] = useState<string>("");
   const [importResult, setImportResult] = useState<DataImport | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+  
+  // Check if all required fields are mapped
+  const hasRequiredMappings = () => {
+    const targetFields = TARGET_FIELDS[importType];
+    const requiredFields = targetFields.filter(f => f.required);
+    return requiredFields.every(field => fieldMappings[field.id]);
+  };
+  
+  const getMissingRequiredFields = () => {
+    const targetFields = TARGET_FIELDS[importType];
+    return targetFields
+      .filter(f => f.required && !fieldMappings[f.id])
+      .map(f => f.label);
+  };
 
   const { data: importHistory = [], isLoading: historyLoading } = useQuery<DataImport[]>({
     queryKey: ["/api/imports"],
@@ -73,6 +91,8 @@ export function DripJobsImport() {
     enabled: step === "mapping",
   });
 
+  const [importError, setImportError] = useState<string | null>(null);
+  
   const importMutation = useMutation({
     mutationFn: async (payload: { data: ParsedRow[]; fieldMappings: FieldMapping; importType: string; fileName: string }) => {
       const res = await fetch("/api/imports", {
@@ -90,15 +110,23 @@ export function DripJobsImport() {
         },
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Import failed");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Import failed" }));
+        throw new Error(errorData.error || "Import failed");
+      }
       return res.json() as Promise<DataImport>;
     },
     onSuccess: (result) => {
+      setImportError(null);
       setImportResult(result);
       setStep("complete");
       queryClient.invalidateQueries({ queryKey: ["/api/imports"] });
       queryClient.invalidateQueries({ queryKey: ["/api/leads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/crm/deals"] });
+    },
+    onError: (error: Error) => {
+      setImportError(error.message);
+      setStep("preview");
     },
   });
 
@@ -129,28 +157,54 @@ export function DripJobsImport() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setParseError(null);
+    
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      setParseError(`File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
+      return;
+    }
+
     setFileName(file.name);
     const reader = new FileReader();
+    reader.onerror = () => {
+      setParseError("Failed to read file. Please try again.");
+    };
     reader.onload = (event) => {
-      const text = event.target?.result as string;
-      const { headers, rows } = parseCSV(text);
-      setCsvHeaders(headers);
-      setCsvData(rows);
-      
-      const autoMappings: FieldMapping = {};
-      const targetFields = TARGET_FIELDS[importType];
-      targetFields.forEach(field => {
-        const suggestions = (suggestedMappings as any)?.[importType]?.[field.id] || [];
-        const match = headers.find(h => 
-          suggestions.some((s: string) => h.toLowerCase() === s.toLowerCase()) ||
-          h.toLowerCase().includes(field.id.toLowerCase())
-        );
-        if (match) {
-          autoMappings[field.id] = match;
+      try {
+        const text = event.target?.result as string;
+        const { headers, rows } = parseCSV(text);
+        
+        if (rows.length === 0) {
+          setParseError("No data found in file. Please check the CSV format.");
+          return;
         }
-      });
-      setFieldMappings(autoMappings);
-      setStep("mapping");
+        
+        if (rows.length > MAX_ROWS) {
+          setParseError(`Too many rows (${rows.length}). Maximum is ${MAX_ROWS} rows per import.`);
+          return;
+        }
+        
+        setCsvHeaders(headers);
+        setCsvData(rows);
+        
+        const autoMappings: FieldMapping = {};
+        const targetFields = TARGET_FIELDS[importType];
+        targetFields.forEach(field => {
+          const suggestions = (suggestedMappings as any)?.[importType]?.[field.id] || [];
+          const match = headers.find(h => 
+            suggestions.some((s: string) => h.toLowerCase() === s.toLowerCase()) ||
+            h.toLowerCase().includes(field.id.toLowerCase())
+          );
+          if (match) {
+            autoMappings[field.id] = match;
+          }
+        });
+        setFieldMappings(autoMappings);
+        setStep("mapping");
+      } catch (err) {
+        setParseError("Failed to parse CSV file. Please check the format.");
+      }
     };
     reader.readAsText(file);
   }, [parseCSV, importType, suggestedMappings]);
@@ -172,6 +226,8 @@ export function DripJobsImport() {
     setFieldMappings({});
     setFileName("");
     setImportResult(null);
+    setParseError(null);
+    setImportError(null);
   };
 
   const renderUploadStep = () => (
@@ -206,13 +262,20 @@ export function DripJobsImport() {
         </Button>
       </div>
 
+      {parseError && (
+        <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm">{parseError}</span>
+        </div>
+      )}
+
       <label
         className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-border rounded-xl cursor-pointer hover-elevate transition-all"
         data-testid="upload-zone"
       >
         <Upload className="w-12 h-12 text-muted-foreground mb-4" />
         <span className="text-sm font-medium">Click to upload CSV file</span>
-        <span className="text-xs text-muted-foreground mt-1">or drag and drop</span>
+        <span className="text-xs text-muted-foreground mt-1">Max {MAX_ROWS.toLocaleString()} rows, {MAX_FILE_SIZE / 1024 / 1024}MB</span>
         <input
           type="file"
           accept=".csv"
@@ -285,11 +348,24 @@ export function DripJobsImport() {
         })}
       </div>
 
+      {!hasRequiredMappings() && (
+        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+          <span className="text-sm">
+            Required fields missing: {getMissingRequiredFields().join(", ")}
+          </span>
+        </div>
+      )}
+
       <div className="flex gap-3 justify-end">
         <Button variant="outline" onClick={resetImport} data-testid="button-cancel-import">
           Cancel
         </Button>
-        <Button onClick={() => setStep("preview")} data-testid="button-preview-import">
+        <Button 
+          onClick={() => setStep("preview")} 
+          disabled={!hasRequiredMappings()}
+          data-testid="button-preview-import"
+        >
           Preview Import
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
@@ -343,11 +419,18 @@ export function DripJobsImport() {
         )}
       </div>
 
+      {importError && (
+        <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center gap-2">
+          <XCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm">{importError}</span>
+        </div>
+      )}
+
       <div className="flex gap-3 justify-end">
         <Button variant="outline" onClick={() => setStep("mapping")} data-testid="button-back-to-mapping">
           Back
         </Button>
-        <Button onClick={handleImport} data-testid="button-start-import">
+        <Button onClick={handleImport} disabled={importMutation.isPending} data-testid="button-start-import">
           <Upload className="w-4 h-4 mr-2" />
           Import {csvData.length} Records
         </Button>

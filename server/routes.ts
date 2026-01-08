@@ -1388,10 +1388,39 @@ export async function registerRoutes(
   });
 
   // POST /api/imports - Start a new import
-  app.post("/api/imports", isAuthenticated, async (req, res) => {
+  app.post("/api/imports", isAuthenticated, hasRole(["admin", "ops_manager", "developer"]), async (req, res) => {
     try {
       const { sourceSystem, importType, fileName, data, fieldMappings } = req.body;
       const tenantId = req.headers["x-tenant-id"] as string || "demo";
+      
+      // Validate required fields
+      if (!sourceSystem || !importType) {
+        return res.status(400).json({ error: "Missing required fields: sourceSystem and importType are required" });
+      }
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        return res.status(400).json({ error: "No data provided for import" });
+      }
+      if (data.length > 5000) {
+        return res.status(400).json({ error: "Import limit exceeded. Maximum 5000 records per import." });
+      }
+      if (!fieldMappings || typeof fieldMappings !== "object") {
+        return res.status(400).json({ error: "Field mappings are required" });
+      }
+      
+      // Validate required field mappings based on import type
+      const requiredFields: Record<string, string[]> = {
+        leads: ["name", "email"],
+        deals: ["title", "customerName"],
+      };
+      const missingFields = (requiredFields[importType] || []).filter(
+        field => !fieldMappings[field]
+      );
+      if (missingFields.length > 0) {
+        return res.status(400).json({ 
+          error: `Missing required field mappings: ${missingFields.join(", ")}`,
+          missingFields 
+        });
+      }
       
       // Create the import job record
       const [importJob] = await db.insert(dataImports).values({
@@ -1433,6 +1462,7 @@ export async function registerRoutes(
             // Track the imported record
             await db.insert(importedRecords).values({
               importId: importJob.id,
+              tenantId,
               recordType: "lead",
               sourceId: row.id || row["ID"] || null,
               targetId: lead.id,
@@ -1457,6 +1487,7 @@ export async function registerRoutes(
             
             await db.insert(importedRecords).values({
               importId: importJob.id,
+              tenantId,
               recordType: "deal",
               sourceId: row.id || row["ID"] || null,
               targetId: deal.id,
@@ -1471,6 +1502,7 @@ export async function registerRoutes(
           
           await db.insert(importedRecords).values({
             importId: importJob.id,
+            tenantId,
             recordType: importType,
             rawData: JSON.stringify(row),
             status: "error",

@@ -4920,6 +4920,7 @@ export type DataImport = typeof dataImports.$inferSelect;
 export const importedRecords = pgTable("imported_records", {
   id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
   importId: varchar("import_id", { length: 36 }).references(() => dataImports.id).notNull(),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
   recordType: varchar("record_type", { length: 30 }).notNull(),
   sourceId: varchar("source_id", { length: 100 }),
   targetId: varchar("target_id", { length: 36 }),
@@ -4929,6 +4930,7 @@ export const importedRecords = pgTable("imported_records", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
   index("idx_imported_records_import").on(table.importId),
+  index("idx_imported_records_tenant").on(table.tenantId),
   index("idx_imported_records_source").on(table.sourceId),
 ]);
 
