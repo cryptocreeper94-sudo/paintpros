@@ -61,6 +61,7 @@ import CreditsSuccess from "@/pages/credits-success";
 import CreditsCancel from "@/pages/credits-cancel";
 import SubscriberDashboard from "@/pages/subscriber-dashboard";
 import InvestorDemo from "@/pages/investor-demo";
+import Partners from "@/pages/partners";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -133,6 +134,7 @@ function Router() {
       <Route path="/credits/success" component={CreditsSuccess} />
       <Route path="/credits/cancel" component={CreditsCancel} />
       <Route path="/subscriber-dashboard" component={SubscriberDashboard} />
+      <Route path="/partners" component={Partners} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -35,6 +35,7 @@ import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
 import { PartnerModal } from "@/components/partner-modal";
+import { RoyaltySummaryCard } from "@/components/royalty-summary-card";
 
 const DEFAULT_PIN = "4444";
 
@@ -469,6 +470,19 @@ export default function Admin() {
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <DripJobsImportCard />
+              </motion.div>
+            </BentoItem>
+
+            {/* Partner Royalties Summary */}
+            <BentoItem colSpan={3} rowSpan={1}>
+              <motion.div 
+                className="h-full" 
+                variants={cardVariants}
+                custom={6}
+                whileHover={hover3DSubtle}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <RoyaltySummaryCard />
               </motion.div>
             </BentoItem>
 
