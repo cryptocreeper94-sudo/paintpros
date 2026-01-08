@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, ExternalLink, CheckCircle2, Heart, Shield, DollarSign } from "lucide-react";
+import { FileText, Download, ExternalLink, CheckCircle2, Heart, Shield, DollarSign, Database, ArrowRight } from "lucide-react";
 
 interface PartnerModalProps {
   open: boolean;
@@ -96,6 +96,31 @@ export function PartnerModal({ open, onOpenChange, hasSignedAgreement = false }:
                     Review Proposal
                     <ExternalLink className="w-3 h-3" />
                   </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-300 bg-amber-50">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Database className="w-5 h-5 text-amber-700" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 mb-1">DripJobs Migration</h3>
+                  <p className="text-sm text-gray-700 mb-2">
+                    Ready to bring over your leads and deals from DripJobs? Here's how:
+                  </p>
+                  <ol className="text-xs text-gray-600 space-y-1 mb-3 list-decimal list-inside">
+                    <li>Log into DripJobs and go to <strong>Leads</strong> or <strong>Deals</strong></li>
+                    <li>Click <strong>Export</strong> and download as CSV</li>
+                    <li>Use the <strong>DripJobs Import</strong> card on your dashboard</li>
+                    <li>Upload the CSV and preview before importing</li>
+                  </ol>
+                  <p className="text-xs text-amber-700 font-medium">
+                    The import tool validates your data and shows any issues before saving.
+                  </p>
                 </div>
               </div>
             </CardContent>
