@@ -759,18 +759,18 @@ function ServicePricing({ tenant }: { tenant: any }) {
                       <DollarSign className="w-6 h-6 text-accent" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold">Get Your Free Estimate</h2>
-                      <p className="text-sm text-muted-foreground">Instant online quotes</p>
+                      <h2 className="text-xl font-bold">Your Price in Seconds</h2>
+                      <p className="text-sm text-muted-foreground">AI-powered instant quotes</p>
                     </div>
                   </div>
                   
                   <p className="text-muted-foreground mb-6">
-                    Use our interactive estimator to get an instant quote for your project. No obligation, no pressure.
+                    Our smart estimator calculates your project cost instantly. No waiting for callbacks.
                   </p>
                   
                   <a href="/estimate">
                     <FlipButton className="w-full" data-testid="button-get-estimate">
-                      Get Free Estimate <ArrowRight className="w-4 h-4 ml-2" />
+                      See My Price Now <ArrowRight className="w-4 h-4 ml-2" />
                     </FlipButton>
                   </a>
                 </GlassCard>

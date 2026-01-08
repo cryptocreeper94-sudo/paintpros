@@ -47,8 +47,8 @@ export default function Resources() {
           color: "text-pink-500"
         },
         {
-          name: "Free Estimate",
-          description: "Get an instant estimate for your painting project",
+          name: "Instant Pricing",
+          description: "AI-powered estimator calculates your project cost in seconds",
           href: "/estimate",
           icon: FileText,
           color: "text-emerald-500"
@@ -223,10 +223,10 @@ export default function Resources() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="mt-12 text-center">
-            <h3 className="text-xl font-bold text-foreground mb-4">Ready to Get Started?</h3>
+            <h3 className="text-xl font-bold text-foreground mb-4">Know Your Price in Seconds</h3>
             <Link href="/estimate">
               <Button size="lg" className="gap-2" data-testid="button-resources-estimate">
-                Get Your Free Estimate
+                See My Price Now
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </Link>

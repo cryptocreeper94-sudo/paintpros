@@ -190,16 +190,16 @@ export default function Awards() {
 
             <div className="mt-10 p-6 bg-card rounded-xl border border-accent/20 text-center">
               <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
-                Schedule a Free Painting Estimate in Nashville
+                Know Your Price in Seconds
               </h2>
               <p className="text-foreground leading-relaxed mb-6">
-                If you're planning a painting project and searching for a reliable <strong>Nashville painting professional</strong>, we'd be honored to earn your business. Contact us today to request a free estimate and experience why so many customers consider us one of the best painters in the area.
+                If you're planning a painting project and searching for a reliable <strong>Nashville painting professional</strong>, we'd be honored to earn your business. Our AI-powered estimator gives you instant pricing — no waiting for callbacks.
               </p>
               <a 
                 href="/estimate" 
                 className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground font-semibold rounded-lg hover:bg-accent/90 transition-colors"
               >
-                Get Your Free Estimate
+                See My Price Now
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>

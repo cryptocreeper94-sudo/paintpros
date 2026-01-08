@@ -215,14 +215,14 @@ export default function Services() {
         <section className="py-16 px-4 md:px-8 bg-gradient-to-br from-accent/10 to-transparent">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              Ready to Get Started?
+              Know Your Price in Seconds
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Get a free estimate for your painting project today.
+              Our AI-powered estimator calculates your project cost instantly.
             </p>
             <Link href="/estimate">
               <Button size="lg" className="text-lg px-8 gap-2" data-testid="button-services-estimate">
-                Get Your Free Estimate
+                See My Price Now
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>

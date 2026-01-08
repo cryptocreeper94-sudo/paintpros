@@ -180,9 +180,9 @@ export default function HomeDemo() {
                   className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 dark:opacity-70 dark:group-hover:opacity-80 transition-opacity"
                 />
                 <div className="relative z-10">
-                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1 text-gray-800 dark:text-white">Free Estimates</h3>
+                  <h3 className="text-sm md:text-2xl font-display font-bold mb-0.5 md:mb-1 text-gray-800 dark:text-white">Your Price in Seconds</h3>
                   <p className="text-[10px] md:text-xs text-gray-700 dark:text-gray-200 pr-8 font-bold">
-                    Use our instant calculator to get a custom quote for your painting project in seconds.
+                    Our AI-powered estimator calculates your project cost instantly. No waiting. No callbacks.
                   </p>
                 </div>
                 <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
