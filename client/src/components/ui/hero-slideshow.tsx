@@ -93,12 +93,12 @@ export function HeroSlideshow() {
     },
     {
       id: "estimate",
-      title: "Get an Instant Estimate",
-      description: "Use our smart estimator to get an accurate quote in seconds.",
+      title: "Know Your Price in Seconds",
+      description: "No waiting for callbacks. Our smart estimator calculates your project cost instantly.",
       image: estimateCalculator,
       icon: Calculator,
       link: "/estimate",
-      linkText: "Try Estimator"
+      linkText: "See My Price"
     },
     {
       id: "booking",

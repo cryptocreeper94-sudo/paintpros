@@ -963,14 +963,14 @@ export default function HomeNPP() {
               
             >
               <h2 className="text-2xl md:text-5xl font-display font-bold text-gray-900 mb-3 md:mb-6">
-                Ready to Transform Your Space?
+                Know Your Price in Seconds
               </h2>
               <p className="text-sm md:text-xl text-gray-600 mb-4 md:mb-8">
-                Get your free estimate today and see why we're Nashville's most trusted painters.
+                No waiting. No guessing. Our smart estimator calculates your project cost instantly.
               </p>
               <Link href="/estimate">
                 <Button size="lg" className="text-sm md:text-lg px-6 md:px-12 py-4 md:py-6 gap-2 shadow-xl shadow-accent/30" data-testid="button-final-cta">
-                  Get Your Free Estimate
+                  See My Price Now
                   <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>
               </Link>

@@ -35,11 +35,11 @@ export function EstimatorPromoCard({ variant = 'default' }: EstimatorPromoCardPr
         </div>
 
         <h3 className={`font-display font-bold ${isCompact ? 'text-sm' : 'text-base md:text-lg'} text-foreground mb-1.5`}>
-          AI Paint Estimator
+          Know Your Price in Seconds
         </h3>
         
         <p className={`${isCompact ? 'text-[10px]' : 'text-xs md:text-sm'} text-muted-foreground mb-3 leading-relaxed`}>
-          Get instant, accurate paint estimates powered by AI. Calculate costs for any room in seconds.
+          No waiting for callbacks. Our smart estimator shows your project cost instantly.
         </p>
 
         <div className={`flex flex-wrap gap-2 mb-4 ${isCompact ? 'text-[9px]' : 'text-[10px] md:text-xs'}`}>
@@ -60,7 +60,7 @@ export function EstimatorPromoCard({ variant = 'default' }: EstimatorPromoCardPr
             data-testid="button-try-estimator"
           >
             <Calculator className="w-4 h-4" />
-            Try the Estimator
+            See My Price Now
             <ArrowRight className="w-4 h-4" />
           </Button>
         </a>
