@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { 
   Target, TrendingUp, Users, Calendar, MessageSquare, 
   Award, CheckCircle, ArrowRight, BarChart3, PieChartIcon,
-  Briefcase, Star, Globe, Megaphone, Square, CheckSquare,
+  Briefcase, Star, Globe, Megaphone,
   Layers, FileText, Cpu, Radio, FolderOpen, LineChart, UsersRound
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 
 // Import images
 import nppLogo from "@assets/Logo_NPP_Vertical_Dark_1767572957240.png";
@@ -36,104 +34,80 @@ const countyData = [
   { name: "Sumner/Dickson", value: 10, color: "#A8D4B0" }
 ];
 
-// Step 1 Foundation checklist items
+// Step 1 Foundation checklist items (static display only - interactive version on Developer/Owner pages)
 const step1Checklists = {
   brand: [
-    { id: "tagline_present", label: 'Present official tagline: "We elevate the backdrop of your life."' },
-    { id: "tagline_approve", label: "Approve tagline usage across all marketing materials" },
-    { id: "tagline_letterhead", label: "Tagline placement: Letterhead" },
-    { id: "tagline_social", label: "Tagline placement: Social media headers" },
-    { id: "tagline_website", label: "Tagline placement: Website header/footer (pending contract rules)" },
-    { id: "brand_review", label: "Review brand identity for consistency with premium positioning" },
+    'Present official tagline: "We elevate the backdrop of your life."',
+    "Approve tagline usage across all marketing materials",
+    "Tagline placement: Letterhead",
+    "Tagline placement: Social media headers",
+    "Tagline placement: Website header/footer (pending contract rules)",
+    "Review brand identity for consistency with premium positioning",
   ],
   website: [
-    { id: "confirm_new_site", label: "Confirm new site as primary marketing engine" },
-    { id: "maintain_legacy", label: "Maintain legacy site for contract duration" },
+    "Confirm new site as primary marketing engine",
+    "Maintain legacy site for contract duration",
   ],
   wordpress: [
-    { id: "confirm_no_wordpress", label: "Confirm WordPress will not be used for marketing operations" },
+    "Confirm WordPress will not be used for marketing operations",
   ],
   contract: [
-    { id: "confirm_contract", label: "Confirm understanding of contract limitations" },
-    { id: "approve_separate", label: "Approve use of separate marketing site" },
+    "Confirm understanding of contract limitations",
+    "Approve use of separate marketing site",
   ],
   ai: [
-    { id: "integrate_ai", label: "Integrate AI tools into marketing messaging" },
-    { id: "train_team_ai", label: "Train team on AI tool workflows" },
+    "Integrate AI tools into marketing messaging",
+    "Train team on AI tool workflows",
   ],
   radio: [
-    { id: "approve_budget", label: "Approve radio advertising budget range" },
-    { id: "select_stations", label: "Select preferred stations" },
-    { id: "approve_script", label: "Approve script draft" },
+    "Approve radio advertising budget range",
+    "Select preferred stations",
+    "Approve script draft",
   ],
   assets: [
-    { id: "upload_logo", label: "Upload logo files" },
-    { id: "upload_colors", label: "Upload color codes" },
-    { id: "upload_fonts", label: "Upload fonts/templates" },
-    { id: "access_facebook", label: "Provide access: Facebook" },
-    { id: "access_instagram", label: "Provide access: Instagram" },
-    { id: "access_google", label: "Provide access: Google Business Profile" },
-    { id: "access_meta", label: "Provide access: Meta Ads Manager" },
-    { id: "access_googleads", label: "Provide access: Google Ads" },
-    { id: "template_social", label: "Begin building templates: Social posts" },
-    { id: "template_flyers", label: "Begin building templates: Flyers" },
-    { id: "template_ads", label: "Begin building templates: Ads" },
-    { id: "template_radio", label: "Begin building templates: Radio scripts" },
+    "Upload logo files",
+    "Upload color codes",
+    "Upload fonts/templates",
+    "Provide access: Facebook",
+    "Provide access: Instagram",
+    "Provide access: Google Business Profile",
+    "Provide access: Meta Ads Manager",
+    "Provide access: Google Ads",
+    "Begin building templates: Social posts",
+    "Begin building templates: Flyers",
+    "Begin building templates: Ads",
+    "Begin building templates: Radio scripts",
   ],
   tracking: [
-    { id: "doc_tracking", label: "Document current lead tracking method" },
-    { id: "identify_sources", label: "Identify top-performing lead sources" },
-    { id: "identify_gaps", label: "Identify tracking gaps" },
-    { id: "build_dashboard", label: "Build initial lead tracking dashboard" },
-    { id: "tracking_radio", label: "Assign unique tracking numbers: Radio" },
-    { id: "tracking_social", label: "Assign unique tracking numbers: Social" },
-    { id: "tracking_print", label: "Assign unique tracking numbers: Print" },
+    "Document current lead tracking method",
+    "Identify top-performing lead sources",
+    "Identify tracking gaps",
+    "Build initial lead tracking dashboard",
+    "Assign unique tracking numbers: Radio",
+    "Assign unique tracking numbers: Social",
+    "Assign unique tracking numbers: Print",
   ],
   team: [
-    { id: "identify_field", label: "Identify team contacts: Field content capture" },
-    { id: "identify_approvals", label: "Identify team contacts: Approvals" },
-    { id: "identify_updates", label: "Identify team contacts: Project updates" },
-    { id: "confirm_social", label: "Confirm social media support roles" },
-    { id: "build_library", label: "Build shared content library" },
-    { id: "establish_workflow", label: "Establish content submission workflow" },
+    "Identify team contacts: Field content capture",
+    "Identify team contacts: Approvals",
+    "Identify team contacts: Project updates",
+    "Confirm social media support roles",
+    "Build shared content library",
+    "Establish content submission workflow",
   ],
   deliverables: [
-    { id: "del_tagline", label: "Approved tagline usage" },
-    { id: "del_assets", label: "Complete brand asset library" },
-    { id: "del_contract", label: "Website contract clarity summary" },
-    { id: "del_comparison", label: "Current vs. new site comparison" },
-    { id: "del_ai", label: "AI tools integrated into workflow" },
-    { id: "del_radio", label: "Radio advertising test plan" },
-    { id: "del_tracking", label: "Lead tracking dashboard (initial)" },
-    { id: "del_team", label: "Team collaboration structure" },
+    "Approved tagline usage",
+    "Complete brand asset library",
+    "Website contract clarity summary",
+    "Current vs. new site comparison",
+    "AI tools integrated into workflow",
+    "Radio advertising test plan",
+    "Lead tracking dashboard (initial)",
+    "Team collaboration structure",
   ],
 };
 
-// Flatten all checklist IDs for state management
-const allChecklistIds = Object.values(step1Checklists).flat().map(item => item.id);
-
 export default function Marketing() {
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("npp_step1_checklist");
-    if (saved) {
-      setCheckedItems(JSON.parse(saved));
-    }
-  }, []);
-
-  // Save to localStorage when changed
-  const toggleCheck = (id: string) => {
-    const updated = { ...checkedItems, [id]: !checkedItems[id] };
-    setCheckedItems(updated);
-    localStorage.setItem("npp_step1_checklist", JSON.stringify(updated));
-  };
-
-  const getCompletionCount = (items: { id: string; label: string }[]) => {
-    return items.filter(item => checkedItems[item.id]).length;
-  };
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
       {/* COVER SHEET */}
@@ -992,31 +966,13 @@ export default function Marketing() {
             </div>
 
             <Card className="p-6">
-              <div className="space-y-3">
-                {step1Checklists.brand.map((item) => (
-                  <div 
-                    key={item.id} 
-                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
-                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
-                    onClick={() => toggleCheck(item.id)}
-                    data-testid={`checkbox-${item.id}`}
-                  >
-                    <Checkbox 
-                      checked={checkedItems[item.id] || false}
-                      onCheckedChange={() => toggleCheck(item.id)}
-                      className="mt-0.5"
-                    />
-                    <span 
-                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
-                      style={{ color: colors.textDark }}
-                    >
-                      {item.label}
-                    </span>
+              <div className="space-y-2">
+                {step1Checklists.brand.map((item, i) => (
+                  <div key={i} className="flex items-start gap-3 p-2">
+                    <div className="w-4 h-4 border-2 rounded mt-0.5 flex-shrink-0" style={{ borderColor: colors.greenDark }} />
+                    <span className="text-sm" style={{ color: colors.textDark }}>{item}</span>
                   </div>
                 ))}
-              </div>
-              <div className="mt-4 pt-4 border-t text-sm" style={{ color: colors.greenDark }}>
-                {getCompletionCount(step1Checklists.brand)} of {step1Checklists.brand.length} completed
               </div>
             </Card>
           </motion.div>
