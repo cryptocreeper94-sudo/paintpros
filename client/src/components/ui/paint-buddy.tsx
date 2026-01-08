@@ -259,6 +259,7 @@ export function PaintBuddy() {
         body: JSON.stringify({
           messages: [...messages, { role: "user", content: userMessage }],
           tenantName: tenant.name,
+          tenantId: tenant.id,
           language: language,
         }),
       });
