@@ -4,7 +4,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { PinChangeModal } from "@/components/ui/pin-change-modal";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
-import { DripJobsImport } from "@/components/crm/dripjobs-import";
+import { DripJobsImportCard } from "@/components/crm/dripjobs-import-card";
 import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
 import { DocumentCenter } from "@/components/document-center";
@@ -460,7 +460,7 @@ export default function Admin() {
             </BentoItem>
 
             {/* DripJobs Data Import - CRM Migration Tool */}
-            <BentoItem colSpan={6} rowSpan={2}>
+            <BentoItem colSpan={3} rowSpan={1}>
               <motion.div 
                 className="h-full" 
                 variants={cardVariants}
@@ -468,7 +468,7 @@ export default function Admin() {
                 whileHover={hover3DSubtle}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <DripJobsImport />
+                <DripJobsImportCard />
               </motion.div>
             </BentoItem>
 

@@ -46,7 +46,11 @@ const TARGET_FIELDS = {
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_ROWS = 5000;
 
-export function DripJobsImport() {
+interface DripJobsImportProps {
+  onComplete?: () => void;
+}
+
+export function DripJobsImport({ onComplete }: DripJobsImportProps = {}) {
   const tenant = useTenant();
   const queryClient = useQueryClient();
   
@@ -494,10 +498,17 @@ export function DripJobsImport() {
         </div>
       )}
 
-      <Button onClick={resetImport} data-testid="button-new-import">
-        <Upload className="w-4 h-4 mr-2" />
-        Import More Data
-      </Button>
+      <div className="flex gap-3 justify-center flex-wrap">
+        {onComplete && (
+          <Button variant="outline" onClick={onComplete} data-testid="button-done-import">
+            Done
+          </Button>
+        )}
+        <Button onClick={resetImport} data-testid="button-new-import">
+          <Upload className="w-4 h-4 mr-2" />
+          Import More Data
+        </Button>
+      </div>
     </motion.div>
   );
 
