@@ -1,12 +1,15 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { 
   Target, TrendingUp, Users, Calendar, MessageSquare, 
   Award, CheckCircle, ArrowRight, BarChart3, PieChartIcon,
-  Briefcase, Star, Globe, Megaphone
+  Briefcase, Star, Globe, Megaphone, Square, CheckSquare,
+  Layers, FileText, Cpu, Radio, FolderOpen, LineChart, UsersRound
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Import images
 import nppLogo from "@assets/Logo_NPP_Vertical_Dark_1767572957240.png";
@@ -33,7 +36,104 @@ const countyData = [
   { name: "Sumner/Dickson", value: 10, color: "#A8D4B0" }
 ];
 
+// Step 1 Foundation checklist items
+const step1Checklists = {
+  brand: [
+    { id: "tagline_present", label: 'Present official tagline: "We elevate the backdrop of your life."' },
+    { id: "tagline_approve", label: "Approve tagline usage across all marketing materials" },
+    { id: "tagline_letterhead", label: "Tagline placement: Letterhead" },
+    { id: "tagline_social", label: "Tagline placement: Social media headers" },
+    { id: "tagline_website", label: "Tagline placement: Website header/footer (pending contract rules)" },
+    { id: "brand_review", label: "Review brand identity for consistency with premium positioning" },
+  ],
+  website: [
+    { id: "confirm_new_site", label: "Confirm new site as primary marketing engine" },
+    { id: "maintain_legacy", label: "Maintain legacy site for contract duration" },
+  ],
+  wordpress: [
+    { id: "confirm_no_wordpress", label: "Confirm WordPress will not be used for marketing operations" },
+  ],
+  contract: [
+    { id: "confirm_contract", label: "Confirm understanding of contract limitations" },
+    { id: "approve_separate", label: "Approve use of separate marketing site" },
+  ],
+  ai: [
+    { id: "integrate_ai", label: "Integrate AI tools into marketing messaging" },
+    { id: "train_team_ai", label: "Train team on AI tool workflows" },
+  ],
+  radio: [
+    { id: "approve_budget", label: "Approve radio advertising budget range" },
+    { id: "select_stations", label: "Select preferred stations" },
+    { id: "approve_script", label: "Approve script draft" },
+  ],
+  assets: [
+    { id: "upload_logo", label: "Upload logo files" },
+    { id: "upload_colors", label: "Upload color codes" },
+    { id: "upload_fonts", label: "Upload fonts/templates" },
+    { id: "access_facebook", label: "Provide access: Facebook" },
+    { id: "access_instagram", label: "Provide access: Instagram" },
+    { id: "access_google", label: "Provide access: Google Business Profile" },
+    { id: "access_meta", label: "Provide access: Meta Ads Manager" },
+    { id: "access_googleads", label: "Provide access: Google Ads" },
+    { id: "template_social", label: "Begin building templates: Social posts" },
+    { id: "template_flyers", label: "Begin building templates: Flyers" },
+    { id: "template_ads", label: "Begin building templates: Ads" },
+    { id: "template_radio", label: "Begin building templates: Radio scripts" },
+  ],
+  tracking: [
+    { id: "doc_tracking", label: "Document current lead tracking method" },
+    { id: "identify_sources", label: "Identify top-performing lead sources" },
+    { id: "identify_gaps", label: "Identify tracking gaps" },
+    { id: "build_dashboard", label: "Build initial lead tracking dashboard" },
+    { id: "tracking_radio", label: "Assign unique tracking numbers: Radio" },
+    { id: "tracking_social", label: "Assign unique tracking numbers: Social" },
+    { id: "tracking_print", label: "Assign unique tracking numbers: Print" },
+  ],
+  team: [
+    { id: "identify_field", label: "Identify team contacts: Field content capture" },
+    { id: "identify_approvals", label: "Identify team contacts: Approvals" },
+    { id: "identify_updates", label: "Identify team contacts: Project updates" },
+    { id: "confirm_social", label: "Confirm social media support roles" },
+    { id: "build_library", label: "Build shared content library" },
+    { id: "establish_workflow", label: "Establish content submission workflow" },
+  ],
+  deliverables: [
+    { id: "del_tagline", label: "Approved tagline usage" },
+    { id: "del_assets", label: "Complete brand asset library" },
+    { id: "del_contract", label: "Website contract clarity summary" },
+    { id: "del_comparison", label: "Current vs. new site comparison" },
+    { id: "del_ai", label: "AI tools integrated into workflow" },
+    { id: "del_radio", label: "Radio advertising test plan" },
+    { id: "del_tracking", label: "Lead tracking dashboard (initial)" },
+    { id: "del_team", label: "Team collaboration structure" },
+  ],
+};
+
+// Flatten all checklist IDs for state management
+const allChecklistIds = Object.values(step1Checklists).flat().map(item => item.id);
+
 export default function Marketing() {
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("npp_step1_checklist");
+    if (saved) {
+      setCheckedItems(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save to localStorage when changed
+  const toggleCheck = (id: string) => {
+    const updated = { ...checkedItems, [id]: !checkedItems[id] };
+    setCheckedItems(updated);
+    localStorage.setItem("npp_step1_checklist", JSON.stringify(updated));
+  };
+
+  const getCompletionCount = (items: { id: string; label: string }[]) => {
+    return items.filter(item => checkedItems[item.id]).length;
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
       {/* COVER SHEET */}
@@ -779,6 +879,773 @@ export default function Marketing() {
               <p className="italic" style={{ color: colors.textDark }}>
                 "Garrett's leadership ensures our brand promise becomes a lived reality. Execution is a leadership responsibility, not a shared one."
               </p>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* STEP 1: FOUNDATION SETUP */}
+      <section className="py-20 px-6" style={{ backgroundColor: colors.greenDark }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="text-center mb-12">
+              <Badge 
+                className="mb-4 text-sm px-4 py-2"
+                style={{ backgroundColor: colors.gold, color: colors.textDark }}
+              >
+                NPP_STEP1_FOUNDATION
+              </Badge>
+              <h2 
+                className="text-3xl md:text-5xl font-serif mb-4"
+                style={{ color: "white", fontFamily: "'Playfair Display', serif" }}
+              >
+                Step 1: Foundation Setup
+              </h2>
+              <p className="text-xl italic" style={{ color: colors.greenLight }}>
+                "We elevate the backdrop of your life."
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 1: Introduction */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <Layers className="w-5 h-5" style={{ color: colors.greenDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                Introduction
+              </h3>
+            </div>
+            
+            <Card className="p-6 mb-6" style={{ backgroundColor: colors.greenLight }}>
+              <p className="font-medium mb-4" style={{ color: colors.greenDark }}>
+                Purpose: Establish the infrastructure for the 12-month marketing campaign.
+              </p>
+            </Card>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                "Brand & messaging alignment",
+                "Asset inventory & access",
+                "Website contract clarity",
+                "Current vs. new site comparison",
+                "AI tools integration",
+                "Radio advertising strategy",
+                "Team collaboration",
+                "Weekly/biweekly checklist structure"
+              ].map((item, i) => (
+                <Card key={i} className="p-4 flex items-center gap-3">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: colors.greenDark }} />
+                  <span className="text-sm" style={{ color: colors.textDark }}>{item}</span>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 2: Brand & Messaging Alignment */}
+      <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: colors.greenLight }}
+                >
+                  <Target className="w-5 h-5" style={{ color: colors.greenDark }} />
+                </div>
+                <h3 
+                  className="text-xl md:text-2xl font-serif"
+                  style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+                >
+                  Brand & Messaging Alignment
+                </h3>
+              </div>
+              <Badge style={{ backgroundColor: colors.gold, color: colors.textDark }}>
+                Week 1
+              </Badge>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.brand.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                    data-testid={`checkbox-${item.id}`}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t text-sm" style={{ color: colors.greenDark }}>
+                {getCompletionCount(step1Checklists.brand)} of {step1Checklists.brand.length} completed
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 3: Current Site vs. New Site */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <Globe className="w-5 h-5" style={{ color: colors.greenDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                Website Performance Comparison
+              </h3>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.textDark }}>
+                  Current Site: NashvillePaintingProfessionals.com
+                </h4>
+                <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: colors.textDark }}>•</span>
+                    Traditional brochure-style site
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: colors.textDark }}>•</span>
+                    Limited SEO structure
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: colors.textDark }}>•</span>
+                    No dynamic content or funnel logic
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span style={{ color: colors.textDark }}>•</span>
+                    Not optimized for modern conversion
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6" style={{ backgroundColor: colors.greenLight }}>
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>
+                  New Site: NashPaintPros.io
+                </h4>
+                <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Modern, fast, AI-driven marketing engine
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Built for conversion, SEO, and scalability
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Includes AI tools and automated workflows
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.greenDark }} />
+                    Already outperforming legacy site by 3× with zero local promotion
+                  </li>
+                </ul>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.website.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 4: WordPress Limitations */}
+      <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <FileText className="w-5 h-5" style={{ color: colors.greenDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                WordPress Limitations
+              </h3>
+            </div>
+
+            <Card className="p-6 mb-6">
+              <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                <li>• WordPress requires plugins, themes, hosting layers, and security add-ons.</li>
+                <li>• High maintenance, high fragility, slow update cycles.</li>
+                <li>• Not ideal for rapid marketing iteration.</li>
+                <li>• New site avoids these limitations entirely.</li>
+              </ul>
+            </Card>
+
+            <Card className="p-6">
+              {step1Checklists.wordpress.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                  style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                  onClick={() => toggleCheck(item.id)}
+                >
+                  <Checkbox 
+                    checked={checkedItems[item.id] || false}
+                    onCheckedChange={() => toggleCheck(item.id)}
+                    className="mt-0.5"
+                  />
+                  <span 
+                    className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                    style={{ color: colors.textDark }}
+                  >
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 5: Contract Clarity */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <FileText className="w-5 h-5" style={{ color: colors.greenDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                Contract Clarity (Horton Group)
+              </h3>
+            </div>
+
+            <Card className="p-6 mb-6" style={{ backgroundColor: colors.greenLight }}>
+              <p className="font-medium mb-4" style={{ color: colors.greenDark }}>
+                Horton owns the site they built and the server it lives on.
+              </p>
+              <p className="font-bold mb-2" style={{ color: colors.textDark }}>Horton does NOT own:</p>
+              <ul className="space-y-1 text-sm mb-4" style={{ color: colors.textDark }}>
+                <li>• NPP's brand</li>
+                <li>• NPP's domain</li>
+                <li>• NPP's right to build additional websites</li>
+              </ul>
+              <div className="grid md:grid-cols-2 gap-4 text-sm" style={{ color: colors.textDark }}>
+                <div>
+                  <p>• No exclusivity clause</p>
+                  <p>• No non-compete language</p>
+                </div>
+                <div>
+                  <p>• No restrictions on additional web properties</p>
+                  <p>• Only binding obligation: financial (remaining payments)</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm" style={{ color: colors.textDark }}>
+                Leaving early only removes support; no litigation risk.
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.contract.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 6: AI Tools Integration */}
+      <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <Cpu className="w-5 h-5" style={{ color: colors.greenDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                AI Tools That Give NPP a Competitive Edge
+              </h3>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <Card className="p-6">
+                <h4 className="font-bold mb-2" style={{ color: colors.greenDark }}>AI Paint Visualizer</h4>
+                <p className="text-sm" style={{ color: colors.textDark }}>
+                  Homeowners preview colors on their actual home photos.
+                </p>
+              </Card>
+              <Card className="p-6">
+                <h4 className="font-bold mb-2" style={{ color: colors.greenDark }}>Square Footage Estimate Scanner</h4>
+                <p className="text-sm" style={{ color: colors.textDark }}>
+                  Calculates project size. Bundles all info into a one-click send-to-team package.
+                </p>
+              </Card>
+            </div>
+
+            <Card className="p-6 mb-6" style={{ backgroundColor: colors.gold + "20" }}>
+              <h4 className="font-bold mb-3" style={{ color: colors.textDark }}>Benefits:</h4>
+              <div className="grid md:grid-cols-4 gap-4 text-sm" style={{ color: colors.textDark }}>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" style={{ color: colors.gold }} />
+                  Higher-quality leads
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" style={{ color: colors.gold }} />
+                  Faster quoting
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" style={{ color: colors.gold }} />
+                  Reduced friction
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" style={{ color: colors.gold }} />
+                  Unique competitive advantage
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.ai.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 7: Radio Advertising Strategy */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.greenLight }}
+              >
+                <Radio className="w-5 h-5" style={{ color: colors.greenDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                Nashville Radio Advertising Integration
+              </h3>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>Pricing</h4>
+                <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                  <li>• $25 per airing (off-peak)</li>
+                  <li>• $100+ per airing (prime time)</li>
+                  <li>• $200–$5,000 per week depending on station/schedule</li>
+                </ul>
+              </Card>
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>Target Demographic</h4>
+                <p className="text-sm" style={{ color: colors.textDark }}>Homeowners 30–65</p>
+              </Card>
+              <Card className="p-6">
+                <h4 className="font-bold mb-3" style={{ color: colors.greenDark }}>Deliverables</h4>
+                <ul className="space-y-2 text-sm" style={{ color: colors.textDark }}>
+                  <li>• 30-second script using tagline</li>
+                  <li>• 4-week test campaign proposal</li>
+                  <li>• Media kit requests</li>
+                </ul>
+              </Card>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.radio.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 8: Asset Inventory & Access */}
+      <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: colors.greenLight }}
+                >
+                  <FolderOpen className="w-5 h-5" style={{ color: colors.greenDark }} />
+                </div>
+                <h3 
+                  className="text-xl md:text-2xl font-serif"
+                  style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+                >
+                  Asset Inventory & Access
+                </h3>
+              </div>
+              <Badge style={{ backgroundColor: colors.gold, color: colors.textDark }}>
+                Week 1-2
+              </Badge>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.assets.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t text-sm" style={{ color: colors.greenDark }}>
+                {getCompletionCount(step1Checklists.assets)} of {step1Checklists.assets.length} completed
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 9: Lead Tracking Setup */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: colors.greenLight }}
+                >
+                  <LineChart className="w-5 h-5" style={{ color: colors.greenDark }} />
+                </div>
+                <h3 
+                  className="text-xl md:text-2xl font-serif"
+                  style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+                >
+                  Lead Tracking Setup
+                </h3>
+              </div>
+              <Badge style={{ backgroundColor: colors.gold, color: colors.textDark }}>
+                Week 2
+              </Badge>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.tracking.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t text-sm" style={{ color: colors.greenDark }}>
+                {getCompletionCount(step1Checklists.tracking)} of {step1Checklists.tracking.length} completed
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 10: Team Collaboration Setup */}
+      <section className="py-16 px-6" style={{ backgroundColor: colors.background }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: colors.greenLight }}
+                >
+                  <UsersRound className="w-5 h-5" style={{ color: colors.greenDark }} />
+                </div>
+                <h3 
+                  className="text-xl md:text-2xl font-serif"
+                  style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+                >
+                  Team Collaboration Setup
+                </h3>
+              </div>
+              <Badge style={{ backgroundColor: colors.gold, color: colors.textDark }}>
+                Week 3-4
+              </Badge>
+            </div>
+
+            <Card className="p-6">
+              <div className="space-y-3">
+                {step1Checklists.team.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? colors.greenLight : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t text-sm" style={{ color: colors.greenDark }}>
+                {getCompletionCount(step1Checklists.team)} of {step1Checklists.team.length} completed
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SLIDE 11: Step 1 Deliverables */}
+      <section className="py-16 px-6" style={{ backgroundColor: "white" }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div 
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.gold }}
+              >
+                <Award className="w-5 h-5" style={{ color: colors.textDark }} />
+              </div>
+              <h3 
+                className="text-xl md:text-2xl font-serif"
+                style={{ color: colors.textDark, fontFamily: "'Playfair Display', serif" }}
+              >
+                Step 1 Deliverables
+              </h3>
+            </div>
+
+            <Card className="p-6" style={{ backgroundColor: colors.greenLight }}>
+              <div className="space-y-3">
+                {step1Checklists.deliverables.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                    style={{ backgroundColor: checkedItems[item.id] ? "white" : "transparent" }}
+                    onClick={() => toggleCheck(item.id)}
+                  >
+                    <Checkbox 
+                      checked={checkedItems[item.id] || false}
+                      onCheckedChange={() => toggleCheck(item.id)}
+                      className="mt-0.5"
+                    />
+                    <span 
+                      className={`text-sm ${checkedItems[item.id] ? "line-through opacity-70" : ""}`}
+                      style={{ color: colors.textDark }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t text-sm font-bold" style={{ color: colors.greenDark }}>
+                {getCompletionCount(step1Checklists.deliverables)} of {step1Checklists.deliverables.length} deliverables completed
+              </div>
             </Card>
           </motion.div>
         </div>
