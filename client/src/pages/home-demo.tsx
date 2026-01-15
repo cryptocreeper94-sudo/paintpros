@@ -105,24 +105,22 @@ export default function HomeDemo() {
             <HeroSlideshow />
           </BentoItem>
 
-          {/* Lead Generation Section - Prominent Hero Area for Demo/Marketplace */}
+          {/* Lead Generation Section - Marketplace for Demo */}
           {tenant.id === "demo" && (
             <>
-              {/* Main Lead Form - Full Width Hero Card */}
-              <BentoItem colSpan={7} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
+              {/* Customer Lead Form */}
+              <BentoItem colSpan={6} rowSpan={3} mobileColSpan={4} mobileRowSpan={5}>
                 <LeadSubmissionForm />
               </BentoItem>
 
-              {/* Contractor CTA + Feature Showcase Stack */}
-              <BentoItem colSpan={5} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
-                <div className="flex flex-col gap-4 h-full">
-                  <div className="flex-1">
-                    <ContractorCTA />
-                  </div>
-                  <div className="flex-1">
-                    <FeatureShowcase />
-                  </div>
-                </div>
+              {/* Contractor CTA */}
+              <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
+                <ContractorCTA />
+              </BentoItem>
+
+              {/* Feature Showcase */}
+              <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
+                <FeatureShowcase />
               </BentoItem>
             </>
           )}
