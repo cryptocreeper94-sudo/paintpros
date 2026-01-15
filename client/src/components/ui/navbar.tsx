@@ -284,9 +284,7 @@ export function Navbar() {
                         transition={{ delay: 0.4 }}
                       >
                         <a 
-                          href="https://lumepaint.co" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                          href="/?tenant=lumepaint" 
                           className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
                           onClick={() => setIsOpen(false)}
                           data-testid="link-lume-paint"

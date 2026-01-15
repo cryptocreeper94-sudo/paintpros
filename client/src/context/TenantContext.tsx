@@ -21,6 +21,16 @@ export function TenantProvider({ children, tenant }: TenantProviderProps) {
       return;
     }
 
+    // Check for tenant override via query parameter (for preview/demo purposes)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tenantOverride = urlParams.get('tenant');
+    if (tenantOverride) {
+      const tenantConfig = getTenantById(tenantOverride);
+      setCurrentTenant(tenantConfig);
+      setIsLoading(false);
+      return;
+    }
+
     async function fetchTenant() {
       try {
         const response = await fetch('/api/tenant');
