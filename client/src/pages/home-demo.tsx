@@ -39,6 +39,9 @@ import { InvestorSnapshotModal } from "@/components/investor-snapshot-modal";
 import { TradeVerticalSelector } from "@/components/trade-vertical-selector";
 import { EstimatorPromoCard } from "@/components/estimator-promo-card";
 import { PWAStaticBanner } from "@/components/pwa-static-banner";
+import { LeadSubmissionForm } from "@/components/lead-generation/lead-submission-form";
+import { FeatureShowcase } from "@/components/lead-generation/feature-showcase";
+import { ContractorCTA } from "@/components/lead-generation/contractor-cta";
 
 export default function HomeDemo() {
   const tenant = useTenant();
@@ -107,6 +110,27 @@ export default function HomeDemo() {
           {tenant.id === "demo" && (
             <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
               <TradeVerticalSelector />
+            </BentoItem>
+          )}
+
+          {/* Lead Generation - Customer Lead Form */}
+          {tenant.id === "demo" && (
+            <BentoItem colSpan={6} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
+              <LeadSubmissionForm />
+            </BentoItem>
+          )}
+
+          {/* Contractor CTA - For Painters */}
+          {tenant.id === "demo" && (
+            <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
+              <ContractorCTA />
+            </BentoItem>
+          )}
+
+          {/* Feature Showcase Gallery */}
+          {tenant.id === "demo" && (
+            <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
+              <FeatureShowcase />
             </BentoItem>
           )}
 

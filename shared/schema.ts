@@ -58,9 +58,22 @@ export const leads = pgTable("leads", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   phone: text("phone"),
+  // Marketplace lead fields
+  address: text("address"),
+  propertyType: text("property_type"), // 'residential' or 'commercial'
+  projectTypes: text("project_types").array(), // ['interior', 'exterior', etc.]
+  timeline: text("timeline"), // 'hot', 'warm', 'cold'
+  urgencyScore: integer("urgency_score"), // 0-100 score
+  squareFootage: text("square_footage"),
+  budget: text("budget"),
+  description: text("description"),
+  source: text("source").default("website"), // 'website', 'marketplace', 'referral', etc.
+  status: text("lead_status").default("new"), // 'new', 'contacted', 'qualified', 'converted'
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
   index("idx_leads_tenant_id").on(table.tenantId),
+  index("idx_leads_timeline").on(table.timeline),
+  index("idx_leads_source").on(table.source),
 ]);
 
 export const insertLeadSchema = createInsertSchema(leads).omit({

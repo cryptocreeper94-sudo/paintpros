@@ -129,6 +129,15 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 
 ## Changelog
 
+### January 15, 2026
+- Added Lume Paint Co tenant (lumepaint.co) - sister site to NPP with "We elevate the backdrop of your life" branding
+- Transformed paintpros.io into lead generation marketplace
+- Created LeadSubmissionForm with 3-step wizard (timeline urgency, project details, contact info)
+- Added FeatureShowcase component with clickable feature cards showing platform capabilities
+- Added ContractorCTA component for painter registration
+- Extended leads schema with marketplace fields (address, propertyType, projectTypes, timeline, urgencyScore, budget, description, source)
+- New API endpoint: `POST /api/marketplace/leads` for customer lead submission with urgency scoring
+
 ### January 4, 2026
 - Added Google Calendar multi-tenant OAuth integration
 - Created GoogleCalendarConnect UI component for tenant dashboards

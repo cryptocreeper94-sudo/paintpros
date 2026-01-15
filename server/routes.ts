@@ -612,6 +612,63 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/marketplace/leads - Create lead from marketplace (customers seeking painters)
+  app.post("/api/marketplace/leads", async (req, res) => {
+    try {
+      const { name, email, phone, address, city, state, zip, propertyType, projectType, timeline, squareFootage, description, budget } = req.body;
+      
+      // Validate required fields
+      if (!name || !email || !phone || !zip) {
+        res.status(400).json({ error: "Name, email, phone, and ZIP are required" });
+        return;
+      }
+      
+      // Split name into first/last
+      const nameParts = (name as string).trim().split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+      
+      // Map timeline to urgency score
+      const urgencyMap: Record<string, number> = {
+        hot: 90,
+        warm: 60,
+        cold: 30
+      };
+      
+      // Format full address
+      const fullAddress = [address, city, state, zip].filter(Boolean).join(", ").trim();
+      
+      // Create lead with all marketplace fields
+      const lead = await storage.createLead({
+        firstName,
+        lastName,
+        email,
+        phone,
+        address: fullAddress,
+        propertyType: propertyType || null,
+        projectTypes: Array.isArray(projectType) ? projectType : (projectType ? [projectType] : null),
+        timeline: timeline || null,
+        urgencyScore: urgencyMap[timeline as string] || 50,
+        squareFootage: squareFootage || null,
+        budget: budget || null,
+        description: description || null,
+        source: "marketplace",
+        status: "new",
+        tenantId: "demo" // Marketplace leads go to demo for distribution
+      });
+      
+      res.status(201).json({ 
+        success: true, 
+        leadId: lead.id,
+        urgency: timeline,
+        urgencyScore: urgencyMap[timeline as string] || 50
+      });
+    } catch (error) {
+      console.error("Error creating marketplace lead:", error);
+      res.status(500).json({ error: "Failed to submit lead request" });
+    }
+  });
+
   // GET /api/leads/:id - Get a specific lead
   app.get("/api/leads/:id", async (req, res) => {
     try {

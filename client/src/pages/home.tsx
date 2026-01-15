@@ -19,9 +19,11 @@ export default function Home() {
   }
   
   // Default tenant-based routing
-  if (tenant.id === "npp") {
+  // NPP and Lume Paint use the minimalist layout
+  if (tenant.id === "npp" || tenant.id === "lumepaint") {
     return <HomeNPP />;
   }
   
+  // Demo/PaintPros uses the lead gen marketplace layout
   return <HomeDemo />;
 }
