@@ -198,7 +198,7 @@ export const paintProsDemo: TenantConfig = {
   subscriptionTier: "full_suite",
   
   name: "PaintPros.io",
-  tagline: "The First Solana-Verified Painting Company Software",
+  tagline: "White Glove Business System for All Trades",
   description: "PaintPros.io is a complete white-label SaaS platform designed specifically for the painting and home services industry. Anti-fraud protection, document recall, and blockchain verification built-in.",
   logo: "/icons/paintpros-mascot.png",
   

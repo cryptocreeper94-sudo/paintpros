@@ -48,9 +48,9 @@ export function HeroSlideshow() {
   const customerSlides: HelpSlide[] = [
     {
       id: "hero",
-      title: "Extraordinary",
-      subtitle: "Craftsmanship.",
-      description: tenant.description || "Premium residential and commercial painting.",
+      title: isDemo ? "White Glove" : "Extraordinary",
+      subtitle: isDemo ? "Business System." : "Craftsmanship.",
+      description: isDemo ? tenant.tagline : (tenant.description || "Premium residential and commercial painting."),
       image: heroBg,
       icon: Star,
       isHero: true
@@ -150,9 +150,9 @@ export function HeroSlideshow() {
   const staffSlides: HelpSlide[] = [
     {
       id: "hero",
-      title: "Extraordinary",
-      subtitle: "Craftsmanship.",
-      description: tenant.description || "Premium residential and commercial painting.",
+      title: isDemo ? "White Glove" : "Extraordinary",
+      subtitle: isDemo ? "Business System." : "Craftsmanship.",
+      description: isDemo ? tenant.tagline : (tenant.description || "Premium residential and commercial painting."),
       image: heroBg,
       icon: Star,
       isHero: true
