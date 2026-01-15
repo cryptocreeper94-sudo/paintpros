@@ -1,6 +1,7 @@
 import { useTenant } from "@/context/TenantContext";
 import HomeDemo from "./home-demo";
 import HomeNPP from "./home-npp";
+import HomeLume from "./home-lume";
 
 export default function Home() {
   const tenant = useTenant();
@@ -19,8 +20,13 @@ export default function Home() {
   }
   
   // Default tenant-based routing
-  // NPP and Lume Paint use the minimalist layout
-  if (tenant.id === "npp" || tenant.id === "lumepaint") {
+  // Lume Paint has its own dedicated elegant layout
+  if (tenant.id === "lumepaint") {
+    return <HomeLume />;
+  }
+  
+  // NPP uses the minimalist layout
+  if (tenant.id === "npp") {
     return <HomeNPP />;
   }
   
