@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench, FileText, Calendar } from "lucide-react";
+import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench, FileText, Calendar, Paintbrush, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -268,6 +268,42 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 </div>
+
+                {/* Sister Sites - NPP Only */}
+                {tenant.id === "npp" && (
+                  <>
+                    <div className="border-t border-white/10 my-4" />
+                    <div className="space-y-1 mb-4">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2 flex items-center gap-2">
+                        <Star className="w-3 h-3" />
+                        Sister Sites
+                      </p>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <a 
+                          href="https://lumepaint.co" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                          onClick={() => setIsOpen(false)}
+                          data-testid="link-lume-paint"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                            <Paintbrush className="w-4 h-4 text-amber-400" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-base font-medium text-foreground">Lume Paint Co</span>
+                            <p className="text-xs text-muted-foreground">Premium painting services</p>
+                          </div>
+                          <ChevronRight className="w-5 h-5 opacity-50" />
+                        </a>
+                      </motion.div>
+                    </div>
+                  </>
+                )}
 
                 {/* Divider */}
                 <div className="border-t border-white/10 my-4" />
