@@ -109,17 +109,17 @@ export default function HomeDemo() {
           {tenant.id === "demo" && (
             <>
               {/* Customer Lead Form */}
-              <BentoItem colSpan={6} rowSpan={3} mobileColSpan={4} mobileRowSpan={5}>
+              <BentoItem colSpan={6} rowSpan={4} mobileColSpan={4} mobileRowSpan={6}>
                 <LeadSubmissionForm />
               </BentoItem>
 
               {/* Contractor CTA */}
-              <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
+              <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={4}>
                 <ContractorCTA />
               </BentoItem>
 
               {/* Feature Showcase */}
-              <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4} mobileRowSpan={2}>
+              <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
                 <FeatureShowcase />
               </BentoItem>
             </>
