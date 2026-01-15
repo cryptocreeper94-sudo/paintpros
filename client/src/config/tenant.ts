@@ -267,6 +267,96 @@ export const paintProsDemo: TenantConfig = {
   },
 };
 
+// Lume Paint Co - Sister site to NPP
+export const lumePaintCo: TenantConfig = {
+  id: "lumepaint",
+  slug: "lume-paint-co",
+  subscriptionTier: "full_suite",
+  
+  name: "Lume Paint Co",
+  tagline: "We elevate the backdrop of your life.",
+  description: "Premium painting services that illuminate your space. Professional interior and exterior painting with meticulous attention to detail.",
+  logo: "/icons/lume-logo.png",
+  
+  phone: "",
+  email: "",
+  address: {
+    city: "Nashville",
+    state: "TN",
+  },
+  
+  social: {
+    googleReviews: "",
+  },
+  
+  theme: {
+    primaryColor: "hsl(42, 75%, 55%)", // Warm gold
+    accentColor: "hsl(42, 60%, 65%)", // Soft gold
+    darkMode: {
+      background: "hsl(35, 20%, 8%)", // Warm dark
+      foreground: "hsl(42, 30%, 95%)", // Cream white
+    },
+    lightMode: {
+      background: "hsl(42, 40%, 97%)", // Warm cream
+      foreground: "hsl(35, 25%, 15%)", // Warm dark text
+    },
+  },
+  
+  services: {
+    interiorPainting: true,
+    exteriorPainting: true,
+    commercialPainting: true,
+    residentialPainting: true,
+    trimAndMolding: true,
+    ceilings: true,
+    doors: true,
+    drywallRepair: true,
+    cabinetPainting: false,
+    deckStaining: false,
+    pressureWashing: false,
+  },
+  
+  pricing: {
+    doorsPerUnit: 150,
+    wallsPerSqFt: 2.50,
+    fullJobPerSqFt: 5.00,
+  },
+  
+  seo: {
+    title: "Lume Paint Co | We Elevate the Backdrop of Your Life",
+    description: "Premium painting services in Nashville. Professional interior and exterior painting that illuminates your space. Free estimates available.",
+    keywords: [
+      "Nashville painters",
+      "Lume Paint",
+      "interior painting",
+      "exterior painting",
+      "house painters Nashville",
+      "premium painting",
+      "residential painting",
+    ],
+    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: false,
+    onlineBooking: false,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    googleRating: 5.0,
+    reviewCount: 0,
+    yearsInBusiness: 1,
+    warrantyYears: 3,
+    licensed: true,
+    insured: true,
+    bonded: false,
+  },
+};
+
 // Estimator-Only Template (for standalone estimator subscribers)
 export const estimatorOnlyTemplate: Partial<TenantConfig> = {
   subscriptionTier: "estimator_only",
@@ -303,6 +393,7 @@ export function createEstimatorOnlyTenant(
 export const tenants: Record<string, TenantConfig> = {
   "npp": nashvillePaintingProfessionals,
   "demo": paintProsDemo,
+  "lumepaint": lumePaintCo,
 };
 
 // Domain to tenant mapping (custom domains)
@@ -313,6 +404,8 @@ const domainTenantMap: Record<string, string> = {
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
   "www.nashvillepaintingprofessionals.com": "npp",
+  "lumepaint.co": "lumepaint",
+  "www.lumepaint.co": "lumepaint",
   "localhost": "npp",
 };
 
@@ -322,6 +415,8 @@ const subdomainTenantMap: Record<string, string> = {
   "npp": "npp",
   "demo": "demo",
   "www": "demo",
+  "lumepaint": "lumepaint",
+  "lume": "lumepaint",
 };
 
 // Parse tenant from hostname (client-side)
