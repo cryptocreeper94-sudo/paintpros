@@ -36,7 +36,6 @@ import { FeatureModal } from "@/components/feature-modal";
 import { SiBitcoin, SiEthereum } from "react-icons/si";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { InvestorSnapshotModal } from "@/components/investor-snapshot-modal";
-import { TradeVerticalSelector } from "@/components/trade-vertical-selector";
 import { EstimatorPromoCard } from "@/components/estimator-promo-card";
 import { PWAStaticBanner } from "@/components/pwa-static-banner";
 import { LeadSubmissionForm } from "@/components/lead-generation/lead-submission-form";
@@ -106,32 +105,26 @@ export default function HomeDemo() {
             <HeroSlideshow />
           </BentoItem>
 
-          {/* Trade Vertical Selector - Demo Only */}
+          {/* Lead Generation Section - Prominent Hero Area for Demo/Marketplace */}
           {tenant.id === "demo" && (
-            <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
-              <TradeVerticalSelector />
-            </BentoItem>
-          )}
+            <>
+              {/* Main Lead Form - Full Width Hero Card */}
+              <BentoItem colSpan={7} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
+                <LeadSubmissionForm />
+              </BentoItem>
 
-          {/* Lead Generation - Customer Lead Form */}
-          {tenant.id === "demo" && (
-            <BentoItem colSpan={6} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
-              <LeadSubmissionForm />
-            </BentoItem>
-          )}
-
-          {/* Contractor CTA - For Painters */}
-          {tenant.id === "demo" && (
-            <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
-              <ContractorCTA />
-            </BentoItem>
-          )}
-
-          {/* Feature Showcase Gallery */}
-          {tenant.id === "demo" && (
-            <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4} mobileRowSpan={3}>
-              <FeatureShowcase />
-            </BentoItem>
+              {/* Contractor CTA + Feature Showcase Stack */}
+              <BentoItem colSpan={5} rowSpan={3} mobileColSpan={4} mobileRowSpan={4}>
+                <div className="flex flex-col gap-4 h-full">
+                  <div className="flex-1">
+                    <ContractorCTA />
+                  </div>
+                  <div className="flex-1">
+                    <FeatureShowcase />
+                  </div>
+                </div>
+              </BentoItem>
+            </>
           )}
 
           {/* PWA Install Banner */}
