@@ -244,7 +244,7 @@ export function LeadSubmissionForm() {
           </div>
           <h2 className="text-2xl font-display font-bold mb-2">You're All Set!</h2>
           <p className="text-muted-foreground mb-4">
-            Your request has been sent to verified {formData.tradeType === "general" ? "contractors" : formData.tradeType + " professionals"} in your area.
+            We're matching you with top-rated {formData.tradeType === "general" ? "contractors" : formData.tradeType + " professionals"} in your area who will compete to earn your business.
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <Badge className={timelineOptions.find(t => t.value === formData.timeline)?.bgColor}>
@@ -264,10 +264,13 @@ export function LeadSubmissionForm() {
 
   return (
     <GlassCard className="p-6" glow="gold">
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-6 h-6 text-amber-500" />
-        <h2 className="text-xl font-display font-bold">Get Free Quotes</h2>
+        <h2 className="text-xl font-display font-bold">Find the Best Price</h2>
       </div>
+      <p className="text-sm text-muted-foreground mb-6">
+        Tell us about your project and we'll match you with top-rated local pros who compete for your business.
+      </p>
 
       <div className="flex justify-between mb-6">
         {[1, 2, 3, 4].map((s) => (
