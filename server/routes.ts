@@ -612,10 +612,10 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/marketplace/leads - Create lead from marketplace (customers seeking painters)
+  // POST /api/marketplace/leads - Create lead from marketplace (customers seeking contractors)
   app.post("/api/marketplace/leads", async (req, res) => {
     try {
-      const { name, email, phone, address, city, state, zip, propertyType, projectType, timeline, squareFootage, description, budget } = req.body;
+      const { name, email, phone, address, city, state, zip, propertyType, projectType, timeline, squareFootage, description, budget, tradeType } = req.body;
       
       // Validate required fields
       if (!name || !email || !phone || !zip) {
@@ -645,6 +645,7 @@ export async function registerRoutes(
         email,
         phone,
         address: fullAddress,
+        tradeType: tradeType || null,
         propertyType: propertyType || null,
         projectTypes: Array.isArray(projectType) ? projectType : (projectType ? [projectType] : null),
         timeline: timeline || null,

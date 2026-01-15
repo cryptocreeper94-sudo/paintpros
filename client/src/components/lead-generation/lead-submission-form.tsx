@@ -24,13 +24,19 @@ import {
   Calendar,
   ArrowRight,
   ArrowLeft,
-  Sparkles
+  Sparkles,
+  PaintRoller,
+  Zap,
+  Wind,
+  Hammer,
+  Wrench
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 interface LeadFormData {
+  tradeType: string;
   name: string;
   email: string;
   phone: string;
@@ -47,6 +53,7 @@ interface LeadFormData {
 }
 
 const initialFormData: LeadFormData = {
+  tradeType: "",
   name: "",
   email: "",
   phone: "",
@@ -62,16 +69,58 @@ const initialFormData: LeadFormData = {
   budget: "",
 };
 
-const projectTypes = [
-  { id: "interior", label: "Interior Painting" },
-  { id: "exterior", label: "Exterior Painting" },
-  { id: "cabinets", label: "Cabinet Painting" },
-  { id: "trim", label: "Trim & Molding" },
-  { id: "drywall", label: "Drywall Repair" },
-  { id: "deck", label: "Deck Staining" },
-  { id: "commercial", label: "Commercial Project" },
-  { id: "other", label: "Other" },
+const tradeTypes = [
+  { id: "painting", label: "Painting", icon: PaintRoller, color: "text-amber-500", bgColor: "bg-amber-500/10 border-amber-500/30" },
+  { id: "electrical", label: "Electrical", icon: Zap, color: "text-yellow-500", bgColor: "bg-yellow-500/10 border-yellow-500/30" },
+  { id: "hvac", label: "HVAC", icon: Wind, color: "text-cyan-500", bgColor: "bg-cyan-500/10 border-cyan-500/30" },
+  { id: "carpentry", label: "Carpentry", icon: Hammer, color: "text-orange-500", bgColor: "bg-orange-500/10 border-orange-500/30" },
+  { id: "general", label: "General Contractor", icon: Wrench, color: "text-slate-500", bgColor: "bg-slate-500/10 border-slate-500/30" },
 ];
+
+const projectTypesByTrade: Record<string, { id: string; label: string }[]> = {
+  painting: [
+    { id: "interior", label: "Interior Painting" },
+    { id: "exterior", label: "Exterior Painting" },
+    { id: "cabinets", label: "Cabinet Painting" },
+    { id: "trim", label: "Trim & Molding" },
+    { id: "drywall", label: "Drywall Repair" },
+    { id: "deck", label: "Deck Staining" },
+    { id: "commercial", label: "Commercial Project" },
+  ],
+  electrical: [
+    { id: "panel-upgrade", label: "Panel Upgrade" },
+    { id: "rewiring", label: "Rewiring" },
+    { id: "lighting", label: "Lighting Installation" },
+    { id: "outlets", label: "Outlets & Switches" },
+    { id: "ev-charger", label: "EV Charger Install" },
+    { id: "generator", label: "Generator Install" },
+    { id: "commercial-electrical", label: "Commercial Project" },
+  ],
+  hvac: [
+    { id: "ac-install", label: "AC Installation" },
+    { id: "furnace", label: "Furnace Install/Repair" },
+    { id: "heat-pump", label: "Heat Pump" },
+    { id: "ductwork", label: "Ductwork" },
+    { id: "maintenance", label: "Maintenance/Tune-up" },
+    { id: "commercial-hvac", label: "Commercial HVAC" },
+  ],
+  carpentry: [
+    { id: "framing", label: "Framing" },
+    { id: "trim-carpentry", label: "Trim & Molding" },
+    { id: "cabinets-carpentry", label: "Custom Cabinets" },
+    { id: "decks", label: "Decks & Patios" },
+    { id: "doors-windows", label: "Doors & Windows" },
+    { id: "repairs", label: "Repairs & Restoration" },
+  ],
+  general: [
+    { id: "remodel", label: "Home Remodel" },
+    { id: "addition", label: "Room Addition" },
+    { id: "bathroom", label: "Bathroom Renovation" },
+    { id: "kitchen", label: "Kitchen Renovation" },
+    { id: "basement", label: "Basement Finishing" },
+    { id: "new-construction", label: "New Construction" },
+  ],
+};
 
 const timelineOptions = [
   { 
@@ -129,7 +178,7 @@ export function LeadSubmissionForm() {
       setSubmitted(true);
       toast({
         title: "Request Submitted!",
-        description: "Local painters will contact you shortly with quotes.",
+        description: `Local ${formData.tradeType === "general" ? "contractors" : formData.tradeType + " pros"} will contact you shortly with quotes.`,
       });
     },
     onError: (error) => {
@@ -154,17 +203,26 @@ export function LeadSubmissionForm() {
     }));
   };
 
+  const currentProjectTypes = formData.tradeType ? projectTypesByTrade[formData.tradeType] || [] : [];
+
   const canProceed = () => {
     switch (step) {
       case 1:
-        return formData.timeline !== "";
+        return formData.tradeType !== "";
       case 2:
-        return formData.propertyType !== "" && formData.projectType.length > 0;
+        return formData.timeline !== "";
       case 3:
+        return formData.propertyType !== "" && formData.projectType.length > 0;
+      case 4:
         return formData.name && formData.email && formData.phone && formData.zip;
       default:
         return true;
     }
+  };
+
+  const getTradeLabel = () => {
+    const trade = tradeTypes.find(t => t.id === formData.tradeType);
+    return trade?.label || "contractor";
   };
 
   const handleSubmit = () => {
@@ -186,7 +244,7 @@ export function LeadSubmissionForm() {
           </div>
           <h2 className="text-2xl font-display font-bold mb-2">You're All Set!</h2>
           <p className="text-muted-foreground mb-4">
-            Your request has been sent to verified painters in your area.
+            Your request has been sent to verified {formData.tradeType === "general" ? "contractors" : formData.tradeType + " professionals"} in your area.
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <Badge className={timelineOptions.find(t => t.value === formData.timeline)?.bgColor}>
@@ -212,17 +270,17 @@ export function LeadSubmissionForm() {
       </div>
 
       <div className="flex justify-between mb-6">
-        {[1, 2, 3].map((s) => (
+        {[1, 2, 3, 4].map((s) => (
           <div key={s} className="flex items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
               step >= s 
                 ? "bg-amber-500 text-white" 
                 : "bg-muted text-muted-foreground"
             }`}>
               {s}
             </div>
-            {s < 3 && (
-              <div className={`w-16 sm:w-24 h-1 mx-2 rounded ${
+            {s < 4 && (
+              <div className={`w-10 sm:w-16 h-1 mx-1 rounded ${
                 step > s ? "bg-amber-500" : "bg-muted"
               }`} />
             )}
@@ -234,6 +292,35 @@ export function LeadSubmissionForm() {
         {step === 1 && (
           <motion.div
             key="step1"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-4"
+          >
+            <h3 className="text-lg font-semibold mb-4">What type of work do you need?</h3>
+            <div className="grid grid-cols-1 gap-3">
+              {tradeTypes.map((trade) => (
+                <div
+                  key={trade.id}
+                  className={`relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    formData.tradeType === trade.id 
+                      ? trade.bgColor 
+                      : "border-border hover:border-muted-foreground/50"
+                  }`}
+                  onClick={() => handleInputChange("tradeType", trade.id)}
+                  data-testid={`button-trade-${trade.id}`}
+                >
+                  <trade.icon className={`w-6 h-6 mr-3 ${trade.color}`} />
+                  <span className="text-base font-medium">{trade.label}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {step === 2 && (
+          <motion.div
+            key="step2"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -270,9 +357,9 @@ export function LeadSubmissionForm() {
           </motion.div>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <motion.div
-            key="step2"
+            key="step3"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -311,9 +398,9 @@ export function LeadSubmissionForm() {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-4">What needs painting?</h3>
+              <h3 className="text-lg font-semibold mb-4">What do you need done?</h3>
               <div className="grid grid-cols-2 gap-2">
-                {projectTypes.map((type) => (
+                {currentProjectTypes.map((type) => (
                   <div
                     key={type.id}
                     className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${
@@ -348,9 +435,9 @@ export function LeadSubmissionForm() {
           </motion.div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <motion.div
-            key="step3"
+            key="step4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -487,7 +574,7 @@ export function LeadSubmissionForm() {
           <div />
         )}
 
-        {step < 3 ? (
+        {step < 4 ? (
           <Button
             onClick={() => setStep(s => s + 1)}
             disabled={!canProceed()}

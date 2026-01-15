@@ -60,6 +60,7 @@ export const leads = pgTable("leads", {
   phone: text("phone"),
   // Marketplace lead fields
   address: text("address"),
+  tradeType: text("trade_type"), // 'painting', 'electrical', 'hvac', 'carpentry', 'general'
   propertyType: text("property_type"), // 'residential' or 'commercial'
   projectTypes: text("project_types").array(), // ['interior', 'exterior', etc.]
   timeline: text("timeline"), // 'hot', 'warm', 'cold'
