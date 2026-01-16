@@ -59,7 +59,7 @@ export function Footer() {
               </>
             ) : (
               <>
-                © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">NPP</span>
+                © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">{tenant.id === "lumepaint" ? "Lume" : "NPP"}</span>
               </>
             )}
           </div>

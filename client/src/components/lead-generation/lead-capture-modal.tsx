@@ -106,13 +106,13 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
   if (submitted) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200">
+        <DialogContent className="sm:max-w-md bg-gradient-to-br from-gray-50 to-white border-gray-200">
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center mb-4"
+              className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mb-4"
             >
               <CheckCircle2 className="w-8 h-8 text-white" />
             </motion.div>
@@ -130,10 +130,10 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg bg-gradient-to-br from-amber-50/95 to-yellow-50/95 border-amber-200/50 backdrop-blur-sm">
+      <DialogContent className="sm:max-w-lg bg-gradient-to-br from-gray-50/95 to-white/95 border-gray-200/50 backdrop-blur-sm">
         <DialogHeader className="text-center pb-2">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-2 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500">
+            <div className="p-2 rounded-full bg-gradient-to-br from-gray-700 to-gray-900">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
           </div>
@@ -162,7 +162,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     placeholder="John Smith"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="bg-white/80 border-amber-200 focus:border-amber-400"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400"
                     data-testid="input-modal-name"
                   />
                 </div>
@@ -174,7 +174,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     placeholder="(615) 555-0123"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="bg-white/80 border-amber-200 focus:border-amber-400"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400"
                     data-testid="input-modal-phone"
                   />
                 </div>
@@ -186,13 +186,13 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     placeholder="john@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="bg-white/80 border-amber-200 focus:border-amber-400"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400"
                     data-testid="input-modal-email"
                   />
                 </div>
                 <Button
                   onClick={() => setStep(2)}
-                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                  className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white"
                   disabled={!formData.name || !formData.phone}
                   data-testid="button-modal-next"
                 >
@@ -215,7 +215,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     value={formData.projectType}
                     onValueChange={(value) => setFormData({ ...formData, projectType: value })}
                   >
-                    <SelectTrigger className="bg-white/80 border-amber-200" data-testid="select-modal-project">
+                    <SelectTrigger className="bg-white/80 border-gray-200" data-testid="select-modal-project">
                       <SelectValue placeholder="Select project type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -231,7 +231,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     value={formData.timeline}
                     onValueChange={(value) => setFormData({ ...formData, timeline: value })}
                   >
-                    <SelectTrigger className="bg-white/80 border-amber-200" data-testid="select-modal-timeline">
+                    <SelectTrigger className="bg-white/80 border-gray-200" data-testid="select-modal-timeline">
                       <SelectValue placeholder="Select timeline" />
                     </SelectTrigger>
                     <SelectContent>
@@ -248,7 +248,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     placeholder="Tell us about your project..."
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="bg-white/80 border-amber-200 focus:border-amber-400 min-h-[80px]"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400 min-h-[80px]"
                     data-testid="textarea-modal-notes"
                   />
                 </div>
@@ -256,14 +256,14 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                   <Button
                     variant="outline"
                     onClick={() => setStep(1)}
-                    className="flex-1 border-amber-300"
+                    className="flex-1 border-gray-300"
                     data-testid="button-modal-back"
                   >
                     Back
                   </Button>
                   <Button
                     onClick={handleSubmit}
-                    className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                    className="flex-1 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white"
                     disabled={leadMutation.isPending}
                     data-testid="button-modal-submit"
                   >

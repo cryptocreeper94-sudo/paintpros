@@ -23,7 +23,7 @@ import {
 import { motion } from "framer-motion";
 import { LeadCaptureModal } from "@/components/lead-generation/lead-capture-modal";
 
-import lumeLogo from "@assets/generated_images/minimal_gold_lume_logo.png";
+import lumeLogo from "@assets/generated_images/gray_black_lume_logo.png";
 import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 import exteriorImage from "@assets/generated_images/exterior_painting.png";
 
@@ -56,11 +56,11 @@ export default function HomeLume() {
     <PageLayout>
       <LeadCaptureModal tenantId={tenant.id} tenantName={tenant.name} />
       
-      <main className="min-h-screen bg-gradient-to-b from-amber-50/30 to-yellow-50/20">
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         
         {/* HERO SECTION - Minimal, Elegant */}
         <section className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 py-16 md:py-24">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-100/40 via-yellow-50/30 to-orange-50/20" />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-100/60 via-gray-50/40 to-white" />
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -76,7 +76,7 @@ export default function HomeLume() {
             
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-light text-gray-800 leading-tight mb-6">
               We elevate the backdrop
-              <span className="block font-medium text-amber-600">of your life.</span>
+              <span className="block font-medium text-gray-900">of your life.</span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-600 max-w-xl mb-10">
@@ -86,12 +86,12 @@ export default function HomeLume() {
             
             <div className="flex items-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-amber-500" />
+                <Shield className="w-4 h-4 text-gray-700" />
                 <span>Licensed & Insured</span>
               </div>
               <div className="w-px h-4 bg-gray-300" />
               <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-amber-500" />
+                <Award className="w-4 h-4 text-gray-700" />
                 <span>3-Year Warranty</span>
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function HomeLume() {
               <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-3">
                 Our Services
               </h2>
-              <div className="w-16 h-0.5 bg-amber-400 mx-auto" />
+              <div className="w-16 h-0.5 bg-gray-400 mx-auto" />
             </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -130,7 +130,7 @@ export default function HomeLume() {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <Home className="w-5 h-5 text-amber-500" />
+                    <Home className="w-5 h-5 text-gray-700" />
                     <h3 className="text-xl font-medium text-gray-800">Interior Painting</h3>
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed">
@@ -156,7 +156,7 @@ export default function HomeLume() {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="w-5 h-5 text-amber-500" />
+                    <Building2 className="w-5 h-5 text-gray-700" />
                     <h3 className="text-xl font-medium text-gray-800">Exterior Painting</h3>
                   </div>
                   <p className="text-gray-600 text-sm leading-relaxed">
@@ -170,7 +170,7 @@ export default function HomeLume() {
         </section>
 
         {/* WHY LUME SECTION */}
-        <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-amber-50/50 to-yellow-50/30">
+        <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-gray-100/50 to-gray-50/30">
           <div className="max-w-5xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -181,7 +181,7 @@ export default function HomeLume() {
               <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-3">
                 Why Choose Lume
               </h2>
-              <div className="w-16 h-0.5 bg-amber-400 mx-auto" />
+              <div className="w-16 h-0.5 bg-gray-400 mx-auto" />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -210,8 +210,8 @@ export default function HomeLume() {
                   transition={{ delay: index * 0.1 }}
                   className="text-center p-6"
                 >
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center mx-auto mb-4">
-                    <item.icon className="w-6 h-6 text-amber-600" />
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-4">
+                    <item.icon className="w-6 h-6 text-gray-700" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-800 mb-2">{item.title}</h3>
                   <p className="text-gray-600 text-sm">{item.description}</p>
@@ -234,7 +234,7 @@ export default function HomeLume() {
                 <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-3">
                   Color Inspiration
                 </h2>
-                <div className="w-16 h-0.5 bg-amber-400 mx-auto mb-4" />
+                <div className="w-16 h-0.5 bg-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">Curated palettes for refined spaces</p>
               </motion.div>
 
@@ -261,7 +261,7 @@ export default function HomeLume() {
 
               <div className="text-center mt-8">
                 <Link href="/colors">
-                  <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50" data-testid="button-view-colors">
+                  <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" data-testid="button-view-colors">
                     View Full Color Library
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -272,7 +272,7 @@ export default function HomeLume() {
         )}
 
         {/* SERVICE AREA */}
-        <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-amber-50/50 to-yellow-50/30">
+        <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-gray-100/50 to-gray-50/30">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -280,12 +280,12 @@ export default function HomeLume() {
               viewport={{ once: true }}
             >
               <div className="flex items-center justify-center gap-2 mb-4">
-                <MapPin className="w-5 h-5 text-amber-500" />
+                <MapPin className="w-5 h-5 text-gray-700" />
                 <h2 className="text-2xl md:text-3xl font-light text-gray-800">
                   Serving Greater Nashville
                 </h2>
               </div>
-              <div className="w-16 h-0.5 bg-amber-400 mx-auto mb-6" />
+              <div className="w-16 h-0.5 bg-gray-400 mx-auto mb-6" />
               <p className="text-gray-600 mb-4">
                 Nashville · Franklin · Brentwood · Murfreesboro · Hendersonville
               </p>
@@ -297,7 +297,7 @@ export default function HomeLume() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="py-20 md:py-28 px-6 bg-gradient-to-br from-amber-100/60 to-yellow-100/40">
+        <section className="py-20 md:py-28 px-6 bg-gradient-to-br from-gray-100/60 to-gray-50/40">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -315,7 +315,7 @@ export default function HomeLume() {
                 <Link href="/estimate">
                   <Button 
                     size="lg" 
-                    className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white px-8 shadow-lg"
+                    className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-8 shadow-lg"
                     data-testid="button-get-estimate"
                   >
                     Get Your Free Estimate
@@ -326,7 +326,7 @@ export default function HomeLume() {
                   <Button 
                     variant="outline" 
                     size="lg"
-                    className="border-amber-400 text-amber-700 hover:bg-amber-50 px-8"
+                    className="border-gray-400 text-gray-700 hover:bg-gray-50 px-8"
                     data-testid="button-call-us"
                   >
                     <Phone className="w-4 h-4 mr-2" />
