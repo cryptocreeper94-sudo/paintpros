@@ -168,7 +168,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
       "commercial painting",
       "residential painting",
     ],
-    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville"],
+    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville", "Lebanon", "Mount Juliet", "Madison", "Goodlettsville"],
   },
   
   features: {
@@ -334,7 +334,7 @@ export const lumePaintCo: TenantConfig = {
       "premium painting",
       "residential painting",
     ],
-    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville"],
+    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville", "Lebanon", "Mount Juliet", "Madison", "Goodlettsville"],
   },
   
   features: {
