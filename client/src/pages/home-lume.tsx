@@ -130,7 +130,7 @@ export default function HomeLume() {
             <p className="mt-4 text-lg md:text-xl text-gray-600 font-light">
               We elevate the backdrop of your life.
             </p>
-            <p className="mt-8 text-sm text-gray-400 md:hidden animate-bounce">
+            <p className="mt-8 text-sm text-gray-800 md:hidden animate-bounce">
               Scroll to explore
             </p>
           </motion.div>
