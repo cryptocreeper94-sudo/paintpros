@@ -56,11 +56,11 @@ export default function HomeLume() {
     <PageLayout>
       <LeadCaptureModal tenantId={tenant.id} tenantName={tenant.name} />
       
-      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <main className="min-h-screen bg-gradient-to-b from-gray-200 to-gray-300">
         
         {/* HERO SECTION - Minimal, Elegant */}
         <section className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 py-16 md:py-24">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-100/60 via-gray-50/40 to-white" />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-300/60 via-gray-200/80 to-gray-100/40" />
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -68,11 +68,14 @@ export default function HomeLume() {
             transition={{ duration: 0.8 }}
             className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto"
           >
-            <img 
-              src={lumeLogo} 
-              alt="Lume" 
-              className="h-16 md:h-24 mb-8 object-contain"
-            />
+            {/* Logo in white frame */}
+            <div className="bg-white rounded-2xl px-12 py-8 md:px-20 md:py-12 shadow-lg mb-8">
+              <img 
+                src={lumeLogo} 
+                alt="Lume" 
+                className="h-32 md:h-48 lg:h-56 object-contain"
+              />
+            </div>
             
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-light text-gray-800 leading-tight mb-6">
               We elevate the backdrop
