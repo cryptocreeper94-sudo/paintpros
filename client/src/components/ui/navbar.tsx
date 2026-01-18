@@ -205,69 +205,71 @@ export function Navbar() {
                   ))}
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-white/10 my-4" />
-
-                {/* For Contractors Section */}
-                <div className="space-y-1 mb-4">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2 flex items-center gap-2">
-                    <HardHat className="w-3 h-3" />
-                    For Contractors
-                  </p>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link href="/contractor-application">
-                      <span 
-                        className={cn(
-                          "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
-                          "bg-gradient-to-r from-accent/10 to-transparent hover:from-accent/20",
-                          "border border-accent/20 hover:border-accent/40",
-                          location === "/contractor-application" && "bg-accent/20 border-accent/50"
-                        )}
-                        onClick={() => setIsOpen(false)}
-                        data-testid="link-contractor-application"
+                {/* For Contractors Section - Only for demo/npp, not for Lume */}
+                {(tenant.id === "demo" || tenant.id === "npp") && (
+                  <>
+                    <div className="border-t border-white/10 my-4" />
+                    <div className="space-y-1 mb-4">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider px-4 mb-2 flex items-center gap-2">
+                        <HardHat className="w-3 h-3" />
+                        For Contractors
+                      </p>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 }}
                       >
-                        <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                          <Briefcase className="w-4 h-4 text-accent" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-base font-medium text-foreground">Join Our Team</span>
-                          <p className="text-xs text-muted-foreground">Apply as a contractor</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 opacity-50" />
-                      </span>
-                    </Link>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35 }}
-                  >
-                    <Link href="/trade-verticals">
-                      <span 
-                        className={cn(
-                          "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
-                          "hover:bg-white/5",
-                          location === "/trade-verticals" && "bg-accent/10"
-                        )}
-                        onClick={() => setIsOpen(false)}
-                        data-testid="link-trade-verticals"
+                        <Link href="/contractor-application">
+                          <span 
+                            className={cn(
+                              "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
+                              "bg-gradient-to-r from-accent/10 to-transparent hover:from-accent/20",
+                              "border border-accent/20 hover:border-accent/40",
+                              location === "/contractor-application" && "bg-accent/20 border-accent/50"
+                            )}
+                            onClick={() => setIsOpen(false)}
+                            data-testid="link-contractor-application"
+                          >
+                            <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                              <Briefcase className="w-4 h-4 text-accent" />
+                            </div>
+                            <div className="flex-1">
+                              <span className="text-base font-medium text-foreground">Join Our Team</span>
+                              <p className="text-xs text-muted-foreground">Apply as a contractor</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 opacity-50" />
+                          </span>
+                        </Link>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.35 }}
                       >
-                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                          <Wrench className="w-4 h-4 text-blue-400" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-base font-medium text-foreground">All Trade Platforms</span>
-                          <p className="text-xs text-muted-foreground">Explore our verticals</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 opacity-50" />
-                      </span>
-                    </Link>
-                  </motion.div>
-                </div>
+                        <Link href="/trade-verticals">
+                          <span 
+                            className={cn(
+                              "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
+                              "hover:bg-white/5",
+                              location === "/trade-verticals" && "bg-accent/10"
+                            )}
+                            onClick={() => setIsOpen(false)}
+                            data-testid="link-trade-verticals"
+                          >
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                              <Wrench className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <div className="flex-1">
+                              <span className="text-base font-medium text-foreground">All Trade Platforms</span>
+                              <p className="text-xs text-muted-foreground">Explore our verticals</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 opacity-50" />
+                          </span>
+                        </Link>
+                      </motion.div>
+                    </div>
+                  </>
+                )}
 
                 {/* Sister Sites - NPP Only */}
                 {tenant.id === "npp" && (
