@@ -49,7 +49,7 @@ import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
-import { sendContactEmail, sendLeadNotification, type ContactFormData, type LeadNotificationData } from "./resend";
+import { sendContactEmail, sendLeadNotification, sendContractorApplicationEmail, type ContactFormData, type LeadNotificationData, type ContractorApplicationData } from "./resend";
 import { setupAuth, isAuthenticated, initAuthBackground } from "./replitAuth";
 import type { RequestHandler } from "express";
 import { checkCredits, deductCreditsAfterUsage, getActionCost, CREDIT_PACKS } from "./aiCredits";
@@ -386,15 +386,57 @@ export async function registerRoutes(
 
   // ============ CONTRACTOR APPLICATIONS ============
   
-  // POST /api/contractor-applications - Submit contractor application
+  // POST /api/contractor-applications - Submit contractor application with email notification
   app.post("/api/contractor-applications", async (req, res) => {
     try {
-      const applicationData = req.body;
-      console.log("Contractor application received:", applicationData);
-      res.status(201).json({ success: true, message: "Application submitted successfully" });
+      const applicationSchema = z.object({
+        firstName: z.string().min(1, "First name is required"),
+        lastName: z.string().min(1, "Last name is required"),
+        email: z.string().email("Valid email is required"),
+        phone: z.string().min(1, "Phone is required"),
+        companyName: z.string().optional(),
+        yearsExperience: z.string().min(1, "Years experience is required"),
+        crewSize: z.string().min(1, "Crew size is required"),
+        availableStart: z.string().optional(),
+        weeklyHours: z.string().optional(),
+        preferredSchedule: z.string().optional(),
+        workHistory: z.string().optional(),
+        certifications: z.string().optional(),
+        specialties: z.string().optional(),
+        hasEquipment: z.boolean().nullable(),
+        references: z.string().optional(),
+        whyJoin: z.string().optional(),
+        tenantId: z.string().optional(),
+        tenantName: z.string().optional(),
+      });
+
+      const validatedData = applicationSchema.parse(req.body);
+      console.log("[Contractor] Application received:", validatedData.firstName, validatedData.lastName);
+
+      // Send email notification via Resend
+      const emailData: ContractorApplicationData = {
+        ...validatedData,
+        hasEquipment: validatedData.hasEquipment ?? false,
+      };
+      
+      const emailResult = await sendContractorApplicationEmail(emailData);
+      
+      if (emailResult.success) {
+        console.log("[Contractor] Email notification sent successfully");
+        res.status(201).json({ success: true, message: "Application submitted successfully" });
+      } else {
+        console.error("[Contractor] Email failed but storing application:", emailResult.error);
+        // Still return success - we received the application even if email failed
+        res.status(201).json({ success: true, message: "Application submitted successfully" });
+      }
     } catch (error) {
-      console.error("Error processing contractor application:", error);
-      res.status(500).json({ success: false, error: "Failed to submit application" });
+      if (error instanceof z.ZodError) {
+        console.error("[Contractor] Validation error:", error.errors);
+        res.status(400).json({ success: false, error: "Invalid application data", details: error.errors });
+      } else {
+        console.error("[Contractor] Error processing application:", error);
+        res.status(500).json({ success: false, error: "Failed to submit application" });
+      }
     }
   });
 

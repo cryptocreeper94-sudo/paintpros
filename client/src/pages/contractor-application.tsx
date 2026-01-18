@@ -180,6 +180,8 @@ export default function ContractorApplication() {
       hasEquipment,
       references: formData.get("references"),
       whyJoin: formData.get("whyJoin"),
+      tenantId: tenant.id,
+      tenantName: tenant.name,
       language,
       submittedAt: new Date().toISOString(),
       portfolioImages: portfolioImages.map((img) => ({
