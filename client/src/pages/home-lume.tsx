@@ -255,65 +255,41 @@ export default function HomeLume() {
               </div>
             </div>
 
-            {/* Row 4: Service Area with Map + CTA */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <GlassCard 
-                className="p-4 cursor-pointer hover:shadow-md transition-all"
-                onClick={() => setActiveModal("service-area")}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="w-5 h-5 text-gray-700" />
-                  <h3 className="font-medium text-gray-800">Service Area</h3>
-                </div>
-                <div className="aspect-video rounded-lg overflow-hidden mb-3">
-                  <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-sm text-gray-600">
-                  {tenant.seo.serviceAreas.slice(0, 4).join(" · ")}
-                </p>
-              </GlassCard>
+            {/* Row 4: Service Area with Map */}
+            <GlassCard 
+              className="p-4 cursor-pointer hover:shadow-md transition-all"
+              onClick={() => setActiveModal("service-area")}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="w-5 h-5 text-gray-700" />
+                <h3 className="font-medium text-gray-800">Service Area</h3>
+              </div>
+              <div className="aspect-[21/9] rounded-lg overflow-hidden mb-3">
+                <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover" />
+              </div>
+              <p className="text-sm text-gray-600">
+                {tenant.seo.serviceAreas.slice(0, 5).join(" · ")}
+              </p>
+            </GlassCard>
 
-              <Link href="/estimate">
-                <GlassCard className="p-4 md:p-6 bg-gradient-to-br from-gray-800 to-gray-900 text-white cursor-pointer hover:shadow-lg transition-all h-full flex flex-col justify-center">
-                  <h3 className="font-medium text-xl md:text-2xl mb-2">Get Your Estimate</h3>
-                  <p className="text-sm text-gray-300 mb-4">Free AI visual editor & sq ft estimate - takes less than a minute</p>
-                  <Button variant="secondary" className="w-fit" data-testid="button-estimate">
+            {/* Row 5: CTA */}
+            <Link href="/estimate">
+              <GlassCard className="p-5 md:p-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white cursor-pointer hover:shadow-lg transition-all">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-medium text-xl md:text-2xl mb-2">Get Your Estimate</h3>
+                    <p className="text-sm text-gray-300">Free AI visual editor & sq ft estimate - takes less than a minute</p>
+                  </div>
+                  <Button variant="secondary" size="lg" className="w-full md:w-auto" data-testid="button-estimate">
                     Start Now <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
-                </GlassCard>
-              </Link>
-            </div>
+                </div>
+              </GlassCard>
+            </Link>
 
           </div>
         </section>
 
-        {/* Contact Bar */}
-        <section className="px-3 md:px-6 pb-8">
-          <div className="max-w-5xl mx-auto">
-            <GlassCard className="p-4 md:p-6 bg-gray-50">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-                <div>
-                  <h3 className="font-medium text-gray-800">Ready to transform your space?</h3>
-                  <p className="text-sm text-gray-600">Premium painting with meticulous attention to detail.</p>
-                </div>
-                <div className="flex gap-3">
-                  <Link href="/estimate">
-                    <Button className="bg-gray-800 hover:bg-gray-900" data-testid="button-cta-estimate">
-                      Get Estimate <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                  {tenant.phone && (
-                    <a href={`tel:${tenant.phone}`}>
-                      <Button variant="outline" data-testid="button-call">
-                        <Phone className="w-4 h-4 mr-2" /> Call
-                      </Button>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </GlassCard>
-          </div>
-        </section>
 
       </main>
 
