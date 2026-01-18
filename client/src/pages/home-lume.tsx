@@ -27,7 +27,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 import exteriorImage from "@assets/generated_images/exterior_painting.png";
-import serviceAreaMap from "@assets/generated_images/middle_tennessee_region_map.png";
+import serviceAreaMap from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
 
 interface PaintColor {
   id: number;
