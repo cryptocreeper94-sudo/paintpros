@@ -544,264 +544,161 @@ function LicensingPricing() {
 }
 
 function ServicePricing({ tenant }: { tenant: any }) {
-  const { pricing, name, credentials } = tenant;
+  const { pricing, credentials } = tenant;
   const isNPP = tenant.id === 'npp';
 
   const FullImplementationBadge = () => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="mb-8"
-    >
-      <GlassCard className="p-4 bg-gradient-to-r from-green-500/10 via-accent/10 to-green-500/10 border-green-500/30" glow>
-        <div className="flex items-center justify-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-              <BadgeCheck className="w-5 h-5 text-green-400" />
-            </div>
-            <div>
-              <p className="font-bold text-green-400">Full Implementation Active</p>
-              <p className="text-xs text-muted-foreground">All premium features unlocked</p>
-            </div>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-medium">AI Room Scanner</span>
-            <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-medium">CRM</span>
-            <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium">Crew Mgmt</span>
-            <span className="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-medium">Blockchain</span>
-          </div>
+    <GlassCard className="p-3 mb-6 bg-gradient-to-r from-green-500/10 via-accent/10 to-green-500/10 border-green-500/30">
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <BadgeCheck className="w-5 h-5 text-green-400" />
+          <span className="font-bold text-green-400 text-sm">Full Implementation Active</span>
         </div>
-      </GlassCard>
-    </motion.div>
+        <div className="flex gap-1 flex-wrap">
+          <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 text-xs">AI Scanner</span>
+          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs">CRM</span>
+          <span className="px-2 py-0.5 rounded-full bg-accent/20 text-accent text-xs">Blockchain</span>
+        </div>
+      </div>
+    </GlassCard>
   );
 
   const pricingItems = pricing ? [
-    {
-      title: "Walls Only",
-      icon: Grid3X3,
-      price: `$${pricing.wallsPerSqFt?.toFixed(2) || '0.00'}`,
-      unit: "per sq ft",
-      description: "Interior wall painting, prep included",
-      color: "text-blue-400",
-      bgColor: "bg-blue-500/20",
-    },
-    {
-      title: "Full Job",
-      icon: Home,
-      price: `$${pricing.fullJobPerSqFt?.toFixed(2) || '0.00'}`,
-      unit: "per sq ft",
-      description: "Walls + Trim + Ceiling",
-      color: "text-green-400",
-      bgColor: "bg-green-500/20",
-      popular: true,
-    },
-    {
-      title: "Doors",
-      icon: DoorOpen,
-      price: `$${pricing.doorsPerUnit || '0'}`,
-      unit: "per door",
-      description: "Both sides, any standard door",
-      color: "text-purple-400",
-      bgColor: "bg-purple-500/20",
-    },
+    { title: "Walls Only", icon: Grid3X3, price: `$${pricing.wallsPerSqFt?.toFixed(2) || '0.00'}`, unit: "/sqft", desc: "Interior walls, prep included", color: "text-blue-400", bg: "bg-blue-500/20" },
+    { title: "Full Job", icon: Home, price: `$${pricing.fullJobPerSqFt?.toFixed(2) || '0.00'}`, unit: "/sqft", desc: "Walls + Trim + Ceiling", color: "text-green-400", bg: "bg-green-500/20", popular: true },
+    { title: "Doors", icon: DoorOpen, price: `$${pricing.doorsPerUnit || '0'}`, unit: "/door", desc: "Both sides included", color: "text-purple-400", bg: "bg-purple-500/20" },
   ] : [];
 
   if (pricing?.ceilingsPerSqFt) {
-    pricingItems.push({
-      title: "Ceilings Only",
-      icon: Maximize,
-      price: `$${pricing.ceilingsPerSqFt.toFixed(2)}`,
-      unit: "per sq ft",
-      description: "Ceiling painting standalone",
-      color: "text-amber-400",
-      bgColor: "bg-amber-500/20",
-    });
+    pricingItems.push({ title: "Ceilings", icon: Maximize, price: `$${pricing.ceilingsPerSqFt.toFixed(2)}`, unit: "/sqft", desc: "Ceiling painting", color: "text-amber-400", bg: "bg-amber-500/20" });
+  }
+  if (pricing?.trimPerLinearFt) {
+    pricingItems.push({ title: "Trim", icon: Ruler, price: `$${pricing.trimPerLinearFt.toFixed(2)}`, unit: "/lnft", desc: "Baseboards & molding", color: "text-teal-400", bg: "bg-teal-500/20" });
   }
 
-  if (pricing?.trimPerLinearFt) {
-    pricingItems.push({
-      title: "Trim Only",
-      icon: Ruler,
-      price: `$${pricing.trimPerLinearFt.toFixed(2)}`,
-      unit: "per linear ft",
-      description: "Baseboards, crown molding, casings",
-      color: "text-teal-400",
-      bgColor: "bg-teal-500/20",
-    });
-  }
+  const inclusions = [
+    { title: "Surface Prep", desc: "Cleaning, sanding, patching, taping, priming" },
+    { title: "Premium Materials", desc: "High-quality paints from trusted brands" },
+    { title: "Full Cleanup", desc: "Spotless finish, furniture replaced" },
+    { title: `${credentials?.warrantyYears || 3}-Year Warranty`, desc: "Guaranteed workmanship" },
+  ];
 
   return (
     <PageLayout>
-      <main className="pt-24 pb-24 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/30 text-accent text-sm mb-6">
+      <main className="pt-20 pb-16 px-3 md:px-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-sm mb-4">
               <Paintbrush className="w-4 h-4" />
               Transparent Pricing
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
+            <h1 className="text-2xl md:text-4xl font-display font-bold mb-2">
               Our <span className="text-accent">Service Rates</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Simple, upfront pricing for all your painting needs. No surprises.
+            <p className="text-sm md:text-lg text-muted-foreground">
+              Simple, upfront pricing. No surprises.
             </p>
-          </motion.div>
+          </div>
 
           {isNPP && <FullImplementationBadge />}
 
-          <div className="px-4 md:px-12 mb-12">
-            <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
-              <CarouselContent className="-ml-4">
-                {pricingItems.map((item, index) => (
-                  <CarouselItem key={item.title} className="pl-4 basis-[280px] md:basis-1/3 lg:basis-1/4">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="h-full"
-                    >
-                      <GlassCard 
-                        className={`p-6 h-full ${item.popular ? 'border-accent/50 bg-accent/5' : ''}`}
-                        glow={item.popular}
-                        data-testid={`pricing-card-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        {item.popular && (
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                            <span className="px-3 py-1 rounded-full bg-accent text-black text-xs font-bold">
-                              BEST VALUE
-                            </span>
-                          </div>
-                        )}
-                        
-                        <div className={`w-14 h-14 rounded-xl ${item.bgColor} flex items-center justify-center mb-4`}>
-                          <item.icon className={`w-7 h-7 ${item.color}`} />
-                        </div>
-                        
-                        <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                        
-                        <div className="mb-3">
-                          <span className="text-4xl font-bold text-accent">{item.price}</span>
-                          <span className="text-muted-foreground text-sm ml-1">{item.unit}</span>
-                        </div>
-                        
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                      </GlassCard>
-                    </motion.div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
-            </Carousel>
+          {/* Pricing Cards - 3 column grid */}
+          <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6">
+            {pricingItems.slice(0, 3).map((item, index) => (
+              <GlassCard 
+                key={item.title}
+                className={`p-3 md:p-4 ${item.popular ? 'border-accent/50 bg-accent/5 relative' : ''}`}
+                data-testid={`pricing-card-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                {item.popular && (
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                    <span className="px-2 py-0.5 rounded-full bg-accent text-black text-[10px] font-bold whitespace-nowrap">
+                      BEST VALUE
+                    </span>
+                  </div>
+                )}
+                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg ${item.bg} flex items-center justify-center mb-2`}>
+                  <item.icon className={`w-4 h-4 md:w-5 md:h-5 ${item.color}`} />
+                </div>
+                <h3 className="text-xs md:text-sm font-bold mb-1">{item.title}</h3>
+                <div className="mb-1">
+                  <span className="text-lg md:text-2xl font-bold text-accent">{item.price}</span>
+                  <span className="text-muted-foreground text-xs">{item.unit}</span>
+                </div>
+                <p className="text-xs text-muted-foreground hidden md:block">{item.desc}</p>
+              </GlassCard>
+            ))}
           </div>
 
-          <BentoGrid>
-            <BentoItem colSpan={6} rowSpan={1}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <GlassCard className="p-6 h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                      <Check className="w-6 h-6 text-green-400" />
+          {/* Additional pricing items if any */}
+          {pricingItems.length > 3 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-6">
+              {pricingItems.slice(3).map((item) => (
+                <GlassCard key={item.title} className="p-3 md:p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`w-6 h-6 rounded-md ${item.bg} flex items-center justify-center`}>
+                      <item.icon className={`w-3 h-3 ${item.color}`} />
                     </div>
-                    <div>
-                      <h2 className="text-xl font-bold">What's Included</h2>
-                      <p className="text-sm text-muted-foreground">Every job includes</p>
-                    </div>
+                    <span className="text-xs md:text-sm font-bold">{item.title}</span>
                   </div>
-                  
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="prep">
-                      <AccordionTrigger className="text-left">Surface Preparation</AccordionTrigger>
-                      <AccordionContent>
-                        Cleaning, sanding, patching small holes, taping, and priming as needed. We ensure surfaces are ready for a flawless finish.
-                      </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="materials">
-                      <AccordionTrigger className="text-left">Premium Materials</AccordionTrigger>
-                      <AccordionContent>
-                        We use high-quality paints and materials from trusted brands. Upgraded options available upon request.
-                      </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="cleanup">
-                      <AccordionTrigger className="text-left">Full Cleanup</AccordionTrigger>
-                      <AccordionContent>
-                        We leave your space spotless. All materials removed, furniture replaced, and a final walkthrough with you.
-                      </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="warranty">
-                      <AccordionTrigger className="text-left">{credentials?.warrantyYears || 3}-Year Warranty</AccordionTrigger>
-                      <AccordionContent>
-                        Peace of mind with our workmanship warranty. Any issues? We'll make it right at no extra cost.
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </GlassCard>
-              </motion.div>
-            </BentoItem>
-
-            <BentoItem colSpan={6} rowSpan={1}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <GlassCard className="p-6 h-full bg-gradient-to-br from-accent/20 to-transparent" glow>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
-                      <DollarSign className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold">Your Price in Seconds</h2>
-                      <p className="text-sm text-muted-foreground">AI-powered instant quotes</p>
-                    </div>
+                  <div>
+                    <span className="text-sm md:text-lg font-bold text-accent">{item.price}</span>
+                    <span className="text-muted-foreground text-xs">{item.unit}</span>
                   </div>
-                  
-                  <p className="text-muted-foreground mb-6">
-                    Our smart estimator calculates your project cost instantly. No waiting for callbacks.
-                  </p>
-                  
-                  <a href="/estimate">
-                    <FlipButton className="w-full" data-testid="button-get-estimate">
-                      See My Price Now <ArrowRight className="w-4 h-4 ml-2" />
-                    </FlipButton>
-                  </a>
                 </GlassCard>
-              </motion.div>
-            </BentoItem>
-          </BentoGrid>
+              ))}
+            </div>
+          )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="mt-12"
-          >
-            <GlassCard className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-blue-400" />
+          {/* What's Included - horizontal on mobile */}
+          <GlassCard className="p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Check className="w-5 h-5 text-green-400" />
+              <h2 className="font-bold">What's Included</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {inclusions.map((item) => (
+                <div key={item.title} className="text-sm">
+                  <p className="font-medium text-foreground">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
                 </div>
+              ))}
+            </div>
+          </GlassCard>
+
+          {/* CTA + Commercial in row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <GlassCard className="p-4 bg-gradient-to-br from-accent/20 to-transparent">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-5 h-5 text-accent" />
+                <h3 className="font-bold">Your Price in Seconds</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                AI-powered instant quotes. No waiting.
+              </p>
+              <a href="/estimate">
+                <FlipButton className="w-full" data-testid="button-get-estimate">
+                  See My Price <ArrowRight className="w-4 h-4 ml-2" />
+                </FlipButton>
+              </a>
+            </GlassCard>
+
+            <GlassCard className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-5 h-5 text-blue-400" />
                 <h3 className="font-bold">Commercial Projects</h3>
               </div>
-              <p className="text-muted-foreground text-sm mb-4">
-                Large commercial projects receive custom pricing based on scope, timeline, and specific requirements. Contact us for a tailored quote.
+              <p className="text-sm text-muted-foreground mb-2">
+                Custom pricing for large projects.
               </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Office Buildings</span>
-                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Retail Spaces</span>
-                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Warehouses</span>
-                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs">Multi-Unit Properties</span>
+              <div className="flex flex-wrap gap-1">
+                <span className="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-xs">Offices</span>
+                <span className="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-xs">Retail</span>
+                <span className="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-xs">Multi-Unit</span>
               </div>
             </GlassCard>
-          </motion.div>
+          </div>
         </div>
       </main>
     </PageLayout>
