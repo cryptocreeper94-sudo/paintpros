@@ -18,7 +18,7 @@ import {
   ChevronRight,
   Palette,
   Star,
-  CheckCircle
+  X
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { LeadCaptureModal } from "@/components/lead-generation/lead-capture-modal";
@@ -27,6 +27,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 import exteriorImage from "@assets/generated_images/exterior_painting.png";
+import serviceAreaMap from "@assets/generated_images/middle_tennessee_region_map.png";
 
 interface PaintColor {
   id: number;
@@ -49,7 +50,7 @@ export default function HomeLume() {
     queryKey: ["/api/paint-colors"],
   });
 
-  const colorSamples = colors.filter(c => c.brand === "sherwin-williams").slice(0, 6);
+  const colorSamples = colors.filter(c => c.brand === "sherwin-williams").slice(0, 5);
 
   const services = [
     {
@@ -78,9 +79,27 @@ export default function HomeLume() {
   ];
 
   const features = [
-    { icon: Shield, title: "Licensed & Insured", desc: "Fully covered for your peace of mind" },
-    { icon: Clock, title: "On-Time Completion", desc: "We respect your schedule" },
-    { icon: Star, title: "3-Year Warranty", desc: "Guaranteed workmanship" }
+    { 
+      id: "licensed",
+      icon: Shield, 
+      title: "Licensed & Insured", 
+      desc: "Fully covered for your peace of mind",
+      details: "We are fully licensed and insured, giving you complete peace of mind. Our comprehensive liability coverage protects your property, and our workers' compensation ensures our team is covered on every job."
+    },
+    { 
+      id: "ontime",
+      icon: Clock, 
+      title: "On-Time Completion", 
+      desc: "We respect your schedule",
+      details: "We understand your time is valuable. That's why we provide accurate timelines upfront and stick to them. Our efficient processes and experienced crews ensure your project is completed on schedule, every time."
+    },
+    { 
+      id: "warranty",
+      icon: Star, 
+      title: "3-Year Warranty", 
+      desc: "Guaranteed workmanship",
+      details: "Every project comes with our comprehensive 3-year warranty on workmanship. If any issues arise with our painting work, we'll make it right at no additional cost to you."
+    }
   ];
 
   return (
@@ -119,10 +138,10 @@ export default function HomeLume() {
 
         {/* BENTO GRID - Tight 3-column layout */}
         <section className="px-3 md:px-6 py-6 md:py-10">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-5xl mx-auto space-y-4 md:space-y-5">
             
             {/* Mobile: Carousel for services */}
-            <div className="md:hidden mb-4">
+            <div className="md:hidden">
               <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex gap-2">
                   {services.map((service) => (
@@ -157,9 +176,8 @@ export default function HomeLume() {
               </div>
             </div>
 
-            {/* Desktop: 3-column grid */}
-            <div className="hidden md:grid grid-cols-3 gap-3">
-              {/* Row 1: Services */}
+            {/* Desktop: Row 1 - Services */}
+            <div className="hidden md:grid grid-cols-3 gap-4">
               {services.map((service) => (
                 <GlassCard 
                   key={service.id}
@@ -183,106 +201,87 @@ export default function HomeLume() {
                   <p className="text-sm text-gray-600">{service.description}</p>
                 </GlassCard>
               ))}
+            </div>
 
-              {/* Row 2: Features (3 items) */}
+            {/* Row 2: Features */}
+            <div className="grid grid-cols-3 gap-2 md:gap-4">
               {features.map((f) => (
-                <GlassCard key={f.title} className="p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="w-5 h-5 text-gray-700" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800 text-sm">{f.title}</p>
-                    <p className="text-xs text-gray-500">{f.desc}</p>
+                <GlassCard 
+                  key={f.id} 
+                  className="p-3 md:p-4 cursor-pointer hover:shadow-md transition-all"
+                  onClick={() => setActiveModal(f.id)}
+                >
+                  <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 text-center md:text-left">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <f.icon className="w-5 h-5 text-gray-700" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800 text-xs md:text-sm">{f.title}</p>
+                      <p className="text-xs text-gray-500 hidden md:block">{f.desc}</p>
+                    </div>
                   </div>
                 </GlassCard>
               ))}
+            </div>
 
-              {/* Row 3: Colors, Service Area, CTA */}
-              {colorSamples.length > 0 && (
+            {/* Row 3: Colors */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Palette className="w-5 h-5 text-gray-700" />
+                  <h3 className="font-medium text-gray-800">Choose Your Colors</h3>
+                </div>
                 <Link href="/colors">
-                  <GlassCard className="p-4 cursor-pointer hover:shadow-md transition-all h-full">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Palette className="w-5 h-5 text-gray-700" />
-                      <h3 className="font-medium text-gray-800">Colors</h3>
-                    </div>
-                    <div className="grid grid-cols-6 gap-1 mb-2">
-                      {colorSamples.map((c) => (
-                        <div key={c.id} className="aspect-square rounded" style={{ backgroundColor: c.hexValue }} />
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-500">View our color library</p>
-                  </GlassCard>
+                  <Button variant="ghost" size="sm" className="text-gray-600" data-testid="button-all-colors">
+                    View All <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
                 </Link>
-              )}
+              </div>
+              <div className="grid grid-cols-5 gap-2 md:gap-3">
+                {colorSamples.map((color) => (
+                  <GlassCard 
+                    key={color.id}
+                    className="p-2 md:p-3 cursor-pointer hover:shadow-md transition-all"
+                    onClick={() => setActiveModal(`color-${color.id}`)}
+                  >
+                    <div 
+                      className="aspect-square rounded-lg mb-2"
+                      style={{ backgroundColor: color.hexValue }}
+                    />
+                    <p className="text-xs text-gray-700 font-medium truncate">{color.colorName}</p>
+                    <p className="text-xs text-gray-400">{color.colorCode}</p>
+                  </GlassCard>
+                ))}
+              </div>
+            </div>
 
-              <GlassCard className="p-4">
-                <div className="flex items-center gap-2 mb-2">
+            {/* Row 4: Service Area with Map + CTA */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <GlassCard 
+                className="p-4 cursor-pointer hover:shadow-md transition-all"
+                onClick={() => setActiveModal("service-area")}
+              >
+                <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-5 h-5 text-gray-700" />
                   <h3 className="font-medium text-gray-800">Service Area</h3>
+                </div>
+                <div className="aspect-video rounded-lg overflow-hidden mb-3">
+                  <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover" />
                 </div>
                 <p className="text-sm text-gray-600">
                   {tenant.seo.serviceAreas.slice(0, 4).join(" · ")}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">and surrounding areas</p>
               </GlassCard>
 
               <Link href="/estimate">
-                <GlassCard className="p-4 bg-gradient-to-br from-gray-800 to-gray-900 text-white cursor-pointer hover:shadow-lg transition-all h-full flex flex-col justify-center">
-                  <h3 className="font-medium text-lg mb-1">Get Your Estimate</h3>
-                  <p className="text-sm text-gray-300 mb-3">Free AI visual editor & sq ft estimate</p>
-                  <Button variant="secondary" size="sm" className="w-fit" data-testid="button-estimate">
-                    Start Now <ArrowRight className="w-4 h-4 ml-1" />
+                <GlassCard className="p-4 md:p-6 bg-gradient-to-br from-gray-800 to-gray-900 text-white cursor-pointer hover:shadow-lg transition-all h-full flex flex-col justify-center">
+                  <h3 className="font-medium text-xl md:text-2xl mb-2">Get Your Estimate</h3>
+                  <p className="text-sm text-gray-300 mb-4">Free AI visual editor & sq ft estimate - takes less than a minute</p>
+                  <Button variant="secondary" className="w-fit" data-testid="button-estimate">
+                    Start Now <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </GlassCard>
               </Link>
-            </div>
-
-            {/* Mobile: Additional cards */}
-            <div className="md:hidden space-y-3 mt-4">
-              <div className="grid grid-cols-3 gap-2">
-                {features.map((f) => (
-                  <GlassCard key={f.title} className="p-3 text-center">
-                    <f.icon className="w-5 h-5 text-gray-700 mx-auto mb-1" />
-                    <p className="text-xs font-medium text-gray-800">{f.title}</p>
-                  </GlassCard>
-                ))}
-              </div>
-
-              <Link href="/estimate">
-                <GlassCard className="p-4 bg-gradient-to-br from-gray-800 to-gray-900 text-white">
-                  <h3 className="font-medium text-lg mb-1">Get Your Estimate</h3>
-                  <p className="text-sm text-gray-300 mb-3">Free AI visual editor & sq ft estimate - takes less than a minute</p>
-                  <Button variant="secondary" size="sm" data-testid="button-estimate-mobile">
-                    Start Now <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </GlassCard>
-              </Link>
-
-              {colorSamples.length > 0 && (
-                <Link href="/colors">
-                  <GlassCard className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Palette className="w-5 h-5 text-gray-700" />
-                        <span className="font-medium text-gray-800">Explore Colors</span>
-                      </div>
-                      <div className="flex gap-1">
-                        {colorSamples.slice(0, 4).map((c) => (
-                          <div key={c.id} className="w-6 h-6 rounded" style={{ backgroundColor: c.hexValue }} />
-                        ))}
-                      </div>
-                    </div>
-                  </GlassCard>
-                </Link>
-              )}
-
-              <GlassCard className="p-4 flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-gray-700" />
-                <div>
-                  <p className="font-medium text-gray-800 text-sm">Service Area</p>
-                  <p className="text-xs text-gray-500">{tenant.seo.serviceAreas.slice(0, 3).join(" · ")}</p>
-                </div>
-              </GlassCard>
             </div>
 
           </div>
@@ -334,16 +333,90 @@ export default function HomeLume() {
               </div>
             )}
             <p className="text-gray-600">{service.details}</p>
-            <div className="flex gap-2 mt-2">
-              <Link href="/estimate" className="flex-1">
-                <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid={`button-${service.id}-estimate`}>
-                  Get Estimate <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
+            <Link href="/estimate" className="block">
+              <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid={`button-${service.id}-estimate`}>
+                Get Estimate <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </DialogContent>
         </Dialog>
       ))}
+
+      {/* Feature Modals */}
+      {features.map((feature) => (
+        <Dialog key={feature.id} open={activeModal === feature.id} onOpenChange={() => setActiveModal(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <feature.icon className="w-5 h-5" />
+                {feature.title}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-600">{feature.details}</p>
+            <Link href="/estimate" className="block">
+              <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid={`button-${feature.id}-cta`}>
+                Get Your Free Estimate <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </DialogContent>
+        </Dialog>
+      ))}
+
+      {/* Color Modals */}
+      {colorSamples.map((color) => (
+        <Dialog key={color.id} open={activeModal === `color-${color.id}`} onOpenChange={() => setActiveModal(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>{color.colorName}</DialogTitle>
+            </DialogHeader>
+            <div 
+              className="aspect-square rounded-xl"
+              style={{ backgroundColor: color.hexValue }}
+            />
+            <div className="space-y-2">
+              <p className="text-sm"><span className="text-gray-500">Code:</span> {color.colorCode}</p>
+              <p className="text-sm"><span className="text-gray-500">Brand:</span> {color.brand}</p>
+              <p className="text-sm"><span className="text-gray-500">Category:</span> {color.category}</p>
+            </div>
+            <Link href="/colors" className="block">
+              <Button variant="outline" className="w-full" data-testid={`button-color-${color.id}-more`}>
+                Explore More Colors <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </DialogContent>
+        </Dialog>
+      ))}
+
+      {/* Service Area Modal */}
+      <Dialog open={activeModal === "service-area"} onOpenChange={() => setActiveModal(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
+              Our Service Area
+            </DialogTitle>
+          </DialogHeader>
+          <div className="aspect-video rounded-lg overflow-hidden">
+            <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p className="font-medium text-gray-800 mb-2">We proudly serve:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {tenant.seo.serviceAreas.map((area) => (
+                <div key={area} className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                  {area}
+                </div>
+              ))}
+            </div>
+          </div>
+          <Link href="/estimate" className="block">
+            <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid="button-service-area-estimate">
+              Get Your Free Estimate <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }
