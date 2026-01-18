@@ -58,19 +58,25 @@ export default function HomeLume() {
       
       <main className="min-h-screen bg-white">
         
-        {/* HERO SECTION - Full-width gray band with logo */}
-        <section className="w-full bg-gray-200 py-16 md:py-24">
+        {/* HERO SECTION - Gradient band with Lume text */}
+        <section 
+          className="w-full py-20 md:py-32"
+          style={{
+            background: 'linear-gradient(to right, white 0%, #d1d5db 30%, #9ca3af 50%, #d1d5db 70%, white 100%)'
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="flex justify-center"
           >
-            <img 
-              src={lumeLogo} 
-              alt="Lume" 
-              className="h-48 md:h-64 lg:h-80 object-contain"
-            />
+            <h1 
+              className="text-7xl md:text-9xl lg:text-[12rem] font-light tracking-wide text-gray-800"
+              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+            >
+              Lume
+            </h1>
           </motion.div>
         </section>
 
