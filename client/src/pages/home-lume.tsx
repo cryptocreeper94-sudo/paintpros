@@ -58,35 +58,41 @@ export default function HomeLume() {
       
       <main className="min-h-screen bg-white">
         
-        {/* HERO SECTION - Minimal, Elegant */}
-        <section className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 py-16 md:py-24 bg-white">
-          
+        {/* HERO SECTION - Full-width gray band with logo */}
+        <section className="w-full bg-gray-200 py-16 md:py-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto"
+            className="flex justify-center"
           >
-            {/* Logo in gray frame */}
-            <div className="bg-gray-200 rounded-2xl px-16 py-12 md:px-24 md:py-16 shadow-lg mb-8">
-              <img 
-                src={lumeLogo} 
-                alt="Lume" 
-                className="h-48 md:h-64 lg:h-80 object-contain"
-              />
-            </div>
-            
+            <img 
+              src={lumeLogo} 
+              alt="Lume" 
+              className="h-48 md:h-64 lg:h-80 object-contain"
+            />
+          </motion.div>
+        </section>
+
+        {/* Tagline Section - White background */}
+        <section className="bg-white py-16 md:py-20 px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center max-w-3xl mx-auto"
+          >
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-light text-gray-800 leading-tight mb-6">
               We elevate the backdrop
               <span className="block font-medium text-gray-900">of your life.</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-gray-600 max-w-xl mb-10">
+            <p className="text-lg md:text-xl text-gray-600 max-w-xl mx-auto mb-10">
               Premium painting services with meticulous attention to detail.
               Nashville's choice for refined spaces.
             </p>
             
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-gray-700" />
                 <span>Licensed & Insured</span>
