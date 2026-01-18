@@ -56,24 +56,23 @@ export default function HomeLume() {
     <PageLayout>
       <LeadCaptureModal tenantId={tenant.id} tenantName={tenant.name} />
       
-      <main className="min-h-screen bg-gradient-to-b from-gray-200 to-gray-300">
+      <main className="min-h-screen bg-white">
         
         {/* HERO SECTION - Minimal, Elegant */}
-        <section className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 py-16 md:py-24">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-300/60 via-gray-200/80 to-gray-100/40" />
+        <section className="relative min-h-[70vh] flex flex-col items-center justify-center px-6 py-16 md:py-24 bg-white">
           
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto"
+            className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto"
           >
-            {/* Logo in white frame */}
-            <div className="bg-white rounded-2xl px-12 py-8 md:px-20 md:py-12 shadow-lg mb-8">
+            {/* Logo in gray frame */}
+            <div className="bg-gray-200 rounded-2xl px-16 py-12 md:px-24 md:py-16 shadow-lg mb-8">
               <img 
                 src={lumeLogo} 
                 alt="Lume" 
-                className="h-32 md:h-48 lg:h-56 object-contain"
+                className="h-48 md:h-64 lg:h-80 object-contain"
               />
             </div>
             
