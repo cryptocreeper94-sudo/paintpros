@@ -141,7 +141,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
             Get Your Free Estimate
           </DialogTitle>
           <DialogDescription className="text-gray-600">
-            In just a few seconds, tell us about your project
+            Takes less than a minute - includes free AI visual editor & sq ft estimate
           </DialogDescription>
         </DialogHeader>
 
