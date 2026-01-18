@@ -1,29 +1,28 @@
 import { Link } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
+import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
+import useEmblaCarousel from "embla-carousel-react";
 import { 
   ArrowRight, 
   Award, 
   Shield, 
   Clock, 
-  CheckCircle2, 
-  Brush, 
   Home, 
   Building2, 
-  Palette, 
   MapPin,
-  Star,
   Sparkles,
-  Phone
+  Phone,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { LeadCaptureModal } from "@/components/lead-generation/lead-capture-modal";
+import { useCallback } from "react";
 
-import lumeLogo from "@assets/generated_images/gray_black_lume_logo.png";
 import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 import exteriorImage from "@assets/generated_images/exterior_painting.png";
 
@@ -38,6 +37,10 @@ interface PaintColor {
 
 export default function HomeLume() {
   const tenant = useTenant();
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   const { data: colors = [] } = useQuery<PaintColor[]>({
     queryKey: ["/api/paint-colors"],
@@ -52,304 +55,209 @@ export default function HomeLume() {
 
   const colorSamples = getColorSamples();
 
+  const services = [
+    {
+      icon: Home,
+      title: "Interior Painting",
+      description: "Walls, ceilings, trim, and doors with premium finishes.",
+      image: interiorImage
+    },
+    {
+      icon: Building2,
+      title: "Exterior Painting",
+      description: "Weather-resistant coatings that protect and beautify.",
+      image: exteriorImage
+    },
+    {
+      icon: Sparkles,
+      title: "Cabinet Refinishing",
+      description: "Transform your kitchen with expertly refinished cabinets."
+    }
+  ];
+
+  const features = [
+    { icon: Sparkles, title: "Premium Quality", desc: "Top-tier paints and materials" },
+    { icon: Clock, title: "On-Time Service", desc: "Projects completed on schedule" },
+    { icon: Shield, title: "3-Year Warranty", desc: "Guaranteed workmanship" }
+  ];
+
   return (
     <PageLayout>
       <LeadCaptureModal tenantId={tenant.id} tenantName={tenant.name} />
       
       <main className="min-h-screen bg-white">
         
-        {/* HERO SECTION - Gradient band with Lume text */}
+        {/* HERO - Gradient band with Lume text */}
         <section 
-          className="w-full py-20 md:py-32"
+          className="w-full py-16 md:py-24"
           style={{
-            background: 'linear-gradient(to right, white 0%, #d1d5db 30%, #9ca3af 50%, #d1d5db 70%, white 100%)'
+            background: 'linear-gradient(to right, white 0%, #e5e7eb 25%, #9ca3af 50%, #e5e7eb 75%, white 100%)'
           }}
         >
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center"
+            className="text-center"
           >
             <h1 
-              className="text-7xl md:text-9xl lg:text-[12rem] font-light tracking-wide text-gray-800"
+              className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide text-gray-800"
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
               Lume
             </h1>
-          </motion.div>
-        </section>
-
-        {/* Tagline Section - White background */}
-        <section className="bg-white py-16 md:py-20 px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-light text-gray-800 leading-tight mb-6">
-              We elevate the backdrop
-              <span className="block font-medium text-gray-900">of your life.</span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-gray-600 max-w-xl mx-auto mb-10">
-              Premium painting services with meticulous attention to detail.
-              Nashville's choice for refined spaces.
+            <p className="mt-4 text-lg md:text-xl text-gray-600 font-light">
+              We elevate the backdrop of your life.
             </p>
-            
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-gray-700" />
-                <span>Licensed & Insured</span>
-              </div>
-              <div className="w-px h-4 bg-gray-300" />
-              <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-gray-700" />
-                <span>3-Year Warranty</span>
-              </div>
-            </div>
           </motion.div>
         </section>
 
-        {/* SERVICES SECTION - Clean Grid */}
-        <section className="py-16 md:py-24 px-6">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-3">
-                Our Services
-              </h2>
-              <div className="w-16 h-0.5 bg-gray-400 mx-auto" />
-            </motion.div>
+        {/* BENTO GRID CONTENT */}
+        <section className="px-3 md:px-6 py-8 md:py-12">
+          <BentoGrid className="max-w-6xl mx-auto">
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-md transition-all"
-              >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img 
-                    src={interiorImage} 
-                    alt="Interior Painting"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Home className="w-5 h-5 text-gray-700" />
-                    <h3 className="text-xl font-medium text-gray-800">Interior Painting</h3>
+            {/* Services - Mobile Carousel, Desktop Grid */}
+            <BentoItem colSpan={6} rowSpan={2} className="md:hidden">
+              <GlassCard className="h-full p-4">
+                <h3 className="text-lg font-medium text-gray-800 mb-3">Our Services</h3>
+                <div className="overflow-hidden" ref={emblaRef}>
+                  <div className="flex gap-3">
+                    {services.map((service) => (
+                      <div key={service.title} className="flex-[0_0_80%] min-w-0">
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <service.icon className="w-6 h-6 text-gray-700 mb-2" />
+                          <h4 className="font-medium text-gray-800">{service.title}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    Transform your living spaces with premium paints and expert craftsmanship.
-                    Walls, ceilings, trim, and doors.
-                  </p>
                 </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="group relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-md transition-all"
-              >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img 
-                    src={exteriorImage} 
-                    alt="Exterior Painting"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                <div className="flex justify-center gap-2 mt-3">
+                  <button onClick={scrollPrev} className="p-1.5 rounded-full bg-gray-100" data-testid="button-services-prev">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button onClick={scrollNext} className="p-1.5 rounded-full bg-gray-100" data-testid="button-services-next">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="w-5 h-5 text-gray-700" />
-                    <h3 className="text-xl font-medium text-gray-800">Exterior Painting</h3>
-                  </div>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    Protect and beautify your home's exterior with weather-resistant finishes
-                    built to last.
-                  </p>
+              </GlassCard>
+            </BentoItem>
+
+            {/* Services - Desktop Only */}
+            {services.map((service, idx) => (
+              <BentoItem key={service.title} colSpan={2} rowSpan={2} className="hidden md:block">
+                <GlassCard className="h-full p-4 hover:shadow-md transition-all">
+                  {service.image && (
+                    <div className="aspect-video rounded-lg overflow-hidden mb-3">
+                      <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <service.icon className="w-6 h-6 text-gray-700 mb-2" />
+                  <h4 className="font-medium text-gray-800">{service.title}</h4>
+                  <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                </GlassCard>
+              </BentoItem>
+            ))}
+
+            {/* Why Choose Lume */}
+            <BentoItem colSpan={8} rowSpan={1} mobileColSpan={4}>
+              <GlassCard className="h-full p-4 md:p-6">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Why Choose Lume</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {features.map((f) => (
+                    <div key={f.title} className="text-center">
+                      <div className="w-10 h-10 mx-auto rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                        <f.icon className="w-5 h-5 text-gray-700" />
+                      </div>
+                      <p className="text-xs md:text-sm font-medium text-gray-800">{f.title}</p>
+                      <p className="text-xs text-gray-500 hidden md:block">{f.desc}</p>
+                    </div>
+                  ))}
                 </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
+              </GlassCard>
+            </BentoItem>
 
-        {/* WHY LUME SECTION */}
-        <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-gray-100/50 to-gray-50/30">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-3">
-                Why Choose Lume
-              </h2>
-              <div className="w-16 h-0.5 bg-gray-400 mx-auto" />
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: Sparkles,
-                  title: "Premium Quality",
-                  description: "We use only top-tier paints and materials for lasting beauty."
-                },
-                {
-                  icon: Clock,
-                  title: "Timely Service",
-                  description: "Projects completed on schedule with minimal disruption."
-                },
-                {
-                  icon: Shield,
-                  title: "Guaranteed Work",
-                  description: "3-year warranty on all painting services we provide."
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="text-center p-6"
-                >
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-4">
-                    <item.icon className="w-6 h-6 text-gray-700" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-2">{item.title}</h3>
-                  <p className="text-gray-600 text-sm">{item.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* COLOR INSPIRATION */}
-        {colorSamples.length > 0 && (
-          <section className="py-16 md:py-24 px-6">
-            <div className="max-w-5xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-3">
-                  Color Inspiration
-                </h2>
-                <div className="w-16 h-0.5 bg-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">Curated palettes for refined spaces</p>
-              </motion.div>
-
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
-                {colorSamples.map((color, index) => (
-                  <motion.div
-                    key={color.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    className="group"
-                  >
-                    <div 
-                      className="aspect-square rounded-xl shadow-sm group-hover:shadow-md transition-all"
-                      style={{ backgroundColor: color.hexValue }}
-                    />
-                    <p className="text-xs text-gray-500 mt-2 text-center truncate">
-                      {color.colorName}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="text-center mt-8">
-                <Link href="/colors">
-                  <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" data-testid="button-view-colors">
-                    View Full Color Library
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* SERVICE AREA */}
-        <section className="py-16 md:py-24 px-6 bg-gradient-to-b from-gray-100/50 to-gray-50/30">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <MapPin className="w-5 h-5 text-gray-700" />
-                <h2 className="text-2xl md:text-3xl font-light text-gray-800">
-                  Serving Greater Nashville
-                </h2>
-              </div>
-              <div className="w-16 h-0.5 bg-gray-400 mx-auto mb-6" />
-              <p className="text-gray-600 mb-4">
-                Nashville · Franklin · Brentwood · Murfreesboro · Hendersonville
-              </p>
-              <p className="text-sm text-gray-500">
-                and surrounding areas
-              </p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* CTA SECTION */}
-        <section className="py-20 md:py-28 px-6 bg-gradient-to-br from-gray-100/60 to-gray-50/40">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-2xl md:text-4xl font-light text-gray-800 mb-4">
-                Ready to transform your space?
-              </h2>
-              <p className="text-gray-600 mb-8 max-w-lg mx-auto">
-                Get a free, no-obligation estimate for your painting project.
-                We'll respond within 24 hours.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* CTA */}
+            <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
+              <GlassCard className="h-full p-4 md:p-6 flex flex-col justify-center items-center text-center bg-gradient-to-br from-gray-100 to-gray-50">
+                <h3 className="text-lg font-medium text-gray-800 mb-2">Get Your Free Estimate</h3>
+                <p className="text-sm text-gray-600 mb-4">We respond within 24 hours</p>
                 <Link href="/estimate">
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-8 shadow-lg"
-                    data-testid="button-get-estimate"
-                  >
-                    Get Your Free Estimate
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                  <Button className="bg-gray-800 hover:bg-gray-900 text-white" data-testid="button-get-estimate">
+                    Start Now <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <a href="tel:+16155550123">
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="border-gray-400 text-gray-700 hover:bg-gray-50 px-8"
-                    data-testid="button-call-us"
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call Us
-                  </Button>
-                </a>
-              </div>
-            </motion.div>
-          </div>
+              </GlassCard>
+            </BentoItem>
+
+            {/* Color Inspiration */}
+            {colorSamples.length > 0 && (
+              <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4}>
+                <GlassCard className="h-full p-4">
+                  <h3 className="text-lg font-medium text-gray-800 mb-3">Color Inspiration</h3>
+                  <div className="flex gap-2">
+                    {colorSamples.slice(0, 6).map((color) => (
+                      <div 
+                        key={color.id}
+                        className="flex-1 aspect-square rounded-lg"
+                        style={{ backgroundColor: color.hexValue }}
+                        title={color.colorName}
+                      />
+                    ))}
+                  </div>
+                  <Link href="/colors" className="block mt-3">
+                    <Button variant="ghost" size="sm" className="w-full text-gray-600" data-testid="button-view-colors">
+                      View Color Library <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </Link>
+                </GlassCard>
+              </BentoItem>
+            )}
+
+            {/* Service Area */}
+            <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4}>
+              <GlassCard className="h-full p-4 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-6 h-6 text-gray-700" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-800">Service Area</h3>
+                  <p className="text-sm text-gray-600">
+                    {tenant.seo.serviceAreas.slice(0, 3).join(" · ")}
+                  </p>
+                  <p className="text-xs text-gray-500">and surrounding areas</p>
+                </div>
+              </GlassCard>
+            </BentoItem>
+
+            {/* Contact */}
+            <BentoItem colSpan={12} rowSpan={1} mobileColSpan={4}>
+              <GlassCard className="h-full p-4 md:p-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-medium">Ready to transform your space?</h3>
+                    <p className="text-gray-300 text-sm">Premium painting services with meticulous attention to detail.</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Link href="/estimate">
+                      <Button variant="secondary" data-testid="button-estimate-cta">
+                        Get Estimate <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                    {tenant.phone && (
+                      <a href={`tel:${tenant.phone}`}>
+                        <Button variant="outline" className="border-white/30 text-white hover:bg-white/10" data-testid="button-call">
+                          <Phone className="w-4 h-4 mr-2" /> Call
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </GlassCard>
+            </BentoItem>
+
+          </BentoGrid>
         </section>
 
       </main>
