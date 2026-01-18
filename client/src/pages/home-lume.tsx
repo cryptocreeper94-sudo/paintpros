@@ -89,9 +89,9 @@ export default function HomeLume() {
       
       <main className="min-h-screen bg-white">
         
-        {/* HERO - Gradient band with Lume text */}
+        {/* HERO - Full viewport on mobile, gradient band */}
         <section 
-          className="w-full py-20 md:py-28"
+          className="w-full min-h-[calc(100vh-60px)] md:min-h-0 md:py-28 flex items-center justify-center"
           style={{
             background: 'linear-gradient(to right, white 0%, #e5e7eb 25%, #9ca3af 50%, #e5e7eb 75%, white 100%)'
           }}
@@ -100,7 +100,7 @@ export default function HomeLume() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center"
+            className="text-center px-4"
           >
             <h1 
               className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide text-gray-800"
@@ -110,6 +110,9 @@ export default function HomeLume() {
             </h1>
             <p className="mt-4 text-lg md:text-xl text-gray-600 font-light">
               We elevate the backdrop of your life.
+            </p>
+            <p className="mt-8 text-sm text-gray-400 md:hidden animate-bounce">
+              Scroll to explore
             </p>
           </motion.div>
         </section>
