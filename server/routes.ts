@@ -440,6 +440,206 @@ export async function registerRoutes(
     }
   });
 
+  // ============ ESTIMATE SUBMISSION (Resend) ============
+  
+  // POST /api/estimates/submit - Submit estimate with email notification
+  app.post("/api/estimates/submit", async (req, res) => {
+    try {
+      const estimateSchema = z.object({
+        tenantId: z.string().optional(),
+        customer: z.object({
+          firstName: z.string().min(1),
+          lastName: z.string().min(1),
+          email: z.string().email(),
+          phone: z.string().min(1),
+          address: z.string().optional()
+        }),
+        services: z.object({
+          walls: z.boolean(),
+          trim: z.boolean(),
+          ceilings: z.boolean(),
+          doors: z.boolean(),
+          cabinets: z.boolean()
+        }),
+        measurements: z.object({
+          squareFootage: z.number(),
+          doorCount: z.number(),
+          cabinetDoors: z.number().optional(),
+          cabinetDrawers: z.number().optional()
+        }),
+        colors: z.array(z.object({
+          colorId: z.string(),
+          colorName: z.string(),
+          hexValue: z.string(),
+          brand: z.string(),
+          colorCode: z.string(),
+          surface: z.enum(['walls', 'trim', 'ceilings', 'doors', 'cabinets'])
+        })).optional(),
+        photos: z.array(z.object({
+          base64: z.string(),
+          roomType: z.string(),
+          caption: z.string().optional()
+        })).optional(),
+        pricing: z.object({
+          tier: z.string(),
+          tierName: z.string(),
+          total: z.number()
+        })
+      });
+
+      const data = estimateSchema.parse(req.body);
+      console.log("[Estimate] Submission received:", data.customer.firstName, data.customer.lastName);
+
+      // Build services list
+      const servicesList = [];
+      if (data.services.walls) servicesList.push("Walls");
+      if (data.services.trim) servicesList.push("Trim");
+      if (data.services.ceilings) servicesList.push("Ceilings");
+      if (data.services.doors) servicesList.push("Doors");
+      if (data.services.cabinets) servicesList.push("Cabinets");
+
+      // Build colors HTML
+      const colorsHtml = data.colors && data.colors.length > 0 ? data.colors.map(c => `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #e9ecef;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 24px; height: 24px; border-radius: 4px; background-color: ${c.hexValue}; border: 1px solid #ccc;"></div>
+              <span>${c.colorName}</span>
+            </div>
+          </td>
+          <td style="padding: 8px; border: 1px solid #e9ecef;">${c.brand}</td>
+          <td style="padding: 8px; border: 1px solid #e9ecef;">${c.colorCode}</td>
+          <td style="padding: 8px; border: 1px solid #e9ecef; text-transform: capitalize;">${c.surface}</td>
+        </tr>
+      `).join('') : '<tr><td colspan="4" style="padding: 8px; text-align: center; color: #666;">No colors selected</td></tr>';
+
+      // Build photos section
+      const photosHtml = data.photos && data.photos.length > 0 
+        ? `<div style="margin-top: 15px;">
+            <strong>Photos Attached:</strong> ${data.photos.length} room photo(s)
+            <p style="font-size: 12px; color: #666;">Room types: ${data.photos.map(p => p.roomType.replace(/_/g, ' ')).join(', ')}</p>
+          </div>`
+        : '';
+
+      // Send email via Resend
+      const { getResendClient } = await import("./resend");
+      const { client, fromEmail } = await getResendClient();
+      const recipientEmail = process.env.ESTIMATE_EMAIL || 'Service@nashvillepaintingprofessionals.com';
+
+      await client.emails.send({
+        from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
+        to: [recipientEmail],
+        replyTo: data.customer.email,
+        subject: `New Estimate Request: ${data.customer.firstName} ${data.customer.lastName} - $${data.pricing.total.toLocaleString()}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-radius: 8px 8px 0 0;">
+              <h1 style="color: #ffd700; margin: 0; font-size: 24px;">New Estimate Request</h1>
+              <p style="color: #4caf50; margin: 5px 0 0 0; font-size: 28px; font-weight: bold;">$${data.pricing.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 20px; border: 1px solid #e9ecef;">
+              <h2 style="color: #333; margin-top: 0; font-size: 18px;">Customer Information</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #666; width: 120px;"><strong>Name:</strong></td>
+                  <td style="padding: 8px 0; color: #333;">${data.customer.firstName} ${data.customer.lastName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Email:</strong></td>
+                  <td style="padding: 8px 0; color: #333;"><a href="mailto:${data.customer.email}">${data.customer.email}</a></td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Phone:</strong></td>
+                  <td style="padding: 8px 0; color: #333;"><a href="tel:${data.customer.phone}">${data.customer.phone}</a></td>
+                </tr>
+                ${data.customer.address ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Address:</strong></td>
+                  <td style="padding: 8px 0; color: #333;">${data.customer.address}</td>
+                </tr>` : ''}
+              </table>
+            </div>
+            
+            <div style="background: #fff; padding: 20px; border: 1px solid #e9ecef; border-top: none;">
+              <h2 style="color: #333; margin-top: 0; font-size: 18px;">Project Details</h2>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                <tr>
+                  <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Services:</strong></td>
+                  <td style="padding: 8px 0; color: #333;">${servicesList.join(', ') || 'None selected'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Square Footage:</strong></td>
+                  <td style="padding: 8px 0; color: #333; font-weight: bold; font-size: 16px;">${data.measurements.squareFootage.toLocaleString()} sq ft</td>
+                </tr>
+                ${data.measurements.doorCount > 0 ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Doors:</strong></td>
+                  <td style="padding: 8px 0; color: #333;">${data.measurements.doorCount}</td>
+                </tr>` : ''}
+                ${(data.measurements.cabinetDoors || 0) > 0 || (data.measurements.cabinetDrawers || 0) > 0 ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Cabinet Pieces:</strong></td>
+                  <td style="padding: 8px 0; color: #333;">${(data.measurements.cabinetDoors || 0)} doors, ${(data.measurements.cabinetDrawers || 0)} drawers</td>
+                </tr>` : ''}
+              </table>
+              
+              ${data.colors && data.colors.length > 0 ? `
+              <h3 style="color: #333; font-size: 16px; margin-bottom: 10px;">Selected Colors</h3>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                <thead>
+                  <tr style="background: #f5f5f5;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #e9ecef;">Color</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #e9ecef;">Brand</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #e9ecef;">Code</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #e9ecef;">Surface</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${colorsHtml}
+                </tbody>
+              </table>
+              ` : ''}
+              
+              ${photosHtml}
+            </div>
+            
+            <div style="background: #e8f5e9; padding: 20px; border: 1px solid #c8e6c9; border-top: none;">
+              <h2 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 18px;">Estimate Summary</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Package:</strong></td>
+                  <td style="padding: 8px 0; color: #333;">${data.pricing.tierName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666;"><strong>Total Estimate:</strong></td>
+                  <td style="padding: 8px 0; color: #2e7d32; font-size: 24px; font-weight: bold;">$${data.pricing.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                </tr>
+              </table>
+            </div>
+            
+            <div style="background: #1a1a2e; padding: 15px 20px; border-radius: 0 0 8px 8px; text-align: center;">
+              <p style="color: #888; margin: 0; font-size: 12px;">
+                Submitted via PaintPros.io Estimator | ${new Date().toLocaleString()}
+              </p>
+            </div>
+          </div>
+        `
+      });
+
+      console.log("[Estimate] Email notification sent successfully");
+      res.status(201).json({ success: true, message: "Estimate submitted successfully" });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("[Estimate] Validation error:", error.errors);
+        res.status(400).json({ success: false, error: "Invalid estimate data", details: error.errors });
+      } else {
+        console.error("[Estimate] Error submitting estimate:", error);
+        res.status(500).json({ success: false, error: "Failed to submit estimate" });
+      }
+    }
+  });
+
   // ============ CONTACT FORM (Resend) ============
   
   // POST /api/contact - Send contact form email via Resend
