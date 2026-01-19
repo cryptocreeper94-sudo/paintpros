@@ -39,6 +39,7 @@ import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
+import { BlogManager } from "@/components/blog-manager";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -806,6 +807,15 @@ export default function Owner() {
               <motion.div className="h-full" variants={cardVariants} custom={10}>
                 <GlassCard className="h-full p-4 md:p-6" glow="blue" hoverEffect={false}>
                   <OwnerResultsView />
+                </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            {/* Blog Manager */}
+            <BentoItem colSpan={12} rowSpan={3}>
+              <motion.div className="h-full" variants={cardVariants} custom={11}>
+                <GlassCard className="h-full p-4 md:p-6" glow="gold" hoverEffect={false}>
+                  <BlogManager />
                 </GlassCard>
               </motion.div>
             </BentoItem>

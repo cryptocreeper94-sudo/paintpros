@@ -128,6 +128,9 @@ import {
   type EsgTracking, type InsertEsgTracking, esgTracking,
   type FinancingApplication, type InsertFinancingApplication, financingApplications,
   type FranchiseAnalytics, type InsertFranchiseAnalytics, franchiseAnalytics,
+  type BlogCategory, type InsertBlogCategory, blogCategories,
+  type BlogPost, type InsertBlogPost, blogPosts,
+  seoPages,
   assetNumberCounter,
   TENANT_PREFIXES
 } from "@shared/schema";
@@ -184,6 +187,20 @@ export interface IStorage {
     issues: string[];
     recommendations: string[];
   }>;
+  
+  // Blog System
+  createBlogCategory(category: InsertBlogCategory): Promise<BlogCategory>;
+  getBlogCategories(tenantId: string): Promise<BlogCategory[]>;
+  updateBlogCategory(id: string, data: Partial<InsertBlogCategory>): Promise<BlogCategory | undefined>;
+  deleteBlogCategory(id: string): Promise<void>;
+  
+  createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+  getBlogPosts(tenantId: string, status?: string): Promise<BlogPost[]>;
+  getBlogPostBySlug(tenantId: string, slug: string): Promise<BlogPost | undefined>;
+  getBlogPostById(id: string): Promise<BlogPost | undefined>;
+  updateBlogPost(id: string, data: Partial<InsertBlogPost>): Promise<BlogPost | undefined>;
+  deleteBlogPost(id: string): Promise<void>;
+  incrementBlogPostViews(id: string): Promise<void>;
   
   // CRM Deals
   createCrmDeal(deal: InsertCrmDeal): Promise<CrmDeal>;
@@ -4005,6 +4022,62 @@ export class DatabaseStorage implements IStorage {
   }
   async getFranchiseAnalytics(tenantId: string): Promise<FranchiseAnalytics[]> {
     return await db.select().from(franchiseAnalytics).where(eq(franchiseAnalytics.tenantId, tenantId)).orderBy(desc(franchiseAnalytics.generatedAt));
+  }
+
+  // Blog Categories
+  async createBlogCategory(category: InsertBlogCategory): Promise<BlogCategory> {
+    const [result] = await db.insert(blogCategories).values(category).returning();
+    return result;
+  }
+  async getBlogCategories(tenantId: string): Promise<BlogCategory[]> {
+    return await db.select().from(blogCategories).where(eq(blogCategories.tenantId, tenantId)).orderBy(blogCategories.sortOrder);
+  }
+  async updateBlogCategory(id: string, data: Partial<InsertBlogCategory>): Promise<BlogCategory | undefined> {
+    const [result] = await db.update(blogCategories).set(data).where(eq(blogCategories.id, id)).returning();
+    return result;
+  }
+  async deleteBlogCategory(id: string): Promise<void> {
+    await db.delete(blogCategories).where(eq(blogCategories.id, id));
+  }
+
+  // Blog Posts
+  async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+    const [result] = await db.insert(blogPosts).values(post).returning();
+    return result;
+  }
+  async getBlogPosts(tenantId: string, status?: string): Promise<BlogPost[]> {
+    if (status) {
+      return await db.select().from(blogPosts)
+        .where(and(eq(blogPosts.tenantId, tenantId), eq(blogPosts.status, status)))
+        .orderBy(desc(blogPosts.publishedAt), desc(blogPosts.createdAt));
+    }
+    return await db.select().from(blogPosts)
+      .where(eq(blogPosts.tenantId, tenantId))
+      .orderBy(desc(blogPosts.publishedAt), desc(blogPosts.createdAt));
+  }
+  async getBlogPostBySlug(tenantId: string, slug: string): Promise<BlogPost | undefined> {
+    const [result] = await db.select().from(blogPosts)
+      .where(and(eq(blogPosts.tenantId, tenantId), eq(blogPosts.slug, slug)));
+    return result;
+  }
+  async getBlogPostById(id: string): Promise<BlogPost | undefined> {
+    const [result] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
+    return result;
+  }
+  async updateBlogPost(id: string, data: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
+    const [result] = await db.update(blogPosts)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(blogPosts.id, id))
+      .returning();
+    return result;
+  }
+  async deleteBlogPost(id: string): Promise<void> {
+    await db.delete(blogPosts).where(eq(blogPosts.id, id));
+  }
+  async incrementBlogPostViews(id: string): Promise<void> {
+    await db.update(blogPosts)
+      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+      .where(eq(blogPosts.id, id));
   }
 }
 

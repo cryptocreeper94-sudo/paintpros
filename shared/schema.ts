@@ -4952,3 +4952,87 @@ export const insertImportedRecordSchema = createInsertSchema(importedRecords).om
 export type InsertImportedRecord = z.infer<typeof insertImportedRecordSchema>;
 export type ImportedRecord = typeof importedRecords.$inferSelect;
 
+// ============ BLOG SYSTEM ============
+
+// Blog Categories
+export const blogCategories = pgTable("blog_categories", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  slug: varchar("slug", { length: 100 }).notNull(),
+  description: text("description"),
+  color: varchar("color", { length: 7 }).default("#D4AF37"),
+  sortOrder: integer("sort_order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_blog_categories_tenant").on(table.tenantId),
+  index("idx_blog_categories_slug").on(table.slug),
+]);
+
+export const insertBlogCategorySchema = createInsertSchema(blogCategories).omit({ id: true, createdAt: true });
+export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;
+export type BlogCategory = typeof blogCategories.$inferSelect;
+
+// Blog Posts
+export const blogPosts = pgTable("blog_posts", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  tenantId: varchar("tenant_id", { length: 50 }).notNull(),
+  
+  // Content
+  title: varchar("title", { length: 200 }).notNull(),
+  slug: varchar("slug", { length: 200 }).notNull(),
+  excerpt: text("excerpt"),
+  content: text("content").notNull(),
+  featuredImage: text("featured_image"),
+  
+  // Organization
+  categoryId: varchar("category_id", { length: 36 }).references(() => blogCategories.id),
+  tags: text("tags").array(),
+  
+  // Author
+  authorName: varchar("author_name", { length: 100 }),
+  authorRole: varchar("author_role", { length: 50 }),
+  authorImage: text("author_image"),
+  
+  // SEO
+  metaTitle: varchar("meta_title", { length: 70 }),
+  metaDescription: varchar("meta_description", { length: 160 }),
+  metaKeywords: text("meta_keywords"),
+  ogImage: text("og_image"),
+  canonicalUrl: text("canonical_url"),
+  
+  // Status & Visibility
+  status: varchar("status", { length: 20 }).default("draft").notNull(), // draft, published, scheduled, archived
+  publishedAt: timestamp("published_at"),
+  scheduledFor: timestamp("scheduled_for"),
+  
+  // Engagement
+  viewCount: integer("view_count").default(0),
+  likeCount: integer("like_count").default(0),
+  shareCount: integer("share_count").default(0),
+  
+  // AI Assistance
+  aiGenerated: boolean("ai_generated").default(false),
+  aiPrompt: text("ai_prompt"),
+  
+  // Reading
+  readingTimeMinutes: integer("reading_time_minutes").default(5),
+  
+  // Related
+  relatedPostIds: text("related_post_ids").array(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_blog_posts_tenant").on(table.tenantId),
+  index("idx_blog_posts_slug").on(table.slug),
+  index("idx_blog_posts_status").on(table.status),
+  index("idx_blog_posts_category").on(table.categoryId),
+  index("idx_blog_posts_published").on(table.publishedAt),
+]);
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: true, createdAt: true, updatedAt: true, viewCount: true, likeCount: true, shareCount: true });
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+

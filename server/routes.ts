@@ -1478,6 +1478,207 @@ export async function registerRoutes(
     }
   });
 
+  // ============ BLOG SYSTEM ============
+  
+  // Blog Categories
+  app.get("/api/blog/categories", async (req, res) => {
+    try {
+      const { tenantId = "npp" } = req.query;
+      const categories = await storage.getBlogCategories(tenantId as string);
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching blog categories:", error);
+      res.status(500).json({ error: "Failed to fetch categories" });
+    }
+  });
+
+  app.post("/api/blog/categories", async (req, res) => {
+    try {
+      const category = await storage.createBlogCategory(req.body);
+      res.status(201).json(category);
+    } catch (error) {
+      console.error("Error creating blog category:", error);
+      res.status(500).json({ error: "Failed to create category" });
+    }
+  });
+
+  app.patch("/api/blog/categories/:id", async (req, res) => {
+    try {
+      const category = await storage.updateBlogCategory(req.params.id, req.body);
+      if (!category) {
+        res.status(404).json({ error: "Category not found" });
+        return;
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Error updating blog category:", error);
+      res.status(500).json({ error: "Failed to update category" });
+    }
+  });
+
+  app.delete("/api/blog/categories/:id", async (req, res) => {
+    try {
+      await storage.deleteBlogCategory(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting blog category:", error);
+      res.status(500).json({ error: "Failed to delete category" });
+    }
+  });
+
+  // Blog Posts
+  app.get("/api/blog/posts", async (req, res) => {
+    try {
+      const { tenantId = "npp", status } = req.query;
+      const posts = await storage.getBlogPosts(tenantId as string, status as string | undefined);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+      res.status(500).json({ error: "Failed to fetch posts" });
+    }
+  });
+
+  app.get("/api/blog/posts/:slug", async (req, res) => {
+    try {
+      const { tenantId = "npp" } = req.query;
+      const post = await storage.getBlogPostBySlug(tenantId as string, req.params.slug);
+      if (!post) {
+        res.status(404).json({ error: "Post not found" });
+        return;
+      }
+      // Increment view count for public views
+      await storage.incrementBlogPostViews(post.id);
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching blog post:", error);
+      res.status(500).json({ error: "Failed to fetch post" });
+    }
+  });
+
+  app.post("/api/blog/posts", async (req, res) => {
+    try {
+      // Generate slug from title if not provided
+      const data = { ...req.body };
+      if (!data.slug && data.title) {
+        data.slug = data.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
+      // Calculate reading time (avg 200 words per minute)
+      if (data.content) {
+        const wordCount = data.content.split(/\s+/).length;
+        data.readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+      }
+      const post = await storage.createBlogPost(data);
+      res.status(201).json(post);
+    } catch (error) {
+      console.error("Error creating blog post:", error);
+      res.status(500).json({ error: "Failed to create post" });
+    }
+  });
+
+  app.patch("/api/blog/posts/:id", async (req, res) => {
+    try {
+      const data = { ...req.body };
+      // Recalculate reading time if content changed
+      if (data.content) {
+        const wordCount = data.content.split(/\s+/).length;
+        data.readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+      }
+      // Set publishedAt if status changed to published
+      if (data.status === 'published' && !data.publishedAt) {
+        data.publishedAt = new Date();
+      }
+      const post = await storage.updateBlogPost(req.params.id, data);
+      if (!post) {
+        res.status(404).json({ error: "Post not found" });
+        return;
+      }
+      res.json(post);
+    } catch (error) {
+      console.error("Error updating blog post:", error);
+      res.status(500).json({ error: "Failed to update post" });
+    }
+  });
+
+  app.delete("/api/blog/posts/:id", async (req, res) => {
+    try {
+      await storage.deleteBlogPost(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      res.status(500).json({ error: "Failed to delete post" });
+    }
+  });
+
+  // AI Blog Writing Assistant
+  app.post("/api/blog/ai/generate", async (req, res) => {
+    try {
+      const { topic, tone = "professional", length = "medium", keywords = [], tenantId = "npp" } = req.body;
+      
+      if (!topic) {
+        res.status(400).json({ error: "Topic is required" });
+        return;
+      }
+
+      const tenantContext = tenantId === "lumepaint" 
+        ? "Lume Paint Co - a premium painting company with the tagline 'We elevate the backdrop of your life'. Use a sophisticated, modern tone."
+        : "Nashville Painting Professionals - a trusted local painting company in Nashville, TN. Use a friendly, professional tone.";
+
+      const prompt = `Write a blog post for a painting company about: "${topic}"
+
+Company Context: ${tenantContext}
+
+Requirements:
+- Tone: ${tone}
+- Length: ${length === "short" ? "400-600 words" : length === "long" ? "1200-1500 words" : "700-900 words"}
+- Include these keywords naturally: ${keywords.join(", ") || "painting, home improvement"}
+- Structure with clear headings (use ## for headings)
+- Include practical tips homeowners can use
+- End with a subtle call-to-action
+
+Format the response as JSON with these fields:
+{
+  "title": "Engaging blog post title",
+  "excerpt": "2-3 sentence summary for previews",
+  "content": "Full blog post content in markdown",
+  "metaDescription": "SEO meta description (under 160 chars)",
+  "suggestedTags": ["tag1", "tag2", "tag3"]
+}`;
+
+      const response = await fetch("https://modelfarm.replit.app/v1beta2/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.REPLIT_AI_API_KEY || ""}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.7,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = JSON.parse(data.choices[0].message.content);
+      
+      res.json({
+        ...content,
+        aiGenerated: true,
+        aiPrompt: topic,
+      });
+    } catch (error) {
+      console.error("Error generating blog content:", error);
+      res.status(500).json({ error: "Failed to generate content" });
+    }
+  });
+
   // ============ CRM DEALS ============
   
   // GET /api/crm/deals - Get all deals

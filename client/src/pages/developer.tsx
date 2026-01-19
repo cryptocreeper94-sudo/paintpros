@@ -39,6 +39,7 @@ import { FranchiseManagement } from "@/components/franchise-management";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
+import { BlogManager } from "@/components/blog-manager";
 import { useAccess } from "@/context/AccessContext";
 
 const DEVELOPER_PIN = "0424";
@@ -2180,6 +2181,15 @@ export default function Developer() {
           {/* SEO Tracker */}
           <BentoItem colSpan={4} rowSpan={2}>
             <SeoTracker />
+          </BentoItem>
+
+          {/* Blog Manager */}
+          <BentoItem colSpan={12} rowSpan={3}>
+            <motion.div className="h-full" variants={cardVariants} custom={12}>
+              <GlassCard className="h-full p-4 md:p-6" glow="gold" hoverEffect={false}>
+                <BlogManager />
+              </GlassCard>
+            </motion.div>
           </BentoItem>
 
           {/* Live Visitors Card */}
