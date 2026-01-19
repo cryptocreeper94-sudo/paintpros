@@ -121,15 +121,13 @@ export function Footer() {
             )}
           </div>
           
-          {/* Team Button */}
-          <a 
-            href="/team" 
-            className="flex items-center gap-1 text-emerald-700/70 hover:text-emerald-600 transition-colors text-[9px] md:text-[10px]"
-            data-testid="link-team"
-          >
-            <Users className="w-3 h-3 md:w-3.5 md:h-3.5" />
-            <span>Team</span>
-          </a>
+          {/* Team Links */}
+          <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px]">
+            <a href="/developer" className="text-amber-600/70 hover:text-amber-500 transition-colors" data-testid="link-developer">Dev</a>
+            <a href="/owner" className="text-purple-600/70 hover:text-purple-500 transition-colors" data-testid="link-owner">Owner</a>
+            <a href="/admin" className="text-blue-600/70 hover:text-blue-500 transition-colors" data-testid="link-admin">Admin</a>
+            <a href="/project-manager" className="text-teal-600/70 hover:text-teal-500 transition-colors" data-testid="link-pm">PM</a>
+          </div>
           
           {/* Desktop Links */}
           <div className="gap-4 whitespace-nowrap hidden md:flex text-stone-600/80">

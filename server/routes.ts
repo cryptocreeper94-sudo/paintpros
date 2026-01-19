@@ -2539,11 +2539,11 @@ Format the response as JSON with these fields:
   app.post("/api/auth/pin/init", async (req, res) => {
     try {
       const defaultPins = [
-        { role: "ops_manager", pin: "4444", mustChangePin: true },
-        { role: "owner", pin: "1111", mustChangePin: true },
-        { role: "project_manager", pin: "2222", mustChangePin: false },
-        { role: "developer", pin: "0424", mustChangePin: false },
-        { role: "crew_lead", pin: "3333", mustChangePin: false },
+        { role: "ops_manager", pin: "4444", mustChangePin: true },  // Admin - Sidonie
+        { role: "owner", pin: "1111", mustChangePin: true },        // Owner - Ryan
+        { role: "project_manager", pin: "5555", mustChangePin: true }, // Project Managers
+        { role: "developer", pin: "0424", mustChangePin: false },   // Developer - Jason
+        { role: "crew_lead", pin: "3333", mustChangePin: true },
         { role: "demo_viewer", pin: "7777", mustChangePin: false }
       ];
       

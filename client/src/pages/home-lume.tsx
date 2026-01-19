@@ -257,63 +257,6 @@ export default function HomeLume() {
               </div>
             </div>
 
-            {/* Row 3.5: Team Dashboards Quick Access */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <BadgeCheck className="w-5 h-5 text-gray-700" />
-                  <h3 className="font-medium text-gray-800">Team Dashboards</h3>
-                </div>
-                <Link href="/team">
-                  <Button variant="ghost" size="sm" className="text-gray-600" data-testid="button-team-portal">
-                    Team Portal <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </Link>
-              </div>
-              <div className="grid grid-cols-5 gap-2 md:gap-3">
-                <Link href="/owner">
-                  <GlassCard className="p-2 md:p-3 cursor-pointer hover:shadow-md transition-all text-center" data-testid="link-owner-lume">
-                    <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-2 shadow-lg shadow-purple-500/20">
-                      <Sparkles className="w-5 h-5 text-white" />
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium">Owner</p>
-                  </GlassCard>
-                </Link>
-                <Link href="/admin">
-                  <GlassCard className="p-2 md:p-3 cursor-pointer hover:shadow-md transition-all text-center" data-testid="link-admin-lume">
-                    <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-2 shadow-lg shadow-blue-500/20">
-                      <Shield className="w-5 h-5 text-white" />
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium">Admin</p>
-                  </GlassCard>
-                </Link>
-                <Link href="/project-manager">
-                  <GlassCard className="p-2 md:p-3 cursor-pointer hover:shadow-md transition-all text-center" data-testid="link-pm-lume">
-                    <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center mb-2 shadow-lg shadow-teal-500/20">
-                      <MapPin className="w-5 h-5 text-white" />
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium">Project</p>
-                  </GlassCard>
-                </Link>
-                <Link href="/developer">
-                  <GlassCard className="p-2 md:p-3 cursor-pointer hover:shadow-md transition-all text-center" data-testid="link-dev-lume">
-                    <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-2 shadow-lg shadow-amber-500/20">
-                      <Layers className="w-5 h-5 text-white" />
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium">Developer</p>
-                  </GlassCard>
-                </Link>
-                <Link href="/color-library">
-                  <GlassCard className="p-2 md:p-3 cursor-pointer hover:shadow-md transition-all text-center" data-testid="link-colors-lume">
-                    <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center mb-2 shadow-lg shadow-pink-500/20">
-                      <Palette className="w-5 h-5 text-white" />
-                    </div>
-                    <p className="text-xs text-gray-700 font-medium">Colors</p>
-                  </GlassCard>
-                </Link>
-              </div>
-            </div>
-
             {/* Row 4: Service Area with Map */}
             <GlassCard 
               className="p-4 cursor-pointer hover:shadow-md transition-all"
