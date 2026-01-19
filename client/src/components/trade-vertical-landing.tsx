@@ -5,15 +5,32 @@ import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { 
   Eye, EyeOff, Settings, Phone, Mail, MapPin, Clock, Shield, Award,
   Calculator, Mic, Camera, Wrench, Star, CheckCircle2, ArrowRight,
   Zap, Users, Calendar, FileText, MessageSquare, BarChart3, Brain,
-  Palette, Home, Building2, Sparkles, X, ChevronDown, ChevronUp,
+  Palette, Home, Building2, Sparkles, X, ChevronDown, ChevronUp, Expand,
   type LucideIcon
 } from "lucide-react";
 import type { TradeVertical } from "@/config/tenant";
+
+import roofingHeroImage from "@assets/generated_images/professional_roofing_installation_work.png";
+import hvacHeroImage from "@assets/generated_images/hvac_technician_servicing_ac_unit.png";
+import electricalHeroImage from "@assets/generated_images/electrician_working_on_panel.png";
+import plumbingHeroImage from "@assets/generated_images/plumber_installing_fixtures.png";
+import landscapingHeroImage from "@assets/generated_images/landscaping_crew_at_work.png";
+import constructionHeroImage from "@assets/generated_images/construction_worker_framing_house.png";
+
+const TRADE_HERO_IMAGES: Record<string, string> = {
+  roofing: roofingHeroImage,
+  hvac: hvacHeroImage,
+  electrical: electricalHeroImage,
+  plumbing: plumbingHeroImage,
+  landscaping: landscapingHeroImage,
+  construction: constructionHeroImage,
+};
 
 type IconName = "home" | "wrench" | "eye" | "building" | "shield" | "zap" | "clock" | "settings" | 
   "sparkles" | "brain" | "calendar" | "calculator" | "camera" | "users" | "filetext" | 
@@ -52,6 +69,10 @@ interface TradeService {
   nameEs: string;
   descEn: string;
   descEs: string;
+  detailEn?: string;
+  detailEs?: string;
+  benefitsEn?: string[];
+  benefitsEs?: string[];
   icon: IconName;
   popular?: boolean;
 }
@@ -62,9 +83,18 @@ interface TradeFeature {
   nameEs: string;
   descEn: string;
   descEs: string;
+  detailEn?: string;
+  detailEs?: string;
+  benefitsEn?: string[];
+  benefitsEs?: string[];
   icon: IconName;
   category: "frontend" | "backend" | "ai" | "integration";
 }
+
+type ModalContent = {
+  type: 'service' | 'feature' | 'toolkit';
+  item: TradeService | TradeFeature | TradeToolkitFeature;
+} | null;
 
 interface TradeToolkitFeature {
   id: string;
@@ -379,8 +409,10 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
     toolkit: true,
     demo: true,
   });
+  const [modalContent, setModalContent] = useState<ModalContent>(null);
   
   const config = TRADE_CONFIGS[tradeId];
+  const heroImage = TRADE_HERO_IMAGES[tradeId];
   
   useEffect(() => {
     const saved = localStorage.getItem(`trade-config-${tradeId}`);
@@ -588,7 +620,14 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
             <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
               <GlassCard className={`p-0 overflow-hidden bg-gradient-to-br ${config.heroGradient} min-h-[300px]`}>
                 <div className="relative h-full p-6 md:p-10 flex flex-col justify-center">
-                  <div className="absolute inset-0 bg-black/30" />
+                  {heroImage && (
+                    <img 
+                      src={heroImage} 
+                      alt={name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
                   <div className="relative z-10">
                     <Badge className="mb-4 bg-white/20 text-white border-0">
                       {language === 'es' ? 'Profesionales Certificados' : 'Certified Professionals'}
@@ -643,7 +682,13 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
               configMode={configMode}
             >
               <BentoItem colSpan={3} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
-                <GlassCard className="p-4 h-full" hoverEffect="lift" glow={service.popular ? "accent" : false}>
+                <GlassCard 
+                  className="p-4 h-full cursor-pointer group" 
+                  hoverEffect="lift" 
+                  glow={service.popular ? "accent" : false}
+                  onClick={() => setModalContent({ type: 'service', item: service })}
+                  data-testid={`service-card-${service.id}`}
+                >
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-primary/10 text-primary">
                       {getIcon(service.icon)}
@@ -664,6 +709,7 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                         {language === 'es' ? service.descEs : service.descEn}
                       </p>
                     </div>
+                    <Expand className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </GlassCard>
               </BentoItem>
@@ -756,11 +802,16 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                   </Badge>
                   <div className="space-y-3">
                     {categoryFeatures.map(feature => (
-                      <div key={feature.id} className="flex items-start gap-3">
+                      <div 
+                        key={feature.id} 
+                        className="flex items-start gap-3 cursor-pointer group p-2 -mx-2 rounded-md hover:bg-muted/50 transition-colors"
+                        onClick={() => setModalContent({ type: 'feature', item: feature })}
+                        data-testid={`feature-card-${feature.id}`}
+                      >
                         <div className="p-1.5 rounded bg-primary/10 text-primary">
                           {getIcon(feature.icon, "w-5 h-5")}
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <div className="font-medium text-sm">
                             {language === 'es' ? feature.nameEs : feature.nameEn}
                           </div>
@@ -850,6 +901,129 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
           </BentoItem>
         </BentoGrid>
       </div>
+      
+      {/* Detail Modal */}
+      <Dialog open={modalContent !== null} onOpenChange={(open) => !open && setModalContent(null)}>
+        <DialogContent className="max-w-lg">
+          {modalContent && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  {'icon' in modalContent.item && (
+                    <div className="p-3 rounded-lg bg-primary/10 text-primary">
+                      {getIcon((modalContent.item as TradeService | TradeFeature).icon, "w-8 h-8")}
+                    </div>
+                  )}
+                  <div>
+                    <DialogTitle className="text-xl">
+                      {language === 'es' ? modalContent.item.nameEs : modalContent.item.nameEn}
+                    </DialogTitle>
+                    {modalContent.type === 'service' && (modalContent.item as TradeService).popular && (
+                      <Badge variant="secondary" className="mt-1">
+                        <Star className="w-3 h-3 mr-1" />
+                        {language === 'es' ? 'Servicio Popular' : 'Popular Service'}
+                      </Badge>
+                    )}
+                    {modalContent.type === 'feature' && (
+                      <Badge variant="outline" className="mt-1 capitalize">
+                        {(modalContent.item as TradeFeature).category}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </DialogHeader>
+              
+              <DialogDescription asChild>
+                <div className="space-y-4">
+                  <p className="text-foreground">
+                    {language === 'es' ? modalContent.item.descEs : modalContent.item.descEn}
+                  </p>
+                  
+                  {/* Detailed description */}
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary" />
+                      {language === 'es' ? 'Lo que incluye' : 'What\'s Included'}
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      {modalContent.type === 'service' && (
+                        <>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Consulta y evaluación gratuita' : 'Free consultation and assessment'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Cotización detallada por escrito' : 'Detailed written estimate'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Profesionales certificados y asegurados' : 'Licensed and insured professionals'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Garantía de satisfacción' : 'Satisfaction guarantee'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Materiales de primera calidad' : 'Premium quality materials'}</span>
+                          </li>
+                        </>
+                      )}
+                      {modalContent.type === 'feature' && (
+                        <>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Acceso completo a esta funcionalidad' : 'Full access to this feature'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Soporte técnico incluido' : 'Technical support included'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Actualizaciones automáticas' : 'Automatic updates'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Integración con otras herramientas' : 'Integration with other tools'}</span>
+                          </li>
+                        </>
+                      )}
+                      {modalContent.type === 'toolkit' && (
+                        <>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Calculadora profesional de campo' : 'Professional field calculator'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Compatible con asistente de voz' : 'Voice assistant compatible'}</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <span>{language === 'es' ? 'Resultados precisos al instante' : 'Instant accurate results'}</span>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                  
+                  <div className="flex gap-3 pt-2">
+                    <Button className="flex-1 gap-2" data-testid="modal-get-started">
+                      <ArrowRight className="w-4 h-4" />
+                      {language === 'es' ? 'Comenzar' : 'Get Started'}
+                    </Button>
+                    <Button variant="outline" className="gap-2" onClick={() => setModalContent(null)} data-testid="modal-close">
+                      {language === 'es' ? 'Cerrar' : 'Close'}
+                    </Button>
+                  </div>
+                </div>
+              </DialogDescription>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
