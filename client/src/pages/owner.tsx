@@ -385,28 +385,28 @@ export default function Owner() {
                     <div>
                       <div className="flex items-center gap-1 mb-1">
                         <DollarSign className="w-3 h-3 text-gold-400" />
-                        <span className="text-xs font-medium">Revenue</span>
+                        <span className="text-xs font-medium">{t('owner.revenue')}</span>
                       </div>
                       <div className="text-xl font-bold text-gold-400">$--</div>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 mb-1">
                         <Target className="w-3 h-3 text-teal-400" />
-                        <span className="text-xs font-medium">Pipeline</span>
+                        <span className="text-xs font-medium">{t('owner.pipeline')}</span>
                       </div>
                       <div className="text-xl font-bold text-teal-400">${getTotalPipelineValue().toLocaleString()}</div>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 mb-1">
                         <Users className="w-3 h-3 text-blue-400" />
-                        <span className="text-xs font-medium">Leads</span>
+                        <span className="text-xs font-medium">{t('owner.leads')}</span>
                       </div>
                       <div className="text-xl font-bold text-blue-400">{leadsLoading ? "--" : leads.length}</div>
                     </div>
                     <div>
                       <div className="flex items-center gap-1 mb-1">
                         <TrendingUp className="w-3 h-3 text-green-400" />
-                        <span className="text-xs font-medium">Growth</span>
+                        <span className="text-xs font-medium">{t('owner.growth')}</span>
                       </div>
                       <div className="text-xl font-bold text-green-400">--%</div>
                     </div>
@@ -429,8 +429,8 @@ export default function Owner() {
                         <Search className="w-4 h-4 text-blue-400" />
                       </motion.div>
                       <div>
-                        <h2 className="text-lg font-display font-bold">SEO Tracker</h2>
-                        <p className="text-xs text-muted-foreground">{seoTags.length} tags</p>
+                        <h2 className="text-lg font-display font-bold">{t('owner.seoTracker')}</h2>
+                        <p className="text-xs text-muted-foreground">{seoTags.length} {t('owner.tags')}</p>
                       </div>
                     </div>
                   {canManageSEO() && (
@@ -442,7 +442,7 @@ export default function Owner() {
                       data-testid="button-add-seo-tag"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Add</span>
+                      <span className="hidden sm:inline">{t('owner.add')}</span>
                     </motion.button>
                   )}
                 </div>
@@ -511,11 +511,11 @@ export default function Owner() {
 
                 <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar">
                   {tagsLoading ? (
-                    <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
+                    <div className="text-center py-6 text-muted-foreground text-sm">{t('owner.loading')}</div>
                   ) : seoTags.length === 0 ? (
                     <div className="text-center py-8">
                       <Tag className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-                      <p className="text-sm text-muted-foreground">No SEO tags yet</p>
+                      <p className="text-sm text-muted-foreground">{t('owner.noSeoTags')}</p>
                     </div>
                   ) : (
                     seoTags.map((tag, index) => (
