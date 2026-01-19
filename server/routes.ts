@@ -54,6 +54,7 @@ import { setupAuth, isAuthenticated, initAuthBackground } from "./replitAuth";
 import type { RequestHandler } from "express";
 import { checkCredits, deductCreditsAfterUsage, getActionCost, CREDIT_PACKS } from "./aiCredits";
 import * as aiCredits from "./aiCredits";
+import * as twilio from "./twilio";
 
 // Global Socket.IO instance for real-time messaging
 let io: SocketServer | null = null;
@@ -9688,6 +9689,61 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error updating user role:", error);
       res.status(500).json({ error: "Failed to update user role" });
+    }
+  });
+
+  // ===== SMS/Twilio Routes =====
+  app.get("/api/sms/status", async (req, res) => {
+    res.json({ configured: twilio.isTwilioConfigured() });
+  });
+
+  app.post("/api/sms/send", async (req, res) => {
+    try {
+      const { to, message, language } = req.body;
+      if (!to || !message) {
+        return res.status(400).json({ error: "Phone number and message are required" });
+      }
+      const result = await twilio.sendSms({ to, message, language });
+      if (result.success) {
+        res.json({ success: true, sid: result.sid });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/sms/send-template", async (req, res) => {
+    try {
+      const { to, template, params, language } = req.body;
+      if (!to || !template) {
+        return res.status(400).json({ error: "Phone number and template are required" });
+      }
+      const result = await twilio.sendTemplatedSms(to, template, params || [], language || 'en');
+      if (result.success) {
+        res.json({ success: true, sid: result.sid });
+      } else {
+        res.status(500).json({ error: result.error });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/sms/crew-notify", async (req, res) => {
+    try {
+      const { phones, template, params, language } = req.body;
+      if (!phones || !Array.isArray(phones) || phones.length === 0) {
+        return res.status(400).json({ error: "Phone numbers array is required" });
+      }
+      if (!template) {
+        return res.status(400).json({ error: "Template is required" });
+      }
+      const result = await twilio.sendCrewNotification(phones, template, params || [], language || 'en');
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   });
 
