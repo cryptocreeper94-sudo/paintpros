@@ -128,6 +128,93 @@ class OrbitEcosystem {
   async ping(): Promise<{ status: string; timestamp: string }> {
     return this.makeRequest<{ status: string; timestamp: string }>('/api/health');
   }
+
+  async syncTenant(tenant: {
+    externalId: string;
+    name: string;
+    email: string;
+    phone?: string;
+    vertical: string;
+    city?: string;
+    state?: string;
+    status: string;
+    subscriptionTier: string;
+    tradeworksEnabled: boolean;
+    source: string;
+  }): Promise<{ id: string } | null> {
+    try {
+      return await this.makeRequest<{ id: string }>('/api/tenants', 'POST', tenant);
+    } catch (error) {
+      console.error('[Orbit] Failed to sync tenant:', error);
+      return null;
+    }
+  }
+
+  async updateTenantStatus(orbitTenantId: string, status: string): Promise<boolean> {
+    try {
+      await this.makeRequest(`/api/tenants/${orbitTenantId}/status`, 'PUT', { status });
+      return true;
+    } catch (error) {
+      console.error('[Orbit] Failed to update tenant status:', error);
+      return false;
+    }
+  }
+
+  async reportRevenue(data: {
+    tenantId: string;
+    orbitTenantId: string;
+    amount: number;
+    type: 'subscription' | 'addon' | 'setup';
+    description: string;
+    periodStart: Date;
+    periodEnd: Date;
+  }): Promise<boolean> {
+    try {
+      await this.makeRequest('/api/revenue', 'POST', data);
+      return true;
+    } catch (error) {
+      console.error('[Orbit] Failed to report revenue:', error);
+      return false;
+    }
+  }
+
+  async syncAllTenants(tenants: Array<{
+    id: string;
+    orbitTenantId?: string;
+    companyName: string;
+    ownerEmail: string;
+    tradeVertical: string;
+    status: string;
+    subscriptionTier: string;
+    tradeworksEnabled: boolean;
+  }>): Promise<{ synced: number; failed: number }> {
+    let synced = 0;
+    let failed = 0;
+
+    for (const tenant of tenants) {
+      try {
+        if (tenant.orbitTenantId) {
+          await this.updateTenantStatus(tenant.orbitTenantId, tenant.status);
+        } else {
+          await this.syncTenant({
+            externalId: tenant.id,
+            name: tenant.companyName,
+            email: tenant.ownerEmail,
+            vertical: tenant.tradeVertical,
+            status: tenant.status,
+            subscriptionTier: tenant.subscriptionTier,
+            tradeworksEnabled: tenant.tradeworksEnabled,
+            source: 'paintpros-batch-sync',
+          });
+        }
+        synced++;
+      } catch {
+        failed++;
+      }
+    }
+
+    return { synced, failed };
+  }
 }
 
 export const orbitEcosystem = new OrbitEcosystem();

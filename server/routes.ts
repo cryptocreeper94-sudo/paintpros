@@ -345,6 +345,65 @@ export async function registerRoutes(
     });
   });
 
+  // ============ TENANT ONBOARDING & PROVISIONING ============
+  
+  // POST /api/tenants/provision - Create new tenant with Stripe checkout
+  app.post("/api/tenants/provision", async (req, res) => {
+    try {
+      const { tenantProvisioning } = await import("./tenant-provisioning");
+      const result = await tenantProvisioning.provisionTenant(req.body);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          tenantId: result.tenantId,
+          checkoutUrl: result.checkoutUrl,
+        });
+      } else {
+        res.status(400).json({ success: false, error: result.error });
+      }
+    } catch (error: any) {
+      console.error("[API] Tenant provisioning error:", error);
+      res.status(500).json({ success: false, error: error.message || "Failed to create tenant" });
+    }
+  });
+  
+  // POST /api/tenants/activate - Activate tenant after successful payment (webhook callback)
+  app.post("/api/tenants/activate", async (req, res) => {
+    try {
+      const { tenantId, subscriptionId } = req.body;
+      
+      if (!tenantId || !subscriptionId) {
+        return res.status(400).json({ error: "Missing tenantId or subscriptionId" });
+      }
+      
+      const { tenantProvisioning } = await import("./tenant-provisioning");
+      const success = await tenantProvisioning.activateTenant(tenantId, subscriptionId);
+      
+      if (success) {
+        res.json({ success: true });
+      } else {
+        res.status(500).json({ success: false, error: "Activation failed" });
+      }
+    } catch (error: any) {
+      console.error("[API] Tenant activation error:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+  
+  // GET /api/tenants/:id - Get tenant details
+  app.get("/api/tenants/:id", async (req, res) => {
+    try {
+      const tenant = await storage.getTenant(req.params.id);
+      if (!tenant) {
+        return res.status(404).json({ error: "Tenant not found" });
+      }
+      res.json(tenant);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // ============ PWA ROUTES (Dynamic per tenant) ============
 
   // Dynamic manifest.json based on hostname

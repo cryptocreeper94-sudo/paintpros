@@ -70,6 +70,8 @@ import PrivacyPolicy from "@/pages/privacy-policy";
 import Contact from "@/pages/contact";
 import FAQ from "@/pages/faq";
 import TradeVerticalPage from "@/pages/trade-vertical";
+import Onboarding from "@/pages/onboarding";
+import OnboardingSuccess from "@/pages/onboarding-success";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -180,6 +182,9 @@ function Router() {
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/contact" component={Contact} />
       <Route path="/faq" component={FAQ} />
+      <Route path="/onboarding" component={Onboarding} />
+      <Route path="/onboarding/success" component={OnboardingSuccess} />
+      <Route path="/onboarding/cancel">{() => <Onboarding />}</Route>
       <Route component={NotFound} />
     </Switch>
   );

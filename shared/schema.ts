@@ -1812,6 +1812,20 @@ export const tenants = pgTable("tenants", {
   locationCount: integer("location_count").default(1),
   perLocationPrice: decimal("per_location_price", { precision: 10, scale: 2 }),
   
+  // Trade vertical info
+  tradeVertical: text("trade_vertical").notNull().default("painting"), // 'painting', 'roofing', 'hvac', 'electrical', 'plumbing', 'landscaping', 'construction'
+  
+  // TradeWorks AI add-on
+  tradeworksEnabled: boolean("tradeworks_enabled").default(false),
+  tradeworksSubscriptionId: text("tradeworks_subscription_id"), // Separate subscription for TradeWorks
+  tradeworksPriceId: text("tradeworks_price_id"), // Which TradeWorks tier
+  tradeworksActivatedAt: timestamp("tradeworks_activated_at"),
+  
+  // Orbit ecosystem sync
+  orbitSyncEnabled: boolean("orbit_sync_enabled").default(true),
+  orbitTenantId: text("orbit_tenant_id"), // ID in Orbit Staffing system
+  orbitLastSyncAt: timestamp("orbit_last_sync_at"),
+  
   // Feature flags (can override defaults per tenant)
   featuresEnabled: jsonb("features_enabled").$type<{
     estimator?: boolean;
@@ -1822,6 +1836,9 @@ export const tenants = pgTable("tenants", {
     booking?: boolean;
     messaging?: boolean;
     analytics?: boolean;
+    tradeworksCalculators?: boolean;
+    tradeworksVoice?: boolean;
+    tradeworksAI?: boolean;
   }>().default({}),
   
   // Status
@@ -1878,6 +1895,15 @@ export const trialTenants = pgTable("trial_tenants", {
   // Theme customization
   primaryColor: text("primary_color").default("#4A5D3E"), // Default army green
   accentColor: text("accent_color").default("#5A6D4E"),
+  
+  // Trade vertical info
+  tradeVertical: text("trade_vertical").notNull().default("painting"), // 'painting', 'roofing', 'hvac', 'electrical', 'plumbing', 'landscaping', 'construction'
+  
+  // TradeWorks AI interest (for conversion)
+  tradeworksInterested: boolean("tradeworks_interested").default(false),
+  
+  // Selected subscription tier
+  selectedTier: text("selected_tier").default("starter"), // 'starter', 'professional', 'enterprise'
   
   // Trial status
   status: text("status").notNull().default("active"), // 'active', 'expired', 'converted', 'cancelled'

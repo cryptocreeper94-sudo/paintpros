@@ -1,5 +1,6 @@
 import { db } from "./db";
 import { 
+  type Tenant, tenants,
   type EstimateRequest, type InsertEstimateRequest, estimateRequests,
   type Lead, type InsertLead, leads,
   type Estimate, type InsertEstimate, estimates,
@@ -137,6 +138,9 @@ import {
 import { desc, eq, ilike, or, and, sql, max, inArray } from "drizzle-orm";
 
 export interface IStorage {
+  // Tenant operations
+  getTenant(id: string): Promise<Tenant | undefined>;
+  
   // User operations (for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
@@ -829,6 +833,12 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Tenant operations
+  async getTenant(id: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.id, id));
+    return tenant;
+  }
+  
   // User operations (for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
