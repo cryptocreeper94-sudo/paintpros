@@ -26,10 +26,12 @@ import {
   ChevronRight,
   Camera,
   Store,
-  ShoppingCart
+  ShoppingCart,
+  ScanLine
 } from "lucide-react";
 import type { PaintColor } from "@shared/schema";
 import { ColorVisualizer, ColorVisualizerCard } from "@/components/color-visualizer";
+import { ColorScanner } from "@/components/color-scanner";
 import { useTenant } from "@/context/TenantContext";
 
 // Hue ranges for color families (0-360 degrees)
@@ -467,6 +469,7 @@ export default function ColorLibrary() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedColor, setSelectedColor] = useState<PaintColor | null>(null);
   const [showVisualizer, setShowVisualizer] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const [visualizerColor, setVisualizerColor] = useState<{ hex: string; name: string } | null>(null);
 
   const { data: allColors = [], isLoading } = useQuery<PaintColor[]>({
@@ -563,11 +566,39 @@ export default function ColorLibrary() {
                 </div>
               </GlassCard>
 
-              {/* Visualizer CTA */}
+              {/* Scanner CTA */}
+              <GlassCard 
+                className="p-4 cursor-pointer hover:border-accent/40 transition-all bg-gradient-to-br from-purple-500/10 to-accent/5" 
+                glow="purple"
+                onClick={() => setShowScanner(true)}
+                data-testid="card-color-scanner"
+              >
+                <div className="flex items-center gap-3 h-full">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <ScanLine className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-foreground text-sm">Color Match Scanner</p>
+                      <span className="text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                        <Sparkles className="w-2.5 h-2.5" />
+                        New
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">Scan any color to match</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                </div>
+              </GlassCard>
+            </div>
+            
+            {/* Visualizer CTA - moved to its own row on mobile */}
+            <div className="mt-4">
               <GlassCard 
                 className="p-4 cursor-pointer hover:border-accent/40 transition-all bg-gradient-to-br from-accent/5 to-gold-400/5" 
                 glow="accent"
                 onClick={() => setShowVisualizer(true)}
+                data-testid="card-color-visualizer"
               >
                 <div className="flex items-center gap-3 h-full">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
@@ -575,7 +606,7 @@ export default function ColorLibrary() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-foreground text-sm">AI Color Visualizer</p>
-                    <p className="text-xs text-muted-foreground truncate">See colors on your wall</p>
+                    <p className="text-xs text-muted-foreground truncate">See colors on your wall before you paint</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-accent flex-shrink-0" />
                 </div>
@@ -785,6 +816,15 @@ export default function ColorLibrary() {
           isOpen={showVisualizer} 
           onClose={() => setShowVisualizer(false)}
           initialColor={visualizerColor || undefined}
+        />
+
+        {/* Color Scanner Modal */}
+        <ColorScanner 
+          isOpen={showScanner}
+          onClose={() => setShowScanner(false)}
+          onColorSelect={(color) => {
+            setVisualizerColor({ hex: color.hex, name: color.name });
+          }}
         />
       </main>
     </PageLayout>
