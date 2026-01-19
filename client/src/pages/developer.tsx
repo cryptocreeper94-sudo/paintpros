@@ -41,6 +41,7 @@ import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
 import { BlogManager } from "@/components/blog-manager";
 import { useAccess } from "@/context/AccessContext";
+import { MarketingHub } from "@/components/marketing-hub";
 
 const DEVELOPER_PIN = "0424";
 
@@ -2188,6 +2189,15 @@ export default function Developer() {
             <motion.div className="h-full" variants={cardVariants} custom={12}>
               <GlassCard className="h-full p-4 md:p-6" glow="gold" hoverEffect={false}>
                 <BlogManager />
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Marketing Hub */}
+          <BentoItem colSpan={12} rowSpan={2}>
+            <motion.div className="h-full" variants={cardVariants} custom={13}>
+              <GlassCard className="h-full p-4 md:p-6" glow="accent" hoverEffect={false}>
+                <MarketingHub showTenantSwitcher={true} />
               </GlassCard>
             </motion.div>
           </BentoItem>

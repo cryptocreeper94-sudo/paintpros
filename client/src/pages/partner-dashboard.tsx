@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, TrendingUp, Calendar, Clock, Shield, ArrowRight, Wallet, PiggyBank, FileText, Settings, ExternalLink, Sparkles, CheckCircle, X, Smartphone, Mail, Palette, Camera } from "lucide-react";
+import { DollarSign, TrendingUp, Calendar, Clock, Shield, ArrowRight, Wallet, PiggyBank, FileText, Settings, ExternalLink, Sparkles, CheckCircle, X, Smartphone, Mail, Palette, Camera, Megaphone } from "lucide-react";
+import { MarketingHub } from "@/components/marketing-hub";
 
 type PaymentFrequency = "instant" | "weekly" | "biweekly" | "monthly";
 
@@ -319,6 +320,19 @@ export default function PartnerDashboard() {
                 <p className="text-lg font-bold text-green-900">$2.2T+</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Marketing Hub */}
+        <Card className="mb-8 border-pink-200 bg-gradient-to-br from-pink-50 to-purple-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Megaphone className="w-5 h-5 text-pink-600" />
+              Marketing Hub
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MarketingHub showTenantSwitcher={true} />
           </CardContent>
         </Card>
 
