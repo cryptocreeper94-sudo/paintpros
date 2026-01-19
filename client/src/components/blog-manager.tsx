@@ -132,6 +132,21 @@ export function BlogManager() {
     },
   });
 
+  const seedCategoriesMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/blog/categories/seed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tenantId: tenant.id }),
+      });
+      if (!res.ok) throw new Error("Failed to seed categories");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/blog/categories"] });
+    },
+  });
+
   const generateWithAI = async () => {
     if (!aiTopic.trim()) return;
     setIsGenerating(true);
@@ -662,9 +677,19 @@ export function BlogManager() {
               </Button>
             </div>
             {categories.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                No categories yet. Add some to organize your blog posts.
-              </p>
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-4">
+                  No categories yet. Add some to organize your blog posts.
+                </p>
+                <Button
+                  onClick={() => seedCategoriesMutation.mutate()}
+                  disabled={seedCategoriesMutation.isPending}
+                  className="bg-gold-400 hover:bg-gold-500 text-black"
+                  data-testid="button-seed-categories"
+                >
+                  {seedCategoriesMutation.isPending ? "Creating..." : "Create Default Categories"}
+                </Button>
+              </div>
             ) : (
               <div className="space-y-2">
                 {categories.map(cat => (

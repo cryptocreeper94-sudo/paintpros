@@ -1540,6 +1540,43 @@ export async function registerRoutes(
     }
   });
 
+  // Seed default blog categories for a tenant
+  app.post("/api/blog/categories/seed", async (req, res) => {
+    try {
+      const { tenantId = "npp" } = req.body;
+      
+      const defaultCategories = [
+        { name: "Painting Tips", slug: "painting-tips", description: "Expert painting advice and techniques", color: "#D4AF37" },
+        { name: "Home Improvement", slug: "home-improvement", description: "DIY projects and renovation ideas", color: "#3B82F6" },
+        { name: "Color Trends", slug: "color-trends", description: "Latest color palettes and design trends", color: "#EC4899" },
+        { name: "Contractor Insights", slug: "contractor-insights", description: "Professional tips from the trade", color: "#10B981" },
+        { name: "Before & After", slug: "before-after", description: "Transformation stories and case studies", color: "#F59E0B" },
+        { name: "Electrical", slug: "electrical", description: "Electrical work tips and safety", color: "#EAB308" },
+        { name: "Plumbing", slug: "plumbing", description: "Plumbing maintenance and repairs", color: "#3B82F6" },
+        { name: "HVAC", slug: "hvac", description: "Heating and cooling system tips", color: "#06B6D4" },
+        { name: "Roofing", slug: "roofing", description: "Roof maintenance and repair guides", color: "#EF4444" },
+        { name: "Carpentry", slug: "carpentry", description: "Woodworking and trim work", color: "#A16207" },
+        { name: "Concrete & Masonry", slug: "concrete-masonry", description: "Foundation and concrete work", color: "#6B7280" },
+        { name: "Landscaping", slug: "landscaping", description: "Outdoor and yard projects", color: "#22C55E" },
+      ];
+      
+      const created = [];
+      for (const cat of defaultCategories) {
+        try {
+          const category = await storage.createBlogCategory({ ...cat, tenantId });
+          created.push(category);
+        } catch (e) {
+          // Category might already exist, skip it
+        }
+      }
+      
+      res.status(201).json({ created: created.length, categories: created });
+    } catch (error) {
+      console.error("Error seeding blog categories:", error);
+      res.status(500).json({ error: "Failed to seed categories" });
+    }
+  });
+
   // Blog Posts
   app.get("/api/blog/posts", async (req, res) => {
     try {
