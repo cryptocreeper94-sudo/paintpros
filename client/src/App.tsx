@@ -56,6 +56,7 @@ import Why40kFails from "@/pages/why-40k-fails";
 import TradeVerticals from "@/pages/trade-verticals";
 import EstimatorApp from "@/pages/estimator-app";
 import TradeToolkit from "@/pages/trade-toolkit";
+import TradeWorksAI from "@/pages/tradeworks-ai";
 import EstimatorConfig from "@/pages/estimator-config";
 import CreditsDashboard from "@/pages/credits-dashboard";
 import CreditsSuccess from "@/pages/credits-success";
@@ -135,6 +136,7 @@ function Router() {
       <Route path="/trial/:slug/upgrade-success" component={TrialUpgradeSuccess} />
       <Route path="/estimator-app" component={EstimatorApp} />
       <Route path="/trade-toolkit" component={TradeToolkit} />
+      <Route path="/tradeworks" component={TradeWorksAI} />
       <Route path="/credits" component={CreditsDashboard} />
       <Route path="/credits/success" component={CreditsSuccess} />
       <Route path="/credits/cancel" component={CreditsCancel} />

@@ -5036,3 +5036,327 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: tru
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 export type BlogPost = typeof blogPosts.$inferSelect;
 
+// ============================================================================
+// TRADEWORKS AI - Multi-Trade Field Toolkit
+// ============================================================================
+
+// TradeWorks User Profiles - extends base users with trade-specific settings
+export const tradeworksProfiles = pgTable("tradeworks_profiles", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).references(() => users.id),
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  // Business info
+  companyName: text("company_name"),
+  phone: text("phone"),
+  zipcode: varchar("zipcode", { length: 10 }),
+  serviceRadius: integer("service_radius").default(25), // miles
+  
+  // Trade preferences
+  primaryTrade: text("primary_trade").default("painting"), // painting, electrical, plumbing, hvac, roofing, carpentry, concrete, landscaping
+  secondaryTrades: text("secondary_trades").array(),
+  
+  // Default rates
+  defaultHourlyRate: decimal("default_hourly_rate", { precision: 10, scale: 2 }).default("45.00"),
+  defaultMarkupPercent: integer("default_markup_percent").default(30),
+  defaultHelperRate: decimal("default_helper_rate", { precision: 10, scale: 2 }).default("25.00"),
+  
+  // Preferences
+  preferredUnits: text("preferred_units").default("imperial"), // imperial, metric
+  preferredCurrency: varchar("preferred_currency", { length: 3 }).default("USD"),
+  preferredVoiceId: text("preferred_voice_id"), // ElevenLabs voice ID
+  voiceEnabled: boolean("voice_enabled").default(true),
+  
+  // Stats
+  totalCalculations: integer("total_calculations").default(0),
+  totalJobs: integer("total_jobs").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_profiles_user").on(table.userId),
+  index("idx_tradeworks_profiles_tenant").on(table.tenantId),
+  index("idx_tradeworks_profiles_zipcode").on(table.zipcode),
+]);
+
+export const insertTradeworksProfileSchema = createInsertSchema(tradeworksProfiles).omit({ id: true, createdAt: true, updatedAt: true, totalCalculations: true, totalJobs: true });
+export type InsertTradeworksProfile = z.infer<typeof insertTradeworksProfileSchema>;
+export type TradeworksProfile = typeof tradeworksProfiles.$inferSelect;
+
+// TradeWorks Jobs - Project tracking
+export const tradeworksJobs = pgTable("tradeworks_jobs", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id", { length: 36 }).references(() => tradeworksProfiles.id).notNull(),
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  // Job details
+  jobName: text("job_name").notNull(),
+  jobAddress: text("job_address"),
+  clientName: text("client_name"),
+  clientPhone: text("client_phone"),
+  clientEmail: text("client_email"),
+  
+  // Classification
+  trade: text("trade").notNull(), // painting, electrical, etc.
+  jobType: text("job_type"), // residential, commercial, industrial
+  
+  // Status
+  status: text("status").default("active"), // active, completed, on-hold, cancelled
+  estimatedValue: decimal("estimated_value", { precision: 10, scale: 2 }),
+  actualValue: decimal("actual_value", { precision: 10, scale: 2 }),
+  
+  // Dates
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  
+  // Notes
+  notes: text("notes"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_jobs_profile").on(table.profileId),
+  index("idx_tradeworks_jobs_tenant").on(table.tenantId),
+  index("idx_tradeworks_jobs_status").on(table.status),
+  index("idx_tradeworks_jobs_trade").on(table.trade),
+]);
+
+export const insertTradeworksJobSchema = createInsertSchema(tradeworksJobs).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertTradeworksJob = z.infer<typeof insertTradeworksJobSchema>;
+export type TradeworksJob = typeof tradeworksJobs.$inferSelect;
+
+// TradeWorks Calculations - Saved calculation history
+export const tradeworksCalculations = pgTable("tradeworks_calculations", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id", { length: 36 }).references(() => tradeworksProfiles.id).notNull(),
+  jobId: varchar("job_id", { length: 36 }).references(() => tradeworksJobs.id), // optional job association
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  // Calculator info
+  calculatorType: text("calculator_type").notNull(), // paint_gallon, voltage_drop, pipe_sizing, etc.
+  trade: text("trade").notNull(), // painting, electrical, plumbing, hvac, roofing, carpentry, concrete, landscaping
+  
+  // User-defined label
+  label: text("label"), // "Master Bedroom Walls", "Kitchen Rewire", etc.
+  
+  // Calculation data
+  inputs: jsonb("inputs").notNull(), // All input values
+  outputs: jsonb("outputs").notNull(), // All calculated results
+  
+  // Voice transcript if voice-input was used
+  voiceTranscript: text("voice_transcript"),
+  
+  // Favorites
+  isFavorite: boolean("is_favorite").default(false),
+  isTemplate: boolean("is_template").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_calcs_profile").on(table.profileId),
+  index("idx_tradeworks_calcs_job").on(table.jobId),
+  index("idx_tradeworks_calcs_tenant").on(table.tenantId),
+  index("idx_tradeworks_calcs_type").on(table.calculatorType),
+  index("idx_tradeworks_calcs_trade").on(table.trade),
+  index("idx_tradeworks_calcs_favorite").on(table.isFavorite),
+]);
+
+export const insertTradeworksCalculationSchema = createInsertSchema(tradeworksCalculations).omit({ id: true, createdAt: true });
+export type InsertTradeworksCalculation = z.infer<typeof insertTradeworksCalculationSchema>;
+export type TradeworksCalculation = typeof tradeworksCalculations.$inferSelect;
+
+// TradeWorks Calculator Defaults - Per-calculator user preferences
+export const tradeworksCalculatorDefaults = pgTable("tradeworks_calculator_defaults", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id", { length: 36 }).references(() => tradeworksProfiles.id).notNull(),
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  calculatorType: text("calculator_type").notNull(),
+  defaultValues: jsonb("default_values").notNull(), // Saved default values for this calculator
+  
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_defaults_profile").on(table.profileId),
+  index("idx_tradeworks_defaults_calc").on(table.calculatorType),
+]);
+
+export const insertTradeworksCalculatorDefaultsSchema = createInsertSchema(tradeworksCalculatorDefaults).omit({ id: true, updatedAt: true });
+export type InsertTradeworksCalculatorDefaults = z.infer<typeof insertTradeworksCalculatorDefaultsSchema>;
+export type TradeworksCalculatorDefaults = typeof tradeworksCalculatorDefaults.$inferSelect;
+
+// TradeWorks Voice Sessions - Voice interaction history
+export const tradeworksVoiceSessions = pgTable("tradeworks_voice_sessions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id", { length: 36 }).references(() => tradeworksProfiles.id).notNull(),
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  sessionStart: timestamp("session_start").defaultNow().notNull(),
+  sessionEnd: timestamp("session_end"),
+  
+  // Conversation transcript
+  transcript: jsonb("transcript"), // Array of { role: 'user'|'assistant', text: string, timestamp: date }
+  
+  // Calculations made during session
+  calculationIds: text("calculation_ids").array(),
+  
+  // Duration in seconds
+  durationSeconds: integer("duration_seconds"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_voice_profile").on(table.profileId),
+  index("idx_tradeworks_voice_tenant").on(table.tenantId),
+]);
+
+export const insertTradeworksVoiceSessionSchema = createInsertSchema(tradeworksVoiceSessions).omit({ id: true, createdAt: true });
+export type InsertTradeworksVoiceSession = z.infer<typeof insertTradeworksVoiceSessionSchema>;
+export type TradeworksVoiceSession = typeof tradeworksVoiceSessions.$inferSelect;
+
+// TradeWorks Saved Stores - Favorite supply stores
+export const tradeworksSavedStores = pgTable("tradeworks_saved_stores", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id", { length: 36 }).references(() => tradeworksProfiles.id).notNull(),
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  // Store info
+  storeName: text("store_name").notNull(),
+  storeType: text("store_type").notNull(), // paint, electrical, plumbing, lumber, hvac, general
+  brand: text("brand"), // sherwin-williams, home-depot, lowes, etc.
+  
+  // Location
+  address: text("address"),
+  city: text("city"),
+  state: varchar("state", { length: 2 }),
+  zipcode: varchar("zipcode", { length: 10 }),
+  
+  // Contact
+  phone: text("phone"),
+  website: text("website"),
+  hours: text("hours"),
+  
+  // User data
+  isFavorite: boolean("is_favorite").default(false),
+  notes: text("notes"),
+  accountNumber: text("account_number"), // User's account at this store
+  
+  // Location data
+  latitude: decimal("latitude", { precision: 10, scale: 7 }),
+  longitude: decimal("longitude", { precision: 10, scale: 7 }),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_stores_profile").on(table.profileId),
+  index("idx_tradeworks_stores_tenant").on(table.tenantId),
+  index("idx_tradeworks_stores_type").on(table.storeType),
+  index("idx_tradeworks_stores_zipcode").on(table.zipcode),
+]);
+
+export const insertTradeworksSavedStoreSchema = createInsertSchema(tradeworksSavedStores).omit({ id: true, createdAt: true });
+export type InsertTradeworksSavedStore = z.infer<typeof insertTradeworksSavedStoreSchema>;
+export type TradeworksSavedStore = typeof tradeworksSavedStores.$inferSelect;
+
+// TradeWorks AI Usage - Track AI feature usage
+export const tradeworksAiUsage = pgTable("tradeworks_ai_usage", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id", { length: 36 }).references(() => tradeworksProfiles.id).notNull(),
+  tenantId: text("tenant_id").default("tradeworks"),
+  
+  featureType: text("feature_type").notNull(), // voice_session, color_match, ai_estimate, quote_writer
+  tokensUsed: integer("tokens_used").default(0),
+  costCents: integer("cost_cents").default(0),
+  
+  // Details
+  details: jsonb("details"), // Feature-specific metadata
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tradeworks_ai_profile").on(table.profileId),
+  index("idx_tradeworks_ai_tenant").on(table.tenantId),
+  index("idx_tradeworks_ai_feature").on(table.featureType),
+]);
+
+export const insertTradeworksAiUsageSchema = createInsertSchema(tradeworksAiUsage).omit({ id: true, createdAt: true });
+export type InsertTradeworksAiUsage = z.infer<typeof insertTradeworksAiUsageSchema>;
+export type TradeworksAiUsage = typeof tradeworksAiUsage.$inferSelect;
+
+// Trade Types Enum for reference
+export const TRADEWORKS_TRADES = [
+  'painting',
+  'electrical',
+  'plumbing',
+  'hvac',
+  'roofing',
+  'carpentry',
+  'concrete',
+  'landscaping'
+] as const;
+
+export type TradeworksTrade = typeof TRADEWORKS_TRADES[number];
+
+// Calculator Types by Trade
+export const TRADEWORKS_CALCULATORS = {
+  painting: [
+    'paint_gallon',
+    'primer_calculator',
+    'cabinet_estimator',
+    'drying_time',
+    'stain_deck',
+    'wallpaper_calculator',
+    'color_match'
+  ],
+  electrical: [
+    'voltage_drop',
+    'wire_sizing',
+    'amperage',
+    'conduit_fill',
+    'breaker_sizing',
+    'led_resistor'
+  ],
+  plumbing: [
+    'pipe_sizing',
+    'fixture_units',
+    'pipe_offset',
+    'water_heater_sizing',
+    'drain_slope'
+  ],
+  hvac: [
+    'btu_load',
+    'duct_sizing',
+    'refrigerant_charge',
+    'temp_split',
+    'airflow_velocity'
+  ],
+  roofing: [
+    'roof_pitch',
+    'shingle_calculator',
+    'rafter_length',
+    'material_estimator'
+  ],
+  carpentry: [
+    'stair_stringer',
+    'board_feet',
+    'stud_spacing',
+    'deck_board',
+    'crown_molding'
+  ],
+  concrete: [
+    'concrete_yards',
+    'rebar_spacing',
+    'block_brick',
+    'mortar_mix',
+    'cure_time'
+  ],
+  landscaping: [
+    'mulch_gravel',
+    'sod_calculator',
+    'fence_posts',
+    'topsoil'
+  ],
+  universal: [
+    'area_calculator',
+    'volume_calculator',
+    'waste_calculator',
+    'labor_estimator',
+    'unit_converter'
+  ]
+} as const;
+
