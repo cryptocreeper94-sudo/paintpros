@@ -116,8 +116,8 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   description: "Nashville's premier painting company offering professional interior and exterior painting services for residential and commercial properties.",
   logo: "/icons/npp-mascot.png",
   
-  phone: "",
-  email: "",
+  phone: "(615) 555-PAINT",
+  email: "info@nashvillepaintingpros.com",
   address: {
     city: "Nashville",
     state: "TN",
@@ -180,7 +180,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     portfolio: true,
     reviews: true,
     blog: true,
-    onlineBooking: false,
+    onlineBooking: true,
     aiAssistant: true,
   },
   
@@ -282,8 +282,8 @@ export const lumePaintCo: TenantConfig = {
   description: "Premium painting services that illuminate your space. Professional interior and exterior painting with meticulous attention to detail.",
   logo: "/icons/lume-logo.png",
   
-  phone: "",
-  email: "",
+  phone: "(615) 555-LUME",
+  email: "hello@lumepaint.co",
   address: {
     city: "Nashville",
     state: "TN",
@@ -346,7 +346,7 @@ export const lumePaintCo: TenantConfig = {
     portfolio: true,
     reviews: true,
     blog: true,
-    onlineBooking: false,
+    onlineBooking: true,
     aiAssistant: true,
   },
   
