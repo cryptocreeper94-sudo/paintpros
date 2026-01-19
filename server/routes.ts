@@ -1465,6 +1465,18 @@ export async function registerRoutes(
       res.status(500).json({ error: "Failed to delete SEO tag" });
     }
   });
+  
+  // GET /api/seo/performance - Get SEO performance score for a tenant
+  app.get("/api/seo/performance", async (req, res) => {
+    try {
+      const { tenantId = "npp" } = req.query;
+      const performance = await storage.getSeoPerformance(tenantId as string);
+      res.json(performance);
+    } catch (error) {
+      console.error("Error fetching SEO performance:", error);
+      res.status(500).json({ error: "Failed to fetch SEO performance" });
+    }
+  });
 
   // ============ CRM DEALS ============
   
@@ -7164,9 +7176,32 @@ Do not include any text before or after the JSON.`
       else if (/safari/i.test(userAgent)) browser = "Safari";
       else if (/edge/i.test(userAgent)) browser = "Edge";
       
-      // Hash IP for privacy
-      const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+      // Get IP for geo-lookup and hashing
+      const forwardedFor = req.headers["x-forwarded-for"];
+      const ip = typeof forwardedFor === 'string' 
+        ? forwardedFor.split(',')[0].trim() 
+        : req.socket.remoteAddress || "";
       const ipHash = Buffer.from(String(ip)).toString("base64").slice(0, 16);
+      
+      // Geo-lookup using free ip-api.com (non-blocking)
+      let country: string | null = null;
+      let city: string | null = null;
+      
+      // Only do geo-lookup for non-local IPs
+      if (ip && !ip.includes('127.0.0.1') && !ip.includes('::1') && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
+        try {
+          const geoResponse = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city`);
+          if (geoResponse.ok) {
+            const geoData = await geoResponse.json();
+            if (geoData.status === 'success') {
+              country = geoData.country || null;
+              city = geoData.city || null;
+            }
+          }
+        } catch (geoError) {
+          // Geo-lookup failed, continue without location data
+        }
+      }
       
       const pageView = await storage.trackPageView({
         page: page || "/",
@@ -7177,13 +7212,35 @@ Do not include any text before or after the JSON.`
         deviceType,
         browser,
         duration: duration || null,
-        tenantId: tenantId || "npp"
+        tenantId: tenantId || "npp",
+        country,
+        city
       });
       
       res.status(201).json({ success: true, id: pageView.id });
     } catch (error) {
       console.error("Error tracking page view:", error);
       res.status(500).json({ error: "Failed to track page view" });
+    }
+  });
+  
+  // GET /api/analytics/geography - Get geographic breakdown of visitors
+  app.get("/api/analytics/geography", async (req, res) => {
+    try {
+      const { tenantId, days = "30" } = req.query;
+      const daysNum = parseInt(days as string) || 30;
+      const startDate = new Date(Date.now() - daysNum * 24 * 60 * 60 * 1000);
+      
+      const geoData = await storage.getGeographicBreakdown(
+        startDate, 
+        new Date(), 
+        tenantId as string | undefined
+      );
+      
+      res.json(geoData);
+    } catch (error) {
+      console.error("Error fetching geographic data:", error);
+      res.status(500).json({ error: "Failed to fetch geographic data" });
     }
   });
 

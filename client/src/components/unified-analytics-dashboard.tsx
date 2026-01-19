@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   BarChart3, Users, Eye, Clock, Globe, Smartphone, Monitor, Tablet,
   TrendingUp, Activity, ArrowUpRight, RefreshCw, Zap, MapPin, Tag,
-  Building2, Paintbrush, Store
+  Building2, Paintbrush, Store, Target, AlertCircle, CheckCircle2
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,7 +21,28 @@ interface AnalyticsData {
   deviceBreakdown: { desktop: number; mobile: number; tablet: number };
   hourlyTraffic: { hour: number; views: number }[];
   dailyTraffic: { date: string; views: number; visitors: number }[];
-  geoData?: { city: string; region: string; count: number }[];
+}
+
+interface GeoData {
+  countries: { country: string; views: number; visitors: number }[];
+  cities: { city: string; country: string; views: number }[];
+  totalWithLocation: number;
+  totalWithoutLocation: number;
+}
+
+interface SeoPerformance {
+  overallScore: number;
+  breakdown: {
+    titleScore: number;
+    metaScore: number;
+    keywordScore: number;
+    structuredDataScore: number;
+    socialScore: number;
+  };
+  totalPages: number;
+  optimizedPages: number;
+  issues: string[];
+  recommendations: string[];
 }
 
 interface SeoTag {
@@ -103,6 +124,81 @@ export function UnifiedAnalyticsDashboard() {
     queryKey: ["/api/seo-tags"],
   });
 
+  const { data: nppGeo } = useQuery<GeoData>({
+    queryKey: ["/api/analytics/geography", "npp"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics/geography?tenantId=npp&days=30");
+      if (!res.ok) throw new Error("Failed to fetch NPP geo data");
+      return res.json();
+    },
+    refetchInterval: 60000,
+  });
+
+  const { data: lumeGeo } = useQuery<GeoData>({
+    queryKey: ["/api/analytics/geography", "lumepaint"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics/geography?tenantId=lumepaint&days=30");
+      if (!res.ok) throw new Error("Failed to fetch Lume geo data");
+      return res.json();
+    },
+    refetchInterval: 60000,
+  });
+
+  const { data: demoGeo } = useQuery<GeoData>({
+    queryKey: ["/api/analytics/geography", "demo"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics/geography?tenantId=demo&days=30");
+      if (!res.ok) throw new Error("Failed to fetch Demo geo data");
+      return res.json();
+    },
+    refetchInterval: 60000,
+  });
+
+  const getGeoForTenant = (tenantId: string): GeoData | undefined => {
+    switch (tenantId) {
+      case "npp": return nppGeo;
+      case "lumepaint": return lumeGeo;
+      case "demo": return demoGeo;
+      default: return nppGeo;
+    }
+  };
+
+  const { data: nppSeo } = useQuery<SeoPerformance>({
+    queryKey: ["/api/seo/performance", "npp"],
+    queryFn: async () => {
+      const res = await fetch("/api/seo/performance?tenantId=npp");
+      if (!res.ok) throw new Error("Failed to fetch NPP SEO");
+      return res.json();
+    },
+  });
+
+  const { data: lumeSeo } = useQuery<SeoPerformance>({
+    queryKey: ["/api/seo/performance", "lumepaint"],
+    queryFn: async () => {
+      const res = await fetch("/api/seo/performance?tenantId=lumepaint");
+      if (!res.ok) throw new Error("Failed to fetch Lume SEO");
+      return res.json();
+    },
+  });
+
+  const { data: demoSeo } = useQuery<SeoPerformance>({
+    queryKey: ["/api/seo/performance", "demo"],
+    queryFn: async () => {
+      const res = await fetch("/api/seo/performance?tenantId=demo");
+      if (!res.ok) throw new Error("Failed to fetch Demo SEO");
+      return res.json();
+    },
+  });
+
+  const getSeoForTenant = (tenantId: string): SeoPerformance | undefined => {
+    switch (tenantId) {
+      case "npp": return nppSeo;
+      case "lumepaint": return lumeSeo;
+      case "demo": return demoSeo;
+      default: return nppSeo;
+    }
+  };
+
   const handleRefreshAll = async () => {
     setIsRefreshing(true);
     await Promise.all([refetchNpp(), refetchLume(), refetchDemo()]);
@@ -135,6 +231,8 @@ export function UnifiedAnalyticsDashboard() {
   const currentLoading = isLoadingTenant(activeTenant);
   const currentConfig = TENANT_CONFIG[activeTenant as keyof typeof TENANT_CONFIG];
   const currentSeoTags = getSeoTagsForTenant(activeTenant);
+  const currentGeo = getGeoForTenant(activeTenant);
+  const currentSeo = getSeoForTenant(activeTenant);
 
   const hourlyData = currentData ? Array.from({ length: 24 }, (_, i) => {
     const found = currentData.hourlyTraffic.find(h => h.hour === i);
@@ -417,40 +515,137 @@ export function UnifiedAnalyticsDashboard() {
 
                   <GlassCard className="p-5">
                     <div className="flex items-center gap-2 mb-4">
-                      <Tag className="w-5 h-5 text-gold-400" />
-                      <h3 className="font-semibold">SEO Tags</h3>
+                      <Target className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">SEO Performance</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="text-center p-2 rounded-lg bg-blue-500/10">
-                        <div className="text-lg font-bold text-blue-400">
-                          {currentSeoTags.filter(t => t.tagType === "keyword").length}
+                    {currentSeo ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-center">
+                          <div className="relative w-24 h-24">
+                            <svg className="w-24 h-24 transform -rotate-90">
+                              <circle
+                                cx="48"
+                                cy="48"
+                                r="40"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                fill="transparent"
+                                className="text-white/10"
+                              />
+                              <circle
+                                cx="48"
+                                cy="48"
+                                r="40"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                fill="transparent"
+                                strokeDasharray={`${currentSeo.overallScore * 2.51} 251`}
+                                className={currentSeo.overallScore >= 70 ? "text-green-500" : currentSeo.overallScore >= 40 ? "text-amber-500" : "text-red-500"}
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-2xl font-bold">{currentSeo.overallScore}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground">Keywords</div>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-purple-500/10">
-                        <div className="text-lg font-bold text-purple-400">
-                          {currentSeoTags.filter(t => t.tagType === "meta_description").length}
+                        <div className="grid grid-cols-2 gap-1 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Titles</span>
+                            <span className={currentSeo.breakdown.titleScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.titleScore}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Meta</span>
+                            <span className={currentSeo.breakdown.metaScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.metaScore}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Keywords</span>
+                            <span className={currentSeo.breakdown.keywordScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.keywordScore}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Social</span>
+                            <span className={currentSeo.breakdown.socialScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.socialScore}%</span>
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground">Meta</div>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-gold-400/10">
-                        <div className="text-lg font-bold text-gold-400">
-                          {currentSeoTags.filter(t => t.tagType === "title").length}
+                        <div className="pt-2 border-t border-white/10 text-xs text-muted-foreground">
+                          {currentSeo.optimizedPages}/{currentSeo.totalPages} pages optimized
                         </div>
-                        <div className="text-xs text-muted-foreground">Titles</div>
                       </div>
-                      <div className="text-center p-2 rounded-lg bg-green-500/10">
-                        <div className="text-lg font-bold text-green-400">
-                          {currentSeoTags.filter(t => t.tagType === "geo").length}
-                        </div>
-                        <div className="text-xs text-muted-foreground">Geo</div>
+                    ) : (
+                      <div className="text-center text-muted-foreground text-sm py-4">
+                        <Target className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                        No SEO data available
                       </div>
+                    )}
+                  </GlassCard>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <GlassCard className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Globe className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">Visitor Locations</h3>
+                      <span className="text-xs text-muted-foreground ml-auto">Last 30 days</span>
                     </div>
-                    <div className="mt-3 pt-3 border-t border-white/10">
-                      <div className="text-xs text-muted-foreground">
-                        Active: {currentSeoTags.filter(t => t.isActive).length} / {currentSeoTags.length}
+                    {currentGeo && currentGeo.countries.length > 0 ? (
+                      <div className="space-y-3">
+                        {currentGeo.countries.slice(0, 6).map((country, i) => {
+                          const maxViews = currentGeo.countries[0]?.views || 1;
+                          const percentage = Math.round((country.views / maxViews) * 100);
+                          return (
+                            <div key={i} className="space-y-1">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="flex items-center gap-2">
+                                  <MapPin className="w-3 h-3 text-muted-foreground" />
+                                  {country.country}
+                                </span>
+                                <span className="font-medium">{country.views} views</span>
+                              </div>
+                              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                <div 
+                                  className="h-full rounded-full bg-gradient-to-r from-gold-400 to-amber-500"
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
+                    ) : (
+                      <div className="text-center text-muted-foreground text-sm py-8">
+                        <Globe className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                        No geographic data yet. Visitor locations will appear as traffic comes in.
+                      </div>
+                    )}
+                  </GlassCard>
+
+                  <GlassCard className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <MapPin className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">Top Cities</h3>
                     </div>
+                    {currentGeo && currentGeo.cities.length > 0 ? (
+                      <div className="space-y-2">
+                        {currentGeo.cities.slice(0, 8).map((city, i) => (
+                          <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-white/5 last:border-0">
+                            <span className="text-muted-foreground">
+                              {city.city}, {city.country}
+                            </span>
+                            <span className="font-medium">{city.views}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-muted-foreground text-sm py-8">
+                        <MapPin className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                        No city data yet
+                      </div>
+                    )}
+                    {currentGeo && (
+                      <div className="mt-4 pt-3 border-t border-white/10 flex justify-between text-xs text-muted-foreground">
+                        <span>With location: {currentGeo.totalWithLocation}</span>
+                        <span>Unknown: {currentGeo.totalWithoutLocation}</span>
+                      </div>
+                    )}
                   </GlassCard>
                 </div>
 

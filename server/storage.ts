@@ -170,6 +170,20 @@ export interface IStorage {
   getSeoTagsByType(tagType: string): Promise<SeoTag[]>;
   toggleSeoTagActive(id: string, isActive: boolean): Promise<SeoTag | undefined>;
   deleteSeoTag(id: string): Promise<void>;
+  getSeoPerformance(tenantId: string): Promise<{
+    overallScore: number;
+    breakdown: {
+      titleScore: number;
+      metaScore: number;
+      keywordScore: number;
+      structuredDataScore: number;
+      socialScore: number;
+    };
+    totalPages: number;
+    optimizedPages: number;
+    issues: string[];
+    recommendations: string[];
+  }>;
   
   // CRM Deals
   createCrmDeal(deal: InsertCrmDeal): Promise<CrmDeal>;
@@ -290,6 +304,12 @@ export interface IStorage {
   }>;
   getLiveVisitorCountByTenant(tenantId: string): Promise<number>;
   getAvailableTenants(): Promise<string[]>;
+  getGeographicBreakdown(startDate: Date, endDate: Date, tenantId?: string): Promise<{
+    countries: { country: string; views: number; visitors: number }[];
+    cities: { city: string; country: string; views: number }[];
+    totalWithLocation: number;
+    totalWithoutLocation: number;
+  }>;
   
   // Estimate Photos
   createEstimatePhoto(photo: InsertEstimatePhoto): Promise<EstimatePhoto>;
@@ -958,6 +978,126 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSeoTag(id: string): Promise<void> {
     await db.delete(seoTags).where(eq(seoTags.id, id));
+  }
+  
+  async getSeoPerformance(tenantId: string): Promise<{
+    overallScore: number;
+    breakdown: {
+      titleScore: number;
+      metaScore: number;
+      keywordScore: number;
+      structuredDataScore: number;
+      socialScore: number;
+    };
+    totalPages: number;
+    optimizedPages: number;
+    issues: string[];
+    recommendations: string[];
+  }> {
+    // Get all SEO pages for this tenant
+    const pages = await db.select().from(seoPages).where(eq(seoPages.tenantId, tenantId));
+    
+    if (pages.length === 0) {
+      return {
+        overallScore: 0,
+        breakdown: { titleScore: 0, metaScore: 0, keywordScore: 0, structuredDataScore: 0, socialScore: 0 },
+        totalPages: 0,
+        optimizedPages: 0,
+        issues: ["No SEO pages configured for this site"],
+        recommendations: ["Add SEO metadata for key pages like Home, Services, About, and Contact"]
+      };
+    }
+    
+    const issues: string[] = [];
+    const recommendations: string[] = [];
+    
+    // Calculate scores for each category
+    let titleScore = 0, metaScore = 0, keywordScore = 0, structuredDataScore = 0, socialScore = 0;
+    let optimizedPages = 0;
+    
+    for (const page of pages) {
+      let pageOptimized = true;
+      
+      // Title scoring (20 points)
+      if (page.metaTitle && page.metaTitle.length >= 30 && page.metaTitle.length <= 60) {
+        titleScore += 20;
+      } else if (page.metaTitle) {
+        titleScore += 10;
+        if (page.metaTitle.length < 30) issues.push(`${page.pagePath}: Title too short`);
+        if (page.metaTitle.length > 60) issues.push(`${page.pagePath}: Title too long`);
+      } else {
+        pageOptimized = false;
+      }
+      
+      // Meta description scoring (20 points)
+      if (page.metaDescription && page.metaDescription.length >= 120 && page.metaDescription.length <= 160) {
+        metaScore += 20;
+      } else if (page.metaDescription) {
+        metaScore += 10;
+      } else {
+        pageOptimized = false;
+      }
+      
+      // Keywords scoring (20 points)
+      if (page.metaKeywords && page.metaKeywords.split(',').length >= 3) {
+        keywordScore += 20;
+      } else if (page.metaKeywords) {
+        keywordScore += 10;
+      } else {
+        pageOptimized = false;
+      }
+      
+      // Structured data scoring (20 points)
+      if (page.structuredData && page.structuredDataType) {
+        structuredDataScore += 20;
+      }
+      
+      // Social (OG + Twitter) scoring (20 points)
+      const hasOg = page.ogTitle && page.ogDescription;
+      const hasTwitter = page.twitterTitle && page.twitterDescription;
+      if (hasOg && hasTwitter) {
+        socialScore += 20;
+      } else if (hasOg || hasTwitter) {
+        socialScore += 10;
+      }
+      
+      if (pageOptimized) optimizedPages++;
+    }
+    
+    // Normalize scores to percentages
+    const maxScore = pages.length * 20;
+    const breakdown = {
+      titleScore: maxScore > 0 ? Math.round((titleScore / maxScore) * 100) : 0,
+      metaScore: maxScore > 0 ? Math.round((metaScore / maxScore) * 100) : 0,
+      keywordScore: maxScore > 0 ? Math.round((keywordScore / maxScore) * 100) : 0,
+      structuredDataScore: maxScore > 0 ? Math.round((structuredDataScore / maxScore) * 100) : 0,
+      socialScore: maxScore > 0 ? Math.round((socialScore / maxScore) * 100) : 0
+    };
+    
+    // Calculate overall score (weighted average)
+    const overallScore = Math.round(
+      (breakdown.titleScore * 0.25) +
+      (breakdown.metaScore * 0.25) +
+      (breakdown.keywordScore * 0.20) +
+      (breakdown.structuredDataScore * 0.15) +
+      (breakdown.socialScore * 0.15)
+    );
+    
+    // Generate recommendations based on weak areas
+    if (breakdown.titleScore < 70) recommendations.push("Optimize page titles (30-60 characters)");
+    if (breakdown.metaScore < 70) recommendations.push("Add meta descriptions (120-160 characters)");
+    if (breakdown.keywordScore < 70) recommendations.push("Add relevant keywords to each page");
+    if (breakdown.structuredDataScore < 50) recommendations.push("Add structured data (JSON-LD) for better search results");
+    if (breakdown.socialScore < 50) recommendations.push("Add Open Graph and Twitter Card tags for social sharing");
+    
+    return {
+      overallScore,
+      breakdown,
+      totalPages: pages.length,
+      optimizedPages,
+      issues: issues.slice(0, 5),
+      recommendations: recommendations.slice(0, 5)
+    };
   }
 
   // CRM Deals
@@ -1692,6 +1832,70 @@ export class DatabaseStorage implements IStorage {
       deviceBreakdown,
       hourlyTraffic: hourlyResult,
       dailyTraffic: dailyResult
+    };
+  }
+  
+  async getGeographicBreakdown(startDate: Date, endDate: Date, tenantId?: string): Promise<{
+    countries: { country: string; views: number; visitors: number }[];
+    cities: { city: string; country: string; views: number }[];
+    totalWithLocation: number;
+    totalWithoutLocation: number;
+  }> {
+    const dateFilter = and(
+      sql`${pageViews.createdAt} >= ${startDate}`,
+      sql`${pageViews.createdAt} <= ${endDate}`
+    );
+    
+    const baseFilter = tenantId 
+      ? and(dateFilter, eq(pageViews.tenantId, tenantId))
+      : dateFilter;
+    
+    // Country breakdown
+    const countriesResult = await db.select({
+      country: pageViews.country,
+      views: sql<number>`count(*)::int`,
+      visitors: sql<number>`count(distinct ${pageViews.sessionId})::int`
+    }).from(pageViews)
+      .where(and(baseFilter, sql`${pageViews.country} is not null`))
+      .groupBy(pageViews.country)
+      .orderBy(sql`count(*) desc`)
+      .limit(20);
+    
+    // City breakdown (top 15)
+    const citiesResult = await db.select({
+      city: pageViews.city,
+      country: pageViews.country,
+      views: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(baseFilter, sql`${pageViews.city} is not null`))
+      .groupBy(pageViews.city, pageViews.country)
+      .orderBy(sql`count(*) desc`)
+      .limit(15);
+    
+    // Count with/without location
+    const withLocationResult = await db.select({
+      count: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(baseFilter, sql`${pageViews.country} is not null`));
+    
+    const withoutLocationResult = await db.select({
+      count: sql<number>`count(*)::int`
+    }).from(pageViews)
+      .where(and(baseFilter, sql`${pageViews.country} is null`));
+    
+    return {
+      countries: countriesResult.map(r => ({
+        country: r.country || 'Unknown',
+        views: r.views,
+        visitors: r.visitors
+      })),
+      cities: citiesResult.map(r => ({
+        city: r.city || 'Unknown',
+        country: r.country || 'Unknown',
+        views: r.views
+      })),
+      totalWithLocation: withLocationResult[0]?.count || 0,
+      totalWithoutLocation: withoutLocationResult[0]?.count || 0
     };
   }
 
