@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useTenant } from "@/context/TenantContext";
 import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { motion } from "framer-motion";
 import { 
   Mail, Phone, MapPin, Clock, Send, CheckCircle2, 
@@ -37,13 +38,10 @@ export default function Contact() {
 
   const submitMutation = useMutation({
     mutationFn: async (data: ContactForm) => {
-      const res = await fetch("/api/contact", {
+      return apiRequest("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, tenantId: tenant.id }),
       });
-      if (!res.ok) throw new Error("Failed to send message");
-      return res.json();
     },
     onSuccess: () => {
       setSubmitted(true);
@@ -241,6 +239,7 @@ export default function Contact() {
                       <a 
                         href={`tel:${tenant.phone}`} 
                         className="text-muted-foreground hover:text-accent transition-colors"
+                        data-testid="link-phone"
                       >
                         {tenant.phone}
                       </a>
@@ -260,6 +259,7 @@ export default function Contact() {
                       <a 
                         href={`mailto:${tenant.email}`} 
                         className="text-muted-foreground hover:text-accent transition-colors break-all"
+                        data-testid="link-email"
                       >
                         {tenant.email}
                       </a>
