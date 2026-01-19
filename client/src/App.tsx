@@ -62,6 +62,9 @@ import CreditsCancel from "@/pages/credits-cancel";
 import SubscriberDashboard from "@/pages/subscriber-dashboard";
 import InvestorDemo from "@/pages/investor-demo";
 import Partners from "@/pages/partners";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import Contact from "@/pages/contact";
+import FAQ from "@/pages/faq";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -135,6 +138,10 @@ function Router() {
       <Route path="/credits/cancel" component={CreditsCancel} />
       <Route path="/subscriber-dashboard" component={SubscriberDashboard} />
       <Route path="/partners" component={Partners} />
+      <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/faq" component={FAQ} />
       <Route component={NotFound} />
     </Switch>
   );

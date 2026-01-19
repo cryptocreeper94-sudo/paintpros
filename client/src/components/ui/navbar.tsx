@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench, FileText, Calendar, Paintbrush, Star } from "lucide-react";
+import { X, PaintRoller, ChevronRight, ArrowLeft, Home, Menu, LogIn, User, LogOut, Award, Palette, BookOpen, TrendingUp, Briefcase, HardHat, Wrench, FileText, Calendar, Paintbrush, Star, HelpCircle, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
@@ -24,6 +24,8 @@ export function Navbar() {
     { name: "Awards", href: "/awards", icon: Award },
     { name: "Color Library", href: "/colors", icon: Palette },
     { name: "Resources", href: "/resources", icon: BookOpen },
+    { name: "FAQ", href: "/faq", icon: HelpCircle },
+    { name: "Contact", href: "/contact", icon: MessageSquare },
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
     { name: "Investors", href: "/investors", icon: TrendingUp, enabled: tenant.id === "demo" },
     { name: "Book Online", href: "/estimate", icon: Calendar, highlight: true, enabled: tenant.features.onlineBooking },

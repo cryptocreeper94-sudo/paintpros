@@ -136,7 +136,7 @@ export function Footer() {
             {isDemo && (
               <a href="/investors" className="hover:text-amber-600 transition-colors" data-testid="link-investors">Investors</a>
             )}
-            <a href="#" className="hover:text-amber-600 transition-colors">Privacy Policy</a>
+            <a href="/privacy" className="hover:text-amber-600 transition-colors" data-testid="link-privacy">Privacy Policy</a>
             <a href="/terms" className="hover:text-amber-600 transition-colors" data-testid="link-terms">Terms & Warranty</a>
           </div>
 
