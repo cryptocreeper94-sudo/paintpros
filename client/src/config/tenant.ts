@@ -180,7 +180,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     portfolio: true,
     reviews: true,
     blog: true,
-    onlineBooking: true,
+    onlineBooking: false,
     aiAssistant: true,
   },
   
@@ -346,7 +346,7 @@ export const lumePaintCo: TenantConfig = {
     portfolio: true,
     reviews: true,
     blog: true,
-    onlineBooking: true,
+    onlineBooking: false,
     aiAssistant: true,
   },
   
