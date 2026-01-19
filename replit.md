@@ -129,6 +129,14 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 
 ## Changelog
 
+### January 19, 2026
+- Created Unified Multi-Tenant Analytics Dashboard with tabs for NPP, Lume, and Demo sites
+- Added Google Analytics 4 integration with tenant-aware tracking (`client/src/lib/analytics.ts`)
+- Dashboard shows live visitors, daily/weekly/monthly traffic, device breakdown, top pages, referrers, and SEO tag counts per tenant
+- Accessible from Owner and Admin dashboards on any tenant - switch between sites in real-time
+- Tenant selection now persists across navigation via sessionStorage
+- Separated NPP and Lume as distinct businesses (removed cross-linking from Lume)
+
 ### January 15, 2026
 - Added Lume Paint Co tenant (lumepaint.co) - sister site to NPP with "We elevate the backdrop of your life" branding
 - Transformed paintpros.io into lead generation marketplace

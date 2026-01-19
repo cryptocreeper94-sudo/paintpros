@@ -1,0 +1,495 @@
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { GlassCard } from "@/components/ui/glass-card";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  BarChart3, Users, Eye, Clock, Globe, Smartphone, Monitor, Tablet,
+  TrendingUp, Activity, ArrowUpRight, RefreshCw, Zap, MapPin, Tag,
+  Building2, Paintbrush, Store
+} from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+interface AnalyticsData {
+  today: { views: number; visitors: number };
+  thisWeek: { views: number; visitors: number };
+  thisMonth: { views: number; visitors: number };
+  allTime: { views: number; visitors: number };
+  liveVisitors: number;
+  topPages: { page: string; views: number }[];
+  topReferrers: { referrer: string; count: number }[];
+  deviceBreakdown: { desktop: number; mobile: number; tablet: number };
+  hourlyTraffic: { hour: number; views: number }[];
+  dailyTraffic: { date: string; views: number; visitors: number }[];
+  geoData?: { city: string; region: string; count: number }[];
+}
+
+interface SeoTag {
+  id: string;
+  tagType: string;
+  value: string;
+  isActive: boolean;
+  tenantId: string;
+}
+
+const TENANT_CONFIG = {
+  npp: {
+    name: "Nashville Painting Pros",
+    shortName: "NPP",
+    icon: Paintbrush,
+    color: "text-amber-400",
+    bgColor: "from-amber-500/20",
+    borderColor: "border-amber-500/30"
+  },
+  lumepaint: {
+    name: "Lume Paint Co",
+    shortName: "Lume",
+    icon: Building2,
+    color: "text-gray-400",
+    bgColor: "from-gray-500/20",
+    borderColor: "border-gray-500/30"
+  },
+  demo: {
+    name: "Demo Marketplace",
+    shortName: "Demo",
+    icon: Store,
+    color: "text-blue-400",
+    bgColor: "from-blue-500/20",
+    borderColor: "border-blue-500/30"
+  }
+};
+
+const DEVICE_COLORS = {
+  desktop: "#f59e0b",
+  mobile: "#3b82f6",
+  tablet: "#10b981"
+};
+
+export function UnifiedAnalyticsDashboard() {
+  const [activeTenant, setActiveTenant] = useState<string>("npp");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const { data: nppData, isLoading: nppLoading, refetch: refetchNpp } = useQuery<AnalyticsData>({
+    queryKey: ["/api/analytics/dashboard", "npp"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics/dashboard?tenantId=npp");
+      if (!res.ok) throw new Error("Failed to fetch NPP analytics");
+      return res.json();
+    },
+    refetchInterval: 30000,
+  });
+
+  const { data: lumeData, isLoading: lumeLoading, refetch: refetchLume } = useQuery<AnalyticsData>({
+    queryKey: ["/api/analytics/dashboard", "lumepaint"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics/dashboard?tenantId=lumepaint");
+      if (!res.ok) throw new Error("Failed to fetch Lume analytics");
+      return res.json();
+    },
+    refetchInterval: 30000,
+  });
+
+  const { data: demoData, isLoading: demoLoading, refetch: refetchDemo } = useQuery<AnalyticsData>({
+    queryKey: ["/api/analytics/dashboard", "demo"],
+    queryFn: async () => {
+      const res = await fetch("/api/analytics/dashboard?tenantId=demo");
+      if (!res.ok) throw new Error("Failed to fetch Demo analytics");
+      return res.json();
+    },
+    refetchInterval: 30000,
+  });
+
+  const { data: seoTags = [] } = useQuery<SeoTag[]>({
+    queryKey: ["/api/seo-tags"],
+  });
+
+  const handleRefreshAll = async () => {
+    setIsRefreshing(true);
+    await Promise.all([refetchNpp(), refetchLume(), refetchDemo()]);
+    setIsRefreshing(false);
+  };
+
+  const getDataForTenant = (tenantId: string): AnalyticsData | undefined => {
+    switch (tenantId) {
+      case "npp": return nppData;
+      case "lumepaint": return lumeData;
+      case "demo": return demoData;
+      default: return nppData;
+    }
+  };
+
+  const isLoadingTenant = (tenantId: string): boolean => {
+    switch (tenantId) {
+      case "npp": return nppLoading;
+      case "lumepaint": return lumeLoading;
+      case "demo": return demoLoading;
+      default: return false;
+    }
+  };
+
+  const getSeoTagsForTenant = (tenantId: string) => {
+    return seoTags.filter(tag => tag.tenantId === tenantId);
+  };
+
+  const currentData = getDataForTenant(activeTenant);
+  const currentLoading = isLoadingTenant(activeTenant);
+  const currentConfig = TENANT_CONFIG[activeTenant as keyof typeof TENANT_CONFIG];
+  const currentSeoTags = getSeoTagsForTenant(activeTenant);
+
+  const hourlyData = currentData ? Array.from({ length: 24 }, (_, i) => {
+    const found = currentData.hourlyTraffic.find(h => h.hour === i);
+    return { hour: `${i}:00`, views: found?.views || 0 };
+  }) : [];
+
+  const deviceData = currentData ? [
+    { name: "Desktop", value: currentData.deviceBreakdown.desktop, color: DEVICE_COLORS.desktop },
+    { name: "Mobile", value: currentData.deviceBreakdown.mobile, color: DEVICE_COLORS.mobile },
+    { name: "Tablet", value: currentData.deviceBreakdown.tablet, color: DEVICE_COLORS.tablet },
+  ].filter(d => d.value > 0) : [];
+
+  const totalLiveVisitors = (nppData?.liveVisitors || 0) + (lumeData?.liveVisitors || 0) + (demoData?.liveVisitors || 0);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h2 className="text-2xl font-display font-bold flex items-center gap-3">
+            <BarChart3 className="w-7 h-7 text-gold-400" />
+            Multi-Site Analytics
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Track all your sites from one dashboard
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
+            <Zap className="w-4 h-4 text-green-400 animate-pulse" />
+            <span className="text-sm font-medium text-green-400">{totalLiveVisitors} Live Total</span>
+          </div>
+          <motion.button
+            onClick={handleRefreshAll}
+            disabled={isRefreshing}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            data-testid="button-refresh-all-analytics"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh All
+          </motion.button>
+        </div>
+      </div>
+
+      <Tabs value={activeTenant} onValueChange={setActiveTenant} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10 p-1 rounded-xl">
+          {Object.entries(TENANT_CONFIG).map(([id, config]) => {
+            const TenantIcon = config.icon;
+            const tenantData = getDataForTenant(id);
+            return (
+              <TabsTrigger 
+                key={id}
+                value={id}
+                className={`flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:${config.bgColor} data-[state=active]:to-transparent rounded-lg transition-all`}
+                data-testid={`tab-tenant-${id}`}
+              >
+                <TenantIcon className={`w-4 h-4 ${config.color}`} />
+                <span className="hidden sm:inline">{config.name}</span>
+                <span className="sm:hidden">{config.shortName}</span>
+                {tenantData && (
+                  <span className="text-xs px-1.5 py-0.5 rounded-full bg-white/10">
+                    {tenantData.liveVisitors}
+                  </span>
+                )}
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTenant}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="mt-6"
+          >
+            {currentLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {[...Array(5)].map((_, i) => (
+                  <GlassCard key={i} className="p-6 animate-pulse">
+                    <div className="h-4 bg-white/10 rounded w-20 mb-2" />
+                    <div className="h-8 bg-white/10 rounded w-16" />
+                  </GlassCard>
+                ))}
+              </div>
+            ) : currentData ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <GlassCard className={`p-5 relative overflow-hidden border ${currentConfig.borderColor}`} glow>
+                    <div className={`absolute inset-0 bg-gradient-to-br ${currentConfig.bgColor} to-transparent`} />
+                    <div className="relative">
+                      <div className={`flex items-center gap-2 text-sm ${currentConfig.color} mb-1`}>
+                        <Zap className="w-4 h-4" />
+                        Live Now
+                      </div>
+                      <div className={`text-3xl font-bold ${currentConfig.color}`} data-testid="text-live-visitors">
+                        {currentData.liveVisitors}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Active visitors</div>
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-gold-400/10 to-transparent" />
+                    <div className="relative">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                        <Eye className="w-4 h-4" />
+                        Today
+                      </div>
+                      <div className="text-3xl font-bold">{currentData.today.views}</div>
+                      <div className="text-xs text-gold-400 flex items-center gap-1 mt-1">
+                        <Users className="w-3 h-3" />
+                        {currentData.today.visitors} visitors
+                      </div>
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+                    <div className="relative">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                        <TrendingUp className="w-4 h-4" />
+                        This Week
+                      </div>
+                      <div className="text-3xl font-bold">{currentData.thisWeek.views}</div>
+                      <div className="text-xs text-blue-400 flex items-center gap-1 mt-1">
+                        <Users className="w-3 h-3" />
+                        {currentData.thisWeek.visitors} visitors
+                      </div>
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
+                    <div className="relative">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                        <Activity className="w-4 h-4" />
+                        This Month
+                      </div>
+                      <div className="text-3xl font-bold">{currentData.thisMonth.views}</div>
+                      <div className="text-xs text-purple-400 flex items-center gap-1 mt-1">
+                        <Users className="w-3 h-3" />
+                        {currentData.thisMonth.visitors} visitors
+                      </div>
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent" />
+                    <div className="relative">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                        <Globe className="w-4 h-4" />
+                        All Time
+                      </div>
+                      <div className="text-3xl font-bold">{currentData.allTime.views}</div>
+                      <div className="text-xs text-accent flex items-center gap-1 mt-1">
+                        <Users className="w-3 h-3" />
+                        {currentData.allTime.visitors} visitors
+                      </div>
+                    </div>
+                  </GlassCard>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <GlassCard className="lg:col-span-2 p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <TrendingUp className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">Daily Traffic (Last 7 Days)</h3>
+                    </div>
+                    <div className="h-[200px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={currentData.dailyTraffic.slice(-7)}>
+                          <defs>
+                            <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <XAxis dataKey="date" stroke="#666" fontSize={12} />
+                          <YAxis stroke="#666" fontSize={12} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(0,0,0,0.8)', 
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              borderRadius: '8px'
+                            }}
+                          />
+                          <Area type="monotone" dataKey="views" stroke="#f59e0b" fill="url(#colorViews)" />
+                          <Area type="monotone" dataKey="visitors" stroke="#3b82f6" fill="transparent" strokeDasharray="5 5" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Monitor className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">Device Breakdown</h3>
+                    </div>
+                    {deviceData.length > 0 ? (
+                      <div className="h-[200px] flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={deviceData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={40}
+                              outerRadius={70}
+                              dataKey="value"
+                              paddingAngle={2}
+                            >
+                              {deviceData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ) : (
+                      <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                        No device data yet
+                      </div>
+                    )}
+                    <div className="flex justify-center gap-4 mt-2">
+                      {deviceData.map(d => (
+                        <div key={d.name} className="flex items-center gap-1 text-xs">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                          {d.name}
+                        </div>
+                      ))}
+                    </div>
+                  </GlassCard>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <GlassCard className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Eye className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">Top Pages</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {currentData.topPages.slice(0, 5).map((page, i) => (
+                        <div key={i} className="flex items-center justify-between text-sm">
+                          <span className="truncate flex-1 text-muted-foreground">{page.page}</span>
+                          <span className="font-medium ml-2">{page.views}</span>
+                        </div>
+                      ))}
+                      {currentData.topPages.length === 0 && (
+                        <div className="text-center text-muted-foreground text-sm py-4">
+                          No page data yet
+                        </div>
+                      )}
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <ArrowUpRight className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">Top Referrers</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {currentData.topReferrers.slice(0, 5).map((ref, i) => (
+                        <div key={i} className="flex items-center justify-between text-sm">
+                          <span className="truncate flex-1 text-muted-foreground">{ref.referrer || 'Direct'}</span>
+                          <span className="font-medium ml-2">{ref.count}</span>
+                        </div>
+                      ))}
+                      {currentData.topReferrers.length === 0 && (
+                        <div className="text-center text-muted-foreground text-sm py-4">
+                          No referrer data yet
+                        </div>
+                      )}
+                    </div>
+                  </GlassCard>
+
+                  <GlassCard className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Tag className="w-5 h-5 text-gold-400" />
+                      <h3 className="font-semibold">SEO Tags</h3>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-center p-2 rounded-lg bg-blue-500/10">
+                        <div className="text-lg font-bold text-blue-400">
+                          {currentSeoTags.filter(t => t.tagType === "keyword").length}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Keywords</div>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-purple-500/10">
+                        <div className="text-lg font-bold text-purple-400">
+                          {currentSeoTags.filter(t => t.tagType === "meta_description").length}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Meta</div>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-gold-400/10">
+                        <div className="text-lg font-bold text-gold-400">
+                          {currentSeoTags.filter(t => t.tagType === "title").length}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Titles</div>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-green-500/10">
+                        <div className="text-lg font-bold text-green-400">
+                          {currentSeoTags.filter(t => t.tagType === "geo").length}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Geo</div>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-white/10">
+                      <div className="text-xs text-muted-foreground">
+                        Active: {currentSeoTags.filter(t => t.isActive).length} / {currentSeoTags.length}
+                      </div>
+                    </div>
+                  </GlassCard>
+                </div>
+
+                <GlassCard className="p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Clock className="w-5 h-5 text-gold-400" />
+                    <h3 className="font-semibold">Hourly Traffic Pattern</h3>
+                  </div>
+                  <div className="h-[150px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={hourlyData}>
+                        <XAxis 
+                          dataKey="hour" 
+                          stroke="#666" 
+                          fontSize={10}
+                          interval={2}
+                        />
+                        <YAxis stroke="#666" fontSize={10} />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'rgba(0,0,0,0.8)', 
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '8px'
+                          }}
+                        />
+                        <Bar dataKey="views" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </GlassCard>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                No analytics data available
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </Tabs>
+    </div>
+  );
+}

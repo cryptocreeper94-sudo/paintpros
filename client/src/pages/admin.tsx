@@ -19,7 +19,7 @@ import { DashboardPreview } from "@/components/dashboard-preview";
 import { hover3D, hover3DSubtle, cardVariants, staggerContainer, iconContainerStyles, cardBackgroundStyles } from "@/lib/theme-effects";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
-import { AnalyticsDashboard } from "@/components/analytics-dashboard";
+import { UnifiedAnalyticsDashboard } from "@/components/unified-analytics-dashboard";
 import { LiveVisitorsCard } from "@/components/live-visitors-card";
 import { useQuery } from "@tanstack/react-query";
 import type { Lead, Estimate, EstimateFollowup } from "@shared/schema";
@@ -795,7 +795,7 @@ export default function Admin() {
               </motion.div>
             </BentoItem>
 
-            {/* Site Analytics */}
+            {/* Unified Multi-Tenant Analytics */}
             <BentoItem colSpan={12} rowSpan={4}>
               <motion.div 
                 className="h-full" 
@@ -805,7 +805,7 @@ export default function Admin() {
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <GlassCard className={`h-full p-4 md:p-6 ${cardBackgroundStyles.mixed}`} glow="blue" hoverEffect={false}>
-                  <AnalyticsDashboard />
+                  <UnifiedAnalyticsDashboard />
                 </GlassCard>
               </motion.div>
             </BentoItem>

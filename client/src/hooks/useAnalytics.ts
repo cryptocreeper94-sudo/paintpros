@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useTenant } from "@/context/TenantContext";
+import { initGA, trackPageView as trackGAPageView } from "@/lib/analytics";
+
+// Track if GA has been initialized
+let gaInitialized = false;
 
 function generateSessionId(): string {
   let sessionId = sessionStorage.getItem("analytics_session_id");
@@ -9,6 +13,15 @@ function generateSessionId(): string {
     sessionStorage.setItem("analytics_session_id", sessionId);
   }
   return sessionId;
+}
+
+// Initialize Google Analytics on first call (with SSR guard)
+function ensureGAInitialized(): void {
+  if (typeof window === 'undefined') return;
+  if (!gaInitialized && import.meta.env.VITE_GA_MEASUREMENT_ID) {
+    initGA();
+    gaInitialized = true;
+  }
 }
 
 export function useAnalytics() {
@@ -48,6 +61,10 @@ export function useAnalytics() {
     lastPageRef.current = location;
     pageStartTimeRef.current = Date.now();
     trackPageView(location);
+    
+    // Also track with Google Analytics if configured
+    ensureGAInitialized();
+    trackGAPageView(location, tenantId);
 
     const handleBeforeUnload = () => {
       const duration = Math.round((Date.now() - pageStartTimeRef.current) / 1000);
