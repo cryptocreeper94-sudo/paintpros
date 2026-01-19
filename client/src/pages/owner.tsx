@@ -16,7 +16,7 @@ import {
   glowGradients,
   springTransition 
 } from "@/lib/theme-effects";
-import { UnifiedAnalyticsDashboard } from "@/components/unified-analytics-dashboard";
+import { OwnerResultsView } from "@/components/owner-results-view";
 import { LiveVisitorsCard } from "@/components/live-visitors-card";
 import { DealsPipeline } from "@/components/crm/deals-pipeline";
 import { ActivityTimeline } from "@/components/crm/activity-timeline";
@@ -805,7 +805,7 @@ export default function Owner() {
             <BentoItem colSpan={12} rowSpan={4}>
               <motion.div className="h-full" variants={cardVariants} custom={10}>
                 <GlassCard className="h-full p-4 md:p-6" glow="blue" hoverEffect={false}>
-                  <UnifiedAnalyticsDashboard />
+                  <OwnerResultsView />
                 </GlassCard>
               </motion.div>
             </BentoItem>
