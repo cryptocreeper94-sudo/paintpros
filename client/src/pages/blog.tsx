@@ -14,6 +14,7 @@ import type { BlogPost, BlogCategory } from "@shared/schema";
 import { cardVariants, staggerContainer } from "@/lib/theme-effects";
 import { useEffect } from "react";
 import { apiRequest } from "@/lib/queryClient";
+import { TradeWorksBlogBanner } from "@/components/tradeworks-blog-banner";
 
 function BlogList() {
   const tenant = useTenant();
@@ -73,6 +74,8 @@ function BlogList() {
               Tips, tricks, and insights from {tenant.name}. Stay up to date with the latest in painting and home improvement.
             </p>
           </motion.div>
+
+          {tenant.id !== "tradeworks" && <TradeWorksBlogBanner />}
 
           {posts.length === 0 ? (
             <motion.div

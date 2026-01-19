@@ -563,6 +563,31 @@ export function BlogManager() {
                   className="min-h-[100px]"
                   data-testid="textarea-ai-topic"
                 />
+                <div className="mt-3">
+                  <p className="text-xs text-muted-foreground mb-2">Quick SEO Topics (click to use):</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "Best paint colors for 2026",
+                      "How to prep walls for painting",
+                      "Interior vs exterior paint differences",
+                      "DIY painting tips for beginners",
+                      "When to hire professional painters",
+                      "Calculating paint needed for a room",
+                      "Choosing paint finishes: matte vs gloss",
+                      "Color psychology in home design",
+                    ].map((topic) => (
+                      <button
+                        key={topic}
+                        type="button"
+                        onClick={() => setAiTopic(topic)}
+                        className="text-xs px-2 py-1 rounded-full bg-gold-400/10 text-gold-400 hover:bg-gold-400/20 transition-colors"
+                        data-testid={`button-topic-${topic.slice(0, 20).replace(/\s/g, '-')}`}
+                      >
+                        {topic}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
