@@ -107,12 +107,10 @@ export function Navbar() {
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
         
-        {/* Language Toggle - Desktop - show for demo/paintpros tenant */}
-        {tenant.id === "demo" && (
-          <div className="hidden md:flex items-center mr-4">
-            <LanguageToggle variant="compact" />
-          </div>
-        )}
+        {/* Language Toggle - Desktop - show for all tenants */}
+        <div className="hidden md:flex items-center mr-4">
+          <LanguageToggle variant="compact" />
+        </div>
       </div>
     </header>
 
@@ -197,12 +195,10 @@ export function Navbar() {
                   <X size={24} className="text-gray-700" />
                 </button>
 
-                {/* Language Toggle - show for demo/paintpros tenant */}
-                {tenant.id === "demo" && (
-                  <div className="mb-4 px-2">
-                    <LanguageToggle variant="text" />
-                  </div>
-                )}
+                {/* Language Toggle - show for all tenants */}
+                <div className="mb-4 px-2">
+                  <LanguageToggle variant="text" />
+                </div>
 
                 {/* Main Links */}
                 <div className="space-y-1 mb-6">

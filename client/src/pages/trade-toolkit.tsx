@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useI18n } from '@/lib/i18n';
+import { LanguageToggle } from '@/components/language-toggle';
 import { 
   Calculator, 
   Ruler, 
@@ -159,6 +161,7 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
   const [ladderHeight, setLadderHeight] = useState('');
   const [wastePercent, setWastePercent] = useState('10');
   const [materialQty, setMaterialQty] = useState('');
+  const { t } = useI18n();
 
   const floorSqFt = roomLength && roomWidth ? parseFloat(roomLength) * parseFloat(roomWidth) : 0;
   const wallSqFt = roomLength && roomWidth && ceilingHeight 
@@ -179,7 +182,7 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
     >
       <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4">
         <ChevronLeft className="w-4 h-4" />
-        <span className="text-sm">Back to Dashboard</span>
+        <span className="text-sm">{t('common.back')}</span>
       </button>
 
       <div className="flex items-center gap-3 mb-6">
@@ -187,19 +190,19 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
           <Ruler className="w-7 h-7 text-white" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">Measure Tools</h2>
-          <p className="text-sm text-slate-400">Room calculations & measurements</p>
+          <h2 className="text-xl font-bold text-white">{t('toolkit.measure')}</h2>
+          <p className="text-sm text-slate-400">{t('toolkit.measureDesc')}</p>
         </div>
       </div>
 
       <GlassPanel className="p-5">
         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
           <Calculator className="w-4 h-4 text-blue-400" />
-          Room Calculator
+          {t('room.title')}
         </h3>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <Label className="text-slate-400 text-xs mb-1.5 block">Length (ft)</Label>
+            <Label className="text-slate-400 text-xs mb-1.5 block">{t('room.length')}</Label>
             <Input 
               type="number" 
               value={roomLength} 
@@ -210,7 +213,7 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
             />
           </div>
           <div>
-            <Label className="text-slate-400 text-xs mb-1.5 block">Width (ft)</Label>
+            <Label className="text-slate-400 text-xs mb-1.5 block">{t('room.width')}</Label>
             <Input 
               type="number" 
               value={roomWidth} 
@@ -222,7 +225,7 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
           </div>
         </div>
         <div className="mb-4">
-          <Label className="text-slate-400 text-xs mb-1.5 block">Ceiling Height (ft)</Label>
+          <Label className="text-slate-400 text-xs mb-1.5 block">{t('room.height')}</Label>
           <Input 
             type="number" 
             value={ceilingHeight} 
@@ -236,15 +239,15 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
           <div className="grid grid-cols-3 gap-2">
             <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl p-4 text-center border border-blue-500/20">
               <p className="text-2xl font-bold text-blue-400">{floorSqFt.toLocaleString()}</p>
-              <p className="text-xs text-slate-400">Floor SF</p>
+              <p className="text-xs text-slate-400">{t('toolkit.floorSF')}</p>
             </div>
             <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl p-4 text-center border border-purple-500/20">
               <p className="text-2xl font-bold text-purple-400">{wallSqFt.toLocaleString()}</p>
-              <p className="text-xs text-slate-400">Wall SF</p>
+              <p className="text-xs text-slate-400">{t('toolkit.wallSF')}</p>
             </div>
             <div className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 rounded-xl p-4 text-center border border-cyan-500/20">
               <p className="text-2xl font-bold text-cyan-400">{totalSqFt.toLocaleString()}</p>
-              <p className="text-xs text-slate-400">Total SF</p>
+              <p className="text-xs text-slate-400">{t('toolkit.totalSF')}</p>
             </div>
           </div>
         )}
@@ -875,6 +878,7 @@ function QuickToolsPanel({ onBack }: { onBack: () => void }) {
 // Main Dashboard
 function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
   const [weather, setWeather] = useState<any>(null);
+  const { t } = useI18n();
   
   useEffect(() => {
     fetch('/api/weather')
@@ -889,6 +893,11 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
+      {/* Language Toggle */}
+      <div className="flex justify-end">
+        <LanguageToggle variant="compact" className="text-white hover:bg-white/10" />
+      </div>
+
       {/* Welcome Section */}
       <div className="text-center pt-2 pb-4">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 mb-4 border border-white/10">
@@ -896,12 +905,12 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
             <Wrench className="w-7 h-7 text-white" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-white mb-1">Trade Toolkit</h1>
-        <p className="text-slate-400 text-sm">Professional Field Tools</p>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('toolkit.title')}</h1>
+        <p className="text-slate-400 text-sm">{t('toolkit.subtitle')}</p>
         <div className="flex items-center justify-center gap-2 mt-3">
           <Badge className="bg-gradient-to-r from-amber-500/80 to-orange-500/80 text-white border-0 gap-1">
             <Crown className="w-3 h-3" />
-            PRO
+            {t('common.pro')}
           </Badge>
           <Badge variant="outline" className="border-white/20 text-slate-300">v2.0</Badge>
         </div>
@@ -911,13 +920,13 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
       {weather && (
         <div className="grid grid-cols-2 gap-3">
           <QuickStat 
-            label="Temperature" 
+            label={t('weather.temperature')} 
             value={`${weather.temp}°F`} 
             icon={Thermometer} 
             color="bg-gradient-to-br from-orange-500 to-red-500"
           />
           <QuickStat 
-            label="Humidity" 
+            label={t('weather.humidity')} 
             value={`${weather.humidity}%`} 
             icon={Droplets} 
             color="bg-gradient-to-br from-blue-500 to-cyan-500"
@@ -927,49 +936,49 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
 
       {/* Feature Grid */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider px-1">Tools</h2>
+        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider px-1">{t('toolkit.tools')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <FeatureTile
             icon={Ruler}
-            label="Measure"
-            sublabel="Room calculations"
+            label={t('toolkit.measure')}
+            sublabel={t('toolkit.measureDesc')}
             color="bg-gradient-to-br from-blue-500 to-blue-600"
             onClick={() => onNavigate('measure')}
           />
           <FeatureTile
             icon={Palette}
-            label="Paint"
-            sublabel="Color & quantities"
+            label={t('trade.painting')}
+            sublabel={t('toolkit.materialsDesc')}
             color="bg-gradient-to-br from-purple-500 to-purple-600"
             onClick={() => onNavigate('paint')}
-            badge="NEW"
+            badge={t('common.new')}
           />
           <FeatureTile
             icon={DollarSign}
-            label="Estimate"
-            sublabel="Quick pricing"
+            label={t('estimate.title')}
+            sublabel={t('tradeworks.quickEstimate')}
             color="bg-gradient-to-br from-green-500 to-emerald-600"
             onClick={() => onNavigate('estimate')}
           />
           <FeatureTile
             icon={Cloud}
-            label="Weather"
-            sublabel="Paint conditions"
+            label={t('toolkit.weather')}
+            sublabel={t('toolkit.paintingConditions')}
             color="bg-gradient-to-br from-cyan-500 to-blue-600"
             onClick={() => onNavigate('weather')}
             live
           />
           <FeatureTile
             icon={Store}
-            label="Stores"
-            sublabel="Supplier links"
+            label={t('toolkit.supplies')}
+            sublabel={t('toolkit.suppliesDesc')}
             color="bg-gradient-to-br from-red-500 to-orange-600"
             onClick={() => onNavigate('stores')}
           />
           <FeatureTile
             icon={Wrench}
-            label="Quick Tools"
-            sublabel="Field utilities"
+            label={t('toolkit.tools')}
+            sublabel={t('toolkit.toolsDesc')}
             color="bg-gradient-to-br from-amber-500 to-yellow-600"
             onClick={() => onNavigate('tools')}
           />
@@ -984,17 +993,17 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-bold text-white">Color Match Scanner</h3>
+              <h3 className="font-bold text-white">{t('toolkit.colorMatch')}</h3>
               <Sparkles className="w-4 h-4 text-amber-400" />
             </div>
-            <p className="text-sm text-slate-400">Scan any surface to match paint colors instantly</p>
+            <p className="text-sm text-slate-400">{t('toolkit.colorMatchDesc')}</p>
           </div>
         </div>
         <Button 
           onClick={() => onNavigate('paint')}
           className="w-full mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
         >
-          Try Now
+          {t('common.getStarted')}
           <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </GlassPanel>
