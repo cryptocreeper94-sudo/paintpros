@@ -280,8 +280,8 @@ export function Navbar() {
                   )}
                 </div>
 
-                {/* Sister Sites - NPP and Lume */}
-                {(tenant.id === "npp" || tenant.id === "lumepaint") && (
+                {/* Sister Sites - NPP Only (for preview access to Lume) */}
+                {tenant.id === "npp" && (
                   <>
                     <div className="border-t border-white/10 my-4" />
                     <div className="space-y-1 mb-4">
@@ -294,39 +294,21 @@ export function Navbar() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4 }}
                       >
-                        {tenant.id === "npp" ? (
-                          <a 
-                            href="/?tenant=lumepaint" 
-                            className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
-                            onClick={() => setIsOpen(false)}
-                            data-testid="link-lume-paint"
-                          >
-                            <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center">
-                              <Paintbrush className="w-4 h-4 text-gray-400" />
-                            </div>
-                            <div className="flex-1">
-                              <span className="text-base font-medium text-foreground">Lume Paint Co</span>
-                              <p className="text-xs text-muted-foreground">Premium painting services</p>
-                            </div>
-                            <ChevronRight className="w-5 h-5 opacity-50" />
-                          </a>
-                        ) : (
-                          <a 
-                            href="/?tenant=npp" 
-                            className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
-                            onClick={() => setIsOpen(false)}
-                            data-testid="link-npp"
-                          >
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                              <Paintbrush className="w-4 h-4 text-amber-400" />
-                            </div>
-                            <div className="flex-1">
-                              <span className="text-base font-medium text-foreground">Nashville Painting Professionals</span>
-                              <p className="text-xs text-muted-foreground">Our flagship brand</p>
-                            </div>
-                            <ChevronRight className="w-5 h-5 opacity-50" />
-                          </a>
-                        )}
+                        <a 
+                          href="/?tenant=lumepaint" 
+                          className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                          onClick={() => setIsOpen(false)}
+                          data-testid="link-lume-paint"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center">
+                            <Paintbrush className="w-4 h-4 text-gray-400" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-base font-medium text-foreground">Lume Paint Co</span>
+                            <p className="text-xs text-muted-foreground">Premium painting services</p>
+                          </div>
+                          <ChevronRight className="w-5 h-5 opacity-50" />
+                        </a>
                       </motion.div>
                     </div>
                   </>
