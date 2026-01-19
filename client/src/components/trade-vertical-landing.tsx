@@ -10,9 +10,41 @@ import {
   Eye, EyeOff, Settings, Phone, Mail, MapPin, Clock, Shield, Award,
   Calculator, Mic, Camera, Wrench, Star, CheckCircle2, ArrowRight,
   Zap, Users, Calendar, FileText, MessageSquare, BarChart3, Brain,
-  Palette, Home, Building2, Sparkles, X, ChevronDown, ChevronUp
+  Palette, Home, Building2, Sparkles, X, ChevronDown, ChevronUp,
+  type LucideIcon
 } from "lucide-react";
 import type { TradeVertical } from "@/config/tenant";
+
+type IconName = "home" | "wrench" | "eye" | "building" | "shield" | "zap" | "clock" | "settings" | 
+  "sparkles" | "brain" | "calendar" | "calculator" | "camera" | "users" | "filetext" | 
+  "messagesquare" | "barchart" | "mappin" | "palette";
+
+const ICON_MAP: Record<IconName, LucideIcon> = {
+  home: Home,
+  wrench: Wrench,
+  eye: Eye,
+  building: Building2,
+  shield: Shield,
+  zap: Zap,
+  clock: Clock,
+  settings: Settings,
+  sparkles: Sparkles,
+  brain: Brain,
+  calendar: Calendar,
+  calculator: Calculator,
+  camera: Camera,
+  users: Users,
+  filetext: FileText,
+  messagesquare: MessageSquare,
+  barchart: BarChart3,
+  mappin: MapPin,
+  palette: Palette,
+};
+
+function getIcon(name: IconName, className: string = "w-6 h-6") {
+  const IconComponent = ICON_MAP[name];
+  return <IconComponent className={className} />;
+}
 
 interface TradeService {
   id: string;
@@ -20,7 +52,7 @@ interface TradeService {
   nameEs: string;
   descEn: string;
   descEs: string;
-  icon: React.ReactNode;
+  icon: IconName;
   popular?: boolean;
 }
 
@@ -30,7 +62,7 @@ interface TradeFeature {
   nameEs: string;
   descEn: string;
   descEs: string;
-  icon: React.ReactNode;
+  icon: IconName;
   category: "frontend" | "backend" | "ai" | "integration";
 }
 
@@ -68,22 +100,22 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     accentColor: "#f59e0b",
     heroGradient: "from-red-900 via-red-800 to-orange-900",
     services: [
-      { id: "roof-install", nameEn: "Roof Installation", nameEs: "Instalación de Techos", descEn: "Complete new roof installations", descEs: "Instalaciones completas de techos nuevos", icon: <Home className="w-6 h-6" />, popular: true },
-      { id: "roof-repair", nameEn: "Roof Repair", nameEs: "Reparación de Techos", descEn: "Fix leaks and damage", descEs: "Reparar filtraciones y daños", icon: <Wrench className="w-6 h-6" /> },
-      { id: "roof-inspect", nameEn: "Roof Inspection", nameEs: "Inspección de Techos", descEn: "Professional assessments", descEs: "Evaluaciones profesionales", icon: <Eye className="w-6 h-6" /> },
-      { id: "shingle", nameEn: "Shingle Roofing", nameEs: "Techos de Tejas", descEn: "Asphalt & architectural shingles", descEs: "Tejas asfálticas y arquitectónicas", icon: <Building2 className="w-6 h-6" /> },
-      { id: "metal", nameEn: "Metal Roofing", nameEs: "Techos de Metal", descEn: "Durable metal roof systems", descEs: "Sistemas de techos metálicos duraderos", icon: <Shield className="w-6 h-6" />, popular: true },
-      { id: "flat", nameEn: "Flat Roofing", nameEs: "Techos Planos", descEn: "Commercial flat roof solutions", descEs: "Soluciones de techos planos comerciales", icon: <Building2 className="w-6 h-6" /> },
-      { id: "gutter", nameEn: "Gutters & Drainage", nameEs: "Canaletas y Drenaje", descEn: "Complete gutter systems", descEs: "Sistemas completos de canaletas", icon: <Zap className="w-6 h-6" /> },
-      { id: "storm", nameEn: "Storm Damage", nameEs: "Daños por Tormentas", descEn: "Emergency storm repairs", descEs: "Reparaciones de emergencia por tormentas", icon: <Zap className="w-6 h-6" /> },
+      { id: "roof-install", nameEn: "Roof Installation", nameEs: "Instalación de Techos", descEn: "Complete new roof installations", descEs: "Instalaciones completas de techos nuevos", icon: "home", popular: true },
+      { id: "roof-repair", nameEn: "Roof Repair", nameEs: "Reparación de Techos", descEn: "Fix leaks and damage", descEs: "Reparar filtraciones y daños", icon: "wrench" },
+      { id: "roof-inspect", nameEn: "Roof Inspection", nameEs: "Inspección de Techos", descEn: "Professional assessments", descEs: "Evaluaciones profesionales", icon: "eye" },
+      { id: "shingle", nameEn: "Shingle Roofing", nameEs: "Techos de Tejas", descEn: "Asphalt & architectural shingles", descEs: "Tejas asfálticas y arquitectónicas", icon: "building" },
+      { id: "metal", nameEn: "Metal Roofing", nameEs: "Techos de Metal", descEn: "Durable metal roof systems", descEs: "Sistemas de techos metálicos duraderos", icon: "shield", popular: true },
+      { id: "flat", nameEn: "Flat Roofing", nameEs: "Techos Planos", descEn: "Commercial flat roof solutions", descEs: "Soluciones de techos planos comerciales", icon: "building" },
+      { id: "gutter", nameEn: "Gutters & Drainage", nameEs: "Canaletas y Drenaje", descEn: "Complete gutter systems", descEs: "Sistemas completos de canaletas", icon: "zap" },
+      { id: "storm", nameEn: "Storm Damage", nameEs: "Daños por Tormentas", descEn: "Emergency storm repairs", descEs: "Reparaciones de emergencia por tormentas", icon: "zap" },
     ],
     features: [
-      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "24/7 appointment scheduling", descEs: "Programación de citas 24/7", icon: <Calendar className="w-5 h-5" />, category: "frontend" },
-      { id: "instant-quote", nameEn: "Instant Quotes", nameEs: "Cotizaciones Instantáneas", descEn: "AI-powered roof estimates", descEs: "Estimaciones de techo con IA", icon: <Calculator className="w-5 h-5" />, category: "ai" },
-      { id: "drone-assess", nameEn: "Drone Assessment", nameEs: "Evaluación con Drones", descEn: "Aerial roof inspection photos", descEs: "Fotos de inspección aérea", icon: <Camera className="w-5 h-5" />, category: "integration" },
-      { id: "crm", nameEn: "Customer CRM", nameEs: "CRM de Clientes", descEn: "Track leads & projects", descEs: "Seguimiento de prospectos y proyectos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "invoicing", nameEn: "Smart Invoicing", nameEs: "Facturación Inteligente", descEn: "Automated billing system", descEs: "Sistema de facturación automatizado", icon: <FileText className="w-5 h-5" />, category: "backend" },
-      { id: "messaging", nameEn: "Team Messaging", nameEs: "Mensajería del Equipo", descEn: "Crew communication hub", descEs: "Centro de comunicación del equipo", icon: <MessageSquare className="w-5 h-5" />, category: "backend" },
+      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "24/7 appointment scheduling", descEs: "Programación de citas 24/7", icon: "calendar", category: "frontend" },
+      { id: "instant-quote", nameEn: "Instant Quotes", nameEs: "Cotizaciones Instantáneas", descEn: "AI-powered roof estimates", descEs: "Estimaciones de techo con IA", icon: "calculator", category: "ai" },
+      { id: "drone-assess", nameEn: "Drone Assessment", nameEs: "Evaluación con Drones", descEn: "Aerial roof inspection photos", descEs: "Fotos de inspección aérea", icon: "camera", category: "integration" },
+      { id: "crm", nameEn: "Customer CRM", nameEs: "CRM de Clientes", descEn: "Track leads & projects", descEs: "Seguimiento de prospectos y proyectos", icon: "users", category: "backend" },
+      { id: "invoicing", nameEn: "Smart Invoicing", nameEs: "Facturación Inteligente", descEn: "Automated billing system", descEs: "Sistema de facturación automatizado", icon: "filetext", category: "backend" },
+      { id: "messaging", nameEn: "Team Messaging", nameEs: "Mensajería del Equipo", descEn: "Crew communication hub", descEs: "Centro de comunicación del equipo", icon: "messagesquare", category: "backend" },
     ],
     toolkitFeatures: [
       { id: "roof-calc", nameEn: "Roof Area Calculator", nameEs: "Calculadora de Área de Techo", descEn: "Calculate square footage from measurements", descEs: "Calcular pies cuadrados desde medidas" },
@@ -108,22 +140,22 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     accentColor: "#f97316",
     heroGradient: "from-sky-900 via-blue-800 to-cyan-900",
     services: [
-      { id: "ac-install", nameEn: "AC Installation", nameEs: "Instalación de AC", descEn: "Central & ductless systems", descEs: "Sistemas centrales y sin ductos", icon: <Zap className="w-6 h-6" />, popular: true },
-      { id: "ac-repair", nameEn: "AC Repair", nameEs: "Reparación de AC", descEn: "Same-day cooling fixes", descEs: "Reparaciones de enfriamiento el mismo día", icon: <Wrench className="w-6 h-6" /> },
-      { id: "heating", nameEn: "Heating Systems", nameEs: "Sistemas de Calefacción", descEn: "Furnace & heat pump install", descEs: "Instalación de hornos y bombas de calor", icon: <Zap className="w-6 h-6" />, popular: true },
-      { id: "maintenance", nameEn: "Preventive Maintenance", nameEs: "Mantenimiento Preventivo", descEn: "Seasonal tune-ups", descEs: "Ajustes estacionales", icon: <Settings className="w-6 h-6" /> },
-      { id: "ductwork", nameEn: "Ductwork", nameEs: "Conductos", descEn: "Design, install & repair", descEs: "Diseño, instalación y reparación", icon: <Building2 className="w-6 h-6" /> },
-      { id: "indoor-air", nameEn: "Indoor Air Quality", nameEs: "Calidad del Aire Interior", descEn: "Purifiers & filtration", descEs: "Purificadores y filtración", icon: <Sparkles className="w-6 h-6" /> },
-      { id: "thermostat", nameEn: "Smart Thermostats", nameEs: "Termostatos Inteligentes", descEn: "WiFi thermostat installation", descEs: "Instalación de termostatos WiFi", icon: <Brain className="w-6 h-6" /> },
-      { id: "emergency", nameEn: "24/7 Emergency", nameEs: "Emergencias 24/7", descEn: "Round-the-clock service", descEs: "Servicio las 24 horas", icon: <Clock className="w-6 h-6" /> },
+      { id: "ac-install", nameEn: "AC Installation", nameEs: "Instalación de AC", descEn: "Central & ductless systems", descEs: "Sistemas centrales y sin ductos", icon: "zap", popular: true },
+      { id: "ac-repair", nameEn: "AC Repair", nameEs: "Reparación de AC", descEn: "Same-day cooling fixes", descEs: "Reparaciones de enfriamiento el mismo día", icon: "wrench" },
+      { id: "heating", nameEn: "Heating Systems", nameEs: "Sistemas de Calefacción", descEn: "Furnace & heat pump install", descEs: "Instalación de hornos y bombas de calor", icon: "zap", popular: true },
+      { id: "maintenance", nameEn: "Preventive Maintenance", nameEs: "Mantenimiento Preventivo", descEn: "Seasonal tune-ups", descEs: "Ajustes estacionales", icon: "settings" },
+      { id: "ductwork", nameEn: "Ductwork", nameEs: "Conductos", descEn: "Design, install & repair", descEs: "Diseño, instalación y reparación", icon: "building" },
+      { id: "indoor-air", nameEn: "Indoor Air Quality", nameEs: "Calidad del Aire Interior", descEn: "Purifiers & filtration", descEs: "Purificadores y filtración", icon: "sparkles" },
+      { id: "thermostat", nameEn: "Smart Thermostats", nameEs: "Termostatos Inteligentes", descEn: "WiFi thermostat installation", descEs: "Instalación de termostatos WiFi", icon: "brain" },
+      { id: "emergency", nameEn: "24/7 Emergency", nameEs: "Emergencias 24/7", descEn: "Round-the-clock service", descEs: "Servicio las 24 horas", icon: "clock" },
     ],
     features: [
-      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "Schedule service anytime", descEs: "Programar servicio en cualquier momento", icon: <Calendar className="w-5 h-5" />, category: "frontend" },
-      { id: "load-calc", nameEn: "Load Calculator", nameEs: "Calculadora de Carga", descEn: "Proper system sizing", descEs: "Dimensionamiento correcto del sistema", icon: <Calculator className="w-5 h-5" />, category: "ai" },
-      { id: "diagnostics", nameEn: "Remote Diagnostics", nameEs: "Diagnósticos Remotos", descEn: "Smart system monitoring", descEs: "Monitoreo inteligente del sistema", icon: <BarChart3 className="w-5 h-5" />, category: "integration" },
-      { id: "crm", nameEn: "Service CRM", nameEs: "CRM de Servicios", descEn: "Customer & equipment tracking", descEs: "Seguimiento de clientes y equipos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "invoicing", nameEn: "Service Invoicing", nameEs: "Facturación de Servicios", descEn: "Parts & labor billing", descEs: "Facturación de piezas y mano de obra", icon: <FileText className="w-5 h-5" />, category: "backend" },
-      { id: "dispatch", nameEn: "Tech Dispatch", nameEs: "Despacho de Técnicos", descEn: "Route optimization", descEs: "Optimización de rutas", icon: <MapPin className="w-5 h-5" />, category: "backend" },
+      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "Schedule service anytime", descEs: "Programar servicio en cualquier momento", icon: "calendar", category: "frontend" },
+      { id: "load-calc", nameEn: "Load Calculator", nameEs: "Calculadora de Carga", descEn: "Proper system sizing", descEs: "Dimensionamiento correcto del sistema", icon: "calculator", category: "ai" },
+      { id: "diagnostics", nameEn: "Remote Diagnostics", nameEs: "Diagnósticos Remotos", descEn: "Smart system monitoring", descEs: "Monitoreo inteligente del sistema", icon: "barchart", category: "integration" },
+      { id: "crm", nameEn: "Service CRM", nameEs: "CRM de Servicios", descEn: "Customer & equipment tracking", descEs: "Seguimiento de clientes y equipos", icon: "users", category: "backend" },
+      { id: "invoicing", nameEn: "Service Invoicing", nameEs: "Facturación de Servicios", descEn: "Parts & labor billing", descEs: "Facturación de piezas y mano de obra", icon: "filetext", category: "backend" },
+      { id: "dispatch", nameEn: "Tech Dispatch", nameEs: "Despacho de Técnicos", descEn: "Route optimization", descEs: "Optimización de rutas", icon: "mappin", category: "backend" },
     ],
     toolkitFeatures: [
       { id: "btu-calc", nameEn: "BTU Calculator", nameEs: "Calculadora de BTU", descEn: "Room cooling/heating needs", descEs: "Necesidades de enfriamiento/calefacción" },
@@ -148,22 +180,22 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     accentColor: "#3b82f6",
     heroGradient: "from-yellow-900 via-amber-800 to-orange-900",
     services: [
-      { id: "panel", nameEn: "Panel Upgrades", nameEs: "Actualización de Paneles", descEn: "100A to 200A+ upgrades", descEs: "Actualizaciones de 100A a 200A+", icon: <Zap className="w-6 h-6" />, popular: true },
-      { id: "rewiring", nameEn: "Whole Home Rewiring", nameEs: "Recableado Completo", descEn: "Complete electrical overhaul", descEs: "Revisión eléctrica completa", icon: <Home className="w-6 h-6" /> },
-      { id: "ev-charger", nameEn: "EV Charger Install", nameEs: "Instalación de Cargador EV", descEn: "Level 2 home charging", descEs: "Carga doméstica Nivel 2", icon: <Zap className="w-6 h-6" />, popular: true },
-      { id: "lighting", nameEn: "Lighting Design", nameEs: "Diseño de Iluminación", descEn: "Indoor & outdoor lighting", descEs: "Iluminación interior y exterior", icon: <Sparkles className="w-6 h-6" /> },
-      { id: "outlets", nameEn: "Outlets & Switches", nameEs: "Tomacorrientes e Interruptores", descEn: "Installation & repair", descEs: "Instalación y reparación", icon: <Settings className="w-6 h-6" /> },
-      { id: "generator", nameEn: "Generator Install", nameEs: "Instalación de Generadores", descEn: "Whole home backup power", descEs: "Energía de respaldo para toda la casa", icon: <Zap className="w-6 h-6" /> },
-      { id: "commercial", nameEn: "Commercial Electric", nameEs: "Electricidad Comercial", descEn: "Business electrical services", descEs: "Servicios eléctricos comerciales", icon: <Building2 className="w-6 h-6" /> },
-      { id: "safety", nameEn: "Safety Inspections", nameEs: "Inspecciones de Seguridad", descEn: "Code compliance checks", descEs: "Verificaciones de cumplimiento", icon: <Shield className="w-6 h-6" /> },
+      { id: "panel", nameEn: "Panel Upgrades", nameEs: "Actualización de Paneles", descEn: "100A to 200A+ upgrades", descEs: "Actualizaciones de 100A a 200A+", icon: "zap", popular: true },
+      { id: "rewiring", nameEn: "Whole Home Rewiring", nameEs: "Recableado Completo", descEn: "Complete electrical overhaul", descEs: "Revisión eléctrica completa", icon: "home" },
+      { id: "ev-charger", nameEn: "EV Charger Install", nameEs: "Instalación de Cargador EV", descEn: "Level 2 home charging", descEs: "Carga doméstica Nivel 2", icon: "zap", popular: true },
+      { id: "lighting", nameEn: "Lighting Design", nameEs: "Diseño de Iluminación", descEn: "Indoor & outdoor lighting", descEs: "Iluminación interior y exterior", icon: "sparkles" },
+      { id: "outlets", nameEn: "Outlets & Switches", nameEs: "Tomacorrientes e Interruptores", descEn: "Installation & repair", descEs: "Instalación y reparación", icon: "settings" },
+      { id: "generator", nameEn: "Generator Install", nameEs: "Instalación de Generadores", descEn: "Whole home backup power", descEs: "Energía de respaldo para toda la casa", icon: "zap" },
+      { id: "commercial", nameEn: "Commercial Electric", nameEs: "Electricidad Comercial", descEn: "Business electrical services", descEs: "Servicios eléctricos comerciales", icon: "building" },
+      { id: "safety", nameEn: "Safety Inspections", nameEs: "Inspecciones de Seguridad", descEn: "Code compliance checks", descEs: "Verificaciones de cumplimiento", icon: "shield" },
     ],
     features: [
-      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "Schedule electrical work", descEs: "Programar trabajo eléctrico", icon: <Calendar className="w-5 h-5" />, category: "frontend" },
-      { id: "load-analysis", nameEn: "Load Analysis", nameEs: "Análisis de Carga", descEn: "Panel capacity planning", descEs: "Planificación de capacidad del panel", icon: <Calculator className="w-5 h-5" />, category: "ai" },
-      { id: "permit-mgmt", nameEn: "Permit Management", nameEs: "Gestión de Permisos", descEn: "Track permits & inspections", descEs: "Seguimiento de permisos e inspecciones", icon: <FileText className="w-5 h-5" />, category: "backend" },
-      { id: "crm", nameEn: "Customer Portal", nameEs: "Portal del Cliente", descEn: "Job history & documents", descEs: "Historial de trabajos y documentos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "invoicing", nameEn: "Project Billing", nameEs: "Facturación de Proyectos", descEn: "Material & labor invoicing", descEs: "Facturación de materiales y mano de obra", icon: <FileText className="w-5 h-5" />, category: "backend" },
-      { id: "safety-docs", nameEn: "Safety Documentation", nameEs: "Documentación de Seguridad", descEn: "Digital compliance records", descEs: "Registros digitales de cumplimiento", icon: <Shield className="w-5 h-5" />, category: "integration" },
+      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "Schedule electrical work", descEs: "Programar trabajo eléctrico", icon: "calendar", category: "frontend" },
+      { id: "load-analysis", nameEn: "Load Analysis", nameEs: "Análisis de Carga", descEn: "Panel capacity planning", descEs: "Planificación de capacidad del panel", icon: "calculator", category: "ai" },
+      { id: "permit-mgmt", nameEn: "Permit Management", nameEs: "Gestión de Permisos", descEn: "Track permits & inspections", descEs: "Seguimiento de permisos e inspecciones", icon: "filetext", category: "backend" },
+      { id: "crm", nameEn: "Customer Portal", nameEs: "Portal del Cliente", descEn: "Job history & documents", descEs: "Historial de trabajos y documentos", icon: "users", category: "backend" },
+      { id: "invoicing", nameEn: "Project Billing", nameEs: "Facturación de Proyectos", descEn: "Material & labor invoicing", descEs: "Facturación de materiales y mano de obra", icon: "filetext", category: "backend" },
+      { id: "safety-docs", nameEn: "Safety Documentation", nameEs: "Documentación de Seguridad", descEn: "Digital compliance records", descEs: "Registros digitales de cumplimiento", icon: "shield", category: "integration" },
     ],
     toolkitFeatures: [
       { id: "wire-calc", nameEn: "Wire Size Calculator", nameEs: "Calculadora de Calibre de Cable", descEn: "AWG sizing for loads", descEs: "Dimensionamiento AWG para cargas" },
@@ -188,22 +220,22 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     accentColor: "#10b981",
     heroGradient: "from-blue-900 via-blue-800 to-cyan-900",
     services: [
-      { id: "drain", nameEn: "Drain Cleaning", nameEs: "Limpieza de Drenajes", descEn: "Clog removal & jetting", descEs: "Eliminación de obstrucciones y chorro", icon: <Zap className="w-6 h-6" />, popular: true },
-      { id: "water-heater", nameEn: "Water Heaters", nameEs: "Calentadores de Agua", descEn: "Tank & tankless systems", descEs: "Sistemas de tanque y sin tanque", icon: <Zap className="w-6 h-6" />, popular: true },
-      { id: "leak", nameEn: "Leak Detection", nameEs: "Detección de Fugas", descEn: "Find & fix hidden leaks", descEs: "Encontrar y reparar fugas ocultas", icon: <Eye className="w-6 h-6" /> },
-      { id: "repipe", nameEn: "Whole Home Repipe", nameEs: "Retuberías Completas", descEn: "Copper & PEX repiping", descEs: "Retuberías de cobre y PEX", icon: <Home className="w-6 h-6" /> },
-      { id: "fixture", nameEn: "Fixture Installation", nameEs: "Instalación de Accesorios", descEn: "Faucets, toilets, sinks", descEs: "Grifos, inodoros, lavabos", icon: <Settings className="w-6 h-6" /> },
-      { id: "sewer", nameEn: "Sewer Line Service", nameEs: "Servicio de Alcantarillado", descEn: "Repair & replacement", descEs: "Reparación y reemplazo", icon: <Wrench className="w-6 h-6" /> },
-      { id: "gas", nameEn: "Gas Line Services", nameEs: "Servicios de Gas", descEn: "Installation & repair", descEs: "Instalación y reparación", icon: <Zap className="w-6 h-6" /> },
-      { id: "emergency", nameEn: "24/7 Emergency", nameEs: "Emergencias 24/7", descEn: "Round-the-clock plumbing", descEs: "Plomería las 24 horas", icon: <Clock className="w-6 h-6" /> },
+      { id: "drain", nameEn: "Drain Cleaning", nameEs: "Limpieza de Drenajes", descEn: "Clog removal & jetting", descEs: "Eliminación de obstrucciones y chorro", icon: "zap", popular: true },
+      { id: "water-heater", nameEn: "Water Heaters", nameEs: "Calentadores de Agua", descEn: "Tank & tankless systems", descEs: "Sistemas de tanque y sin tanque", icon: "zap", popular: true },
+      { id: "leak", nameEn: "Leak Detection", nameEs: "Detección de Fugas", descEn: "Find & fix hidden leaks", descEs: "Encontrar y reparar fugas ocultas", icon: "eye" },
+      { id: "repipe", nameEn: "Whole Home Repipe", nameEs: "Retuberías Completas", descEn: "Copper & PEX repiping", descEs: "Retuberías de cobre y PEX", icon: "home" },
+      { id: "fixture", nameEn: "Fixture Installation", nameEs: "Instalación de Accesorios", descEn: "Faucets, toilets, sinks", descEs: "Grifos, inodoros, lavabos", icon: "settings" },
+      { id: "sewer", nameEn: "Sewer Line Service", nameEs: "Servicio de Alcantarillado", descEn: "Repair & replacement", descEs: "Reparación y reemplazo", icon: "wrench" },
+      { id: "gas", nameEn: "Gas Line Services", nameEs: "Servicios de Gas", descEn: "Installation & repair", descEs: "Instalación y reparación", icon: "zap" },
+      { id: "emergency", nameEn: "24/7 Emergency", nameEs: "Emergencias 24/7", descEn: "Round-the-clock plumbing", descEs: "Plomería las 24 horas", icon: "clock" },
     ],
     features: [
-      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "Book plumbing service", descEs: "Reservar servicio de plomería", icon: <Calendar className="w-5 h-5" />, category: "frontend" },
-      { id: "camera-inspect", nameEn: "Camera Inspection", nameEs: "Inspección con Cámara", descEn: "Sewer line video", descEs: "Video de línea de alcantarillado", icon: <Camera className="w-5 h-5" />, category: "integration" },
-      { id: "flat-rate", nameEn: "Flat Rate Pricing", nameEs: "Precios Fijos", descEn: "Upfront cost estimates", descEs: "Estimaciones de costo por adelantado", icon: <Calculator className="w-5 h-5" />, category: "ai" },
-      { id: "crm", nameEn: "Service History", nameEs: "Historial de Servicios", descEn: "Complete job records", descEs: "Registros completos de trabajos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "inventory", nameEn: "Parts Inventory", nameEs: "Inventario de Piezas", descEn: "Truck stock management", descEs: "Gestión de inventario del camión", icon: <Wrench className="w-5 h-5" />, category: "backend" },
-      { id: "dispatch", nameEn: "Smart Dispatch", nameEs: "Despacho Inteligente", descEn: "Optimize technician routes", descEs: "Optimizar rutas de técnicos", icon: <MapPin className="w-5 h-5" />, category: "backend" },
+      { id: "online-booking", nameEn: "Online Booking", nameEs: "Reservas en Línea", descEn: "Book plumbing service", descEs: "Reservar servicio de plomería", icon: "calendar", category: "frontend" },
+      { id: "camera-inspect", nameEn: "Camera Inspection", nameEs: "Inspección con Cámara", descEn: "Sewer line video", descEs: "Video de línea de alcantarillado", icon: "camera", category: "integration" },
+      { id: "flat-rate", nameEn: "Flat Rate Pricing", nameEs: "Precios Fijos", descEn: "Upfront cost estimates", descEs: "Estimaciones de costo por adelantado", icon: "calculator", category: "ai" },
+      { id: "crm", nameEn: "Service History", nameEs: "Historial de Servicios", descEn: "Complete job records", descEs: "Registros completos de trabajos", icon: "users", category: "backend" },
+      { id: "inventory", nameEn: "Parts Inventory", nameEs: "Inventario de Piezas", descEn: "Truck stock management", descEs: "Gestión de inventario del camión", icon: "wrench", category: "backend" },
+      { id: "dispatch", nameEn: "Smart Dispatch", nameEs: "Despacho Inteligente", descEn: "Optimize technician routes", descEs: "Optimizar rutas de técnicos", icon: "mappin", category: "backend" },
     ],
     toolkitFeatures: [
       { id: "pipe-calc", nameEn: "Pipe Sizing Calculator", nameEs: "Calculadora de Tuberías", descEn: "Flow rate & pressure", descEs: "Caudal y presión" },
@@ -228,22 +260,22 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     accentColor: "#84cc16",
     heroGradient: "from-green-900 via-emerald-800 to-lime-900",
     services: [
-      { id: "design", nameEn: "Landscape Design", nameEs: "Diseño de Jardines", descEn: "Custom outdoor plans", descEs: "Planes personalizados de exteriores", icon: <Palette className="w-6 h-6" />, popular: true },
-      { id: "install", nameEn: "Landscape Installation", nameEs: "Instalación de Jardines", descEn: "Plants, trees & shrubs", descEs: "Plantas, árboles y arbustos", icon: <Sparkles className="w-6 h-6" /> },
-      { id: "hardscape", nameEn: "Hardscaping", nameEs: "Hardscaping", descEn: "Patios, walkways, walls", descEs: "Patios, caminos, muros", icon: <Building2 className="w-6 h-6" />, popular: true },
-      { id: "irrigation", nameEn: "Irrigation Systems", nameEs: "Sistemas de Riego", descEn: "Sprinkler install & repair", descEs: "Instalación y reparación de aspersores", icon: <Zap className="w-6 h-6" /> },
-      { id: "lawn", nameEn: "Lawn Care", nameEs: "Cuidado del Césped", descEn: "Mowing, fertilizing, aeration", descEs: "Corte, fertilización, aireación", icon: <Sparkles className="w-6 h-6" /> },
-      { id: "lighting", nameEn: "Outdoor Lighting", nameEs: "Iluminación Exterior", descEn: "Landscape & security lights", descEs: "Iluminación de jardines y seguridad", icon: <Sparkles className="w-6 h-6" /> },
-      { id: "drainage", nameEn: "Drainage Solutions", nameEs: "Soluciones de Drenaje", descEn: "French drains & grading", descEs: "Drenajes franceses y nivelación", icon: <Zap className="w-6 h-6" /> },
-      { id: "seasonal", nameEn: "Seasonal Cleanup", nameEs: "Limpieza Estacional", descEn: "Spring & fall services", descEs: "Servicios de primavera y otoño", icon: <Sparkles className="w-6 h-6" /> },
+      { id: "design", nameEn: "Landscape Design", nameEs: "Diseño de Jardines", descEn: "Custom outdoor plans", descEs: "Planes personalizados de exteriores", icon: "palette", popular: true },
+      { id: "install", nameEn: "Landscape Installation", nameEs: "Instalación de Jardines", descEn: "Plants, trees & shrubs", descEs: "Plantas, árboles y arbustos", icon: "sparkles" },
+      { id: "hardscape", nameEn: "Hardscaping", nameEs: "Hardscaping", descEn: "Patios, walkways, walls", descEs: "Patios, caminos, muros", icon: "building", popular: true },
+      { id: "irrigation", nameEn: "Irrigation Systems", nameEs: "Sistemas de Riego", descEn: "Sprinkler install & repair", descEs: "Instalación y reparación de aspersores", icon: "zap" },
+      { id: "lawn", nameEn: "Lawn Care", nameEs: "Cuidado del Césped", descEn: "Mowing, fertilizing, aeration", descEs: "Corte, fertilización, aireación", icon: "sparkles" },
+      { id: "lighting", nameEn: "Outdoor Lighting", nameEs: "Iluminación Exterior", descEn: "Landscape & security lights", descEs: "Iluminación de jardines y seguridad", icon: "sparkles" },
+      { id: "drainage", nameEn: "Drainage Solutions", nameEs: "Soluciones de Drenaje", descEn: "French drains & grading", descEs: "Drenajes franceses y nivelación", icon: "zap" },
+      { id: "seasonal", nameEn: "Seasonal Cleanup", nameEs: "Limpieza Estacional", descEn: "Spring & fall services", descEs: "Servicios de primavera y otoño", icon: "sparkles" },
     ],
     features: [
-      { id: "design-tool", nameEn: "3D Design Tool", nameEs: "Herramienta de Diseño 3D", descEn: "Visualize your landscape", descEs: "Visualiza tu jardín", icon: <Palette className="w-5 h-5" />, category: "frontend" },
-      { id: "plant-db", nameEn: "Plant Database", nameEs: "Base de Datos de Plantas", descEn: "Species info & care", descEs: "Información y cuidado de especies", icon: <Sparkles className="w-5 h-5" />, category: "ai" },
-      { id: "scheduling", nameEn: "Service Scheduling", nameEs: "Programación de Servicios", descEn: "Recurring maintenance", descEs: "Mantenimiento recurrente", icon: <Calendar className="w-5 h-5" />, category: "backend" },
-      { id: "crm", nameEn: "Property Profiles", nameEs: "Perfiles de Propiedades", descEn: "Site history & photos", descEs: "Historial del sitio y fotos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "crew-mgmt", nameEn: "Crew Management", nameEs: "Gestión de Equipos", descEn: "Route & job assignment", descEs: "Asignación de rutas y trabajos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "weather", nameEn: "Weather Integration", nameEs: "Integración del Clima", descEn: "Smart scheduling", descEs: "Programación inteligente", icon: <Sparkles className="w-5 h-5" />, category: "integration" },
+      { id: "design-tool", nameEn: "3D Design Tool", nameEs: "Herramienta de Diseño 3D", descEn: "Visualize your landscape", descEs: "Visualiza tu jardín", icon: "palette", category: "frontend" },
+      { id: "plant-db", nameEn: "Plant Database", nameEs: "Base de Datos de Plantas", descEn: "Species info & care", descEs: "Información y cuidado de especies", icon: "sparkles", category: "ai" },
+      { id: "scheduling", nameEn: "Service Scheduling", nameEs: "Programación de Servicios", descEn: "Recurring maintenance", descEs: "Mantenimiento recurrente", icon: "calendar", category: "backend" },
+      { id: "crm", nameEn: "Property Profiles", nameEs: "Perfiles de Propiedades", descEn: "Site history & photos", descEs: "Historial del sitio y fotos", icon: "users", category: "backend" },
+      { id: "crew-mgmt", nameEn: "Crew Management", nameEs: "Gestión de Equipos", descEn: "Route & job assignment", descEs: "Asignación de rutas y trabajos", icon: "users", category: "backend" },
+      { id: "weather", nameEn: "Weather Integration", nameEs: "Integración del Clima", descEn: "Smart scheduling", descEs: "Programación inteligente", icon: "sparkles", category: "integration" },
     ],
     toolkitFeatures: [
       { id: "mulch-calc", nameEn: "Mulch Calculator", nameEs: "Calculadora de Mantillo", descEn: "Cubic yards needed", descEs: "Yardas cúbicas necesarias" },
@@ -268,22 +300,22 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     accentColor: "#f59e0b",
     heroGradient: "from-stone-900 via-zinc-800 to-neutral-900",
     services: [
-      { id: "remodel", nameEn: "Home Remodeling", nameEs: "Remodelación del Hogar", descEn: "Kitchen, bath, whole home", descEs: "Cocina, baño, casa completa", icon: <Home className="w-6 h-6" />, popular: true },
-      { id: "addition", nameEn: "Room Additions", nameEs: "Ampliaciones", descEn: "Expand your living space", descEs: "Amplía tu espacio", icon: <Building2 className="w-6 h-6" /> },
-      { id: "new-build", nameEn: "New Construction", nameEs: "Construcción Nueva", descEn: "Custom home building", descEs: "Construcción de casas personalizadas", icon: <Building2 className="w-6 h-6" />, popular: true },
-      { id: "commercial", nameEn: "Commercial Buildout", nameEs: "Construcción Comercial", descEn: "Office & retail spaces", descEs: "Espacios de oficina y comercio", icon: <Building2 className="w-6 h-6" /> },
-      { id: "framing", nameEn: "Framing & Structure", nameEs: "Estructura y Armazón", descEn: "Structural carpentry", descEs: "Carpintería estructural", icon: <Wrench className="w-6 h-6" /> },
-      { id: "finish", nameEn: "Finish Carpentry", nameEs: "Carpintería de Acabados", descEn: "Trim, molding, cabinets", descEs: "Molduras, gabinetes", icon: <Sparkles className="w-6 h-6" /> },
-      { id: "concrete", nameEn: "Concrete Work", nameEs: "Trabajo de Concreto", descEn: "Foundations & flatwork", descEs: "Cimentaciones y losas", icon: <Building2 className="w-6 h-6" /> },
-      { id: "permits", nameEn: "Permit Services", nameEs: "Servicios de Permisos", descEn: "We handle all permits", descEs: "Manejamos todos los permisos", icon: <FileText className="w-6 h-6" /> },
+      { id: "remodel", nameEn: "Home Remodeling", nameEs: "Remodelación del Hogar", descEn: "Kitchen, bath, whole home", descEs: "Cocina, baño, casa completa", icon: "home", popular: true },
+      { id: "addition", nameEn: "Room Additions", nameEs: "Ampliaciones", descEn: "Expand your living space", descEs: "Amplía tu espacio", icon: "building" },
+      { id: "new-build", nameEn: "New Construction", nameEs: "Construcción Nueva", descEn: "Custom home building", descEs: "Construcción de casas personalizadas", icon: "building", popular: true },
+      { id: "commercial", nameEn: "Commercial Buildout", nameEs: "Construcción Comercial", descEn: "Office & retail spaces", descEs: "Espacios de oficina y comercio", icon: "building" },
+      { id: "framing", nameEn: "Framing & Structure", nameEs: "Estructura y Armazón", descEn: "Structural carpentry", descEs: "Carpintería estructural", icon: "wrench" },
+      { id: "finish", nameEn: "Finish Carpentry", nameEs: "Carpintería de Acabados", descEn: "Trim, molding, cabinets", descEs: "Molduras, gabinetes", icon: "sparkles" },
+      { id: "concrete", nameEn: "Concrete Work", nameEs: "Trabajo de Concreto", descEn: "Foundations & flatwork", descEs: "Cimentaciones y losas", icon: "building" },
+      { id: "permits", nameEn: "Permit Services", nameEs: "Servicios de Permisos", descEn: "We handle all permits", descEs: "Manejamos todos los permisos", icon: "filetext" },
     ],
     features: [
-      { id: "project-mgmt", nameEn: "Project Management", nameEs: "Gestión de Proyectos", descEn: "Timeline & milestone tracking", descEs: "Seguimiento de cronograma e hitos", icon: <BarChart3 className="w-5 h-5" />, category: "backend" },
-      { id: "3d-render", nameEn: "3D Renderings", nameEs: "Renderizados 3D", descEn: "Visualize your project", descEs: "Visualiza tu proyecto", icon: <Palette className="w-5 h-5" />, category: "frontend" },
-      { id: "bid-mgmt", nameEn: "Bid Management", nameEs: "Gestión de Ofertas", descEn: "Sub-contractor bidding", descEs: "Ofertas de subcontratistas", icon: <FileText className="w-5 h-5" />, category: "backend" },
-      { id: "crm", nameEn: "Client Portal", nameEs: "Portal del Cliente", descEn: "Progress updates & docs", descEs: "Actualizaciones de progreso y documentos", icon: <Users className="w-5 h-5" />, category: "backend" },
-      { id: "scheduling", nameEn: "Construction Schedule", nameEs: "Cronograma de Construcción", descEn: "Gantt charts & dependencies", descEs: "Gráficos Gantt y dependencias", icon: <Calendar className="w-5 h-5" />, category: "backend" },
-      { id: "cost-tracking", nameEn: "Cost Tracking", nameEs: "Seguimiento de Costos", descEn: "Budget vs actual", descEs: "Presupuesto vs real", icon: <BarChart3 className="w-5 h-5" />, category: "backend" },
+      { id: "project-mgmt", nameEn: "Project Management", nameEs: "Gestión de Proyectos", descEn: "Timeline & milestone tracking", descEs: "Seguimiento de cronograma e hitos", icon: "barchart", category: "backend" },
+      { id: "3d-render", nameEn: "3D Renderings", nameEs: "Renderizados 3D", descEn: "Visualize your project", descEs: "Visualiza tu proyecto", icon: "palette", category: "frontend" },
+      { id: "bid-mgmt", nameEn: "Bid Management", nameEs: "Gestión de Ofertas", descEn: "Sub-contractor bidding", descEs: "Ofertas de subcontratistas", icon: "filetext", category: "backend" },
+      { id: "crm", nameEn: "Client Portal", nameEs: "Portal del Cliente", descEn: "Progress updates & docs", descEs: "Actualizaciones de progreso y documentos", icon: "users", category: "backend" },
+      { id: "scheduling", nameEn: "Construction Schedule", nameEs: "Cronograma de Construcción", descEn: "Gantt charts & dependencies", descEs: "Gráficos Gantt y dependencias", icon: "calendar", category: "backend" },
+      { id: "cost-tracking", nameEn: "Cost Tracking", nameEs: "Seguimiento de Costos", descEn: "Budget vs actual", descEs: "Presupuesto vs real", icon: "barchart", category: "backend" },
     ],
     toolkitFeatures: [
       { id: "concrete-calc", nameEn: "Concrete Calculator", nameEs: "Calculadora de Concreto", descEn: "Cubic yards for slabs & footings", descEs: "Yardas cúbicas para losas y zapatas" },
@@ -614,7 +646,7 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                 <GlassCard className="p-4 h-full" hoverEffect="lift" glow={service.popular ? "accent" : false}>
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                      {service.icon}
+                      {getIcon(service.icon)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -726,7 +758,7 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                     {categoryFeatures.map(feature => (
                       <div key={feature.id} className="flex items-start gap-3">
                         <div className="p-1.5 rounded bg-primary/10 text-primary">
-                          {feature.icon}
+                          {getIcon(feature.icon, "w-5 h-5")}
                         </div>
                         <div>
                           <div className="font-medium text-sm">
