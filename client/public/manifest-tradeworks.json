@@ -1,0 +1,38 @@
+{
+  "name": "TradeWorks AI",
+  "short_name": "TradeWorks",
+  "description": "Professional field toolkit with 85+ calculators for 8 trades. AI-powered voice assistant, color matching, and more.",
+  "start_url": "/tradeworks",
+  "scope": "/tradeworks",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa/tradeworks/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/tradeworks/icon-512.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa/tradeworks/splash.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["utilities", "productivity", "business"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "id": "tradeworks-ai",
+  "prefer_related_applications": false
+}

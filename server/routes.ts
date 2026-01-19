@@ -108,6 +108,8 @@ const domainTenantMap: Record<string, string> = {
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
   "www.nashvillepaintingprofessionals.com": "npp",
+  "tradeworksai.io": "tradeworks",
+  "www.tradeworksai.io": "tradeworks",
   "localhost": "npp",
 };
 
@@ -127,6 +129,8 @@ const pwaConfigs: Record<string, {
   backgroundColor: string;
   themeColor: string;
   iconPath: string;
+  startUrl?: string;
+  categories?: string[];
 }> = {
   npp: {
     name: "Nashville Painting Professionals",
@@ -159,6 +163,16 @@ const pwaConfigs: Record<string, {
     backgroundColor: "#1a1f1c",
     themeColor: "#d4a853",
     iconPath: "/pwa/estimator"
+  },
+  tradeworks: {
+    name: "TradeWorks AI",
+    shortName: "TradeWorks",
+    description: "Professional field toolkit with 85+ calculators for 8 trades. AI-powered voice assistant.",
+    backgroundColor: "#0f172a",
+    themeColor: "#f59e0b",
+    iconPath: "/pwa/tradeworks",
+    startUrl: "/tradeworks",
+    categories: ["utilities", "productivity", "business"]
   }
 };
 
@@ -341,7 +355,7 @@ export async function registerRoutes(
       name: config.name,
       short_name: config.shortName,
       description: config.description,
-      start_url: "/",
+      start_url: config.startUrl || "/",
       display: "standalone",
       background_color: config.backgroundColor,
       theme_color: config.themeColor,
@@ -360,7 +374,7 @@ export async function registerRoutes(
           purpose: "any maskable"
         }
       ],
-      categories: ["business", "lifestyle"],
+      categories: config.categories || ["business", "lifestyle"],
       lang: "en-US",
       dir: "ltr"
     };

@@ -389,11 +389,74 @@ export function createEstimatorOnlyTenant(
   } as TenantConfig;
 }
 
+// TradeWorks AI tenant (standalone product)
+export const tradeWorksAI: TenantConfig = {
+  id: "tradeworks",
+  slug: "tradeworks-ai",
+  subscriptionTier: "full_suite",
+  
+  name: "TradeWorks AI",
+  tagline: "The Professional Field Toolkit",
+  description: "85+ calculators for 8 trades with AI-powered voice assistant, color matching, and store finder.",
+  
+  theme: {
+    primaryColor: "#f59e0b",
+    accentColor: "#3b82f6",
+    darkMode: {
+      background: "#0f172a",
+      foreground: "#f1f5f9",
+    },
+    lightMode: {
+      background: "#f8fafc",
+      foreground: "#0f172a",
+    },
+  },
+  
+  services: {
+    interiorPainting: true,
+    exteriorPainting: true,
+    commercialPainting: true,
+    residentialPainting: true,
+    trimAndMolding: true,
+    ceilings: true,
+    doors: true,
+    drywallRepair: true,
+    cabinetPainting: true,
+    deckStaining: true,
+    pressureWashing: true,
+  },
+  
+  pricing: {
+    doorsPerUnit: 150,
+    wallsPerSqFt: 3.5,
+    fullJobPerSqFt: 5.0,
+  },
+  
+  seo: {
+    title: "TradeWorks AI | Professional Field Toolkit for 8 Trades",
+    description: "85+ calculators with AI voice assistant. Painting, electrical, plumbing, HVAC, roofing, carpentry, concrete, landscaping.",
+    keywords: ["trade calculator", "field toolkit", "contractor app", "AI assistant", "construction calculator"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: false,
+    reviews: false,
+    blog: false,
+    onlineBooking: false,
+    aiAssistant: true,
+  },
+  
+  credentials: {},
+};
+
 // Tenant registry
 export const tenants: Record<string, TenantConfig> = {
   "npp": nashvillePaintingProfessionals,
   "demo": paintProsDemo,
   "lumepaint": lumePaintCo,
+  "tradeworks": tradeWorksAI,
 };
 
 // Domain to tenant mapping (custom domains)
@@ -406,6 +469,8 @@ const domainTenantMap: Record<string, string> = {
   "www.nashvillepaintingprofessionals.com": "npp",
   "lumepaint.co": "lumepaint",
   "www.lumepaint.co": "lumepaint",
+  "tradeworksai.io": "tradeworks",
+  "www.tradeworksai.io": "tradeworks",
   "localhost": "npp",
 };
 
