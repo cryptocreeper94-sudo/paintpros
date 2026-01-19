@@ -1540,6 +1540,19 @@ export async function registerRoutes(
     }
   });
 
+  // Trigger manual blog generation
+  app.post("/api/blog/generate-auto", async (req, res) => {
+    try {
+      const { tenantId } = req.body;
+      const { triggerBlogGeneration } = await import("./blog-scheduler");
+      const result = await triggerBlogGeneration(tenantId);
+      res.json(result);
+    } catch (error) {
+      console.error("Error triggering blog generation:", error);
+      res.status(500).json({ error: "Failed to generate blog posts" });
+    }
+  });
+
   // Seed default blog categories for a tenant
   app.post("/api/blog/categories/seed", async (req, res) => {
     try {
