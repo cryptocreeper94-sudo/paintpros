@@ -31,16 +31,16 @@ const TRADE_VERTICALS = [
   { id: "construction", name: "General Construction", nameEs: "Construcción General", icon: HardHat, color: "#78716c", description: "Remodeling & new construction", descriptionEs: "Remodelación y nueva construcción" },
 ];
 
-const SUBSCRIPTION_TIERS = [
+const PLATFORM_TIERS = [
   { 
-    id: "starter", 
-    name: "Starter", 
-    nameEs: "Inicial",
-    price: 29, 
-    subtitle: "Estimator Tool",
-    subtitleEs: "Herramienta de Estimación",
-    features: ["Online Estimator", "Lead Capture", "Basic CRM", "Email Support"],
-    featuresEs: ["Estimador en Línea", "Captura de Leads", "CRM Básico", "Soporte por Email"],
+    id: "tools-only", 
+    name: "Tools Only", 
+    nameEs: "Solo Herramientas",
+    price: 0, 
+    subtitle: "Estimator Tools",
+    subtitleEs: "Herramientas de Estimación",
+    features: ["Trade Estimators", "Lead Capture", "Basic CRM"],
+    featuresEs: ["Estimadores de Oficios", "Captura de Leads", "CRM Básico"],
     popular: false
   },
   { 
@@ -50,8 +50,8 @@ const SUBSCRIPTION_TIERS = [
     price: 199, 
     subtitle: "Full Suite",
     subtitleEs: "Suite Completa",
-    features: ["Everything in Starter", "Advanced CRM", "Unlimited Team", "Priority Support", "Analytics Dashboard"],
-    featuresEs: ["Todo en Inicial", "CRM Avanzado", "Equipo Ilimitado", "Soporte Prioritario", "Panel de Análisis"],
+    features: ["Professional Website", "Advanced CRM", "Unlimited Team", "Priority Support", "Analytics Dashboard"],
+    featuresEs: ["Sitio Web Profesional", "CRM Avanzado", "Equipo Ilimitado", "Soporte Prioritario", "Panel de Análisis"],
     popular: true
   },
   { 
@@ -67,34 +67,59 @@ const SUBSCRIPTION_TIERS = [
   },
 ];
 
-const TRADEWORKS_ADDON = {
-  price: 29,
-  features: ["85+ Trade Calculators", "AI Voice Assistant", "Photo Analysis", "Offline Mode", "Instant Estimates"],
-  featuresEs: ["85+ Calculadoras de Oficios", "Asistente de Voz IA", "Análisis de Fotos", "Modo Sin Conexión", "Estimaciones Instantáneas"],
+const TRADE_PRICING = {
+  single: 29,
+  threeBundle: 59,
+  allBundle: 99,
 };
 
+const COMBO_PRICING = {
+  proAllTrades: 269,
+  enterpriseAllTrades: 569,
+};
+
+function calculateTotalPrice(selectedTrades: string[], platformTier: string, billingInterval: 'month' | 'year'): number {
+  const tradeCount = selectedTrades.length;
+  let total = 0;
+  
+  const platform = PLATFORM_TIERS.find(t => t.id === platformTier);
+  const hasPlatform = platformTier === 'professional' || platformTier === 'enterprise';
+  
+  if (hasPlatform && tradeCount === 6) {
+    total = platformTier === 'enterprise' ? COMBO_PRICING.enterpriseAllTrades : COMBO_PRICING.proAllTrades;
+  } else {
+    if (platform) total += platform.price;
+    
+    if (tradeCount === 6) {
+      total += TRADE_PRICING.allBundle;
+    } else if (tradeCount >= 3) {
+      total += TRADE_PRICING.threeBundle + (tradeCount - 3) * TRADE_PRICING.single;
+    } else {
+      total += tradeCount * TRADE_PRICING.single;
+    }
+  }
+  
+  if (billingInterval === 'year') {
+    total = Math.round(total * 10);
+  }
+  
+  return total;
+}
+
 const onboardingSchema = z.object({
-  // Step 1: Company Info
   companyName: z.string().min(2, "Company name is required"),
   ownerName: z.string().min(2, "Owner name is required"),
   ownerEmail: z.string().email("Valid email required"),
   ownerPhone: z.string().optional(),
   companyCity: z.string().optional(),
   companyState: z.string().optional(),
-  
-  // Step 2: Trade Vertical
   tradeVertical: z.string(),
-  
-  // Step 3: Branding
+  selectedTrades: z.array(z.string()).default([]),
   primaryColor: z.string().default("#4A5D3E"),
   accentColor: z.string().default("#C4A052"),
   logoUrl: z.string().optional(),
-  
-  // Step 4: TradeWorks AI
-  tradeworksEnabled: z.boolean().default(false),
-  
-  // Step 5: Subscription
   subscriptionTier: z.string().default("professional"),
+  billingInterval: z.enum(["month", "year"]).default("month"),
 });
 
 type OnboardingFormData = z.infer<typeof onboardingSchema>;
@@ -119,17 +144,20 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
       companyCity: "",
       companyState: "",
       tradeVertical: "painting",
+      selectedTrades: ["painting"],
       primaryColor: "#4A5D3E",
       accentColor: "#C4A052",
       logoUrl: "",
-      tradeworksEnabled: false,
       subscriptionTier: "professional",
+      billingInterval: "month",
     },
   });
 
   const selectedTrade = TRADE_VERTICALS.find(t => t.id === form.watch("tradeVertical"));
-  const selectedTier = SUBSCRIPTION_TIERS.find(t => t.id === form.watch("subscriptionTier"));
-  const tradeworksEnabled = form.watch("tradeworksEnabled");
+  const selectedTier = PLATFORM_TIERS.find(t => t.id === form.watch("subscriptionTier"));
+  const selectedTrades = form.watch("selectedTrades") || [];
+  const billingInterval = form.watch("billingInterval");
+  const totalPrice = calculateTotalPrice(selectedTrades, form.watch("subscriptionTier"), billingInterval);
 
   const createTenantMutation = useMutation({
     mutationFn: async (data: OnboardingFormData) => {
@@ -168,7 +196,7 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
         fieldsToValidate = ["primaryColor"];
         break;
       case 4:
-        fieldsToValidate = ["tradeworksEnabled"];
+        fieldsToValidate = ["selectedTrades"];
         break;
       case 5:
         fieldsToValidate = ["subscriptionTier"];
@@ -191,17 +219,20 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
     }
   };
 
-  const calculateTotal = () => {
-    const tierPrice = selectedTier?.price || 0;
-    const tradeworksPrice = tradeworksEnabled ? TRADEWORKS_ADDON.price : 0;
-    return tierPrice + tradeworksPrice;
+  const toggleTrade = (tradeId: string) => {
+    const current = form.getValues("selectedTrades") || [];
+    if (current.includes(tradeId)) {
+      form.setValue("selectedTrades", current.filter((t: string) => t !== tradeId));
+    } else {
+      form.setValue("selectedTrades", [...current, tradeId]);
+    }
   };
 
   const stepTitles = {
     1: { en: "Company Information", es: "Información de la Empresa" },
     2: { en: "Select Your Trade", es: "Selecciona Tu Oficio" },
     3: { en: "Brand Your Site", es: "Personaliza Tu Marca" },
-    4: { en: "TradeWorks AI Toolkit", es: "Kit de Herramientas TradeWorks AI" },
+    4: { en: "Estimator Tools", es: "Herramientas de Estimación" },
     5: { en: "Choose Your Plan", es: "Elige Tu Plan" },
   };
 
@@ -514,7 +545,7 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                   </motion.div>
                 )}
 
-                {/* Step 4: TradeWorks AI */}
+                {/* Step 4: Trade Selection */}
                 {step === 4 && (
                   <motion.div
                     key="step4"
@@ -525,60 +556,76 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                   >
                     <div className="bg-gradient-to-br from-amber-900 via-orange-800 to-yellow-900 rounded-lg p-6 text-white">
                       <div className="flex items-center gap-3 mb-4">
-                        <Brain className="w-10 h-10 text-yellow-400" />
+                        <Calculator className="w-10 h-10 text-yellow-400" />
                         <div>
-                          <h3 className="text-2xl font-bold">TradeWorks AI</h3>
-                          <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
-                            ${TRADEWORKS_ADDON.price}/{language === 'es' ? 'mes' : 'mo'}
+                          <h3 className="text-2xl font-bold">
+                            {language === 'es' ? 'Herramientas de Estimación' : 'Estimator Tools'}
+                          </h3>
+                          <p className="text-white/80 text-sm">
+                            {language === 'es' 
+                              ? 'Selecciona los oficios para tu equipo' 
+                              : 'Select trade tools for your team'}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2 mb-4 text-center text-sm">
+                        <div className="bg-white/10 rounded-lg p-3">
+                          <div className="text-2xl font-bold text-yellow-400">$29</div>
+                          <div className="text-white/70">{language === 'es' ? '1 oficio' : '1 trade'}</div>
+                        </div>
+                        <div className="bg-white/10 rounded-lg p-3">
+                          <div className="text-2xl font-bold text-yellow-400">$59</div>
+                          <div className="text-white/70">{language === 'es' ? '3 oficios' : '3 trades'}</div>
+                          <Badge className="bg-green-500/20 text-green-300 text-xs mt-1">
+                            {language === 'es' ? 'Ahorra $28' : 'Save $28'}
+                          </Badge>
+                        </div>
+                        <div className="bg-white/10 rounded-lg p-3">
+                          <div className="text-2xl font-bold text-yellow-400">$99</div>
+                          <div className="text-white/70">{language === 'es' ? '6 oficios' : 'All 6'}  </div>
+                          <Badge className="bg-green-500/20 text-green-300 text-xs mt-1">
+                            {language === 'es' ? 'Ahorra $75' : 'Save $75'}
                           </Badge>
                         </div>
                       </div>
-                      <p className="text-white/80 mb-6">
-                        {language === 'es'
-                          ? 'Añade poderosas herramientas de cálculo con IA a tu sitio web y equipo de campo.'
-                          : 'Add powerful AI-powered calculation tools to your website and field crew.'}
-                      </p>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        {(language === 'es' ? TRADEWORKS_ADDON.featuresEs : TRADEWORKS_ADDON.features).map((feature, i) => (
-                          <div key={i} className="flex items-center gap-2 bg-white/10 rounded-lg p-3">
-                            {i === 0 && <Calculator className="w-5 h-5 text-yellow-400" />}
-                            {i === 1 && <Mic className="w-5 h-5 text-yellow-400" />}
-                            {i === 2 && <Camera className="w-5 h-5 text-yellow-400" />}
-                            {i === 3 && <Zap className="w-5 h-5 text-yellow-400" />}
-                            {i === 4 && <CheckCircle2 className="w-5 h-5 text-yellow-400" />}
-                            <span>{feature}</span>
-                          </div>
-                        ))}
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {TRADE_VERTICALS.filter(t => t.id !== 'construction').map((trade) => {
+                          const isSelected = selectedTrades.includes(trade.id);
+                          const TradeIcon = trade.icon;
+                          return (
+                            <button
+                              key={trade.id}
+                              type="button"
+                              onClick={() => toggleTrade(trade.id)}
+                              className={`p-4 rounded-lg border-2 transition-all text-left ${
+                                isSelected 
+                                  ? 'border-yellow-400 bg-yellow-400/20' 
+                                  : 'border-white/20 hover:border-white/40 bg-white/5'
+                              }`}
+                              data-testid={`trade-tool-${trade.id}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <TradeIcon className="w-5 h-5" style={{ color: trade.color }} />
+                                <span className="font-medium">
+                                  {language === 'es' ? trade.nameEs : trade.name}
+                                </span>
+                                {isSelected && <Check className="w-4 h-4 text-yellow-400 ml-auto" />}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                       
-                      <FormField
-                        control={form.control}
-                        name="tradeworksEnabled"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center justify-between bg-white/10 rounded-lg p-4">
-                              <div>
-                                <FormLabel className="text-white text-lg">
-                                  {language === 'es' ? 'Añadir TradeWorks AI' : 'Add TradeWorks AI'}
-                                </FormLabel>
-                                <p className="text-white/70 text-sm">
-                                  {language === 'es' 
-                                    ? 'Potencia tu negocio con herramientas de IA' 
-                                    : 'Power up your business with AI tools'}
-                                </p>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  data-testid="switch-tradeworks"
-                                />
-                              </FormControl>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
+                      <div className="mt-4 p-3 bg-white/10 rounded-lg flex items-center justify-between">
+                        <span className="font-medium">
+                          {language === 'es' ? 'Herramientas seleccionadas' : 'Selected tools'}: {selectedTrades.length}
+                        </span>
+                        <span className="text-yellow-400 font-bold">
+                          ${selectedTrades.length === 6 ? 99 : selectedTrades.length >= 3 ? 59 + (selectedTrades.length - 3) * 29 : selectedTrades.length * 29}/{language === 'es' ? 'mes' : 'mo'}
+                        </span>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -592,9 +639,27 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-6"
                   >
+                    {/* Billing Interval Toggle */}
+                    <div className="flex justify-center">
+                      <Tabs value={billingInterval} onValueChange={(v) => form.setValue("billingInterval", v as "month" | "year")}>
+                        <TabsList>
+                          <TabsTrigger value="month" data-testid="billing-monthly">
+                            {language === 'es' ? 'Mensual' : 'Monthly'}
+                          </TabsTrigger>
+                          <TabsTrigger value="year" data-testid="billing-annual">
+                            {language === 'es' ? 'Anual' : 'Annual'}
+                            <Badge className="ml-2 bg-green-500/20 text-green-600 text-xs">
+                              {language === 'es' ? '2 meses gratis' : '2 months free'}
+                            </Badge>
+                          </TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {SUBSCRIPTION_TIERS.map((tier) => {
+                      {PLATFORM_TIERS.map((tier) => {
                         const isSelected = form.watch("subscriptionTier") === tier.id;
+                        const displayPrice = billingInterval === 'year' ? Math.round(tier.price * 10) : tier.price;
                         return (
                           <button
                             key={tier.id}
@@ -616,14 +681,19 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                             <div className="text-lg font-semibold">
                               {language === 'es' ? tier.nameEs : tier.name}
                             </div>
+                            <div className="text-sm text-muted-foreground mb-2">
+                              {language === 'es' ? tier.subtitleEs : tier.subtitle}
+                            </div>
                             <div className="text-3xl font-bold my-2">
-                              ${tier.price}
-                              <span className="text-sm font-normal text-muted-foreground">
-                                /{language === 'es' ? 'mes' : 'mo'}
-                              </span>
+                              {tier.price === 0 ? (language === 'es' ? 'Gratis' : 'Free') : `$${displayPrice}`}
+                              {tier.price > 0 && (
+                                <span className="text-sm font-normal text-muted-foreground">
+                                  /{billingInterval === 'year' ? (language === 'es' ? 'año' : 'yr') : (language === 'es' ? 'mes' : 'mo')}
+                                </span>
+                              )}
                             </div>
                             <ul className="space-y-2 mt-4">
-                              {(language === 'es' ? tier.featuresEs : tier.features).map((feature, i) => (
+                              {(language === 'es' ? tier.featuresEs : tier.features).map((feature: string, i: number) => (
                                 <li key={i} className="flex items-start gap-2 text-sm">
                                   <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                                   <span>{feature}</span>
@@ -641,19 +711,26 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                         {language === 'es' ? 'Resumen del Pedido' : 'Order Summary'}
                       </h4>
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>{selectedTier?.name} {language === 'es' ? 'Plan' : 'Plan'}</span>
-                          <span>${selectedTier?.price}/{language === 'es' ? 'mes' : 'mo'}</span>
-                        </div>
-                        {tradeworksEnabled && (
+                        {selectedTier && selectedTier.price > 0 && (
                           <div className="flex justify-between">
-                            <span>TradeWorks AI</span>
-                            <span>${TRADEWORKS_ADDON.price}/{language === 'es' ? 'mes' : 'mo'}</span>
+                            <span>{language === 'es' ? selectedTier.nameEs : selectedTier.name} {language === 'es' ? 'Plataforma' : 'Platform'}</span>
+                            <span>${billingInterval === 'year' ? Math.round(selectedTier.price * 10) : selectedTier.price}/{billingInterval === 'year' ? (language === 'es' ? 'año' : 'yr') : (language === 'es' ? 'mes' : 'mo')}</span>
+                          </div>
+                        )}
+                        {selectedTrades.length > 0 && (
+                          <div className="flex justify-between">
+                            <span>{language === 'es' ? 'Herramientas' : 'Estimator Tools'} ({selectedTrades.length})</span>
+                            <span>
+                              ${billingInterval === 'year' 
+                                ? Math.round((selectedTrades.length === 6 ? 99 : selectedTrades.length >= 3 ? 59 + (selectedTrades.length - 3) * 29 : selectedTrades.length * 29) * 10)
+                                : (selectedTrades.length === 6 ? 99 : selectedTrades.length >= 3 ? 59 + (selectedTrades.length - 3) * 29 : selectedTrades.length * 29)
+                              }/{billingInterval === 'year' ? (language === 'es' ? 'año' : 'yr') : (language === 'es' ? 'mes' : 'mo')}
+                            </span>
                           </div>
                         )}
                         <div className="border-t pt-2 flex justify-between font-bold text-lg">
                           <span>Total</span>
-                          <span>${calculateTotal()}/{language === 'es' ? 'mes' : 'mo'}</span>
+                          <span>${totalPrice}/{billingInterval === 'year' ? (language === 'es' ? 'año' : 'yr') : (language === 'es' ? 'mes' : 'mo')}</span>
                         </div>
                       </div>
                     </GlassCard>

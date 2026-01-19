@@ -12,11 +12,12 @@ interface TenantProvisionRequest {
   companyCity?: string;
   companyState?: string;
   tradeVertical: string;
+  selectedTrades: string[];
   primaryColor: string;
   accentColor: string;
   logoUrl?: string;
-  tradeworksEnabled: boolean;
   subscriptionTier: string;
+  billingInterval: 'month' | 'year';
 }
 
 interface ProvisionResult {
@@ -26,32 +27,28 @@ interface ProvisionResult {
   error?: string;
 }
 
-const SUBSCRIPTION_TIERS: Record<string, { 
-  monthly: number; 
-  stripePriceId: string;
-  productName: string;
-}> = {
-  starter: { 
-    monthly: 29, 
-    stripePriceId: "price_1SlCL4PQpkkF93FKJ5F9y9sC",
-    productName: "PaintPros.io Estimator Tool"
-  },
-  professional: { 
-    monthly: 199, 
-    stripePriceId: "price_1SlCL5PQpkkF93FKe0aUduOg",
-    productName: "PaintPros.io Full Suite"
-  },
-  enterprise: { 
-    monthly: 499, 
-    stripePriceId: "price_1SlCL6PQpkkF93FKuFz2kDcu",
-    productName: "PaintPros.io Franchise License"
-  },
+const TRADE_ESTIMATORS: Record<string, { monthly: string; annual: string }> = {
+  painting: { monthly: "price_1SrBzdPQpkkF93FKy15vIwzk", annual: "price_1SrBzdPQpkkF93FKlyz5qaIJ" },
+  roofing: { monthly: "price_1SrBzePQpkkF93FK60VGhCdM", annual: "price_1SrBzePQpkkF93FKiwe9uQpj" },
+  hvac: { monthly: "price_1SrBzfPQpkkF93FKYCsvXoQp", annual: "price_1SrBzfPQpkkF93FKz07rfQti" },
+  electrical: { monthly: "price_1SrBzgPQpkkF93FKeGlRsJ4t", annual: "price_1SrBzgPQpkkF93FKcPNB1obI" },
+  plumbing: { monthly: "price_1SrBzhPQpkkF93FK5T5LhOKe", annual: "price_1SrBzhPQpkkF93FKtqRu7Dc4" },
+  landscaping: { monthly: "price_1SrBziPQpkkF93FKxtIWid03", annual: "price_1SrBziPQpkkF93FKRaEsWRnI" },
 };
 
-const TRADEWORKS_AI = {
-  monthly: 29,
-  stripePriceId: "price_1SlCL4PQpkkF93FKJ5F9y9sC",
-  productName: "PaintPros.io Estimator Tool"
+const TRADE_BUNDLES: Record<string, { monthly: string; annual: string; trades: number }> = {
+  "3-trade": { monthly: "price_1SrBziPQpkkF93FKqU4gHpG3", annual: "price_1SrBzjPQpkkF93FKHnvtYJuI", trades: 3 },
+  "all-trades": { monthly: "price_1SrBzjPQpkkF93FKVn6QHOXH", annual: "price_1SrBzkPQpkkF93FKShNdCxwk", trades: 6 },
+};
+
+const PLATFORM_TIERS: Record<string, { monthly: string; annual: string; price: number }> = {
+  professional: { monthly: "price_1SlCL5PQpkkF93FKe0aUduOg", annual: "price_1SlCL5PQpkkF93FKYh5D4Tj7", price: 199 },
+  enterprise: { monthly: "price_1SlCL6PQpkkF93FKuFz2kDcu", annual: "price_1SlCL6PQpkkF93FKTKOkcU9A", price: 499 },
+};
+
+const COMBO_BUNDLES: Record<string, { monthly: string; annual: string; price: number }> = {
+  "pro-all-trades": { monthly: "price_1SrBzkPQpkkF93FKJCxeiNix", annual: "price_1SrBzkPQpkkF93FKmHIerZg3", price: 269 },
+  "enterprise-all-trades": { monthly: "price_1SrBzlPQpkkF93FKDQeUnnA5", annual: "price_1SrBzlPQpkkF93FKJ61myt1o", price: 569 },
 };
 
 export class TenantProvisioning {
@@ -73,7 +70,8 @@ export class TenantProvisioning {
         metadata: {
           companyName: request.companyName,
           tradeVertical: request.tradeVertical,
-          tradeworksEnabled: String(request.tradeworksEnabled),
+          selectedTrades: request.selectedTrades.join(','),
+          subscriptionTier: request.subscriptionTier,
         },
       });
       
@@ -89,12 +87,13 @@ export class TenantProvisioning {
         primaryColor: request.primaryColor,
         accentColor: request.accentColor,
         tradeVertical: request.tradeVertical,
-        tradeworksEnabled: request.tradeworksEnabled,
+        tradeworksEnabled: request.selectedTrades.length > 0,
         subscriptionTier: request.subscriptionTier,
         subscriptionStatus: "pending",
         stripeCustomerId: customer.id,
         status: "provisioning",
         orbitSyncEnabled: true,
+        metadata: { selectedTrades: request.selectedTrades, billingInterval: request.billingInterval },
       }).returning();
       
       await this.syncToOrbit(tenant.id, request);
@@ -114,12 +113,19 @@ export class TenantProvisioning {
         metadata: {
           tenantId: tenant.id,
           tradeVertical: request.tradeVertical,
-          tradeworksEnabled: String(request.tradeworksEnabled),
+          selectedTrades: request.selectedTrades.join(','),
+          subscriptionTier: request.subscriptionTier,
         },
       });
       
       await db.update(tenants)
-        .set({ metadata: { checkoutSessionId: session.id } })
+        .set({ 
+          metadata: { 
+            selectedTrades: request.selectedTrades, 
+            billingInterval: request.billingInterval,
+            checkoutSessionId: session.id 
+          } 
+        })
         .where(eq(tenants.id, tenant.id));
       
       return {
@@ -152,9 +158,28 @@ export class TenantProvisioning {
       const [tenant] = await db.select().from(tenants).where(eq(tenants.id, tenantId));
       
       if (tenant) {
-        const tierPrice = SUBSCRIPTION_PRICES[tenant.subscriptionTier]?.monthly || 0;
-        const tradeworksPrice = tenant.tradeworksEnabled ? TRADEWORKS_PRICE.monthly : 0;
-        const totalRevenue = tierPrice + tradeworksPrice;
+        const metadata = tenant.metadata as { selectedTrades?: string[]; billingInterval?: string } || {};
+        const selectedTrades = metadata.selectedTrades || [];
+        const tradeCount = selectedTrades.length;
+        const hasPlatform = tenant.subscriptionTier === 'professional' || tenant.subscriptionTier === 'enterprise';
+        
+        let totalRevenue = 0;
+        if (hasPlatform && tradeCount === 6) {
+          totalRevenue = tenant.subscriptionTier === 'enterprise' 
+            ? COMBO_BUNDLES["enterprise-all-trades"].price 
+            : COMBO_BUNDLES["pro-all-trades"].price;
+        } else {
+          const platformPrice = PLATFORM_TIERS[tenant.subscriptionTier]?.price || 0;
+          totalRevenue = platformPrice;
+          
+          if (tradeCount === 6) {
+            totalRevenue += 99;
+          } else if (tradeCount >= 3) {
+            totalRevenue += 59 + (tradeCount - 3) * 29;
+          } else {
+            totalRevenue += tradeCount * 29;
+          }
+        }
         
         await db.insert(royaltyRevenue).values({
           productCode: `tradepros-${tenant.tradeVertical}`,
@@ -201,7 +226,7 @@ export class TenantProvisioning {
         state: request.companyState,
         status: 'provisioning',
         subscriptionTier: request.subscriptionTier,
-        tradeworksEnabled: request.tradeworksEnabled,
+        tradeworksEnabled: request.selectedTrades.length > 0,
         source: 'paintpros-onboarding',
       });
       
@@ -241,20 +266,47 @@ export class TenantProvisioning {
   
   private async buildLineItems(request: TenantProvisionRequest, stripe: any): Promise<any[]> {
     const items: any[] = [];
+    const interval = request.billingInterval || 'month';
+    const priceKey = interval === 'year' ? 'annual' : 'monthly';
     
-    const tier = SUBSCRIPTION_TIERS[request.subscriptionTier];
-    if (tier) {
-      items.push({
-        price: tier.stripePriceId,
-        quantity: 1,
-      });
+    const tradeCount = request.selectedTrades.length;
+    const hasPlatform = request.subscriptionTier === 'professional' || request.subscriptionTier === 'enterprise';
+    
+    if (hasPlatform && tradeCount === 6) {
+      const comboKey = request.subscriptionTier === 'enterprise' ? 'enterprise-all-trades' : 'pro-all-trades';
+      const combo = COMBO_BUNDLES[comboKey];
+      if (combo) {
+        items.push({ price: combo[priceKey], quantity: 1 });
+        return items;
+      }
     }
     
-    if (request.tradeworksEnabled) {
-      items.push({
-        price: TRADEWORKS_AI.stripePriceId,
-        quantity: 1,
-      });
+    if (hasPlatform) {
+      const platform = PLATFORM_TIERS[request.subscriptionTier];
+      if (platform) {
+        items.push({ price: platform[priceKey], quantity: 1 });
+      }
+    }
+    
+    if (tradeCount === 6) {
+      items.push({ price: TRADE_BUNDLES["all-trades"][priceKey], quantity: 1 });
+    } else if (tradeCount >= 3) {
+      items.push({ price: TRADE_BUNDLES["3-trade"][priceKey], quantity: 1 });
+      const extraTrades = tradeCount - 3;
+      for (let i = 3; i < tradeCount; i++) {
+        const trade = request.selectedTrades[i];
+        const estimator = TRADE_ESTIMATORS[trade];
+        if (estimator) {
+          items.push({ price: estimator[priceKey], quantity: 1 });
+        }
+      }
+    } else if (tradeCount > 0) {
+      for (const trade of request.selectedTrades) {
+        const estimator = TRADE_ESTIMATORS[trade];
+        if (estimator) {
+          items.push({ price: estimator[priceKey], quantity: 1 });
+        }
+      }
     }
     
     return items;
