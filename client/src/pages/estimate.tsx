@@ -4,7 +4,7 @@ import { FlipButton } from "@/components/ui/flip-button";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send, Wrench, Share2, Users } from "lucide-react";
+import { ArrowRight, ArrowLeft, Calculator, Check, DoorOpen, Paintbrush, Square, Layers, Camera, X, Lock, Upload, Loader2, Crown, Star, Award, Palette, User, Mail, Phone, Home, ImagePlus, Ruler, CheckCircle, AlertCircle, Send, Wrench, Share2, Users, ScanLine, Sparkles } from "lucide-react";
 import { MaterialBreakdown } from "@/components/material-breakdown";
 import { useAccess } from "@/context/AccessContext";
 import { useState, useMemo, useEffect } from "react";
@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { RoomScannerModal } from "@/components/room-scanner";
+import { ColorScanner } from "@/components/color-scanner";
 import type { PaintColor } from "@shared/schema";
 
 interface EstimatorConfig {
@@ -157,6 +158,7 @@ export default function Estimate() {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [colorPickerSurface, setColorPickerSurface] = useState<'walls' | 'trim' | 'ceilings' | 'doors' | 'cabinets'>('walls');
   const [showScannerModal, setShowScannerModal] = useState(false);
+  const [showColorScanner, setShowColorScanner] = useState(false);
 
   // Step 5: Review & Submit
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -826,6 +828,30 @@ export default function Estimate() {
                         Color Preferences (Optional)
                       </Label>
                       
+                      {/* Color Scanner CTA */}
+                      <div 
+                        className="mb-4 p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-accent/10 border border-purple-500/30 cursor-pointer hover:border-purple-500/50 transition-colors"
+                        onClick={() => setShowColorScanner(true)}
+                        data-testid="button-color-scanner"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                            <ScanLine className="w-5 h-5 text-purple-400" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm">Color Match Scanner</span>
+                              <Badge className="bg-purple-500/20 text-purple-400 text-[10px] gap-0.5">
+                                <Sparkles className="w-2.5 h-2.5" />
+                                New
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">Scan any color to find matching paint</p>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-purple-400" />
+                        </div>
+                      </div>
+                      
                       <div className="space-y-3">
                         {Object.entries(jobSelections).filter(([_, selected]) => selected).map(([surface]) => {
                           const selectedColor = selectedColors.find(c => c.surface === surface);
@@ -1202,6 +1228,39 @@ export default function Estimate() {
           onScanComplete={(sqft) => handleScannerResult({ squareFootage: sqft })}
         />
       )}
+
+      {/* Color Match Scanner */}
+      <ColorScanner 
+        isOpen={showColorScanner}
+        onClose={() => setShowColorScanner(false)}
+        onColorSelect={(color) => {
+          if (colorPickerSurface) {
+            addColor({
+              id: `scanned-${Date.now()}`,
+              brand: color.brand || 'custom',
+              productLine: '',
+              colorCode: color.code || '',
+              colorName: color.name,
+              hexValue: color.hex,
+              category: 'custom',
+              undertone: 'neutral',
+              lrv: 50,
+              coordinatingColors: [],
+              trimColors: [],
+              accentColors: null,
+              interiorRecommended: true,
+              exteriorRecommended: true,
+              roomTypes: [],
+              description: null,
+              imageUrl: null,
+              popularity: 0,
+              tenantId: null,
+              isActive: true,
+              createdAt: new Date()
+            }, colorPickerSurface);
+          }
+        }}
+      />
     </PageLayout>
   );
 }
