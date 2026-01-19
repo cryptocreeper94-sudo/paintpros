@@ -878,8 +878,9 @@ const domainTenantMap: Record<string, string> = {
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
   "www.nashvillepaintingprofessionals.com": "npp",
-  "lumepaint.co": "lumepaint",
-  "www.lumepaint.co": "lumepaint",
+  // DISABLED - Lume not ready for public yet (uncomment to enable)
+  // "lumepaint.co": "lumepaint",
+  // "www.lumepaint.co": "lumepaint",
   "tradeworksai.io": "tradeworks",
   "www.tradeworksai.io": "tradeworks",
   "roofpros.io": "roofpros",
@@ -903,8 +904,9 @@ const subdomainTenantMap: Record<string, string> = {
   "npp": "npp",
   "demo": "demo",
   "www": "demo",
-  "lumepaint": "lumepaint",
-  "lume": "lumepaint",
+  // DISABLED - Lume not ready for public yet (uncomment to enable)
+  // "lumepaint": "lumepaint",
+  // "lume": "lumepaint",
   "roofpros": "roofpros",
   "hvacpros": "hvacpros",
   "electricpros": "electricpros",
