@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -611,6 +611,207 @@ function StoreFinder({ zipcode }: { zipcode: string }) {
   );
 }
 
+// Voice Assistant Component with ElevenLabs
+function VoiceAssistant({ 
+  onClose, 
+  onCalculation 
+}: { 
+  onClose: () => void;
+  onCalculation?: (type: string, result: any) => void;
+}) {
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [response, setResponse] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const { toast } = useToast();
+  const recognitionRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const speakResponse = async (text: string) => {
+    setIsSpeaking(true);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice: 'nova' }),
+      });
+      
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        audioRef.current = new Audio(url);
+        audioRef.current.onended = () => {
+          setIsSpeaking(false);
+          URL.revokeObjectURL(url);
+        };
+        await audioRef.current.play();
+      } else {
+        setIsSpeaking(false);
+      }
+    } catch (error) {
+      console.error('TTS error:', error);
+      setIsSpeaking(false);
+    }
+  };
+
+  const processCommand = async (command: string) => {
+    setIsProcessing(true);
+    const lowerCommand = command.toLowerCase();
+    
+    // Parse paint calculations
+    const paintMatch = lowerCommand.match(/paint.*?(\d+)\s*(?:by|x|times)\s*(\d+)/i);
+    const voltageMatch = lowerCommand.match(/voltage.*?(\d+)\s*(?:feet|ft)/i);
+    const btuMatch = lowerCommand.match(/btu.*?(\d+)\s*(?:square|sq)/i);
+    
+    let responseText = '';
+    
+    if (paintMatch) {
+      const length = parseInt(paintMatch[1]);
+      const width = parseInt(paintMatch[2]);
+      const perimeter = 2 * (length + width);
+      const wallArea = perimeter * 8; // Assume 8ft ceilings
+      const gallons = Math.ceil((wallArea * 2) / 350); // 2 coats, 350 sqft coverage
+      responseText = `For a ${length} by ${width} room, you'll need approximately ${gallons} gallons of paint. That's based on ${wallArea} square feet of wall space with 2 coats.`;
+      if (onCalculation) {
+        onCalculation('paint_gallon', { sqFt: wallArea, gallons });
+      }
+    } else if (voltageMatch) {
+      const feet = parseInt(voltageMatch[1]);
+      const voltageDrop = (2 * feet * 15 * 1.98) / 1000; // 15 amps, 12 AWG copper
+      const percent = (voltageDrop / 120) * 100;
+      responseText = `For ${feet} feet of 12 gauge copper wire at 15 amps, the voltage drop is ${percent.toFixed(2)}%. ${percent <= 3 ? 'This is within NEC guidelines.' : 'Consider using a larger wire gauge.'}`;
+    } else if (btuMatch) {
+      const sqFt = parseInt(btuMatch[1]);
+      const btu = sqFt * 20;
+      const tons = btu / 12000;
+      responseText = `For ${sqFt} square feet, you'll need approximately ${btu.toLocaleString()} BTUs, or about ${tons.toFixed(1)} tons of cooling capacity.`;
+    } else {
+      responseText = "I can help with paint calculations, voltage drop, and BTU sizing. Try saying something like 'calculate paint for a 12 by 15 room'.";
+    }
+    
+    setResponse(responseText);
+    setIsProcessing(false);
+    await speakResponse(responseText);
+  };
+
+  const startListening = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast({ title: 'Speech recognition not supported', variant: 'destructive' });
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.interimResults = true;
+    recognitionRef.current.lang = 'en-US';
+
+    recognitionRef.current.onresult = (event: any) => {
+      const current = event.resultIndex;
+      const result = event.results[current];
+      setTranscript(result[0].transcript);
+      
+      if (result.isFinal) {
+        processCommand(result[0].transcript);
+      }
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current.onerror = (event: any) => {
+      console.error('Speech error:', event.error);
+      setIsListening(false);
+      if (event.error === 'not-allowed') {
+        toast({ title: 'Microphone access denied', variant: 'destructive' });
+      }
+    };
+
+    recognitionRef.current.start();
+    setIsListening(true);
+    setTranscript('');
+    setResponse('');
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center py-6">
+      <motion.button
+        onClick={isListening ? stopListening : startListening}
+        disabled={isProcessing || isSpeaking}
+        animate={{ 
+          scale: isListening ? [1, 1.1, 1] : 1,
+          boxShadow: isListening ? '0 0 40px rgba(147, 51, 234, 0.5)' : '0 0 20px rgba(147, 51, 234, 0.3)'
+        }}
+        transition={{ repeat: isListening ? Infinity : 0, duration: 1.5 }}
+        className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 transition-all ${
+          isListening 
+            ? 'bg-gradient-to-br from-red-500 via-pink-500 to-purple-500' 
+            : isSpeaking
+            ? 'bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500'
+            : 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500'
+        } ${isProcessing ? 'opacity-50' : ''}`}
+        data-testid="button-voice-mic"
+      >
+        {isProcessing ? (
+          <RefreshCw className="w-10 h-10 text-white animate-spin" />
+        ) : isSpeaking ? (
+          <Volume2 className="w-10 h-10 text-white" />
+        ) : (
+          <Mic className="w-10 h-10 text-white" />
+        )}
+      </motion.button>
+      
+      <div className="text-center mb-4 min-h-[60px]">
+        {isListening && (
+          <div className="flex items-center gap-2 text-red-400 mb-2">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            Listening...
+          </div>
+        )}
+        {transcript && (
+          <p className="text-white font-medium mb-2">"{transcript}"</p>
+        )}
+        {response && !isListening && (
+          <p className="text-slate-400 text-sm">{response}</p>
+        )}
+        {!transcript && !isListening && !response && (
+          <p className="text-slate-500 text-sm">
+            Tap the mic and say something like:<br />
+            "Calculate paint for a 12 by 15 room"
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 gap-1">
+          <Sparkles className="w-3 h-3" />
+          Powered by ElevenLabs
+        </Badge>
+      </div>
+    </div>
+  );
+}
+
 // Main TradeWorks AI Component
 export default function TradeWorksAI() {
   const [selectedTrade, setSelectedTrade] = useState('painting');
@@ -972,21 +1173,15 @@ export default function TradeWorksAI() {
               Voice Assistant
             </DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center py-8">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 mb-6"
-            >
-              <Mic className="w-10 h-10 text-white" />
-            </motion.div>
-            <p className="text-slate-400 text-center mb-4">
-              "Calculate paint for a 12 by 15 room with 9 foot ceilings"
-            </p>
-            <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
-              Coming Soon - ElevenLabs Integration
-            </Badge>
-          </div>
+          <VoiceAssistant 
+            onClose={() => setShowVoice(false)}
+            onCalculation={(type, result) => {
+              toast({ 
+                title: 'Calculation Complete', 
+                description: `${type}: ${JSON.stringify(result)}` 
+              });
+            }}
+          />
         </DialogContent>
       </Dialog>
 
