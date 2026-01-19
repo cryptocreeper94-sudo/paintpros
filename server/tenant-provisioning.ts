@@ -26,15 +26,32 @@ interface ProvisionResult {
   error?: string;
 }
 
-const SUBSCRIPTION_PRICES: Record<string, { monthly: number; stripePriceId?: string }> = {
-  starter: { monthly: 149 },
-  professional: { monthly: 299 },
-  enterprise: { monthly: 599 },
+const SUBSCRIPTION_TIERS: Record<string, { 
+  monthly: number; 
+  stripePriceId: string;
+  productName: string;
+}> = {
+  starter: { 
+    monthly: 29, 
+    stripePriceId: "price_1SlCL4PQpkkF93FKJ5F9y9sC",
+    productName: "PaintPros.io Estimator Tool"
+  },
+  professional: { 
+    monthly: 199, 
+    stripePriceId: "price_1SlCL5PQpkkF93FKe0aUduOg",
+    productName: "PaintPros.io Full Suite"
+  },
+  enterprise: { 
+    monthly: 499, 
+    stripePriceId: "price_1SlCL6PQpkkF93FKuFz2kDcu",
+    productName: "PaintPros.io Franchise License"
+  },
 };
 
-const TRADEWORKS_PRICE = {
-  monthly: 49,
-  stripePriceId: undefined as string | undefined,
+const TRADEWORKS_AI = {
+  monthly: 29,
+  stripePriceId: "price_1SlCL4PQpkkF93FKJ5F9y9sC",
+  productName: "PaintPros.io Estimator Tool"
 };
 
 export class TenantProvisioning {
@@ -225,41 +242,17 @@ export class TenantProvisioning {
   private async buildLineItems(request: TenantProvisionRequest, stripe: any): Promise<any[]> {
     const items: any[] = [];
     
-    const tierPrice = SUBSCRIPTION_PRICES[request.subscriptionTier];
-    if (tierPrice) {
+    const tier = SUBSCRIPTION_TIERS[request.subscriptionTier];
+    if (tier) {
       items.push({
-        price_data: {
-          currency: 'usd',
-          unit_amount: tierPrice.monthly * 100,
-          recurring: { interval: 'month' },
-          product_data: {
-            name: `${this.getVerticalDisplayName(request.tradeVertical)} Pro - ${this.capitalize(request.subscriptionTier)}`,
-            description: `Professional ${request.tradeVertical} website and CRM`,
-            metadata: {
-              tier: request.subscriptionTier,
-              vertical: request.tradeVertical,
-            },
-          },
-        },
+        price: tier.stripePriceId,
         quantity: 1,
       });
     }
     
     if (request.tradeworksEnabled) {
       items.push({
-        price_data: {
-          currency: 'usd',
-          unit_amount: TRADEWORKS_PRICE.monthly * 100,
-          recurring: { interval: 'month' },
-          product_data: {
-            name: 'TradeWorks AI Toolkit',
-            description: '85+ calculators, voice assistant, AI features',
-            metadata: {
-              addon: 'tradeworks',
-              vertical: request.tradeVertical,
-            },
-          },
-        },
+        price: TRADEWORKS_AI.stripePriceId,
         quantity: 1,
       });
     }

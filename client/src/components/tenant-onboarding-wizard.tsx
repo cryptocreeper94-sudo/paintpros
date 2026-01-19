@@ -36,16 +36,20 @@ const SUBSCRIPTION_TIERS = [
     id: "starter", 
     name: "Starter", 
     nameEs: "Inicial",
-    price: 149, 
-    features: ["Online Booking", "Basic CRM", "5 Team Members", "Email Support"],
-    featuresEs: ["Reservas en Línea", "CRM Básico", "5 Miembros del Equipo", "Soporte por Email"],
+    price: 29, 
+    subtitle: "Estimator Tool",
+    subtitleEs: "Herramienta de Estimación",
+    features: ["Online Estimator", "Lead Capture", "Basic CRM", "Email Support"],
+    featuresEs: ["Estimador en Línea", "Captura de Leads", "CRM Básico", "Soporte por Email"],
     popular: false
   },
   { 
     id: "professional", 
     name: "Professional", 
     nameEs: "Profesional",
-    price: 299, 
+    price: 199, 
+    subtitle: "Full Suite",
+    subtitleEs: "Suite Completa",
     features: ["Everything in Starter", "Advanced CRM", "Unlimited Team", "Priority Support", "Analytics Dashboard"],
     featuresEs: ["Todo en Inicial", "CRM Avanzado", "Equipo Ilimitado", "Soporte Prioritario", "Panel de Análisis"],
     popular: true
@@ -54,7 +58,9 @@ const SUBSCRIPTION_TIERS = [
     id: "enterprise", 
     name: "Enterprise", 
     nameEs: "Empresarial",
-    price: 599, 
+    price: 499, 
+    subtitle: "Franchise License",
+    subtitleEs: "Licencia de Franquicia",
     features: ["Everything in Professional", "Multi-Location", "API Access", "Dedicated Account Manager", "Custom Integrations"],
     featuresEs: ["Todo en Profesional", "Multi-Ubicación", "Acceso API", "Gerente de Cuenta Dedicado", "Integraciones Personalizadas"],
     popular: false
@@ -62,7 +68,7 @@ const SUBSCRIPTION_TIERS = [
 ];
 
 const TRADEWORKS_ADDON = {
-  price: 49,
+  price: 29,
   features: ["85+ Trade Calculators", "AI Voice Assistant", "Photo Analysis", "Offline Mode", "Instant Estimates"],
   featuresEs: ["85+ Calculadoras de Oficios", "Asistente de Voz IA", "Análisis de Fotos", "Modo Sin Conexión", "Estimaciones Instantáneas"],
 };
