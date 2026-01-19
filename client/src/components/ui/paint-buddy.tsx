@@ -58,10 +58,10 @@ export function PaintBuddy() {
   // Get current translations
   const t = translations[language];
 
-  // Read language from localStorage on mount and listen for changes
+  // Sync language with global i18n system
   useEffect(() => {
     const updateLanguage = () => {
-      const storedLang = localStorage.getItem("rollie-language");
+      const storedLang = localStorage.getItem("paintpros-language");
       setLanguage(storedLang === "es" ? "es" : "en");
     };
     
@@ -70,12 +70,12 @@ export function PaintBuddy() {
     // Listen for storage changes (from other tabs or components)
     window.addEventListener("storage", updateLanguage);
     
-    // Custom event for same-tab updates
-    window.addEventListener("language-change", updateLanguage);
+    // Poll for language changes (since storage event doesn't fire in same tab)
+    const interval = setInterval(updateLanguage, 500);
     
     return () => {
       window.removeEventListener("storage", updateLanguage);
-      window.removeEventListener("language-change", updateLanguage);
+      clearInterval(interval);
     };
   }, []);
 
@@ -357,12 +357,12 @@ export function PaintBuddy() {
               {/* Header with controls */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  {/* Language Toggle */}
+                  {/* Language Toggle - syncs with global i18n */}
                   <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-0.5">
                     <button
                       onClick={() => {
                         setLanguage("en");
-                        localStorage.setItem("rollie-language", "en");
+                        localStorage.setItem("paintpros-language", "en");
                       }}
                       className={`px-2 py-1 text-xs font-medium rounded-full transition-all ${
                         language === "en"
@@ -376,7 +376,7 @@ export function PaintBuddy() {
                     <button
                       onClick={() => {
                         setLanguage("es");
-                        localStorage.setItem("rollie-language", "es");
+                        localStorage.setItem("paintpros-language", "es");
                       }}
                       className={`px-2 py-1 text-xs font-medium rounded-full transition-all ${
                         language === "es"
