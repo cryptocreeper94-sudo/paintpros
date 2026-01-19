@@ -69,6 +69,7 @@ import Partners from "@/pages/partners";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import Contact from "@/pages/contact";
 import FAQ from "@/pages/faq";
+import TradeVerticalPage from "@/pages/trade-vertical";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
 function AnalyticsTracker() {
@@ -86,19 +87,41 @@ function ScrollToTop() {
   return null;
 }
 
-function TradeWorksRedirect() {
+function TenantHomeRedirect() {
   const tenantId = getTenantIdFromHostname(window.location.hostname);
+  
   if (tenantId === 'tradeworks' && window.location.pathname === '/') {
     window.location.replace('/tradeworks');
     return null;
   }
+  
+  const tradeVerticals = ['roofpros', 'hvacpros', 'electricpros', 'plumbpros', 'landscapepros', 'buildpros'];
+  const tradeMap: Record<string, string> = {
+    roofpros: 'roofing',
+    hvacpros: 'hvac',
+    electricpros: 'electrical',
+    plumbpros: 'plumbing',
+    landscapepros: 'landscaping',
+    buildpros: 'construction',
+  };
+  
+  if (tradeVerticals.includes(tenantId)) {
+    return <TradeVerticalPage tradeId={tradeMap[tenantId]} />;
+  }
+  
   return <Home />;
 }
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={TradeWorksRedirect} />
+      <Route path="/" component={TenantHomeRedirect} />
+      <Route path="/roofpros">{() => <TradeVerticalPage tradeId="roofing" />}</Route>
+      <Route path="/hvacpros">{() => <TradeVerticalPage tradeId="hvac" />}</Route>
+      <Route path="/electricpros">{() => <TradeVerticalPage tradeId="electrical" />}</Route>
+      <Route path="/plumbpros">{() => <TradeVerticalPage tradeId="plumbing" />}</Route>
+      <Route path="/landscapepros">{() => <TradeVerticalPage tradeId="landscaping" />}</Route>
+      <Route path="/buildpros">{() => <TradeVerticalPage tradeId="construction" />}</Route>
       <Route path="/services" component={Services} />
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/about" component={About} />
