@@ -1570,6 +1570,14 @@ export async function registerRoutes(
         const wordCount = data.content.split(/\s+/).length;
         data.readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
       }
+      // Convert publishedAt string to Date if provided
+      if (data.publishedAt && typeof data.publishedAt === 'string') {
+        data.publishedAt = new Date(data.publishedAt);
+      }
+      // Auto-set publishedAt for published posts
+      if (data.status === 'published' && !data.publishedAt) {
+        data.publishedAt = new Date();
+      }
       const post = await storage.createBlogPost(data);
       res.status(201).json(post);
     } catch (error) {
