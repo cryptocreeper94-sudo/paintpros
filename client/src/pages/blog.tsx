@@ -184,7 +184,7 @@ function BlogPostView({ slug }: { slug: string }) {
 
   const trackViewMutation = useMutation({
     mutationFn: async (postId: string) => {
-      await apiRequest(`/api/blog/posts/${postId}/view`, { method: "POST" });
+      await fetch(`/api/blog/posts/${postId}/view`, { method: "POST" });
     },
   });
 
