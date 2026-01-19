@@ -10,9 +10,9 @@ export default function HomeLume() {
     <PageLayout>
       <LeadCaptureModal tenantId={tenant.id} tenantName={tenant.name} />
       
-      <main className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-white">
+      <main className="fixed inset-0 flex items-center justify-center bg-white" style={{ top: '60px', bottom: '40px' }}>
         <section 
-          className="w-full min-h-[calc(100vh-100px)] flex items-center justify-center"
+          className="w-full h-full flex items-center justify-center"
           style={{
             background: 'linear-gradient(to right, white 0%, #e5e7eb 25%, #9ca3af 50%, #e5e7eb 75%, white 100%)'
           }}
