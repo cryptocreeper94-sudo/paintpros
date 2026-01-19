@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings, Sparkles } from "lucide-react";
+import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings, Sparkles, MessageSquare } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/language-toggle";
+import { SmsMessenger } from "@/components/sms-messenger";
 import { 
   hover3D, 
   hover3DSubtle, 
@@ -761,15 +762,22 @@ export default function Owner() {
               </motion.div>
             </BentoItem>
 
-            {/* Row: Version History + Room Scanner = 6+6=12 */}
+            {/* Row: SMS Messenger + Version History = 6+6=12 */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={9} whileHover={hover3DSubtle}>
+                <SmsMessenger />
+              </motion.div>
+            </BentoItem>
+
             <BentoItem colSpan={6} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={9} whileHover={hover3DSubtle}>
                 <VersionHistory maxItems={5} />
               </motion.div>
             </BentoItem>
 
+            {/* Room Scanner */}
             <BentoItem colSpan={6} rowSpan={1}>
-              <motion.div className="h-full" variants={cardVariants} custom={9}>
+              <motion.div className="h-full" variants={cardVariants} custom={10}>
                 <RoomScannerCard locked={false} accentColor="gold-400" />
               </motion.div>
             </BentoItem>

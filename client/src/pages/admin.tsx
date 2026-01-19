@@ -16,6 +16,9 @@ import { FlipButton } from "@/components/ui/flip-button";
 import { motion } from "framer-motion";
 import { Shield, Users, FileText, Bell, ArrowRight, Search, Mail, Calendar, Database, Settings, Clock, Send, X, CheckCircle, GitBranch, TrendingUp, DollarSign, Award, ListTodo, Heart, Eye } from "lucide-react";
 import { DashboardPreview } from "@/components/dashboard-preview";
+import { useI18n } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/language-toggle";
+import { SmsMessenger } from "@/components/sms-messenger";
 import { hover3D, hover3DSubtle, cardVariants, staggerContainer, iconContainerStyles, cardBackgroundStyles } from "@/lib/theme-effects";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
@@ -43,6 +46,7 @@ export default function Admin() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
   const { login, currentUser, canEdit } = useAccess();
+  const { t } = useI18n();
   const isSessionAuth = currentUser.isAuthenticated && (currentUser.role === "ops_manager" || currentUser.role === "admin");
   const [isAuthenticated, setIsAuthenticated] = useState(isDemo || isSessionAuth);
   const [pin, setPin] = useState("");
@@ -290,11 +294,12 @@ export default function Admin() {
                 <Shield className="w-6 h-6 text-accent" />
               </motion.div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">Admin Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Lead & Deal Management</p>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t('admin.title')}</h1>
+                <p className="text-sm text-muted-foreground">{t('admin.subtitle')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LanguageToggle variant="compact" />
               <DashboardPreview currentRole="admin" />
               {!isDemo && (
                 <motion.button
