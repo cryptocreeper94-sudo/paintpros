@@ -26,7 +26,6 @@ const AVAILABLE_ROLES = [
   { value: "owner", label: "Owner", icon: Crown, gradient: "from-purple-500 to-pink-500", color: "bg-purple-500/20 text-purple-300 border-purple-500/40" },
   { value: "admin", label: "Admin", icon: Shield, gradient: "from-red-500 to-orange-500", color: "bg-red-500/20 text-red-300 border-red-500/40" },
   { value: "project-manager", label: "Project Manager", icon: Briefcase, gradient: "from-blue-500 to-cyan-500", color: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
-  { value: "area-manager", label: "Area Manager", icon: UserCog, gradient: "from-cyan-500 to-teal-500", color: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40" },
   { value: "crew-lead", label: "Crew Lead", icon: HardHat, gradient: "from-green-500 to-emerald-500", color: "bg-green-500/20 text-green-300 border-green-500/40" },
   { value: "developer", label: "Developer", icon: Code, gradient: "from-amber-500 to-yellow-500", color: "bg-amber-500/20 text-amber-300 border-amber-500/40" },
 ];

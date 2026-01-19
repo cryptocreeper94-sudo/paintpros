@@ -7,7 +7,6 @@ import { cardBackgroundStyles, iconContainerStyles, springTransition } from "@/l
 const PIN_ROLES = [
   { role: "Project Manager", pin: "2222", icon: MapPin, color: "text-teal-400", bgColor: "bg-teal-400/20" },
   { role: "Crew Lead", pin: "3333", icon: HardHat, color: "text-orange-400", bgColor: "bg-orange-400/20" },
-  { role: "Area Manager", pin: "5555", icon: Users, color: "text-pink-400", bgColor: "bg-pink-400/20" },
 ];
 
 interface PinReferenceAccordionProps {
