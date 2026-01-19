@@ -2,6 +2,9 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 type Language = "en" | "es";
 
+// Use the same localStorage key as the global i18n system
+const LANGUAGE_STORAGE_KEY = "paintpros-language";
+
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
@@ -263,23 +266,35 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const STORAGE_KEY = "crew-lead-language";
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
       if (saved === "en" || saved === "es") return saved;
     }
     return "en";
   });
 
+  // Sync with global language system (poll for changes from navbar toggle)
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, language);
+    const checkLanguage = () => {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (saved && (saved === "en" || saved === "es") && saved !== language) {
+        setLanguageState(saved);
+      }
+    };
+    
+    const interval = setInterval(checkLanguage, 500);
+    return () => clearInterval(interval);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
   }, [language]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   };
 
   const t = (key: string): string => {

@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { FlipButton } from "@/components/ui/flip-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, DollarSign, TrendingUp, Users, ArrowRight, Search, Plus, Tag, X, Check, ToggleLeft, ToggleRight, Trash2, Mail, Database, Target, Eye, Settings, Sparkles } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/language-toggle";
 import { 
   hover3D, 
   hover3DSubtle, 
@@ -54,6 +56,7 @@ export default function Owner() {
   const tenant = useTenant();
   const isDemo = tenant.id === "demo";
   const { login, currentUser, canManageSEO, canViewSalesData } = useAccess();
+  const { t } = useI18n();
   const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "owner";
   const [isAuthenticated, setIsAuthenticated] = useState(isDemo || isSessionAuth);
   const [pin, setPin] = useState("");
@@ -254,8 +257,12 @@ export default function Owner() {
                   >
                     <Crown className="w-10 h-10 text-gold-400" />
                   </motion.div>
-                  <h1 className="text-3xl font-display font-bold mb-2">Owner Access</h1>
-                  <p className="text-muted-foreground">Enter your PIN to continue</p>
+                  <h1 className="text-3xl font-display font-bold mb-2">{t('owner.access')}</h1>
+                  <p className="text-muted-foreground">{t('owner.enterPin')}</p>
+                </div>
+                {/* Language Toggle */}
+                <div className="flex justify-center mb-4">
+                  <LanguageToggle variant="compact" />
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-6">
@@ -268,9 +275,9 @@ export default function Owner() {
                     maxLength={4}
                     data-testid="input-owner-pin"
                   />
-                  {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm text-center">{error}</motion.p>}
+                  {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm text-center">{t('owner.invalidPin')}</motion.p>}
                   <FlipButton className="w-full h-14" data-testid="button-owner-login">
-                    Access Dashboard <ArrowRight className="w-5 h-5" />
+                    {t('owner.accessDashboard')} <ArrowRight className="w-5 h-5" />
                   </FlipButton>
                 </form>
               </GlassCard>
@@ -335,11 +342,12 @@ export default function Owner() {
                 <Crown className="w-6 h-6 text-gold-400" />
               </motion.div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">Owner Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Business overview and financials</p>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t('owner.title')}</h1>
+                <p className="text-sm text-muted-foreground">{t('owner.subtitle')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LanguageToggle variant="compact" />
               <DashboardPreview currentRole="owner" />
               {!isDemo && (
                 <motion.button
