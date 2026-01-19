@@ -71,6 +71,7 @@ const TRADE_PRICING = {
   single: 29,
   threeBundle: 59,
   allBundle: 99,
+  allTradesCount: 7,
 };
 
 const COMBO_PRICING = {
@@ -80,17 +81,18 @@ const COMBO_PRICING = {
 
 function calculateTotalPrice(selectedTrades: string[], platformTier: string, billingInterval: 'month' | 'year'): number {
   const tradeCount = selectedTrades.length;
+  const allTradesCount = TRADE_PRICING.allTradesCount;
   let total = 0;
   
   const platform = PLATFORM_TIERS.find(t => t.id === platformTier);
   const hasPlatform = platformTier === 'professional' || platformTier === 'enterprise';
   
-  if (hasPlatform && tradeCount === 6) {
+  if (hasPlatform && tradeCount === allTradesCount) {
     total = platformTier === 'enterprise' ? COMBO_PRICING.enterpriseAllTrades : COMBO_PRICING.proAllTrades;
   } else {
     if (platform) total += platform.price;
     
-    if (tradeCount === 6) {
+    if (tradeCount === allTradesCount) {
       total += TRADE_PRICING.allBundle;
     } else if (tradeCount >= 3) {
       total += TRADE_PRICING.threeBundle + (tradeCount - 3) * TRADE_PRICING.single;
@@ -583,9 +585,9 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                         </div>
                         <div className="bg-white/10 rounded-lg p-3">
                           <div className="text-2xl font-bold text-yellow-400">$99</div>
-                          <div className="text-white/70">{language === 'es' ? '6 oficios' : 'All 6'}  </div>
+                          <div className="text-white/70">{language === 'es' ? '7 oficios' : 'All 7'}  </div>
                           <Badge className="bg-green-500/20 text-green-300 text-xs mt-1">
-                            {language === 'es' ? 'Ahorra $75' : 'Save $75'}
+                            {language === 'es' ? 'Ahorra $104' : 'Save $104'}
                           </Badge>
                         </div>
                       </div>

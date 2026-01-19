@@ -34,11 +34,12 @@ const TRADE_ESTIMATORS: Record<string, { monthly: string; annual: string }> = {
   electrical: { monthly: "price_1SrBzgPQpkkF93FKeGlRsJ4t", annual: "price_1SrBzgPQpkkF93FKcPNB1obI" },
   plumbing: { monthly: "price_1SrBzhPQpkkF93FK5T5LhOKe", annual: "price_1SrBzhPQpkkF93FKtqRu7Dc4" },
   landscaping: { monthly: "price_1SrBziPQpkkF93FKxtIWid03", annual: "price_1SrBziPQpkkF93FKRaEsWRnI" },
+  construction: { monthly: "price_1SrCEMPQpkkF93FKWbCpPnSJ", annual: "price_1SrCEMPQpkkF93FKK4y5DaIC" },
 };
 
 const TRADE_BUNDLES: Record<string, { monthly: string; annual: string; trades: number }> = {
   "3-trade": { monthly: "price_1SrBziPQpkkF93FKqU4gHpG3", annual: "price_1SrBzjPQpkkF93FKHnvtYJuI", trades: 3 },
-  "all-trades": { monthly: "price_1SrBzjPQpkkF93FKVn6QHOXH", annual: "price_1SrBzkPQpkkF93FKShNdCxwk", trades: 6 },
+  "all-trades": { monthly: "price_1SrBzjPQpkkF93FKVn6QHOXH", annual: "price_1SrBzkPQpkkF93FKShNdCxwk", trades: 7 },
 };
 
 const PLATFORM_TIERS: Record<string, { monthly: string; annual: string; price: number }> = {
@@ -164,7 +165,7 @@ export class TenantProvisioning {
         const hasPlatform = tenant.subscriptionTier === 'professional' || tenant.subscriptionTier === 'enterprise';
         
         let totalRevenue = 0;
-        if (hasPlatform && tradeCount === 6) {
+        if (hasPlatform && tradeCount === 7) {
           totalRevenue = tenant.subscriptionTier === 'enterprise' 
             ? COMBO_BUNDLES["enterprise-all-trades"].price 
             : COMBO_BUNDLES["pro-all-trades"].price;
@@ -172,7 +173,7 @@ export class TenantProvisioning {
           const platformPrice = PLATFORM_TIERS[tenant.subscriptionTier]?.price || 0;
           totalRevenue = platformPrice;
           
-          if (tradeCount === 6) {
+          if (tradeCount === 7) {
             totalRevenue += 99;
           } else if (tradeCount >= 3) {
             totalRevenue += 59 + (tradeCount - 3) * 29;
@@ -272,7 +273,7 @@ export class TenantProvisioning {
     const tradeCount = request.selectedTrades.length;
     const hasPlatform = request.subscriptionTier === 'professional' || request.subscriptionTier === 'enterprise';
     
-    if (hasPlatform && tradeCount === 6) {
+    if (hasPlatform && tradeCount === 7) {
       const comboKey = request.subscriptionTier === 'enterprise' ? 'enterprise-all-trades' : 'pro-all-trades';
       const combo = COMBO_BUNDLES[comboKey];
       if (combo) {
@@ -288,7 +289,7 @@ export class TenantProvisioning {
       }
     }
     
-    if (tradeCount === 6) {
+    if (tradeCount === 7) {
       items.push({ price: TRADE_BUNDLES["all-trades"][priceKey], quantity: 1 });
     } else if (tradeCount >= 3) {
       items.push({ price: TRADE_BUNDLES["3-trade"][priceKey], quantity: 1 });
