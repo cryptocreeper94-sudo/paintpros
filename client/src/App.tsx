@@ -8,6 +8,7 @@ import { TenantProvider } from "@/context/TenantContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AccessProvider } from "@/context/AccessContext";
 import { DemoProvider } from "@/context/DemoContext";
+import { I18nProvider } from "@/lib/i18n";
 import { DemoModeBanner } from "@/components/demo-mode-banner";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { getTenantIdFromHostname } from "@/config/tenant";
@@ -164,22 +165,24 @@ function Router() {
 function App() {
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <TenantProvider>
-          <DemoProvider>
-            <AccessProvider>
-              <TooltipProvider>
-                <DemoModeBanner />
-                <ScrollToTop />
-                <AnalyticsTracker />
-                <Toaster />
-                <Router />
-                <PaintBuddy />
-              </TooltipProvider>
-            </AccessProvider>
-          </DemoProvider>
-        </TenantProvider>
-      </QueryClientProvider>
+      <I18nProvider>
+        <QueryClientProvider client={queryClient}>
+          <TenantProvider>
+            <DemoProvider>
+              <AccessProvider>
+                <TooltipProvider>
+                  <DemoModeBanner />
+                  <ScrollToTop />
+                  <AnalyticsTracker />
+                  <Toaster />
+                  <Router />
+                  <PaintBuddy />
+                </TooltipProvider>
+              </AccessProvider>
+            </DemoProvider>
+          </TenantProvider>
+        </QueryClientProvider>
+      </I18nProvider>
     </ThemeProvider>
   );
 }
