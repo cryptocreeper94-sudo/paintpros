@@ -42,7 +42,13 @@ interface MarketingHubProps {
 const TENANTS = [
   { id: "npp", name: "Nashville Painting Professionals", shortName: "NPP", color: "gold" },
   { id: "lume", name: "Lume Paint Co", shortName: "Lume", color: "gray" },
-  { id: "paintpros", name: "paintpros.io", shortName: "PaintPros", color: "blue" },
+  { id: "demo", name: "paintpros.io", shortName: "PaintPros", color: "blue" },
+  { id: "roofpros", name: "RoofPros.io", shortName: "Roof", color: "red" },
+  { id: "hvacpros", name: "HVACPros.io", shortName: "HVAC", color: "sky" },
+  { id: "electricpros", name: "ElectricPros.io", shortName: "Electric", color: "yellow" },
+  { id: "plumbpros", name: "PlumbPros.io", shortName: "Plumb", color: "blue" },
+  { id: "landscapepros", name: "LandscapePros.io", shortName: "Landscape", color: "green" },
+  { id: "buildpros", name: "BuildPros.io", shortName: "Build", color: "stone" },
 ];
 
 interface ScheduledPost {

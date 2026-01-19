@@ -591,6 +591,26 @@ const translations: Record<Language, Record<string, string>> = {
     'tradeworks.allTrades': '8 Trade Categories',
     'tradeworks.calculators': '85+ Calculators',
     'tradeworks.bilingualSupport': 'English & Spanish',
+    
+    // Trade Verticals
+    'trades.roofing': 'Roofing',
+    'trades.hvac': 'HVAC',
+    'trades.electrical': 'Electrical',
+    'trades.plumbing': 'Plumbing',
+    'trades.landscaping': 'Landscaping',
+    'trades.construction': 'Construction',
+    'trades.painting': 'Painting',
+    'trades.multiTrade': 'Multi-Trade',
+    'trades.roofingDesc': 'Professional roofing solutions',
+    'trades.hvacDesc': 'Climate control experts',
+    'trades.electricalDesc': 'Licensed electrical contractors',
+    'trades.plumbingDesc': 'Professional plumbing services',
+    'trades.landscapingDesc': 'Transform your outdoor space',
+    'trades.constructionDesc': 'Building excellence',
+    'trades.services': 'Our Services',
+    'trades.freeEstimate': 'Free Estimate',
+    'trades.emergency': '24/7 Emergency',
+    'trades.licensed': 'Licensed & Insured',
   },
   
   es: {
@@ -1173,6 +1193,26 @@ const translations: Record<Language, Record<string, string>> = {
     'tradeworks.allTrades': '8 Categorías de Oficios',
     'tradeworks.calculators': '85+ Calculadoras',
     'tradeworks.bilingualSupport': 'Inglés y Español',
+    
+    // Trade Verticals
+    'trades.roofing': 'Techos',
+    'trades.hvac': 'HVAC',
+    'trades.electrical': 'Electricidad',
+    'trades.plumbing': 'Plomería',
+    'trades.landscaping': 'Jardinería',
+    'trades.construction': 'Construcción',
+    'trades.painting': 'Pintura',
+    'trades.multiTrade': 'Multi-Oficio',
+    'trades.roofingDesc': 'Soluciones profesionales de techos',
+    'trades.hvacDesc': 'Expertos en control de clima',
+    'trades.electricalDesc': 'Contratistas eléctricos licenciados',
+    'trades.plumbingDesc': 'Servicios profesionales de plomería',
+    'trades.landscapingDesc': 'Transforma tu espacio exterior',
+    'trades.constructionDesc': 'Excelencia en construcción',
+    'trades.services': 'Nuestros Servicios',
+    'trades.freeEstimate': 'Cotización Gratis',
+    'trades.emergency': 'Emergencias 24/7',
+    'trades.licensed': 'Licenciado y Asegurado',
   }
 };
 

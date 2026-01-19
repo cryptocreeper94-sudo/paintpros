@@ -1,6 +1,10 @@
 export type SubscriptionTier = "estimator_only" | "full_suite";
 
+export type TradeVertical = "painting" | "roofing" | "hvac" | "electrical" | "plumbing" | "landscaping" | "construction" | "multi_trade";
+
 export interface TenantConfig {
+  // Trade vertical (determines service categories)
+  tradeVertical?: TradeVertical;
   id: string;
   slug: string;
   
@@ -451,12 +455,419 @@ export const tradeWorksAI: TenantConfig = {
   credentials: {},
 };
 
+// RoofPros.io - Roofing trade vertical
+export const roofPros: TenantConfig = {
+  id: "roofpros",
+  slug: "roofpros",
+  tradeVertical: "roofing",
+  subscriptionTier: "full_suite",
+  
+  name: "RoofPros.io",
+  tagline: "Professional Roofing Solutions",
+  description: "Your trusted roofing professionals. Residential and commercial roofing, repairs, inspections, and installations.",
+  
+  theme: {
+    primaryColor: "#dc2626",
+    accentColor: "#f59e0b",
+    darkMode: {
+      background: "#1a1a1a",
+      foreground: "#ffffff",
+    },
+    lightMode: {
+      background: "#ffffff",
+      foreground: "#1a1a1a",
+    },
+  },
+  
+  services: {
+    interiorPainting: false,
+    exteriorPainting: false,
+    commercialPainting: false,
+    residentialPainting: false,
+    trimAndMolding: false,
+    ceilings: false,
+    doors: false,
+    drywallRepair: false,
+    cabinetPainting: false,
+    deckStaining: false,
+    pressureWashing: false,
+  },
+  
+  pricing: {
+    doorsPerUnit: 0,
+    wallsPerSqFt: 0,
+    fullJobPerSqFt: 8.5,
+  },
+  
+  seo: {
+    title: "RoofPros.io | Professional Roofing Solutions",
+    description: "Expert roofing services for residential and commercial properties. Free inspections, quality repairs, and complete roof installations.",
+    keywords: ["roofing", "roof repair", "roof installation", "roof inspection", "commercial roofing", "residential roofing"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: true,
+    onlineBooking: true,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    licensed: true,
+    insured: true,
+    bonded: true,
+  },
+};
+
+// HVACPros.io - HVAC trade vertical
+export const hvacPros: TenantConfig = {
+  id: "hvacpros",
+  slug: "hvacpros",
+  tradeVertical: "hvac",
+  subscriptionTier: "full_suite",
+  
+  name: "HVACPros.io",
+  tagline: "Climate Control Experts",
+  description: "Professional heating, ventilation, and air conditioning services. Installation, repair, and maintenance for all systems.",
+  
+  theme: {
+    primaryColor: "#0ea5e9",
+    accentColor: "#f97316",
+    darkMode: {
+      background: "#0c1929",
+      foreground: "#f0f9ff",
+    },
+    lightMode: {
+      background: "#f0f9ff",
+      foreground: "#0c1929",
+    },
+  },
+  
+  services: {
+    interiorPainting: false,
+    exteriorPainting: false,
+    commercialPainting: false,
+    residentialPainting: false,
+    trimAndMolding: false,
+    ceilings: false,
+    doors: false,
+    drywallRepair: false,
+    cabinetPainting: false,
+    deckStaining: false,
+    pressureWashing: false,
+  },
+  
+  pricing: {
+    doorsPerUnit: 0,
+    wallsPerSqFt: 0,
+    fullJobPerSqFt: 0,
+  },
+  
+  seo: {
+    title: "HVACPros.io | Climate Control Experts",
+    description: "Professional HVAC services including AC repair, heating installation, and maintenance. 24/7 emergency services available.",
+    keywords: ["hvac", "air conditioning", "heating", "ac repair", "furnace", "heat pump", "ductwork"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: true,
+    onlineBooking: true,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    licensed: true,
+    insured: true,
+    bonded: true,
+  },
+};
+
+// ElectricPros.io - Electrical trade vertical
+export const electricPros: TenantConfig = {
+  id: "electricpros",
+  slug: "electricpros",
+  tradeVertical: "electrical",
+  subscriptionTier: "full_suite",
+  
+  name: "ElectricPros.io",
+  tagline: "Power Your World Safely",
+  description: "Licensed electrical contractors providing residential and commercial electrical services. Installations, repairs, and upgrades.",
+  
+  theme: {
+    primaryColor: "#eab308",
+    accentColor: "#3b82f6",
+    darkMode: {
+      background: "#171717",
+      foreground: "#fefce8",
+    },
+    lightMode: {
+      background: "#fefce8",
+      foreground: "#171717",
+    },
+  },
+  
+  services: {
+    interiorPainting: false,
+    exteriorPainting: false,
+    commercialPainting: false,
+    residentialPainting: false,
+    trimAndMolding: false,
+    ceilings: false,
+    doors: false,
+    drywallRepair: false,
+    cabinetPainting: false,
+    deckStaining: false,
+    pressureWashing: false,
+  },
+  
+  pricing: {
+    doorsPerUnit: 0,
+    wallsPerSqFt: 0,
+    fullJobPerSqFt: 0,
+  },
+  
+  seo: {
+    title: "ElectricPros.io | Licensed Electrical Contractors",
+    description: "Expert electrical services for homes and businesses. Panel upgrades, rewiring, EV charger installation, and emergency repairs.",
+    keywords: ["electrician", "electrical contractor", "wiring", "panel upgrade", "ev charger", "electrical repair"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: true,
+    onlineBooking: true,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    licensed: true,
+    insured: true,
+    bonded: true,
+  },
+};
+
+// PlumbPros.io - Plumbing trade vertical
+export const plumbPros: TenantConfig = {
+  id: "plumbpros",
+  slug: "plumbpros",
+  tradeVertical: "plumbing",
+  subscriptionTier: "full_suite",
+  
+  name: "PlumbPros.io",
+  tagline: "Flow With Confidence",
+  description: "Professional plumbing services for residential and commercial properties. Repairs, installations, and emergency services.",
+  
+  theme: {
+    primaryColor: "#2563eb",
+    accentColor: "#10b981",
+    darkMode: {
+      background: "#0f172a",
+      foreground: "#dbeafe",
+    },
+    lightMode: {
+      background: "#dbeafe",
+      foreground: "#0f172a",
+    },
+  },
+  
+  services: {
+    interiorPainting: false,
+    exteriorPainting: false,
+    commercialPainting: false,
+    residentialPainting: false,
+    trimAndMolding: false,
+    ceilings: false,
+    doors: false,
+    drywallRepair: false,
+    cabinetPainting: false,
+    deckStaining: false,
+    pressureWashing: false,
+  },
+  
+  pricing: {
+    doorsPerUnit: 0,
+    wallsPerSqFt: 0,
+    fullJobPerSqFt: 0,
+  },
+  
+  seo: {
+    title: "PlumbPros.io | Professional Plumbing Services",
+    description: "Expert plumbing solutions for all your needs. Drain cleaning, water heater repair, pipe installation, and 24/7 emergency service.",
+    keywords: ["plumber", "plumbing", "drain cleaning", "water heater", "pipe repair", "emergency plumber"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: true,
+    onlineBooking: true,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    licensed: true,
+    insured: true,
+    bonded: true,
+  },
+};
+
+// LandscapePros.io - Landscaping trade vertical
+export const landscapePros: TenantConfig = {
+  id: "landscapepros",
+  slug: "landscapepros",
+  tradeVertical: "landscaping",
+  subscriptionTier: "full_suite",
+  
+  name: "LandscapePros.io",
+  tagline: "Transform Your Outdoor Space",
+  description: "Professional landscaping and lawn care services. Design, installation, and maintenance for beautiful outdoor spaces.",
+  
+  theme: {
+    primaryColor: "#22c55e",
+    accentColor: "#84cc16",
+    darkMode: {
+      background: "#14532d",
+      foreground: "#dcfce7",
+    },
+    lightMode: {
+      background: "#dcfce7",
+      foreground: "#14532d",
+    },
+  },
+  
+  services: {
+    interiorPainting: false,
+    exteriorPainting: false,
+    commercialPainting: false,
+    residentialPainting: false,
+    trimAndMolding: false,
+    ceilings: false,
+    doors: false,
+    drywallRepair: false,
+    cabinetPainting: false,
+    deckStaining: true,
+    pressureWashing: true,
+  },
+  
+  pricing: {
+    doorsPerUnit: 0,
+    wallsPerSqFt: 0,
+    fullJobPerSqFt: 0,
+  },
+  
+  seo: {
+    title: "LandscapePros.io | Professional Landscaping Services",
+    description: "Expert landscaping design and installation. Lawn care, hardscaping, irrigation, and outdoor living spaces.",
+    keywords: ["landscaping", "lawn care", "hardscape", "irrigation", "outdoor design", "garden"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: true,
+    onlineBooking: true,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    licensed: true,
+    insured: true,
+  },
+};
+
+// BuildPros.io - General construction trade vertical
+export const buildPros: TenantConfig = {
+  id: "buildpros",
+  slug: "buildpros",
+  tradeVertical: "construction",
+  subscriptionTier: "full_suite",
+  
+  name: "BuildPros.io",
+  tagline: "Building Excellence",
+  description: "Full-service general contractors. New construction, remodeling, additions, and commercial buildouts.",
+  
+  theme: {
+    primaryColor: "#78716c",
+    accentColor: "#f59e0b",
+    darkMode: {
+      background: "#1c1917",
+      foreground: "#f5f5f4",
+    },
+    lightMode: {
+      background: "#f5f5f4",
+      foreground: "#1c1917",
+    },
+  },
+  
+  services: {
+    interiorPainting: true,
+    exteriorPainting: true,
+    commercialPainting: true,
+    residentialPainting: true,
+    trimAndMolding: true,
+    ceilings: true,
+    doors: true,
+    drywallRepair: true,
+    cabinetPainting: true,
+    deckStaining: true,
+    pressureWashing: true,
+  },
+  
+  pricing: {
+    doorsPerUnit: 200,
+    wallsPerSqFt: 4.0,
+    fullJobPerSqFt: 150,
+  },
+  
+  seo: {
+    title: "BuildPros.io | General Contractors & Construction",
+    description: "Expert general contracting services. Custom homes, renovations, additions, and commercial construction.",
+    keywords: ["general contractor", "construction", "remodeling", "home builder", "renovation", "commercial buildout"],
+    serviceAreas: ["Nationwide"],
+  },
+  
+  features: {
+    estimator: true,
+    portfolio: true,
+    reviews: true,
+    blog: true,
+    onlineBooking: true,
+    aiAssistant: true,
+  },
+  
+  credentials: {
+    licensed: true,
+    insured: true,
+    bonded: true,
+  },
+};
+
 // Tenant registry
 export const tenants: Record<string, TenantConfig> = {
   "npp": nashvillePaintingProfessionals,
   "demo": paintProsDemo,
   "lumepaint": lumePaintCo,
   "tradeworks": tradeWorksAI,
+  "roofpros": roofPros,
+  "hvacpros": hvacPros,
+  "electricpros": electricPros,
+  "plumbpros": plumbPros,
+  "landscapepros": landscapePros,
+  "buildpros": buildPros,
 };
 
 // Domain to tenant mapping (custom domains)
@@ -471,6 +882,18 @@ const domainTenantMap: Record<string, string> = {
   "www.lumepaint.co": "lumepaint",
   "tradeworksai.io": "tradeworks",
   "www.tradeworksai.io": "tradeworks",
+  "roofpros.io": "roofpros",
+  "www.roofpros.io": "roofpros",
+  "hvacpros.io": "hvacpros",
+  "www.hvacpros.io": "hvacpros",
+  "electricpros.io": "electricpros",
+  "www.electricpros.io": "electricpros",
+  "plumbpros.io": "plumbpros",
+  "www.plumbpros.io": "plumbpros",
+  "landscapepros.io": "landscapepros",
+  "www.landscapepros.io": "landscapepros",
+  "buildpros.io": "buildpros",
+  "www.buildpros.io": "buildpros",
   "localhost": "npp",
 };
 
@@ -482,6 +905,12 @@ const subdomainTenantMap: Record<string, string> = {
   "www": "demo",
   "lumepaint": "lumepaint",
   "lume": "lumepaint",
+  "roofpros": "roofpros",
+  "hvacpros": "hvacpros",
+  "electricpros": "electricpros",
+  "plumbpros": "plumbpros",
+  "landscapepros": "landscapepros",
+  "buildpros": "buildpros",
 };
 
 // Parse tenant from hostname (client-side)
