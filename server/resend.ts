@@ -66,8 +66,8 @@ export async function sendContactEmail(data: ContactFormData): Promise<{ success
   try {
     const { client, fromEmail } = await getResendClient();
     
-    // Use CONTACT_EMAIL env var, or fall back to configured from email, or default
-    const recipientEmail = process.env.CONTACT_EMAIL || 'contact@paintpros.io';
+    // Use CONTACT_EMAIL env var, or fall back to NPP service email
+    const recipientEmail = process.env.CONTACT_EMAIL || 'service@nashvillepaintingprofessionals.com';
     
     const result = await client.emails.send({
       from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',

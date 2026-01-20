@@ -117,7 +117,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   logo: "/icons/npp-mascot.png",
   
   phone: "(615) 555-PAINT",
-  email: "info@nashpaintpros.com",
+  email: "service@nashvillepaintingprofessionals.com",
   address: {
     city: "Nashville",
     state: "TN",
@@ -283,7 +283,7 @@ export const lumePaintCo: TenantConfig = {
   logo: "/icons/lume-logo.png",
   
   phone: "(615) 555-LUME",
-  email: "hello@lumepaint.co",
+  email: "service@nashvillepaintingprofessionals.com",
   address: {
     city: "Nashville",
     state: "TN",

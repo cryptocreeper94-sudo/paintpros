@@ -9,7 +9,7 @@ export default function Start() {
   const tenant = useTenant();
   
   const phoneNumber = tenant.phone || "(615) 555-PAINT";
-  const email = tenant.email || "info@nashpaintpros.com";
+  const email = tenant.email || "service@nashvillepaintingprofessionals.com";
   const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
 
   return (

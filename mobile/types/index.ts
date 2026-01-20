@@ -94,7 +94,7 @@ export const NPP_TENANT: TenantConfig = {
   },
   contact: {
     phone: '(615) 555-PAINT',
-    email: 'info@nashpaintpros.io',
+    email: 'service@nashvillepaintingprofessionals.com',
     website: 'nashpaintpros.io',
   },
   pricing: {
