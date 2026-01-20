@@ -39,7 +39,7 @@ export default function AdminGuide() {
           <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200">
             <CardTitle className="flex items-center gap-2 text-purple-800">
               <Calculator className="h-6 w-6" />
-              AI-Powered Instant Estimator
+              Instant Estimator
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
@@ -51,7 +51,7 @@ export default function AdminGuide() {
               <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
                 <ScanLine className="h-8 w-8 text-purple-600" />
                 <div>
-                  <p className="font-medium text-purple-800">AI Room Scanner</p>
+                  <p className="font-medium text-purple-800">Room Scanner</p>
                   <p className="text-sm text-purple-600">Customers scan rooms to auto-calculate square footage</p>
                 </div>
               </div>
@@ -124,7 +124,7 @@ export default function AdminGuide() {
                 <Calculator className="h-6 w-6 text-purple-600" />
                 <div>
                   <p className="font-medium text-purple-800">Get Estimate</p>
-                  <p className="text-xs text-purple-600">AI estimator</p>
+                  <p className="text-xs text-purple-600">Estimator</p>
                 </div>
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function AdminGuide() {
                   <td className="py-3 font-mono text-sm text-pink-600 font-bold">nashpaintpros.io/start</td>
                 </tr>
                 <tr>
-                  <td className="py-3 text-gray-600">AI Estimator</td>
+                  <td className="py-3 text-gray-600">Instant Estimator</td>
                   <td className="py-3 font-mono text-sm text-purple-600">nashpaintpros.io/estimate</td>
                 </tr>
                 <tr>

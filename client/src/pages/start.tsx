@@ -83,7 +83,7 @@ export default function Start() {
               <ArrowRight className="w-5 h-5" />
             </Button>
           </Link>
-          <p className="text-xs text-gray-500">Free AI-powered estimate in under 60 seconds</p>
+          <p className="text-xs text-gray-500">Free instant estimate in under 60 seconds</p>
 
           <div className="pt-6 border-t border-gray-100">
             <p className="text-xs text-gray-400">

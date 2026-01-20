@@ -123,13 +123,13 @@ export default function HomeNPP() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-lg md:text-2xl text-[#800000] mb-4 md:mb-6 max-w-2xl mx-auto md:mx-0">
-                Your Vision. Our Passion. Nashville's Choice.
-              </p>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight">
-                Transforming Familiar Spaces
-                <span className="block text-accent">Into Exceptional Places</span>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight mb-4 md:mb-6">
+                Nashville Painting
+                <span className="block">Professionals</span>
               </h1>
+              <p className="text-lg md:text-2xl text-[#800000] max-w-2xl mx-auto md:mx-0">
+                Transforming familiar spaces into exceptional places
+              </p>
             </motion.div>
 
             <motion.div
@@ -151,7 +151,7 @@ export default function HomeNPP() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mx-auto inline-block rounded-full bg-gray-100/55 px-4 py-2 text-xs font-medium text-gray-700 md:mx-0 md:text-sm"
             >
-              AI Room Visualizer · Square Footage Scanner · Instant Estimates
+              Room Visualizer · Square Footage Calculator · Instant Estimates
             </motion.p>
           </div>
 
@@ -1097,7 +1097,7 @@ export default function HomeNPP() {
               </DialogTitle>
             </DialogHeader>
             <p className="mt-2 text-white/90">
-              See your project price in under 60 seconds with our AI-powered estimator.
+              See your project price in under 60 seconds with our smart estimator.
             </p>
           </div>
           <div className="p-6 space-y-4">
@@ -1108,7 +1108,7 @@ export default function HomeNPP() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
-                <span>AI room visualizer included</span>
+                <span>Room visualizer included</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
