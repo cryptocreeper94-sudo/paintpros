@@ -29,7 +29,7 @@ export function Navbar() {
     { name: "Contact", href: "/contact", icon: MessageSquare },
     { name: "Compare", href: "/compare", enabled: tenant.id === "demo" },
     { name: "Investors", href: "/investors", icon: TrendingUp, enabled: tenant.id === "demo" },
-    { name: "Book Online", href: "/estimate", icon: Calendar, highlight: true, enabled: tenant.features.onlineBooking },
+    { name: "Book Online", href: "/book", icon: Calendar, highlight: true, enabled: tenant.features.onlineBooking },
     { name: "Estimate", href: "/estimate", highlight: true, enabled: tenant.features.estimator && !tenant.features.onlineBooking },
   ].filter(link => link.enabled !== false);
 
