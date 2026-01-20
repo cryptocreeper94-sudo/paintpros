@@ -230,6 +230,115 @@ export async function sendContractorApplicationEmail(data: ContractorApplication
   }
 }
 
+export interface BookingNotificationData {
+  customerName: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  serviceType: string;
+  scheduledDate: Date;
+  scheduledTime: string;
+  address?: string;
+  notes?: string;
+  tenantName?: string;
+}
+
+export async function sendBookingNotification(data: BookingNotificationData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { client, fromEmail } = await getResendClient();
+    
+    // Bookings go to NPP service email
+    const recipientEmail = process.env.BOOKING_EMAIL || 'service@nashvillepaintingprofessionals.com';
+    const formattedDate = data.scheduledDate.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    
+    const result = await client.emails.send({
+      from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
+      to: [recipientEmail],
+      replyTo: data.customerEmail,
+      subject: `New Booking Request: ${data.serviceType} - ${data.customerName} (${formattedDate})`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #4a5d23 0%, #6b7c3f 100%); padding: 20px; border-radius: 8px 8px 0 0;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Booking Request</h1>
+            <p style="color: #e0e0e0; margin: 5px 0 0 0;">${data.tenantName || 'Nashville Painting Professionals'}</p>
+            <p style="color: #ffd700; margin: 10px 0 0 0; font-size: 14px; font-weight: bold;">⚠️ ACTION REQUIRED: Please review and confirm this booking</p>
+          </div>
+          
+          <div style="background: #fff3cd; padding: 15px 20px; border: 1px solid #ffc107; border-top: none;">
+            <p style="color: #856404; margin: 0; font-size: 14px;">
+              <strong>Status: PENDING</strong> - This booking requires your approval. Log into the admin dashboard to confirm or decline.
+            </p>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 20px; border: 1px solid #e9ecef; border-top: none;">
+            <h2 style="color: #333; margin-top: 0;">Customer Information</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Name:</strong></td>
+                <td style="padding: 8px 0; color: #333;">${data.customerName}</td>
+              </tr>
+              ${data.customerEmail ? `
+              <tr>
+                <td style="padding: 8px 0; color: #666;"><strong>Email:</strong></td>
+                <td style="padding: 8px 0; color: #333;"><a href="mailto:${data.customerEmail}">${data.customerEmail}</a></td>
+              </tr>` : ''}
+              ${data.customerPhone ? `
+              <tr>
+                <td style="padding: 8px 0; color: #666;"><strong>Phone:</strong></td>
+                <td style="padding: 8px 0; color: #333;"><a href="tel:${data.customerPhone}">${data.customerPhone}</a></td>
+              </tr>` : ''}
+              ${data.address ? `
+              <tr>
+                <td style="padding: 8px 0; color: #666;"><strong>Address:</strong></td>
+                <td style="padding: 8px 0; color: #333;">${data.address}</td>
+              </tr>` : ''}
+            </table>
+          </div>
+          
+          <div style="background: #fff; padding: 20px; border: 1px solid #e9ecef; border-top: none;">
+            <h2 style="color: #333; margin-top: 0;">Appointment Details</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Service:</strong></td>
+                <td style="padding: 8px 0; color: #333;">${data.serviceType}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #666;"><strong>Date:</strong></td>
+                <td style="padding: 8px 0; color: #2e7d32; font-weight: bold;">${formattedDate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #666;"><strong>Time:</strong></td>
+                <td style="padding: 8px 0; color: #2e7d32; font-weight: bold;">${data.scheduledTime}</td>
+              </tr>
+            </table>
+            ${data.notes ? `
+            <div style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 4px;">
+              <strong style="color: #666;">Customer Notes:</strong>
+              <p style="color: #333; margin: 8px 0 0 0;">${data.notes}</p>
+            </div>` : ''}
+          </div>
+          
+          <div style="background: #4a5d23; padding: 15px 20px; border-radius: 0 0 8px 8px; text-align: center;">
+            <p style="color: #e0e0e0; margin: 0; font-size: 12px;">
+              Log into your admin dashboard to confirm or decline this booking.
+            </p>
+          </div>
+        </div>
+      `
+    });
+
+    console.log('[Email] Booking notification sent successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send booking notification:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' };
+  }
+}
+
 export async function sendLeadNotification(data: LeadNotificationData): Promise<{ success: boolean; error?: string }> {
   try {
     const { client, fromEmail } = await getResendClient();

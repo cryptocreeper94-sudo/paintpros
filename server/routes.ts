@@ -49,7 +49,7 @@ import { z } from "zod";
 import * as solana from "./solana";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
-import { sendContactEmail, sendLeadNotification, sendContractorApplicationEmail, type ContactFormData, type LeadNotificationData, type ContractorApplicationData } from "./resend";
+import { sendContactEmail, sendLeadNotification, sendBookingNotification, sendContractorApplicationEmail, type ContactFormData, type LeadNotificationData, type BookingNotificationData, type ContractorApplicationData } from "./resend";
 import { setupAuth, isAuthenticated, initAuthBackground } from "./replitAuth";
 import type { RequestHandler } from "express";
 import { checkCredits, deductCreditsAfterUsage, getActionCost, CREDIT_PACKS } from "./aiCredits";
@@ -8564,6 +8564,24 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         scheduledTime,
         customerNotes
       });
+
+      // Send email notification for new booking
+      try {
+        await sendBookingNotification({
+          customerName,
+          customerEmail,
+          customerPhone,
+          serviceType,
+          scheduledDate: new Date(scheduledDate),
+          scheduledTime,
+          address: customerAddress,
+          notes: projectDescription || customerNotes,
+          tenantName: tenantId === 'lumepaint' ? 'Lume Paint Co' : 'Nashville Painting Professionals'
+        });
+      } catch (emailError) {
+        console.error('[Booking] Failed to send notification email:', emailError);
+        // Don't fail the booking if email fails
+      }
 
       res.status(201).json(booking);
     } catch (error) {
