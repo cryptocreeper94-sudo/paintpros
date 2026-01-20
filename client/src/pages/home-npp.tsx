@@ -1,14 +1,18 @@
+import { useState } from "react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/footer";
-import { FlipButton } from "@/components/ui/flip-button";
-import { ArrowRight, Phone, Calendar, Star, Shield, Clock, Award } from "lucide-react";
+import { ArrowRight, Phone, Star, Shield, Clock, Award, X, Calculator } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { Link, useLocation } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import paintersImage from "@assets/generated_images/two_painters_ladder_and_ground.png";
 
 export default function HomeNPP() {
   const tenant = useTenant();
+  const [, setLocation] = useLocation();
+  const [showEstimateModal, setShowEstimateModal] = useState(true);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden flex flex-col">
@@ -38,24 +42,6 @@ export default function HomeNPP() {
               {tenant.description}
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Link href="/estimate">
-                <FlipButton data-testid="link-get-estimate">
-                  Get Instant Estimate <ArrowRight className="w-4 h-4" />
-                </FlipButton>
-              </Link>
-              
-              <Link href="/book">
-                <span
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-accent/50 text-foreground hover:bg-accent/10 transition-colors cursor-pointer"
-                  data-testid="link-book-now"
-                >
-                  <Calendar className="w-4 h-4" />
-                  Book Now
-                </span>
-              </Link>
-            </div>
-
             <div className="mt-6 flex items-center gap-2 justify-center md:justify-start text-sm text-muted-foreground">
               <Phone className="w-4 h-4" />
               <a href={`tel:${tenant.phone}`} className="hover:text-foreground transition-colors">
@@ -152,15 +138,58 @@ export default function HomeNPP() {
             
             <div className="mt-10">
               <Link href="/estimate">
-                <FlipButton data-testid="link-estimate-bottom">
+                <Button size="lg" className="gap-2" data-testid="link-estimate-bottom">
                   Get Your Free Estimate <ArrowRight className="w-4 h-4" />
-                </FlipButton>
+                </Button>
               </Link>
             </div>
           </div>
         </section>
       </main>
       <Footer />
+
+      <AnimatePresence>
+        {showEstimateModal && (
+          <Dialog open={showEstimateModal} onOpenChange={setShowEstimateModal}>
+            <DialogContent className="sm:max-w-md border-primary/20">
+              <button
+                onClick={() => setShowEstimateModal(false)}
+                className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none"
+                data-testid="button-close-modal"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              
+              <div className="text-center py-4">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Calculator className="w-8 h-8 text-primary" />
+                </div>
+                
+                <h2 className="text-2xl font-bold mb-2">Get Your Instant Estimate</h2>
+                <p className="text-muted-foreground mb-6">
+                  Answer a few quick questions and get an accurate price in under 2 minutes.
+                </p>
+                
+                <Button
+                  size="lg"
+                  className="w-full gap-2"
+                  onClick={() => {
+                    setShowEstimateModal(false);
+                    setLocation("/estimate");
+                  }}
+                  data-testid="button-start-estimate"
+                >
+                  Start My Estimate <ArrowRight className="w-4 h-4" />
+                </Button>
+                
+                <p className="text-xs text-muted-foreground mt-4">
+                  No commitment required. Free instant pricing.
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
