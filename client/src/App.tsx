@@ -70,6 +70,7 @@ import PrivacyPolicy from "@/pages/privacy-policy";
 import Contact from "@/pages/contact";
 import FAQ from "@/pages/faq";
 import Start from "@/pages/start";
+import Book from "@/pages/book";
 import TradeVerticalPage from "@/pages/trade-vertical";
 import Onboarding from "@/pages/onboarding";
 import OnboardingSuccess from "@/pages/onboarding-success";
@@ -184,6 +185,7 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/faq" component={FAQ} />
       <Route path="/start" component={Start} />
+      <Route path="/book" component={Book} />
       <Route path="/onboarding" component={Onboarding} />
       <Route path="/onboarding/success" component={OnboardingSuccess} />
       <Route path="/onboarding/cancel">{() => <Onboarding />}</Route>
