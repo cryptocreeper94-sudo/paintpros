@@ -43,6 +43,7 @@ import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 import { BlogManager } from "@/components/blog-manager";
+import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -69,6 +70,7 @@ export default function Owner() {
   const [newTagValue, setNewTagValue] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { selectedTenant, setSelectedTenant, tenantLabel } = useTenantFilter();
   
   const queryClient = useQueryClient();
 
@@ -362,6 +364,13 @@ export default function Owner() {
               )}
             </div>
           </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto mb-4">
+          <TenantSwitcher 
+            selectedTenant={selectedTenant} 
+            onTenantChange={setSelectedTenant}
+          />
         </div>
 
         <motion.div

@@ -39,6 +39,7 @@ import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
 import { PartnerModal } from "@/components/partner-modal";
 import { RoyaltySummaryCard } from "@/components/royalty-summary-card";
+import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 
 const DEFAULT_PIN = "4444";
 
@@ -56,6 +57,7 @@ export default function Admin() {
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showDripJobsImport, setShowDripJobsImport] = useState(false);
+  const { selectedTenant, setSelectedTenant, tenantLabel } = useTenantFilter();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -313,6 +315,13 @@ export default function Admin() {
               )}
             </div>
           </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto mb-4">
+          <TenantSwitcher 
+            selectedTenant={selectedTenant} 
+            onTenantChange={setSelectedTenant}
+          />
         </div>
 
         <motion.div

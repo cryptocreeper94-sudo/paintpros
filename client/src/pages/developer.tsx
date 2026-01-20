@@ -42,6 +42,7 @@ import { SeoTracker } from "@/components/seo/SeoTracker";
 import { BlogManager } from "@/components/blog-manager";
 import { useAccess } from "@/context/AccessContext";
 import { MarketingHub } from "@/components/marketing-hub";
+import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 
 const DEVELOPER_PIN = "0424";
 
@@ -1466,6 +1467,7 @@ export default function Developer() {
   const { login, currentUser } = useAccess();
   const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "developer";
   const [isAuthenticated, setIsAuthenticated] = useState(isSessionAuth);
+  const { selectedTenant, setSelectedTenant, tenantLabel } = useTenantFilter();
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -2167,6 +2169,13 @@ export default function Developer() {
             </div>
           </div>
         </motion.div>
+
+        <div className="max-w-7xl mx-auto mb-4">
+          <TenantSwitcher 
+            selectedTenant={selectedTenant} 
+            onTenantChange={setSelectedTenant}
+          />
+        </div>
 
         <motion.div
           variants={staggerContainer}
