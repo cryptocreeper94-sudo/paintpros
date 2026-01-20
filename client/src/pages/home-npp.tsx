@@ -166,9 +166,13 @@ export default function HomeNPP() {
                 </div>
                 
                 <h2 className="text-2xl font-bold mb-2">Get Your Instant Estimate</h2>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-muted-foreground mb-4">
                   Answer a few quick questions and get an accurate price in under 2 minutes.
                 </p>
+                <div className="text-sm text-primary/80 mb-4 flex items-center justify-center gap-2">
+                  <span className="inline-block px-2 py-1 bg-primary/10 rounded text-xs font-medium">AI-Powered</span>
+                  <span className="text-muted-foreground">Scan rooms with your camera • Match any color instantly</span>
+                </div>
                 
                 <Button
                   size="lg"
