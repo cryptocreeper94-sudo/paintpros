@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   ArrowRight, 
   Award, 
@@ -24,7 +26,9 @@ import {
   BadgeCheck,
   MessageSquare,
   Calendar,
-  Sparkles
+  Sparkles,
+  Calculator,
+  X
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -54,6 +58,7 @@ interface PaintColor {
 
 export default function HomeNPP() {
   const tenant = useTenant();
+  const [showEstimateModal, setShowEstimateModal] = useState(true);
 
   // Fetch colors for preview
   const { data: colors = [] } = useQuery<PaintColor[]>({
@@ -118,12 +123,12 @@ export default function HomeNPP() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-lg md:text-2xl text-[#800000] mb-4 md:mb-6 max-w-2xl mx-auto md:mx-0 whitespace-nowrap">
-                Nashville's Most Trusted Painters
+              <p className="text-lg md:text-2xl text-[#800000] mb-4 md:mb-6 max-w-2xl mx-auto md:mx-0">
+                Your Vision. Our Passion. Nashville's Choice.
               </p>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight">
-                Painting Done
-                <span className="block text-accent">The Right Way</span>
+                Transforming Familiar Spaces
+                <span className="block text-accent">Into Exceptional Places</span>
               </h1>
             </motion.div>
 
@@ -133,12 +138,6 @@ export default function HomeNPP() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex w-full flex-row items-center justify-center gap-3 md:w-auto md:justify-start md:gap-4"
             >
-              <Link href="/estimate">
-                <Button size="default" className="text-sm px-4 md:px-6 gap-2 shadow-lg shadow-accent/30" data-testid="button-hero-estimate">
-                  See My Price
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
               <a href="#see-how">
                 <Button size="default" className="text-sm px-4 md:px-6 bg-accent/90 text-white border-accent shadow-lg shadow-accent/20" data-testid="button-see-how">
                   See How It Works
@@ -1086,6 +1085,57 @@ export default function HomeNPP() {
       </main>
       
       <PWAInstallPrompt />
+
+      {/* Estimate Modal - Appears on every visit */}
+      <Dialog open={showEstimateModal} onOpenChange={setShowEstimateModal}>
+        <DialogContent className="max-w-md p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-accent to-accent/80 p-6 text-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
+                <Calculator className="w-6 h-6" />
+                Get Your Free Estimate
+              </DialogTitle>
+            </DialogHeader>
+            <p className="mt-2 text-white/90">
+              See your project price in under 60 seconds with our AI-powered estimator.
+            </p>
+          </div>
+          <div className="p-6 space-y-4">
+            <div className="space-y-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span>Instant pricing - no waiting</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span>AI room visualizer included</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span>No commitment required</span>
+              </div>
+            </div>
+            <Link href="/estimate" className="block">
+              <Button 
+                size="lg" 
+                className="w-full gap-2 shadow-lg"
+                onClick={() => setShowEstimateModal(false)}
+                data-testid="button-modal-estimate"
+              >
+                See My Price Now
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <button 
+              onClick={() => setShowEstimateModal(false)}
+              className="w-full text-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              data-testid="button-modal-dismiss"
+            >
+              I'll look around first
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }
