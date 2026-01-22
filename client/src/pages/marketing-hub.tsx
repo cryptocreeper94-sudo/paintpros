@@ -170,10 +170,6 @@ export default function MarketingHub() {
       localStorage.setItem("marketing_posts", JSON.stringify(initialPosts));
     }
 
-    const savedPin = localStorage.getItem("marketing_pin");
-    if (savedPin) {
-      setCurrentPin(savedPin);
-    }
   }, []);
 
   const validatePinStrength = (testPin: string): boolean => {
@@ -655,6 +651,86 @@ export default function MarketingHub() {
                     I focus on other things. The system runs like a carousel - it never stops.
                   </p>
                 </div>
+              </GlassCard>
+
+              {/* AI Marketing Assistant - Proactive & Productive */}
+              <GlassCard className="p-6 bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-900/20 dark:to-cyan-900/20 border-indigo-200 dark:border-indigo-700">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-500" />
+                  AI Marketing Assistant
+                  <Badge className="ml-2 bg-indigo-100 text-indigo-700 text-xs">Proactive Mode</Badge>
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  This isn't just a chatbot - it's a working assistant that actually does things for you.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <PenTool className="w-4 h-4 text-indigo-500" />
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Content Suggestions</p>
+                    </div>
+                    <p className="text-xs text-gray-500">AI analyzes your best-performing posts and generates new caption ideas matching your brand voice.</p>
+                    <Badge className="mt-2 bg-green-100 text-green-700 text-xs">Active</Badge>
+                  </div>
+                  
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-purple-100 dark:border-purple-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-4 h-4 text-purple-500" />
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Smart Scheduling</p>
+                    </div>
+                    <p className="text-xs text-gray-500">Recommends optimal posting times based on engagement data. Prevents duplicate content automatically.</p>
+                    <Badge className="mt-2 bg-green-100 text-green-700 text-xs">Active</Badge>
+                  </div>
+                  
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-orange-100 dark:border-orange-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-orange-500" />
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Performance Alerts</p>
+                    </div>
+                    <p className="text-xs text-gray-500">Notifies you when posts underperform or when engagement spikes. Suggests improvements automatically.</p>
+                    <Badge className="mt-2 bg-yellow-100 text-yellow-700 text-xs">Coming Soon</Badge>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-4 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <Target className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">What This Means For You</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                        The AI doesn't just answer questions - it actively works. When you're busy with school, the AI is:
+                      </p>
+                      <ul className="text-xs text-gray-600 dark:text-gray-300 mt-2 space-y-1 list-disc list-inside">
+                        <li>Analyzing which posts perform best and why</li>
+                        <li>Generating new content ideas based on what works</li>
+                        <li>Keeping the carousel running with fresh content</li>
+                        <li>Flagging anything that needs human attention</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Current Status - Meta Integration */}
+              <GlassCard className="p-6 border-2 border-blue-300 dark:border-blue-700">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-blue-500 animate-pulse" />
+                  Status Update - Meta Integration In Progress
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  I'm currently working on getting the direct API connection to Meta (Facebook/Instagram) set up. 
+                  Once complete, you'll be able to:
+                </p>
+                <ul className="text-sm text-gray-600 dark:text-gray-300 mt-2 space-y-1 list-disc list-inside">
+                  <li>Post directly to Facebook & Instagram from this dashboard</li>
+                  <li>See all analytics in one place - no switching apps</li>
+                  <li>Schedule and automate posts with AI assistance</li>
+                  <li>Run the entire marketing operation right here</li>
+                </ul>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 font-medium">
+                  Until then, feel free to explore the Content Catalog and Analytics tabs. The foundation is ready!
+                </p>
               </GlassCard>
             </TabsContent>
 
@@ -1419,11 +1495,23 @@ export default function MarketingHub() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showPinChange} onOpenChange={setShowPinChange}>
+      <Dialog open={showPinChange} onOpenChange={() => {}}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Set Your Secure PIN</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5 text-purple-500" />
+              Welcome! Set Your Secure PIN
+            </DialogTitle>
           </DialogHeader>
+          <div className="mb-4 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              <strong>First Login Detected!</strong> For security, please create a new PIN. 
+              {userRole === "marketing" && " This will be your personal access code for the Marketing Hub."}
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              Your PIN must include: uppercase, lowercase, number, special character (min 6 chars)
+            </p>
+          </div>
           <PinChangeForm 
             onSubmit={handlePinChange}
             validateStrength={validatePinStrength}
