@@ -4131,8 +4131,8 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.insert(marketingPosts).values(post).returning();
     return result;
   }
-  async getMarketingPosts(tenantId: string): Promise<MarketingPost[]> {
-    return await db.select().from(marketingPosts).where(eq(marketingPosts.tenantId, tenantId)).orderBy(desc(marketingPosts.scheduledDate));
+  async getMarketingPosts(): Promise<MarketingPost[]> {
+    return await db.select().from(marketingPosts).orderBy(desc(marketingPosts.createdAt));
   }
   async updateMarketingPost(id: string, updates: Partial<InsertMarketingPost>): Promise<MarketingPost | undefined> {
     const [result] = await db.update(marketingPosts).set(updates).where(eq(marketingPosts.id, id)).returning();

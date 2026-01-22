@@ -6815,8 +6815,7 @@ Do not include any text before or after the JSON.`
   });
   
   app.get("/api/marketing/posts", async (req, res) => {
-    const tenantId = (req.query.tenantId as string) || "demo";
-    const posts = await storage.getMarketingPosts(tenantId);
+    const posts = await storage.getMarketingPosts();
     res.json(posts);
   });
   
@@ -6833,6 +6832,105 @@ Do not include any text before or after the JSON.`
   app.delete("/api/marketing/posts/:id", async (req, res) => {
     await storage.deleteMarketingPost(req.params.id);
     res.status(204).send();
+  });
+
+  // Seed marketing images (110 generated images across 14 categories)
+  app.post("/api/marketing/seed", async (req, res) => {
+    const tenantId = (req.body.tenantId as string) || "npp";
+    
+    const categories = [
+      { name: "interior", count: 12, label: "Interior Painting" },
+      { name: "exterior", count: 12, label: "Exterior Painting" },
+      { name: "cabinets", count: 8, label: "Cabinet Refinishing" },
+      { name: "trim", count: 8, label: "Trim & Molding" },
+      { name: "commercial_office", count: 5, label: "Commercial Office" },
+      { name: "commercial_warehouse", count: 5, label: "Commercial Warehouse" },
+      { name: "apartments", count: 8, label: "Apartments" },
+      { name: "doors", count: 6, label: "Doors" },
+      { name: "windows", count: 6, label: "Windows" },
+      { name: "decks", count: 6, label: "Decks & Patios" },
+      { name: "general", count: 10, label: "General Projects" }
+    ];
+    
+    const createdImages: any[] = [];
+    
+    try {
+      for (const cat of categories) {
+        for (let i = 1; i <= cat.count; i++) {
+          const filename = `${cat.name}_${i}.jpg`;
+          const image = await storage.createMarketingImage({
+            tenantId,
+            filename,
+            filePath: `/marketing/${tenantId}/${cat.name}/${filename}`,
+            altText: `${cat.label} project ${i} by ${tenantId === 'npp' ? 'Nashville Painting Professionals' : 'Lume Paint Co'}`,
+            category: cat.name,
+            subcategory: i % 3 === 0 ? 'before_after' : i % 3 === 1 ? 'full_room' : 'detail',
+            tags: [cat.name, tenantId === 'npp' ? 'nashville' : 'lume', 'professional', 'quality'],
+            width: 1200,
+            height: 800,
+            aspectRatio: '3:2',
+            usageCount: Math.floor(Math.random() * 20),
+            isActive: true,
+            isFavorite: i <= 2
+          });
+          createdImages.push(image);
+        }
+      }
+      
+      res.json({ success: true, count: createdImages.length, message: `Seeded ${createdImages.length} images for ${tenantId}` });
+    } catch (error: any) {
+      console.error("Seed error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Seed marketing posts with realistic content
+  app.post("/api/marketing/seed-posts", async (req, res) => {
+    const categories = ['general', 'promo', 'tips', 'testimonial'];
+    const sampleContent = [
+      "Transform your home with professional painting services! Our expert crew delivers flawless results every time.",
+      "Spring is the perfect time for exterior painting. Book now and get 15% off!",
+      "Pro Tip: Always use primer before painting dark walls with lighter colors for the best coverage.",
+      "Another satisfied customer! 'The team was professional, on-time, and the results exceeded my expectations.' - Sarah M.",
+      "Cabinet refinishing can give your kitchen a whole new look at a fraction of the cost of replacement!",
+      "Our crew takes pride in every project, big or small. Quality is our promise.",
+      "Before and after transformation! This living room went from dated to modern in just 2 days.",
+      "Need help choosing colors? Our design consultants are here to help you find the perfect palette.",
+      "We use only premium paints for lasting results that look beautiful for years to come.",
+      "Commercial painting services available! Offices, retail spaces, and more."
+    ];
+    
+    const posts: any[] = [];
+    
+    try {
+      for (let i = 0; i < 25; i++) {
+        const daysAgo = Math.floor(Math.random() * 60);
+        const usedDate = new Date();
+        usedDate.setDate(usedDate.getDate() - daysAgo);
+        
+        const post = await storage.createMarketingPost({
+          content: sampleContent[i % sampleContent.length],
+          category: categories[Math.floor(Math.random() * categories.length)],
+          imageUrl: `https://picsum.photos/seed/post${i}/800/600`,
+          isActive: Math.random() > 0.1,
+        });
+        
+        // Update with usage stats if "used"
+        if (Math.random() > 0.3) {
+          await storage.updateMarketingPost(post.id, {
+            usageCount: Math.floor(Math.random() * 10) + 1,
+            lastUsedAt: usedDate
+          });
+        }
+        
+        posts.push(post);
+      }
+      
+      res.json({ success: true, count: posts.length, message: `Seeded ${posts.length} marketing posts` });
+    } catch (error: any) {
+      console.error("Seed posts error:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   // ============ MODULE 3: IMMERSIVE SITE CAPTURE ============
