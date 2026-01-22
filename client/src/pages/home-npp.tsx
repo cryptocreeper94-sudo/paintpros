@@ -127,7 +127,7 @@ export default function HomeNPP() {
                 Nashville Painting
                 <span className="block">Professionals</span>
               </h1>
-              <p className="text-lg md:text-2xl text-[#800000] max-w-2xl mx-auto md:mx-0">
+              <p className="text-sm md:text-2xl text-[#800000] max-w-2xl mx-auto md:mx-0">
                 Transforming familiar spaces into extraordinary places
               </p>
             </motion.div>
