@@ -716,11 +716,37 @@ export default function MarketingHub() {
               <GlassCard className="p-6 border-2 border-blue-300 dark:border-blue-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-blue-500 animate-pulse" />
-                  Status Update - Meta Integration In Progress
+                  Status Update - What I'm Working On
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  I'm currently working on getting the direct API connection to Meta (Facebook/Instagram) set up. 
-                  Once complete, you'll be able to:
+                
+                <div className="space-y-4">
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Step 1: Manual Rotation (Current)</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                      Setting up the first content rotation manually to establish the baseline. This ensures we have proven content 
+                      and timing patterns before the AI takes over. You'll see the calendar populate with our initial schedule.
+                    </p>
+                  </div>
+                  
+                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Step 2: Meta API Connection (In Progress)</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                      Working on getting the direct API connection to Meta (Facebook/Instagram) set up. 
+                      This will allow the system to post automatically without anyone logging into Meta Business Suite.
+                    </p>
+                  </div>
+                  
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Step 3: Full Automation (Coming Next)</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                      Once Meta is connected and manual rotation is proven, the AI takes over completely. 
+                      The carousel runs 24/7 and you just get notified when something needs attention.
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-4">
+                  Once fully connected, you'll be able to:
                 </p>
                 <ul className="text-sm text-gray-600 dark:text-gray-300 mt-2 space-y-1 list-disc list-inside">
                   <li>Post directly to Facebook & Instagram from this dashboard</li>
@@ -729,7 +755,7 @@ export default function MarketingHub() {
                   <li>Run the entire marketing operation right here</li>
                 </ul>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 font-medium">
-                  Until then, feel free to explore the Content Catalog and Analytics tabs. The foundation is ready!
+                  Until then, explore the Content Catalog and Analytics tabs. The foundation is ready!
                 </p>
               </GlassCard>
 
