@@ -5430,57 +5430,6 @@ export const insertMarketingImageSchema = createInsertSchema(marketingImages).om
 export type InsertMarketingImage = z.infer<typeof insertMarketingImageSchema>;
 export type MarketingImage = typeof marketingImages.$inferSelect;
 
-// Marketing Posts - Social media post content library
-export const marketingPosts = pgTable("marketing_posts", {
-  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-  tenantId: text("tenant_id").notNull(), // 'npp', 'lumepaint'
-  
-  // Content
-  content: text("content").notNull(),
-  
-  // Categorization
-  category: text("category").notNull(), // 'interior', 'exterior', 'cabinets', 'doors', 'trim', 'decks', 'commercial', 'general'
-  type: text("type").notNull(), // 'evergreen', 'seasonal'
-  platform: text("platform").notNull(), // 'instagram', 'facebook', 'nextdoor'
-  
-  // Optional seasonal details
-  seasonalStart: text("seasonal_start"), // 'jan', 'spring', etc.
-  seasonalEnd: text("seasonal_end"),
-  
-  // Associated image
-  imageId: varchar("image_id", { length: 36 }).references(() => marketingImages.id),
-  
-  // Usage tracking
-  usageCount: integer("usage_count").default(0),
-  lastUsedAt: timestamp("last_used_at"),
-  
-  // Scheduling
-  status: text("status").default("draft"), // 'draft', 'scheduled', 'posted', 'retired'
-  scheduledFor: timestamp("scheduled_for"),
-  postedAt: timestamp("posted_at"),
-  
-  // Collaboration
-  claimedBy: text("claimed_by"),
-  claimedAt: timestamp("claimed_at"),
-  
-  // Status
-  isActive: boolean("is_active").default(true),
-  isFavorite: boolean("is_favorite").default(false),
-  
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => [
-  index("idx_marketing_posts_tenant").on(table.tenantId),
-  index("idx_marketing_posts_category").on(table.category),
-  index("idx_marketing_posts_type").on(table.type),
-  index("idx_marketing_posts_platform").on(table.platform),
-  index("idx_marketing_posts_status").on(table.status),
-]);
-
-export const insertMarketingPostSchema = createInsertSchema(marketingPosts).omit({ id: true, createdAt: true, updatedAt: true });
-export type InsertMarketingPost = z.infer<typeof insertMarketingPostSchema>;
-export type MarketingPost = typeof marketingPosts.$inferSelect;
-
 // Marketing Usage Log - Track when and where content is used
 export const marketingUsageLog = pgTable("marketing_usage_log", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
