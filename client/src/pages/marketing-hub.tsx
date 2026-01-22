@@ -64,33 +64,33 @@ const PLATFORMS = [
 ];
 
 const SAMPLE_EVERGREEN_NPP: Partial<SocialPost>[] = [
-  { content: "Transform your home with Nashville's most trusted painters. Quality craftsmanship, exceptional results.", category: "general", platform: "instagram" },
-  { content: "Interior painting that brings your vision to life. From accent walls to whole-home transformations.", category: "interior", platform: "instagram" },
+  { content: "Turning familiar spaces into extraordinary places. Nashville Painting Professionals - quality craftsmanship, exceptional results.", category: "general", platform: "instagram" },
+  { content: "Interior painting that brings your vision to life. Turning familiar spaces into extraordinary places.", category: "interior", platform: "instagram" },
   { content: "Protect your investment with professional exterior painting. Weather-resistant finishes that last.", category: "exterior", platform: "facebook" },
   { content: "Commercial painting solutions for businesses that demand excellence. Minimal disruption, maximum impact.", category: "commercial", platform: "facebook" },
   { content: "Cabinet refinishing that saves thousands over replacement. Fresh look, fraction of the cost.", category: "cabinets", platform: "nextdoor" },
   { content: "The details matter. Professional trim and door painting for a polished finish.", category: "trim", platform: "instagram" },
   { content: "Deck staining and fence refinishing. Extend the life of your outdoor spaces.", category: "decks", platform: "nextdoor" },
-  { content: "Why choose Nashville Painting Professionals? Licensed, insured, and committed to your satisfaction.", category: "general", platform: "facebook" },
+  { content: "Why choose Nashville Painting Professionals? We're turning familiar spaces into extraordinary places - one home at a time.", category: "general", platform: "facebook" },
   { content: "Before & After: See the difference professional painting makes. Free estimates available.", category: "general", platform: "instagram" },
   { content: "Your neighbors trust us. Join hundreds of satisfied Nashville homeowners.", category: "general", platform: "nextdoor" },
-  { content: "Quality paint. Expert application. Results that last for years, not months.", category: "general", platform: "instagram" },
+  { content: "Quality paint. Expert application. Turning familiar spaces into extraordinary places.", category: "general", platform: "instagram" },
   { content: "From prep to perfection - our process ensures flawless results every time.", category: "general", platform: "facebook" },
 ];
 
 const SAMPLE_EVERGREEN_LUME: Partial<SocialPost>[] = [
-  { content: "Illuminate your space with Lume Paint Co. Where color meets craftsmanship.", category: "general", platform: "instagram" },
-  { content: "Interior transformations that reflect your style. Lume brings the light.", category: "interior", platform: "instagram" },
+  { content: "We elevate the backdrop of your life. Lume Paint Co - where color meets craftsmanship.", category: "general", platform: "instagram" },
+  { content: "Interior transformations that reflect your style. Elevating the backdrop of your life.", category: "interior", platform: "instagram" },
   { content: "Exterior painting with lasting beauty. Lume protects what matters most.", category: "exterior", platform: "facebook" },
   { content: "Commercial spaces deserve professional finishes. Lume delivers on time, every time.", category: "commercial", platform: "facebook" },
-  { content: "Breathe new life into your kitchen. Cabinet painting by Lume.", category: "cabinets", platform: "nextdoor" },
+  { content: "Breathe new life into your kitchen. Cabinet painting by Lume - elevating the backdrop of your life.", category: "cabinets", platform: "nextdoor" },
   { content: "Precision trim work. The finishing touch your home deserves.", category: "trim", platform: "instagram" },
   { content: "Outdoor living, perfected. Deck and fence services by Lume Paint Co.", category: "decks", platform: "nextdoor" },
-  { content: "Why Lume? Because your home deserves the best. Free consultations available.", category: "general", platform: "facebook" },
+  { content: "Why Lume? We elevate the backdrop of your life. Free consultations available.", category: "general", platform: "facebook" },
   { content: "See the Lume difference. Stunning transformations, happy homeowners.", category: "general", platform: "instagram" },
-  { content: "Trusted by your community. Lume Paint Co - painting done right.", category: "general", platform: "nextdoor" },
-  { content: "Light up your living spaces. Lume Paint Co - where excellence shines.", category: "general", platform: "instagram" },
-  { content: "Professional painters. Premium results. The Lume promise.", category: "general", platform: "facebook" },
+  { content: "Trusted by your community. Lume Paint Co - elevating the backdrop of your life.", category: "general", platform: "nextdoor" },
+  { content: "We elevate the backdrop of your life. Lume Paint Co - where excellence shines.", category: "general", platform: "instagram" },
+  { content: "Professional painters. Premium results. Elevating the backdrop of your life.", category: "general", platform: "facebook" },
 ];
 
 const SAMPLE_SEASONAL_NPP: Partial<SocialPost>[] = [
