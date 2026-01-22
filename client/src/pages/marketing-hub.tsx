@@ -653,6 +653,70 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
+              {/* What I Need From You - Logan's Tasks */}
+              <GlassCard className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-700">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-amber-500" />
+                  What I Need From You
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  Here's where you can make a real impact - none of these are urgent, just whenever you have time:
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      Review AI Captions
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      When the AI generates content, give it a quick read. Does it sound like NPP? 
+                      Flag anything that feels off - your gut check is valuable.
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-blue-500" />
+                      Spot Trends
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      You're on social media more than me. If you see a trending format or meme that could work 
+                      for a painting company, let me know. Fresh ideas keep us relevant.
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-purple-500" />
+                      Check Engagement
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      Once a week, peek at which posts are getting likes/comments. 
+                      The Analytics tab shows this - just note anything surprising.
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-pink-500" />
+                      Image Picks
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      Browse the Content Catalog when you have a minute. If you see images that would 
+                      work great together or spot any that look outdated, let me know.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                  <p className="text-xs text-amber-800 dark:text-amber-200">
+                    <strong>No pressure:</strong> None of these are required. The system runs without input. 
+                    But your perspective as someone in the target demographic is genuinely helpful when you have spare time.
+                  </p>
+                </div>
+              </GlassCard>
+
               {/* AI Marketing Assistant - Proactive & Productive */}
               <GlassCard className="p-6 bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-900/20 dark:to-cyan-900/20 border-indigo-200 dark:border-indigo-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
