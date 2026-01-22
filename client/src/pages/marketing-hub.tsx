@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Megaphone, Instagram, Facebook, Home, Calendar, 
   TrendingUp, Clock, CheckCircle, AlertTriangle, Edit, 
-  Trash2, Plus, Copy, Lock, User, 
+  Trash2, Plus, Copy, Lock, User, Mic,
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
   FileText, Users, BarChart3, Target, Lightbulb
@@ -731,6 +731,71 @@ export default function MarketingHub() {
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 font-medium">
                   Until then, feel free to explore the Content Catalog and Analytics tabs. The foundation is ready!
                 </p>
+              </GlassCard>
+
+              {/* AI Agent Instructions */}
+              <GlassCard className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-cyan-200 dark:border-cyan-700">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-cyan-500" />
+                  How to Work with the Marketing AI
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  The Marketing AI is voice-enabled and designed to be your hands-off assistant. Here's what it can do:
+                </p>
+                
+                <div className="space-y-4">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <Mic className="w-4 h-4 text-cyan-500" />
+                      Voice Commands (Coming Soon)
+                    </p>
+                    <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                      <p className="italic">"Generate a post about spring exterior painting"</p>
+                      <p className="italic">"Schedule the deck staining post for Tuesday at 10am"</p>
+                      <p className="italic">"What content hasn't been used in 30 days?"</p>
+                      <p className="italic">"Show me our best performing posts this month"</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-purple-500" />
+                      Auto-Calendar Population
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      Once Meta is connected, the AI will automatically populate your posting calendar based on:
+                    </p>
+                    <ul className="text-xs text-gray-600 dark:text-gray-300 mt-2 space-y-1 list-disc list-inside">
+                      <li>Optimal posting times from your analytics data</li>
+                      <li>Seasonal relevance (spring cleaning, summer decks, holiday prep)</li>
+                      <li>Content rotation to prevent staleness</li>
+                      <li>Platform-specific best practices (Instagram vs Facebook vs Nextdoor)</li>
+                    </ul>
+                  </div>
+
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
+                      <Target className="w-4 h-4 text-green-500" />
+                      Smart Ad Timing
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
+                      When Meta integration is live, the AI will run ads at the right times:
+                    </p>
+                    <ul className="text-xs text-gray-600 dark:text-gray-300 mt-2 space-y-1 list-disc list-inside">
+                      <li>Boost high-performing organic posts automatically</li>
+                      <li>Target peak engagement windows based on your audience</li>
+                      <li>Adjust spend based on lead response rates</li>
+                      <li>Pause underperforming ads before they waste budget</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-cyan-100 dark:bg-cyan-900/40 rounded-lg">
+                  <p className="text-xs text-cyan-800 dark:text-cyan-200">
+                    <strong>Bottom Line:</strong> You focus on school. The AI keeps the marketing machine running. 
+                    Just check in occasionally and send a quick message if you're updating anything.
+                  </p>
+                </div>
               </GlassCard>
             </TabsContent>
 
