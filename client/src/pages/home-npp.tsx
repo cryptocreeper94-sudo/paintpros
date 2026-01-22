@@ -128,7 +128,7 @@ export default function HomeNPP() {
                 <span className="block">Professionals</span>
               </h1>
               <p className="text-lg md:text-2xl text-[#800000] max-w-2xl mx-auto md:mx-0">
-                Turning familiar spaces into extraordinary places
+                Transforming familiar spaces into extraordinary places
               </p>
             </motion.div>
 

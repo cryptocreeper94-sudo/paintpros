@@ -112,7 +112,7 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   subscriptionTier: "full_suite",
   
   name: "Nashville Painting Professionals",
-  tagline: "Turning familiar spaces into extraordinary places.",
+  tagline: "Transforming familiar spaces into extraordinary places.",
   description: "Nashville's premier painting company offering professional interior and exterior painting services for residential and commercial properties.",
   logo: "/icons/npp-mascot.png",
   

@@ -64,17 +64,17 @@ const PLATFORMS = [
 ];
 
 const SAMPLE_EVERGREEN_NPP: Partial<SocialPost>[] = [
-  { content: "Turning familiar spaces into extraordinary places. Nashville Painting Professionals - quality craftsmanship, exceptional results.", category: "general", platform: "instagram" },
-  { content: "Interior painting that brings your vision to life. Turning familiar spaces into extraordinary places.", category: "interior", platform: "instagram" },
+  { content: "Transforming familiar spaces into extraordinary places. Nashville Painting Professionals - quality craftsmanship, exceptional results.", category: "general", platform: "instagram" },
+  { content: "Interior painting that brings your vision to life. Transforming familiar spaces into extraordinary places.", category: "interior", platform: "instagram" },
   { content: "Protect your investment with professional exterior painting. Weather-resistant finishes that last.", category: "exterior", platform: "facebook" },
   { content: "Commercial painting solutions for businesses that demand excellence. Minimal disruption, maximum impact.", category: "commercial", platform: "facebook" },
   { content: "Cabinet refinishing that saves thousands over replacement. Fresh look, fraction of the cost.", category: "cabinets", platform: "nextdoor" },
   { content: "The details matter. Professional trim and door painting for a polished finish.", category: "trim", platform: "instagram" },
   { content: "Deck staining and fence refinishing. Extend the life of your outdoor spaces.", category: "decks", platform: "nextdoor" },
-  { content: "Why choose Nashville Painting Professionals? We're turning familiar spaces into extraordinary places - one home at a time.", category: "general", platform: "facebook" },
+  { content: "Why choose Nashville Painting Professionals? We're transforming familiar spaces into extraordinary places - one home at a time.", category: "general", platform: "facebook" },
   { content: "Before & After: See the difference professional painting makes. Free estimates available.", category: "general", platform: "instagram" },
   { content: "Your neighbors trust us. Join hundreds of satisfied Nashville homeowners.", category: "general", platform: "nextdoor" },
-  { content: "Quality paint. Expert application. Turning familiar spaces into extraordinary places.", category: "general", platform: "instagram" },
+  { content: "Quality paint. Expert application. Transforming familiar spaces into extraordinary places.", category: "general", platform: "instagram" },
   { content: "From prep to perfection - our process ensures flawless results every time.", category: "general", platform: "facebook" },
 ];
 

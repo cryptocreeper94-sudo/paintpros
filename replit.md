@@ -7,7 +7,7 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 I prefer simple language and detailed explanations. I want iterative development and for you to ask before making major changes. Do not make changes to the `assets/branding/` folder.
 
 ## Brand Taglines
-- **NPP (Nashville Painting Professionals)**: "Turning familiar spaces into extraordinary places."
+- **NPP (Nashville Painting Professionals)**: "Transforming familiar spaces into extraordinary places."
 - **Lume Paint Co**: "We elevate the backdrop of your life." (or "Elevating the backdrop of your life" depending on context)
 
 ## System Architecture
