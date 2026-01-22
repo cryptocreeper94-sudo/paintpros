@@ -2407,9 +2407,10 @@ export type LaborEstimate = typeof laborEstimates.$inferSelect;
 // MARKETING AUTO-DEPLOY SYSTEM
 // ============================================
 
-// Marketing Posts - Content for social media rotation
+// Marketing Posts - Content for social media rotation (tenant-scoped)
 export const marketingPosts = pgTable("marketing_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("shared"),
   content: text("content").notNull(),
   category: text("category").notNull().default("general"), // general, promo, tips, testimonial
   imageUrl: text("image_url"),
@@ -2418,6 +2419,7 @@ export const marketingPosts = pgTable("marketing_posts", {
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
+  index("idx_marketing_posts_tenant").on(table.tenantId),
   index("idx_marketing_posts_category").on(table.category),
   index("idx_marketing_posts_active").on(table.isActive),
 ]);

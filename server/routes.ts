@@ -6815,7 +6815,8 @@ Do not include any text before or after the JSON.`
   });
   
   app.get("/api/marketing/posts", async (req, res) => {
-    const posts = await storage.getMarketingPosts();
+    const tenantId = req.query.tenantId as string | undefined;
+    const posts = await storage.getMarketingPosts(tenantId);
     res.json(posts);
   });
   
@@ -6834,7 +6835,7 @@ Do not include any text before or after the JSON.`
     res.status(204).send();
   });
 
-  // Seed marketing images (110 generated images across 14 categories)
+  // Seed marketing images (110+ generated images across 14 categories)
   app.post("/api/marketing/seed", async (req, res) => {
     const tenantId = (req.body.tenantId as string) || "npp";
     
@@ -6843,13 +6844,16 @@ Do not include any text before or after the JSON.`
       { name: "exterior", count: 12, label: "Exterior Painting" },
       { name: "cabinets", count: 8, label: "Cabinet Refinishing" },
       { name: "trim", count: 8, label: "Trim & Molding" },
-      { name: "commercial_office", count: 5, label: "Commercial Office" },
-      { name: "commercial_warehouse", count: 5, label: "Commercial Warehouse" },
+      { name: "commercial_office", count: 6, label: "Commercial Office" },
+      { name: "commercial_warehouse", count: 6, label: "Commercial Warehouse" },
       { name: "apartments", count: 8, label: "Apartments" },
       { name: "doors", count: 6, label: "Doors" },
       { name: "windows", count: 6, label: "Windows" },
-      { name: "decks", count: 6, label: "Decks & Patios" },
-      { name: "general", count: 10, label: "General Projects" }
+      { name: "decks", count: 8, label: "Decks & Patios" },
+      { name: "before_after", count: 10, label: "Before & After Transformations" },
+      { name: "crew_at_work", count: 6, label: "Crew at Work" },
+      { name: "testimonials", count: 8, label: "Customer Testimonials" },
+      { name: "general", count: 8, label: "General Projects" }
     ];
     
     const createdImages: any[] = [];
@@ -6884,8 +6888,9 @@ Do not include any text before or after the JSON.`
     }
   });
 
-  // Seed marketing posts with realistic content
+  // Seed marketing posts with realistic content (tenant-scoped)
   app.post("/api/marketing/seed-posts", async (req, res) => {
+    const tenantId = (req.body.tenantId as string) || "shared";
     const categories = ['general', 'promo', 'tips', 'testimonial'];
     const sampleContent = [
       "Transform your home with professional painting services! Our expert crew delivers flawless results every time.",
@@ -6909,9 +6914,10 @@ Do not include any text before or after the JSON.`
         usedDate.setDate(usedDate.getDate() - daysAgo);
         
         const post = await storage.createMarketingPost({
+          tenantId,
           content: sampleContent[i % sampleContent.length],
           category: categories[Math.floor(Math.random() * categories.length)],
-          imageUrl: `https://picsum.photos/seed/post${i}/800/600`,
+          imageUrl: `https://picsum.photos/seed/post${tenantId}${i}/800/600`,
           isActive: Math.random() > 0.1,
         });
         
@@ -6926,7 +6932,7 @@ Do not include any text before or after the JSON.`
         posts.push(post);
       }
       
-      res.json({ success: true, count: posts.length, message: `Seeded ${posts.length} marketing posts` });
+      res.json({ success: true, count: posts.length, message: `Seeded ${posts.length} marketing posts for ${tenantId}` });
     } catch (error: any) {
       console.error("Seed posts error:", error);
       res.status(500).json({ error: error.message });
