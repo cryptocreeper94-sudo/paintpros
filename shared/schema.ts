@@ -5386,3 +5386,201 @@ export const TRADEWORKS_CALCULATORS = {
   ]
 } as const;
 
+// ==========================================
+// MARKETING ASSET MANAGEMENT (DAM) SYSTEM
+// ==========================================
+
+// Marketing Images - Catalog of all marketing imagery
+export const marketingImages = pgTable("marketing_images", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(), // 'npp', 'lumepaint', 'shared'
+  
+  // Image details
+  filename: text("filename").notNull(),
+  filePath: text("file_path").notNull(), // Path in assets folder
+  altText: text("alt_text"),
+  
+  // Categorization
+  category: text("category").notNull(), // 'interior', 'exterior', 'cabinets', 'doors', 'trim', 'decks', 'commercial_office', 'commercial_warehouse', 'apartments', 'windows', 'general'
+  subcategory: text("subcategory"), // More specific like 'accent_wall', 'full_room', 'before_after'
+  tags: text("tags").array(), // ['modern', 'traditional', 'bright', 'dark', 'residential', 'commercial']
+  
+  // Metadata
+  width: integer("width"),
+  height: integer("height"),
+  aspectRatio: text("aspect_ratio"), // '1:1', '16:9', '4:3', '9:16'
+  
+  // Usage tracking
+  usageCount: integer("usage_count").default(0),
+  lastUsedAt: timestamp("last_used_at"),
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  isFavorite: boolean("is_favorite").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_images_tenant").on(table.tenantId),
+  index("idx_marketing_images_category").on(table.category),
+  index("idx_marketing_images_active").on(table.isActive),
+]);
+
+export const insertMarketingImageSchema = createInsertSchema(marketingImages).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertMarketingImage = z.infer<typeof insertMarketingImageSchema>;
+export type MarketingImage = typeof marketingImages.$inferSelect;
+
+// Marketing Posts - Social media post content library
+export const marketingPosts = pgTable("marketing_posts", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(), // 'npp', 'lumepaint'
+  
+  // Content
+  content: text("content").notNull(),
+  
+  // Categorization
+  category: text("category").notNull(), // 'interior', 'exterior', 'cabinets', 'doors', 'trim', 'decks', 'commercial', 'general'
+  type: text("type").notNull(), // 'evergreen', 'seasonal'
+  platform: text("platform").notNull(), // 'instagram', 'facebook', 'nextdoor'
+  
+  // Optional seasonal details
+  seasonalStart: text("seasonal_start"), // 'jan', 'spring', etc.
+  seasonalEnd: text("seasonal_end"),
+  
+  // Associated image
+  imageId: varchar("image_id", { length: 36 }).references(() => marketingImages.id),
+  
+  // Usage tracking
+  usageCount: integer("usage_count").default(0),
+  lastUsedAt: timestamp("last_used_at"),
+  
+  // Scheduling
+  status: text("status").default("draft"), // 'draft', 'scheduled', 'posted', 'retired'
+  scheduledFor: timestamp("scheduled_for"),
+  postedAt: timestamp("posted_at"),
+  
+  // Collaboration
+  claimedBy: text("claimed_by"),
+  claimedAt: timestamp("claimed_at"),
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  isFavorite: boolean("is_favorite").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_posts_tenant").on(table.tenantId),
+  index("idx_marketing_posts_category").on(table.category),
+  index("idx_marketing_posts_type").on(table.type),
+  index("idx_marketing_posts_platform").on(table.platform),
+  index("idx_marketing_posts_status").on(table.status),
+]);
+
+export const insertMarketingPostSchema = createInsertSchema(marketingPosts).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertMarketingPost = z.infer<typeof insertMarketingPostSchema>;
+export type MarketingPost = typeof marketingPosts.$inferSelect;
+
+// Marketing Usage Log - Track when and where content is used
+export const marketingUsageLog = pgTable("marketing_usage_log", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  
+  // What was used
+  assetType: text("asset_type").notNull(), // 'image', 'post'
+  assetId: varchar("asset_id", { length: 36 }).notNull(),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Where it was used
+  platform: text("platform").notNull(), // 'instagram', 'facebook', 'nextdoor', 'website', 'print'
+  campaignName: text("campaign_name"),
+  
+  // When
+  usedAt: timestamp("used_at").defaultNow().notNull(),
+  
+  // Who
+  usedBy: text("used_by"),
+  
+  // Performance (optional, for future tracking)
+  impressions: integer("impressions"),
+  engagements: integer("engagements"),
+  clicks: integer("clicks"),
+  
+  notes: text("notes"),
+}, (table) => [
+  index("idx_marketing_usage_asset").on(table.assetId),
+  index("idx_marketing_usage_tenant").on(table.tenantId),
+  index("idx_marketing_usage_platform").on(table.platform),
+  index("idx_marketing_usage_date").on(table.usedAt),
+]);
+
+export const insertMarketingUsageLogSchema = createInsertSchema(marketingUsageLog).omit({ id: true });
+export type InsertMarketingUsageLog = z.infer<typeof insertMarketingUsageLogSchema>;
+export type MarketingUsageLog = typeof marketingUsageLog.$inferSelect;
+
+// Marketing Analytics - Aggregated performance metrics
+export const marketingAnalytics = pgTable("marketing_analytics", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Time period
+  periodType: text("period_type").notNull(), // 'daily', 'weekly', 'monthly'
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  
+  // Platform breakdown
+  platform: text("platform").notNull(), // 'instagram', 'facebook', 'nextdoor', 'all'
+  
+  // Content metrics
+  postsScheduled: integer("posts_scheduled").default(0),
+  postsPublished: integer("posts_published").default(0),
+  imagesUsed: integer("images_used").default(0),
+  
+  // Engagement metrics
+  totalImpressions: integer("total_impressions").default(0),
+  totalEngagements: integer("total_engagements").default(0),
+  totalClicks: integer("total_clicks").default(0),
+  
+  // Derived metrics
+  engagementRate: real("engagement_rate"), // engagements / impressions
+  clickThroughRate: real("click_through_rate"), // clicks / impressions
+  
+  // Category performance
+  topCategories: jsonb("top_categories"), // [{ category: 'interior', count: 10, engagement: 500 }]
+  topPosts: jsonb("top_posts"), // [{ postId: '...', content: '...', engagements: 100 }]
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_analytics_tenant").on(table.tenantId),
+  index("idx_marketing_analytics_period").on(table.periodStart),
+  index("idx_marketing_analytics_platform").on(table.platform),
+]);
+
+export const insertMarketingAnalyticsSchema = createInsertSchema(marketingAnalytics).omit({ id: true, createdAt: true });
+export type InsertMarketingAnalytics = z.infer<typeof insertMarketingAnalyticsSchema>;
+export type MarketingAnalytics = typeof marketingAnalytics.$inferSelect;
+
+// Marketing Categories constant
+export const MARKETING_CATEGORIES = [
+  'interior',
+  'exterior', 
+  'cabinets',
+  'doors',
+  'trim',
+  'decks',
+  'commercial_office',
+  'commercial_warehouse',
+  'apartments',
+  'windows',
+  'general',
+  'before_after',
+  'crew',
+  'seasonal'
+] as const;
+
+export type MarketingCategory = typeof MARKETING_CATEGORIES[number];
+
+// Marketing Platforms constant
+export const MARKETING_PLATFORMS = ['instagram', 'facebook', 'nextdoor'] as const;
+export type MarketingPlatform = typeof MARKETING_PLATFORMS[number];
+
+
