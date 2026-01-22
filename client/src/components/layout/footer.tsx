@@ -127,6 +127,7 @@ export function Footer() {
             <a href="/owner" className="text-purple-600/70 hover:text-purple-500 transition-colors" data-testid="link-owner">Owner</a>
             <a href="/admin" className="text-blue-600/70 hover:text-blue-500 transition-colors" data-testid="link-admin">Admin</a>
             <a href="/project-manager" className="text-teal-600/70 hover:text-teal-500 transition-colors" data-testid="link-pm">PM</a>
+            <a href="/marketing-hub" className="text-pink-600/70 hover:text-pink-500 transition-colors" data-testid="link-marketing">Mktg</a>
           </div>
           
           {/* Desktop Links */}
