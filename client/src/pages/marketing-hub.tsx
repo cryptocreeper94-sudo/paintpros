@@ -660,59 +660,61 @@ export default function MarketingHub() {
                   What I Need From You
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                  Here's where you can make a real impact - none of these are urgent, just whenever you have time:
+                  The system is built and ready to go. Now I need your help running it. These are your responsibilities 
+                  to keep the marketing machine operating at maximum effectiveness:
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border-l-4 border-green-500">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       Review AI Captions
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
-                      When the AI generates content, give it a quick read. Does it sound like NPP? 
-                      Flag anything that feels off - your gut check is valuable.
+                      When the AI generates content, review it before it goes live. Does it sound like NPP? 
+                      Your approval ensures brand voice stays consistent.
                     </p>
                   </div>
                   
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border-l-4 border-blue-500">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-blue-500" />
                       Spot Trends
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
-                      You're on social media more than me. If you see a trending format or meme that could work 
-                      for a painting company, let me know. Fresh ideas keep us relevant.
+                      You're on social media daily. When you see trending formats or ideas that could work 
+                      for a painting company, flag them. This keeps our content fresh and relevant.
                     </p>
                   </div>
                   
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border-l-4 border-purple-500">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
                       <BarChart3 className="w-4 h-4 text-purple-500" />
-                      Check Engagement
+                      Monitor Engagement
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
-                      Once a week, peek at which posts are getting likes/comments. 
-                      The Analytics tab shows this - just note anything surprising.
+                      Check the Analytics tab weekly. Note which posts are winning and which are underperforming. 
+                      This data drives our optimization decisions.
                     </p>
                   </div>
                   
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border-l-4 border-pink-500">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
                       <Palette className="w-4 h-4 text-pink-500" />
-                      Image Picks
+                      Curate the Library
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
-                      Browse the Content Catalog when you have a minute. If you see images that would 
-                      work great together or spot any that look outdated, let me know.
+                      Browse the Content Catalog regularly. Flag outdated images, suggest new pairings, 
+                      and keep the library fresh. Quality in = quality out.
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-4 p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
                   <p className="text-xs text-amber-800 dark:text-amber-200">
-                    <strong>No pressure:</strong> None of these are required. The system runs without input. 
-                    But your perspective as someone in the target demographic is genuinely helpful when you have spare time.
+                    <strong>Your role is critical:</strong> The AI handles the heavy lifting, but your eyes on the system 
+                    ensure we catch issues early and stay ahead of the competition. Together, we're running a marketing 
+                    operation that most small businesses can't afford.
                   </p>
                 </div>
               </GlassCard>
