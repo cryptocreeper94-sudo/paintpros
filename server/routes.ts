@@ -2497,7 +2497,7 @@ Format the response as JSON with these fields:
       }
       
       // Check all possible roles for this PIN
-      const roles = ["ops_manager", "owner", "project_manager", "developer", "crew_lead", "demo_viewer", "area_manager"];
+      const roles = ["ops_manager", "owner", "project_manager", "developer", "crew_lead", "demo_viewer", "area_manager", "marketing"];
       
       for (const role of roles) {
         const userPin = await storage.getUserPinByRole(role);

@@ -24,8 +24,6 @@ import {
 import { useTenant } from "@/context/TenantContext";
 import { format, subWeeks, isAfter, startOfWeek, addDays } from "date-fns";
 
-const DEFAULT_PIN = "Mkt2025!";
-
 interface SocialPost {
   id: string;
   brand: "npp" | "lumepaint";
@@ -116,7 +114,7 @@ export default function MarketingHub() {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [showPinChange, setShowPinChange] = useState(false);
-  const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
+  const [userRole, setUserRole] = useState<string>("");
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "calendar" | "analytics">("overview");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
@@ -186,23 +184,47 @@ export default function MarketingHub() {
     return hasLower && hasUpper && hasSpecial && hasNumber && testPin.length >= 6;
   };
 
-  const handleLogin = () => {
-    if (pin === currentPin) {
-      setIsAuthenticated(true);
-      setError("");
-      if (pin === DEFAULT_PIN) {
-        setShowPinChange(true);
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("/api/auth/pin/verify-any", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+      const data = await response.json();
+      
+      if (data.success && (data.role === "marketing" || data.role === "developer" || data.role === "owner")) {
+        setIsAuthenticated(true);
+        setUserRole(data.role);
+        setError("");
+        if (data.mustChangePin) {
+          setShowPinChange(true);
+        }
+      } else if (data.success) {
+        setError("Access denied. Marketing, Developer, or Owner PIN required.");
+      } else {
+        setError("Invalid PIN. Please try again.");
       }
-    } else {
-      setError("Invalid PIN. Please try again.");
+    } catch (err) {
+      setError("Failed to verify PIN. Please try again.");
     }
   };
 
-  const handlePinChange = (newPin: string) => {
+  const handlePinChange = async (newPin: string) => {
     if (validatePinStrength(newPin)) {
-      setCurrentPin(newPin);
-      localStorage.setItem("marketing_pin", newPin);
-      setShowPinChange(false);
+      try {
+        const response = await fetch("/api/auth/pin/change", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: userRole, currentPin: pin, newPin }),
+        });
+        const data = await response.json();
+        if (data.success) {
+          setShowPinChange(false);
+        }
+      } catch (err) {
+        console.error("Failed to change PIN:", err);
+      }
     }
   };
 
