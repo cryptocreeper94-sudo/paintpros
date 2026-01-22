@@ -155,7 +155,7 @@ export default function HomeNPP() {
             </motion.p>
           </div>
 
-          {/* Mobile painters image - centered below content, shifted up visually, behind text */}
+          {/* Mobile painters image - centered below content, positioned to avoid text overlap */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -165,7 +165,7 @@ export default function HomeNPP() {
             <img
               src={paintersImage}
               alt="Professional painters at work"
-              className="mx-auto block w-full max-w-full object-contain -translate-y-[85px] scale-[2.309]"
+              className="mx-auto block w-full max-w-full object-contain translate-y-[40px] scale-[2.1]"
             />
           </motion.div>
         </section>
