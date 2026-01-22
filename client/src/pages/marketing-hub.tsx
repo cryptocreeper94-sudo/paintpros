@@ -118,7 +118,7 @@ export default function MarketingHub() {
   const [showPinChange, setShowPinChange] = useState(false);
   const [currentPin, setCurrentPin] = useState(DEFAULT_PIN);
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [activeTab, setActiveTab] = useState<"catalog" | "calendar" | "analytics">("catalog");
+  const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "calendar" | "analytics">("overview");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -450,10 +450,14 @@ export default function MarketingHub() {
           </BentoGrid>
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
+                <Sparkles className="w-4 h-4" />
+                Overview
+              </TabsTrigger>
               <TabsTrigger value="catalog" className="flex items-center gap-2" data-testid="tab-catalog">
                 <FileText className="w-4 h-4" />
-                Content Catalog
+                Catalog
               </TabsTrigger>
               <TabsTrigger value="calendar" className="flex items-center gap-2" data-testid="tab-calendar">
                 <Calendar className="w-4 h-4" />
@@ -464,6 +468,173 @@ export default function MarketingHub() {
                 Analytics
               </TabsTrigger>
             </TabsList>
+
+            {/* OVERVIEW TAB - Welcome, Status, Roadmap */}
+            <TabsContent value="overview" className="space-y-6">
+              {/* Welcome Section for Logan */}
+              <GlassCard className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      Welcome to the Marketing Hub, Logan!
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                      This is your command center for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"} social media marketing. 
+                      Everything is designed to run automatically with minimal coordination needed. 
+                      When you make changes, just shoot a quick message. The system handles the rest.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* What's Working Now - Status Dashboard */}
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  What's Working Now
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">100+ Marketing Images</p>
+                      <p className="text-xs text-gray-500">Digital Asset Library across 14 categories</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Content Catalog</p>
+                      <p className="text-xs text-gray-500">Evergreen + Seasonal posts ready to schedule</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Scheduling Calendar</p>
+                      <p className="text-xs text-gray-500">4-week duplicate prevention built in</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Analytics Dashboard</p>
+                      <p className="text-xs text-gray-500">Weekly trends, KPIs, performance insights</p>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Meta Business Suite Integration Roadmap */}
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Target className="w-5 h-5 text-blue-500" />
+                  AI Marketing Autopilot - Roadmap
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  Our goal: Set it and forget it. The system posts automatically while you focus on what matters.
+                </p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-l-4 border-blue-500">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-300 font-bold text-sm">1</div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Meta Business Suite Integration</p>
+                      <p className="text-xs text-gray-500 mt-1">Connect Facebook + Instagram via Meta Graph API. Auto-post from your content library.</p>
+                      <Badge className="mt-2 bg-yellow-100 text-yellow-700 text-xs">Coming Soon</Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border-l-4 border-purple-500">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-800 flex items-center justify-center flex-shrink-0 text-purple-600 dark:text-purple-300 font-bold text-sm">2</div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">AI Content Generation</p>
+                      <p className="text-xs text-gray-500 mt-1">AI writes captions using your brand voice. "Transforming familiar spaces..." for NPP.</p>
+                      <Badge className="mt-2 bg-yellow-100 text-yellow-700 text-xs">Coming Soon</Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-l-4 border-green-500">
+                    <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center flex-shrink-0 text-green-600 dark:text-green-300 font-bold text-sm">3</div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Smart Carousel Scheduler</p>
+                      <p className="text-xs text-gray-500 mt-1">System rotates through content automatically. You just send a message when updating.</p>
+                      <Badge className="mt-2 bg-yellow-100 text-yellow-700 text-xs">Coming Soon</Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border-l-4 border-orange-500">
+                    <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-800 flex items-center justify-center flex-shrink-0 text-orange-600 dark:text-orange-300 font-bold text-sm">4</div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Platform Expansion</p>
+                      <p className="text-xs text-gray-500 mt-1">Start with Facebook/Instagram. Add X (Twitter) when franchising goes national.</p>
+                      <Badge className="mt-2 bg-gray-100 text-gray-600 text-xs">Future</Badge>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Google Analytics Integration */}
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-orange-500" />
+                  Google Analytics Integration
+                </h3>
+                <div className="flex items-start gap-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+                  <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Awaiting Authorization Code</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Once we receive the Google Analytics authorization code, this section will display:
+                    </p>
+                    <ul className="text-xs text-gray-500 mt-2 space-y-1 list-disc list-inside">
+                      <li>Live visitor tracking</li>
+                      <li>Traffic sources breakdown</li>
+                      <li>Lead conversion metrics</li>
+                      <li>Campaign performance (UTM tracking)</li>
+                    </ul>
+                    <Badge className="mt-3 bg-orange-100 text-orange-700 text-xs">Ready to Connect</Badge>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Quick Communication Guide */}
+              <GlassCard className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-yellow-500" />
+                  How This Works (Keep It Simple)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-2">
+                    <p className="font-semibold text-gray-900 dark:text-white">When you update content:</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs">Just send a quick message: "Hey, I updated next week's Nextdoor post."</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="font-semibold text-gray-900 dark:text-white">When I update content:</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs">I'll message you: "Updated the seasonal posts for spring. Take a look when you can."</p>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                    The goal is efficiency. You get credit for running a killer marketing campaign while focusing on schoolwork. 
+                    I focus on other things. The system runs like a carousel - it never stops.
+                  </p>
+                </div>
+              </GlassCard>
+            </TabsContent>
 
             <TabsContent value="catalog" className="space-y-6">
               <GlassCard className="p-4">
