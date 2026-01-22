@@ -131,6 +131,9 @@ import {
   type FranchiseAnalytics, type InsertFranchiseAnalytics, franchiseAnalytics,
   type BlogCategory, type InsertBlogCategory, blogCategories,
   type BlogPost, type InsertBlogPost, blogPosts,
+  type MarketingImage, type InsertMarketingImage, marketingImages,
+  type MarketingUsageLog, type InsertMarketingUsageLog, marketingUsageLog,
+  type MarketingPost, type InsertMarketingPost, marketingPosts,
   seoPages,
   assetNumberCounter,
   TENANT_PREFIXES
@@ -4088,6 +4091,55 @@ export class DatabaseStorage implements IStorage {
     await db.update(blogPosts)
       .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
       .where(eq(blogPosts.id, id));
+  }
+
+  // Marketing Images (DAM)
+  async createMarketingImage(image: InsertMarketingImage): Promise<MarketingImage> {
+    const [result] = await db.insert(marketingImages).values(image).returning();
+    return result;
+  }
+  async getMarketingImages(tenantId: string): Promise<MarketingImage[]> {
+    return await db.select().from(marketingImages).where(eq(marketingImages.tenantId, tenantId)).orderBy(desc(marketingImages.createdAt));
+  }
+  async getMarketingImagesByCategory(tenantId: string, category: string): Promise<MarketingImage[]> {
+    return await db.select().from(marketingImages)
+      .where(and(eq(marketingImages.tenantId, tenantId), eq(marketingImages.category, category)))
+      .orderBy(desc(marketingImages.createdAt));
+  }
+  async updateMarketingImage(id: string, updates: Partial<InsertMarketingImage>): Promise<MarketingImage | undefined> {
+    const [result] = await db.update(marketingImages).set({ ...updates, updatedAt: new Date() }).where(eq(marketingImages.id, id)).returning();
+    return result;
+  }
+  async deleteMarketingImage(id: string): Promise<void> {
+    await db.delete(marketingImages).where(eq(marketingImages.id, id));
+  }
+
+  // Marketing Usage Log
+  async createMarketingUsageLog(log: InsertMarketingUsageLog): Promise<MarketingUsageLog> {
+    const [result] = await db.insert(marketingUsageLog).values(log).returning();
+    return result;
+  }
+  async getMarketingUsageLogs(tenantId: string): Promise<MarketingUsageLog[]> {
+    return await db.select().from(marketingUsageLog).where(eq(marketingUsageLog.tenantId, tenantId)).orderBy(desc(marketingUsageLog.usedAt));
+  }
+  async getMarketingUsageByImage(imageId: string): Promise<MarketingUsageLog[]> {
+    return await db.select().from(marketingUsageLog).where(eq(marketingUsageLog.imageId, imageId)).orderBy(desc(marketingUsageLog.usedAt));
+  }
+
+  // Marketing Posts
+  async createMarketingPost(post: InsertMarketingPost): Promise<MarketingPost> {
+    const [result] = await db.insert(marketingPosts).values(post).returning();
+    return result;
+  }
+  async getMarketingPosts(tenantId: string): Promise<MarketingPost[]> {
+    return await db.select().from(marketingPosts).where(eq(marketingPosts.tenantId, tenantId)).orderBy(desc(marketingPosts.scheduledDate));
+  }
+  async updateMarketingPost(id: string, updates: Partial<InsertMarketingPost>): Promise<MarketingPost | undefined> {
+    const [result] = await db.update(marketingPosts).set(updates).where(eq(marketingPosts.id, id)).returning();
+    return result;
+  }
+  async deleteMarketingPost(id: string): Promise<void> {
+    await db.delete(marketingPosts).where(eq(marketingPosts.id, id));
   }
 }
 

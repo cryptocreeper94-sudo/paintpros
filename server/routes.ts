@@ -6740,6 +6740,101 @@ Do not include any text before or after the JSON.`
     res.json(optimizations);
   });
 
+  // ============ MARKETING DAM (Digital Asset Management) ============
+  
+  // Marketing Images
+  app.post("/api/marketing/images", async (req, res) => {
+    try {
+      const image = await storage.createMarketingImage(req.body);
+      res.status(201).json(image);
+    } catch (error: any) {
+      console.error("Error creating marketing image:", error);
+      res.status(500).json({ error: "Failed to create marketing image" });
+    }
+  });
+  
+  app.get("/api/marketing/images", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const category = req.query.category as string;
+    
+    if (category) {
+      const images = await storage.getMarketingImagesByCategory(tenantId, category);
+      res.json(images);
+    } else {
+      const images = await storage.getMarketingImages(tenantId);
+      res.json(images);
+    }
+  });
+  
+  app.patch("/api/marketing/images/:id", async (req, res) => {
+    try {
+      const image = await storage.updateMarketingImage(req.params.id, req.body);
+      if (!image) return res.status(404).json({ error: "Image not found" });
+      res.json(image);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update marketing image" });
+    }
+  });
+  
+  app.delete("/api/marketing/images/:id", async (req, res) => {
+    await storage.deleteMarketingImage(req.params.id);
+    res.status(204).send();
+  });
+  
+  // Marketing Usage Logs
+  app.post("/api/marketing/usage", async (req, res) => {
+    try {
+      const log = await storage.createMarketingUsageLog(req.body);
+      res.status(201).json(log);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to log marketing usage" });
+    }
+  });
+  
+  app.get("/api/marketing/usage", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const imageId = req.query.imageId as string;
+    
+    if (imageId) {
+      const logs = await storage.getMarketingUsageByImage(imageId);
+      res.json(logs);
+    } else {
+      const logs = await storage.getMarketingUsageLogs(tenantId);
+      res.json(logs);
+    }
+  });
+  
+  // Marketing Posts
+  app.post("/api/marketing/posts", async (req, res) => {
+    try {
+      const post = await storage.createMarketingPost(req.body);
+      res.status(201).json(post);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create marketing post" });
+    }
+  });
+  
+  app.get("/api/marketing/posts", async (req, res) => {
+    const tenantId = (req.query.tenantId as string) || "demo";
+    const posts = await storage.getMarketingPosts(tenantId);
+    res.json(posts);
+  });
+  
+  app.patch("/api/marketing/posts/:id", async (req, res) => {
+    try {
+      const post = await storage.updateMarketingPost(req.params.id, req.body);
+      if (!post) return res.status(404).json({ error: "Post not found" });
+      res.json(post);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update marketing post" });
+    }
+  });
+  
+  app.delete("/api/marketing/posts/:id", async (req, res) => {
+    await storage.deleteMarketingPost(req.params.id);
+    res.status(204).send();
+  });
+
   // ============ MODULE 3: IMMERSIVE SITE CAPTURE ============
   
   // Site Scans (Digital Twins)
