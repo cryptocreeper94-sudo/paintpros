@@ -254,9 +254,20 @@ export default function MarketingHub() {
         section5: `Section 5: How We Stay In Sync. When you update content, send a quick message. The goal is efficiency. The system runs like a carousel, it never stops.`,
       };
     }
-    // Developer, Owner, Admin view - more comprehensive
+    // Developer view - Marketing Director with multi-tenant access
+    if (isDeveloperRole) {
+      return {
+        welcome: `Welcome back, ${userName}. Marketing Director view for ${tenantName}. Use the tenant switcher to manage NPP and Lume marketing operations. Full access to content, analytics, scheduling, and automation across all properties.`,
+        section1: `Content Library: Over 100 marketing images organized by category. AI-powered caption generation. Visual content catalog with scheduling calendar.`,
+        section2: `Analytics: Real-time performance tracking, engagement metrics, and platform breakdowns. Monitor what's working across all tenants.`,
+        section3: `Automation Status: Manual rotation active. Meta API integration in progress. Full automation coming soon.`,
+        section4: `Roadmap: AI content suggestions, smart scheduling, performance alerts, and ad optimization.`,
+        section5: `Multi-Tenant Access: Switch between NPP and Lume using the tenant selector. All analytics are tenant-separated.`,
+      };
+    }
+    // Owner and Admin view
     return {
-      welcome: `Welcome back, ${userName}. You're viewing the Marketing Hub for ${tenantName}. Use the tenant switcher above to switch between NPP and Lume. This dashboard gives you full access to content management, analytics, and scheduling across all properties.`,
+      welcome: `Welcome back, ${userName}. You're viewing the Marketing Hub for ${tenantName}. Use the tenant switcher above to switch between NPP and Lume. This dashboard gives you visibility into marketing operations and performance.`,
       section1: `Content Library: Over 100 marketing images organized by category. AI-powered caption generation. Visual content catalog with scheduling calendar.`,
       section2: `Analytics: Real-time performance tracking, engagement metrics, and platform breakdowns. Monitor what's working across all tenants.`,
       section3: `Automation Status: Manual rotation active. Meta API integration in progress. Full automation coming soon.`,
@@ -630,7 +641,7 @@ export default function MarketingHub() {
           {userName && (
             <PersonalizedGreeting 
               userName={userName}
-              userRole={userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Developer" : userRole === "owner" ? "Owner" : "Admin"}
+              userRole={userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Marketing Director" : userRole === "owner" ? "Owner" : "Admin"}
               showWelcomeModal={showWelcomeModal}
               onWelcomeComplete={() => setShowWelcomeModal(false)}
               primaryColor="#9333ea"
