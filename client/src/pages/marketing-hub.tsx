@@ -2771,21 +2771,36 @@ export default function MarketingHub() {
               {/* WEBSITE ANALYTICS - Real Traffic Data */}
               <GlassCard className="p-6" data-testid="analytics-website-traffic">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selectedTenant === "npp" ? "from-blue-500 to-indigo-600" : "from-amber-500 to-orange-600"} flex items-center justify-center`}>
                       <Globe className="w-5 h-5 text-white" />
                     </div>
-                    Website Traffic
-                  </h3>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => refetchAnalytics()}
-                    data-testid="button-refresh-analytics"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-1" />
-                    Refresh
-                  </Button>
+                    <div>
+                      <h3 className="text-xl font-bold">Website Traffic</h3>
+                      <p className={`text-sm font-medium ${selectedTenant === "npp" ? "text-blue-600" : "text-amber-600"}`}>
+                        {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge 
+                      variant="outline" 
+                      className={`${selectedTenant === "npp" 
+                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 border-blue-200" 
+                        : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 border-amber-200"}`}
+                    >
+                      {selectedTenant === "npp" ? "NPP" : "LUME"}
+                    </Badge>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => refetchAnalytics()}
+                      data-testid="button-refresh-analytics"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      Refresh
+                    </Button>
+                  </div>
                 </div>
 
                 {analyticsLoading ? (
@@ -2964,9 +2979,14 @@ export default function MarketingHub() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Globe className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>Website analytics will appear here once traffic is tracked</p>
+                  <div className="text-center py-8">
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${selectedTenant === "npp" ? "from-blue-500/20 to-indigo-600/20" : "from-amber-500/20 to-orange-600/20"} flex items-center justify-center`}>
+                      <Globe className={`w-8 h-8 ${selectedTenant === "npp" ? "text-blue-500" : "text-amber-500"}`} />
+                    </div>
+                    <p className="font-medium mb-1">
+                      {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Website analytics will appear here once traffic is tracked</p>
                   </div>
                 )}
               </GlassCard>
