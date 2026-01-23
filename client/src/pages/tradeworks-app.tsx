@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { 
   Mic, MicOff, Volume2, VolumeX, Send, Loader2, 
   Calendar, Users, FileText, TrendingUp, MessageSquare,
@@ -14,11 +15,14 @@ import {
   ChevronRight, Plus, Search, Bell, Menu, X, Truck,
   CloudSun, Wrench, ClipboardList, CreditCard, PieChart,
   Target, Zap, Building2, HardHat, BarChart3, Wallet,
-  FileCheck, Shield, Car, Package, UserCheck, Bot
+  FileCheck, Shield, Car, Package, UserCheck, Bot, Upload
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import { DripJobsImport } from "@/components/crm/dripjobs-import";
+import { format } from "date-fns";
 
 type AppSection = "home" | "sales" | "schedule" | "money" | "crew" | "tools" | "ai";
 
@@ -65,9 +69,30 @@ export default function TradeWorksApp() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showDripJobsImport, setShowDripJobsImport] = useState(false);
   
   const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { data: leads = [] } = useQuery<any[]>({
+    queryKey: ["/api/leads"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: bookings = [] } = useQuery<any[]>({
+    queryKey: ["/api/bookings"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: estimates = [] } = useQuery<any[]>({
+    queryKey: ["/api/estimates"],
+    enabled: isAuthenticated,
+  });
+
+  const todayStr = new Date().toDateString();
+  const todaysJobs = bookings.filter((b: any) => new Date(b.date).toDateString() === todayStr);
+  const pendingLeads = leads.filter((l: any) => l.status === "new" || l.status === "pending");
+  const pendingEstimates = estimates.filter((e: any) => e.status === "pending" || e.status === "draft");
 
   useEffect(() => {
     if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
@@ -258,10 +283,10 @@ export default function TradeWorksApp() {
   };
 
   const todayStats: QuickStat[] = [
-    { label: "Today's Jobs", value: "4", icon: <Calendar className="w-4 h-4" />, change: "+1 from yesterday", trend: "up" },
-    { label: "Pending Leads", value: "12", icon: <Users className="w-4 h-4" />, change: "3 new today", trend: "up" },
-    { label: "Open Invoices", value: "$8,450", icon: <DollarSign className="w-4 h-4" />, change: "2 due this week", trend: "neutral" },
-    { label: "This Week", value: "$24,200", icon: <TrendingUp className="w-4 h-4" />, change: "+18% vs last week", trend: "up" },
+    { label: "Today's Jobs", value: String(todaysJobs.length), icon: <Calendar className="w-4 h-4" />, change: `${bookings.length} total scheduled`, trend: todaysJobs.length > 0 ? "up" : "neutral" },
+    { label: "Pending Leads", value: String(pendingLeads.length), icon: <Users className="w-4 h-4" />, change: `${leads.length} total leads`, trend: pendingLeads.length > 0 ? "up" : "neutral" },
+    { label: "Open Estimates", value: String(pendingEstimates.length), icon: <FileText className="w-4 h-4" />, change: `${estimates.length} total`, trend: pendingEstimates.length > 0 ? "up" : "neutral" },
+    { label: "This Week", value: `${bookings.length} jobs`, icon: <TrendingUp className="w-4 h-4" />, change: "Active pipeline", trend: "up" },
   ];
 
   if (!isAuthenticated) {
@@ -422,65 +447,74 @@ export default function TradeWorksApp() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-white font-semibold">Today's Jobs</h2>
-                  <Button variant="ghost" size="sm" className="text-orange-400 text-xs">View All</Button>
+                  <Button variant="ghost" size="sm" className="text-orange-400 text-xs" onClick={() => setActiveSection("schedule")}>View All</Button>
                 </div>
                 <div className="space-y-2">
-                  {[
-                    { time: "8:00 AM", customer: "Johnson Residence", type: "Interior Painting", status: "In Progress", crew: "Team Alpha" },
-                    { time: "10:30 AM", customer: "Smith Office", type: "Commercial", status: "Scheduled", crew: "Team Beta" },
-                    { time: "2:00 PM", customer: "Williams Home", type: "Exterior Prep", status: "Scheduled", crew: "Team Alpha" },
-                  ].map((job, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-3">
+                  {todaysJobs.length > 0 ? todaysJobs.slice(0, 3).map((job: any, i: number) => (
+                    <Card key={job.id || i} className="bg-gray-900/50 border-gray-800 p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="text-center">
-                            <p className="text-white text-sm font-medium">{job.time.split(' ')[0]}</p>
-                            <p className="text-gray-500 text-xs">{job.time.split(' ')[1]}</p>
+                            <p className="text-white text-sm font-medium">{job.timeSlot?.split(' ')[0] || '9:00'}</p>
+                            <p className="text-gray-500 text-xs">{job.timeSlot?.split(' ')[1] || 'AM'}</p>
                           </div>
                           <div className="w-px h-10 bg-gray-800" />
                           <div>
-                            <p className="text-white text-sm font-medium">{job.customer}</p>
-                            <p className="text-gray-500 text-xs">{job.type}</p>
-                            <p className="text-gray-600 text-xs">{job.crew}</p>
+                            <p className="text-white text-sm font-medium">{job.customerName || 'Customer'}</p>
+                            <p className="text-gray-500 text-xs">{job.serviceType || 'Service'}</p>
                           </div>
                         </div>
-                        <Badge className={job.status === "In Progress" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
-                          {job.status}
+                        <Badge className={job.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
+                          {job.status || 'Scheduled'}
                         </Badge>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-4 text-center">
+                      <p className="text-gray-500 text-sm">No jobs scheduled for today</p>
+                      <Button size="sm" className="mt-2 bg-orange-500" onClick={() => setActiveSection("schedule")}>View Schedule</Button>
+                    </Card>
+                  )}
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-white font-semibold">Hot Leads</h2>
-                  <Button variant="ghost" size="sm" className="text-orange-400 text-xs">View All</Button>
+                  <h2 className="text-white font-semibold">Recent Leads</h2>
+                  <Button variant="ghost" size="sm" className="text-orange-400 text-xs" onClick={() => setActiveSection("sales")}>View All</Button>
                 </div>
                 <div className="space-y-2">
-                  {[
-                    { name: "Sarah Mitchell", type: "Exterior Painting", value: "$4,200", time: "2h ago", score: 85 },
-                    { name: "David Chen", type: "Kitchen Cabinet", value: "$2,800", time: "5h ago", score: 72 },
-                  ].map((lead, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-3">
+                  {leads.length > 0 ? leads.slice(0, 3).map((lead: any, i: number) => (
+                    <Card key={lead.id || i} className="bg-gray-900/50 border-gray-800 p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                            {lead.name.split(' ').map(n => n[0]).join('')}
+                            {(lead.name || lead.email || 'L').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-white text-sm font-medium">{lead.name}</p>
-                            <p className="text-gray-500 text-xs">{lead.type}</p>
+                            <p className="text-white text-sm font-medium">{lead.name || lead.email || 'New Lead'}</p>
+                            <p className="text-gray-500 text-xs">{lead.serviceType || lead.source || 'Inquiry'}</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-green-400 text-sm font-medium">{lead.value}</p>
-                          <p className="text-gray-600 text-xs">{lead.time}</p>
+                          <Badge className={
+                            lead.status === "new" ? "bg-blue-500/20 text-blue-400" :
+                            lead.status === "hot" ? "bg-red-500/20 text-red-400" :
+                            "bg-gray-800 text-gray-400"
+                          }>
+                            {lead.status || 'New'}
+                          </Badge>
                         </div>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-4 text-center">
+                      <p className="text-gray-500 text-sm">No leads yet</p>
+                      <Button size="sm" className="mt-2 bg-orange-500" onClick={() => setShowDripJobsImport(true)}>
+                        <Upload className="w-4 h-4 mr-1" /> Import from DripJobs
+                      </Button>
+                    </Card>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -517,72 +551,82 @@ export default function TradeWorksApp() {
                 </TabsList>
                 
                 <TabsContent value="leads" className="mt-4 space-y-2">
-                  {[
-                    { name: "Sarah Mitchell", phone: "(615) 555-0123", type: "Exterior", value: "$4,200", status: "Hot", time: "2h" },
-                    { name: "David Chen", phone: "(615) 555-0456", type: "Cabinets", value: "$2,800", status: "Warm", time: "5h" },
-                    { name: "Amanda Foster", phone: "(615) 555-0789", type: "Interior", value: "$3,500", status: "New", time: "1d" },
-                    { name: "Michael Brown", phone: "(615) 555-0321", type: "Commercial", value: "$12,000", status: "Follow-up", time: "2d" },
-                  ].map((lead, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {leads.length > 0 ? leads.map((lead: any, i: number) => (
+                    <Card key={lead.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                            {lead.name.split(' ').map(n => n[0]).join('')}
+                            {(lead.name || lead.email || 'L').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-white font-medium">{lead.name}</p>
-                            <p className="text-gray-500 text-sm">{lead.type} - {lead.value}</p>
+                            <p className="text-white font-medium">{lead.name || lead.email || 'New Lead'}</p>
+                            <p className="text-gray-500 text-sm">{lead.serviceType || lead.source || 'Inquiry'}</p>
                           </div>
                         </div>
                         <Badge className={
-                          lead.status === "Hot" ? "bg-red-500/20 text-red-400" :
-                          lead.status === "Warm" ? "bg-orange-500/20 text-orange-400" :
-                          lead.status === "New" ? "bg-blue-500/20 text-blue-400" :
+                          lead.status === "hot" ? "bg-red-500/20 text-red-400" :
+                          lead.status === "warm" ? "bg-orange-500/20 text-orange-400" :
+                          lead.status === "new" ? "bg-blue-500/20 text-blue-400" :
                           "bg-gray-800 text-gray-400"
                         }>
-                          {lead.status}
+                          {lead.status || 'New'}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 mt-3">
-                        <Button size="sm" variant="outline" className="flex-1 border-gray-700 text-gray-300">
-                          <Phone className="w-3 h-3 mr-1" /> Call
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1 border-gray-700 text-gray-300">
-                          <Mail className="w-3 h-3 mr-1" /> Email
-                        </Button>
+                        {lead.phone && (
+                          <Button size="sm" variant="outline" className="flex-1 border-gray-700 text-gray-300" asChild>
+                            <a href={`tel:${lead.phone}`}><Phone className="w-3 h-3 mr-1" /> Call</a>
+                          </Button>
+                        )}
+                        {lead.email && (
+                          <Button size="sm" variant="outline" className="flex-1 border-gray-700 text-gray-300" asChild>
+                            <a href={`mailto:${lead.email}`}><Mail className="w-3 h-3 mr-1" /> Email</a>
+                          </Button>
+                        )}
                         <Button size="sm" className="flex-1 bg-orange-500 hover:bg-orange-600">
                           <FileText className="w-3 h-3 mr-1" /> Estimate
                         </Button>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>No leads yet</p>
+                      <Button size="sm" className="mt-2 bg-orange-500" onClick={() => setShowDripJobsImport(true)}>
+                        <Upload className="w-4 h-4 mr-1" /> Import from DripJobs
+                      </Button>
+                    </div>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="estimates" className="mt-4 space-y-2">
-                  {[
-                    { id: "EST-2024-001", customer: "Johnson Residence", total: "$6,800", status: "Pending", date: "Dec 15" },
-                    { id: "EST-2024-002", customer: "Smith Office", total: "$18,500", status: "Approved", date: "Dec 14" },
-                    { id: "EST-2024-003", customer: "Williams Home", total: "$4,200", status: "Draft", date: "Dec 13" },
-                  ].map((est, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {estimates.length > 0 ? estimates.map((est: any, i: number) => (
+                    <Card key={est.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium">{est.customer}</p>
-                          <p className="text-gray-500 text-sm">{est.id}</p>
+                          <p className="text-white font-medium">{est.customerName || est.name || 'Estimate'}</p>
+                          <p className="text-gray-500 text-sm">EST-{String(est.id).slice(0, 8)}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-white font-medium">{est.total}</p>
+                          <p className="text-white font-medium">${est.total?.toLocaleString() || est.amount?.toLocaleString() || '0'}</p>
                           <Badge className={
-                            est.status === "Approved" ? "bg-green-500/20 text-green-400" :
-                            est.status === "Pending" ? "bg-yellow-500/20 text-yellow-400" :
+                            est.status === "approved" || est.status === "accepted" ? "bg-green-500/20 text-green-400" :
+                            est.status === "pending" ? "bg-yellow-500/20 text-yellow-400" :
+                            est.status === "sent" ? "bg-blue-500/20 text-blue-400" :
                             "bg-gray-800 text-gray-400"
                           }>
-                            {est.status}
+                            {est.status || 'Draft'}
                           </Badge>
                         </div>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>No estimates yet</p>
+                      <Button size="sm" className="mt-2 bg-orange-500">Create Estimate</Button>
+                    </div>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="proposals" className="mt-4 space-y-2">
@@ -628,50 +672,50 @@ export default function TradeWorksApp() {
               </div>
 
               <div className="space-y-3">
-                {[
-                  { time: "8:00 AM", duration: "4h", customer: "Johnson Residence", address: "123 Oak Street", type: "Interior Painting", crew: "Team Alpha", status: "In Progress" },
-                  { time: "10:30 AM", duration: "3h", customer: "Smith Office", address: "456 Business Pkwy", type: "Commercial Painting", crew: "Team Beta", status: "Scheduled" },
-                  { time: "2:00 PM", duration: "2h", customer: "Williams Home", address: "789 Maple Ave", type: "Exterior Prep", crew: "Team Alpha", status: "Scheduled" },
-                  { time: "4:30 PM", duration: "1h", customer: "Davis Property", address: "321 Pine Rd", type: "Estimate Visit", crew: "Ryan", status: "Scheduled" },
-                ].map((job, i) => (
-                  <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                {bookings.length > 0 ? bookings.slice(0, 10).map((job: any, i: number) => (
+                  <Card key={job.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                     <div className="flex gap-3">
                       <div className="text-center min-w-[60px]">
-                        <p className="text-white font-medium">{job.time.split(' ')[0]}</p>
-                        <p className="text-gray-500 text-xs">{job.time.split(' ')[1]}</p>
-                        <p className="text-gray-600 text-xs mt-1">{job.duration}</p>
+                        <p className="text-white font-medium">{job.timeSlot?.split(' ')[0] || '9:00'}</p>
+                        <p className="text-gray-500 text-xs">{job.timeSlot?.split(' ')[1] || 'AM'}</p>
+                        <p className="text-gray-600 text-xs mt-1">{job.date ? format(new Date(job.date), 'MMM d') : ''}</p>
                       </div>
                       <div className="w-px bg-gray-800" />
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="text-white font-medium">{job.customer}</p>
-                            <p className="text-gray-500 text-sm">{job.type}</p>
-                            <div className="flex items-center gap-1 mt-1 text-gray-600 text-xs">
-                              <MapPin className="w-3 h-3" />
-                              {job.address}
-                            </div>
+                            <p className="text-white font-medium">{job.customerName || 'Customer'}</p>
+                            <p className="text-gray-500 text-sm">{job.serviceType || 'Service'}</p>
+                            {job.address && (
+                              <div className="flex items-center gap-1 mt-1 text-gray-600 text-xs">
+                                <MapPin className="w-3 h-3" />
+                                {job.address}
+                              </div>
+                            )}
                           </div>
-                          <Badge className={job.status === "In Progress" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
-                            {job.status}
+                          <Badge className={job.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
+                            {job.status || 'Scheduled'}
                           </Badge>
                         </div>
                         <div className="flex items-center gap-2 mt-3">
-                          <Badge variant="outline" className="border-gray-700 text-gray-400">
-                            <Users className="w-3 h-3 mr-1" />
-                            {job.crew}
-                          </Badge>
-                          <Button size="sm" variant="ghost" className="text-gray-400 ml-auto">
-                            <Phone className="w-3 h-3" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="text-gray-400">
-                            <MapPin className="w-3 h-3" />
-                          </Button>
+                          {job.phone && (
+                            <Button size="sm" variant="ghost" className="text-gray-400" asChild>
+                              <a href={`tel:${job.phone}`}><Phone className="w-3 h-3" /></a>
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
                   </Card>
-                ))}
+                )) : (
+                  <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                    <Calendar className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                    <p className="text-gray-500">No jobs scheduled</p>
+                    <Button size="sm" className="mt-3 bg-orange-500">
+                      <Plus className="w-4 h-4 mr-1" /> Add Job
+                    </Button>
+                  </Card>
+                )}
               </div>
             </motion.div>
           )}
@@ -1138,6 +1182,17 @@ export default function TradeWorksApp() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Sheet open={showDripJobsImport} onOpenChange={setShowDripJobsImport}>
+        <SheetContent side="bottom" className="h-[90vh] bg-gray-900 border-gray-800">
+          <SheetHeader>
+            <SheetTitle className="text-white">Import from DripJobs</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 h-full overflow-auto">
+            <DripJobsImport onComplete={() => setShowDripJobsImport(false)} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
