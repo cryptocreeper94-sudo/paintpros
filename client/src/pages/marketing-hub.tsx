@@ -21,7 +21,7 @@ import {
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
   FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2,
-  ImageIcon, MessageSquare, Layers, Wand2, Star
+  ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { PersonalizedGreeting } from "@/components/personalized-greeting";
@@ -211,7 +211,18 @@ export default function MarketingHub() {
   const [showPinChange, setShowPinChange] = useState(false);
   const [userRole, setUserRole] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  
+  // Logout function - clears session and resets state
+  const handleLogout = () => {
+    localStorage.removeItem("marketing_session");
+    setIsAuthenticated(false);
+    setUserRole("");
+    setUserName("");
+    setPin("");
+    setStayLoggedIn(false);
+  };
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [activeTab, setActiveTab] = useState<"overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics">("overview");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
@@ -375,6 +386,26 @@ export default function MarketingHub() {
     }
   };
 
+  // Check for saved session on mount (30-day persistence)
+  useEffect(() => {
+    const savedSession = localStorage.getItem("marketing_session");
+    if (savedSession) {
+      try {
+        const session = JSON.parse(savedSession);
+        if (session.expiry && new Date(session.expiry) > new Date()) {
+          setIsAuthenticated(true);
+          setUserRole(session.role);
+          setUserName(session.name);
+        } else {
+          // Session expired, clear it
+          localStorage.removeItem("marketing_session");
+        }
+      } catch (e) {
+        localStorage.removeItem("marketing_session");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const savedPosts = localStorage.getItem("marketing_posts");
     if (savedPosts) {
@@ -464,9 +495,22 @@ export default function MarketingHub() {
           project_manager: "PM",
           crew_lead: "Crew Lead",
         };
-        setUserName(roleNames[data.role] || data.role);
+        const name = roleNames[data.role] || data.role;
+        setUserName(name);
         setError("");
         setShowWelcomeModal(true);
+        
+        // Save session for 30 days if "Stay logged in" is checked
+        if (stayLoggedIn) {
+          const expiry = new Date();
+          expiry.setDate(expiry.getDate() + 30);
+          localStorage.setItem("marketing_session", JSON.stringify({
+            role: data.role,
+            name: name,
+            expiry: expiry.toISOString(),
+          }));
+        }
+        
         if (data.mustChangePin) {
           setShowPinChange(true);
         }
@@ -651,6 +695,30 @@ export default function MarketingHub() {
                   <Lock className="w-4 h-4 mr-2" />
                   Access Dashboard
                 </Button>
+                
+                {/* Stay Logged In Option */}
+                <div className="pt-2">
+                  <label className="flex items-start gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={stayLoggedIn}
+                      onChange={(e) => setStayLoggedIn(e.target.checked)}
+                      className="mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      data-testid="checkbox-stay-logged-in"
+                    />
+                    <div className="flex-1">
+                      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                        Stay logged in for 30 days
+                      </span>
+                      {stayLoggedIn && (
+                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" />
+                          Only use on your personal device. Others with access to this browser can enter your dashboard.
+                        </p>
+                      )}
+                    </div>
+                  </label>
+                </div>
               </div>
 
               <p className="text-xs text-gray-500 text-center mt-6">
@@ -709,6 +777,15 @@ export default function MarketingHub() {
               >
                 <Lock className="w-4 h-4 mr-1" />
                 PIN
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-red-600"
+                data-testid="button-logout"
+              >
+                <LogOut className="w-4 h-4" />
               </Button>
             </div>
           </motion.div>
