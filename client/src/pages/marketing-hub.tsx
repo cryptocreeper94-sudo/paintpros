@@ -232,6 +232,21 @@ export default function MarketingHub() {
   const [contentBundles, setContentBundles] = useState<ContentBundle[]>([]);
   const [showAddImageModal, setShowAddImageModal] = useState(false);
   const [showAddMessageModal, setShowAddMessageModal] = useState(false);
+  
+  // Notes/Notepad state
+  interface TeamNote {
+    id: string;
+    author: string;
+    role: string;
+    content: string;
+    createdAt: string;
+    tenant: string;
+  }
+  const [teamNotes, setTeamNotes] = useState<TeamNote[]>(() => {
+    const saved = localStorage.getItem("marketing_team_notes");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [newNoteContent, setNewNoteContent] = useState("");
   const [imageSubjectFilter, setImageSubjectFilter] = useState<string>("all");
   const [messageSubjectFilter, setMessageSubjectFilter] = useState<string>("all");
   const [isGeneratingMatch, setIsGeneratingMatch] = useState(false);
@@ -751,6 +766,10 @@ export default function MarketingHub() {
               <TabsTrigger value="analytics" className="flex items-center gap-2" data-testid="tab-analytics">
                 <BarChart3 className="w-4 h-4" />
                 Analytics
+              </TabsTrigger>
+              <TabsTrigger value="notes" className="flex items-center gap-2" data-testid="tab-notes">
+                <FileText className="w-4 h-4" />
+                Notes
               </TabsTrigger>
             </TabsList>
 
@@ -2578,6 +2597,114 @@ export default function MarketingHub() {
                     These recommendations are based on industry best practices for painting/home services. 
                     Once GA4 is connected, we'll optimize these based on your actual audience engagement data.
                   </p>
+                </div>
+              </GlassCard>
+            </TabsContent>
+
+            {/* NOTES TAB - Team communication notepad */}
+            <TabsContent value="notes" className="space-y-6" data-testid="notes-tab-content">
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-purple-500" />
+                    Team Notes
+                  </h3>
+                  <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/30 text-purple-600">
+                    {teamNotes.filter(n => n.tenant === selectedTenant).length} notes
+                  </Badge>
+                </div>
+                
+                {/* Add New Note */}
+                <div className="mb-6 p-4 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl">
+                  <Label className="text-sm font-medium mb-2 block">Leave a note for the team</Label>
+                  <Textarea
+                    placeholder="What's happening? Updates, reminders, ideas..."
+                    value={newNoteContent}
+                    onChange={(e) => setNewNoteContent(e.target.value)}
+                    className="min-h-[100px] mb-3"
+                    data-testid="input-new-note"
+                  />
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs text-muted-foreground">
+                      Posting as <span className="font-medium">{userName}</span> ({userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Marketing Director" : userRole === "owner" ? "Owner" : "Admin"})
+                    </p>
+                    <Button 
+                      onClick={() => {
+                        if (!newNoteContent.trim()) return;
+                        const newNote: TeamNote = {
+                          id: `note-${Date.now()}`,
+                          author: userName,
+                          role: userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Marketing Director" : userRole === "owner" ? "Owner" : "Admin",
+                          content: newNoteContent.trim(),
+                          createdAt: new Date().toISOString(),
+                          tenant: selectedTenant
+                        };
+                        const updated = [newNote, ...teamNotes];
+                        setTeamNotes(updated);
+                        localStorage.setItem("marketing_team_notes", JSON.stringify(updated));
+                        setNewNoteContent("");
+                      }}
+                      disabled={!newNoteContent.trim()}
+                      className="bg-purple-600 hover:bg-purple-700"
+                      data-testid="button-add-note"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Post Note
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Notes List */}
+                <div className="space-y-4">
+                  {teamNotes
+                    .filter(note => note.tenant === selectedTenant)
+                    .map(note => (
+                      <motion.div
+                        key={note.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-violet-600 flex items-center justify-center text-white text-sm font-bold">
+                              {note.author.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{note.author}</p>
+                              <p className="text-xs text-muted-foreground">{note.role}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {format(new Date(note.createdAt), "MMM d, h:mm a")}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-red-500 hover:text-red-600 hover:bg-red-50"
+                              onClick={() => {
+                                const updated = teamNotes.filter(n => n.id !== note.id);
+                                setTeamNotes(updated);
+                                localStorage.setItem("marketing_team_notes", JSON.stringify(updated));
+                              }}
+                              data-testid={`button-delete-note-${note.id}`}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap">{note.content}</p>
+                      </motion.div>
+                    ))}
+                  
+                  {teamNotes.filter(n => n.tenant === selectedTenant).length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                      <p className="text-lg font-medium">No notes yet</p>
+                      <p className="text-sm">Leave a note for your team above</p>
+                    </div>
+                  )}
                 </div>
               </GlassCard>
             </TabsContent>
