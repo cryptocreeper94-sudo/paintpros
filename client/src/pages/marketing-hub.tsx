@@ -455,11 +455,113 @@ export default function MarketingHub() {
     const savedImages = localStorage.getItem("marketing_images");
     if (savedImages) {
       setLibraryImages(JSON.parse(savedImages));
+    } else {
+      // Sample images for demonstration
+      const sampleImages: LibraryImage[] = [
+        {
+          id: "sample-1",
+          brand: "npp",
+          url: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&h=300&fit=crop",
+          description: "Fresh interior paint - living room transformation",
+          subject: "interior-walls",
+          style: "finished-result",
+          season: "all-year",
+          quality: 5,
+          tags: ["interior", "living room", "modern", "white"],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-2",
+          brand: "npp",
+          url: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&h=300&fit=crop",
+          description: "Exterior home painting - curb appeal",
+          subject: "exterior-home",
+          style: "finished-result",
+          season: "all-year",
+          quality: 5,
+          tags: ["exterior", "house", "curb appeal"],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-3",
+          brand: "npp",
+          url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+          description: "Paint color samples and swatches",
+          subject: "general",
+          style: "action-shot",
+          season: "all-year",
+          quality: 4,
+          tags: ["colors", "swatches", "samples"],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-4",
+          brand: "lumepaint",
+          url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400&h=300&fit=crop",
+          description: "Beautiful bedroom refresh",
+          subject: "interior-walls",
+          style: "finished-result",
+          season: "all-year",
+          quality: 5,
+          tags: ["bedroom", "interior", "calming"],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-5",
+          brand: "lumepaint",
+          url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
+          description: "Kitchen cabinet transformation",
+          subject: "cabinet-work",
+          style: "before-after",
+          season: "all-year",
+          quality: 5,
+          tags: ["kitchen", "cabinets", "renovation"],
+          createdAt: new Date().toISOString()
+        }
+      ];
+      setLibraryImages(sampleImages);
+      localStorage.setItem("marketing_images", JSON.stringify(sampleImages));
     }
     
     const savedMessages = localStorage.getItem("marketing_messages");
     if (savedMessages) {
       setMessageTemplates(JSON.parse(savedMessages));
+    } else {
+      // Sample messages for demonstration
+      const sampleMessages: MessageTemplate[] = [
+        {
+          id: "msg-sample-1",
+          brand: "npp",
+          content: "Transform your space with a fresh coat of paint! Our expert team delivers stunning results every time. Contact us for a free estimate!",
+          subject: "interior-walls",
+          tone: "professional",
+          callToAction: "quote",
+          hashtags: ["#NashvillePainting", "#InteriorDesign", "#HomeImprovement"],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "msg-sample-2",
+          brand: "npp",
+          content: "Boost your home's curb appeal with professional exterior painting. We use premium paints that last for years!",
+          subject: "exterior-home",
+          tone: "professional",
+          callToAction: "quote",
+          hashtags: ["#ExteriorPainting", "#CurbAppeal", "#NashvilleHomes"],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "msg-sample-3",
+          brand: "lumepaint",
+          content: "Elevating the backdrop of your life, one room at a time. Let us bring your vision to life with color.",
+          subject: "interior-walls",
+          tone: "friendly",
+          callToAction: "contact",
+          hashtags: ["#LumePaint", "#ElevateYourSpace", "#ColorExperts"],
+          createdAt: new Date().toISOString()
+        }
+      ];
+      setMessageTemplates(sampleMessages);
+      localStorage.setItem("marketing_messages", JSON.stringify(sampleMessages));
     }
     
     const savedBundles = localStorage.getItem("marketing_bundles");
