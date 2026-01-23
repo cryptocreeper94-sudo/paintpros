@@ -108,6 +108,8 @@ export default function FieldTool() {
   const [showWeather, setShowWeather] = useState(false);
   const [showMileage, setShowMileage] = useState(false);
   const [showPhotoAI, setShowPhotoAI] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [editingName, setEditingName] = useState(userName);
   const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -296,7 +298,15 @@ export default function FieldTool() {
             >
               <Brain className="w-5 h-5" />
             </Button>
-            <Button size="icon" variant="ghost" className="text-gray-400">
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="text-gray-400"
+              onClick={() => {
+                setEditingName(userName);
+                setShowSettings(true);
+              }}
+            >
               <Settings className="w-5 h-5" />
             </Button>
           </div>
@@ -1076,6 +1086,109 @@ export default function FieldTool() {
                 >
                   <Send className="w-5 h-5" />
                 </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Settings Panel */}
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex flex-col"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-800">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: `${colors.primary}20` }}
+                >
+                  <Settings className="w-5 h-5" style={{ color: colors.primary }} />
+                </div>
+                <h2 className="text-xl font-bold text-white">Settings</h2>
+              </div>
+              <Button 
+                size="icon" 
+                variant="ghost"
+                onClick={() => setShowSettings(false)}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              {/* Profile Section */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">Profile</h3>
+                <Card className="bg-gray-900/50 border-gray-800 p-4 space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-400 mb-2 block">Your Name</label>
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="bg-gray-800 border-gray-700 text-white"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">This name appears in your personalized greeting</p>
+                  </div>
+                  <Button
+                    className="w-full"
+                    style={{ background: colors.primary }}
+                    onClick={() => {
+                      localStorage.setItem("field_tool_user", editingName);
+                      setUserName(editingName);
+                      setShowSettings(false);
+                    }}
+                  >
+                    Save Name
+                  </Button>
+                </Card>
+              </div>
+
+              {/* App Info */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">About</h3>
+                <Card className="bg-gray-900/50 border-gray-800 p-4 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">App</span>
+                    <span className="text-white">{appName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Version</span>
+                    <span className="text-white">1.0.0</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Powered by</span>
+                    <span className="text-white">TradeWorks AI</span>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Quick Links */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">Quick Links</h3>
+                <div className="space-y-2">
+                  <Card 
+                    className="bg-gray-900/50 border-gray-800 p-4 cursor-pointer active:scale-[0.98] transition-transform"
+                    onClick={() => window.location.href = '/help'}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-white">Help & Documentation</span>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </div>
+                  </Card>
+                  <Card 
+                    className="bg-gray-900/50 border-gray-800 p-4 cursor-pointer active:scale-[0.98] transition-transform"
+                    onClick={() => window.location.href = '/admin'}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-white">Admin Dashboard</span>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </div>
+                  </Card>
+                </div>
               </div>
             </div>
           </motion.div>
