@@ -2324,6 +2324,261 @@ export default function MarketingHub() {
                   </div>
                 </GlassCard>
               </div>
+
+              {/* Google Analytics Integration Section */}
+              <GlassCard className="p-6 border-2 border-dashed border-blue-300 dark:border-blue-700" data-testid="analytics-ga-integration">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-500" />
+                    Google Analytics Integration
+                  </h3>
+                  <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 border-blue-300">
+                    Coming Soon
+                  </Badge>
+                </div>
+                <div className="grid md:grid-cols-4 gap-4 mb-6">
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl text-center">
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <p className="text-2xl font-bold text-blue-600">--</p>
+                    <p className="text-xs text-muted-foreground">Live Visitors</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl text-center">
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-green-600" />
+                    </div>
+                    <p className="text-2xl font-bold text-green-600">--</p>
+                    <p className="text-xs text-muted-foreground">Page Views (7d)</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl text-center">
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-purple-500/20 flex items-center justify-center">
+                      <Target className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <p className="text-2xl font-bold text-purple-600">--</p>
+                    <p className="text-xs text-muted-foreground">Avg Session</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl text-center">
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-amber-500/20 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <p className="text-2xl font-bold text-amber-600">--</p>
+                    <p className="text-xs text-muted-foreground">Bounce Rate</p>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      Traffic Trend (30 Days)
+                    </h4>
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                      <div className="text-center text-muted-foreground">
+                        <BarChart3 className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">Connect GA4 to see traffic data</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-blue-500" />
+                      Top Referrers
+                    </h4>
+                    <div className="space-y-2">
+                      {["Google Search", "Facebook", "Instagram", "Direct", "Nextdoor"].map((source, idx) => (
+                        <div key={source} className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">{source}</span>
+                          <span className="font-mono text-muted-foreground">--</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <strong>GA4 Integration:</strong> Once connected, you'll see real-time website traffic, 
+                    top pages, referral sources, device breakdown, and conversion tracking all synced with your 
+                    social media performance data.
+                  </p>
+                </div>
+              </GlassCard>
+
+              {/* Platform Distribution Pie Chart */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <GlassCard className="p-6" data-testid="analytics-platform-pie">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-pink-500" />
+                    Content Distribution by Platform
+                  </h3>
+                  {(() => {
+                    const tenantPosts = posts.filter(p => p.brand === selectedTenant);
+                    const platformData = PLATFORMS.map(platform => ({
+                      name: platform.label,
+                      value: tenantPosts.filter(p => p.platform === platform.id).length,
+                      color: platform.id === "instagram" ? "#E1306C" : platform.id === "facebook" ? "#4267B2" : "#00B636"
+                    })).filter(d => d.value > 0);
+                    
+                    if (platformData.length === 0) {
+                      return (
+                        <div className="h-48 flex items-center justify-center text-muted-foreground">
+                          <div className="text-center">
+                            <Target className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                            <p className="text-sm">No content data yet</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    return (
+                      <>
+                        <ResponsiveContainer width="100%" height={180}>
+                          <PieChart>
+                            <Pie
+                              data={platformData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={40}
+                              outerRadius={70}
+                              paddingAngle={5}
+                              dataKey="value"
+                            >
+                              {platformData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'rgba(0,0,0,0.8)', 
+                                border: 'none', 
+                                borderRadius: '8px',
+                                fontSize: '12px'
+                              }} 
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="flex justify-center gap-4 mt-2">
+                          {platformData.map(platform => (
+                            <div key={platform.name} className="flex items-center gap-1.5 text-xs">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: platform.color }} />
+                              <span>{platform.name}</span>
+                              <span className="font-bold">({platform.value})</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </GlassCard>
+
+                <GlassCard className="p-6" data-testid="analytics-content-health">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-green-500" />
+                    Content Health Score
+                  </h3>
+                  {(() => {
+                    const tenantPosts = posts.filter(p => p.brand === selectedTenant);
+                    const total = tenantPosts.length;
+                    const posted = tenantPosts.filter(p => p.status === "posted").length;
+                    const scheduled = tenantPosts.filter(p => p.status === "scheduled").length;
+                    const evergreen = tenantPosts.filter(p => p.type === "evergreen").length;
+                    const categoryCount = new Set(tenantPosts.map(p => p.category)).size;
+                    const platformCount = new Set(tenantPosts.map(p => p.platform)).size;
+                    
+                    // Calculate health score (0-100)
+                    const diversityScore = Math.min(categoryCount * 12, 30); // Max 30 points
+                    const coverageScore = Math.min(platformCount * 10, 30); // Max 30 points
+                    const evergreenScore = total > 0 ? Math.round((evergreen / total) * 20) : 0; // Max 20 points
+                    const activityScore = Math.min((posted + scheduled) * 2, 20); // Max 20 points
+                    const healthScore = diversityScore + coverageScore + evergreenScore + activityScore;
+                    
+                    const scoreColor = healthScore >= 80 ? "text-green-600" : healthScore >= 60 ? "text-blue-600" : healthScore >= 40 ? "text-amber-600" : "text-red-600";
+                    const bgColor = healthScore >= 80 ? "from-green-500 to-emerald-400" : healthScore >= 60 ? "from-blue-500 to-cyan-400" : healthScore >= 40 ? "from-amber-500 to-orange-400" : "from-red-500 to-rose-400";
+                    
+                    return (
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="relative inline-flex items-center justify-center">
+                            <svg className="w-32 h-32 transform -rotate-90">
+                              <circle cx="64" cy="64" r="56" fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-200 dark:text-gray-700" />
+                              <circle 
+                                cx="64" cy="64" r="56" fill="none" strokeWidth="8" 
+                                strokeLinecap="round"
+                                className={`text-transparent bg-gradient-to-r ${bgColor}`}
+                                style={{ 
+                                  stroke: healthScore >= 80 ? '#22c55e' : healthScore >= 60 ? '#3b82f6' : healthScore >= 40 ? '#f59e0b' : '#ef4444',
+                                  strokeDasharray: `${healthScore * 3.52} 352` 
+                                }}
+                              />
+                            </svg>
+                            <div className="absolute flex flex-col items-center">
+                              <span className={`text-3xl font-bold ${scoreColor}`}>{healthScore}</span>
+                              <span className="text-xs text-muted-foreground">/ 100</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                            <p className="font-medium">Diversity</p>
+                            <p className="text-muted-foreground">{diversityScore}/30 pts</p>
+                          </div>
+                          <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                            <p className="font-medium">Coverage</p>
+                            <p className="text-muted-foreground">{coverageScore}/30 pts</p>
+                          </div>
+                          <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                            <p className="font-medium">Evergreen</p>
+                            <p className="text-muted-foreground">{evergreenScore}/20 pts</p>
+                          </div>
+                          <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                            <p className="font-medium">Activity</p>
+                            <p className="text-muted-foreground">{activityScore}/20 pts</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </GlassCard>
+              </div>
+
+              {/* Best Posting Times */}
+              <GlassCard className="p-6" data-testid="analytics-best-times">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-indigo-500" />
+                  Recommended Posting Times
+                </h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {PLATFORMS.map(platform => (
+                    <div key={platform.id} className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${platform.color} flex items-center justify-center`}>
+                          <platform.icon className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="font-medium">{platform.label}</span>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Best Day</span>
+                          <span className="font-medium">{platform.id === "instagram" ? "Wed, Fri" : platform.id === "facebook" ? "Thu, Sun" : "Sat"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Best Time</span>
+                          <span className="font-medium">{platform.id === "instagram" ? "11am, 7pm" : platform.id === "facebook" ? "1pm, 8pm" : "10am"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Frequency</span>
+                          <span className="font-medium text-green-600">3x/week</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                  <p className="text-xs text-muted-foreground">
+                    These recommendations are based on industry best practices for painting/home services. 
+                    Once GA4 is connected, we'll optimize these based on your actual audience engagement data.
+                  </p>
+                </div>
+              </GlassCard>
             </TabsContent>
           </Tabs>
         </div>
