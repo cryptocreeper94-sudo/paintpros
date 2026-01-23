@@ -56,7 +56,21 @@ import {
   Timer,
   Route,
   Building2,
-  PaintBucket
+  PaintBucket,
+  BarChart3,
+  Megaphone,
+  TrendingUp,
+  CreditCard,
+  Receipt,
+  Briefcase,
+  Shield,
+  Bell,
+  Star,
+  Target,
+  PieChart,
+  Activity,
+  Layers,
+  Crown
 } from "lucide-react";
 
 export default function FieldTool() {
@@ -222,7 +236,7 @@ export default function FieldTool() {
     { id: "home", icon: Home, label: "Home" },
     { id: "jobs", icon: ClipboardList, label: "Jobs" },
     { id: "tools", icon: Wrench, label: "Tools" },
-    { id: "time", icon: Clock, label: "Time" },
+    { id: "business", icon: Briefcase, label: "Business" },
   ];
 
   return (
@@ -481,6 +495,118 @@ export default function FieldTool() {
           </motion.div>
         )}
 
+        {activeSection === "business" && (
+          <motion.div
+            key="business"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="p-4 space-y-4"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-white">Business Suite</h2>
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+                <Crown className="w-3 h-3 mr-1" /> Pro
+              </Badge>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Today's Revenue", value: "$2,450", icon: DollarSign, trend: "+12%" },
+                { label: "Active Leads", value: "23", icon: Target, trend: "+5" },
+                { label: "Pending Estimates", value: "8", icon: FileText, trend: "3 new" },
+                { label: "Jobs This Week", value: "12", icon: Calendar, trend: "On track" },
+              ].map((stat, i) => (
+                <Card key={i} className="bg-gray-900/50 border-gray-800 p-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-gray-500 text-xs">{stat.label}</p>
+                      <p className="text-white text-xl font-bold">{stat.value}</p>
+                      <p className="text-green-400 text-xs">{stat.trend}</p>
+                    </div>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${colors.primary}20` }}>
+                      <stat.icon className="w-4 h-4" style={{ color: colors.primary }} />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Business Tools Grid */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-400">Management Tools</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { icon: Megaphone, label: "Marketing Hub", desc: "Campaigns & social", path: "/marketing-hub" },
+                  { icon: BarChart3, label: "Analytics", desc: "Traffic & insights", path: "/admin" },
+                  { icon: Users, label: "CRM", desc: "Leads & customers", path: "/admin" },
+                  { icon: Receipt, label: "Invoicing", desc: "Bills & payments", path: "/admin" },
+                  { icon: PieChart, label: "Reports", desc: "Performance data", path: "/owner" },
+                  { icon: Clock, label: "Time Tracking", desc: "Crew hours", action: () => setActiveSection("time") },
+                  { icon: Shield, label: "Admin Panel", desc: "Full dashboard", path: "/admin" },
+                  { icon: Settings, label: "Settings", desc: "Preferences", path: "/admin" },
+                ].map((tool, i) => (
+                  <Card 
+                    key={i}
+                    className="bg-gray-900/50 border-gray-800 p-4 cursor-pointer hover:bg-gray-800/50 transition-all active:scale-[0.98]"
+                    onClick={() => tool.path ? window.location.href = tool.path : tool.action?.()}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${colors.primary}20` }}>
+                        <tool.icon className="w-5 h-5" style={{ color: colors.primary }} />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium text-sm">{tool.label}</p>
+                        <p className="text-gray-500 text-xs">{tool.desc}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-400">Quick Actions</h3>
+              <div className="space-y-2">
+                <Card 
+                  className="p-4 border-0 cursor-pointer active:scale-[0.98] transition-transform"
+                  style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}10 100%)` }}
+                  onClick={() => window.location.href = '/marketing-hub'}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: colors.gradient }}>
+                      <Megaphone className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">Marketing Hub</p>
+                      <p className="text-gray-400 text-sm">Schedule posts, manage reviews, run campaigns</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </div>
+                </Card>
+
+                <Card 
+                  className="bg-gray-900/50 border-gray-800 p-4 cursor-pointer active:scale-[0.98] transition-transform"
+                  onClick={() => window.location.href = '/admin'}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                      <Activity className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">View Full Dashboard</p>
+                      <p className="text-gray-400 text-sm">Analytics, leads, scheduling, and more</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {activeSection === "time" && (
           <motion.div
             key="time"
@@ -489,7 +615,12 @@ export default function FieldTool() {
             exit={{ opacity: 0 }}
             className="p-4 space-y-4"
           >
-            <h2 className="text-lg font-semibold text-white">Time Tracking</h2>
+            <div className="flex items-center gap-3 mb-2">
+              <Button size="icon" variant="ghost" onClick={() => setActiveSection("business")}>
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <h2 className="text-lg font-semibold text-white">Time Tracking</h2>
+            </div>
             
             <Card className="bg-gray-900/50 border-gray-800 p-6 text-center">
               <div className={`w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ${isClockedIn ? 'bg-green-500/20' : 'bg-gray-800'}`}>
