@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { PersonalizedGreeting } from "@/components/personalized-greeting";
-import { format, subWeeks, isAfter, startOfWeek, addDays } from "date-fns";
+import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface SocialPost {
   id: string;
@@ -2148,6 +2149,95 @@ export default function MarketingHub() {
                   })()}
                 </div>
               </GlassCard>
+
+              {/* Recharts Visualizations */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <GlassCard className="p-6" data-testid="analytics-posting-trend-chart">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-green-500" />
+                    Posting Activity (Last 14 Days)
+                  </h3>
+                  {(() => {
+                    const tenantPosts = posts.filter(p => p.brand === selectedTenant);
+                    const today = new Date();
+                    const trendData = eachDayOfInterval({
+                      start: subDays(today, 13),
+                      end: today
+                    }).map(day => {
+                      const posted = tenantPosts.filter(p => 
+                        p.status === "posted" && p.lastUsed && isSameDay(new Date(p.lastUsed), day)
+                      ).length;
+                      const scheduled = tenantPosts.filter(p => 
+                        p.status === "scheduled" && p.scheduledDate && isSameDay(new Date(p.scheduledDate), day)
+                      ).length;
+                      return {
+                        date: format(day, 'MM/dd'),
+                        Posted: posted,
+                        Scheduled: scheduled,
+                        total: posted + scheduled
+                      };
+                    });
+                    return (
+                      <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={trendData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(136,136,136,0.2)" />
+                          <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="rgba(136,136,136,0.5)" />
+                          <YAxis tick={{ fontSize: 10 }} stroke="rgba(136,136,136,0.5)" allowDecimals={false} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(0,0,0,0.8)', 
+                              border: 'none', 
+                              borderRadius: '8px',
+                              fontSize: '12px'
+                            }} 
+                          />
+                          <Line type="monotone" dataKey="Posted" stroke="#22c55e" strokeWidth={2} dot={{ fill: '#22c55e', r: 3 }} />
+                          <Line type="monotone" dataKey="Scheduled" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: '#8b5cf6', r: 3 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    );
+                  })()}
+                </GlassCard>
+
+                <GlassCard className="p-6" data-testid="analytics-category-bar-chart">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-500" />
+                    Content by Category
+                  </h3>
+                  {(() => {
+                    const tenantPosts = posts.filter(p => p.brand === selectedTenant);
+                    const categoryData = CATEGORIES.map(cat => ({
+                      name: cat.label.length > 8 ? cat.label.slice(0, 8) + '...' : cat.label,
+                      count: tenantPosts.filter(p => p.category === cat.id).length
+                    })).filter(d => d.count > 0);
+                    
+                    const COLORS = ['#ec4899', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444', '#84cc16'];
+                    
+                    return (
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={categoryData} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(136,136,136,0.2)" />
+                          <XAxis type="number" tick={{ fontSize: 10 }} stroke="rgba(136,136,136,0.5)" allowDecimals={false} />
+                          <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} stroke="rgba(136,136,136,0.5)" width={70} />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'rgba(0,0,0,0.8)', 
+                              border: 'none', 
+                              borderRadius: '8px',
+                              fontSize: '12px'
+                            }} 
+                          />
+                          <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                            {categoryData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    );
+                  })()}
+                </GlassCard>
+              </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <GlassCard className="p-6" data-testid="analytics-top-content">
