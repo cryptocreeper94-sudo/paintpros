@@ -1,0 +1,38 @@
+{
+  "name": "NPP Marketing Hub",
+  "short_name": "Marketing",
+  "description": "Social media catalog, scheduling & analytics for Nashville Painting Professionals",
+  "start_url": "/marketing-hub",
+  "scope": "/marketing-hub",
+  "display": "standalone",
+  "background_color": "#1e1b4b",
+  "theme_color": "#a855f7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa/marketing/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/marketing/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa/marketing/splash.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["business", "productivity", "social"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "id": "npp-marketing-hub",
+  "prefer_related_applications": false
+}

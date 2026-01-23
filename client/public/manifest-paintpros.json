@@ -1,0 +1,37 @@
+{
+  "name": "PaintPros.io",
+  "short_name": "PaintPros",
+  "description": "Professional painting business management platform by Orbit",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa/paintpros/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/paintpros/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa/paintpros/splash-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "id": "paintpros-io",
+  "prefer_related_applications": false
+}

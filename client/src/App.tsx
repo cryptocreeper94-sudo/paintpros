@@ -55,6 +55,7 @@ import PartnerDashboard from "@/pages/partner-dashboard";
 import ProposalRyan from "@/pages/proposal-ryan";
 import Marketing from "@/pages/marketing";
 import MarketingHub from "@/pages/marketing-hub";
+import InstallMarketingPWA from "@/pages/install-marketing-pwa";
 import OpsAI from "@/pages/ops-ai";
 import TradeWorksApp from "@/pages/tradeworks-app";
 import Why40kFails from "@/pages/why-40k-fails";
@@ -164,6 +165,7 @@ function Router() {
       <Route path="/proposal-ryan" component={ProposalRyan} />
       <Route path="/marketing" component={Marketing} />
       <Route path="/marketing-hub" component={MarketingHub} />
+      <Route path="/install-marketing" component={InstallMarketingPWA} />
       <Route path="/ops" component={OpsAI} />
       <Route path="/tradeworks" component={TradeWorksApp} />
       <Route path="/comparison" component={Why40kFails} />

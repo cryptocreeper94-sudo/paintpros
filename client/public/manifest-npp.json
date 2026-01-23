@@ -1,0 +1,37 @@
+{
+  "name": "Nashville Painting Professionals",
+  "short_name": "NPP",
+  "description": "Transforming familiar spaces into extraordinary places. Premium painting services in Nashville, TN.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1f1c",
+  "theme_color": "#d4a853",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa/npp/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa/npp/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa/npp/splash-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["business", "lifestyle"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "id": "npp-painters",
+  "prefer_related_applications": false
+}
