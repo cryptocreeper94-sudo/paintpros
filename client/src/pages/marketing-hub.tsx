@@ -263,11 +263,11 @@ export default function MarketingHub() {
     if (isMarketingRole) {
       return {
         welcome: `Hey ${userName}, here's what I built for us. This is our Marketing Hub for ${tenantName}. I've been building this system so we can run a professional marketing operation together without either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, what I'm still connecting, and where we're headed. Let's make this thing dominate.`,
-        section1: `Section 1: What's Ready Right Now. We have over 100 marketing images loaded and organized, an AI assistant that can generate captions and analyze performance, a visual content catalog where you can browse everything, a scheduling calendar to plan your posts, and real-time analytics tracking.`,
+        section1: `Section 1: What's Ready Right Now. We have over 100 marketing images loaded and organized, a visual content catalog where you can browse everything, a scheduling calendar to plan your posts, real-time analytics tracking with charts and metrics, and a Team Notes feature so we can leave messages for each other.`,
         section2: `Section 2: How To Operate It. Your Tasks. The system is built and ready to go. Now I need your help running it. These are your responsibilities to keep the marketing machine operating at maximum effectiveness. First, Review AI Captions: When the AI generates content, review it before it goes live. Does it sound like NPP? Your approval ensures brand voice stays consistent. Second, Spot Trends: You're on social media daily. When you see trending formats or ideas that could work for a painting company, flag them. This keeps our content fresh and relevant. Third, Monitor Engagement: Check the Analytics tab weekly. Note which posts are winning and which are underperforming. This data drives our optimization decisions. Fourth, Curate the Library: Browse the Content Catalog regularly. Flag outdated images, suggest new pairings, and keep the library fresh. Quality in equals quality out.`,
         section3: `Section 3: What I'm Still Connecting. Step 1, Manual Rotation, is current. Setting up the first content rotation manually to establish the baseline. Step 2, Meta API Connection, is in progress. Working on getting the direct API connection to Meta set up. Step 3, Full Automation, is coming next.`,
         section4: `Section 4: Where We're Headed. The Marketing AI will handle Content Suggestions, Smart Scheduling, Performance Alerts, and Ad Optimization automatically.`,
-        section5: `Section 5: How We Stay In Sync. When you update content, send a quick message. The goal is efficiency. The system runs like a carousel, it never stops.`,
+        section5: `Section 5: How We Stay In Sync. Use the Team Notes tab to leave messages. For example, you post: "Hey, updated next week's Nextdoor post." I reply: "Got it, scheduled for next week." Everyone sees the notes and stays in the loop. The goal is efficiency. The system runs like a carousel, it never stops.`,
       };
     }
     // Developer view - Marketing Director with multi-tenant access
@@ -871,6 +871,15 @@ export default function MarketingHub() {
                       <p className="text-xs text-gray-500">Weekly trends, KPIs, performance insights</p>
                     </div>
                   </div>
+                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">Team Notes</p>
+                      <p className="text-xs text-gray-500">Leave messages for the team, stay in sync</p>
+                    </div>
+                  </div>
                 </div>
               </GlassCard>
 
@@ -1228,20 +1237,29 @@ export default function MarketingHub() {
                     {isReading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
                   </Button>
                 </h3>
+                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl mb-4">
+                  <p className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-purple-500" />
+                    Use the Notes Tab
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                    The <strong>Notes</strong> tab is where we leave messages for each other. Quick updates, reminders, ideas - all in one place.
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
+                  <div className="space-y-2 p-3 bg-white dark:bg-gray-800 rounded-lg">
                     <p className="font-semibold text-gray-900 dark:text-white">When you update content:</p>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs">Just send a quick message: "Hey, I updated next week's Nextdoor post."</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs">Post a note: "Hey, updated next week's Nextdoor post."</p>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 p-3 bg-white dark:bg-gray-800 rounded-lg">
                     <p className="font-semibold text-gray-900 dark:text-white">When I update content:</p>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs">I'll message you: "Updated the seasonal posts for spring. Take a look when you can."</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs">I'll post: "Got it, scheduled for next week. Also added spring promo content."</p>
                   </div>
                 </div>
                 <div className="mt-4 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                   <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                    The goal is efficiency. You get credit for running a killer marketing campaign while focusing on schoolwork. 
-                    I focus on other things. The system runs like a carousel - it never stops.
+                    The goal is efficiency. Everyone sees the notes, everyone stays in the loop. 
+                    The system runs like a carousel - it never stops.
                   </p>
                 </div>
               </GlassCard>
