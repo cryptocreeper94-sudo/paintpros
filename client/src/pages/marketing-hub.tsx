@@ -497,22 +497,23 @@ export default function MarketingHub() {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      Welcome to the Marketing Hub, Logan!
+                      Hey Logan - Here's What I Built For Us
                     </h2>
                     <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                      This is your command center for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"} social media marketing. 
-                      Everything is designed to run automatically with minimal coordination needed. 
-                      When you make changes, just shoot a quick message. The system handles the rest.
+                      This is our Marketing Hub for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}. 
+                      I've been building this system so we can run a professional marketing operation together without 
+                      either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, 
+                      what I'm still connecting, and where we're headed. Let's make this thing dominate.
                     </p>
                   </div>
                 </div>
               </GlassCard>
 
-              {/* What's Working Now - Status Dashboard */}
+              {/* Section 1: What's Ready */}
               <GlassCard className="p-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
-                  What's Working Now
+                  1. What's Ready Right Now
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
@@ -629,35 +630,11 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
-              {/* Quick Communication Guide */}
-              <GlassCard className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Lightbulb className="w-5 h-5 text-yellow-500" />
-                  How This Works (Keep It Simple)
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <p className="font-semibold text-gray-900 dark:text-white">When you update content:</p>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs">Just send a quick message: "Hey, I updated next week's Nextdoor post."</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="font-semibold text-gray-900 dark:text-white">When I update content:</p>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs">I'll message you: "Updated the seasonal posts for spring. Take a look when you can."</p>
-                  </div>
-                </div>
-                <div className="mt-4 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                    The goal is efficiency. You get credit for running a killer marketing campaign while focusing on schoolwork. 
-                    I focus on other things. The system runs like a carousel - it never stops.
-                  </p>
-                </div>
-              </GlassCard>
-
-              {/* What I Need From You - Logan's Tasks */}
+              {/* Section 2: How To Operate It */}
               <GlassCard className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Users className="w-5 h-5 text-amber-500" />
-                  What I Need From You
+                  2. How To Operate It (Your Tasks)
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                   The system is built and ready to go. Now I need your help running it. These are your responsibilities 
@@ -778,11 +755,11 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
-              {/* Current Status - Meta Integration */}
+              {/* Section 3: What I'm Still Connecting */}
               <GlassCard className="p-6 border-2 border-blue-300 dark:border-blue-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-blue-500 animate-pulse" />
-                  Status Update - What I'm Working On
+                  3. What I'm Still Connecting
                 </h3>
                 
                 <div className="space-y-4">
@@ -825,14 +802,14 @@ export default function MarketingHub() {
                 </p>
               </GlassCard>
 
-              {/* AI Agent Instructions */}
+              {/* Section 4: Where We're Headed */}
               <GlassCard className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-cyan-200 dark:border-cyan-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-cyan-500" />
-                  How to Work with the Marketing AI
+                  4. Where We're Headed (The Vision)
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                  The Marketing AI is voice-enabled and designed to be your hands-off assistant. Here's what it can do:
+                  Once implementation becomes normal, here's what our Marketing AI will handle automatically:
                 </p>
                 
                 <div className="space-y-4">
@@ -886,6 +863,30 @@ export default function MarketingHub() {
                   <p className="text-xs text-cyan-800 dark:text-cyan-200">
                     <strong>Bottom Line:</strong> You focus on school. The AI keeps the marketing machine running. 
                     Just check in occasionally and send a quick message if you're updating anything.
+                  </p>
+                </div>
+              </GlassCard>
+
+              {/* Section 5: How We Stay In Sync */}
+              <GlassCard className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-yellow-500" />
+                  5. How We Stay In Sync
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-2">
+                    <p className="font-semibold text-gray-900 dark:text-white">When you update content:</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs">Just send a quick message: "Hey, I updated next week's Nextdoor post."</p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="font-semibold text-gray-900 dark:text-white">When I update content:</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs">I'll message you: "Updated the seasonal posts for spring. Take a look when you can."</p>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                    The goal is efficiency. You get credit for running a killer marketing campaign while focusing on schoolwork. 
+                    I focus on other things. The system runs like a carousel - it never stops.
                   </p>
                 </div>
               </GlassCard>
