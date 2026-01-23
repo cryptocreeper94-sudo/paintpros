@@ -89,10 +89,41 @@ export default function TradeWorksApp() {
     enabled: isAuthenticated,
   });
 
+  const { data: payments = [] } = useQuery<any[]>({
+    queryKey: ["/api/payments"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: crewLeads = [] } = useQuery<any[]>({
+    queryKey: ["/api/crew/leads"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: crewStats } = useQuery<any>({
+    queryKey: ["/api/crew/stats"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: paintColors = [] } = useQuery<any[]>({
+    queryKey: ["/api/paint-colors"],
+    enabled: isAuthenticated,
+  });
+
   const todayStr = new Date().toDateString();
   const todaysJobs = bookings.filter((b: any) => new Date(b.date).toDateString() === todayStr);
   const pendingLeads = leads.filter((l: any) => l.status === "new" || l.status === "pending");
   const pendingEstimates = estimates.filter((e: any) => e.status === "pending" || e.status === "draft");
+  
+  // Calculate payment totals
+  const thisMonthPayments = payments.filter((p: any) => {
+    const paymentDate = new Date(p.createdAt);
+    const now = new Date();
+    return paymentDate.getMonth() === now.getMonth() && paymentDate.getFullYear() === now.getFullYear();
+  });
+  const totalRevenue = thisMonthPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+  const paidPayments = payments.filter((p: any) => p.status === "completed" || p.status === "paid");
+  const pendingPayments = payments.filter((p: any) => p.status === "pending");
+  const overduePayments = payments.filter((p: any) => p.status === "overdue" || (p.status === "pending" && new Date(p.dueDate) < new Date()));
 
   useEffect(() => {
     if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
@@ -730,107 +761,125 @@ export default function TradeWorksApp() {
             >
               <Card className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 border-green-800/50 p-4">
                 <p className="text-green-400 text-sm mb-1">This Month</p>
-                <p className="text-white text-3xl font-bold">$47,850</p>
+                <p className="text-white text-3xl font-bold">${(totalRevenue / 100).toLocaleString()}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge className="bg-green-500/20 text-green-400">+23% vs last month</Badge>
+                  <Badge className="bg-green-500/20 text-green-400">{payments.length} payments</Badge>
+                  {pendingPayments.length > 0 && (
+                    <Badge className="bg-yellow-500/20 text-yellow-400">{pendingPayments.length} pending</Badge>
+                  )}
                 </div>
               </Card>
 
               <Tabs defaultValue="invoices" className="w-full">
                 <TabsList className="w-full bg-gray-900 border border-gray-800 p-1 rounded-xl">
                   <TabsTrigger value="invoices" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Invoices</TabsTrigger>
-                  <TabsTrigger value="expenses" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Expenses</TabsTrigger>
+                  <TabsTrigger value="estimates" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Estimates</TabsTrigger>
                   <TabsTrigger value="payroll" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Payroll</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="invoices" className="mt-4 space-y-2">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-gray-400 text-sm">Outstanding: <span className="text-white font-medium">$8,450</span></p>
+                    <p className="text-gray-400 text-sm">Outstanding: <span className="text-white font-medium">${(pendingPayments.reduce((s: number, p: any) => s + (p.amount || 0), 0) / 100).toLocaleString()}</span></p>
                     <Button size="sm" className="bg-orange-500">
                       <Plus className="w-4 h-4 mr-1" /> New Invoice
                     </Button>
                   </div>
-                  {[
-                    { id: "INV-001", customer: "Johnson Residence", amount: "$3,400", status: "Paid", date: "Dec 20" },
-                    { id: "INV-002", customer: "Smith Office", amount: "$5,200", status: "Due", date: "Dec 25" },
-                    { id: "INV-003", customer: "Williams Home", amount: "$2,100", status: "Overdue", date: "Dec 15" },
-                    { id: "INV-004", customer: "Chen Property", amount: "$1,150", status: "Draft", date: "Dec 22" },
-                  ].map((inv, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {payments.length > 0 ? payments.slice(0, 10).map((payment: any, i: number) => (
+                    <Card key={payment.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium">{inv.customer}</p>
-                          <p className="text-gray-500 text-sm">{inv.id} - {inv.date}</p>
+                          <p className="text-white font-medium">{payment.customerName || `Payment #${payment.id?.slice(0, 8)}`}</p>
+                          <p className="text-gray-500 text-sm">{payment.estimateId ? `Est: ${payment.estimateId.slice(0, 8)}` : ''} - {format(new Date(payment.createdAt), 'MMM d')}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-white font-medium">{inv.amount}</p>
+                          <p className="text-white font-medium">${((payment.amount || 0) / 100).toLocaleString()}</p>
                           <Badge className={
-                            inv.status === "Paid" ? "bg-green-500/20 text-green-400" :
-                            inv.status === "Overdue" ? "bg-red-500/20 text-red-400" :
-                            inv.status === "Due" ? "bg-yellow-500/20 text-yellow-400" :
+                            payment.status === "completed" || payment.status === "paid" ? "bg-green-500/20 text-green-400" :
+                            payment.status === "overdue" ? "bg-red-500/20 text-red-400" :
+                            payment.status === "pending" ? "bg-yellow-500/20 text-yellow-400" :
                             "bg-gray-800 text-gray-400"
                           }>
-                            {inv.status}
+                            {payment.status || 'Pending'}
                           </Badge>
                         </div>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                      <DollarSign className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-500">No payments yet</p>
+                      <p className="text-gray-600 text-sm mt-1">Payments will appear when estimates are paid</p>
+                    </Card>
+                  )}
                 </TabsContent>
 
-                <TabsContent value="expenses" className="mt-4 space-y-2">
+                <TabsContent value="estimates" className="mt-4 space-y-2">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-gray-400 text-sm">This month: <span className="text-white font-medium">$12,340</span></p>
+                    <p className="text-gray-400 text-sm">Total Value: <span className="text-white font-medium">${estimates.reduce((s: number, e: any) => s + (e.totalAmount || 0), 0).toLocaleString()}</span></p>
                     <Button size="sm" className="bg-orange-500">
-                      <Camera className="w-4 h-4 mr-1" /> Snap Receipt
+                      <Plus className="w-4 h-4 mr-1" /> New Estimate
                     </Button>
                   </div>
-                  {[
-                    { desc: "Benjamin Moore Paint", amount: "$847.50", category: "Materials", date: "Dec 21" },
-                    { desc: "Truck Fuel", amount: "$125.00", category: "Mileage", date: "Dec 20" },
-                    { desc: "Supplies - Home Depot", amount: "$234.80", category: "Equipment", date: "Dec 19" },
-                  ].map((exp, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {estimates.length > 0 ? estimates.slice(0, 10).map((est: any, i: number) => (
+                    <Card key={est.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium">{exp.desc}</p>
-                          <p className="text-gray-500 text-sm">{exp.category} - {exp.date}</p>
+                          <p className="text-white font-medium">{est.customerName || est.name || 'Estimate'}</p>
+                          <p className="text-gray-500 text-sm">{est.serviceType || 'Service'} - {format(new Date(est.createdAt), 'MMM d')}</p>
                         </div>
-                        <p className="text-red-400 font-medium">-{exp.amount}</p>
+                        <div className="text-right">
+                          <p className="text-white font-medium">${(est.totalAmount || 0).toLocaleString()}</p>
+                          <Badge className={
+                            est.status === "approved" || est.status === "accepted" ? "bg-green-500/20 text-green-400" :
+                            est.status === "rejected" ? "bg-red-500/20 text-red-400" :
+                            est.status === "pending" ? "bg-yellow-500/20 text-yellow-400" :
+                            "bg-gray-800 text-gray-400"
+                          }>
+                            {est.status || 'Draft'}
+                          </Badge>
+                        </div>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                      <FileText className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-500">No estimates yet</p>
+                    </Card>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="payroll" className="mt-4 space-y-2">
                   <Card className="bg-gray-900/50 border-gray-800 p-4 mb-3">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-gray-400 text-sm">Next Payroll</p>
-                      <Badge className="bg-orange-500/20 text-orange-400">Dec 31</Badge>
+                      <p className="text-gray-400 text-sm">Team Members</p>
+                      <Badge className="bg-orange-500/20 text-orange-400">{crewLeads.length} crew leads</Badge>
                     </div>
-                    <p className="text-white text-2xl font-bold">$8,420</p>
-                    <p className="text-gray-500 text-sm mt-1">5 team members</p>
+                    <p className="text-white text-2xl font-bold">{crewStats?.totalMembers || crewLeads.length} members</p>
+                    <p className="text-gray-500 text-sm mt-1">Active crew</p>
                   </Card>
-                  {[
-                    { name: "Mike Thompson", hours: "42h", rate: "$28/hr", total: "$1,176" },
-                    { name: "Chris Rodriguez", hours: "40h", rate: "$26/hr", total: "$1,040" },
-                    { name: "Jake Wilson", hours: "38h", rate: "$24/hr", total: "$912" },
-                  ].map((emp, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {crewLeads.length > 0 ? crewLeads.map((crew: any, i: number) => (
+                    <Card key={crew.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white">
-                            {emp.name.split(' ').map(n => n[0]).join('')}
+                            {(crew.name || 'C').split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                           </div>
                           <div>
-                            <p className="text-white font-medium">{emp.name}</p>
-                            <p className="text-gray-500 text-sm">{emp.hours} @ {emp.rate}</p>
+                            <p className="text-white font-medium">{crew.name || 'Crew Lead'}</p>
+                            <p className="text-gray-500 text-sm">{crew.specialty || 'General'}</p>
                           </div>
                         </div>
-                        <p className="text-green-400 font-medium">{emp.total}</p>
+                        <Badge className={crew.isActive ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
+                          {crew.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                      <Users className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-500">No crew leads yet</p>
+                    </Card>
+                  )}
                 </TabsContent>
               </Tabs>
             </motion.div>
@@ -853,11 +902,11 @@ export default function TradeWorksApp() {
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <Card className="bg-gray-900/50 border-gray-800 p-3 text-center">
-                  <p className="text-2xl font-bold text-white">8</p>
+                  <p className="text-2xl font-bold text-white">{crewStats?.totalMembers || crewLeads.length}</p>
                   <p className="text-gray-500 text-xs">Team Members</p>
                 </Card>
                 <Card className="bg-gray-900/50 border-gray-800 p-3 text-center">
-                  <p className="text-2xl font-bold text-green-400">6</p>
+                  <p className="text-2xl font-bold text-green-400">{crewStats?.activeToday || todaysJobs.length}</p>
                   <p className="text-gray-500 text-xs">On Jobs Today</p>
                 </Card>
               </div>
@@ -866,44 +915,41 @@ export default function TradeWorksApp() {
                 <TabsList className="w-full bg-gray-900 border border-gray-800 p-1 rounded-xl">
                   <TabsTrigger value="active" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Active</TabsTrigger>
                   <TabsTrigger value="time" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Time</TabsTrigger>
-                  <TabsTrigger value="subs" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Subs</TabsTrigger>
+                  <TabsTrigger value="jobs" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">Jobs</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="active" className="mt-4 space-y-2">
-                  {[
-                    { name: "Mike Thompson", role: "Crew Lead", status: "On Job", location: "Johnson Residence", avatar: "MT" },
-                    { name: "Chris Rodriguez", role: "Painter", status: "On Job", location: "Johnson Residence", avatar: "CR" },
-                    { name: "Jake Wilson", role: "Painter", status: "On Job", location: "Smith Office", avatar: "JW" },
-                    { name: "Tony Martinez", role: "Painter", status: "Available", location: "", avatar: "TM" },
-                  ].map((member, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {crewLeads.length > 0 ? crewLeads.map((crew: any, i: number) => (
+                    <Card key={crew.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                              {member.avatar}
+                              {(crew.name || 'C').split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                             </div>
-                            <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 ${member.status === "On Job" ? "bg-green-500" : "bg-gray-500"}`} />
+                            <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 ${crew.isActive ? "bg-green-500" : "bg-gray-500"}`} />
                           </div>
                           <div>
-                            <p className="text-white font-medium">{member.name}</p>
-                            <p className="text-gray-500 text-sm">{member.role}</p>
-                            {member.location && (
+                            <p className="text-white font-medium">{crew.name || 'Crew Lead'}</p>
+                            <p className="text-gray-500 text-sm">{crew.specialty || 'General'}</p>
+                            {crew.phone && (
                               <div className="flex items-center gap-1 text-gray-600 text-xs mt-1">
-                                <MapPin className="w-3 h-3" />
-                                {member.location}
+                                <Phone className="w-3 h-3" />
+                                {crew.phone}
                               </div>
                             )}
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-1">
-                          <Badge className={member.status === "On Job" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
-                            {member.status}
+                          <Badge className={crew.isActive ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
+                            {crew.isActive ? 'Active' : 'Inactive'}
                           </Badge>
                           <div className="flex gap-1">
-                            <Button size="icon" variant="ghost" className="w-8 h-8 text-gray-500">
-                              <Phone className="w-4 h-4" />
-                            </Button>
+                            {crew.phone && (
+                              <Button size="icon" variant="ghost" className="w-8 h-8 text-gray-500" asChild>
+                                <a href={`tel:${crew.phone}`}><Phone className="w-4 h-4" /></a>
+                              </Button>
+                            )}
                             <Button size="icon" variant="ghost" className="w-8 h-8 text-gray-500">
                               <MessageSquare className="w-4 h-4" />
                             </Button>
@@ -911,51 +957,57 @@ export default function TradeWorksApp() {
                         </div>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                      <HardHat className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-500">No crew leads yet</p>
+                      <Button size="sm" className="mt-3 bg-orange-500">
+                        <Plus className="w-4 h-4 mr-1" /> Add Crew Lead
+                      </Button>
+                    </Card>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="time" className="mt-4 space-y-2">
-                  {[
-                    { name: "Mike Thompson", clockIn: "7:45 AM", hours: "5.2h", status: "Clocked In" },
-                    { name: "Chris Rodriguez", clockIn: "7:52 AM", hours: "5.1h", status: "Clocked In" },
-                    { name: "Jake Wilson", clockIn: "8:30 AM", hours: "4.5h", status: "Clocked In" },
-                  ].map((entry, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                  {crewLeads.length > 0 ? crewLeads.filter((c: any) => c.isActive).map((crew: any, i: number) => (
+                    <Card key={crew.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium">{entry.name}</p>
-                          <p className="text-gray-500 text-sm">In: {entry.clockIn}</p>
+                          <p className="text-white font-medium">{crew.name || 'Crew Lead'}</p>
+                          <p className="text-gray-500 text-sm">{crew.specialty || 'General'}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-white font-medium">{entry.hours}</p>
-                          <Badge className="bg-green-500/20 text-green-400">{entry.status}</Badge>
+                          <Badge className="bg-green-500/20 text-green-400">Active</Badge>
                         </div>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                      <Clock className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-500">No time entries today</p>
+                    </Card>
+                  )}
                 </TabsContent>
 
-                <TabsContent value="subs" className="mt-4 space-y-2">
-                  {[
-                    { company: "Pro Drywall LLC", specialty: "Drywall Repair", rating: 4.8, jobs: 12 },
-                    { company: "Elite Pressure Wash", specialty: "Power Washing", rating: 4.9, jobs: 8 },
-                  ].map((sub, i) => (
-                    <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
+                <TabsContent value="jobs" className="mt-4 space-y-2">
+                  {todaysJobs.length > 0 ? todaysJobs.map((job: any, i: number) => (
+                    <Card key={job.id || i} className="bg-gray-900/50 border-gray-800 p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium">{sub.company}</p>
-                          <p className="text-gray-500 text-sm">{sub.specialty}</p>
+                          <p className="text-white font-medium">{job.customerName || 'Customer'}</p>
+                          <p className="text-gray-500 text-sm">{job.serviceType || 'Service'} - {job.timeSlot || 'TBD'}</p>
                         </div>
-                        <div className="text-right">
-                          <div className="flex items-center gap-1 text-yellow-400">
-                            <Star className="w-4 h-4 fill-current" />
-                            <span>{sub.rating}</span>
-                          </div>
-                          <p className="text-gray-500 text-xs">{sub.jobs} jobs</p>
-                        </div>
+                        <Badge className={job.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}>
+                          {job.status || 'Scheduled'}
+                        </Badge>
                       </div>
                     </Card>
-                  ))}
+                  )) : (
+                    <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
+                      <Calendar className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                      <p className="text-gray-500">No jobs scheduled today</p>
+                    </Card>
+                  )}
                 </TabsContent>
               </Tabs>
             </motion.div>
@@ -969,28 +1021,134 @@ export default function TradeWorksApp() {
               exit={{ opacity: 0 }}
               className="p-4 space-y-4"
             >
-              <h2 className="text-white font-semibold text-lg mb-4">TradeWorks Tools</h2>
-              
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { icon: <Calculator className="w-6 h-6" />, label: "Paint Calculator", desc: "Estimate coverage", color: "from-blue-500 to-blue-600" },
-                  { icon: <Palette className="w-6 h-6" />, label: "Color Match", desc: "Match any color", color: "from-purple-500 to-purple-600" },
-                  { icon: <Camera className="w-6 h-6" />, label: "Room Measure", desc: "Photo measure", color: "from-green-500 to-green-600" },
-                  { icon: <Package className="w-6 h-6" />, label: "Material Calc", desc: "All materials", color: "from-orange-500 to-orange-600" },
-                  { icon: <Car className="w-6 h-6" />, label: "Mileage", desc: "Track drives", color: "from-red-500 to-red-600" },
-                  { icon: <CloudSun className="w-6 h-6" />, label: "Weather", desc: "Job conditions", color: "from-cyan-500 to-cyan-600" },
-                  { icon: <FileCheck className="w-6 h-6" />, label: "Documents", desc: "Licenses, W9s", color: "from-amber-500 to-amber-600" },
-                  { icon: <Shield className="w-6 h-6" />, label: "Safety", desc: "MSDS, procedures", color: "from-gray-500 to-gray-600" },
-                ].map((tool, i) => (
-                  <Card key={i} className="bg-gray-900/50 border-gray-800 p-4 hover:bg-gray-800/50 transition-colors cursor-pointer">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${tool.color} rounded-xl flex items-center justify-center text-white mb-3`}>
-                      {tool.icon}
+              <Tabs defaultValue="calculator" className="w-full">
+                <TabsList className="w-full bg-gray-900 border border-gray-800 p-1 rounded-xl mb-4">
+                  <TabsTrigger value="calculator" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">
+                    <Calculator className="w-4 h-4 mr-1" /> Calc
+                  </TabsTrigger>
+                  <TabsTrigger value="colors" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">
+                    <Palette className="w-4 h-4 mr-1" /> Colors
+                  </TabsTrigger>
+                  <TabsTrigger value="more" className="flex-1 data-[state=active]:bg-orange-500 rounded-lg">
+                    <Wrench className="w-4 h-4 mr-1" /> More
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="calculator" className="space-y-4">
+                  <Card className="bg-gray-900/50 border-gray-800 p-4">
+                    <h3 className="text-white font-semibold mb-4">Paint Calculator</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-gray-400 text-sm mb-1 block">Room Width (ft)</label>
+                        <input 
+                          type="number" 
+                          placeholder="12"
+                          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                          data-testid="input-room-width"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm mb-1 block">Room Length (ft)</label>
+                        <input 
+                          type="number" 
+                          placeholder="14"
+                          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                          data-testid="input-room-length"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm mb-1 block">Ceiling Height (ft)</label>
+                        <input 
+                          type="number" 
+                          placeholder="9"
+                          defaultValue="9"
+                          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                          data-testid="input-ceiling-height"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm mb-1 block">Number of Coats</label>
+                        <select className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white" data-testid="select-coats">
+                          <option value="1">1 Coat</option>
+                          <option value="2" selected>2 Coats</option>
+                          <option value="3">3 Coats</option>
+                        </select>
+                      </div>
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600" data-testid="button-calculate">
+                        Calculate Coverage
+                      </Button>
+                      <Card className="bg-gray-800 p-4 mt-4">
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                          <div>
+                            <p className="text-gray-400 text-xs">Wall Sq Ft</p>
+                            <p className="text-white text-xl font-bold">468</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 text-xs">Gallons Needed</p>
+                            <p className="text-orange-400 text-xl font-bold">2.6</p>
+                          </div>
+                        </div>
+                        <p className="text-gray-500 text-xs text-center mt-2">Based on 350 sq ft per gallon coverage</p>
+                      </Card>
                     </div>
-                    <p className="text-white font-medium">{tool.label}</p>
-                    <p className="text-gray-500 text-sm">{tool.desc}</p>
                   </Card>
-                ))}
-              </div>
+                </TabsContent>
+
+                <TabsContent value="colors" className="space-y-4">
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <input 
+                      type="text" 
+                      placeholder="Search colors..."
+                      className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-white text-sm"
+                      data-testid="input-color-search"
+                    />
+                  </div>
+                  <p className="text-gray-400 text-sm">{paintColors.length} colors in library</p>
+                  <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+                    {paintColors.length > 0 ? paintColors.slice(0, 20).map((color: any, i: number) => (
+                      <Card key={color.id || i} className="bg-gray-900/50 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/50">
+                        <div 
+                          className="w-full h-16 rounded-lg mb-2 border border-gray-700"
+                          style={{ backgroundColor: color.hexValue || '#888888' }}
+                        />
+                        <p className="text-white text-sm font-medium truncate">{color.colorName}</p>
+                        <p className="text-gray-500 text-xs">{color.brand} - {color.colorCode}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <Badge className="text-xs bg-gray-800 text-gray-400">{color.category}</Badge>
+                          {color.lrv && <span className="text-gray-600 text-xs">LRV: {color.lrv}</span>}
+                        </div>
+                      </Card>
+                    )) : (
+                      <div className="col-span-2 text-center py-8">
+                        <Palette className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                        <p className="text-gray-500">Loading colors...</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="more" className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { icon: <Camera className="w-6 h-6" />, label: "Room Measure", desc: "Photo measure", color: "from-green-500 to-green-600" },
+                      { icon: <Package className="w-6 h-6" />, label: "Material Calc", desc: "All materials", color: "from-orange-500 to-orange-600" },
+                      { icon: <Car className="w-6 h-6" />, label: "Mileage", desc: "Track drives", color: "from-red-500 to-red-600" },
+                      { icon: <CloudSun className="w-6 h-6" />, label: "Weather", desc: "Job conditions", color: "from-cyan-500 to-cyan-600" },
+                      { icon: <FileCheck className="w-6 h-6" />, label: "Documents", desc: "Licenses, W9s", color: "from-amber-500 to-amber-600" },
+                      { icon: <Shield className="w-6 h-6" />, label: "Safety", desc: "MSDS, procedures", color: "from-gray-500 to-gray-600" },
+                    ].map((tool, i) => (
+                      <Card key={i} className="bg-gray-900/50 border-gray-800 p-4 hover:bg-gray-800/50 transition-colors cursor-pointer">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${tool.color} rounded-xl flex items-center justify-center text-white mb-3`}>
+                          {tool.icon}
+                        </div>
+                        <p className="text-white font-medium">{tool.label}</p>
+                        <p className="text-gray-500 text-sm">{tool.desc}</p>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </motion.div>
           )}
         </AnimatePresence>
