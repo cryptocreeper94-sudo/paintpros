@@ -37,6 +37,8 @@ import {
   Store,
   Car,
   Sun,
+  Moon,
+  Sunset,
   CloudRain,
   Wind,
   Thermometer,
@@ -72,10 +74,27 @@ import {
   Layers,
   Crown
 } from "lucide-react";
+import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
+
+function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function getGreetingIcon(hour: number) {
+  if (hour >= 5 && hour < 12) return Sun;
+  if (hour >= 12 && hour < 17) return Sunset;
+  return Moon;
+}
 
 export default function FieldTool() {
   const tenant = useTenant();
   const [activeSection, setActiveSection] = useState("home");
+  const [userName, setUserName] = useState(() => {
+    return localStorage.getItem("field_tool_user") || "Team Member";
+  });
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -241,7 +260,7 @@ export default function FieldTool() {
 
   return (
     <div className="min-h-screen bg-black text-white pb-20 overflow-x-hidden">
-      {/* Header with tenant branding */}
+      {/* Header with tenant branding and personalized greeting */}
       <div 
         className="sticky top-0 z-40 px-4 py-3 backdrop-blur-xl border-b border-white/10"
         style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%)` }}
@@ -255,8 +274,17 @@ export default function FieldTool() {
               <PaintBucket className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">{appName}</h1>
-              <p className="text-xs text-gray-400">{tenant?.tagline || "Field Operations"}</p>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const hour = new Date().getHours();
+                  const Icon = getGreetingIcon(hour);
+                  return <Icon className="w-4 h-4" style={{ color: colors.primary }} />;
+                })()}
+                <h1 className="text-lg font-bold text-white">
+                  {getTimeGreeting()}, <span style={{ color: colors.primary }}>{userName}</span>
+                </h1>
+              </div>
+              <p className="text-xs text-gray-400">{appName} - {tenant?.tagline || "Field Operations"}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

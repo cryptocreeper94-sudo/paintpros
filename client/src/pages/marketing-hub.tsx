@@ -23,6 +23,7 @@ import {
   ImageIcon, MessageSquare, Layers, Wand2, Star
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
+import { PersonalizedGreeting } from "@/components/personalized-greeting";
 import { format, subWeeks, isAfter, startOfWeek, addDays } from "date-fns";
 
 interface SocialPost {
@@ -207,6 +208,8 @@ export default function MarketingHub() {
   const [error, setError] = useState("");
   const [showPinChange, setShowPinChange] = useState(false);
   const [userRole, setUserRole] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [activeTab, setActiveTab] = useState<"overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics">("overview");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
@@ -387,7 +390,17 @@ export default function MarketingHub() {
       if (data.success && (data.role === "marketing" || data.role === "developer" || data.role === "owner")) {
         setIsAuthenticated(true);
         setUserRole(data.role);
+        const roleNames: Record<string, string> = {
+          marketing: "Logan",
+          developer: "Brian", 
+          owner: "Ryan",
+          ops_manager: "Admin",
+          project_manager: "PM",
+          crew_lead: "Crew Lead",
+        };
+        setUserName(roleNames[data.role] || data.role);
         setError("");
+        setShowWelcomeModal(true);
         if (data.mustChangePin) {
           setShowPinChange(true);
         }
@@ -589,6 +602,17 @@ export default function MarketingHub() {
       <main className="min-h-screen py-8 px-4 pb-20">
         <div className="max-w-7xl mx-auto space-y-6">
           
+          {/* Personalized Greeting */}
+          {userName && (
+            <PersonalizedGreeting 
+              userName={userName}
+              userRole={userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Developer" : "Owner"}
+              showWelcomeModal={showWelcomeModal}
+              onWelcomeComplete={() => setShowWelcomeModal(false)}
+              primaryColor="#9333ea"
+            />
+          )}
+
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
