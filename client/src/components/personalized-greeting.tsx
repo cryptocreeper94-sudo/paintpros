@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Sun, Moon, Sunset, Sparkles, BookOpen, ArrowRight, 
   CheckCircle, Megaphone, BarChart3, Calendar, FileText,
-  Users, Settings, Lightbulb
+  Users, Settings, Lightbulb, Smartphone, MoreVertical, Share
 } from "lucide-react";
 
 interface PersonalizedGreetingProps {
@@ -204,6 +204,11 @@ function WelcomeModal({ isOpen, onClose, userName, userRole, primaryColor }: Wel
       content: "Plan your content in advance with the visual calendar. Drag and drop to reschedule posts."
     },
     {
+      title: "Add to Your Home Screen",
+      icon: Smartphone,
+      content: "Want quick access? Tap the 3 dots (or Share button on iPhone) in your browser, then tap 'Add to Home Screen'. You'll get an app icon for instant access!"
+    },
+    {
       title: "You're All Set!",
       icon: CheckCircle,
       content: "Need help? Check the documentation or reach out to the team. Let's make some great content!"
@@ -225,6 +230,11 @@ function WelcomeModal({ isOpen, onClose, userName, userRole, primaryColor }: Wel
       title: "Quick Actions",
       icon: Lightbulb,
       content: "Use the quick action buttons to navigate to common tasks. Everything is designed to be just a tap away."
+    },
+    {
+      title: "Add to Your Home Screen",
+      icon: Smartphone,
+      content: "Want quick access? Tap the 3 dots (or Share button on iPhone) in your browser, then tap 'Add to Home Screen'. You'll get an app icon for instant access!"
     },
     {
       title: "You're Ready!",
