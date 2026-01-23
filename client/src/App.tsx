@@ -56,6 +56,7 @@ import ProposalRyan from "@/pages/proposal-ryan";
 import Marketing from "@/pages/marketing";
 import MarketingHub from "@/pages/marketing-hub";
 import OpsAI from "@/pages/ops-ai";
+import TradeWorksApp from "@/pages/tradeworks-app";
 import Why40kFails from "@/pages/why-40k-fails";
 import TradeVerticals from "@/pages/trade-verticals";
 import EstimatorApp from "@/pages/estimator-app";
@@ -152,6 +153,7 @@ function Router() {
       <Route path="/marketing" component={Marketing} />
       <Route path="/marketing-hub" component={MarketingHub} />
       <Route path="/ops" component={OpsAI} />
+      <Route path="/tradeworks" component={TradeWorksApp} />
       <Route path="/comparison" component={Why40kFails} />
       <Route path="/compare" component={Compare} />
       <Route path="/trade-verticals" component={TradeVerticals} />
