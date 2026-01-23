@@ -22,7 +22,8 @@ import {
   Crown,
   Code,
   HardHat,
-  MapPin
+  MapPin,
+  Megaphone
 } from "lucide-react";
 
 import heroBg from "@assets/generated_images/abstract_army_green_dark_texture_with_gold_accents.png";
@@ -45,9 +46,11 @@ interface StaffSlide {
 const ROLE_ROUTES: Record<string, { route: string; displayName: string; color: string; icon: typeof Crown }> = {
   "owner": { route: "/owner", displayName: "Owner", color: "text-gold-400", icon: Crown },
   "ops_manager": { route: "/admin", displayName: "Admin", color: "text-blue-400", icon: Shield },
+  "admin": { route: "/admin", displayName: "Admin", color: "text-blue-400", icon: Shield },
   "project_manager": { route: "/project-manager", displayName: "Project Manager", color: "text-teal-400", icon: MapPin },
   "crew_lead": { route: "/crew-lead", displayName: "Crew Lead", color: "text-orange-400", icon: HardHat },
   "developer": { route: "/developer", displayName: "Developer", color: "text-purple-400", icon: Code },
+  "marketing": { route: "/marketing-hub", displayName: "Marketing Manager", color: "text-pink-400", icon: Megaphone },
   "demo_viewer": { route: "/demo-viewer", displayName: "Demo Viewer", color: "text-pink-400", icon: Star },
 };
 
