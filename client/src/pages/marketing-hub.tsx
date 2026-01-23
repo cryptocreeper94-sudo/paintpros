@@ -1219,7 +1219,7 @@ export default function MarketingHub() {
                     .filter(img => img.brand === selectedTenant)
                     .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter)
                     .map(img => (
-                      <GlassCard key={img.id} className="p-2 overflow-hidden">
+                      <GlassCard key={img.id} className="p-2 overflow-hidden" data-testid={`card-library-image-${img.id}`}>
                         <img src={img.url} alt={img.description} className="w-full h-32 object-cover rounded-lg mb-2" />
                         <div className="space-y-1">
                           <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{img.description}</p>
@@ -1290,7 +1290,7 @@ export default function MarketingHub() {
                     .filter(msg => msg.brand === selectedTenant)
                     .filter(msg => messageSubjectFilter === "all" || msg.subject === messageSubjectFilter)
                     .map(msg => (
-                      <GlassCard key={msg.id} className="p-4">
+                      <GlassCard key={msg.id} className="p-4" data-testid={`card-message-template-${msg.id}`}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <p className="text-sm text-gray-900 dark:text-white mb-2">{msg.content}</p>
@@ -1301,7 +1301,7 @@ export default function MarketingHub() {
                               {msg.hashtags.length > 0 && <Badge variant="outline" className="text-blue-600">{msg.hashtags.length} hashtags</Badge>}
                             </div>
                           </div>
-                          <Button size="icon" variant="ghost">
+                          <Button size="icon" variant="ghost" data-testid={`button-edit-message-${msg.id}`}>
                             <Edit className="w-4 h-4" />
                           </Button>
                         </div>
@@ -1327,8 +1327,34 @@ export default function MarketingHub() {
                   <Button 
                     onClick={async () => {
                       setIsGeneratingMatch(true);
-                      // AI matching logic would go here
-                      setTimeout(() => setIsGeneratingMatch(false), 2000);
+                      // AI matching logic - match images with messages by subject
+                      const tenantImages = libraryImages.filter(img => img.brand === selectedTenant);
+                      const tenantMessages = messageTemplates.filter(msg => msg.brand === selectedTenant);
+                      const newBundles: ContentBundle[] = [];
+                      
+                      for (const image of tenantImages) {
+                        const matchingMessages = tenantMessages.filter(msg => msg.subject === image.subject);
+                        for (const msg of matchingMessages) {
+                          // Check if this combination already exists
+                          const exists = contentBundles.some(b => b.imageId === image.id && b.messageId === msg.id);
+                          if (!exists) {
+                            newBundles.push({
+                              id: `bundle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                              imageId: image.id,
+                              messageId: msg.id,
+                              brand: selectedTenant as "npp" | "lumepaint",
+                              platform: msg.platform,
+                              status: "suggested",
+                              createdAt: new Date().toISOString(),
+                            });
+                          }
+                        }
+                      }
+                      
+                      const updated = [...contentBundles, ...newBundles];
+                      setContentBundles(updated);
+                      localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                      setIsGeneratingMatch(false);
                     }}
                     disabled={isGeneratingMatch || libraryImages.length === 0 || messageTemplates.length === 0}
                     data-testid="button-generate-bundles"
@@ -1383,7 +1409,7 @@ export default function MarketingHub() {
                       const image = libraryImages.find(i => i.id === bundle.imageId);
                       const message = messageTemplates.find(m => m.id === bundle.messageId);
                       return (
-                        <GlassCard key={bundle.id} className="p-4">
+                        <GlassCard key={bundle.id} className="p-4" data-testid={`card-content-bundle-${bundle.id}`}>
                           <div className="flex gap-4">
                             {image && (
                               <img src={image.url} alt="" className="w-24 h-24 object-cover rounded-lg" />
@@ -1395,14 +1421,25 @@ export default function MarketingHub() {
                                 </Badge>
                                 <Badge variant="outline">{bundle.platform}</Badge>
                               </div>
-                              <p className="text-sm text-gray-900 dark:text-white mb-2">{message?.content}</p>
+                              <p className="text-sm text-gray-900 dark:text-white mb-2" data-testid={`text-bundle-content-${bundle.id}`}>{message?.content}</p>
                               {bundle.status === "suggested" && (
                                 <div className="flex gap-2">
-                                  <Button size="sm" className="bg-green-500 hover:bg-green-600">
+                                  <Button 
+                                    size="sm" 
+                                    className="bg-green-500"
+                                    data-testid={`button-approve-bundle-${bundle.id}`}
+                                    onClick={() => {
+                                      const updated = contentBundles.map(b => 
+                                        b.id === bundle.id ? { ...b, status: "approved" as const } : b
+                                      );
+                                      setContentBundles(updated);
+                                      localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                                    }}
+                                  >
                                     <CheckCircle className="w-3 h-3 mr-1" />
                                     Approve
                                   </Button>
-                                  <Button size="sm" variant="outline">
+                                  <Button size="sm" variant="outline" data-testid={`button-edit-bundle-${bundle.id}`}>
                                     <Edit className="w-3 h-3 mr-1" />
                                     Edit
                                   </Button>
