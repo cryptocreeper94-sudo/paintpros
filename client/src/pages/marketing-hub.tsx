@@ -1865,6 +1865,7 @@ function AddPostForm({ onSubmit, onCancel }: {
   onCancel: () => void;
 }) {
   const [content, setContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [platform, setPlatform] = useState("instagram");
   const [type, setType] = useState("evergreen");
   const [category, setCategory] = useState("general");
@@ -1910,6 +1911,26 @@ function AddPostForm({ onSubmit, onCancel }: {
         </Select>
       </div>
       <div>
+        <Label>Image URL (optional)</Label>
+        <Input 
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="https://example.com/image.jpg or leave blank"
+          data-testid="input-image-url"
+        />
+        {imageUrl && (
+          <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <img 
+              src={imageUrl} 
+              alt="Preview" 
+              className="w-full h-32 object-cover rounded"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          </div>
+        )}
+        <p className="text-xs text-gray-500 mt-1">Paste a URL to an image, or upload to a service and paste the link</p>
+      </div>
+      <div>
         <Label>Message Content</Label>
         <Textarea 
           value={content}
@@ -1923,7 +1944,13 @@ function AddPostForm({ onSubmit, onCancel }: {
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>Cancel</Button>
         <Button 
-          onClick={() => onSubmit({ content, platform: platform as any, type: type as any, category: category as any })}
+          onClick={() => onSubmit({ 
+            content, 
+            imageUrl: imageUrl || undefined,
+            platform: platform as any, 
+            type: type as any, 
+            category: category as any 
+          })}
           disabled={!content.trim()}
           data-testid="button-submit-post"
         >
