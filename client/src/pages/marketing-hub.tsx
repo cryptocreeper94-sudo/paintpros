@@ -392,7 +392,7 @@ export default function MarketingHub() {
         setUserRole(data.role);
         const roleNames: Record<string, string> = {
           marketing: "Logan",
-          developer: "Brian", 
+          developer: "Jason", 
           owner: "Ryan",
           ops_manager: "Admin",
           project_manager: "PM",
