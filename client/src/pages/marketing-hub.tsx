@@ -1048,8 +1048,8 @@ export default function MarketingHub() {
 
   return (
     <PageLayout>
-      <main className="min-h-screen py-8 px-4 pb-20">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <main className="min-h-screen py-4 md:py-8 px-2 md:px-4 pb-20 overflow-x-hidden">
+        <div className="max-w-7xl mx-auto space-y-4 md:space-y-6 w-full overflow-hidden">
           
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -1057,20 +1057,20 @@ export default function MarketingHub() {
             className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
           >
             <div>
-              <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
-                  <Megaphone className="w-5 h-5 text-white" />
+              <h1 className="text-xl md:text-3xl font-display font-bold text-gray-900 dark:text-white flex items-center gap-2 md:gap-3">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                  <Megaphone className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
-                Marketing Hub
+                <span className="truncate">Marketing Hub</span>
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               {userName && (
-                <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 border-purple-200">
+                <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 border-purple-200 text-xs">
                   {userName}
                 </Badge>
               )}
@@ -1084,9 +1084,11 @@ export default function MarketingHub() {
                   size="sm"
                   onClick={() => window.location.href = "/developer"}
                   data-testid="button-back-to-developer"
+                  className="text-xs"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  Developer Hub
+                  <ArrowLeft className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Developer Hub</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               )}
               {userRole === "owner" && (
@@ -1095,9 +1097,11 @@ export default function MarketingHub() {
                   size="sm"
                   onClick={() => window.location.href = "/owner"}
                   data-testid="button-back-to-owner"
+                  className="text-xs"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  Owner Dashboard
+                  <ArrowLeft className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Owner Dashboard</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               )}
               {userRole === "admin" && (
@@ -1106,28 +1110,30 @@ export default function MarketingHub() {
                   size="sm"
                   onClick={() => window.location.href = "/admin"}
                   data-testid="button-back-to-admin"
+                  className="text-xs"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  Admin Dashboard
+                  <ArrowLeft className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Admin Dashboard</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               )}
               <Button 
                 variant="outline" 
-                size="sm"
+                size="icon"
                 onClick={() => setShowPinChange(true)}
                 data-testid="button-change-pin"
+                className="h-8 w-8"
               >
-                <Lock className="w-4 h-4 mr-1" />
-                PIN
+                <Lock className="w-3 h-3" />
               </Button>
               <Button 
                 variant="ghost" 
-                size="sm"
+                size="icon"
                 onClick={handleLogout}
-                className="text-muted-foreground hover:text-red-600"
+                className="text-muted-foreground hover:text-red-600 h-8 w-8"
                 data-testid="button-logout"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3 h-3" />
               </Button>
             </div>
           </motion.div>
@@ -1172,108 +1178,108 @@ export default function MarketingHub() {
           </BentoGrid>
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            <TabsList className="flex flex-wrap gap-1 mb-6 h-auto p-1">
-              <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
-                <Sparkles className="w-4 h-4" />
-                Overview
+            <TabsList className="grid grid-cols-4 md:flex md:flex-wrap gap-1 mb-4 md:mb-6 h-auto p-1 w-full">
+              <TabsTrigger value="overview" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-overview">
+                <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Overview</span>
               </TabsTrigger>
-              <TabsTrigger value="images" className="flex items-center gap-2" data-testid="tab-images">
-                <ImageIcon className="w-4 h-4" />
-                Images
+              <TabsTrigger value="images" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-images">
+                <ImageIcon className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Images</span>
               </TabsTrigger>
-              <TabsTrigger value="messages" className="flex items-center gap-2" data-testid="tab-messages">
-                <MessageSquare className="w-4 h-4" />
-                Messages
+              <TabsTrigger value="messages" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-messages">
+                <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Messages</span>
               </TabsTrigger>
-              <TabsTrigger value="bundles" className="flex items-center gap-2" data-testid="tab-bundles">
-                <Layers className="w-4 h-4" />
-                AI Bundles
+              <TabsTrigger value="bundles" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-bundles">
+                <Layers className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">AI Bundles</span>
               </TabsTrigger>
-              <TabsTrigger value="catalog" className="flex items-center gap-2" data-testid="tab-catalog">
-                <FileText className="w-4 h-4" />
-                Catalog
+              <TabsTrigger value="catalog" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-catalog">
+                <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Catalog</span>
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center gap-2" data-testid="tab-calendar">
-                <Calendar className="w-4 h-4" />
-                Schedule
+              <TabsTrigger value="calendar" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-calendar">
+                <Calendar className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Schedule</span>
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center gap-2" data-testid="tab-analytics">
-                <BarChart3 className="w-4 h-4" />
-                Analytics
+              <TabsTrigger value="analytics" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-analytics">
+                <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Analytics</span>
               </TabsTrigger>
-              <TabsTrigger value="notes" className="flex items-center gap-2" data-testid="tab-notes">
-                <FileText className="w-4 h-4" />
-                Notes
+              <TabsTrigger value="notes" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-notes">
+                <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Notes</span>
               </TabsTrigger>
             </TabsList>
 
             {/* OVERVIEW TAB - Welcome, Status, Roadmap */}
             <TabsContent value="overview" className="space-y-6">
               {/* Voice Assistant Tip - First thing Logan sees */}
-              <div className="p-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                  <Volume2 className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-sm">Voice Mode Available</p>
-                  <p className="text-xs text-white/90">
-                    Say "Hey, read me section 2" or click the speaker icon on any section to have the AI read it to you. 
-                    Hands-free marketing updates while you multitask.
-                  </p>
+              <div className="p-3 md:p-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Volume2 className="w-4 h-4 md:w-5 md:h-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-xs md:text-sm">Voice Mode Available</p>
+                    <p className="text-xs text-white/90 line-clamp-2">
+                      Click the speaker icon on any section to have the AI read it to you.
+                    </p>
+                  </div>
                 </div>
                 <Button 
                   size="sm" 
                   variant="secondary" 
-                  className="bg-white/20 hover:bg-white/30 text-white border-0"
+                  className="bg-white/20 hover:bg-white/30 text-white border-0 text-xs flex-shrink-0"
                   onClick={() => handleReadSection("welcome")}
                   data-testid="button-voice-demo"
                 >
-                  <Volume2 className="w-4 h-4 mr-1" />
+                  <Volume2 className="w-3 h-3 mr-1" />
                   Try It
                 </Button>
               </div>
 
               {/* Intro Toggle - Show/Hide all intro content */}
               {introHidden ? (
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-white" />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 md:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">Welcome guide hidden</p>
-                      <p className="text-xs text-muted-foreground">You've read the intro. Focus on what matters.</p>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white text-sm">Welcome guide hidden</p>
+                      <p className="text-xs text-muted-foreground">You've read the intro.</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" onClick={showIntro} data-testid="button-show-intro">
-                    Show Guide Again
+                  <Button variant="outline" size="sm" onClick={showIntro} data-testid="button-show-intro" className="text-xs flex-shrink-0">
+                    Show Guide
                   </Button>
                 </div>
               ) : (
                 <>
                   {/* Welcome Section for Logan */}
-                  <GlassCard className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                        <User className="w-6 h-6 text-white" />
+                  <GlassCard className="p-4 md:p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
+                    <div className="flex flex-col sm:flex-row items-start gap-3 md:gap-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                        <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
-                      <div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      <div className="min-w-0">
+                        <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">
                           Hey Logan - Here's What I Built For Us
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm leading-relaxed">
                           This is our Marketing Hub for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}. 
                           I've been building this system so we can run a professional marketing operation together without 
-                          either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, 
-                          what I'm still connecting, and where we're headed. Let's make this thing dominate.
+                          either of us having to spend hours on it.
                         </p>
                       </div>
                     </div>
                   </GlassCard>
 
               {/* Section 1: What's Ready */}
-              <GlassCard className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <GlassCard className="p-4 md:p-6">
+                <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   1. What's Ready Right Now
                   <Button 
