@@ -24,7 +24,6 @@ import {
   ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import { PersonalizedGreeting } from "@/components/personalized-greeting";
 import { useQuery } from "@tanstack/react-query";
 import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin } from "lucide-react";
 import { AreaChart, Area } from "recharts";
@@ -761,17 +760,6 @@ export default function MarketingHub() {
       <main className="min-h-screen py-8 px-4 pb-20">
         <div className="max-w-7xl mx-auto space-y-6">
           
-          {/* Personalized Greeting */}
-          {userName && (
-            <PersonalizedGreeting 
-              userName={userName}
-              userRole={userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Marketing Director" : userRole === "owner" ? "Owner" : "Admin"}
-              showWelcomeModal={showWelcomeModal}
-              onWelcomeComplete={() => setShowWelcomeModal(false)}
-              primaryColor="#9333ea"
-            />
-          )}
-
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -785,11 +773,16 @@ export default function MarketingHub() {
                 Marketing Hub
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Social media catalog & scheduling for {selectedTenant === "npp" ? "NPP" : "Lume"}
+                {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
+              {userName && (
+                <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 border-purple-200">
+                  {userName}
+                </Badge>
+              )}
               <TenantSwitcher 
                 selectedTenant={selectedTenant} 
                 onTenantChange={setSelectedTenant} 
@@ -2772,12 +2765,12 @@ export default function MarketingHub() {
               <GlassCard className="p-6" data-testid="analytics-website-traffic">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selectedTenant === "npp" ? "from-blue-500 to-indigo-600" : "from-amber-500 to-orange-600"} flex items-center justify-center`}>
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selectedTenant === "npp" ? "from-blue-500 to-indigo-600" : "from-purple-500 to-violet-600"} flex items-center justify-center`}>
                       <Globe className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold">Website Traffic</h3>
-                      <p className={`text-sm font-medium ${selectedTenant === "npp" ? "text-blue-600" : "text-amber-600"}`}>
+                      <p className={`text-sm font-medium ${selectedTenant === "npp" ? "text-blue-600" : "text-purple-600"}`}>
                         {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
                       </p>
                     </div>
@@ -2787,7 +2780,7 @@ export default function MarketingHub() {
                       variant="outline" 
                       className={`${selectedTenant === "npp" 
                         ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 border-blue-200" 
-                        : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 border-amber-200"}`}
+                        : "bg-purple-50 dark:bg-purple-900/30 text-purple-600 border-purple-200"}`}
                     >
                       {selectedTenant === "npp" ? "NPP" : "LUME"}
                     </Badge>
@@ -2980,8 +2973,8 @@ export default function MarketingHub() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${selectedTenant === "npp" ? "from-blue-500/20 to-indigo-600/20" : "from-amber-500/20 to-orange-600/20"} flex items-center justify-center`}>
-                      <Globe className={`w-8 h-8 ${selectedTenant === "npp" ? "text-blue-500" : "text-amber-500"}`} />
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${selectedTenant === "npp" ? "from-blue-500/20 to-indigo-600/20" : "from-purple-500/20 to-violet-600/20"} flex items-center justify-center`}>
+                      <Globe className={`w-8 h-8 ${selectedTenant === "npp" ? "text-blue-500" : "text-purple-500"}`} />
                     </div>
                     <p className="font-medium mb-1">
                       {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
