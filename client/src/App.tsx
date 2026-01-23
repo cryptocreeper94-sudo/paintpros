@@ -62,6 +62,7 @@ import TradeVerticals from "@/pages/trade-verticals";
 import EstimatorApp from "@/pages/estimator-app";
 import TradeToolkit from "@/pages/trade-toolkit";
 import TradeWorksAI from "@/pages/tradeworks-ai";
+import FieldTool from "@/pages/field-tool";
 import EstimatorConfig from "@/pages/estimator-config";
 import CreditsDashboard from "@/pages/credits-dashboard";
 import CreditsSuccess from "@/pages/credits-success";
@@ -197,6 +198,7 @@ function Router() {
       <Route path="/onboarding" component={Onboarding} />
       <Route path="/onboarding/success" component={OnboardingSuccess} />
       <Route path="/onboarding/cancel">{() => <Onboarding />}</Route>
+      <Route path="/app" component={FieldTool} />
       <Route component={NotFound} />
     </Switch>
   );
