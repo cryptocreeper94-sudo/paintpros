@@ -19,7 +19,8 @@ import {
   Trash2, Plus, Copy, Lock, User, Mic,
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
-  FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2
+  FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2,
+  ImageIcon, MessageSquare, Layers, Wand2, Star
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { format, subWeeks, isAfter, startOfWeek, addDays } from "date-fns";
@@ -43,6 +44,97 @@ interface CalendarDay {
   date: Date;
   posts: SocialPost[];
 }
+
+// DAM System Types
+type ImageSubject = "interior-walls" | "exterior-home" | "cabinet-work" | "deck-staining" | "trim-detail" | "door-painting" | "commercial-space" | "before-after" | "team-action" | "general";
+type ImageStyle = "finished-result" | "before-after" | "action-shot" | "detail-closeup" | "wide-angle" | "testimonial";
+type ImageSeason = "spring" | "summer" | "fall" | "winter" | "all-year";
+
+interface LibraryImage {
+  id: string;
+  brand: "npp" | "lumepaint";
+  url: string;
+  subject: ImageSubject;
+  style: ImageStyle;
+  season: ImageSeason;
+  quality: 1 | 2 | 3 | 4 | 5;
+  description: string;
+  tags: string[];
+  createdAt: string;
+}
+
+type MessageTone = "professional" | "friendly" | "promotional" | "educational" | "urgent";
+type MessageCTA = "book-now" | "get-quote" | "learn-more" | "call-us" | "visit-site" | "none";
+
+interface MessageTemplate {
+  id: string;
+  brand: "npp" | "lumepaint";
+  content: string;
+  subject: ImageSubject;
+  tone: MessageTone;
+  cta: MessageCTA;
+  platform: "instagram" | "facebook" | "nextdoor" | "all";
+  hashtags: string[];
+  createdAt: string;
+}
+
+interface ContentBundle {
+  id: string;
+  brand: "npp" | "lumepaint";
+  imageId: string;
+  messageId: string;
+  status: "suggested" | "approved" | "scheduled" | "posted";
+  scheduledDate?: string;
+  platform: "instagram" | "facebook" | "nextdoor";
+  createdAt: string;
+}
+
+const IMAGE_SUBJECTS: { id: ImageSubject; label: string }[] = [
+  { id: "interior-walls", label: "Interior Walls" },
+  { id: "exterior-home", label: "Exterior Home" },
+  { id: "cabinet-work", label: "Cabinet Work" },
+  { id: "deck-staining", label: "Deck Staining" },
+  { id: "trim-detail", label: "Trim & Detail" },
+  { id: "door-painting", label: "Door Painting" },
+  { id: "commercial-space", label: "Commercial Space" },
+  { id: "before-after", label: "Before/After" },
+  { id: "team-action", label: "Team Action" },
+  { id: "general", label: "General/Brand" },
+];
+
+const IMAGE_STYLES: { id: ImageStyle; label: string }[] = [
+  { id: "finished-result", label: "Finished Result" },
+  { id: "before-after", label: "Before/After" },
+  { id: "action-shot", label: "Action Shot" },
+  { id: "detail-closeup", label: "Detail Close-up" },
+  { id: "wide-angle", label: "Wide Angle" },
+  { id: "testimonial", label: "Testimonial" },
+];
+
+const IMAGE_SEASONS: { id: ImageSeason; label: string }[] = [
+  { id: "all-year", label: "All Year" },
+  { id: "spring", label: "Spring" },
+  { id: "summer", label: "Summer" },
+  { id: "fall", label: "Fall" },
+  { id: "winter", label: "Winter" },
+];
+
+const MESSAGE_TONES: { id: MessageTone; label: string }[] = [
+  { id: "professional", label: "Professional" },
+  { id: "friendly", label: "Friendly" },
+  { id: "promotional", label: "Promotional" },
+  { id: "educational", label: "Educational" },
+  { id: "urgent", label: "Urgent" },
+];
+
+const MESSAGE_CTAS: { id: MessageCTA; label: string }[] = [
+  { id: "none", label: "No CTA" },
+  { id: "book-now", label: "Book Now" },
+  { id: "get-quote", label: "Get Quote" },
+  { id: "learn-more", label: "Learn More" },
+  { id: "call-us", label: "Call Us" },
+  { id: "visit-site", label: "Visit Site" },
+];
 
 const CATEGORIES = [
   { id: "interior", label: "Interior", icon: Home },
@@ -116,7 +208,7 @@ export default function MarketingHub() {
   const [showPinChange, setShowPinChange] = useState(false);
   const [userRole, setUserRole] = useState<string>("");
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [activeTab, setActiveTab] = useState<"overview" | "catalog" | "calendar" | "analytics">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics">("overview");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -128,6 +220,16 @@ export default function MarketingHub() {
   const [calendarWeekStart, setCalendarWeekStart] = useState(startOfWeek(new Date()));
   const [isReading, setIsReading] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  
+  // DAM System State
+  const [libraryImages, setLibraryImages] = useState<LibraryImage[]>([]);
+  const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>([]);
+  const [contentBundles, setContentBundles] = useState<ContentBundle[]>([]);
+  const [showAddImageModal, setShowAddImageModal] = useState(false);
+  const [showAddMessageModal, setShowAddMessageModal] = useState(false);
+  const [imageSubjectFilter, setImageSubjectFilter] = useState<string>("all");
+  const [messageSubjectFilter, setMessageSubjectFilter] = useState<string>("all");
+  const [isGeneratingMatch, setIsGeneratingMatch] = useState(false);
 
   // Section content for voice reading (stripped of emojis)
   const sectionContent: Record<string, string> = {
@@ -248,6 +350,21 @@ export default function MarketingHub() {
       localStorage.setItem("marketing_posts", JSON.stringify(initialPosts));
     }
 
+    // Load DAM data
+    const savedImages = localStorage.getItem("marketing_images");
+    if (savedImages) {
+      setLibraryImages(JSON.parse(savedImages));
+    }
+    
+    const savedMessages = localStorage.getItem("marketing_messages");
+    if (savedMessages) {
+      setMessageTemplates(JSON.parse(savedMessages));
+    }
+    
+    const savedBundles = localStorage.getItem("marketing_bundles");
+    if (savedBundles) {
+      setContentBundles(JSON.parse(savedBundles));
+    }
   }, []);
 
   const validatePinStrength = (testPin: string): boolean => {
@@ -546,10 +663,22 @@ export default function MarketingHub() {
           </BentoGrid>
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="flex flex-wrap gap-1 mb-6 h-auto p-1">
               <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                 <Sparkles className="w-4 h-4" />
                 Overview
+              </TabsTrigger>
+              <TabsTrigger value="images" className="flex items-center gap-2" data-testid="tab-images">
+                <ImageIcon className="w-4 h-4" />
+                Images
+              </TabsTrigger>
+              <TabsTrigger value="messages" className="flex items-center gap-2" data-testid="tab-messages">
+                <MessageSquare className="w-4 h-4" />
+                Messages
+              </TabsTrigger>
+              <TabsTrigger value="bundles" className="flex items-center gap-2" data-testid="tab-bundles">
+                <Layers className="w-4 h-4" />
+                AI Bundles
               </TabsTrigger>
               <TabsTrigger value="catalog" className="flex items-center gap-2" data-testid="tab-catalog">
                 <FileText className="w-4 h-4" />
@@ -1037,6 +1166,255 @@ export default function MarketingHub() {
                   </p>
                 </div>
               </GlassCard>
+            </TabsContent>
+
+            {/* IMAGES TAB - Image Library with Tags */}
+            <TabsContent value="images" className="space-y-6">
+              <GlassCard className="p-4">
+                <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <ImageIcon className="w-5 h-5 text-purple-500" />
+                      Image Library
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Tagged images that the AI can match with message templates
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Select value={imageSubjectFilter} onValueChange={setImageSubjectFilter}>
+                      <SelectTrigger className="w-40" data-testid="select-image-subject">
+                        <SelectValue placeholder="All Subjects" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Subjects</SelectItem>
+                        {IMAGE_SUBJECTS.map(s => (
+                          <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-image">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Image
+                    </Button>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {libraryImages.length === 0 ? (
+                <GlassCard className="p-8 text-center">
+                  <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Images Yet</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Add images to your library with subject tags. The AI will use these tags to match images with appropriate messages.
+                  </p>
+                  <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-first-image">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Your First Image
+                  </Button>
+                </GlassCard>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {libraryImages
+                    .filter(img => img.brand === selectedTenant)
+                    .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter)
+                    .map(img => (
+                      <GlassCard key={img.id} className="p-2 overflow-hidden">
+                        <img src={img.url} alt={img.description} className="w-full h-32 object-cover rounded-lg mb-2" />
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{img.description}</p>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label}</Badge>
+                            <Badge variant="outline" className="text-xs">{img.style}</Badge>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {[1, 2, 3, 4, 5].map(n => (
+                              <Star key={n} className={`w-3 h-3 ${n <= img.quality ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      </GlassCard>
+                    ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* MESSAGES TAB - Message Templates with Tags */}
+            <TabsContent value="messages" className="space-y-6">
+              <GlassCard className="p-4">
+                <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <MessageSquare className="w-5 h-5 text-blue-500" />
+                      Message Templates
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Captions and messages the AI can pair with matching images
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Select value={messageSubjectFilter} onValueChange={setMessageSubjectFilter}>
+                      <SelectTrigger className="w-40" data-testid="select-message-subject">
+                        <SelectValue placeholder="All Subjects" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Subjects</SelectItem>
+                        {IMAGE_SUBJECTS.map(s => (
+                          <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={() => setShowAddMessageModal(true)} data-testid="button-add-message">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Message
+                    </Button>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {messageTemplates.length === 0 ? (
+                <GlassCard className="p-8 text-center">
+                  <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Message Templates Yet</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Add message templates with subject tags. The AI will match these with images that share the same subject.
+                  </p>
+                  <Button onClick={() => setShowAddMessageModal(true)} data-testid="button-add-first-message">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Your First Message
+                  </Button>
+                </GlassCard>
+              ) : (
+                <div className="space-y-3">
+                  {messageTemplates
+                    .filter(msg => msg.brand === selectedTenant)
+                    .filter(msg => messageSubjectFilter === "all" || msg.subject === messageSubjectFilter)
+                    .map(msg => (
+                      <GlassCard key={msg.id} className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-900 dark:text-white mb-2">{msg.content}</p>
+                            <div className="flex flex-wrap gap-1">
+                              <Badge variant="secondary">{IMAGE_SUBJECTS.find(s => s.id === msg.subject)?.label}</Badge>
+                              <Badge variant="outline">{MESSAGE_TONES.find(t => t.id === msg.tone)?.label}</Badge>
+                              {msg.cta !== "none" && <Badge className="bg-green-100 text-green-800">{MESSAGE_CTAS.find(c => c.id === msg.cta)?.label}</Badge>}
+                              {msg.hashtags.length > 0 && <Badge variant="outline" className="text-blue-600">{msg.hashtags.length} hashtags</Badge>}
+                            </div>
+                          </div>
+                          <Button size="icon" variant="ghost">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </GlassCard>
+                    ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* AI BUNDLES TAB - Smart Matching */}
+            <TabsContent value="bundles" className="space-y-6">
+              <GlassCard className="p-4">
+                <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <Wand2 className="w-5 h-5 text-pink-500" />
+                      AI Content Bundles
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Smart image + message combinations created by AI based on matching tags
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={async () => {
+                      setIsGeneratingMatch(true);
+                      // AI matching logic would go here
+                      setTimeout(() => setIsGeneratingMatch(false), 2000);
+                    }}
+                    disabled={isGeneratingMatch || libraryImages.length === 0 || messageTemplates.length === 0}
+                    data-testid="button-generate-bundles"
+                  >
+                    {isGeneratingMatch ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="w-4 h-4 mr-1" />
+                        Generate Bundles
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </GlassCard>
+
+              {(libraryImages.length === 0 || messageTemplates.length === 0) ? (
+                <GlassCard className="p-8 text-center">
+                  <Layers className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Add Content First</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    You need both images and message templates before the AI can create bundles. 
+                    Add at least one image and one message to get started.
+                  </p>
+                  <div className="flex gap-2 justify-center">
+                    <Button variant="outline" onClick={() => setActiveTab("images")}>
+                      <ImageIcon className="w-4 h-4 mr-1" />
+                      Add Images
+                    </Button>
+                    <Button variant="outline" onClick={() => setActiveTab("messages")}>
+                      <MessageSquare className="w-4 h-4 mr-1" />
+                      Add Messages
+                    </Button>
+                  </div>
+                </GlassCard>
+              ) : contentBundles.length === 0 ? (
+                <GlassCard className="p-8 text-center">
+                  <Wand2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ready to Generate</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    Click "Generate Bundles" to have the AI create smart image + message combinations based on matching subject tags.
+                  </p>
+                </GlassCard>
+              ) : (
+                <div className="space-y-4">
+                  {contentBundles
+                    .filter(b => b.brand === selectedTenant)
+                    .map(bundle => {
+                      const image = libraryImages.find(i => i.id === bundle.imageId);
+                      const message = messageTemplates.find(m => m.id === bundle.messageId);
+                      return (
+                        <GlassCard key={bundle.id} className="p-4">
+                          <div className="flex gap-4">
+                            {image && (
+                              <img src={image.url} alt="" className="w-24 h-24 object-cover rounded-lg" />
+                            )}
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Badge className={bundle.status === "approved" ? "bg-green-500" : bundle.status === "suggested" ? "bg-yellow-500" : "bg-blue-500"}>
+                                  {bundle.status}
+                                </Badge>
+                                <Badge variant="outline">{bundle.platform}</Badge>
+                              </div>
+                              <p className="text-sm text-gray-900 dark:text-white mb-2">{message?.content}</p>
+                              {bundle.status === "suggested" && (
+                                <div className="flex gap-2">
+                                  <Button size="sm" className="bg-green-500 hover:bg-green-600">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Approve
+                                  </Button>
+                                  <Button size="sm" variant="outline">
+                                    <Edit className="w-3 h-3 mr-1" />
+                                    Edit
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </GlassCard>
+                      );
+                    })}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="catalog" className="space-y-6">
@@ -1856,7 +2234,269 @@ export default function MarketingHub() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Image Modal */}
+      <Dialog open={showAddImageModal} onOpenChange={setShowAddImageModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-purple-500" />
+              Add Image to Library
+            </DialogTitle>
+          </DialogHeader>
+          <AddImageForm 
+            onSubmit={(image) => {
+              const newImage: LibraryImage = {
+                ...image,
+                id: `img-${Date.now()}`,
+                brand: selectedTenant as "npp" | "lumepaint",
+                createdAt: new Date().toISOString(),
+              };
+              const updated = [...libraryImages, newImage];
+              setLibraryImages(updated);
+              localStorage.setItem("marketing_images", JSON.stringify(updated));
+              setShowAddImageModal(false);
+            }}
+            onCancel={() => setShowAddImageModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Message Modal */}
+      <Dialog open={showAddMessageModal} onOpenChange={setShowAddMessageModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-blue-500" />
+              Add Message Template
+            </DialogTitle>
+          </DialogHeader>
+          <AddMessageForm 
+            onSubmit={(message) => {
+              const newMessage: MessageTemplate = {
+                ...message,
+                id: `msg-${Date.now()}`,
+                brand: selectedTenant as "npp" | "lumepaint",
+                createdAt: new Date().toISOString(),
+              };
+              const updated = [...messageTemplates, newMessage];
+              setMessageTemplates(updated);
+              localStorage.setItem("marketing_messages", JSON.stringify(updated));
+              setShowAddMessageModal(false);
+            }}
+            onCancel={() => setShowAddMessageModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </PageLayout>
+  );
+}
+
+// Add Image Form Component
+function AddImageForm({ onSubmit, onCancel }: {
+  onSubmit: (image: Omit<LibraryImage, "id" | "brand" | "createdAt">) => void;
+  onCancel: () => void;
+}) {
+  const [url, setUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [subject, setSubject] = useState<ImageSubject>("general");
+  const [style, setStyle] = useState<ImageStyle>("finished-result");
+  const [season, setSeason] = useState<ImageSeason>("all-year");
+  const [quality, setQuality] = useState<1 | 2 | 3 | 4 | 5>(3);
+  const [tags, setTags] = useState("");
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Image URL</Label>
+        <Input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://example.com/image.jpg"
+          data-testid="input-library-image-url"
+        />
+        {url && (
+          <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <img src={url} alt="Preview" className="w-full h-32 object-cover rounded" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          </div>
+        )}
+      </div>
+      <div>
+        <Label>Description</Label>
+        <Input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Brief description of the image"
+          data-testid="input-image-description"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>Subject</Label>
+          <Select value={subject} onValueChange={(v) => setSubject(v as ImageSubject)}>
+            <SelectTrigger data-testid="select-image-subject-form">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {IMAGE_SUBJECTS.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Style</Label>
+          <Select value={style} onValueChange={(v) => setStyle(v as ImageStyle)}>
+            <SelectTrigger data-testid="select-image-style">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {IMAGE_STYLES.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>Season</Label>
+          <Select value={season} onValueChange={(v) => setSeason(v as ImageSeason)}>
+            <SelectTrigger data-testid="select-image-season">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {IMAGE_SEASONS.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Quality (1-5)</Label>
+          <Select value={String(quality)} onValueChange={(v) => setQuality(Number(v) as 1|2|3|4|5)}>
+            <SelectTrigger data-testid="select-image-quality">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[1, 2, 3, 4, 5].map(n => <SelectItem key={n} value={String(n)}>{n} Star{n > 1 ? 's' : ''}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div>
+        <Label>Tags (comma separated)</Label>
+        <Input
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+          placeholder="modern, clean, residential"
+          data-testid="input-image-tags"
+        />
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button
+          onClick={() => onSubmit({ url, description, subject, style, season, quality, tags: tags.split(",").map(t => t.trim()).filter(Boolean) })}
+          disabled={!url.trim()}
+          data-testid="button-submit-image"
+        >
+          Add Image
+        </Button>
+      </DialogFooter>
+    </div>
+  );
+}
+
+// Add Message Form Component
+function AddMessageForm({ onSubmit, onCancel }: {
+  onSubmit: (message: Omit<MessageTemplate, "id" | "brand" | "createdAt">) => void;
+  onCancel: () => void;
+}) {
+  const [content, setContent] = useState("");
+  const [subject, setSubject] = useState<ImageSubject>("general");
+  const [tone, setTone] = useState<MessageTone>("professional");
+  const [cta, setCta] = useState<MessageCTA>("none");
+  const [platform, setPlatform] = useState<"instagram" | "facebook" | "nextdoor" | "all">("all");
+  const [hashtags, setHashtags] = useState("");
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Message Content</Label>
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write your message template..."
+          rows={4}
+          data-testid="textarea-message-content"
+        />
+        <p className="text-xs text-gray-500 mt-1">{content.length} characters</p>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>Subject Match</Label>
+          <Select value={subject} onValueChange={(v) => setSubject(v as ImageSubject)}>
+            <SelectTrigger data-testid="select-message-subject-form">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {IMAGE_SUBJECTS.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Tone</Label>
+          <Select value={tone} onValueChange={(v) => setTone(v as MessageTone)}>
+            <SelectTrigger data-testid="select-message-tone">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MESSAGE_TONES.map(t => <SelectItem key={t.id} value={t.id}>{t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label>Call to Action</Label>
+          <Select value={cta} onValueChange={(v) => setCta(v as MessageCTA)}>
+            <SelectTrigger data-testid="select-message-cta">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MESSAGE_CTAS.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Platform</Label>
+          <Select value={platform} onValueChange={(v) => setPlatform(v as typeof platform)}>
+            <SelectTrigger data-testid="select-message-platform">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Platforms</SelectItem>
+              <SelectItem value="instagram">Instagram</SelectItem>
+              <SelectItem value="facebook">Facebook</SelectItem>
+              <SelectItem value="nextdoor">Nextdoor</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div>
+        <Label>Hashtags (comma separated)</Label>
+        <Input
+          value={hashtags}
+          onChange={(e) => setHashtags(e.target.value)}
+          placeholder="#NashvillePainting, #HomeImprovement"
+          data-testid="input-message-hashtags"
+        />
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button
+          onClick={() => onSubmit({ content, subject, tone, cta, platform, hashtags: hashtags.split(",").map(h => h.trim()).filter(Boolean) })}
+          disabled={!content.trim()}
+          data-testid="button-submit-message"
+        >
+          Add Message
+        </Button>
+      </DialogFooter>
+    </div>
   );
 }
 
