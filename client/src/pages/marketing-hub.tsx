@@ -19,7 +19,7 @@ import {
   Trash2, Plus, Copy, Lock, User, Mic,
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
-  FileText, Users, BarChart3, Target, Lightbulb
+  FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { format, subWeeks, isAfter, startOfWeek, addDays } from "date-fns";
@@ -126,6 +126,75 @@ export default function MarketingHub() {
   const [duplicatePost, setDuplicatePost] = useState<SocialPost | null>(null);
   const [editingPost, setEditingPost] = useState<SocialPost | null>(null);
   const [calendarWeekStart, setCalendarWeekStart] = useState(startOfWeek(new Date()));
+  const [isReading, setIsReading] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+  // Section content for voice reading (stripped of emojis)
+  const sectionContent: Record<string, string> = {
+    welcome: `Hey Logan, here's what I built for us. This is our Marketing Hub for ${selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}. I've been building this system so we can run a professional marketing operation together without either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, what I'm still connecting, and where we're headed. Let's make this thing dominate.`,
+    section1: `Section 1: What's Ready Right Now. We have over 100 marketing images loaded and organized, an AI assistant that can generate captions and analyze performance, a visual content catalog where you can browse everything, a scheduling calendar to plan your posts, and real-time analytics tracking.`,
+    section2: `Section 2: How To Operate It. Your Tasks. The system is built and ready to go. Now I need your help running it. These are your responsibilities to keep the marketing machine operating at maximum effectiveness. First, Review AI Captions: When the AI generates content, review it before it goes live. Does it sound like NPP? Your approval ensures brand voice stays consistent. Second, Spot Trends: You're on social media daily. When you see trending formats or ideas that could work for a painting company, flag them. This keeps our content fresh and relevant. Third, Monitor Engagement: Check the Analytics tab weekly. Note which posts are winning and which are underperforming. This data drives our optimization decisions. Fourth, Curate the Library: Browse the Content Catalog regularly. Flag outdated images, suggest new pairings, and keep the library fresh. Quality in equals quality out. Your role is critical: The AI handles the heavy lifting, but your eyes on the system ensure we catch issues early and stay ahead of the competition. Together, we're running a marketing operation that most small businesses can't afford.`,
+    section3: `Section 3: What I'm Still Connecting. Step 1, Manual Rotation, is current. Setting up the first content rotation manually to establish the baseline. This ensures we have proven content and timing patterns before the AI takes over. You'll see the calendar populate with our initial schedule. Step 2, Meta API Connection, is in progress. Working on getting the direct API connection to Meta, that's Facebook and Instagram, set up. This will allow the system to post automatically without anyone logging into Meta Business Suite. Step 3, Full Automation, is coming next. Once Meta is connected and manual rotation is proven, the AI takes over completely. The carousel runs 24 7 and you just get notified when something needs attention.`,
+    section4: `Section 4: Where We're Headed, The Vision. Once implementation becomes normal, here's what our Marketing AI will handle automatically. Content Suggestions: Based on what's performing, it'll recommend what to post next. Smart Scheduling: Auto-populate the calendar based on engagement analytics. Performance Alerts: Get notified when something's going viral or tanking. Ad Optimization: Run ads at optimal times, target peak engagement windows based on your audience, adjust spend based on lead response rates, and pause underperforming ads before they waste budget.`,
+    section5: `Section 5: How We Stay In Sync. When you update content, just send a quick message like, Hey, I updated next week's Nextdoor post. When I update content, I'll message you something like, Updated the seasonal posts for spring. Take a look when you can. The goal is efficiency. You get credit for running a killer marketing campaign while focusing on schoolwork. I focus on other things. The system runs like a carousel, it never stops.`,
+  };
+
+  // Strip emojis from text for clean voice output
+  const stripEmojis = (text: string): string => {
+    return text.replace(/[\u{1F600}-\\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\\u{1F1E0}-\\u{1F1FF}]|[\\u{2600}-\\u{26FF}]|[\u{2700}-\u{27BF}]|[\\u{1F900}-\\u{1F9FF}]|[\u{1FA00}-\\u{1FA6F}]|[\\u{1FA70}-\\u{1FAFF}]|[\u{231A}-\u{231B}]|[\\u{23E9}-\u{23F3}]|[\\u{23F8}-\u{23FA}]|[\\u{25AA}-\u{25AB}]|[\\u{25B6}]|[\u{25C0}]|[\\u{25FB}-\\u{25FE}]|[\\u{2614}-\u{2615}]|[\\u{2648}-\u{2653}]|[\\u{267F}]|[\u{2693}]|[\u{26A1}]|[\u{26AA}-\\u{26AB}]|[\\u{26BD}-\u{26BE}]|[\u{26C4}-\\u{26C5}]|[\\u{26CE}]|[\u{26D4}]|[\\u{26EA}]|[\\u{26F2}-\\u{26F3}]|[\u{26F5}]|[\\u{26FA}]|[\\u{26FD}]|[\u{2702}]|[\\u{2705}]|[\u{2708}-\u{270D}]|[\\u{270F}]|[\u{2712}]|[\u{2714}]|[\\u{2716}]|[\u{271D}]|[\u{2721}]|[\u{2728}]|[\\u{2733}-\u{2734}]|[\u{2744}]|[\\u{2747}]|[\\u{274C}]|[\u{274E}]|[\u{2753}-\\u{2755}]|[\\u{2757}]|[\\u{2763}-\u{2764}]|[\u{2795}-\\u{2797}]|[\u{27A1}]|[\u{27B0}]|[\u{27BF}]|[\u{2934}-\u{2935}]|[\u{2B05}-\u{2B07}]|[\u{2B1B}-\\u{2B1C}]|[\u{2B50}]|[\u{2B55}]|[\u{3030}]|[\u{303D}]|[\\u{3297}]|[\\u{3299}]/gu, '').replace(/\s+/g, ' ').trim();
+  };
+
+  // Handle text-to-speech for a section
+  const handleReadSection = async (sectionId: string) => {
+    // Stop current audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      setCurrentAudio(null);
+      setIsReading(false);
+      return;
+    }
+
+    const content = sectionContent[sectionId];
+    if (!content) return;
+
+    const cleanText = stripEmojis(content);
+    setIsReading(true);
+
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText, voice: 'alloy' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('TTS request failed');
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      audio.onended = () => {
+        setIsReading(false);
+        setCurrentAudio(null);
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      audio.onerror = () => {
+        setIsReading(false);
+        setCurrentAudio(null);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      setCurrentAudio(audio);
+      await audio.play();
+    } catch (error) {
+      console.error('TTS error:', error);
+      setIsReading(false);
+    }
+  };
 
   useEffect(() => {
     const savedPosts = localStorage.getItem("marketing_posts");
@@ -489,6 +558,30 @@ export default function MarketingHub() {
 
             {/* OVERVIEW TAB - Welcome, Status, Roadmap */}
             <TabsContent value="overview" className="space-y-6">
+              {/* Voice Assistant Tip - First thing Logan sees */}
+              <div className="p-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <Volume2 className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">Voice Mode Available</p>
+                  <p className="text-xs text-white/90">
+                    Say "Hey, read me section 2" or click the speaker icon on any section to have the AI read it to you. 
+                    Hands-free marketing updates while you multitask.
+                  </p>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="secondary" 
+                  className="bg-white/20 hover:bg-white/30 text-white border-0"
+                  onClick={() => handleReadSection("welcome")}
+                  data-testid="button-voice-demo"
+                >
+                  <Volume2 className="w-4 h-4 mr-1" />
+                  Try It
+                </Button>
+              </div>
+
               {/* Welcome Section for Logan */}
               <GlassCard className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
                 <div className="flex items-start gap-4">
@@ -514,6 +607,15 @@ export default function MarketingHub() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   1. What's Ready Right Now
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="ml-auto h-8 w-8"
+                    onClick={() => handleReadSection("section1")}
+                    data-testid="button-read-section1"
+                  >
+                    {isReading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
+                  </Button>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
@@ -635,6 +737,15 @@ export default function MarketingHub() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Users className="w-5 h-5 text-amber-500" />
                   2. How To Operate It (Your Tasks)
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="ml-auto h-8 w-8"
+                    onClick={() => handleReadSection("section2")}
+                    data-testid="button-read-section2"
+                  >
+                    {isReading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
+                  </Button>
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                   The system is built and ready to go. Now I need your help running it. These are your responsibilities 
@@ -760,6 +871,15 @@ export default function MarketingHub() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-blue-500 animate-pulse" />
                   3. What I'm Still Connecting
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="ml-auto h-8 w-8"
+                    onClick={() => handleReadSection("section3")}
+                    data-testid="button-read-section3"
+                  >
+                    {isReading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
+                  </Button>
                 </h3>
                 
                 <div className="space-y-4">
@@ -807,6 +927,15 @@ export default function MarketingHub() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-cyan-500" />
                   4. Where We're Headed (The Vision)
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="ml-auto h-8 w-8"
+                    onClick={() => handleReadSection("section4")}
+                    data-testid="button-read-section4"
+                  >
+                    {isReading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
+                  </Button>
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                   Once implementation becomes normal, here's what our Marketing AI will handle automatically:
@@ -872,6 +1001,15 @@ export default function MarketingHub() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Lightbulb className="w-5 h-5 text-yellow-500" />
                   5. How We Stay In Sync
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="ml-auto h-8 w-8"
+                    onClick={() => handleReadSection("section5")}
+                    data-testid="button-read-section5"
+                  >
+                    {isReading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
+                  </Button>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div className="space-y-2">
