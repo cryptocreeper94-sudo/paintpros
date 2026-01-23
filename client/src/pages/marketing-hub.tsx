@@ -234,15 +234,37 @@ export default function MarketingHub() {
   const [messageSubjectFilter, setMessageSubjectFilter] = useState<string>("all");
   const [isGeneratingMatch, setIsGeneratingMatch] = useState(false);
 
-  // Section content for voice reading (stripped of emojis)
-  const sectionContent: Record<string, string> = {
-    welcome: `Hey Logan, here's what I built for us. This is our Marketing Hub for ${selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}. I've been building this system so we can run a professional marketing operation together without either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, what I'm still connecting, and where we're headed. Let's make this thing dominate.`,
-    section1: `Section 1: What's Ready Right Now. We have over 100 marketing images loaded and organized, an AI assistant that can generate captions and analyze performance, a visual content catalog where you can browse everything, a scheduling calendar to plan your posts, and real-time analytics tracking.`,
-    section2: `Section 2: How To Operate It. Your Tasks. The system is built and ready to go. Now I need your help running it. These are your responsibilities to keep the marketing machine operating at maximum effectiveness. First, Review AI Captions: When the AI generates content, review it before it goes live. Does it sound like NPP? Your approval ensures brand voice stays consistent. Second, Spot Trends: You're on social media daily. When you see trending formats or ideas that could work for a painting company, flag them. This keeps our content fresh and relevant. Third, Monitor Engagement: Check the Analytics tab weekly. Note which posts are winning and which are underperforming. This data drives our optimization decisions. Fourth, Curate the Library: Browse the Content Catalog regularly. Flag outdated images, suggest new pairings, and keep the library fresh. Quality in equals quality out. Your role is critical: The AI handles the heavy lifting, but your eyes on the system ensure we catch issues early and stay ahead of the competition. Together, we're running a marketing operation that most small businesses can't afford.`,
-    section3: `Section 3: What I'm Still Connecting. Step 1, Manual Rotation, is current. Setting up the first content rotation manually to establish the baseline. This ensures we have proven content and timing patterns before the AI takes over. You'll see the calendar populate with our initial schedule. Step 2, Meta API Connection, is in progress. Working on getting the direct API connection to Meta, that's Facebook and Instagram, set up. This will allow the system to post automatically without anyone logging into Meta Business Suite. Step 3, Full Automation, is coming next. Once Meta is connected and manual rotation is proven, the AI takes over completely. The carousel runs 24 7 and you just get notified when something needs attention.`,
-    section4: `Section 4: Where We're Headed, The Vision. Once implementation becomes normal, here's what our Marketing AI will handle automatically. Content Suggestions: Based on what's performing, it'll recommend what to post next. Smart Scheduling: Auto-populate the calendar based on engagement analytics. Performance Alerts: Get notified when something's going viral or tanking. Ad Optimization: Run ads at optimal times, target peak engagement windows based on your audience, adjust spend based on lead response rates, and pause underperforming ads before they waste budget.`,
-    section5: `Section 5: How We Stay In Sync. When you update content, just send a quick message like, Hey, I updated next week's Nextdoor post. When I update content, I'll message you something like, Updated the seasonal posts for spring. Take a look when you can. The goal is efficiency. You get credit for running a killer marketing campaign while focusing on schoolwork. I focus on other things. The system runs like a carousel, it never stops.`,
+  // Role-specific content - different messaging for different users
+  const isMarketingRole = userRole === "marketing";
+  const isDeveloperRole = userRole === "developer";
+  const isOwnerRole = userRole === "owner";
+  const isAdminRole = userRole === "admin" || userRole === "ops_manager";
+  const tenantName = selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co";
+
+  // Section content for voice reading (stripped of emojis) - role-specific
+  const getSectionContent = (): Record<string, string> => {
+    if (isMarketingRole) {
+      return {
+        welcome: `Hey ${userName}, here's what I built for us. This is our Marketing Hub for ${tenantName}. I've been building this system so we can run a professional marketing operation together without either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, what I'm still connecting, and where we're headed. Let's make this thing dominate.`,
+        section1: `Section 1: What's Ready Right Now. We have over 100 marketing images loaded and organized, an AI assistant that can generate captions and analyze performance, a visual content catalog where you can browse everything, a scheduling calendar to plan your posts, and real-time analytics tracking.`,
+        section2: `Section 2: How To Operate It. Your Tasks. The system is built and ready to go. Now I need your help running it. These are your responsibilities to keep the marketing machine operating at maximum effectiveness. First, Review AI Captions: When the AI generates content, review it before it goes live. Does it sound like NPP? Your approval ensures brand voice stays consistent. Second, Spot Trends: You're on social media daily. When you see trending formats or ideas that could work for a painting company, flag them. This keeps our content fresh and relevant. Third, Monitor Engagement: Check the Analytics tab weekly. Note which posts are winning and which are underperforming. This data drives our optimization decisions. Fourth, Curate the Library: Browse the Content Catalog regularly. Flag outdated images, suggest new pairings, and keep the library fresh. Quality in equals quality out.`,
+        section3: `Section 3: What I'm Still Connecting. Step 1, Manual Rotation, is current. Setting up the first content rotation manually to establish the baseline. Step 2, Meta API Connection, is in progress. Working on getting the direct API connection to Meta set up. Step 3, Full Automation, is coming next.`,
+        section4: `Section 4: Where We're Headed. The Marketing AI will handle Content Suggestions, Smart Scheduling, Performance Alerts, and Ad Optimization automatically.`,
+        section5: `Section 5: How We Stay In Sync. When you update content, send a quick message. The goal is efficiency. The system runs like a carousel, it never stops.`,
+      };
+    }
+    // Developer, Owner, Admin view - more comprehensive
+    return {
+      welcome: `Welcome back, ${userName}. You're viewing the Marketing Hub for ${tenantName}. Use the tenant switcher above to switch between NPP and Lume. This dashboard gives you full access to content management, analytics, and scheduling across all properties.`,
+      section1: `Content Library: Over 100 marketing images organized by category. AI-powered caption generation. Visual content catalog with scheduling calendar.`,
+      section2: `Analytics: Real-time performance tracking, engagement metrics, and platform breakdowns. Monitor what's working across all tenants.`,
+      section3: `Automation Status: Manual rotation active. Meta API integration in progress. Full automation coming soon.`,
+      section4: `Roadmap: AI content suggestions, smart scheduling, performance alerts, and ad optimization.`,
+      section5: `Multi-Tenant Access: Switch between NPP and Lume using the tenant selector. All analytics are tenant-separated.`,
+    };
   };
+
+  const sectionContent = getSectionContent();
 
   // Strip emojis from text for clean voice output
   const stripEmojis = (text: string): string => {
@@ -387,14 +409,15 @@ export default function MarketingHub() {
       });
       const data = await response.json();
       
-      if (data.success && (data.role === "marketing" || data.role === "developer" || data.role === "owner")) {
+      if (data.success && (data.role === "marketing" || data.role === "developer" || data.role === "owner" || data.role === "admin" || data.role === "ops_manager")) {
         setIsAuthenticated(true);
         setUserRole(data.role);
         const roleNames: Record<string, string> = {
           marketing: "Logan",
           developer: "Jason", 
           owner: "Ryan",
-          ops_manager: "Admin",
+          admin: "Sidonie",
+          ops_manager: "Sidonie",
           project_manager: "PM",
           crew_lead: "Crew Lead",
         };
@@ -405,7 +428,7 @@ export default function MarketingHub() {
           setShowPinChange(true);
         }
       } else if (data.success) {
-        setError("Access denied. Marketing, Developer, or Owner PIN required.");
+        setError("Access denied. Authorized personnel only.");
       } else {
         setError("Invalid PIN. Please try again.");
       }
@@ -606,7 +629,7 @@ export default function MarketingHub() {
           {userName && (
             <PersonalizedGreeting 
               userName={userName}
-              userRole={userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Developer" : "Owner"}
+              userRole={userRole === "marketing" ? "Marketing Manager" : userRole === "developer" ? "Developer" : userRole === "owner" ? "Owner" : "Admin"}
               showWelcomeModal={showWelcomeModal}
               onWelcomeComplete={() => setShowWelcomeModal(false)}
               primaryColor="#9333ea"
