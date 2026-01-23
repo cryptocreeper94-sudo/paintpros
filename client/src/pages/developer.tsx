@@ -25,8 +25,6 @@ import { BookingsCard } from "@/components/bookings-card";
 import { CrewManagementCard } from "@/components/crew-management-card";
 import { VersionHistory } from "@/components/version-history";
 import { RoomScannerCard } from "@/components/room-scanner";
-import { AnalyticsDashboard } from "@/components/analytics-dashboard";
-import { TenantAnalyticsDashboard } from "@/components/tenant-analytics-dashboard";
 import { LiveVisitorsCard } from "@/components/live-visitors-card";
 import { toast } from "sonner";
 import { HallmarkBadge, HallmarkStamp, PoweredByOrbit } from "@/components/hallmark";
@@ -2707,20 +2705,6 @@ export default function Developer() {
               whileTap={tapEffect}
             >
               <VersionHistory showAllTenants={true} maxItems={10} />
-            </motion.div>
-          </BentoItem>
-
-          {/* Analytics Dashboard - Full Width */}
-          <BentoItem colSpan={12} rowSpan={4}>
-            <AnalyticsDashboard />
-          </BentoItem>
-
-          {/* Tenant Analytics Dashboard - Per-Client Analytics */}
-          <BentoItem colSpan={12} rowSpan={4}>
-            <motion.div variants={cardVariants} className="h-full">
-              <GlassCard className={`h-full p-6 ${cardBackgroundStyles.mixed}`} glow="purple" animatedBorder>
-                <TenantAnalyticsDashboard />
-              </GlassCard>
             </motion.div>
           </BentoItem>
 

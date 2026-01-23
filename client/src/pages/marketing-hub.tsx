@@ -25,6 +25,9 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { PersonalizedGreeting } from "@/components/personalized-greeting";
+import { useQuery } from "@tanstack/react-query";
+import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin } from "lucide-react";
+import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
@@ -639,6 +642,28 @@ export default function MarketingHub() {
     }
     return days;
   }, [calendarWeekStart, posts, selectedTenant]);
+
+  // Website Analytics Query - Real traffic data
+  const { data: websiteAnalytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery<{
+    today: { views: number; visitors: number };
+    thisWeek: { views: number; visitors: number };
+    thisMonth: { views: number; visitors: number };
+    allTime: { views: number; visitors: number };
+    liveVisitors: number;
+    topPages: { page: string; views: number }[];
+    topReferrers: { referrer: string; count: number }[];
+    deviceBreakdown: { desktop: number; mobile: number; tablet: number };
+    hourlyTraffic: { hour: number; views: number }[];
+    dailyTraffic: { date: string; views: number; visitors: number }[];
+  }>({
+    queryKey: ["/api/analytics/dashboard", selectedTenant],
+    queryFn: async () => {
+      const res = await fetch(`/api/analytics/dashboard?tenantId=${selectedTenant}`);
+      if (!res.ok) return null;
+      return res.json();
+    },
+    refetchInterval: 30000,
+  });
 
   const stats = useMemo(() => {
     const brandPosts = posts.filter(p => p.brand === selectedTenant);
@@ -2741,6 +2766,209 @@ export default function MarketingHub() {
                     Once GA4 is connected, we'll optimize these based on your actual audience engagement data.
                   </p>
                 </div>
+              </GlassCard>
+
+              {/* WEBSITE ANALYTICS - Real Traffic Data */}
+              <GlassCard className="p-6" data-testid="analytics-website-traffic">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-white" />
+                    </div>
+                    Website Traffic
+                  </h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => refetchAnalytics()}
+                    data-testid="button-refresh-analytics"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-1" />
+                    Refresh
+                  </Button>
+                </div>
+
+                {analyticsLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse">
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-2" />
+                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-12" />
+                      </div>
+                    ))}
+                  </div>
+                ) : websiteAnalytics ? (
+                  <div className="space-y-6">
+                    {/* Traffic Stats Row */}
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 rounded-xl">
+                        <div className="flex items-center gap-2 text-green-600 mb-1">
+                          <Zap className="w-4 h-4 animate-pulse" />
+                          <span className="text-xs font-medium">Live Now</span>
+                        </div>
+                        <p className="text-2xl font-bold text-green-600">{websiteAnalytics.liveVisitors}</p>
+                        <p className="text-[10px] text-muted-foreground">Active visitors</p>
+                      </div>
+                      <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/20 rounded-xl">
+                        <div className="flex items-center gap-2 text-blue-600 mb-1">
+                          <Eye className="w-4 h-4" />
+                          <span className="text-xs font-medium">Today</span>
+                        </div>
+                        <p className="text-2xl font-bold">{websiteAnalytics.today.views}</p>
+                        <p className="text-[10px] text-muted-foreground">{websiteAnalytics.today.visitors} visitors</p>
+                      </div>
+                      <div className="p-4 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/30 dark:to-violet-900/20 rounded-xl">
+                        <div className="flex items-center gap-2 text-purple-600 mb-1">
+                          <Eye className="w-4 h-4" />
+                          <span className="text-xs font-medium">This Week</span>
+                        </div>
+                        <p className="text-2xl font-bold">{websiteAnalytics.thisWeek.views}</p>
+                        <p className="text-[10px] text-muted-foreground">{websiteAnalytics.thisWeek.visitors} visitors</p>
+                      </div>
+                      <div className="p-4 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/20 rounded-xl">
+                        <div className="flex items-center gap-2 text-amber-600 mb-1">
+                          <Eye className="w-4 h-4" />
+                          <span className="text-xs font-medium">This Month</span>
+                        </div>
+                        <p className="text-2xl font-bold">{websiteAnalytics.thisMonth.views}</p>
+                        <p className="text-[10px] text-muted-foreground">{websiteAnalytics.thisMonth.visitors} visitors</p>
+                      </div>
+                      <div className="p-4 bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl">
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
+                          <TrendingUp className="w-4 h-4" />
+                          <span className="text-xs font-medium">All Time</span>
+                        </div>
+                        <p className="text-2xl font-bold">{websiteAnalytics.allTime.views.toLocaleString()}</p>
+                        <p className="text-[10px] text-muted-foreground">{websiteAnalytics.allTime.visitors.toLocaleString()} visitors</p>
+                      </div>
+                    </div>
+
+                    {/* Charts Row */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Daily Traffic Chart */}
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-blue-500" />
+                          Daily Traffic (14 days)
+                        </h4>
+                        <ResponsiveContainer width="100%" height={150}>
+                          <AreaChart data={websiteAnalytics.dailyTraffic}>
+                            <defs>
+                              <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <XAxis dataKey="date" tick={{ fontSize: 9 }} stroke="rgba(136,136,136,0.5)" />
+                            <YAxis tick={{ fontSize: 9 }} stroke="rgba(136,136,136,0.5)" />
+                            <Tooltip contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: 'none', borderRadius: '8px', fontSize: '11px' }} />
+                            <Area type="monotone" dataKey="views" stroke="#3b82f6" strokeWidth={2} fill="url(#colorViews)" />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Device Breakdown */}
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                          <Smartphone className="w-4 h-4 text-purple-500" />
+                          Device Breakdown
+                        </h4>
+                        <div className="flex items-center gap-4">
+                          <ResponsiveContainer width={100} height={100}>
+                            <PieChart>
+                              <Pie
+                                data={[
+                                  { name: 'Desktop', value: websiteAnalytics.deviceBreakdown.desktop, color: '#f59e0b' },
+                                  { name: 'Mobile', value: websiteAnalytics.deviceBreakdown.mobile, color: '#3b82f6' },
+                                  { name: 'Tablet', value: websiteAnalytics.deviceBreakdown.tablet, color: '#10b981' },
+                                ].filter(d => d.value > 0)}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={25}
+                                outerRadius={40}
+                                dataKey="value"
+                              >
+                                {[
+                                  { name: 'Desktop', value: websiteAnalytics.deviceBreakdown.desktop, color: '#f59e0b' },
+                                  { name: 'Mobile', value: websiteAnalytics.deviceBreakdown.mobile, color: '#3b82f6' },
+                                  { name: 'Tablet', value: websiteAnalytics.deviceBreakdown.tablet, color: '#10b981' },
+                                ].filter(d => d.value > 0).map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                              </Pie>
+                            </PieChart>
+                          </ResponsiveContainer>
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                <Monitor className="w-4 h-4 text-amber-500" />
+                                <span>Desktop</span>
+                              </div>
+                              <span className="font-medium">{websiteAnalytics.deviceBreakdown.desktop}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                <Smartphone className="w-4 h-4 text-blue-500" />
+                                <span>Mobile</span>
+                              </div>
+                              <span className="font-medium">{websiteAnalytics.deviceBreakdown.mobile}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                <Tablet className="w-4 h-4 text-green-500" />
+                                <span>Tablet</span>
+                              </div>
+                              <span className="font-medium">{websiteAnalytics.deviceBreakdown.tablet}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Top Pages & Referrers */}
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-rose-500" />
+                          Top Pages
+                        </h4>
+                        <div className="space-y-2">
+                          {websiteAnalytics.topPages.slice(0, 5).map((page, i) => (
+                            <div key={i} className="flex items-center justify-between text-sm">
+                              <span className="truncate flex-1 text-muted-foreground">{page.page}</span>
+                              <span className="font-medium ml-2">{page.views}</span>
+                            </div>
+                          ))}
+                          {websiteAnalytics.topPages.length === 0 && (
+                            <p className="text-sm text-muted-foreground">No page data yet</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                          <Globe className="w-4 h-4 text-teal-500" />
+                          Top Referrers
+                        </h4>
+                        <div className="space-y-2">
+                          {websiteAnalytics.topReferrers.slice(0, 5).map((ref, i) => (
+                            <div key={i} className="flex items-center justify-between text-sm">
+                              <span className="truncate flex-1 text-muted-foreground">{ref.referrer || 'Direct'}</span>
+                              <span className="font-medium ml-2">{ref.count}</span>
+                            </div>
+                          ))}
+                          {websiteAnalytics.topReferrers.length === 0 && (
+                            <p className="text-sm text-muted-foreground">No referrer data yet</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Globe className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>Website analytics will appear here once traffic is tracked</p>
+                  </div>
+                )}
               </GlassCard>
             </TabsContent>
 
