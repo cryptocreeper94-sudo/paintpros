@@ -247,6 +247,21 @@ export default function MarketingHub() {
     return saved ? JSON.parse(saved) : [];
   });
   const [newNoteContent, setNewNoteContent] = useState("");
+  
+  // Dismiss intro sections (persists in localStorage per user)
+  const [introHidden, setIntroHidden] = useState(() => {
+    const saved = localStorage.getItem(`marketing_intro_hidden_${userRole}`);
+    return saved === "true";
+  });
+  const hideIntro = () => {
+    setIntroHidden(true);
+    localStorage.setItem(`marketing_intro_hidden_${userRole}`, "true");
+  };
+  const showIntro = () => {
+    setIntroHidden(false);
+    localStorage.setItem(`marketing_intro_hidden_${userRole}`, "false");
+  };
+  
   const [imageSubjectFilter, setImageSubjectFilter] = useState<string>("all");
   const [messageSubjectFilter, setMessageSubjectFilter] = useState<string>("all");
   const [isGeneratingMatch, setIsGeneratingMatch] = useState(false);
@@ -799,25 +814,43 @@ export default function MarketingHub() {
                 </Button>
               </div>
 
-              {/* Welcome Section for Logan */}
-              <GlassCard className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                    <User className="w-6 h-6 text-white" />
+              {/* Intro Toggle - Show/Hide all intro content */}
+              {introHidden ? (
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">Welcome guide hidden</p>
+                      <p className="text-xs text-muted-foreground">You've read the intro. Focus on what matters.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      Hey Logan - Here's What I Built For Us
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                      This is our Marketing Hub for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}. 
-                      I've been building this system so we can run a professional marketing operation together without 
-                      either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, 
-                      what I'm still connecting, and where we're headed. Let's make this thing dominate.
-                    </p>
-                  </div>
+                  <Button variant="outline" size="sm" onClick={showIntro} data-testid="button-show-intro">
+                    Show Guide Again
+                  </Button>
                 </div>
-              </GlassCard>
+              ) : (
+                <>
+                  {/* Welcome Section for Logan */}
+                  <GlassCard className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                        <User className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                          Hey Logan - Here's What I Built For Us
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                          This is our Marketing Hub for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}. 
+                          I've been building this system so we can run a professional marketing operation together without 
+                          either of us having to spend hours on it. Below I'll walk you through what's ready, how to use it, 
+                          what I'm still connecting, and where we're headed. Let's make this thing dominate.
+                        </p>
+                      </div>
+                    </div>
+                  </GlassCard>
 
               {/* Section 1: What's Ready */}
               <GlassCard className="p-6">
@@ -1263,6 +1296,21 @@ export default function MarketingHub() {
                   </p>
                 </div>
               </GlassCard>
+
+                  {/* Dismiss Intro Button */}
+                  <div className="flex justify-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={hideIntro}
+                      className="text-muted-foreground"
+                      data-testid="button-hide-intro"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Got it - Hide this guide
+                    </Button>
+                  </div>
+                </>
+              )}
             </TabsContent>
 
             {/* IMAGES TAB - Image Library with Tags */}
