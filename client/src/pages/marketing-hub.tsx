@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin } from "lucide-react";
+import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft } from "lucide-react";
 import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -1078,15 +1078,39 @@ export default function MarketingHub() {
                 selectedTenant={selectedTenant} 
                 onTenantChange={setSelectedTenant} 
               />
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.location.href = "/"}
-                data-testid="button-back-to-site"
-              >
-                <Home className="w-4 h-4 mr-1" />
-                Site
-              </Button>
+              {userRole === "developer" && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.href = "/developer"}
+                  data-testid="button-back-to-developer"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Developer Hub
+                </Button>
+              )}
+              {userRole === "owner" && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.href = "/owner"}
+                  data-testid="button-back-to-owner"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Owner Dashboard
+                </Button>
+              )}
+              {userRole === "admin" && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.href = "/admin"}
+                  data-testid="button-back-to-admin"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Admin Dashboard
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 size="sm"
