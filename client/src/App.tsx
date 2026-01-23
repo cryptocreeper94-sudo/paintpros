@@ -81,6 +81,17 @@ import Onboarding from "@/pages/onboarding";
 import OnboardingSuccess from "@/pages/onboarding-success";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 
+function ConditionalPaintBuddy() {
+  const [location] = useLocation();
+  
+  // Hide PaintBuddy on internal/admin routes
+  const hiddenRoutes = ['/app', '/admin', '/owner', '/crew-lead', '/marketing-hub', '/ops-ai', '/developer'];
+  const shouldHide = hiddenRoutes.some(route => location.startsWith(route));
+  
+  if (shouldHide) return null;
+  return <PaintBuddy />;
+}
+
 function AnalyticsTracker() {
   useAnalytics();
   return null;
@@ -218,7 +229,7 @@ function App() {
                   <AnalyticsTracker />
                   <Toaster />
                   <Router />
-                  <PaintBuddy />
+                  <ConditionalPaintBuddy />
                 </TooltipProvider>
               </AccessProvider>
             </DemoProvider>
