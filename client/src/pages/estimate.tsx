@@ -61,8 +61,16 @@ interface SelectedColor {
 
 // Static pricing - no Good/Better/Best packages
 
+import EstimateLume from "./estimate-lume";
+
 export default function Estimate() {
   const tenant = useTenant();
+  
+  // Use Lume-specific estimator for Lume tenant
+  if (tenant.id === "lume") {
+    return <EstimateLume />;
+  }
+  
   const isDemo = tenant.id === "demo";
   
   // Fetch estimator config from API
