@@ -73,8 +73,9 @@ class OrbitEcosystem {
     const url = `${this.config.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'X-Orbit-API-Key': this.config.apiKey,
-      'X-Orbit-API-Secret': this.config.apiSecret,
+      'X-API-Key': this.config.apiKey,
+      'X-API-Secret': this.config.apiSecret,
+      'X-App-Name': 'PaintPros',
     };
 
     const response = await fetch(url, {
@@ -114,15 +115,23 @@ class OrbitEcosystem {
   }
 
   async getSharedSnippets(): Promise<OrbitSnippet[]> {
-    return this.makeRequest<OrbitSnippet[]>('/api/snippets');
+    return this.makeRequest<OrbitSnippet[]>('/snippets');
   }
 
   async shareSnippet(snippet: Partial<OrbitSnippet>): Promise<OrbitSnippet> {
-    return this.makeRequest<OrbitSnippet>('/api/snippets', 'POST', snippet);
+    return this.makeRequest<OrbitSnippet>('/snippets', 'POST', snippet);
   }
 
   async getSnippetsByTag(tag: string): Promise<OrbitSnippet[]> {
-    return this.makeRequest<OrbitSnippet[]>(`/api/snippets?tag=${encodeURIComponent(tag)}`);
+    return this.makeRequest<OrbitSnippet[]>(`/snippets?category=${encodeURIComponent(tag)}`);
+  }
+
+  async getSnippetsByLanguage(language: string): Promise<OrbitSnippet[]> {
+    return this.makeRequest<OrbitSnippet[]>(`/snippets?language=${encodeURIComponent(language)}`);
+  }
+
+  async checkEcosystemStatus(): Promise<{ connected: boolean; permissions: string[]; hubName: string }> {
+    return this.makeRequest<{ connected: boolean; permissions: string[]; hubName: string }>('/status');
   }
 
   async ping(): Promise<{ status: string; timestamp: string }> {
