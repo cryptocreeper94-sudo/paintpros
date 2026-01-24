@@ -329,14 +329,11 @@ export default function MarketingHub() {
 
   // Strip emojis from text for clean voice output
   const stripEmojis = (text: string): string => {
-    // Remove common emoji ranges and special characters
+    // Remove emojis and special characters using character class ranges
     return text
-      .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')  // Misc symbols, emoticons, dingbats
-      .replace(/[\u{2600}-\u{26FF}]/gu, '')    // Misc symbols
-      .replace(/[\u{2700}-\u{27BF}]/gu, '')    // Dingbats
-      .replace(/[\u{FE00}-\u{FE0F}]/gu, '')    // Variation selectors
-      .replace(/[\u{1F000}-\u{1F02F}]/gu, '')  // Mahjong tiles
-      .replace(/[\u{1F0A0}-\u{1F0FF}]/gu, '')  // Playing cards
+      .split('')
+      .filter(char => char.charCodeAt(0) < 0x1F300 || char.charCodeAt(0) > 0x1F9FF)
+      .join('')
       .replace(/\s+/g, ' ')
       .trim();
   };
