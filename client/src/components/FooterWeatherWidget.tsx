@@ -103,22 +103,15 @@ export function FooterWeatherWidget() {
         title={weather ? `${weather.condition} - ${weather.description}` : "Loading weather..."}
       >
         {isLoading ? (
-          <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-400 animate-spin" />
+          <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-black animate-spin" />
         ) : error ? (
-          <Cloud className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
+          <Cloud className="w-3.5 h-3.5 md:w-4 md:h-4 text-black" />
         ) : (
           <>
             <IconComponent 
-              className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-colors ${
-                weather?.icon === "sun" ? "text-yellow-400 group-hover:text-yellow-300" :
-                weather?.icon === "moon" ? "text-blue-300 group-hover:text-blue-200" :
-                weather?.icon?.includes("rain") || weather?.icon?.includes("drizzle") ? "text-sky-400 group-hover:text-sky-300" :
-                weather?.icon?.includes("snow") ? "text-white group-hover:text-blue-100" :
-                weather?.icon?.includes("lightning") ? "text-yellow-300 group-hover:text-yellow-200" :
-                "text-gray-300 group-hover:text-gray-200"
-              }`}
+              className="w-3.5 h-3.5 md:w-4 md:h-4 transition-colors text-black group-hover:text-stone-600"
             />
-            <span className="text-[9px] md:text-[10px] font-medium text-white/80 group-hover:text-white tabular-nums">
+            <span className="text-[9px] md:text-[10px] font-semibold text-black group-hover:text-stone-600 tabular-nums">
               {weather?.temp}°
             </span>
           </>
