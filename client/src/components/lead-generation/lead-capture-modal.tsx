@@ -106,7 +106,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
   if (submitted) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-br from-gray-50 to-white border-gray-200">
+        <DialogContent className="max-w-[90%] sm:max-w-md bg-gradient-to-br from-gray-50 to-white border-gray-200">
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <motion.div
               initial={{ scale: 0 }}
@@ -130,18 +130,18 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg bg-gradient-to-br from-gray-50/95 to-white/95 border-gray-200/50 backdrop-blur-sm">
+      <DialogContent className="max-w-[90%] sm:max-w-md bg-gradient-to-br from-gray-50/95 to-white/95 border-gray-200/50 backdrop-blur-sm">
         <DialogHeader className="text-center pb-2">
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="p-2 rounded-full bg-gradient-to-br from-gray-700 to-gray-900">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
           </div>
-          <DialogTitle className="text-2xl font-display text-gray-900">
+          <DialogTitle className="text-xl font-display text-gray-900">
             Get Your Free Estimate
           </DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Takes less than a minute - includes free AI visual editor & sq ft estimate
+          <DialogDescription className="text-gray-600 text-sm">
+            Get your free estimate using our room visualizer tool - right from your phone!
           </DialogDescription>
         </DialogHeader>
 
