@@ -221,9 +221,9 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                   <div className="flex items-start gap-2 sm:gap-3">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                     <div className="text-xs sm:text-sm">
-                      <p className="font-medium text-amber-400 mb-1">Disclaimer</p>
+                      <p className="font-medium text-amber-400 mb-1">Just an Estimate</p>
                       <p className="text-muted-foreground text-[11px] sm:text-xs leading-relaxed">
-                        Estimates are approximations (±10-20%). Final pricing requires professional measurement.
+                        This is for estimate purposes only. Your final price will be confirmed by one of our friendly team members.
                       </p>
                     </div>
                   </div>
