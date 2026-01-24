@@ -84,8 +84,8 @@ export function Footer() {
             className="flex items-center gap-1 transition-all hover:scale-110 group"
             data-testid="button-hallmark-badge"
           >
-            <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-fuchsia-400 group-hover:text-fuchsia-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.8)]" />
-            <span className="hidden md:inline text-fuchsia-300/90 font-mono text-[9px] group-hover:text-fuchsia-200">
+            <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-400 group-hover:text-stone-300" />
+            <span className="hidden md:inline text-stone-400/90 font-mono text-[9px] group-hover:text-stone-300">
               {displayHallmark}
             </span>
           </button>
