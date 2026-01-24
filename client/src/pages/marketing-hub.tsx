@@ -234,7 +234,7 @@ export default function MarketingHub() {
     setStayLoggedIn(false);
   };
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [activeTab, setActiveTab] = useState<"overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics" | "campaigns" | "ai-tools" | "playbook">("overview");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -1250,6 +1250,18 @@ export default function MarketingHub() {
               <TabsTrigger value="notes" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-notes">
                 <FileText className="w-3 h-3 md:w-4 md:h-4" />
                 <span className="hidden md:inline">Notes</span>
+              </TabsTrigger>
+              <TabsTrigger value="campaigns" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-campaigns">
+                <Target className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Campaigns</span>
+              </TabsTrigger>
+              <TabsTrigger value="ai-tools" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-ai-tools">
+                <Wand2 className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Copy Tools</span>
+              </TabsTrigger>
+              <TabsTrigger value="playbook" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-playbook">
+                <Lightbulb className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Playbook</span>
               </TabsTrigger>
             </TabsList>
 
@@ -3540,6 +3552,468 @@ export default function MarketingHub() {
                       <p className="text-sm">Leave a note for your team above</p>
                     </div>
                   )}
+                </div>
+              </GlassCard>
+            </TabsContent>
+
+            {/* CAMPAIGNS TAB - ROI Tracking */}
+            <TabsContent value="campaigns" className="space-y-6" data-testid="campaigns-tab-content">
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Target className="w-5 h-5 text-green-500" />
+                    Campaign ROI Tracker
+                  </h3>
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    Ready for API Integration
+                  </Badge>
+                </div>
+                
+                <p className="text-sm text-muted-foreground mb-6">
+                  Track marketing spend, lead attribution, and ROI. Once Meta/Google APIs are connected, costs will sync automatically.
+                </p>
+
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  <div className="p-4 rounded-md bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-blue-500" />
+                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Total Spend</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">$0.00</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">This month</p>
+                  </div>
+                  <div className="p-4 rounded-md bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100 dark:border-green-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Users className="w-4 h-4 text-green-500" />
+                      <span className="text-xs font-medium text-green-700 dark:text-green-300">Leads Generated</span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">0</p>
+                    <p className="text-xs text-green-600 dark:text-green-400">From campaigns</p>
+                  </div>
+                  <div className="p-4 rounded-md bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-100 dark:border-purple-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="w-4 h-4 text-purple-500" />
+                      <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Cost Per Lead</span>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">$0.00</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400">Average</p>
+                  </div>
+                </div>
+
+                <div className="border border-dashed border-gray-300 dark:border-gray-600 rounded-md p-6 text-center">
+                  <Target className="w-10 h-10 mx-auto mb-3 text-gray-400" />
+                  <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Create Your First Campaign</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Track Facebook ads, Google campaigns, mailers, and more. See which marketing efforts bring the best ROI.
+                  </p>
+                  <Button variant="outline" data-testid="button-create-campaign">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Campaign
+                  </Button>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
+                  <Globe className="w-5 h-5 text-blue-500" />
+                  Attribution Sources
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                        <Facebook className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Facebook/Instagram Ads</p>
+                        <p className="text-xs text-muted-foreground">Via Meta Business Suite API</p>
+                      </div>
+                      <Badge className="ml-auto bg-yellow-100 text-yellow-700">Pending</Badge>
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Google Ads</p>
+                        <p className="text-xs text-muted-foreground">Via Google Ads API</p>
+                      </div>
+                      <Badge className="ml-auto bg-yellow-100 text-yellow-700">Pending</Badge>
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Google LSA</p>
+                        <p className="text-xs text-muted-foreground">Local Services Ads</p>
+                      </div>
+                      <Badge className="ml-auto bg-green-100 text-green-700">Connected</Badge>
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Manual Entry</p>
+                        <p className="text-xs text-muted-foreground">Mailers, flyers, events</p>
+                      </div>
+                      <Badge className="ml-auto bg-green-100 text-green-700">Ready</Badge>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+            </TabsContent>
+
+            {/* AI TOOLS TAB - Copy Generator */}
+            <TabsContent value="ai-tools" className="space-y-6" data-testid="ai-tools-tab-content">
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Wand2 className="w-5 h-5 text-purple-500" />
+                    Copy Generator
+                  </h3>
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                    Powered by OpenAI
+                  </Badge>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-6">
+                  Generate social media posts, ad copy, and email content using your brand voice. No more writer's block.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium">Content Type</Label>
+                      <Select defaultValue="social">
+                        <SelectTrigger className="mt-1" data-testid="select-content-type">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="social">Social Media Post</SelectItem>
+                          <SelectItem value="ad">Ad Copy</SelectItem>
+                          <SelectItem value="email">Email Subject Line</SelectItem>
+                          <SelectItem value="sms">SMS Message</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Service Focus</Label>
+                      <Select defaultValue="interior">
+                        <SelectTrigger className="mt-1" data-testid="select-service-focus">
+                          <SelectValue placeholder="Select service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="interior">Interior Painting</SelectItem>
+                          <SelectItem value="exterior">Exterior Painting</SelectItem>
+                          <SelectItem value="cabinets">Cabinet Refinishing</SelectItem>
+                          <SelectItem value="commercial">Commercial</SelectItem>
+                          <SelectItem value="general">General/Brand</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Tone</Label>
+                      <Select defaultValue="professional">
+                        <SelectTrigger className="mt-1" data-testid="select-tone">
+                          <SelectValue placeholder="Select tone" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="professional">Professional</SelectItem>
+                          <SelectItem value="friendly">Friendly & Warm</SelectItem>
+                          <SelectItem value="urgent">Urgent/Limited Time</SelectItem>
+                          <SelectItem value="educational">Educational</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button className="w-full" data-testid="button-generate-copy">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate Copy
+                    </Button>
+                  </div>
+
+                  <div className="p-4 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                    <Label className="text-sm font-medium mb-2 block">Generated Copy</Label>
+                    <div className="min-h-[200px] p-3 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-muted-foreground">
+                      <p className="italic">Your generated content will appear here...</p>
+                      <p className="mt-4 text-xs">Select your options and click Generate to create brand-aligned copy.</p>
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button variant="outline" size="sm" disabled data-testid="button-copy-to-clipboard">
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copy
+                      </Button>
+                      <Button variant="outline" size="sm" disabled data-testid="button-add-to-catalog">
+                        <Plus className="w-3 h-3 mr-1" />
+                        Add to Catalog
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <GlassCard className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                      <Facebook className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">Facebook Post</p>
+                      <p className="text-xs text-muted-foreground">Engagement-focused</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full" data-testid="button-quick-facebook">
+                    Quick Generate
+                  </Button>
+                </GlassCard>
+                <GlassCard className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-pink-500 flex items-center justify-center">
+                      <Instagram className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">Instagram Caption</p>
+                      <p className="text-xs text-muted-foreground">With hashtags</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full" data-testid="button-quick-instagram">
+                    Quick Generate
+                  </Button>
+                </GlassCard>
+                <GlassCard className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                      <MessageSquare className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">Follow-up SMS</p>
+                      <p className="text-xs text-muted-foreground">Lead nurturing</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full" data-testid="button-quick-sms">
+                    Quick Generate
+                  </Button>
+                </GlassCard>
+              </div>
+            </TabsContent>
+
+            {/* PLAYBOOK TAB - Marketing Psychology */}
+            <TabsContent value="playbook" className="space-y-6" data-testid="playbook-tab-content">
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-yellow-500" />
+                    Marketing Psychology Playbook
+                  </h3>
+                  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                    Strategy Guide
+                  </Badge>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-6">
+                  Proven psychological principles that drive customer action. Use these strategies to create compelling campaigns.
+                </p>
+
+                <Accordion type="single" collapsible className="space-y-3">
+                  <AccordionItem value="social-proof" className="border rounded-md px-4 bg-blue-50/50 dark:bg-blue-900/10">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-blue-500 flex items-center justify-center">
+                          <Users className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Social Proof</p>
+                          <p className="text-xs text-muted-foreground">People trust what others trust</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="pl-11 space-y-3">
+                        <p className="text-sm"><strong>Why it works:</strong> Customers look to others' experiences to validate their decisions.</p>
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                          <p className="text-xs font-medium text-blue-600 mb-1">Tactics to use:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                            <li>Showcase 5-star reviews prominently</li>
+                            <li>Display "500+ homes painted in Nashville"</li>
+                            <li>Before/after photos with homeowner testimonials</li>
+                            <li>Google review count badges on website</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="scarcity" className="border rounded-md px-4 bg-red-50/50 dark:bg-red-900/10">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-red-500 flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Scarcity & Urgency</p>
+                          <p className="text-xs text-muted-foreground">Limited availability drives action</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="pl-11 space-y-3">
+                        <p className="text-sm"><strong>Why it works:</strong> Fear of missing out (FOMO) motivates quick decisions.</p>
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                          <p className="text-xs font-medium text-red-600 mb-1">Tactics to use:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                            <li>"Only 3 spring slots remaining"</li>
+                            <li>"Book by Friday for 10% off"</li>
+                            <li>Seasonal campaigns with clear end dates</li>
+                            <li>"Schedule now - crews booking 4 weeks out"</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="reciprocity" className="border rounded-md px-4 bg-green-50/50 dark:bg-green-900/10">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-green-500 flex items-center justify-center">
+                          <Star className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Reciprocity</p>
+                          <p className="text-xs text-muted-foreground">Give value first, receive trust back</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="pl-11 space-y-3">
+                        <p className="text-sm"><strong>Why it works:</strong> When you give something free, people feel obligated to reciprocate.</p>
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                          <p className="text-xs font-medium text-green-600 mb-1">Tactics to use:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                            <li>Free color consultations</li>
+                            <li>Free detailed estimates (not just quotes)</li>
+                            <li>Helpful blog content and paint tips</li>
+                            <li>"Free touch-up kit with every project"</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="emotion" className="border rounded-md px-4 bg-purple-50/50 dark:bg-purple-900/10">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-purple-500 flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Emotional Storytelling</p>
+                          <p className="text-xs text-muted-foreground">Feelings drive decisions, logic justifies</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="pl-11 space-y-3">
+                        <p className="text-sm"><strong>Why it works:</strong> People remember stories 22x more than facts. Emotions create lasting connections.</p>
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                          <p className="text-xs font-medium text-purple-600 mb-1">Tactics to use:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                            <li>Tell homeowner transformation stories</li>
+                            <li>Focus on how they'll FEEL in the space</li>
+                            <li>"Elevating the backdrop of your life"</li>
+                            <li>Show the journey: stressed → excited → proud</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="authority" className="border rounded-md px-4 bg-orange-50/50 dark:bg-orange-900/10">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-orange-500 flex items-center justify-center">
+                          <Target className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Authority & Expertise</p>
+                          <p className="text-xs text-muted-foreground">Credentials build instant trust</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="pl-11 space-y-3">
+                        <p className="text-sm"><strong>Why it works:</strong> People trust experts. Credentials reduce perceived risk.</p>
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                          <p className="text-xs font-medium text-orange-600 mb-1">Tactics to use:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                            <li>Display licenses and insurance prominently</li>
+                            <li>"10+ years serving Middle Tennessee"</li>
+                            <li>Sherwin-Williams certified contractor</li>
+                            <li>BBB accreditation and awards</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="loss-aversion" className="border rounded-md px-4 bg-yellow-50/50 dark:bg-yellow-900/10">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-yellow-500 flex items-center justify-center">
+                          <AlertTriangle className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Loss Aversion</p>
+                          <p className="text-xs text-muted-foreground">Avoiding loss beats gaining benefits</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="pl-11 space-y-3">
+                        <p className="text-sm"><strong>Why it works:</strong> People feel losses 2x more intensely than equivalent gains.</p>
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                          <p className="text-xs font-medium text-yellow-600 mb-1">Tactics to use:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
+                            <li>"Don't let peeling paint decrease your home value"</li>
+                            <li>"Stop losing curb appeal every year you wait"</li>
+                            <li>"Protect your investment before winter damage"</li>
+                            <li>3-year warranty = protection against future costs</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  Quick Action Checklist
+                </h3>
+                <div className="grid md:grid-cols-2 gap-3">
+                  {[
+                    "Use social proof (reviews, testimonials)",
+                    "Create urgency with limited-time offers",
+                    "Offer free consultations (reciprocity)",
+                    "Tell transformation stories",
+                    "Display credentials prominently",
+                    "Frame benefits as avoiding losses",
+                    "Add \"because\" to CTAs for persuasion",
+                    "Use emotional imagery in posts"
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-green-50 dark:bg-green-900/20">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-sm">{item}</span>
+                    </div>
+                  ))}
                 </div>
               </GlassCard>
             </TabsContent>
