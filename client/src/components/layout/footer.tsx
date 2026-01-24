@@ -96,7 +96,7 @@ export function Footer() {
           {/* Version - Clickable */}
           <button
             onClick={() => setShowVersionModal(true)}
-            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-amber-600/80 hover:text-amber-500"
+            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-stone-500/80 hover:text-stone-400"
             data-testid="button-version"
           >
             v{version}
@@ -105,19 +105,19 @@ export function Footer() {
           {/* Socials - Show configured links or placeholders */}
           <div className="flex gap-2 md:gap-3 items-center">
             {tenant.social?.instagram ? (
-              <a href={tenant.social.instagram} className="transition-all hover:scale-110" data-testid="link-instagram"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
+              <a href={tenant.social.instagram} className="transition-all hover:scale-110" data-testid="link-instagram"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
             ) : (
-              <a href="#" className="transition-all hover:scale-110" data-testid="link-instagram-placeholder"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500/70 hover:text-pink-400" /></a>
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-instagram-placeholder"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
             )}
             {tenant.social?.facebook ? (
-              <a href={tenant.social.facebook} className="transition-all hover:scale-110" data-testid="link-facebook"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
+              <a href={tenant.social.facebook} className="transition-all hover:scale-110" data-testid="link-facebook"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
             ) : (
-              <a href="#" className="transition-all hover:scale-110" data-testid="link-facebook-placeholder"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600/70 hover:text-blue-500" /></a>
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-facebook-placeholder"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
             )}
             {tenant.social?.linkedin ? (
-              <a href={tenant.social.linkedin} className="transition-all hover:scale-110" data-testid="link-linkedin"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
+              <a href={tenant.social.linkedin} className="transition-all hover:scale-110" data-testid="link-linkedin"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
             ) : (
-              <a href="#" className="transition-all hover:scale-110" data-testid="link-linkedin-placeholder"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-sky-600/70 hover:text-sky-500" /></a>
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-linkedin-placeholder"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
             )}
             {/* Darkwave Smart Chain link for demo site */}
             {isDemo && (
@@ -125,7 +125,7 @@ export function Footer() {
                 href="https://dwsc.io" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-fuchsia-400/80 hover:text-fuchsia-300 transition-all hover:scale-105"
+                className="flex items-center gap-1 text-stone-400/80 hover:text-stone-300 transition-all hover:scale-105"
                 title="Powered by Darkwave Smart Chain"
                 data-testid="link-dwsc"
               >
@@ -142,7 +142,7 @@ export function Footer() {
               setPin("");
               setPinError("");
             }}
-            className="flex items-center gap-1 text-[9px] md:text-[10px] text-amber-600/70 hover:text-amber-500 transition-colors"
+            className="flex items-center gap-1 text-[9px] md:text-[10px] text-stone-500/70 hover:text-stone-400 transition-colors"
             data-testid="button-team-login"
           >
             <Users className="w-3 h-3" />
@@ -152,10 +152,10 @@ export function Footer() {
           {/* Desktop Links */}
           <div className="gap-4 whitespace-nowrap hidden md:flex text-stone-600/80">
             {isDemo && (
-              <a href="/investors" className="hover:text-amber-600 transition-colors" data-testid="link-investors">Investors</a>
+              <a href="/investors" className="hover:text-stone-400 transition-colors" data-testid="link-investors">Investors</a>
             )}
-            <a href="/privacy" className="hover:text-amber-600 transition-colors" data-testid="link-privacy">Privacy Policy</a>
-            <a href="/terms" className="hover:text-amber-600 transition-colors" data-testid="link-terms">Terms & Warranty</a>
+            <a href="/privacy" className="hover:text-stone-400 transition-colors" data-testid="link-privacy">Privacy Policy</a>
+            <a href="/terms" className="hover:text-stone-400 transition-colors" data-testid="link-terms">Terms & Warranty</a>
           </div>
 
           
