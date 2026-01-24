@@ -935,23 +935,23 @@ export function getTenantIdFromHostname(hostname: string): string {
     }
   }
   
-  // Fallback to env variable
-  return import.meta.env.VITE_TENANT_ID || "npp";
+  // Fallback to env variable - default to Lume
+  return import.meta.env.VITE_TENANT_ID || "lume";
 }
 
 // Get current tenant based on domain or environment
 export function getCurrentTenant(): TenantConfig {
   if (typeof window !== "undefined") {
     const tenantId = getTenantIdFromHostname(window.location.hostname);
-    return tenants[tenantId] || nashvillePaintingProfessionals;
+    return tenants[tenantId] || lumePaintCo;
   }
   
-  // Fallback to environment variable (for dev/staging)
-  const tenantId = import.meta.env.VITE_TENANT_ID || "npp";
-  return tenants[tenantId] || nashvillePaintingProfessionals;
+  // Fallback to environment variable (for dev/staging) - default to Lume
+  const tenantId = import.meta.env.VITE_TENANT_ID || "lume";
+  return tenants[tenantId] || lumePaintCo;
 }
 
 // Get tenant by ID
 export function getTenantById(tenantId: string): TenantConfig {
-  return tenants[tenantId] || nashvillePaintingProfessionals;
+  return tenants[tenantId] || lumePaintCo;
 }

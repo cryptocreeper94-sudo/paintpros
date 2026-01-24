@@ -203,8 +203,8 @@ function getTenantFromHostname(hostname: string): string {
     return envTenant.toLowerCase();
   }
   
-  // Default fallback
-  return "npp";
+  // Default fallback - Lume Paint Co
+  return "lume";
 }
 
 // Track online users: Map<socketId, { userId, role, displayName }>
