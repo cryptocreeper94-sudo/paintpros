@@ -301,11 +301,11 @@ export default function HomeLume() {
               </DialogTitle>
             </DialogHeader>
             {service.image && (
-              <div className="aspect-video rounded-lg overflow-hidden">
+              <div className="aspect-video rounded-lg overflow-hidden mb-4">
                 <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
               </div>
             )}
-            <p className="text-gray-600">{service.details}</p>
+            <p className="text-gray-600 mt-2">{service.details}</p>
             <Link href="/estimate" className="block">
               <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid={`button-${service.id}-estimate`}>
                 Get Estimate <ArrowRight className="w-4 h-4 ml-2" />
