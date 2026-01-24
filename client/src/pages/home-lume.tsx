@@ -263,7 +263,7 @@ export default function HomeLume() {
                 <h3 className="font-medium text-gray-800">Service Area</h3>
               </div>
               <div className="aspect-[21/9] rounded-lg overflow-hidden mb-3">
-                <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover" />
+                <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover grayscale" />
               </div>
               <p className="text-sm text-gray-600">
                 {tenant.seo.serviceAreas.slice(0, 5).join(" · ")}
@@ -370,7 +370,7 @@ export default function HomeLume() {
             </DialogTitle>
           </DialogHeader>
           <div className="aspect-video rounded-lg overflow-hidden">
-            <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover" />
+            <img src={serviceAreaMap} alt="Service Area Map" className="w-full h-full object-cover grayscale" />
           </div>
           <div>
             <p className="font-medium text-gray-800 mb-2">We proudly serve:</p>
