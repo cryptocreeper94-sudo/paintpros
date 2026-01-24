@@ -6,11 +6,13 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback } from "react";
-import serviceAreaMap from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
+import serviceAreaMapNpp from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
+import serviceAreaMapLume from "@assets/generated_images/lume_service_area_map_elegant_bw.png";
 
 export default function About() {
   const tenant = useTenant();
   const cityName = tenant.address?.city || "Our Community";
+  const serviceAreaMap = tenant.id === "lume" ? serviceAreaMapLume : serviceAreaMapNpp;
   const warrantyYears = tenant.credentials?.warrantyYears || 3;
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
 
