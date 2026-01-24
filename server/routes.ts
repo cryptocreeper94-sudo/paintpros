@@ -47,6 +47,7 @@ import * as crypto from "crypto";
 import OpenAI from "openai";
 import { z } from "zod";
 import * as solana from "./solana";
+import * as darkwave from "./darkwave";
 import { orbitEcosystem } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, sendLeadNotification, sendBookingNotification, sendContractorApplicationEmail, type ContactFormData, type LeadNotificationData, type BookingNotificationData, type ContractorApplicationData } from "./resend";
@@ -2732,6 +2733,98 @@ Format the response as JSON with these fields:
     } catch (error) {
       console.error("Error requesting airdrop:", error);
       res.status(500).json({ error: "Failed to request airdrop" });
+    }
+  });
+
+  // ============ DARKWAVE TRUST LAYER ============
+  
+  // POST /api/darkwave/stamp - Stamp hash to Darkwave blockchain
+  app.post("/api/darkwave/stamp", async (req, res) => {
+    try {
+      const { entityType, entityId, documentHash, tenantId } = req.body;
+      
+      if (!documentHash) {
+        res.status(400).json({ error: "Document hash required" });
+        return;
+      }
+      
+      const credentials = darkwave.getApiCredentials();
+      if (!credentials) {
+        res.status(500).json({ error: "Darkwave API not configured" });
+        return;
+      }
+      
+      const result = await darkwave.stampHashToBlockchain(
+        documentHash,
+        { entityType, entityId },
+        tenantId
+      );
+      
+      res.status(201).json({
+        success: true,
+        txHash: result.txHash,
+        blockNumber: result.blockNumber,
+        timestamp: result.timestamp,
+        explorerUrl: result.explorerUrl
+      });
+    } catch (error: any) {
+      console.error("Darkwave stamp error:", error);
+      res.status(500).json({ error: "Failed to stamp to Darkwave", details: error.message });
+    }
+  });
+  
+  // POST /api/darkwave/verify - Verify a stamp on Darkwave
+  app.post("/api/darkwave/verify", async (req, res) => {
+    try {
+      const { txHash } = req.body;
+      if (!txHash) {
+        res.status(400).json({ error: "Transaction hash required" });
+        return;
+      }
+      const result = await darkwave.verifyStamp(txHash);
+      res.json(result);
+    } catch (error) {
+      console.error("Error verifying Darkwave stamp:", error);
+      res.status(500).json({ error: "Failed to verify stamp" });
+    }
+  });
+  
+  // POST /api/darkwave/trust/register - Register a new trust layer member
+  app.post("/api/darkwave/trust/register", async (req, res) => {
+    try {
+      const { tenantId, companyName, hallmarkNumber } = req.body;
+      
+      if (!tenantId || !companyName || !hallmarkNumber) {
+        res.status(400).json({ error: "tenantId, companyName, and hallmarkNumber required" });
+        return;
+      }
+      
+      const credentials = darkwave.getApiCredentials();
+      if (!credentials) {
+        res.status(500).json({ error: "Darkwave API not configured" });
+        return;
+      }
+      
+      const member = await darkwave.registerTrustMember(tenantId, companyName, hallmarkNumber);
+      
+      res.status(201).json({
+        success: true,
+        member
+      });
+    } catch (error: any) {
+      console.error("Error registering trust member:", error);
+      res.status(500).json({ error: "Failed to register trust member", details: error.message });
+    }
+  });
+  
+  // GET /api/darkwave/trust/members - Get all trust layer members
+  app.get("/api/darkwave/trust/members", async (req, res) => {
+    try {
+      const members = await darkwave.getTrustMembers();
+      res.json({ members });
+    } catch (error) {
+      console.error("Error fetching trust members:", error);
+      res.status(500).json({ error: "Failed to fetch trust members" });
     }
   });
 
