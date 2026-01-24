@@ -53,4 +53,4 @@ expertMode = true
 [userenv.shared]
 VITE_TENANT_ID = "lume"
 CONTACT_EMAIL = "Cryptocreeper94@gmail.com"
-ORBIT_ECOSYSTEM_DEV_URL = "https://orbitstaffing.io/api/ecosystem"
+ORBIT_ECOSYSTEM_DEV_URL = "https://606bb700-1745-49b9-8ff5-b83937d394a3-00-1b1vrn19wm7h.spock.replit.dev/api/ecosystem"
