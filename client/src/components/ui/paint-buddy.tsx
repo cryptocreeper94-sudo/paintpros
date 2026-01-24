@@ -301,7 +301,7 @@ export function PaintBuddy() {
             <motion.img
               src={rollieMascot}
               alt="Paint Buddy"
-              className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(212,175,55,0.9)] transition-all"
+              className="w-16 h-16 object-contain grayscale drop-shadow-[0_0_20px_rgba(100,100,100,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(100,100,100,0.9)] transition-all"
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -526,7 +526,7 @@ export function PaintBuddy() {
               <motion.img
                 src={rollieMascot}
                 alt="Rollie"
-                className={`w-24 h-24 md:w-40 md:h-40 object-contain drop-shadow-2xl ${
+                className={`w-24 h-24 md:w-40 md:h-40 object-contain grayscale drop-shadow-2xl ${
                   isSpeaking ? "animate-bounce" : ""
                 }`}
                 animate={isSpeaking ? { scale: [1, 1.05, 1] } : { y: [0, -6, 0] }}
