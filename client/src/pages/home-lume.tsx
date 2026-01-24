@@ -128,7 +128,7 @@ export default function HomeLume() {
             >
               Lume
             </h1>
-            <p className="mt-4 text-lg md:text-xl text-gray-600 font-light">
+            <p className="mt-4 text-lg md:text-xl text-gray-600 font-light whitespace-nowrap">
               Elevating the backdrop of your life.
             </p>
           </motion.div>
