@@ -134,8 +134,8 @@ class OrbitEcosystem {
     return this.makeRequest<{ connected: boolean; permissions: string[]; hubName: string }>('/status');
   }
 
-  async ping(): Promise<{ status: string; timestamp: string }> {
-    return this.makeRequest<{ status: string; timestamp: string }>('/api/health');
+  async ping(): Promise<{ connected: boolean; hubName: string; appName: string; permissions: string[] }> {
+    return this.makeRequest<{ connected: boolean; hubName: string; appName: string; permissions: string[] }>('/status');
   }
 
   async syncTenant(tenant: {
