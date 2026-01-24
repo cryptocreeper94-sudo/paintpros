@@ -111,7 +111,7 @@ export default function HomeLume() {
         
         {/* HERO - Full viewport, no scroll indication */}
         <section 
-          className="w-full h-[calc(100vh-100px)] flex items-center justify-center"
+          className="w-full h-[calc(100vh-48px)] flex items-center justify-center"
           style={{
             background: 'linear-gradient(to right, white 0%, #e5e7eb 25%, #9ca3af 50%, #e5e7eb 75%, white 100%)'
           }}
