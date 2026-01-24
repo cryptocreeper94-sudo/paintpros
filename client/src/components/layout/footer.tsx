@@ -169,7 +169,7 @@ export function Footer() {
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-amber-600" />
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {tenant.id === "lume" || tenant.id === "lumepaint" ? "Darkwave Trust Layer" : "Solana Verified Platform"}
+                  {isDemo ? "Dual Chain Verified" : "Darkwave Trust Layer"}
                 </h3>
               </div>
               <button 
@@ -185,12 +185,12 @@ export function Footer() {
               {/* First in Industry Badge */}
               <div className="bg-gradient-to-r from-purple-100 to-emerald-100 border border-emerald-300 rounded-lg p-3 text-center">
                 <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
-                  {tenant.id === "lume" || tenant.id === "lumepaint" ? "Verified Member" : "Industry First"}
+                  {isDemo ? "Dual Chain Verified" : "Verified Member"}
                 </span>
                 <p className="text-sm font-semibold text-gray-900 mt-0.5">
-                  {tenant.id === "lume" || tenant.id === "lumepaint" 
-                    ? <><span className="text-emerald-600">Darkwave Trust Layer</span> Verified Member</>
-                    : <>First Solana-Verified <span className="text-emerald-600">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span></>
+                  {isDemo 
+                    ? <><span className="text-purple-600">Solana</span> + <span className="text-emerald-600">Darkwave</span> Verified</>
+                    : <><span className="text-emerald-600">Darkwave Trust Layer</span> Verified Member</>
                   }
                 </p>
               </div>
@@ -249,7 +249,7 @@ export function Footer() {
               
               {/* Powered by */}
               <p className="text-center text-[10px] text-gray-500">
-                {isDemo ? "ORBIT Hallmark System" : tenant.id === "lume" || tenant.id === "lumepaint" ? "Powered by Darkwave Trust Layer" : "Powered by ORBIT • NPP Verified"}
+                {isDemo ? "Powered by ORBIT • Dual Chain Verified" : "Powered by Darkwave Trust Layer"}
               </p>
             </div>
           </div>
