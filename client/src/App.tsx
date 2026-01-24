@@ -62,6 +62,7 @@ import Why40kFails from "@/pages/why-40k-fails";
 import TradeVerticals from "@/pages/trade-verticals";
 import EstimatorApp from "@/pages/estimator-app";
 import TradeToolkit from "@/pages/trade-toolkit";
+import CodeHub from "@/pages/code-hub";
 import TradeWorksAI from "@/pages/tradeworks-ai";
 import FieldTool from "@/pages/field-tool";
 import EstimatorConfig from "@/pages/estimator-config";
