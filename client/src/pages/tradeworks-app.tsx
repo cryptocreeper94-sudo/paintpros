@@ -71,6 +71,13 @@ export default function TradeWorksApp() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showDripJobsImport, setShowDripJobsImport] = useState(false);
   
+  // Paint calculator state
+  const [roomWidth, setRoomWidth] = useState<number>(12);
+  const [roomLength, setRoomLength] = useState<number>(14);
+  const [ceilingHeight, setCeilingHeight] = useState<number>(9);
+  const [numCoats, setNumCoats] = useState<number>(2);
+  const [colorSearch, setColorSearch] = useState("");
+  
   const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -104,10 +111,24 @@ export default function TradeWorksApp() {
     enabled: isAuthenticated,
   });
 
-  const { data: paintColors = [] } = useQuery<any[]>({
+  const { data: paintColors = [], isLoading: isLoadingColors } = useQuery<any[]>({
     queryKey: ["/api/paint-colors"],
     enabled: isAuthenticated,
   });
+
+  // Calculate paint coverage
+  const wallSqFt = 2 * ceilingHeight * (roomWidth + roomLength);
+  const sqFtPerGallon = 350;
+  const gallonsNeeded = (wallSqFt * numCoats) / sqFtPerGallon;
+  
+  // Filter colors by search
+  const filteredColors = colorSearch 
+    ? paintColors.filter((c: any) => 
+        c.colorName?.toLowerCase().includes(colorSearch.toLowerCase()) ||
+        c.colorCode?.toLowerCase().includes(colorSearch.toLowerCase()) ||
+        c.brand?.toLowerCase().includes(colorSearch.toLowerCase())
+      )
+    : paintColors;
 
   const todayStr = new Date().toDateString();
   const todaysJobs = bookings.filter((b: any) => new Date(b.date).toDateString() === todayStr);
@@ -1042,7 +1063,8 @@ export default function TradeWorksApp() {
                         <label className="text-gray-400 text-sm mb-1 block">Room Width (ft)</label>
                         <input 
                           type="number" 
-                          placeholder="12"
+                          value={roomWidth}
+                          onChange={(e) => setRoomWidth(Number(e.target.value) || 0)}
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
                           data-testid="input-room-width"
                         />
@@ -1051,7 +1073,8 @@ export default function TradeWorksApp() {
                         <label className="text-gray-400 text-sm mb-1 block">Room Length (ft)</label>
                         <input 
                           type="number" 
-                          placeholder="14"
+                          value={roomLength}
+                          onChange={(e) => setRoomLength(Number(e.target.value) || 0)}
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
                           data-testid="input-room-length"
                         />
@@ -1060,35 +1083,37 @@ export default function TradeWorksApp() {
                         <label className="text-gray-400 text-sm mb-1 block">Ceiling Height (ft)</label>
                         <input 
                           type="number" 
-                          placeholder="9"
-                          defaultValue="9"
+                          value={ceilingHeight}
+                          onChange={(e) => setCeilingHeight(Number(e.target.value) || 0)}
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
                           data-testid="input-ceiling-height"
                         />
                       </div>
                       <div>
                         <label className="text-gray-400 text-sm mb-1 block">Number of Coats</label>
-                        <select className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white" data-testid="select-coats">
+                        <select 
+                          value={numCoats}
+                          onChange={(e) => setNumCoats(Number(e.target.value))}
+                          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white" 
+                          data-testid="select-coats"
+                        >
                           <option value="1">1 Coat</option>
-                          <option value="2" selected>2 Coats</option>
+                          <option value="2">2 Coats</option>
                           <option value="3">3 Coats</option>
                         </select>
                       </div>
-                      <Button className="w-full bg-orange-500 hover:bg-orange-600" data-testid="button-calculate">
-                        Calculate Coverage
-                      </Button>
-                      <Card className="bg-gray-800 p-4 mt-4">
+                      <Card className="bg-gray-800 p-4">
                         <div className="grid grid-cols-2 gap-4 text-center">
                           <div>
                             <p className="text-gray-400 text-xs">Wall Sq Ft</p>
-                            <p className="text-white text-xl font-bold">468</p>
+                            <p className="text-white text-xl font-bold">{wallSqFt.toLocaleString()}</p>
                           </div>
                           <div>
                             <p className="text-gray-400 text-xs">Gallons Needed</p>
-                            <p className="text-orange-400 text-xl font-bold">2.6</p>
+                            <p className="text-orange-400 text-xl font-bold">{gallonsNeeded.toFixed(1)}</p>
                           </div>
                         </div>
-                        <p className="text-gray-500 text-xs text-center mt-2">Based on 350 sq ft per gallon coverage</p>
+                        <p className="text-gray-500 text-xs text-center mt-2">Based on {sqFtPerGallon} sq ft per gallon coverage</p>
                       </Card>
                     </div>
                   </Card>
@@ -1099,14 +1124,23 @@ export default function TradeWorksApp() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input 
                       type="text" 
-                      placeholder="Search colors..."
+                      placeholder="Search colors by name, code, or brand..."
+                      value={colorSearch}
+                      onChange={(e) => setColorSearch(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-white text-sm"
                       data-testid="input-color-search"
                     />
                   </div>
-                  <p className="text-gray-400 text-sm">{paintColors.length} colors in library</p>
+                  <p className="text-gray-400 text-sm">
+                    {colorSearch ? `${filteredColors.length} results` : `${paintColors.length} colors in library`}
+                  </p>
                   <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-                    {paintColors.length > 0 ? paintColors.slice(0, 20).map((color: any, i: number) => (
+                    {isLoadingColors ? (
+                      <div className="col-span-2 text-center py-8">
+                        <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                        <p className="text-gray-500">Loading colors...</p>
+                      </div>
+                    ) : filteredColors.length > 0 ? filteredColors.slice(0, 30).map((color: any, i: number) => (
                       <Card key={color.id || i} className="bg-gray-900/50 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/50">
                         <div 
                           className="w-full h-16 rounded-lg mb-2 border border-gray-700"
@@ -1122,7 +1156,7 @@ export default function TradeWorksApp() {
                     )) : (
                       <div className="col-span-2 text-center py-8">
                         <Palette className="w-12 h-12 mx-auto mb-2 text-gray-600" />
-                        <p className="text-gray-500">Loading colors...</p>
+                        <p className="text-gray-500">{colorSearch ? 'No colors match your search' : 'No colors available'}</p>
                       </div>
                     )}
                   </div>
