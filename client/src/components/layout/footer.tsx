@@ -92,15 +92,6 @@ export function Footer() {
 
           {/* Weather Widget */}
           <FooterWeatherWidget />
-          
-          {/* Version - Clickable */}
-          <button
-            onClick={() => setShowVersionModal(true)}
-            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-black font-semibold hover:text-stone-600"
-            data-testid="button-version"
-          >
-            v{version}
-          </button>
 
           {/* Socials - Show configured links or placeholders */}
           <div className="flex gap-2 md:gap-3 items-center">
@@ -142,21 +133,21 @@ export function Footer() {
               setPin("");
               setPinError("");
             }}
-            className="flex items-center gap-1 text-[9px] md:text-[10px] text-black font-semibold hover:text-stone-600 transition-colors"
+            className="text-[9px] md:text-[10px] text-black font-semibold hover:text-stone-600 transition-colors"
             data-testid="button-team-login"
           >
-            <Users className="w-3 h-3" />
-            <span>Team</span>
+            Team
           </button>
           
-          {/* Desktop Links */}
-          <div className="gap-4 whitespace-nowrap hidden md:flex text-black font-semibold">
-            {isDemo && (
-              <a href="/investors" className="hover:text-stone-600 transition-colors" data-testid="link-investors">Investors</a>
-            )}
-            <a href="/privacy" className="hover:text-stone-600 transition-colors" data-testid="link-privacy">Privacy Policy</a>
-            <a href="/terms" className="hover:text-stone-600 transition-colors" data-testid="link-terms">Terms & Warranty</a>
-          </div>
+          {/* Legal Links */}
+          <a href="/terms" className="text-[9px] md:text-[10px] text-black font-semibold hover:text-stone-600 transition-colors" data-testid="link-legal">
+            Legal
+          </a>
+          
+          {/* Investors - Demo only */}
+          {isDemo && (
+            <a href="/investors" className="text-[9px] md:text-[10px] text-black font-semibold hover:text-stone-600 transition-colors" data-testid="link-investors">Investors</a>
+          )}
 
           
         </div>
