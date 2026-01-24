@@ -26,7 +26,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 import exteriorImage from "@assets/generated_images/exterior_painting.png";
-import cabinetImage from "@assets/generated_images/cabinet_refinishing.png";
+import cabinetImage from "@assets/marketing/cabinets-01-white-modern.png";
 import serviceAreaMap from "@assets/generated_images/lume_service_area_map_elegant_bw.png";
 
 interface PaintColor {
