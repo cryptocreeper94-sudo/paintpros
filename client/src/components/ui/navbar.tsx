@@ -38,13 +38,13 @@ export function Navbar() {
     <header className="relative z-50">
       <div className={cn(
         "flex items-center px-3 md:px-4 overflow-hidden",
-        (tenant.id === "npp" || tenant.id === "lumepaint") ? "h-20 md:h-28 lg:h-36" : "h-16 md:h-20"
+        tenant.id === "npp" ? "h-20 md:h-28 lg:h-36" : tenant.id === "lumepaint" ? "h-12 md:h-14" : "h-16 md:h-20"
       )}>
         {/* Left: Hamburger Menu - NPP logo for NPP, standard menu for demo */}
         <button 
           className={cn(
             "hover:opacity-80 transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
-            (tenant.id === "npp" || tenant.id === "lumepaint") ? "p-1 ml-1" : "p-2 ml-2"
+            tenant.id === "npp" ? "p-1 ml-1" : tenant.id === "lumepaint" ? "p-2 ml-2" : "p-2 ml-2"
           )}
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
@@ -60,15 +60,7 @@ export function Navbar() {
               style={{ marginTop: '-40px', marginLeft: '-145px' }}
             />
           ) : tenant.id === "lumepaint" ? (
-            <div className="flex items-center gap-2">
-              <Menu size={24} className="text-gray-700" />
-              <span 
-                className="text-2xl md:text-3xl font-light text-gray-800 tracking-wide"
-                style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
-              >
-                Lume
-              </span>
-            </div>
+            <Menu size={24} className="text-gray-700" />
           ) : (
             <Menu size={28} className="text-gray-700" />
           )}
