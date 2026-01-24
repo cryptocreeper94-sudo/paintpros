@@ -197,6 +197,12 @@ function getTenantFromHostname(hostname: string): string {
     }
   }
   
+  // Check environment variable override for development
+  const envTenant = process.env.DEFAULT_TENANT || process.env.VITE_TENANT_ID;
+  if (envTenant && ['npp', 'lume', 'lumepaint', 'demo', 'orbit', 'tradeworks'].includes(envTenant.toLowerCase())) {
+    return envTenant.toLowerCase();
+  }
+  
   // Default fallback
   return "npp";
 }
