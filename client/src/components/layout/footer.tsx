@@ -60,11 +60,11 @@ export function Footer() {
   
   return (
     <>
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-transparent border-t border-white/10 text-[10px] md:text-xs text-muted-foreground h-[40px] max-h-[40px] flex items-center">
-        <div className="w-full px-1 md:px-4 flex justify-between items-center">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-transparent border-t border-white/10 text-[10px] md:text-xs h-[40px] max-h-[40px] flex items-center">
+        <div className="w-full px-2 md:px-4 flex justify-around items-center">
           
           {/* Copyright */}
-          <div className="whitespace-nowrap text-[9px] md:text-[10px] text-stone-600/90">
+          <div className="whitespace-nowrap text-[9px] md:text-[10px] text-black font-semibold">
             {isDemo ? (
               <>
                 <span className="hidden sm:inline">Powered by Darkwave Studios, LLC</span>
@@ -84,8 +84,8 @@ export function Footer() {
             className="flex items-center gap-1 transition-all hover:scale-110 group"
             data-testid="button-hallmark-badge"
           >
-            <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-400 group-hover:text-stone-300" />
-            <span className="hidden md:inline text-stone-400/90 font-mono text-[9px] group-hover:text-stone-300">
+            <Shield className="w-3.5 h-3.5 md:w-4 md:h-4 text-black group-hover:text-stone-600" />
+            <span className="hidden md:inline text-black font-semibold font-mono text-[9px] group-hover:text-stone-600">
               {displayHallmark}
             </span>
           </button>
@@ -96,7 +96,7 @@ export function Footer() {
           {/* Version - Clickable */}
           <button
             onClick={() => setShowVersionModal(true)}
-            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-stone-500/80 hover:text-stone-400"
+            className="font-mono text-[8px] md:text-[9px] transition-colors underline decoration-dotted underline-offset-2 text-black font-semibold hover:text-stone-600"
             data-testid="button-version"
           >
             v{version}
@@ -105,19 +105,19 @@ export function Footer() {
           {/* Socials - Show configured links or placeholders */}
           <div className="flex gap-2 md:gap-3 items-center">
             {tenant.social?.instagram ? (
-              <a href={tenant.social.instagram} className="transition-all hover:scale-110" data-testid="link-instagram"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
+              <a href={tenant.social.instagram} className="transition-all hover:scale-110" data-testid="link-instagram"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-black hover:text-stone-600" /></a>
             ) : (
-              <a href="#" className="transition-all hover:scale-110" data-testid="link-instagram-placeholder"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-instagram-placeholder"><Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-black hover:text-stone-600" /></a>
             )}
             {tenant.social?.facebook ? (
-              <a href={tenant.social.facebook} className="transition-all hover:scale-110" data-testid="link-facebook"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
+              <a href={tenant.social.facebook} className="transition-all hover:scale-110" data-testid="link-facebook"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-black hover:text-stone-600" /></a>
             ) : (
-              <a href="#" className="transition-all hover:scale-110" data-testid="link-facebook-placeholder"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-facebook-placeholder"><Facebook className="w-3.5 h-3.5 md:w-4 md:h-4 text-black hover:text-stone-600" /></a>
             )}
             {tenant.social?.linkedin ? (
-              <a href={tenant.social.linkedin} className="transition-all hover:scale-110" data-testid="link-linkedin"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
+              <a href={tenant.social.linkedin} className="transition-all hover:scale-110" data-testid="link-linkedin"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-black hover:text-stone-600" /></a>
             ) : (
-              <a href="#" className="transition-all hover:scale-110" data-testid="link-linkedin-placeholder"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-stone-500/70 hover:text-stone-400" /></a>
+              <a href="#" className="transition-all hover:scale-110" data-testid="link-linkedin-placeholder"><Linkedin className="w-3.5 h-3.5 md:w-4 md:h-4 text-black hover:text-stone-600" /></a>
             )}
             {/* Darkwave Smart Chain link for demo site */}
             {isDemo && (
@@ -125,12 +125,12 @@ export function Footer() {
                 href="https://dwsc.io" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-stone-400/80 hover:text-stone-300 transition-all hover:scale-105"
+                className="flex items-center gap-1 text-black hover:text-stone-600 transition-all hover:scale-105"
                 title="Powered by Darkwave Smart Chain"
                 data-testid="link-dwsc"
               >
                 <ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                <span className="text-[8px] md:text-[9px] font-medium hidden sm:inline">DWSC</span>
+                <span className="text-[8px] md:text-[9px] font-semibold hidden sm:inline">DWSC</span>
               </a>
             )}
           </div>
@@ -142,7 +142,7 @@ export function Footer() {
               setPin("");
               setPinError("");
             }}
-            className="flex items-center gap-1 text-[9px] md:text-[10px] text-stone-500/70 hover:text-stone-400 transition-colors"
+            className="flex items-center gap-1 text-[9px] md:text-[10px] text-black font-semibold hover:text-stone-600 transition-colors"
             data-testid="button-team-login"
           >
             <Users className="w-3 h-3" />
@@ -150,12 +150,12 @@ export function Footer() {
           </button>
           
           {/* Desktop Links */}
-          <div className="gap-4 whitespace-nowrap hidden md:flex text-stone-600/80">
+          <div className="gap-4 whitespace-nowrap hidden md:flex text-black font-semibold">
             {isDemo && (
-              <a href="/investors" className="hover:text-stone-400 transition-colors" data-testid="link-investors">Investors</a>
+              <a href="/investors" className="hover:text-stone-600 transition-colors" data-testid="link-investors">Investors</a>
             )}
-            <a href="/privacy" className="hover:text-stone-400 transition-colors" data-testid="link-privacy">Privacy Policy</a>
-            <a href="/terms" className="hover:text-stone-400 transition-colors" data-testid="link-terms">Terms & Warranty</a>
+            <a href="/privacy" className="hover:text-stone-600 transition-colors" data-testid="link-privacy">Privacy Policy</a>
+            <a href="/terms" className="hover:text-stone-600 transition-colors" data-testid="link-terms">Terms & Warranty</a>
           </div>
 
           
