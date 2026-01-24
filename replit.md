@@ -8,7 +8,7 @@ I prefer simple language and detailed explanations. I want iterative development
 
 ## Brand Taglines
 - **NPP (Nashville Painting Professionals)**: "Transforming familiar spaces into extraordinary places."
-- **Lume Paint Co**: "We elevate the backdrop of your life." (or "Elevating the backdrop of your life" depending on context)
+- **Lume Paint Co**: "Elevating the backdrop of your life."
 
 ## System Architecture
 

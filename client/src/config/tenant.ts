@@ -278,7 +278,7 @@ export const lumePaintCo: TenantConfig = {
   subscriptionTier: "full_suite",
   
   name: "Lume Paint Co",
-  tagline: "We elevate the backdrop of your life.",
+  tagline: "Elevating the backdrop of your life.",
   description: "Premium painting services that illuminate your space. Professional interior and exterior painting with meticulous attention to detail.",
   logo: "/icons/lume-logo.png",
   
