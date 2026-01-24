@@ -30,9 +30,12 @@ import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
+// Dynamic brand type supports all tenants
+type TenantBrand = string;
+
 interface SocialPost {
   id: string;
-  brand: "npp" | "lumepaint";
+  brand: TenantBrand;
   platform: "instagram" | "facebook" | "nextdoor";
   type: "evergreen" | "seasonal";
   category: "interior" | "exterior" | "commercial" | "cabinets" | "doors" | "trim" | "decks" | "general";
@@ -57,7 +60,7 @@ type ImageSeason = "spring" | "summer" | "fall" | "winter" | "all-year";
 
 interface LibraryImage {
   id: string;
-  brand: "npp" | "lumepaint";
+  brand: TenantBrand;
   url: string;
   subject: ImageSubject;
   style: ImageStyle;
@@ -73,7 +76,7 @@ type MessageCTA = "book-now" | "get-quote" | "learn-more" | "call-us" | "visit-s
 
 interface MessageTemplate {
   id: string;
-  brand: "npp" | "lumepaint";
+  brand: TenantBrand;
   content: string;
   subject: ImageSubject;
   tone: MessageTone;
@@ -85,7 +88,7 @@ interface MessageTemplate {
 
 interface ContentBundle {
   id: string;
-  brand: "npp" | "lumepaint";
+  brand: TenantBrand;
   imageId: string;
   messageId: string;
   status: "suggested" | "approved" | "scheduled" | "posted";
@@ -904,7 +907,7 @@ export default function MarketingHub() {
   const addPost = (newPost: Partial<SocialPost>) => {
     const post: SocialPost = {
       id: `${selectedTenant}-${Date.now()}`,
-      brand: selectedTenant as "npp" | "lumepaint",
+      brand: selectedTenant,
       platform: newPost.platform || "instagram",
       type: newPost.type || "evergreen",
       category: newPost.category || "general",
@@ -1173,6 +1176,46 @@ export default function MarketingHub() {
               </GlassCard>
             </BentoItem>
           </BentoGrid>
+
+          {/* Quick Actions - Clear entry points */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 my-4">
+            <Button 
+              variant="outline" 
+              className="h-auto py-3 flex flex-col gap-1"
+              onClick={() => setActiveTab("bundles")}
+              data-testid="quick-action-create"
+            >
+              <Wand2 className="w-5 h-5 text-purple-500" />
+              <span className="text-xs font-medium">Create Post</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto py-3 flex flex-col gap-1"
+              onClick={() => setActiveTab("calendar")}
+              data-testid="quick-action-schedule"
+            >
+              <Calendar className="w-5 h-5 text-blue-500" />
+              <span className="text-xs font-medium">Schedule</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto py-3 flex flex-col gap-1"
+              onClick={() => setActiveTab("images")}
+              data-testid="quick-action-images"
+            >
+              <ImageIcon className="w-5 h-5 text-green-500" />
+              <span className="text-xs font-medium">Image Library</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto py-3 flex flex-col gap-1"
+              onClick={() => setActiveTab("analytics")}
+              data-testid="quick-action-analytics"
+            >
+              <BarChart3 className="w-5 h-5 text-orange-500" />
+              <span className="text-xs font-medium">Analytics</span>
+            </Button>
+          </div>
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
             <TabsList className="grid grid-cols-4 md:flex md:flex-wrap gap-1 mb-4 md:mb-6 h-auto p-1 w-full">
@@ -1839,6 +1882,87 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
+              {/* Gamification Templates - Engagement Hooks */}
+              <GlassCard className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="w-5 h-5 text-amber-600" />
+                  <h4 className="font-bold text-gray-900 dark:text-white">Engagement Boosters</h4>
+                  <Badge variant="secondary" className="text-xs">Quick Add</Badge>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
+                  One-click gamification templates to boost engagement. These challenge-style posts encourage comments and shares.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {[
+                    { 
+                      title: "Guess the Before Color", 
+                      IconComponent: Search,
+                      content: "Can you guess what color this room was BEFORE our team worked their magic? Drop your guess in the comments - we'll reveal the answer tomorrow! Hint: It wasn't pretty.",
+                      subject: "before-after" as ImageSubject
+                    },
+                    { 
+                      title: "Spot the Difference", 
+                      IconComponent: Eye,
+                      content: "We made 3 changes to this space beyond the paint color. Can you spot them all? First person to get all 3 wins a $25 gift card! (Look closely at the trim, lighting, and one more surprise...)",
+                      subject: "interior-walls" as ImageSubject
+                    },
+                    { 
+                      title: "Color Challenge", 
+                      IconComponent: Palette,
+                      content: "What would YOU name this color? Wrong answers only! Our team calls it 'Monday Morning Coffee' but we want to hear your creative names. Best answer gets featured in our next post!",
+                      subject: "interior-walls" as ImageSubject
+                    },
+                    { 
+                      title: "This or That", 
+                      IconComponent: Lightbulb,
+                      content: "Which style speaks to you? A) Bold and dramatic accent walls B) Soft and subtle neutrals. Vote with A or B in the comments! We're curious what our neighbors prefer.",
+                      subject: "general" as ImageSubject
+                    },
+                    { 
+                      title: "Rate This Transform", 
+                      IconComponent: Star,
+                      content: "On a scale of 1-10, how would you rate this transformation? Be honest! We love feedback from our community. Drop your rating and tell us what you think!",
+                      subject: "before-after" as ImageSubject
+                    },
+                    { 
+                      title: "Caption This", 
+                      IconComponent: PenTool,
+                      content: "Caption contest time! Give us your best caption for this transformation. Funniest answer wins bragging rights AND a shoutout in our next post. Ready, set, caption!",
+                      subject: "before-after" as ImageSubject
+                    }
+                  ].map((template, idx) => (
+                    <Button 
+                      key={idx}
+                      variant="outline" 
+                      size="sm"
+                      className="justify-start text-left h-auto py-2 px-3"
+                      onClick={() => {
+                        const newMessage: MessageTemplate = {
+                          id: `msg-gamify-${Date.now()}-${idx}`,
+                          brand: selectedTenant,
+                          content: template.content,
+                          subject: template.subject,
+                          tone: "friendly" as MessageTone,
+                          cta: "none" as MessageCTA,
+                          platform: "all",
+                          hashtags: ["engagement", "community", "fun"],
+                          createdAt: new Date().toISOString(),
+                        };
+                        const updated = [...messageTemplates, newMessage];
+                        setMessageTemplates(updated);
+                        localStorage.setItem("marketing_messages", JSON.stringify(updated));
+                      }}
+                      data-testid={`button-gamify-${idx}`}
+                    >
+                      <div className="w-6 h-6 rounded bg-amber-100 dark:bg-amber-800 flex items-center justify-center mr-2 flex-shrink-0">
+                        <template.IconComponent className="w-3 h-3 text-amber-700 dark:text-amber-200" />
+                      </div>
+                      <span className="text-xs">{template.title}</span>
+                    </Button>
+                  ))}
+                </div>
+              </GlassCard>
+
               {messageTemplates.length === 0 ? (
                 <GlassCard className="p-8 text-center">
                   <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
@@ -1909,7 +2033,7 @@ export default function MarketingHub() {
                               id: `bundle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                               imageId: image.id,
                               messageId: msg.id,
-                              brand: selectedTenant as "npp" | "lumepaint",
+                              brand: selectedTenant,
                               platform: msg.platform,
                               status: "suggested",
                               createdAt: new Date().toISOString(),
@@ -3528,7 +3652,7 @@ export default function MarketingHub() {
               const newImage: LibraryImage = {
                 ...image,
                 id: `img-${Date.now()}`,
-                brand: selectedTenant as "npp" | "lumepaint",
+                brand: selectedTenant,
                 createdAt: new Date().toISOString(),
               };
               const updated = [...libraryImages, newImage];
@@ -3555,7 +3679,7 @@ export default function MarketingHub() {
               const newMessage: MessageTemplate = {
                 ...message,
                 id: `msg-${Date.now()}`,
-                brand: selectedTenant as "npp" | "lumepaint",
+                brand: selectedTenant,
                 createdAt: new Date().toISOString(),
               };
               const updated = [...messageTemplates, newMessage];
