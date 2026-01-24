@@ -135,8 +135,8 @@ export default function HomeLume() {
         </section>
 
         {/* BODY - Scroll down to see */}
-        <section className="px-3 md:px-6 py-6 md:py-10">
-          <div className="max-w-5xl mx-auto space-y-4 md:space-y-5">
+        <section className="px-3 md:px-6 py-8 md:py-12">
+          <div className="max-w-5xl mx-auto space-y-10 md:space-y-14">
             
             {/* Mobile: Carousel for services */}
             <div className="md:hidden">
