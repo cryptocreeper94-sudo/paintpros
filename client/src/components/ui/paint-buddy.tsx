@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Loader2, Mic, MicOff, Trash2 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import rollieMascot from "@assets/generated_images/rollie_bowtie_transparent.png";
+import rollieMascot from "@assets/generated_images/rollie_bw_final.png";
 
 interface Message {
   role: "user" | "assistant";
@@ -301,7 +301,7 @@ export function PaintBuddy() {
             <motion.img
               src={rollieMascot}
               alt="Paint Buddy"
-              className="w-16 h-16 object-contain grayscale contrast-150 brightness-110 drop-shadow-[0_0_20px_rgba(100,100,100,0.6)] group-hover:drop-shadow-[0_0_30px_rgba(100,100,100,0.9)] transition-all"
+              className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(50,50,50,0.7)] group-hover:drop-shadow-[0_0_30px_rgba(50,50,50,0.9)] transition-all"
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -526,7 +526,7 @@ export function PaintBuddy() {
               <motion.img
                 src={rollieMascot}
                 alt="Rollie"
-                className={`w-24 h-24 md:w-40 md:h-40 object-contain grayscale contrast-150 brightness-110 drop-shadow-2xl ${
+                className={`w-24 h-24 md:w-40 md:h-40 object-contain drop-shadow-2xl ${
                   isSpeaking ? "animate-bounce" : ""
                 }`}
                 animate={isSpeaking ? { scale: [1, 1.05, 1] } : { y: [0, -6, 0] }}
