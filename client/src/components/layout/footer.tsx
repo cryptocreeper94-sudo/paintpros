@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink, Users } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Shield, X, Sparkles, Calendar, Hash, ExternalLink, Users, Lock } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { FOUNDING_ASSETS } from "@shared/schema";
 import { FooterWeatherWidget } from "@/components/FooterWeatherWidget";
+import { useLocation } from "wouter";
 
 interface ReleaseInfo {
   version: string;
@@ -20,10 +21,23 @@ interface ReleaseInfo {
   };
 }
 
+const PIN_ROUTES: Record<string, { route: string; role: string }> = {
+  "1111": { route: "/owner", role: "Owner" },
+  "4444": { route: "/admin", role: "Admin" },
+  "0424": { route: "/developer", role: "Developer" },
+  "88888": { route: "/marketing-hub", role: "Marketing" },
+  "5555": { route: "/project-manager", role: "Project Manager" },
+  "7777": { route: "/crew-lead", role: "Crew Lead" },
+};
+
 export function Footer() {
   const tenant = useTenant();
+  const [, setLocation] = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pinError, setPinError] = useState("");
     
   const { data: releaseInfo } = useQuery<ReleaseInfo>({
     queryKey: ['/api/releases/latest', tenant.id],
@@ -121,14 +135,19 @@ export function Footer() {
             )}
           </div>
           
-          {/* Team Links */}
-          <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px]">
-            <a href="/developer" className="text-amber-600/70 hover:text-amber-500 transition-colors" data-testid="link-developer">Dev</a>
-            <a href="/owner" className="text-purple-600/70 hover:text-purple-500 transition-colors" data-testid="link-owner">Owner</a>
-            <a href="/admin" className="text-blue-600/70 hover:text-blue-500 transition-colors" data-testid="link-admin">Admin</a>
-            <a href="/project-manager" className="text-teal-600/70 hover:text-teal-500 transition-colors" data-testid="link-pm">PM</a>
-            <a href="/marketing-hub" className="text-pink-600/70 hover:text-pink-500 transition-colors" data-testid="link-marketing">Mktg</a>
-          </div>
+          {/* Team Login Button */}
+          <button
+            onClick={() => {
+              setShowTeamModal(true);
+              setPin("");
+              setPinError("");
+            }}
+            className="flex items-center gap-1 text-[9px] md:text-[10px] text-amber-600/70 hover:text-amber-500 transition-colors"
+            data-testid="button-team-login"
+          >
+            <Users className="w-3 h-3" />
+            <span>Team</span>
+          </button>
           
           {/* Desktop Links */}
           <div className="gap-4 whitespace-nowrap hidden md:flex text-stone-600/80">
@@ -342,6 +361,81 @@ export function Footer() {
                 Paint Pros by ORBIT • Verified Software
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Team Login Modal */}
+      {showTeamModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          style={{ paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)', paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)' }}
+          onClick={() => setShowTeamModal(false)}
+        >
+          <div 
+            className="bg-white border border-amber-200 rounded-2xl p-5 max-w-xs w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-2">
+                <Lock className="w-5 h-5 text-amber-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Team Login</h3>
+              </div>
+              <button 
+                onClick={() => setShowTeamModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                data-testid="button-close-team-modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                const route = PIN_ROUTES[pin];
+                if (route) {
+                  setShowTeamModal(false);
+                  setLocation(route.route);
+                } else {
+                  setPinError("Invalid PIN");
+                }
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Enter your PIN</label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={pin}
+                  onChange={(e) => {
+                    setPin(e.target.value);
+                    setPinError("");
+                  }}
+                  placeholder="Enter PIN"
+                  className="w-full px-4 py-3 text-center text-2xl tracking-widest border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  autoFocus
+                  data-testid="input-team-pin"
+                />
+                {pinError && (
+                  <p className="text-red-500 text-sm mt-1 text-center">{pinError}</p>
+                )}
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-medium rounded-lg text-center hover:from-amber-400 hover:to-yellow-400 transition-all"
+                data-testid="button-submit-team-pin"
+              >
+                Login
+              </button>
+              
+              <p className="text-center text-[10px] text-gray-500">
+                Owner • Admin • Developer • Marketing • PM
+              </p>
+            </form>
           </div>
         </div>
       )}
