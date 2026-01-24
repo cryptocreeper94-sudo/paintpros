@@ -563,19 +563,19 @@ export default function EstimateLume() {
                   <div className="bg-gray-900 text-white rounded-lg p-4">
                     <div className="flex items-center gap-3 mb-2">
                       <Smartphone className="w-5 h-5" />
-                      <span className="font-medium">Want Enhanced Features?</span>
+                      <span className="font-medium">Unlock the Full Experience</span>
                     </div>
                     <p className="text-sm text-gray-300 mb-3">
-                      Download our mobile app for room scanning, instant color matching, and real-time estimates.
+                      Scan your room, match colors instantly, and get real-time estimates right from your phone.
                     </p>
                     <Button
                       variant="outline"
                       size="sm"
                       className="border-white text-white hover:bg-white hover:text-black w-full"
-                      data-testid="button-download-app"
+                      data-testid="button-download-tool"
                     >
                       <Download className="w-4 h-4 mr-2" />
-                      Get the Lume App
+                      Try the Estimator Tool
                     </Button>
                   </div>
                 </div>
