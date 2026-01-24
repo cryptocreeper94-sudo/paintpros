@@ -168,7 +168,9 @@ export function Footer() {
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-amber-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Solana Verified Platform</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {tenant.id === "lume" || tenant.id === "lumepaint" ? "Darkwave Trust Layer" : "Solana Verified Platform"}
+                </h3>
               </div>
               <button 
                 onClick={() => setShowModal(false)}
@@ -182,9 +184,14 @@ export function Footer() {
             <div className="space-y-4">
               {/* First in Industry Badge */}
               <div className="bg-gradient-to-r from-purple-100 to-emerald-100 border border-emerald-300 rounded-lg p-3 text-center">
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Industry First</span>
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
+                  {tenant.id === "lume" || tenant.id === "lumepaint" ? "Verified Member" : "Industry First"}
+                </span>
                 <p className="text-sm font-semibold text-gray-900 mt-0.5">
-                  First Solana-Verified <span className="text-emerald-600">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span>
+                  {tenant.id === "lume" || tenant.id === "lumepaint" 
+                    ? <><span className="text-emerald-600">Darkwave Trust Layer</span> Verified Member</>
+                    : <>First Solana-Verified <span className="text-emerald-600">{tenant.id === "demo" ? "Painting Company Software" : "Painting Company"}</span></>
+                  }
                 </p>
               </div>
               {/* QR Code */}
@@ -242,7 +249,7 @@ export function Footer() {
               
               {/* Powered by */}
               <p className="text-center text-[10px] text-gray-500">
-                {isDemo ? "ORBIT Hallmark System" : "Powered by ORBIT • NPP Verified"}
+                {isDemo ? "ORBIT Hallmark System" : tenant.id === "lume" || tenant.id === "lumepaint" ? "Powered by Darkwave Trust Layer" : "Powered by ORBIT • NPP Verified"}
               </p>
             </div>
           </div>
