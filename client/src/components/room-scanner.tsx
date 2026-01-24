@@ -36,13 +36,13 @@ export function RoomScannerCard({ locked = true, accentColor = "accent" }: { loc
             <div className={`w-10 h-10 rounded-xl bg-${accentColor}/20 flex items-center justify-center`}>
               <Camera className="w-5 h-5 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-display font-bold text-muted-foreground">AI Room Scanner</h3>
+            <h3 className="text-xl font-display font-bold text-muted-foreground">Room Visualizer</h3>
           </div>
           <p className="text-sm text-muted-foreground/70 mb-4">
-            Upload room photos for AI-powered square footage estimation. Uses OpenAI Vision to analyze dimensions.
+            Upload room photos for instant square footage estimation right from your phone.
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className="px-2 py-1 rounded-lg bg-white/5 text-xs text-muted-foreground/60">AI Vision</span>
+            <span className="px-2 py-1 rounded-lg bg-white/5 text-xs text-muted-foreground/60">Photo Scan</span>
             <span className="px-2 py-1 rounded-lg bg-white/5 text-xs text-muted-foreground/60">Auto Calibration</span>
             <span className="px-2 py-1 rounded-lg bg-white/5 text-xs text-muted-foreground/60">±10-20% Accuracy</span>
           </div>
@@ -64,13 +64,13 @@ export function RoomScannerCard({ locked = true, accentColor = "accent" }: { loc
             <div className={`w-10 h-10 rounded-xl bg-${accentColor}/20 flex items-center justify-center`}>
               <Camera className={`w-5 h-5 text-${accentColor}`} />
             </div>
-            <h3 className="text-xl font-display font-bold">AI Room Scanner</h3>
+            <h3 className="text-xl font-display font-bold">Room Visualizer</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Upload room photos for AI-powered square footage estimation.
+            Upload room photos for instant square footage estimation.
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className={`px-2 py-1 rounded-lg bg-${accentColor}/10 text-xs text-${accentColor}`}>AI Vision</span>
+            <span className={`px-2 py-1 rounded-lg bg-${accentColor}/10 text-xs text-${accentColor}`}>Photo Scan</span>
             <span className={`px-2 py-1 rounded-lg bg-${accentColor}/10 text-xs text-${accentColor}`}>Auto Calibration</span>
           </div>
         </GlassCard>
@@ -196,9 +196,9 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                   <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-2xl bg-gradient-to-br from-accent/30 to-gold-400/20 flex items-center justify-center border border-accent/30">
                     <Camera className="w-7 h-7 sm:w-8 sm:h-8 text-accent" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">AI Room Scanner</h2>
+                  <h2 className="text-xl sm:text-2xl font-display font-bold mb-2">Room Visualizer</h2>
                   <p className="text-muted-foreground text-sm px-2">
-                    Snap or upload a photo for AI-powered square footage estimation
+                    Snap or upload a photo for instant square footage estimation
                   </p>
                 </div>
 
@@ -208,7 +208,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                     <div className="text-sm">
                       <p className="font-medium text-accent mb-1.5 sm:mb-2 text-xs sm:text-sm">📷 Tips for Best Results</p>
                       <ul className="text-muted-foreground space-y-0.5 sm:space-y-1 text-[11px] sm:text-xs leading-relaxed">
-                        <li><strong>Include a door</strong> - Helps AI calibrate scale</li>
+                        <li><strong>Include a door</strong> - Helps calibrate scale</li>
                         <li><strong>Stand in corner</strong> - Capture 2 walls</li>
                         <li><strong>Good lighting</strong> - Clearer dimension cues</li>
                         <li className="hidden sm:list-item"><strong>Landscape mode</strong> - Wider field of view</li>
@@ -223,7 +223,7 @@ export function RoomScannerModal({ isOpen, onClose, leadId, onScanComplete }: Ro
                     <div className="text-xs sm:text-sm">
                       <p className="font-medium text-amber-400 mb-1">Disclaimer</p>
                       <p className="text-muted-foreground text-[11px] sm:text-xs leading-relaxed">
-                        AI estimates are approximations (±10-20%). Final pricing requires professional measurement.
+                        Estimates are approximations (±10-20%). Final pricing requires professional measurement.
                       </p>
                     </div>
                   </div>
