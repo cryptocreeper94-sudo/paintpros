@@ -13,6 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 import { useState, useEffect, useMemo } from "react";
+
+// Marketing Hub hero images
+import crewTeamPhoto from "@/assets/marketing/crew-10-team-photo.png";
+import interiorLivingRoom from "@/assets/marketing/interior-01-living-room-gray.png";
+import crewMeasuring from "@/assets/marketing/crew-06-measuring.png";
+import commercialLobby from "@/assets/marketing/commercial-office-05-lobby.png";
+import colorConsult from "@/assets/marketing/general-01-color-consult.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Megaphone, Instagram, Facebook, Home, Calendar, 
@@ -1280,7 +1287,7 @@ export default function MarketingHub() {
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage: `url('/assets/marketing/crew-10-team-photo.png')`
+                backgroundImage: `url(${crewTeamPhoto})`
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 via-[#1e3a5f]/80 to-transparent" />
@@ -1363,7 +1370,7 @@ export default function MarketingHub() {
               <div className="relative rounded-xl overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('/assets/marketing/interior-01-living-room-gray.png')` }}
+                  style={{ backgroundImage: `url(${interiorLivingRoom})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/90 to-[#1e3a5f]/60" />
                 <div className="relative z-10 p-6 md:p-8">
@@ -2973,7 +2980,7 @@ export default function MarketingHub() {
               <div className="relative rounded-xl overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('/assets/marketing/crew-06-measuring.png')` }}
+                  style={{ backgroundImage: `url(${crewMeasuring})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 to-[#1e3a5f]/70" />
                 <div className="relative z-10 p-6 md:p-8">
@@ -3098,7 +3105,7 @@ export default function MarketingHub() {
               <div className="relative rounded-xl overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('/assets/marketing/commercial-office-05-lobby.png')` }}
+                  style={{ backgroundImage: `url(${commercialLobby})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 to-[#1e3a5f]/70" />
                 <div className="relative z-10 p-6 md:p-8">
@@ -4580,7 +4587,7 @@ export default function MarketingHub() {
               <div className="relative rounded-xl overflow-hidden">
                 <div 
                   className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url('/assets/marketing/general-01-color-consult.png')` }}
+                  style={{ backgroundImage: `url(${colorConsult})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 to-[#1e3a5f]/70" />
                 <div className="relative z-10 p-6 md:p-8">

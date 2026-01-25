@@ -58,12 +58,26 @@ The design emphasizes a "Sparkle and Shine" aesthetic, utilizing a Bento Grid la
 - **Crew Management System:** Dashboard for crew leads including time tracking, job notes, and incident reporting
 - **Internal Messaging System:** Real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges
 
-### Marketing Hub Features
-- **Quick Actions Panel**: Create Post, Schedule, Image Library, Analytics buttons
-- **Post Templates**: 6 gamification templates with engagement hooks (Quiz, Caption This, Poll, Countdown, Before/After, Giveaway)
-- **Multi-Tenant Support**: Works dynamically across all tenants
-- **Social Strategy**: Manual posting via Meta Business Suite (Facebook/Instagram); X developer account available
-- **Roadmap Items**: Meta Business Suite Integration, Content Generation, Smart Carousel Scheduler, Performance Alerts, Voice Commands, Google Analytics Integration
+### Marketing Hub Features (Redesigned January 2026)
+The Marketing Hub has been completely redesigned as a premium $100k enterprise product with 4 streamlined tabs:
+
+**Tab Structure (4 tabs replacing previous 12):**
+1. **Content Studio** - Sub-tabs for Image Library, Message Templates, and Social Bundles with photo-realistic hero images
+2. **Analytics Center** - All metrics with educational explanations (What it means, Why it matters)
+3. **Calendar** - Weekly content scheduling with best practices tips
+4. **Playbook** - Marketing psychology strategies (Social Proof, Scarcity, Reciprocity, Authority, etc.)
+
+**Design Features:**
+- Photo-realistic hero images throughout using existing marketing assets
+- Educational approach: Every section includes "How This Works" explanations
+- Navy blue branding (#1e3a5f) consistent with Lume theme
+- Split-layout login page with hero image and feature badges
+
+**Access Methods:**
+- Direct PIN 88888 on /marketing page
+- Also accessible via Owner (1111), Admin (4444), Developer (0424) PINs
+
+**Photo Assets Location:** `client/src/assets/marketing/` (crew photos, interiors, exteriors, commercial spaces)
 
 ### AI Credits System
 A prepaid model for metered features with subscription tiers and credit packs. Security involves server-side pack validation and credit deduction. Stripe is integrated for payments.
@@ -134,15 +148,15 @@ Key tables include:
 - **Express:** API server
 
 ## Recent Changes (January 2026)
+- **NEW: Marketing Hub Redesign** - Complete restructure from 12 tabs to 4 tabs (Content Studio, Analytics Center, Calendar, Playbook)
+- **NEW: Photo-realistic hero images** - Each Marketing Hub tab now has professional hero imagery with navy blue gradient overlays
+- **NEW: Educational content** - Every section includes "How This Works" explanations, metric definitions with "What it means" and "Why it matters"
 - **NEW: Fluid viewport scaling** - All tenant hero sections now scale smoothly from mobile to 4K/TV displays using clamp()
 - **NEW: Scroll indicator** - "Explore" label with bouncing arrow on Lume hero to guide users to scroll
 - **NEW: Lume PWA** - Full PWA support with navy blue branding, custom icons and splash screen
 - **NEW: Pricing Config Panel** - Estimator pricing now editable from Admin/Owner/Developer dashboards
 - **All 5 PWAs configured**: Lume, NPP, PaintPros/Demo, TradeWorks, Marketing Hub
 - Privacy Policy updated to January 25, 2026
-- Marketing Hub "Start Here" Guide - Visual walkthrough tab with red accents, clickable section links
-- Added Campaign ROI Tracker tab (manual cost entry now, API integration pending)
-- Added Copy Generator tab for social posts, ads, and SMS content
 - Added Marketing Psychology Playbook with 6 proven strategies
 - Connected PaintPros to ORBIT Ecosystem Hub with working credentials
 - Created DarkWave Ecosystem Hub handoff documentation for Code Hub implementation
