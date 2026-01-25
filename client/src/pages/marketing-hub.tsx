@@ -994,20 +994,39 @@ export default function MarketingHub() {
             {/* Content Overlay */}
             <div className="relative z-10 flex flex-col justify-between p-12 text-white">
               <div>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <Megaphone className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-2xl font-display font-bold">Marketing Hub</span>
-                </div>
+                <span className="text-lg font-display font-bold opacity-80">Marketing Hub</span>
               </div>
               
               <div className="space-y-8">
-                <h2 className="text-4xl font-display font-bold leading-tight">
-                  Elevate Your Brand's<br />Digital Presence
-                </h2>
+                {/* Dual Brand Logos */}
+                <div className="space-y-6">
+                  {/* Lume Emblem */}
+                  <div>
+                    <h2 className="text-3xl font-display font-bold">
+                      Lume Paint Co<span className="text-lg align-super">™</span>
+                    </h2>
+                    <p className="text-white/70 italic text-sm">Elevating the backdrop of your life</p>
+                  </div>
+                  
+                  {/* Divider */}
+                  <div className="flex items-center gap-4">
+                    <div className="h-px flex-1 bg-white/30" />
+                    <span className="text-white/50 text-sm">&</span>
+                    <div className="h-px flex-1 bg-white/30" />
+                  </div>
+                  
+                  {/* NPP Logo */}
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 inline-block">
+                    <img 
+                      src={nppLogo} 
+                      alt="Nashville Painting Professionals" 
+                      className="h-20 w-auto object-contain"
+                    />
+                  </div>
+                </div>
+                
                 <p className="text-lg text-white/80 max-w-md">
-                  Professional social media management, content scheduling, and analytics all in one place.
+                  Unified marketing management for both brands. Enter your PIN to access content, scheduling, and analytics.
                 </p>
                 
                 {/* Feature Badges */}
@@ -1024,24 +1043,6 @@ export default function MarketingHub() {
                     <ImageIcon className="w-4 h-4" />
                     <span className="text-sm">Image Library</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
-                    <Wand2 className="w-4 h-4" />
-                    <span className="text-sm">Copy Generator</span>
-                  </div>
-                </div>
-                
-                {/* Platform Icons */}
-                <div className="flex items-center gap-4 pt-4">
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Instagram className="w-5 h-5" />
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Facebook className="w-5 h-5" />
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Home className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm text-white/60 ml-2">+ more platforms</span>
                 </div>
               </div>
               
@@ -1058,21 +1059,37 @@ export default function MarketingHub() {
               animate={{ opacity: 1, y: 0 }}
               className="w-full max-w-md"
             >
-              {/* Mobile Header - Hero image for small screens */}
+              {/* Mobile Header - Hero image with dual branding */}
               <div className="md:hidden mb-6">
                 <div className="relative rounded-2xl overflow-hidden mb-4">
                   <div 
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${crewTeamPhoto})` }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/80 to-[#1e3a5f]/95" />
-                  <div className="relative z-10 p-6 text-center text-white">
-                    <h1 className="text-2xl font-display font-bold mb-1">
-                      Marketing Hub
-                    </h1>
-                    <p className="text-white/80 text-sm">
-                      Lume Paint Co & Nashville Painting Professionals
-                    </p>
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/85 to-[#1e3a5f]/95" />
+                  <div className="relative z-10 p-5 text-white">
+                    <p className="text-xs opacity-70 text-center mb-3">Marketing Hub</p>
+                    
+                    {/* Dual Logos */}
+                    <div className="flex items-center justify-center gap-4">
+                      {/* Lume */}
+                      <div className="text-center">
+                        <p className="font-display font-bold text-lg">Lume Paint Co<span className="text-xs align-super">™</span></p>
+                        <p className="text-white/60 text-xs italic">Elevating the backdrop of your life</p>
+                      </div>
+                      
+                      {/* Divider */}
+                      <div className="w-px h-10 bg-white/30" />
+                      
+                      {/* NPP */}
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                        <img 
+                          src={nppLogo} 
+                          alt="NPP" 
+                          className="h-10 w-auto object-contain"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
