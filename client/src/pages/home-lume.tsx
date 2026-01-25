@@ -128,6 +128,11 @@ export default function HomeLume() {
             >
               Lume
             </h1>
+            <p 
+              className="text-sm md:text-base font-light tracking-[0.3em] uppercase mt-1 text-gray-700"
+            >
+              Paint.co
+            </p>
             <p className="mt-4 text-lg md:text-xl text-gray-600 font-light whitespace-nowrap">
               Elevating the backdrop of your life.
             </p>

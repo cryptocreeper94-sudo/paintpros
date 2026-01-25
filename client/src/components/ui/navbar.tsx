@@ -96,26 +96,6 @@ export function Navbar() {
           </div>
         )}
 
-        {/* Lume Paint Co branding */}
-        {tenant.id === "lumepaint" && (
-          <div className="flex flex-col items-start ml-3 min-w-0 flex-shrink">
-            <div 
-              className="text-xl md:text-2xl font-display font-bold text-foreground"
-              style={{ letterSpacing: '0.02em' }}
-              data-testid="text-lume-title"
-            >
-              Lume
-            </div>
-            <div 
-              className="text-[10px] md:text-xs text-muted-foreground -mt-0.5"
-              style={{ letterSpacing: '0.05em' }}
-              data-testid="text-lume-domain"
-            >
-              Paint.co
-            </div>
-          </div>
-        )}
-
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
         
