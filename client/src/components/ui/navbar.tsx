@@ -98,10 +98,11 @@ export function Navbar() {
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
         
-        {/* Home Button - right side to balance hamburger */}
+        {/* Home Button - right side to balance hamburger, with safe area for PWA */}
         <Link href="/">
           <button 
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-2"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-4 md:mr-2"
+            style={{ marginRight: 'max(1rem, env(safe-area-inset-right, 0.5rem))' }}
             aria-label="Go home"
             data-testid="button-home-header"
           >
