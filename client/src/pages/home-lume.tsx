@@ -124,46 +124,46 @@ export default function HomeLume() {
             className="text-center px-4"
           >
             <h1 
-              className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide"
+              className="text-6xl md:text-8xl lg:text-9xl 2xl:text-[12rem] font-light tracking-wide"
               style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
             >
-              Lume<sup className="text-xl md:text-2xl lg:text-3xl align-super ml-1">™</sup>
+              Lume<sup className="text-xl md:text-2xl lg:text-3xl 2xl:text-5xl align-super ml-1">™</sup>
             </h1>
             <p 
-              className="text-sm md:text-base font-light tracking-[0.3em] uppercase mt-1"
+              className="text-sm md:text-base lg:text-lg 2xl:text-xl font-light tracking-[0.3em] uppercase mt-1 2xl:mt-2"
               style={{ color: '#1e3a5f' }}
             >
               Paint.co
             </p>
-            <p className="mt-4 text-lg md:text-xl font-light whitespace-nowrap" style={{ color: '#2d4a6f' }}>
+            <p className="mt-4 2xl:mt-6 text-lg md:text-xl lg:text-2xl 2xl:text-3xl font-light whitespace-nowrap" style={{ color: '#2d4a6f' }}>
               Elevating the backdrop of your life.
             </p>
           </motion.div>
           
           {/* Scroll indicator */}
           <motion.div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer"
+            className="absolute bottom-8 2xl:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             onClick={() => window.scrollTo({ top: window.innerHeight - 48, behavior: 'smooth' })}
             data-testid="button-scroll-indicator"
           >
-            <span className="text-xs tracking-widest uppercase mb-2" style={{ color: '#1e3a5f' }}>
+            <span className="text-xs 2xl:text-sm tracking-widest uppercase mb-2" style={{ color: '#1e3a5f' }}>
               Explore
             </span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             >
-              <ChevronDown className="w-6 h-6" style={{ color: '#1e3a5f' }} />
+              <ChevronDown className="w-6 h-6 2xl:w-8 2xl:h-8" style={{ color: '#1e3a5f' }} />
             </motion.div>
           </motion.div>
         </section>
 
         {/* BODY - Scroll down to see */}
-        <section className="px-3 md:px-6 py-8 md:py-12">
-          <div className="max-w-5xl mx-auto space-y-10 md:space-y-14">
+        <section className="px-3 md:px-6 2xl:px-12 py-8 md:py-12 2xl:py-16">
+          <div className="max-w-5xl 2xl:max-w-7xl mx-auto space-y-10 md:space-y-14 2xl:space-y-20">
             
             {/* Mobile: Carousel for services */}
             <div className="md:hidden">
