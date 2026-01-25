@@ -292,8 +292,8 @@ app.use((req, res, next) => {
       // This happens after server is ready to ensure database connection is established
       await autoDeployVersionBump();
       
-      // Start the marketing scheduler for automated social media posts
-      startScheduler();
+      // DISABLED: Social media posting disabled until proper accounts are connected
+      // startScheduler();
       
       // Start the blog scheduler for automated AI blog generation
       startBlogScheduler();
