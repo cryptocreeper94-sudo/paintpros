@@ -1058,17 +1058,23 @@ export default function MarketingHub() {
               animate={{ opacity: 1, y: 0 }}
               className="w-full max-w-md"
             >
-              {/* Mobile Header - Only shows on small screens */}
-              <div className="md:hidden text-center mb-8">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#1e3a5f] flex items-center justify-center">
-                  <Megaphone className="w-8 h-8 text-white" />
+              {/* Mobile Header - Hero image for small screens */}
+              <div className="md:hidden mb-6">
+                <div className="relative rounded-2xl overflow-hidden mb-4">
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${crewTeamPhoto})` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/80 to-[#1e3a5f]/95" />
+                  <div className="relative z-10 p-6 text-center text-white">
+                    <h1 className="text-2xl font-display font-bold mb-1">
+                      Marketing Hub
+                    </h1>
+                    <p className="text-white/80 text-sm">
+                      Lume Paint Co & Nashville Painting Professionals
+                    </p>
+                  </div>
                 </div>
-                <h1 className="text-2xl font-display font-bold text-gray-900 dark:text-white">
-                  Marketing Hub
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
-                  Social Media Catalog & Scheduling
-                </p>
               </div>
               
               <GlassCard className="p-8">
