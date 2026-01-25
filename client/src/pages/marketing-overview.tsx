@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { 
   Calendar, BarChart3, Megaphone, Target, Clock, Users, 
-  CheckCircle, ArrowRight, FileText, Lightbulb, Zap
+  CheckCircle, ArrowRight, FileText, Lightbulb, Zap, Home, LogIn
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,40 @@ export default function MarketingOverview() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900">
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+          <button 
+            onClick={() => setLocation("/")}
+            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+            data-testid="button-home"
+          >
+            <Home className="w-5 h-5" />
+            <span className="font-semibold">Home</span>
+          </button>
+          <nav className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation("/marketing-hub")}
+              className="text-white/70 hover:text-white"
+              data-testid="button-nav-hub"
+            >
+              Marketing Hub
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setLocation("/auth")}
+              className="bg-purple-600 hover:bg-purple-700"
+              data-testid="button-nav-signin"
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              Sign In
+            </Button>
+          </nav>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
@@ -388,7 +422,18 @@ export default function MarketingOverview() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-white/10">
         <div className="max-w-5xl mx-auto text-center">
-          <p className="text-white/50 text-sm">Powered by Dark Wave Studios</p>
+          <p className="text-white/50 text-sm">
+            Powered by{" "}
+            <a 
+              href="https://darkwavestudios.io" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline hover:text-white/70 transition-colors"
+              data-testid="link-darkwave-studios"
+            >
+              Dark Wave Studios
+            </a>
+          </p>
           <p className="text-white/30 text-xs mt-2">&copy; 2026 All rights reserved</p>
         </div>
       </footer>

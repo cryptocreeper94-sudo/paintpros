@@ -238,7 +238,18 @@ export default function AuthPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 1 }}
           >
-            <p className="text-xs text-white/50">Powered by Dark Wave Studios</p>
+            <p className="text-xs text-white/50">
+              Powered by{" "}
+              <a 
+                href="https://darkwavestudios.io" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-white/70 transition-colors"
+                data-testid="link-darkwave-desktop"
+              >
+                Dark Wave Studios
+              </a>
+            </p>
             <p className="text-xs text-white/40 mt-1">&copy; 2026 All rights reserved</p>
           </motion.div>
         </div>
@@ -573,7 +584,18 @@ export default function AuthPage() {
         
         {/* Mobile Footer - Only visible on smaller screens */}
         <div className="lg:hidden text-center mt-6 pt-4 border-t border-border">
-          <p className="text-xs text-muted-foreground">Powered by Dark Wave Studios</p>
+          <p className="text-xs text-muted-foreground">
+            Powered by{" "}
+            <a 
+              href="https://darkwavestudios.io" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+              data-testid="link-darkwave-mobile"
+            >
+              Dark Wave Studios
+            </a>
+          </p>
           <p className="text-xs text-muted-foreground/70 mt-1">&copy; 2026 All rights reserved</p>
         </div>
         </div>
