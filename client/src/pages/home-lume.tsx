@@ -123,17 +123,18 @@ export default function HomeLume() {
             className="text-center px-4"
           >
             <h1 
-              className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide text-gray-800"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide"
+              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#C9A227' }}
             >
               Lume<sup className="text-xl md:text-2xl lg:text-3xl align-super ml-1">™</sup>
             </h1>
             <p 
-              className="text-sm md:text-base font-light tracking-[0.3em] uppercase mt-1 text-gray-700"
+              className="text-sm md:text-base font-light tracking-[0.3em] uppercase mt-1"
+              style={{ color: '#1e3a5f' }}
             >
               Paint.co
             </p>
-            <p className="mt-4 text-lg md:text-xl text-gray-600 font-light whitespace-nowrap">
+            <p className="mt-4 text-lg md:text-xl font-light whitespace-nowrap" style={{ color: '#1e3a5f' }}>
               Elevating the backdrop of your life.
             </p>
           </motion.div>
@@ -312,7 +313,7 @@ export default function HomeLume() {
             )}
             <p className="text-gray-600 mt-2">{service.details}</p>
             <Link href="/estimate" className="block">
-              <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid={`button-${service.id}-estimate`}>
+              <Button className="w-full" style={{ backgroundColor: '#1e3a5f' }} data-testid={`button-${service.id}-estimate`}>
                 Get Estimate <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
@@ -332,7 +333,7 @@ export default function HomeLume() {
             </DialogHeader>
             <p className="text-gray-600">{feature.details}</p>
             <Link href="/estimate" className="block">
-              <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid={`button-${feature.id}-cta`}>
+              <Button className="w-full" style={{ backgroundColor: '#1e3a5f' }} data-testid={`button-${feature.id}-cta`}>
                 Get Your Free Estimate <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
@@ -389,7 +390,7 @@ export default function HomeLume() {
             </div>
           </div>
           <Link href="/estimate" className="block">
-            <Button className="w-full bg-gray-800 hover:bg-gray-900" data-testid="button-service-area-estimate">
+            <Button className="w-full" style={{ backgroundColor: '#1e3a5f' }} data-testid="button-service-area-estimate">
               Get Your Free Estimate <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>

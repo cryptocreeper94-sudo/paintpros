@@ -121,12 +121,12 @@ export function Navbar() {
         <div className="pt-4 pb-2">
           <div className="text-center">
             <h2 
-              className="text-3xl md:text-4xl font-light tracking-wide text-gray-800"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+              className="text-3xl md:text-4xl font-light tracking-wide"
+              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#C9A227' }}
             >
               Lume<sup className="text-xs md:text-sm align-super ml-0.5">™</sup>
             </h2>
-            <p className="text-[10px] md:text-xs font-light tracking-[0.2em] uppercase text-gray-600">
+            <p className="text-[10px] md:text-xs font-light tracking-[0.2em] uppercase" style={{ color: '#1e3a5f' }}>
               Paint.co
             </p>
           </div>
@@ -218,12 +218,12 @@ export function Navbar() {
                 {tenant.id === "lumepaint" && (
                   <div className="text-center mb-6 pb-4 border-b border-gray-200">
                     <h2 
-                      className="text-4xl font-light tracking-wide text-gray-800"
-                      style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                      className="text-4xl font-light tracking-wide"
+                      style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#C9A227' }}
                     >
                       Lume<sup className="text-sm align-super ml-0.5">™</sup>
                     </h2>
-                    <p className="text-xs font-light tracking-[0.2em] uppercase text-gray-600 mt-1">
+                    <p className="text-xs font-light tracking-[0.2em] uppercase mt-1" style={{ color: '#1e3a5f' }}>
                       Paint.co
                     </p>
                   </div>
