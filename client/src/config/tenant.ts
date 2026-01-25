@@ -157,6 +157,8 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   pricing: {
     doorsPerUnit: 150,
     wallsPerSqFt: 2.50,
+    ceilingsPerSqFt: 3.00,
+    trimPerLinearFt: 2.50,
     fullJobPerSqFt: 5.00,
   },
   
@@ -327,6 +329,8 @@ export const lumePaintCo: TenantConfig = {
   pricing: {
     doorsPerUnit: 150,
     wallsPerSqFt: 2.50,
+    ceilingsPerSqFt: 3.00,
+    trimPerLinearFt: 2.50,
     fullJobPerSqFt: 5.00,
   },
   
