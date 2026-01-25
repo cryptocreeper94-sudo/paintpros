@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowRight,
   Shield,
@@ -27,7 +27,14 @@ import {
   Award,
   Heart,
   Globe,
-  Layers
+  Layers,
+  LayoutGrid,
+  Rows,
+  Eye,
+  Briefcase,
+  FileText,
+  Calendar,
+  DollarSign
 } from "lucide-react";
 
 const staggerContainer = {
@@ -64,6 +71,19 @@ const coreValues = [
 export default function DemoViewer() {
   const [, setLocation] = useLocation();
   const [hoveredTrade, setHoveredTrade] = useState<string | null>(null);
+  const [layoutPanelOpen, setLayoutPanelOpen] = useState(false);
+  const [currentLayout, setCurrentLayout] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('dev_layout_override');
+    setCurrentLayout(saved);
+  }, []);
+
+  const handleLayoutChange = (layout: 'bento' | 'minimalist') => {
+    localStorage.setItem('dev_layout_override', layout);
+    setCurrentLayout(layout);
+    window.location.reload();
+  };
 
   return (
     <PageLayout>
@@ -138,6 +158,55 @@ export default function DemoViewer() {
             </div>
           </motion.div>
         </section>
+
+        {/* Layout Toggle Panel */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <AnimatePresence>
+            {layoutPanelOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                className="absolute bottom-14 right-0 bg-background border rounded-lg shadow-lg p-4 w-64"
+              >
+                <h4 className="font-semibold text-sm mb-3">Demo Layout Style</h4>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => handleLayoutChange('bento')}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-md transition-colors ${currentLayout === 'bento' ? 'bg-accent/20 border border-accent/40' : 'hover:bg-muted'}`}
+                    data-testid="button-layout-bento"
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium">Bento Grid</div>
+                      <div className="text-xs text-muted-foreground">Feature-rich layout</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => handleLayoutChange('minimalist')}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-md transition-colors ${currentLayout === 'minimalist' ? 'bg-accent/20 border border-accent/40' : 'hover:bg-muted'}`}
+                    data-testid="button-layout-minimalist"
+                  >
+                    <Rows className="w-4 h-4" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium">Clean Minimalist</div>
+                      <div className="text-xs text-muted-foreground">Streamlined view</div>
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg bg-background"
+            onClick={() => setLayoutPanelOpen(!layoutPanelOpen)}
+            data-testid="button-toggle-layout-panel"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </div>
 
         {/* What You Get Section */}
         <section className="py-16 px-4 bg-muted/30">

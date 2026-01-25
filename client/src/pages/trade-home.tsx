@@ -360,15 +360,7 @@ export default function TradeHome() {
               </p>
             </motion.div>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <GlassCard className="p-6" data-testid="card-ecosystem-tradeworks">
-                <div className="p-3 bg-emerald-500/20 rounded-xl w-fit mb-4">
-                  <Target className="w-5 h-5 text-emerald-600" />
-                </div>
-                <h3 className="font-semibold mb-2" data-testid="text-ecosystem-tradeworks-title">TradeWorks</h3>
-                <p className="text-sm text-muted-foreground">Complete contractor operations - CRM, scheduling, invoicing, crew management.</p>
-              </GlassCard>
-              
+            <div className="grid md:grid-cols-2 gap-6">
               <GlassCard className="p-6" data-testid="card-ecosystem-orbit">
                 <div className="p-3 bg-purple-500/20 rounded-xl w-fit mb-4">
                   <Users className="w-5 h-5 text-purple-600" />
