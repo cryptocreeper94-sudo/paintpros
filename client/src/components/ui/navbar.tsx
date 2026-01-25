@@ -116,50 +116,67 @@ export function Navbar() {
       </div>
     </header>
 
+      {/* Lume Branding Header for subpages */}
+      {location !== "/" && tenant.id === "lumepaint" && (
+        <div className="pt-4 pb-2">
+          <div className="text-center">
+            <h2 
+              className="text-3xl md:text-4xl font-light tracking-wide text-gray-800"
+              style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+            >
+              Lume<sup className="text-xs md:text-sm align-super ml-0.5">™</sup>
+            </h2>
+            <p className="text-[10px] md:text-xs font-light tracking-[0.2em] uppercase text-gray-600">
+              Paint.co
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Navigation Controls - Back and Close buttons on all pages except home */}
       {location !== "/" && (
         <>
-          {/* Mobile - positioned to avoid hamburger menu overlap */}
-          <div className="fixed top-3 left-3 z-[60] md:hidden flex items-center gap-2">
+          {/* Mobile - minimal elegant buttons */}
+          <div className="fixed top-3 left-3 z-[60] md:hidden flex items-center gap-1.5">
             <button 
               onClick={(e) => {
                 e.stopPropagation();
                 window.history.back();
               }}
-              className="p-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+              className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
               aria-label="Go back"
               data-testid="button-back-mobile"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+              <ArrowLeft className="w-4 h-4 text-gray-600" />
             </button>
             <Link href="/">
               <button 
                 onClick={(e) => e.stopPropagation()}
-                className="p-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-100 transition-all"
+                className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
                 aria-label="Go home"
                 data-testid="button-home-mobile"
               >
-                <X className="w-5 h-5 text-gray-700" />
+                <X className="w-4 h-4 text-gray-600" />
               </button>
             </Link>
           </div>
-          {/* Desktop - top right corner */}
-          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-2">
+          {/* Desktop - minimal elegant buttons */}
+          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-1.5">
             <button 
               onClick={() => window.history.back()}
-              className="p-2.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-md hover:bg-gray-100 transition-all"
+              className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
               aria-label="Go back"
               data-testid="button-back-desktop"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+              <ArrowLeft className="w-4 h-4 text-gray-600" />
             </button>
             <Link href="/">
               <button 
-                className="p-2.5 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-md hover:bg-gray-100 transition-all"
+                className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
                 aria-label="Close and go home"
                 data-testid="button-close-desktop"
               >
-                <X className="w-5 h-5 text-gray-700" />
+                <X className="w-4 h-4 text-gray-600" />
               </button>
             </Link>
           </div>

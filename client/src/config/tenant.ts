@@ -284,9 +284,9 @@ export const lumePaintCo: TenantConfig = {
   logo: "/icons/lume-logo.png",
   
   phone: "(615) 555-LUME",
-  email: "service@nashvillepaintingprofessionals.com",
+  email: "hello@lumepaint.co",
   address: {
-    city: "Nashville",
+    city: "Murfreesboro",
     state: "TN",
   },
   
