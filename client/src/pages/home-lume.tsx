@@ -126,7 +126,7 @@ export default function HomeLume() {
               className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide text-gray-800"
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
-              Lume
+              Lume<sup className="text-xl md:text-2xl lg:text-3xl align-super ml-1">™</sup>
             </h1>
             <p 
               className="text-sm md:text-base font-light tracking-[0.3em] uppercase mt-1 text-gray-700"
