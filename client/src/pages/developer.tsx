@@ -42,6 +42,7 @@ import { BlogManager } from "@/components/blog-manager";
 import { useAccess } from "@/context/AccessContext";
 import { MarketingHub } from "@/components/marketing-hub";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
+import { PricingConfigPanel } from "@/components/pricing-config-panel";
 
 const DEVELOPER_PIN = "0424";
 
@@ -2182,13 +2183,18 @@ export default function Developer() {
           animate="visible"
         >
         <BentoGrid>
+          {/* Estimator Pricing Configuration */}
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
+            <PricingConfigPanel />
+          </BentoItem>
+
           {/* System Health - full width on mobile */}
-          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
+          <BentoItem colSpan={3} rowSpan={1} mobileColSpan={4}>
             <SystemHealthCard />
           </BentoItem>
 
           {/* SEO Tracker - full width on mobile */}
-          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={4}>
+          <BentoItem colSpan={3} rowSpan={2} mobileColSpan={4}>
             <SeoTracker />
           </BentoItem>
 

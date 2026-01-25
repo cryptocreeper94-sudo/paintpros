@@ -45,6 +45,7 @@ import { SystemHealthCard } from "@/components/system-health-card";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 import { BlogManager } from "@/components/blog-manager";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
+import { PricingConfigPanel } from "@/components/pricing-config-panel";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -380,12 +381,17 @@ export default function Owner() {
           animate="visible"
         >
           <BentoGrid className="max-w-7xl mx-auto">
+            {/* Estimator Pricing Configuration */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <PricingConfigPanel />
+            </BentoItem>
+
             {/* Row 1: System Health + Live Visitors + Stats = 4+4+4=12 */}
-            <BentoItem colSpan={4} rowSpan={1}>
+            <BentoItem colSpan={3} rowSpan={1}>
               <SystemHealthCard />
             </BentoItem>
 
-            <BentoItem colSpan={4} rowSpan={1}>
+            <BentoItem colSpan={3} rowSpan={1}>
               <LiveVisitorsCard />
             </BentoItem>
 

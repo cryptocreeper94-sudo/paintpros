@@ -41,6 +41,7 @@ import { SeoTracker } from "@/components/seo/SeoTracker";
 import { PartnerModal } from "@/components/partner-modal";
 import { RoyaltySummaryCard } from "@/components/royalty-summary-card";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
+import { PricingConfigPanel } from "@/components/pricing-config-panel";
 
 const DEFAULT_PIN = "4444";
 
@@ -331,6 +332,11 @@ export default function Admin() {
           animate="visible"
         >
           <BentoGrid className="max-w-7xl mx-auto">
+            {/* Estimator Pricing Configuration */}
+            <BentoItem colSpan={6} rowSpan={2}>
+              <PricingConfigPanel />
+            </BentoItem>
+
             {/* System Health */}
             <BentoItem colSpan={3} rowSpan={1}>
               <SystemHealthCard />
