@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/context/TenantContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
+import nppLogo from "@/assets/npp-logo.jpg";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -112,18 +113,35 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
-            {isLogin ? "Welcome Back" : "Create Account"}
-          </CardTitle>
-          <CardDescription>
-            {isLogin
-              ? `Sign in to your ${tenant.name} account`
-              : `Join ${tenant.name} to get started`}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="flex items-center justify-center gap-8 w-full max-w-5xl">
+        {/* Left Logo - Lume Paint Co */}
+        <div className="hidden lg:flex flex-col items-center justify-center w-64 flex-shrink-0">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
+              LUME
+            </h2>
+            <p className="text-lg text-muted-foreground tracking-widest uppercase" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Paint Co
+            </p>
+            <p className="text-xs text-muted-foreground italic mt-4">
+              "Elevating the backdrop of your life"
+            </p>
+          </div>
+        </div>
+
+        {/* Login Card - Center */}
+        <Card className="w-full max-w-md flex-shrink-0">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </CardTitle>
+            <CardDescription>
+              {isLogin
+                ? `Sign in to your ${tenant.name} account`
+                : `Join ${tenant.name} to get started`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
           {isLogin ? (
             <Form {...loginForm}>
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
@@ -388,7 +406,21 @@ export default function AuthPage() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+
+        {/* Right Logo - NPP */}
+        <div className="hidden lg:flex flex-col items-center justify-center w-64 flex-shrink-0">
+          <img 
+            src={nppLogo} 
+            alt="Nashville Painting Professionals" 
+            className="w-full max-w-[200px] h-auto rounded-md"
+            data-testid="img-npp-logo"
+          />
+          <p className="text-xs text-muted-foreground italic mt-4 text-center">
+            "Transforming familiar spaces into extraordinary places"
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
