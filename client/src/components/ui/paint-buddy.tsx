@@ -285,26 +285,44 @@ export function PaintBuddy() {
 
   return (
     <>
-      {/* Minimized Rollie - Bottom Right */}
+      {/* Minimized Rollie - Bow Tie Icon */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleOpen}
-            className="fixed bottom-[54px] right-[18px] z-50 group"
+            className="fixed bottom-4 right-4 z-50 group"
             data-testid="button-paint-buddy-open"
           >
-            <motion.img
-              src={rollieMascot}
-              alt="Paint Buddy"
-              className="w-16 h-16 object-contain drop-shadow-[0_0_20px_rgba(50,50,50,0.7)] group-hover:drop-shadow-[0_0_30px_rgba(50,50,50,0.9)] transition-all"
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
+            {/* Bow Tie SVG */}
+            <motion.div
+              className="w-10 h-10 flex items-center justify-center"
+              animate={{ rotate: [0, 3, -3, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <svg 
+                viewBox="0 0 100 50" 
+                className="w-10 h-5 drop-shadow-md"
+                fill="currentColor"
+              >
+                {/* Left wing */}
+                <path 
+                  d="M0 25 Q0 5 25 5 Q40 5 45 25 Q40 45 25 45 Q0 45 0 25Z" 
+                  className="text-gray-700"
+                />
+                {/* Right wing */}
+                <path 
+                  d="M100 25 Q100 5 75 5 Q60 5 55 25 Q60 45 75 45 Q100 45 100 25Z" 
+                  className="text-gray-700"
+                />
+                {/* Center knot */}
+                <circle cx="50" cy="25" r="8" className="text-gray-800" />
+              </svg>
+            </motion.div>
             <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               {t.askRollie}
             </span>
