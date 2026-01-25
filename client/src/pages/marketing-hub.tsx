@@ -20,6 +20,9 @@ import interiorLivingRoom from "@/assets/marketing/interior-01-living-room-gray.
 import crewMeasuring from "@/assets/marketing/crew-06-measuring.png";
 import commercialLobby from "@/assets/marketing/commercial-office-05-lobby.png";
 import colorConsult from "@/assets/marketing/general-01-color-consult.png";
+
+// Brand logos
+import nppLogo from "@/assets/branding/logo-npp-vertical.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Megaphone, Instagram, Facebook, Home, Calendar, 
@@ -1242,6 +1245,37 @@ export default function MarketingHub() {
               </Button>
             </div>
           </motion.div>
+
+          {/* Dual Branding Section - Lume & NPP */}
+          {(selectedTenant === "lumepaint" || selectedTenant === "npp") && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-center gap-6 py-4 px-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-gray-200 dark:border-gray-700"
+            >
+              {/* Lume Emblem */}
+              <div className="flex flex-col items-center text-center">
+                <h3 className="font-display text-lg md:text-xl font-bold text-[#1e3a5f] dark:text-white">
+                  Lume Paint Co<span className="text-xs align-super">™</span>
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                  Elevating the backdrop of your life
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="h-12 w-px bg-gray-300 dark:bg-gray-600" />
+
+              {/* NPP Emblem */}
+              <div className="flex flex-col items-center">
+                <img 
+                  src={nppLogo} 
+                  alt="Nashville Painting Professionals" 
+                  className="h-12 md:h-16 w-auto object-contain"
+                />
+              </div>
+            </motion.div>
+          )}
 
           <BentoGrid className="gap-3">
             <BentoItem colSpan={2} mobileColSpan={2}>
