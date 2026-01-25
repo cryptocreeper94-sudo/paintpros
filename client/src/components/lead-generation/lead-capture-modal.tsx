@@ -133,11 +133,24 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
       <DialogContent className="max-w-[90%] sm:max-w-md p-0 border-[3px] border-[#1e3a5f] bg-[#1e3a5f] overflow-hidden shadow-2xl">
         <div className="m-2 border-2 border-[#0f1f33] rounded-md shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-50 to-white p-6">
           <DialogHeader className="text-center pb-2">
-            <div className="mb-3">
-              <h2 className="font-display text-2xl text-[#1e3a5f] tracking-wide">Lume<span className="text-xs align-top">™</span> Paint Co</h2>
-              <p className="text-xs text-[#1e3a5f]/70 italic mt-0.5">Elevating the backdrop of your life.</p>
+            <div className="mb-4">
+              <h2 
+                className="text-3xl font-light tracking-wide"
+                style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
+              >
+                Lume<sup className="text-xs align-super ml-0.5">™</sup>
+              </h2>
+              <p 
+                className="text-[10px] font-light tracking-[0.3em] uppercase mt-0.5"
+                style={{ color: '#1e3a5f' }}
+              >
+                Paint.co
+              </p>
+              <p className="mt-2 text-sm font-light" style={{ color: '#2d4a6f' }}>
+                Elevating the backdrop of your life.
+              </p>
             </div>
-            <DialogTitle className="text-xl font-display text-[#1e3a5f]">
+            <DialogTitle className="text-lg font-display text-[#1e3a5f]">
               Get Your Free Estimate
             </DialogTitle>
             <DialogDescription className="text-gray-600 text-sm">
