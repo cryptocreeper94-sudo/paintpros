@@ -970,14 +970,86 @@ export default function MarketingHub() {
   if (!isAuthenticated) {
     return (
       <PageLayout>
-        <main className="min-h-screen flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-md"
-          >
-            <GlassCard className="p-8">
-              <div className="text-center mb-8">
+        <main className="min-h-screen flex">
+          {/* Left Side - Hero Image */}
+          <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80')`
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/90 via-pink-800/80 to-purple-900/90" />
+            
+            {/* Content Overlay */}
+            <div className="relative z-10 flex flex-col justify-between p-12 text-white">
+              <div>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Megaphone className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-2xl font-display font-bold">Marketing Hub</span>
+                </div>
+              </div>
+              
+              <div className="space-y-8">
+                <h2 className="text-4xl font-display font-bold leading-tight">
+                  Elevate Your Brand's<br />Digital Presence
+                </h2>
+                <p className="text-lg text-white/80 max-w-md">
+                  Professional social media management, content scheduling, and analytics all in one place.
+                </p>
+                
+                {/* Feature Badges */}
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm">Content Calendar</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <BarChart3 className="w-4 h-4" />
+                    <span className="text-sm">Analytics</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <ImageIcon className="w-4 h-4" />
+                    <span className="text-sm">Image Library</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <Wand2 className="w-4 h-4" />
+                    <span className="text-sm">Copy Generator</span>
+                  </div>
+                </div>
+                
+                {/* Platform Icons */}
+                <div className="flex items-center gap-4 pt-4">
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Instagram className="w-5 h-5" />
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Facebook className="w-5 h-5" />
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Home className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm text-white/60 ml-2">+ more platforms</span>
+                </div>
+              </div>
+              
+              <div className="text-sm text-white/50">
+                Powered by PaintPros.io
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Side - Login Form */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-md"
+            >
+              {/* Mobile Header - Only shows on mobile */}
+              <div className="lg:hidden text-center mb-8">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
                   <Megaphone className="w-8 h-8 text-white" />
                 </div>
@@ -988,59 +1060,85 @@ export default function MarketingHub() {
                   Social Media Catalog & Scheduling
                 </p>
               </div>
+              
+              <GlassCard className="p-8">
+                <div className="text-center mb-8">
+                  <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white">
+                    Welcome Back
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400 mt-2">
+                    Enter your PIN to access the dashboard
+                  </p>
+                </div>
 
-              <div className="space-y-4">
-                <Input
-                  type="password"
-                  placeholder="Enter PIN"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className="text-center text-xl tracking-widest"
-                  data-testid="input-marketing-pin"
-                />
-                {error && (
-                  <p className="text-red-500 text-sm text-center">{error}</p>
-                )}
-                <Button 
-                  onClick={handleLogin} 
-                  className="w-full bg-gradient-to-r from-pink-500 to-purple-600"
-                  data-testid="button-marketing-login"
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  Access Dashboard
-                </Button>
-                
-                {/* Stay Logged In Option */}
-                <div className="pt-2">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={stayLoggedIn}
-                      onChange={(e) => setStayLoggedIn(e.target.checked)}
-                      className="mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                      data-testid="checkbox-stay-logged-in"
-                    />
-                    <div className="flex-1">
-                      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">
-                        Stay logged in for 30 days
-                      </span>
-                      {stayLoggedIn && (
-                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
-                          <AlertTriangle className="w-3 h-3" />
-                          Only use on your personal device. Others with access to this browser can enter your dashboard.
-                        </p>
-                      )}
-                    </div>
-                  </label>
+                <div className="space-y-4">
+                  <Input
+                    type="password"
+                    placeholder="Enter PIN"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                    className="text-center text-xl tracking-widest h-14"
+                    data-testid="input-marketing-pin"
+                  />
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
+                  <Button 
+                    onClick={handleLogin} 
+                    className="w-full h-12 bg-gradient-to-r from-pink-500 to-purple-600 text-lg"
+                    data-testid="button-marketing-login"
+                  >
+                    <Lock className="w-5 h-5 mr-2" />
+                    Access Dashboard
+                  </Button>
+                  
+                  {/* Stay Logged In Option */}
+                  <div className="pt-4">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={stayLoggedIn}
+                        onChange={(e) => setStayLoggedIn(e.target.checked)}
+                        className="mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        data-testid="checkbox-stay-logged-in"
+                      />
+                      <div className="flex-1">
+                        <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                          Stay logged in for 30 days
+                        </span>
+                        {stayLoggedIn && (
+                          <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            Only use on your personal device
+                          </p>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-xs text-gray-500 text-center">
+                    First time? Use default PIN, then set your own secure PIN.
+                  </p>
+                </div>
+              </GlassCard>
+              
+              {/* Trust Indicators */}
+              <div className="mt-6 flex items-center justify-center gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-1">
+                  <Lock className="w-4 h-4" />
+                  <span>Secure</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-300 rounded-full" />
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Encrypted</span>
                 </div>
               </div>
-
-              <p className="text-xs text-gray-500 text-center mt-6">
-                First time? Use default PIN, then set your own secure PIN.
-              </p>
-            </GlassCard>
-          </motion.div>
+            </motion.div>
+          </div>
         </main>
       </PageLayout>
     );
