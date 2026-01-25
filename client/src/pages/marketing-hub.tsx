@@ -981,12 +981,12 @@ export default function MarketingHub() {
     return (
       <PageLayout>
         <main className="min-h-screen flex">
-          {/* Left Side - Hero Image */}
-          <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+          {/* Left Side - Hero Image - Shows on medium screens and up */}
+          <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage: `url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80')`
+                backgroundImage: `url(${crewTeamPhoto})`
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f]/95 via-[#2d4a6f]/90 to-[#1e3a5f]/95" />
@@ -1052,14 +1052,14 @@ export default function MarketingHub() {
           </div>
           
           {/* Right Side - Login Form */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+          <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="w-full max-w-md"
             >
-              {/* Mobile Header - Only shows on mobile */}
-              <div className="lg:hidden text-center mb-8">
+              {/* Mobile Header - Only shows on small screens */}
+              <div className="md:hidden text-center mb-8">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#1e3a5f] flex items-center justify-center">
                   <Megaphone className="w-8 h-8 text-white" />
                 </div>
@@ -1172,7 +1172,11 @@ export default function MarketingHub() {
                 <span className="truncate">Marketing Hub</span>
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Lume Paint Co"}
+                {(selectedTenant === "npp" || selectedTenant === "lumepaint") 
+                  ? "Lume Paint Co & Nashville Painting Professionals" 
+                  : selectedTenant === "demo" 
+                    ? "TrustLayer Marketing" 
+                    : "Marketing Dashboard"}
               </p>
             </div>
 
