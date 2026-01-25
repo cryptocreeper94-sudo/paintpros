@@ -387,10 +387,21 @@ export function Navbar() {
                 </div>
 
                 {/* Tenant name decoration at bottom */}
-                <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
+                <div className="mt-6 pt-4 border-t border-white/10 flex flex-col items-center gap-3">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <PaintRoller className="w-5 h-5 text-accent" />
                     <span className="text-xs">{tenant.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-muted-foreground/60">
+                    <span className="text-[10px]">Powered by</span>
+                    <a 
+                      href="https://darkwavestudios.io" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-semibold tracking-wide hover:text-accent transition-colors"
+                    >
+                      DarkWave TrustLayer
+                    </a>
                   </div>
                 </div>
               </div>
