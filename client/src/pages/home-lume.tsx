@@ -124,7 +124,7 @@ export default function HomeLume() {
           >
             <h1 
               className="text-6xl md:text-8xl lg:text-9xl font-light tracking-wide"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#C9A227' }}
+              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
             >
               Lume<sup className="text-xl md:text-2xl lg:text-3xl align-super ml-1">™</sup>
             </h1>
@@ -134,7 +134,7 @@ export default function HomeLume() {
             >
               Paint.co
             </p>
-            <p className="mt-4 text-lg md:text-xl font-light whitespace-nowrap" style={{ color: '#1e3a5f' }}>
+            <p className="mt-4 text-lg md:text-xl font-light whitespace-nowrap" style={{ color: '#2d4a6f' }}>
               Elevating the backdrop of your life.
             </p>
           </motion.div>

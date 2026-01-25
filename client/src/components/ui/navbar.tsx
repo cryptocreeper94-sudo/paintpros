@@ -122,7 +122,7 @@ export function Navbar() {
           <div className="text-center">
             <h2 
               className="text-3xl md:text-4xl font-light tracking-wide"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#C9A227' }}
+              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
             >
               Lume<sup className="text-xs md:text-sm align-super ml-0.5">™</sup>
             </h2>
@@ -219,7 +219,7 @@ export function Navbar() {
                   <div className="text-center mb-6 pb-4 border-b border-gray-200">
                     <h2 
                       className="text-4xl font-light tracking-wide"
-                      style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#C9A227' }}
+                      style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
                     >
                       Lume<sup className="text-sm align-super ml-0.5">™</sup>
                     </h2>
