@@ -16,6 +16,9 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 - **NPP (Nashville Painting Professionals)**: "Transforming familiar spaces into extraordinary places."
 - **Lume Paint Co**: "Elevating the backdrop of your life."
 
+## Brand Colors
+- **Lume Paint Co**: Dark navy blue (#1e3a5f) - used for titles, text accents, and buttons. Service area is Murfreesboro, TN (20-mile radius).
+
 ## Quick Reference - PIN Access
 | PIN | Role | Dashboard |
 |-----|------|-----------|
