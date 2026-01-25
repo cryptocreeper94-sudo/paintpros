@@ -21,7 +21,7 @@ import {
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
   FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2,
-  ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut
+  ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut, BookOpen, ArrowRight, Play, Link
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
@@ -234,7 +234,7 @@ export default function MarketingHub() {
     setStayLoggedIn(false);
   };
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [activeTab, setActiveTab] = useState<"overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics" | "campaigns" | "ai-tools" | "playbook">("overview");
+  const [activeTab, setActiveTab] = useState<"guide" | "overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics" | "notes" | "campaigns" | "ai-tools" | "playbook">("guide");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -1219,6 +1219,10 @@ export default function MarketingHub() {
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
             <TabsList className="grid grid-cols-4 md:flex md:flex-wrap gap-1 mb-4 md:mb-6 h-auto p-1 w-full">
+              <TabsTrigger value="guide" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3 data-[state=active]:bg-red-500 data-[state=active]:text-white" data-testid="tab-guide">
+                <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden md:inline">Start Here</span>
+              </TabsTrigger>
               <TabsTrigger value="overview" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-overview">
                 <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
                 <span className="hidden md:inline">Overview</span>
@@ -1264,6 +1268,339 @@ export default function MarketingHub() {
                 <span className="hidden md:inline">Playbook</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* GETTING STARTED GUIDE TAB */}
+            <TabsContent value="guide" className="space-y-6" data-testid="guide-tab-content">
+              {/* Welcome Header */}
+              <div className="p-6 bg-gradient-to-br from-red-600 to-red-800 rounded-md text-white">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-md bg-white/20 flex items-center justify-center">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">Marketing Hub Guide</h2>
+                    <p className="text-white/90 text-sm">Your complete walkthrough to mastering this system</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-white/10 rounded-md">
+                  <p className="text-sm leading-relaxed">
+                    {selectedTenant === "lumepaint" || selectedTenant === "lume" ? (
+                      <>Welcome to your Marketing Hub - built to help you <strong>"Elevating the backdrop of your life"</strong> through professional, consistent marketing. This system is designed to work just like the tools you already use, making the transition smooth and intuitive.</>
+                    ) : (
+                      <>Welcome to your Marketing Hub - built to help you <strong>"Transforming familiar spaces into extraordinary places"</strong> through professional, consistent marketing. This system is designed to work just like the tools you already use, making the transition smooth and intuitive.</>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* The Big Picture */}
+              <GlassCard className="p-6 border-l-4 border-l-red-500">
+                <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-red-600 dark:text-red-400">
+                  <Target className="w-5 h-5" />
+                  The Big Picture
+                </h3>
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    This Marketing Hub is your <strong>central command center</strong> for all marketing activities. Right now, you will manually input content - but this is intentional. It gives you time to:
+                  </p>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-md bg-red-500 flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">1</span>
+                        </div>
+                        <span className="font-semibold text-red-700 dark:text-red-300">Learn the System</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Get familiar with how everything works before we connect live data</p>
+                    </div>
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-md bg-red-500 flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">2</span>
+                        </div>
+                        <span className="font-semibold text-red-700 dark:text-red-300">Build Your Library</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Create posts, images, and messages that reflect your brand</p>
+                    </div>
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-md bg-red-500 flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">3</span>
+                        </div>
+                        <span className="font-semibold text-red-700 dark:text-red-300">Connect Later</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Once ready, we will link to Meta Business Suite, Google Ads, and more</p>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Integration Roadmap */}
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
+                  <Link className="w-5 h-5 text-red-500" />
+                  How It Connects to What You Already Use
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  This system was designed to <strong>mimic the platforms you are already familiar with</strong>. Once integrated, it will pull data from and push content to:
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Facebook className="w-6 h-6 text-blue-600" />
+                      <div>
+                        <p className="font-semibold">Meta Business Suite</p>
+                        <p className="text-xs text-muted-foreground">Facebook + Instagram posting</p>
+                      </div>
+                      <Badge className="ml-auto bg-yellow-100 text-yellow-700 text-xs">Coming Soon</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Currently: Post manually via Meta. Soon: Schedule directly from here.</p>
+                  </div>
+                  <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Globe className="w-6 h-6 text-red-500" />
+                      <div>
+                        <p className="font-semibold">Google Ads</p>
+                        <p className="text-xs text-muted-foreground">Campaign cost tracking</p>
+                      </div>
+                      <Badge className="ml-auto bg-yellow-100 text-yellow-700 text-xs">Coming Soon</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Currently: Enter costs manually. Soon: Auto-sync spend and ROI.</p>
+                  </div>
+                  <div className="p-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                    <div className="flex items-center gap-3 mb-2">
+                      <MapPin className="w-6 h-6 text-green-600" />
+                      <div>
+                        <p className="font-semibold">Google Local Services</p>
+                        <p className="text-xs text-muted-foreground">LSA lead tracking</p>
+                      </div>
+                      <Badge className="ml-auto bg-green-100 text-green-700 text-xs">Connected</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Already integrated! Leads from LSA flow into your system.</p>
+                  </div>
+                  <div className="p-4 rounded-md bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                    <div className="flex items-center gap-3 mb-2">
+                      <BarChart3 className="w-6 h-6 text-purple-600" />
+                      <div>
+                        <p className="font-semibold">Google Analytics</p>
+                        <p className="text-xs text-muted-foreground">Website visitor tracking</p>
+                      </div>
+                      <Badge className="ml-auto bg-green-100 text-green-700 text-xs">Connected</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Already integrated! See visitor data in Analytics tab.</p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Section-by-Section Walkthrough */}
+              <GlassCard className="p-6 border-l-4 border-l-red-500">
+                <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-red-600 dark:text-red-400">
+                  <Play className="w-5 h-5" />
+                  Section-by-Section Walkthrough
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Click any section below to jump directly to it and explore. Each section is designed to be intuitive - if you have used social media scheduling tools before, this will feel familiar.
+                </p>
+                
+                <div className="space-y-3">
+                  {/* Overview Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("overview")}
+                    data-testid="guide-link-overview"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-cyan-500 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Overview</p>
+                      <p className="text-xs text-muted-foreground">Your dashboard with quick actions, voice mode tip, and platform status</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Images Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("images")}
+                    data-testid="guide-link-images"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-pink-500 flex items-center justify-center flex-shrink-0">
+                      <ImageIcon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Images</p>
+                      <p className="text-xs text-muted-foreground">Upload and organize your visual content library for social posts</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Messages Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("messages")}
+                    data-testid="guide-link-messages"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-blue-500 flex items-center justify-center flex-shrink-0">
+                      <MessageSquare className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Messages</p>
+                      <p className="text-xs text-muted-foreground">Save common text messages for quick replies and follow-ups</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Catalog Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("catalog")}
+                    data-testid="guide-link-catalog"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-indigo-500 flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Catalog</p>
+                      <p className="text-xs text-muted-foreground">Your full library of social posts - filter, search, and manage content</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Calendar/Schedule Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("calendar")}
+                    data-testid="guide-link-calendar"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <Calendar className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Schedule</p>
+                      <p className="text-xs text-muted-foreground">Plan your posts on a weekly calendar - see whats going out when</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Analytics Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("analytics")}
+                    data-testid="guide-link-analytics"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-orange-500 flex items-center justify-center flex-shrink-0">
+                      <BarChart3 className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Analytics</p>
+                      <p className="text-xs text-muted-foreground">Website traffic, visitor stats, and SEO performance data</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Campaigns Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("campaigns")}
+                    data-testid="guide-link-campaigns"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-red-500 flex items-center justify-center flex-shrink-0">
+                      <Target className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Campaigns</p>
+                      <p className="text-xs text-muted-foreground">Track ROI on marketing spend - manual entry now, auto-sync later</p>
+                    </div>
+                    <Badge className="bg-red-100 text-red-700 text-xs mr-2">New</Badge>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Copy Tools Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("ai-tools")}
+                    data-testid="guide-link-ai-tools"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-purple-500 flex items-center justify-center flex-shrink-0">
+                      <Wand2 className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Copy Tools</p>
+                      <p className="text-xs text-muted-foreground">Generate social posts, ad copy, and SMS messages with smart assistance</p>
+                    </div>
+                    <Badge className="bg-red-100 text-red-700 text-xs mr-2">New</Badge>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Playbook Link */}
+                  <div 
+                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
+                    onClick={() => setActiveTab("playbook")}
+                    data-testid="guide-link-playbook"
+                  >
+                    <div className="w-10 h-10 rounded-md bg-yellow-500 flex items-center justify-center flex-shrink-0">
+                      <Lightbulb className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Playbook</p>
+                      <p className="text-xs text-muted-foreground">Marketing psychology strategies and proven tactics that drive action</p>
+                    </div>
+                    <Badge className="bg-red-100 text-red-700 text-xs mr-2">New</Badge>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Key Takeaways */}
+              <GlassCard className="p-6 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/10 dark:to-orange-900/10 border-2 border-red-200 dark:border-red-800">
+                <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-red-600 dark:text-red-400">
+                  <CheckCircle className="w-5 h-5" />
+                  Key Takeaways
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Not a new language</p>
+                      <p className="text-xs text-muted-foreground">This mirrors tools you already use - just better organized</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Manual input is intentional</p>
+                      <p className="text-xs text-muted-foreground">Learn the system now, connect to live data when ready</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Everything connects</p>
+                      <p className="text-xs text-muted-foreground">Meta, Google, analytics - all will flow through one hub</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-sm">Start exploring</p>
+                      <p className="text-xs text-muted-foreground">Click the sections above to dive in and get comfortable</p>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Voice Mode Reminder */}
+              <div className="p-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-md text-white flex items-center gap-4">
+                <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <Mic className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">Voice Mode Available</p>
+                  <p className="text-xs text-white/90">Toggle voice mode in any tab to hear content read aloud while you multitask</p>
+                </div>
+              </div>
+            </TabsContent>
 
             {/* OVERVIEW TAB - Welcome, Status, Roadmap */}
             <TabsContent value="overview" className="space-y-6">

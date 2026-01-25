@@ -131,6 +131,10 @@ Key tables include:
 - **Express:** API server
 
 ## Recent Changes (January 2026)
+- **NEW: Marketing Hub "Start Here" Guide** - Visual walkthrough tab with red accents, clickable section links, integration roadmap, and brand-specific messaging. Opens by default for new users.
+- Added Campaign ROI Tracker tab (manual cost entry now, API integration pending)
+- Added Copy Generator tab for social posts, ads, and SMS content
+- Added Marketing Psychology Playbook with 6 proven strategies
 - Connected PaintPros to ORBIT Ecosystem Hub with working credentials
 - Created DarkWave Ecosystem Hub handoff documentation for Code Hub implementation
 - Improved Marketing Hub UI with Quick Actions panel
