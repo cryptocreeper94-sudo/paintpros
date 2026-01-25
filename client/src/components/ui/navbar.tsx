@@ -388,13 +388,13 @@ export function Navbar() {
                       </div>
                       <Link href="/account">
                         <span 
-                          className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5"
+                          className="flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-all hover:bg-white/5"
                           onClick={() => setIsOpen(false)}
                           data-testid="link-my-account"
                         >
-                          <User className="w-5 h-5 text-accent" />
-                          <span className="text-lg font-medium text-foreground">My Account</span>
-                          <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                          <User className="w-4 h-4 text-accent" />
+                          <span className="text-sm font-medium text-foreground">My Account</span>
+                          <ChevronRight className="w-4 h-4 opacity-50 ml-auto" />
                         </span>
                       </Link>
                       <button 
@@ -407,22 +407,22 @@ export function Navbar() {
                             console.error('Logout failed', e);
                           }
                         }}
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 w-full text-left"
+                        className="flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 w-full text-left"
                       >
-                        <LogOut className="w-5 h-5 text-red-400" />
-                        <span className="text-lg font-medium text-foreground">Log Out</span>
-                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                        <LogOut className="w-4 h-4 text-red-400" />
+                        <span className="text-sm font-medium text-foreground">Log Out</span>
+                        <ChevronRight className="w-4 h-4 opacity-50 ml-auto" />
                       </button>
                     </>
                   ) : (
                     <Link href="/auth">
                       <span 
-                        className="flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all hover:bg-white/5 bg-accent/10"
+                        className="flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 bg-accent/10"
                         onClick={() => setIsOpen(false)}
                       >
-                        <LogIn className="w-5 h-5 text-accent" />
-                        <span className="text-lg font-medium text-foreground">Login / Sign Up</span>
-                        <ChevronRight className="w-5 h-5 opacity-50 ml-auto" />
+                        <LogIn className="w-4 h-4 text-accent" />
+                        <span className="text-sm font-medium text-foreground">Login / Sign Up</span>
+                        <ChevronRight className="w-4 h-4 opacity-50 ml-auto" />
                       </span>
                     </Link>
                   )}
