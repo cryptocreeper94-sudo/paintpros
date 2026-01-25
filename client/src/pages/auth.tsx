@@ -194,22 +194,28 @@ export default function AuthPage() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-4 bg-background">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-4 bg-background min-h-screen">
+        <div className="w-full max-w-md px-2 sm:px-0">
+
+        {/* Mobile Header - Only visible on smaller screens */}
+        <div className="lg:hidden text-center mb-6">
+          <h1 className="text-2xl font-bold text-foreground mb-1">Marketing Hub</h1>
+          <p className="text-sm text-muted-foreground">Professional tools for your business</p>
+        </div>
 
         {/* Login Card - Center */}
-        <Card className="w-full max-w-md flex-shrink-0">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">
+        <Card className="w-full">
+          <CardHeader className="text-center px-4 sm:px-6">
+            <CardTitle className="text-xl sm:text-2xl font-bold">
               {isLogin ? "Welcome Back" : "Create Account"}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm">
               {isLogin
                 ? `Sign in to your ${tenant.name} account`
                 : `Join ${tenant.name} to get started`}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
           {isLogin ? (
             <Form {...loginForm}>
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
@@ -495,9 +501,9 @@ export default function AuthPage() {
                 </Button>
               ) : isIOS ? (
                 <div className="text-sm text-muted-foreground">
-                  <p className="flex items-center justify-center gap-1">
-                    <Smartphone className="w-4 h-4" />
-                    For quick access: tap Share, then "Add to Home Screen"
+                  <p className="flex flex-wrap items-center justify-center gap-1 text-center leading-relaxed">
+                    <Smartphone className="w-4 h-4 flex-shrink-0" />
+                    <span>Tap Share, then "Add to Home Screen"</span>
                   </p>
                 </div>
               ) : (
