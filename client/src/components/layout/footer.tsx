@@ -169,7 +169,7 @@ export function Footer() {
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-amber-600" />
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {isDemo ? "Dual Chain Verified" : "Darkwave Trust Layer"}
+                  {isDemo ? "Dual Chain Verified" : "TrustLayer"}
                 </h3>
               </div>
               <button 
@@ -190,7 +190,7 @@ export function Footer() {
                 <p className="text-sm font-semibold text-gray-900 mt-0.5">
                   {isDemo 
                     ? <><span className="text-purple-600">Solana</span> + <span className="text-emerald-600">Darkwave</span> Verified</>
-                    : <><span className="text-emerald-600">Darkwave Trust Layer</span> Verified Member</>
+                    : <><span className="text-emerald-600">TrustLayer</span> Verified Member</>
                   }
                 </p>
               </div>
@@ -249,7 +249,7 @@ export function Footer() {
               
               {/* Powered by */}
               <p className="text-center text-[10px] text-gray-500">
-                {isDemo ? "Powered by ORBIT • Dual Chain Verified" : "Powered by Darkwave Trust Layer"}
+                {isDemo ? "Powered by ORBIT • Dual Chain Verified" : "Powered by TrustLayer"}
               </p>
             </div>
           </div>
