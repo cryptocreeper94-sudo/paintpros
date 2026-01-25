@@ -101,8 +101,7 @@ export function Navbar() {
         {/* Home Button - right side to balance hamburger, with safe area for PWA */}
         <Link href="/">
           <button 
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-4 md:mr-2"
-            style={{ marginRight: 'max(1rem, env(safe-area-inset-right, 0.5rem))' }}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-12 md:mr-2"
             aria-label="Go home"
             data-testid="button-home-header"
           >
