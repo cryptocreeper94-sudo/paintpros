@@ -29,12 +29,12 @@ import {
   Palette
 } from "lucide-react";
 
-import roofingHero from "@assets/generated_images/roofing_hero.png";
-import hvacHero from "@assets/generated_images/hvac_hero.png";
-import electricalHero from "@assets/generated_images/electrical_hero.png";
-import plumbingHero from "@assets/generated_images/plumbing_hero.png";
-import landscapingHero from "@assets/generated_images/landscaping_hero.png";
-import constructionHero from "@assets/generated_images/construction_hero.png";
+import roofingHero from "../assets/generated_images/roofing_hero.png";
+import hvacHero from "../assets/generated_images/hvac_hero.png";
+import electricalHero from "../assets/generated_images/electrical_hero.png";
+import plumbingHero from "../assets/generated_images/plumbing_hero.png";
+import landscapingHero from "../assets/generated_images/landscaping_hero.png";
+import constructionHero from "../assets/generated_images/construction_hero.png";
 
 const tradeData: Record<string, {
   hero: string;
@@ -150,15 +150,15 @@ export default function TradeHome() {
                   TrustLayer Verified
                 </Badge>
                 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4" data-testid="text-hero-title">
                   {tenant.name}
                 </h1>
                 
-                <p className="text-xl text-white/90 mb-6">
+                <p className="text-xl text-white/90 mb-6" data-testid="text-hero-tagline">
                   {tenant.tagline}
                 </p>
                 
-                <p className="text-white/70 mb-8 max-w-lg">
+                <p className="text-white/70 mb-8 max-w-lg" data-testid="text-hero-description">
                   {tenant.description}
                 </p>
                 
@@ -197,7 +197,7 @@ export default function TradeHome() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-wrap justify-center gap-6 md:gap-12">
               {data.benefits.map((benefit, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm">
+                <div key={i} className="flex items-center gap-2 text-sm" data-testid={`text-benefit-${i}`}>
                   <CheckCircle className="w-4 h-4 text-emerald-500" />
                   <span className="text-muted-foreground">{benefit}</span>
                 </div>
@@ -234,11 +234,11 @@ export default function TradeHome() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <GlassCard className="p-6 h-full">
+                  <GlassCard className="p-6 h-full" data-testid={`card-service-${i}`}>
                     <div className="p-3 bg-accent/20 rounded-xl w-fit mb-4">
                       <Wrench className="w-5 h-5 text-accent" />
                     </div>
-                    <h3 className="font-semibold mb-2">{service.title}</h3>
+                    <h3 className="font-semibold mb-2" data-testid={`text-service-title-${i}`}>{service.title}</h3>
                     <p className="text-sm text-muted-foreground">{service.description}</p>
                   </GlassCard>
                 </motion.div>
@@ -271,11 +271,11 @@ export default function TradeHome() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <GlassCard className="p-6 text-center">
+                  <GlassCard className="p-6 text-center" data-testid={`card-value-${value.title.toLowerCase()}`}>
                     <div className="p-4 bg-accent/20 rounded-full w-fit mx-auto mb-4">
                       <value.icon className="w-6 h-6 text-accent" />
                     </div>
-                    <h3 className="font-semibold mb-1">{value.title}</h3>
+                    <h3 className="font-semibold mb-1" data-testid={`text-value-title-${i}`}>{value.title}</h3>
                     <p className="text-sm text-muted-foreground">{value.description}</p>
                   </GlassCard>
                 </motion.div>
@@ -349,27 +349,27 @@ export default function TradeHome() {
             </motion.div>
             
             <div className="grid md:grid-cols-3 gap-6">
-              <GlassCard className="p-6">
+              <GlassCard className="p-6" data-testid="card-ecosystem-tradeworks">
                 <div className="p-3 bg-emerald-500/20 rounded-xl w-fit mb-4">
                   <Target className="w-5 h-5 text-emerald-600" />
                 </div>
-                <h3 className="font-semibold mb-2">TradeWorks</h3>
+                <h3 className="font-semibold mb-2" data-testid="text-ecosystem-tradeworks-title">TradeWorks</h3>
                 <p className="text-sm text-muted-foreground">Complete contractor operations - CRM, scheduling, invoicing, crew management.</p>
               </GlassCard>
               
-              <GlassCard className="p-6">
+              <GlassCard className="p-6" data-testid="card-ecosystem-orbit">
                 <div className="p-3 bg-purple-500/20 rounded-xl w-fit mb-4">
                   <Users className="w-5 h-5 text-purple-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Orbit Staffing</h3>
+                <h3 className="font-semibold mb-2" data-testid="text-ecosystem-orbit-title">Orbit Staffing</h3>
                 <p className="text-sm text-muted-foreground">Payroll, HR, and staffing solutions integrated with your operations.</p>
               </GlassCard>
               
-              <GlassCard className="p-6">
+              <GlassCard className="p-6" data-testid="card-ecosystem-marketing">
                 <div className="p-3 bg-amber-500/20 rounded-xl w-fit mb-4">
                   <Palette className="w-5 h-5 text-amber-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Marketing Hub</h3>
+                <h3 className="font-semibold mb-2" data-testid="text-ecosystem-marketing-title">Marketing Hub</h3>
                 <p className="text-sm text-muted-foreground">Social media, content creation, analytics, and campaign management.</p>
               </GlassCard>
             </div>
