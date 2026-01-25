@@ -136,8 +136,8 @@ export function Navbar() {
       {/* Navigation Controls - Back and Close buttons on all pages except home */}
       {location !== "/" && (
         <>
-          {/* Mobile - minimal elegant buttons */}
-          <div className="fixed top-3 left-3 z-[60] md:hidden flex items-center gap-1.5">
+          {/* Mobile - minimal elegant buttons - positioned on right to not overlap hamburger */}
+          <div className="fixed top-3 right-3 z-[60] md:hidden flex items-center gap-1.5">
             <button 
               onClick={(e) => {
                 e.stopPropagation();
