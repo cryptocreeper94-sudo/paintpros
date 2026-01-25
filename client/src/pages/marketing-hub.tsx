@@ -979,7 +979,7 @@ export default function MarketingHub() {
 
   if (!isAuthenticated) {
     return (
-      <PageLayout>
+      <PageLayout hideNavbar hideFooter>
         <main className="min-h-screen flex">
           {/* Left Side - Hero Image - Shows on medium screens and up */}
           <div className="hidden md:flex md:w-1/2 relative overflow-hidden">
@@ -1161,7 +1161,7 @@ export default function MarketingHub() {
   }
 
   return (
-    <PageLayout>
+    <PageLayout hideNavbar hideFooter>
       <main className="min-h-screen py-4 md:py-8 px-2 md:px-4 pb-20 overflow-x-hidden">
         <div className="max-w-7xl mx-auto space-y-4 md:space-y-6 w-full overflow-hidden">
           
