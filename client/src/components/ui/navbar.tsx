@@ -392,16 +392,29 @@ export function Navbar() {
                     <PaintRoller className="w-5 h-5 text-accent" />
                     <span className="text-xs">{tenant.name}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-muted-foreground/60">
-                    <span className="text-[10px]">Powered by</span>
-                    <a 
-                      href="https://darkwavestudios.io" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-[10px] font-semibold tracking-wide hover:text-accent transition-colors"
-                    >
-                      DarkWave TrustLayer
-                    </a>
+                  <div className="flex flex-col items-center gap-1 text-muted-foreground/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px]">Powered by</span>
+                      <a 
+                        href="https://darkwavestudios.io" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-semibold tracking-wide hover:text-accent transition-colors"
+                      >
+                        DarkWave Studios
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[9px]">Member of</span>
+                      <a 
+                        href="https://dwtl.io" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[9px] font-semibold tracking-wide hover:text-accent transition-colors"
+                      >
+                        TrustLayer Network
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
