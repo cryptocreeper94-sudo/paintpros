@@ -979,7 +979,7 @@ export default function MarketingHub() {
                 backgroundImage: `url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80')`
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/90 via-pink-800/80 to-purple-900/90" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f]/95 via-[#2d4a6f]/90 to-[#1e3a5f]/95" />
             
             {/* Content Overlay */}
             <div className="relative z-10 flex flex-col justify-between p-12 text-white">
@@ -1050,7 +1050,7 @@ export default function MarketingHub() {
             >
               {/* Mobile Header - Only shows on mobile */}
               <div className="lg:hidden text-center mb-8">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#1e3a5f] flex items-center justify-center">
                   <Megaphone className="w-8 h-8 text-white" />
                 </div>
                 <h1 className="text-2xl font-display font-bold text-gray-900 dark:text-white">
@@ -1086,7 +1086,7 @@ export default function MarketingHub() {
                   )}
                   <Button 
                     onClick={handleLogin} 
-                    className="w-full h-12 bg-gradient-to-r from-pink-500 to-purple-600 text-lg"
+                    className="w-full h-12 bg-[#1e3a5f] hover:bg-[#2d4a6f] text-lg"
                     data-testid="button-marketing-login"
                   >
                     <Lock className="w-5 h-5 mr-2" />
