@@ -131,8 +131,8 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[90%] sm:max-w-md p-0 border-2 border-[#1e3a5f] bg-transparent overflow-hidden">
-        <div className="m-1.5 border border-[#1e3a5f]/50 rounded-lg bg-gradient-to-br from-gray-50/95 to-white/95 backdrop-blur-sm p-6">
+      <DialogContent className="max-w-[90%] sm:max-w-md p-0 border-[3px] border-[#1e3a5f] bg-[#1e3a5f] overflow-hidden shadow-2xl">
+        <div className="m-2 border-2 border-[#0f1f33] rounded-md shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-50 to-white p-6">
           <DialogHeader className="text-center pb-2">
             <div className="flex items-center justify-center gap-2 mb-3">
               <img src={lumeLogo} alt="Lume Paint Co" className="w-16 h-16 object-contain" />
