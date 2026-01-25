@@ -332,17 +332,17 @@ export const lumePaintCo: TenantConfig = {
   
   seo: {
     title: "Lume Paint Co | We Elevate the Backdrop of Your Life",
-    description: "Premium painting services in Nashville. Professional interior and exterior painting that illuminates your space. Free estimates available.",
+    description: "Premium painting services in Murfreesboro and Rutherford County. Professional interior and exterior painting that illuminates your space. Free estimates available.",
     keywords: [
-      "Nashville painters",
+      "Murfreesboro painters",
       "Lume Paint",
       "interior painting",
       "exterior painting",
-      "house painters Nashville",
-      "premium painting",
+      "house painters Murfreesboro",
+      "Rutherford County painters",
       "residential painting",
     ],
-    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville", "Lebanon", "Mount Juliet", "Madison", "Goodlettsville"],
+    serviceAreas: ["Murfreesboro", "Smyrna", "La Vergne", "Christiana", "Eagleville", "Rockvale", "Lascassas", "Blackman", "Walterhill"],
   },
   
   features: {
