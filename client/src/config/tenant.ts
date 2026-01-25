@@ -276,6 +276,7 @@ export const lumePaintCo: TenantConfig = {
   id: "lumepaint",
   slug: "lume-paint-co",
   subscriptionTier: "full_suite",
+  tradeVertical: "painting",
   
   name: "Lume Paint Co",
   tagline: "Elevating the backdrop of your life.",

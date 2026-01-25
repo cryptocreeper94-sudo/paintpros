@@ -35,6 +35,7 @@ import electricalHero from "../assets/generated_images/electrical_hero.png";
 import plumbingHero from "../assets/generated_images/plumbing_hero.png";
 import landscapingHero from "../assets/generated_images/landscaping_hero.png";
 import constructionHero from "../assets/generated_images/construction_hero.png";
+import paintingHero from "../assets/generated_images/painting_hero.png";
 
 const tradeData: Record<string, {
   hero: string;
@@ -42,6 +43,17 @@ const tradeData: Record<string, {
   services: { title: string; description: string }[];
   benefits: string[];
 }> = {
+  painting: {
+    hero: paintingHero,
+    icon: Palette,
+    services: [
+      { title: "Interior Painting", description: "Walls, ceilings, trim, and accent features" },
+      { title: "Exterior Painting", description: "Complete exterior transformations with quality finishes" },
+      { title: "Cabinet Refinishing", description: "Refresh your cabinets without full replacement" },
+      { title: "Commercial Painting", description: "Professional painting for businesses and offices" },
+    ],
+    benefits: ["Free estimates", "Licensed & insured", "Premium paints", "Satisfaction guaranteed"],
+  },
   roofing: {
     hero: roofingHero,
     icon: Home,

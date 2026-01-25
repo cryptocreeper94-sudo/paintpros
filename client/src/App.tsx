@@ -119,6 +119,11 @@ function TenantHomeRedirect() {
     return null;
   }
   
+  // Demo tenant (PaintPros.io) shows the TrustLayer hub as landing page
+  if (tenantId === 'demo') {
+    return <DemoViewer />;
+  }
+  
   const tradeVerticals = ['roofpros', 'hvacpros', 'electricpros', 'plumbpros', 'landscapepros', 'buildpros'];
   const tradeMap: Record<string, string> = {
     roofpros: 'roofing',

@@ -44,7 +44,7 @@ const cardVariants = {
 };
 
 const tradeVerticals = [
-  { id: "paint", name: "Painting", icon: Palette, color: "bg-purple-500/20", textColor: "text-purple-600", path: "/", description: "Interior & exterior painting services" },
+  { id: "paint", name: "Painting", icon: Palette, color: "bg-purple-500/20", textColor: "text-purple-600", path: "/trade-home?tenant=lumepaint", description: "Interior & exterior painting services" },
   { id: "roof", name: "Roofing", icon: Home, color: "bg-orange-500/20", textColor: "text-orange-600", path: "/trade-home?tenant=roofpros", description: "Roof repair & replacement" },
   { id: "hvac", name: "HVAC", icon: Flame, color: "bg-red-500/20", textColor: "text-red-600", path: "/trade-home?tenant=hvacpros", description: "Heating & cooling systems" },
   { id: "electric", name: "Electrical", icon: Zap, color: "bg-amber-500/20", textColor: "text-amber-600", path: "/trade-home?tenant=electricpros", description: "Wiring & electrical work" },
