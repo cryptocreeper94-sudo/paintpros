@@ -130,35 +130,35 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[85%] sm:max-w-sm p-0 border-[3px] border-[#1e3a5f] bg-[#1e3a5f] shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="m-1.5 border-2 border-[#0f1f33] rounded-md shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-50 to-white p-4">
-          <DialogHeader className="text-center pb-1">
-            <div className="mb-2">
+      <DialogContent className="max-w-[85%] sm:max-w-sm p-0 border-[3px] border-[#1e3a5f] bg-[#1e3a5f] shadow-2xl max-h-[88vh] overflow-y-auto">
+        <div className="m-1 border-2 border-[#0f1f33] rounded-md shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-50 to-white p-3">
+          <DialogHeader className="text-center pb-0">
+            <div className="mb-1.5">
               <h2 
-                className="text-2xl font-light tracking-wide"
+                className="text-xl font-light tracking-wide"
                 style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
               >
-                Lume<sup className="text-[8px] align-super ml-0.5">™</sup>
+                Lume<sup className="text-[7px] align-super ml-0.5">™</sup>
               </h2>
               <p 
-                className="text-[9px] font-light tracking-[0.25em] uppercase"
+                className="text-[8px] font-light tracking-[0.2em] uppercase -mt-0.5"
                 style={{ color: '#1e3a5f' }}
               >
                 Paint.co
               </p>
-              <p className="mt-1 text-xs font-light" style={{ color: '#2d4a6f' }}>
+              <p className="mt-0.5 text-[11px] font-light" style={{ color: '#2d4a6f' }}>
                 Elevating the backdrop of your life.
               </p>
             </div>
-            <DialogTitle className="text-base font-display text-[#1e3a5f]">
+            <DialogTitle className="text-sm font-display text-[#1e3a5f]">
               Get Your Free Estimate
             </DialogTitle>
-            <DialogDescription className="text-gray-600 text-xs">
+            <DialogDescription className="text-gray-600 text-[11px]">
               Get your free estimate using our room visualizer tool - right from your phone!
             </DialogDescription>
           </DialogHeader>
 
-        <div className="mt-3">
+        <div className="mt-2">
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div
@@ -166,46 +166,46 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-2.5"
+                className="space-y-2"
               >
-                <div className="space-y-1">
-                  <Label htmlFor="name" className="text-gray-700 text-xs">Your Name *</Label>
+                <div className="space-y-0.5">
+                  <Label htmlFor="name" className="text-gray-700 text-[11px]">Your Name *</Label>
                   <Input
                     id="name"
                     placeholder="John Smith"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="bg-white/80 border-gray-200 focus:border-gray-400 h-9 text-sm"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400 h-8 text-sm"
                     data-testid="input-modal-name"
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="phone" className="text-gray-700 text-xs">Phone Number *</Label>
+                <div className="space-y-0.5">
+                  <Label htmlFor="phone" className="text-gray-700 text-[11px]">Phone Number *</Label>
                   <Input
                     id="phone"
                     type="tel"
                     placeholder="(615) 555-0123"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="bg-white/80 border-gray-200 focus:border-gray-400 h-9 text-sm"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400 h-8 text-sm"
                     data-testid="input-modal-phone"
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="email" className="text-gray-700 text-xs">Email (optional)</Label>
+                <div className="space-y-0.5">
+                  <Label htmlFor="email" className="text-gray-700 text-[11px]">Email (optional)</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="john@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="bg-white/80 border-gray-200 focus:border-gray-400 h-9 text-sm"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400 h-8 text-sm"
                     data-testid="input-modal-email"
                   />
                 </div>
                 <Button
                   onClick={() => setStep(2)}
-                  className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white h-9 text-sm"
+                  className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white h-8 text-sm"
                   disabled={!formData.name || !formData.phone}
                   data-testid="button-modal-next"
                 >
@@ -220,15 +220,15 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-2.5"
+                className="space-y-2"
               >
-                <div className="space-y-1">
-                  <Label className="text-gray-700 text-xs">What type of project?</Label>
+                <div className="space-y-0.5">
+                  <Label className="text-gray-700 text-[11px]">What type of project?</Label>
                   <Select
                     value={formData.projectType}
                     onValueChange={(value) => setFormData({ ...formData, projectType: value })}
                   >
-                    <SelectTrigger className="bg-white/80 border-gray-200 h-9 text-sm" data-testid="select-modal-project">
+                    <SelectTrigger className="bg-white/80 border-gray-200 h-8 text-sm" data-testid="select-modal-project">
                       <SelectValue placeholder="Select project type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -238,13 +238,13 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-gray-700 text-xs">When do you need this done?</Label>
+                <div className="space-y-0.5">
+                  <Label className="text-gray-700 text-[11px]">When do you need this done?</Label>
                   <Select
                     value={formData.timeline}
                     onValueChange={(value) => setFormData({ ...formData, timeline: value })}
                   >
-                    <SelectTrigger className="bg-white/80 border-gray-200 h-9 text-sm" data-testid="select-modal-timeline">
+                    <SelectTrigger className="bg-white/80 border-gray-200 h-8 text-sm" data-testid="select-modal-timeline">
                       <SelectValue placeholder="Select timeline" />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,14 +254,14 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="notes" className="text-gray-700 text-xs">Anything else we should know?</Label>
+                <div className="space-y-0.5">
+                  <Label htmlFor="notes" className="text-gray-700 text-[11px]">Anything else we should know?</Label>
                   <Textarea
                     id="notes"
                     placeholder="Tell us about your project..."
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="bg-white/80 border-gray-200 focus:border-gray-400 min-h-[60px] text-sm"
+                    className="bg-white/80 border-gray-200 focus:border-gray-400 min-h-[50px] text-sm"
                     data-testid="textarea-modal-notes"
                   />
                 </div>
@@ -269,14 +269,14 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                   <Button
                     variant="outline"
                     onClick={() => setStep(1)}
-                    className="flex-1 border-gray-300 h-9 text-sm"
+                    className="flex-1 border-gray-300 h-8 text-sm"
                     data-testid="button-modal-back"
                   >
                     Back
                   </Button>
                   <Button
                     onClick={handleSubmit}
-                    className="flex-1 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white h-9 text-sm"
+                    className="flex-1 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white h-8 text-sm"
                     disabled={leadMutation.isPending}
                     data-testid="button-modal-submit"
                   >
@@ -288,8 +288,8 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
           </AnimatePresence>
         </div>
 
-          <div className="flex items-center justify-center gap-1.5 pt-2 text-[10px] text-gray-500">
-            <Clock className="w-2.5 h-2.5" />
+          <div className="flex items-center justify-center gap-1 pt-1.5 text-[9px] text-gray-500">
+            <Clock className="w-2 h-2" />
             <span>Response within 24 hours</span>
           </div>
         </div>
