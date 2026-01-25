@@ -7,7 +7,7 @@ import { Shield, Eye, Lock, Database, Bell, Mail, FileText, ExternalLink } from 
 export default function PrivacyPolicy() {
   const tenant = useTenant();
   const currentYear = new Date().getFullYear();
-  const lastUpdated = "January 15, 2026";
+  const lastUpdated = "January 25, 2026";
 
   return (
     <PageLayout>

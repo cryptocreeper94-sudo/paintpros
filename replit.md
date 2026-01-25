@@ -134,14 +134,16 @@ Key tables include:
 - **Express:** API server
 
 ## Recent Changes (January 2026)
-- **NEW: Marketing Hub "Start Here" Guide** - Visual walkthrough tab with red accents, clickable section links, integration roadmap, and brand-specific messaging. Opens by default for new users.
+- **NEW: Fluid viewport scaling** - All tenant hero sections now scale smoothly from mobile to 4K/TV displays using clamp()
+- **NEW: Scroll indicator** - "Explore" label with bouncing arrow on Lume hero to guide users to scroll
+- **NEW: Lume PWA** - Full PWA support with navy blue branding, custom icons and splash screen
+- **NEW: Pricing Config Panel** - Estimator pricing now editable from Admin/Owner/Developer dashboards
+- **All 5 PWAs configured**: Lume, NPP, PaintPros/Demo, TradeWorks, Marketing Hub
+- Privacy Policy updated to January 25, 2026
+- Marketing Hub "Start Here" Guide - Visual walkthrough tab with red accents, clickable section links
 - Added Campaign ROI Tracker tab (manual cost entry now, API integration pending)
 - Added Copy Generator tab for social posts, ads, and SMS content
 - Added Marketing Psychology Playbook with 6 proven strategies
 - Connected PaintPros to ORBIT Ecosystem Hub with working credentials
 - Created DarkWave Ecosystem Hub handoff documentation for Code Hub implementation
-- Improved Marketing Hub UI with Quick Actions panel
-- Updated Marketing Hub to support all tenants dynamically (removed hardcoded brand types)
-- Added 6 gamification post templates with engagement hooks using lucide-react icons
 - Completed site audit: All key Lume pages clean and ready for Monday demo
-- Fixed code warnings from architect feedback (removed hover-elevate from buttons, proper icon usage)
