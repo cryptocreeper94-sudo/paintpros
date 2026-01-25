@@ -38,6 +38,7 @@ import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { Lock } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { OfficeAssistant } from "@/components/ui/office-assistant";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { DashboardPreview } from "@/components/dashboard-preview";
 import { SystemHealthCard } from "@/components/system-health-card";
@@ -863,6 +864,7 @@ export default function Owner() {
         currentUserRole="owner"
         currentUserName="Owner"
       />
+      <OfficeAssistant />
     </PageLayout>
   );
 }

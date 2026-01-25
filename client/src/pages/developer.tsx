@@ -32,6 +32,7 @@ import { ProposalTemplateManager } from "@/components/crm/proposal-templates";
 import { getAssetBadge, formatDate } from "@/lib/hallmark";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { OfficeAssistant } from "@/components/ui/office-assistant";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { FranchiseManagement } from "@/components/franchise-management";
 import { TradeVerticalsCard } from "@/components/trade-verticals-card";
@@ -2781,6 +2782,7 @@ export default function Developer() {
         currentUserRole="developer"
         currentUserName="Developer"
       />
+      <OfficeAssistant />
     </PageLayout>
   );
 }

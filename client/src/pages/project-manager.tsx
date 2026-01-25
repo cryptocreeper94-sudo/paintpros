@@ -16,6 +16,7 @@ import type { Lead } from "@shared/schema";
 import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { OfficeAssistant } from "@/components/ui/office-assistant";
 
 const DEFAULT_PROJECT_MANAGER_PIN = "2222";
 
@@ -484,6 +485,7 @@ export default function ProjectManager() {
         currentUserRole="project-manager"
         currentUserName="Project Manager"
       />
+      <OfficeAssistant />
     </PageLayout>
   );
 }

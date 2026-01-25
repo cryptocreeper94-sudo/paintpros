@@ -34,6 +34,7 @@ import { useTenant } from "@/context/TenantContext";
 import { useAccess } from "@/context/AccessContext";
 import { Zap } from "lucide-react";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { OfficeAssistant } from "@/components/ui/office-assistant";
 import { PinReferenceAccordion } from "@/components/pin-reference-accordion";
 import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
@@ -832,6 +833,7 @@ export default function Admin() {
         currentUserRole="admin"
         currentUserName="Admin"
       />
+      <OfficeAssistant />
     </PageLayout>
   );
 }
