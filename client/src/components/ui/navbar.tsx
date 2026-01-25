@@ -50,7 +50,7 @@ export function Navbar() {
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={28} className="text-gray-700" />
+            <X size={28} className="text-black" />
           ) : tenant.id === "npp" ? (
             <img 
               src={nppLogo} 
@@ -59,9 +59,9 @@ export function Navbar() {
               style={{ marginTop: '-40px', marginLeft: '-145px' }}
             />
           ) : tenant.id === "lumepaint" ? (
-            <Menu size={24} className="text-gray-700" />
+            <Menu size={24} className="text-black" />
           ) : (
-            <Menu size={28} className="text-gray-700" />
+            <Menu size={28} className="text-black" />
           )}
         </button>
         
@@ -98,16 +98,28 @@ export function Navbar() {
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
         
-        {/* Home Button - right side to balance hamburger, with safe area for PWA */}
-        <Link href="/">
-          <button 
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-12 md:mr-2"
-            aria-label="Go home"
-            data-testid="button-home-header"
-          >
-            <Home className="w-5 h-5 text-gray-700" />
-          </button>
-        </Link>
+        {/* Right side buttons: Close (X) + Home - all black */}
+        <div className="flex items-center gap-1 mr-2">
+          {location !== "/" && (
+            <button 
+              onClick={() => window.history.back()}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Go back"
+              data-testid="button-back-header"
+            >
+              <ArrowLeft className="w-5 h-5 text-black" />
+            </button>
+          )}
+          <Link href="/">
+            <button 
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Go home"
+              data-testid="button-home-header"
+            >
+              <Home className="w-5 h-5 text-black" />
+            </button>
+          </Link>
+        </div>
         
         {/* Language Toggle - Desktop - show for all tenants */}
         <div className="hidden md:flex items-center mr-4">
@@ -133,55 +145,6 @@ export function Navbar() {
         </div>
       )}
 
-      {/* Navigation Controls - Back and Close buttons on all pages except home */}
-      {location !== "/" && (
-        <>
-          {/* Mobile - minimal elegant buttons - positioned on right to not overlap hamburger */}
-          <div className="fixed top-3 right-3 z-[60] md:hidden flex items-center gap-1.5">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                window.history.back();
-              }}
-              className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
-              aria-label="Go back"
-              data-testid="button-back-mobile"
-            >
-              <ArrowLeft className="w-4 h-4 text-gray-600" />
-            </button>
-            <Link href="/">
-              <button 
-                onClick={(e) => e.stopPropagation()}
-                className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
-                aria-label="Go home"
-                data-testid="button-home-mobile"
-              >
-                <X className="w-4 h-4 text-gray-600" />
-              </button>
-            </Link>
-          </div>
-          {/* Desktop - minimal elegant buttons */}
-          <div className="fixed top-4 right-4 z-40 hidden md:flex items-center gap-1.5">
-            <button 
-              onClick={() => window.history.back()}
-              className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
-              aria-label="Go back"
-              data-testid="button-back-desktop"
-            >
-              <ArrowLeft className="w-4 h-4 text-gray-600" />
-            </button>
-            <Link href="/">
-              <button 
-                className="p-2 bg-gray-100/80 backdrop-blur-sm rounded-lg hover:bg-gray-200/80 transition-all"
-                aria-label="Close and go home"
-                data-testid="button-close-desktop"
-              >
-                <X className="w-4 h-4 text-gray-600" />
-              </button>
-            </Link>
-          </div>
-        </>
-      )}
 
       {/* Sidebar Menu */}
       <AnimatePresence>
