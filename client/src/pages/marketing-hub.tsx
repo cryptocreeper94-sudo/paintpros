@@ -234,7 +234,7 @@ export default function MarketingHub() {
     setStayLoggedIn(false);
   };
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [activeTab, setActiveTab] = useState<"guide" | "overview" | "images" | "messages" | "bundles" | "catalog" | "calendar" | "analytics" | "notes" | "campaigns" | "ai-tools" | "playbook">("guide");
+  const [activeTab, setActiveTab] = useState<"content" | "analytics" | "calendar" | "playbook">("content");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -1156,7 +1156,7 @@ export default function MarketingHub() {
           >
             <div>
               <h1 className="text-xl md:text-3xl font-display font-bold text-gray-900 dark:text-white flex items-center gap-2 md:gap-3">
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
                   <Megaphone className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
                 <span className="truncate">Marketing Hub</span>
@@ -1168,7 +1168,7 @@ export default function MarketingHub() {
 
             <div className="flex flex-wrap items-center gap-2">
               {userName && (
-                <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 border-purple-200 text-xs">
+                <Badge variant="outline" className="bg-[#1e3a5f]/10 dark:bg-[#1e3a5f]/30 text-[#1e3a5f] dark:text-white border-[#1e3a5f]/30 text-xs">
                   {userName}
                 </Badge>
               )}
@@ -1275,102 +1275,378 @@ export default function MarketingHub() {
             </BentoItem>
           </BentoGrid>
 
-          {/* Quick Actions - Clear entry points */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 my-4">
-            <Button 
-              variant="outline" 
-              className="h-auto py-3 flex flex-col gap-1"
-              onClick={() => setActiveTab("bundles")}
-              data-testid="quick-action-create"
-            >
-              <Wand2 className="w-5 h-5 text-purple-500" />
-              <span className="text-xs font-medium">Create Post</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-auto py-3 flex flex-col gap-1"
-              onClick={() => setActiveTab("calendar")}
-              data-testid="quick-action-schedule"
-            >
-              <Calendar className="w-5 h-5 text-blue-500" />
-              <span className="text-xs font-medium">Schedule</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-auto py-3 flex flex-col gap-1"
-              onClick={() => setActiveTab("images")}
-              data-testid="quick-action-images"
-            >
-              <ImageIcon className="w-5 h-5 text-green-500" />
-              <span className="text-xs font-medium">Image Library</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="h-auto py-3 flex flex-col gap-1"
-              onClick={() => setActiveTab("analytics")}
-              data-testid="quick-action-analytics"
-            >
-              <BarChart3 className="w-5 h-5 text-orange-500" />
-              <span className="text-xs font-medium">Analytics</span>
-            </Button>
+          {/* Hero Section with Photo */}
+          <div className="relative rounded-xl overflow-hidden mb-6">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url('/assets/marketing/crew-10-team-photo.png')`
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 via-[#1e3a5f]/80 to-transparent" />
+            <div className="relative z-10 p-8 md:p-12">
+              <div className="max-w-xl">
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-3">
+                  Your Marketing Command Center
+                </h2>
+                <p className="text-white/80 mb-6">
+                  Create, schedule, and track all your marketing content in one place. 
+                  Build your brand with professional imagery and data-driven insights.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button 
+                    className="bg-white text-[#1e3a5f]"
+                    onClick={() => setActiveTab("content")}
+                    data-testid="hero-action-create"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Content
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="border-white/30 text-white bg-white/10 backdrop-blur-sm"
+                    onClick={() => setActiveTab("analytics")}
+                    data-testid="hero-action-analytics"
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    View Analytics
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            <TabsList className="grid grid-cols-4 md:flex md:flex-wrap gap-1 mb-4 md:mb-6 h-auto p-1 w-full">
-              <TabsTrigger value="guide" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3 data-[state=active]:bg-red-500 data-[state=active]:text-white" data-testid="tab-guide">
-                <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Start Here</span>
+            {/* Clean 4-Tab Navigation */}
+            <TabsList className="grid grid-cols-4 gap-1 mb-6 h-auto p-1.5 w-full bg-[#1e3a5f]/5 dark:bg-[#1e3a5f]/20 rounded-lg">
+              <TabsTrigger 
+                value="content" 
+                className="flex items-center justify-center gap-2 py-3 text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-md transition-all" 
+                data-testid="tab-content"
+              >
+                <Layers className="w-4 h-4" />
+                <span className="hidden sm:inline">Content Studio</span>
+                <span className="sm:hidden">Content</span>
               </TabsTrigger>
-              <TabsTrigger value="overview" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-overview">
-                <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Overview</span>
+              <TabsTrigger 
+                value="analytics" 
+                className="flex items-center justify-center gap-2 py-3 text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-md transition-all" 
+                data-testid="tab-analytics"
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span className="hidden sm:inline">Analytics</span>
+                <span className="sm:hidden">Stats</span>
               </TabsTrigger>
-              <TabsTrigger value="images" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-images">
-                <ImageIcon className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Images</span>
+              <TabsTrigger 
+                value="calendar" 
+                className="flex items-center justify-center gap-2 py-3 text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-md transition-all" 
+                data-testid="tab-calendar"
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline">Calendar</span>
+                <span className="sm:hidden">Plan</span>
               </TabsTrigger>
-              <TabsTrigger value="messages" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-messages">
-                <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Messages</span>
-              </TabsTrigger>
-              <TabsTrigger value="bundles" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-bundles">
-                <Layers className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">AI Bundles</span>
-              </TabsTrigger>
-              <TabsTrigger value="catalog" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-catalog">
-                <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Catalog</span>
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-calendar">
-                <Calendar className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Schedule</span>
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-analytics">
-                <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Analytics</span>
-              </TabsTrigger>
-              <TabsTrigger value="notes" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-notes">
-                <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Notes</span>
-              </TabsTrigger>
-              <TabsTrigger value="campaigns" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-campaigns">
-                <Target className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Campaigns</span>
-              </TabsTrigger>
-              <TabsTrigger value="ai-tools" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-ai-tools">
-                <Wand2 className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Copy Tools</span>
-              </TabsTrigger>
-              <TabsTrigger value="playbook" className="flex items-center justify-center gap-1 text-xs md:text-sm px-2 md:px-3" data-testid="tab-playbook">
-                <Lightbulb className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Playbook</span>
+              <TabsTrigger 
+                value="playbook" 
+                className="flex items-center justify-center gap-2 py-3 text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-md transition-all" 
+                data-testid="tab-playbook"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">Playbook</span>
+                <span className="sm:hidden">Learn</span>
               </TabsTrigger>
             </TabsList>
 
-            {/* GETTING STARTED GUIDE TAB */}
+            {/* CONTENT STUDIO TAB - Images, Messages, Social Posts */}
+            <TabsContent value="content" className="space-y-6" data-testid="content-tab">
+              {/* Content Studio Hero */}
+              <div className="relative rounded-xl overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url('/assets/marketing/interior-01-living-room-gray.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/90 to-[#1e3a5f]/60" />
+                <div className="relative z-10 p-6 md:p-8">
+                  <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-2">Content Studio</h2>
+                  <p className="text-white/80 text-sm max-w-xl">
+                    Build your marketing library with professional images, compelling messages, and ready-to-post content bundles.
+                  </p>
+                </div>
+              </div>
+
+              {/* How This Works - Educational */}
+              <GlassCard className="p-4 border-l-4 border-l-[#1e3a5f]">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">How Content Studio Works</h4>
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Step 1:</strong> Upload professional images from your jobs. 
+                      <strong> Step 2:</strong> Create message templates for different platforms. 
+                      <strong> Step 3:</strong> Bundle them together for easy scheduling. 
+                      The system will suggest smart combinations based on matching topics.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Sub-Tabs for Content Types */}
+              <Tabs defaultValue="images" className="w-full">
+                <TabsList className="grid grid-cols-3 gap-1 h-auto p-1 mb-4">
+                  <TabsTrigger value="images" className="flex items-center gap-2 py-2.5">
+                    <ImageIcon className="w-4 h-4" />
+                    <span>Images</span>
+                    <Badge variant="secondary" className="text-xs">{libraryImages.filter(i => i.brand === selectedTenant).length}</Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="messages" className="flex items-center gap-2 py-2.5">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Messages</span>
+                    <Badge variant="secondary" className="text-xs">{messageTemplates.filter(m => m.brand === selectedTenant).length}</Badge>
+                  </TabsTrigger>
+                  <TabsTrigger value="bundles" className="flex items-center gap-2 py-2.5">
+                    <Wand2 className="w-4 h-4" />
+                    <span>Bundles</span>
+                    <Badge variant="secondary" className="text-xs">{contentBundles.filter(b => b.brand === selectedTenant).length}</Badge>
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Images Sub-Tab */}
+                <TabsContent value="images" className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Image Library</h3>
+                      <p className="text-sm text-muted-foreground">Professional photos for your marketing</p>
+                    </div>
+                    <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-image">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Image
+                    </Button>
+                  </div>
+                  
+                  {/* Image Tips */}
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-xs text-blue-800 dark:text-blue-200">
+                      <strong>Pro Tip:</strong> High-quality before/after photos and finished project shots get 3x more engagement than stock images.
+                    </p>
+                  </div>
+
+                  {/* Subject Filter */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant={imageSubjectFilter === "all" ? "default" : "outline"}
+                      onClick={() => setImageSubjectFilter("all")}
+                      className={imageSubjectFilter === "all" ? "bg-[#1e3a5f]" : ""}
+                    >
+                      All
+                    </Button>
+                    {IMAGE_SUBJECTS.slice(0, 6).map(subject => (
+                      <Button
+                        key={subject.id}
+                        size="sm"
+                        variant={imageSubjectFilter === subject.id ? "default" : "outline"}
+                        onClick={() => setImageSubjectFilter(subject.id)}
+                        className={imageSubjectFilter === subject.id ? "bg-[#1e3a5f]" : ""}
+                      >
+                        {subject.label}
+                      </Button>
+                    ))}
+                  </div>
+
+                  {/* Image Grid */}
+                  {libraryImages.filter(i => i.brand === selectedTenant).length === 0 ? (
+                    <GlassCard className="p-8 text-center">
+                      <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Images Yet</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Start building your library with professional photos from your best projects.
+                      </p>
+                      <Button onClick={() => setShowAddImageModal(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Your First Image
+                      </Button>
+                    </GlassCard>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {libraryImages
+                        .filter(img => img.brand === selectedTenant)
+                        .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter)
+                        .map(img => (
+                          <GlassCard key={img.id} className="overflow-hidden group">
+                            <div className="aspect-square relative">
+                              <img src={img.url} alt={img.description} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <Button size="sm" variant="secondary">
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  View
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="p-3">
+                              <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label}</Badge>
+                            </div>
+                          </GlassCard>
+                        ))}
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* Messages Sub-Tab */}
+                <TabsContent value="messages" className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Message Templates</h3>
+                      <p className="text-sm text-muted-foreground">Ready-to-use captions and copy</p>
+                    </div>
+                    <Button onClick={() => setShowAddMessageModal(true)} data-testid="button-add-message">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Message
+                    </Button>
+                  </div>
+
+                  {/* Message Tips */}
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <p className="text-xs text-green-800 dark:text-green-200">
+                      <strong>Pro Tip:</strong> Messages with a clear call-to-action ("Get your free estimate") convert 2x better than posts without one.
+                    </p>
+                  </div>
+
+                  {messageTemplates.filter(m => m.brand === selectedTenant).length === 0 ? (
+                    <GlassCard className="p-8 text-center">
+                      <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Messages Yet</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Create message templates to pair with your images for quick posting.
+                      </p>
+                      <Button onClick={() => setShowAddMessageModal(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Your First Message
+                      </Button>
+                    </GlassCard>
+                  ) : (
+                    <div className="space-y-3">
+                      {messageTemplates
+                        .filter(msg => msg.brand === selectedTenant)
+                        .map(msg => (
+                          <GlassCard key={msg.id} className="p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-900 dark:text-white mb-2">{msg.content}</p>
+                                <div className="flex flex-wrap gap-1">
+                                  <Badge variant="secondary">{IMAGE_SUBJECTS.find(s => s.id === msg.subject)?.label}</Badge>
+                                  <Badge variant="outline">{MESSAGE_TONES.find(t => t.id === msg.tone)?.label}</Badge>
+                                  {msg.cta !== "none" && <Badge className="bg-green-100 text-green-800">{MESSAGE_CTAS.find(c => c.id === msg.cta)?.label}</Badge>}
+                                </div>
+                              </div>
+                              <Button size="icon" variant="ghost">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </GlassCard>
+                        ))}
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* Bundles Sub-Tab */}
+                <TabsContent value="bundles" className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Content Bundles</h3>
+                      <p className="text-sm text-muted-foreground">Image + message combinations ready to post</p>
+                    </div>
+                    <Button 
+                      onClick={async () => {
+                        setIsGeneratingMatch(true);
+                        const tenantImages = libraryImages.filter(img => img.brand === selectedTenant);
+                        const tenantMessages = messageTemplates.filter(msg => msg.brand === selectedTenant);
+                        const newBundles: ContentBundle[] = [];
+                        for (const image of tenantImages) {
+                          const matchingMessages = tenantMessages.filter(msg => msg.subject === image.subject);
+                          for (const msg of matchingMessages) {
+                            const exists = contentBundles.some(b => b.imageId === image.id && b.messageId === msg.id);
+                            if (!exists) {
+                              newBundles.push({
+                                id: `bundle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                                imageId: image.id,
+                                messageId: msg.id,
+                                brand: selectedTenant,
+                                platform: msg.platform,
+                                status: "suggested",
+                                createdAt: new Date().toISOString(),
+                              });
+                            }
+                          }
+                        }
+                        const updated = [...contentBundles, ...newBundles];
+                        setContentBundles(updated);
+                        localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                        setIsGeneratingMatch(false);
+                      }}
+                      disabled={isGeneratingMatch || libraryImages.length === 0 || messageTemplates.length === 0}
+                      data-testid="button-generate-bundles"
+                    >
+                      {isGeneratingMatch ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                      Generate Bundles
+                    </Button>
+                  </div>
+
+                  {/* Bundle Tips */}
+                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                    <p className="text-xs text-purple-800 dark:text-purple-200">
+                      <strong>How it works:</strong> We match images and messages with the same topic tags to create ready-to-post combinations.
+                    </p>
+                  </div>
+
+                  {contentBundles.filter(b => b.brand === selectedTenant).length === 0 ? (
+                    <GlassCard className="p-8 text-center">
+                      <Wand2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Bundles Yet</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Add images and messages first, then generate smart bundles.
+                      </p>
+                    </GlassCard>
+                  ) : (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {contentBundles
+                        .filter(b => b.brand === selectedTenant)
+                        .slice(0, 6)
+                        .map(bundle => {
+                          const image = libraryImages.find(i => i.id === bundle.imageId);
+                          const message = messageTemplates.find(m => m.id === bundle.messageId);
+                          return (
+                            <GlassCard key={bundle.id} className="p-4">
+                              <div className="flex gap-4">
+                                {image && (
+                                  <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img src={image.url} alt="" className="w-full h-full object-cover" />
+                                  </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 dark:text-white line-clamp-2 mb-2">
+                                    {message?.content || "No message"}
+                                  </p>
+                                  <div className="flex gap-1">
+                                    <Badge variant="outline" className="text-xs">{bundle.platform}</Badge>
+                                    <Badge variant="secondary" className="text-xs">{bundle.status}</Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            </GlassCard>
+                          );
+                        })}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </TabsContent>
+
+            {/* GETTING STARTED GUIDE TAB - Now moved to Playbook */}
             <TabsContent value="guide" className="space-y-6" data-testid="guide-tab-content">
               {/* Welcome Header */}
-              <div className="p-6 bg-gradient-to-br from-red-600 to-red-800 rounded-md text-white">
+              <div className="p-6 bg-gradient-to-br from-[#1e3a5f] to-[#2d4a6f] rounded-md text-white">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-md bg-white/20 flex items-center justify-center">
                     <BookOpen className="w-6 h-6" />
@@ -1501,66 +1777,34 @@ export default function MarketingHub() {
                 </p>
                 
                 <div className="space-y-3">
-                  {/* Overview Link */}
+                  {/* Content Studio Link */}
                   <div 
                     className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
-                    onClick={() => setActiveTab("overview")}
-                    data-testid="guide-link-overview"
+                    onClick={() => setActiveTab("content")}
+                    data-testid="guide-link-content"
                   >
-                    <div className="w-10 h-10 rounded-md bg-cyan-500 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-md bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+                      <Layers className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold">Overview</p>
-                      <p className="text-xs text-muted-foreground">Your dashboard with quick actions, voice mode tip, and platform status</p>
+                      <p className="font-semibold">Content Studio</p>
+                      <p className="text-xs text-muted-foreground">Images, messages, and content bundles - all your marketing assets</p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-gray-400" />
                   </div>
 
-                  {/* Images Link */}
+                  {/* Analytics Link */}
                   <div 
                     className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
-                    onClick={() => setActiveTab("images")}
-                    data-testid="guide-link-images"
+                    onClick={() => setActiveTab("analytics")}
+                    data-testid="guide-link-analytics"
                   >
-                    <div className="w-10 h-10 rounded-md bg-pink-500 flex items-center justify-center flex-shrink-0">
-                      <ImageIcon className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-md bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <BarChart3 className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold">Images</p>
-                      <p className="text-xs text-muted-foreground">Upload and organize your visual content library for social posts</p>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-gray-400" />
-                  </div>
-
-                  {/* Messages Link */}
-                  <div 
-                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
-                    onClick={() => setActiveTab("messages")}
-                    data-testid="guide-link-messages"
-                  >
-                    <div className="w-10 h-10 rounded-md bg-blue-500 flex items-center justify-center flex-shrink-0">
-                      <MessageSquare className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">Messages</p>
-                      <p className="text-xs text-muted-foreground">Save common text messages for quick replies and follow-ups</p>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-gray-400" />
-                  </div>
-
-                  {/* Catalog Link */}
-                  <div 
-                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
-                    onClick={() => setActiveTab("catalog")}
-                    data-testid="guide-link-catalog"
-                  >
-                    <div className="w-10 h-10 rounded-md bg-indigo-500 flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">Catalog</p>
-                      <p className="text-xs text-muted-foreground">Your full library of social posts - filter, search, and manage content</p>
+                      <p className="font-semibold">Analytics Center</p>
+                      <p className="text-xs text-muted-foreground">Track your marketing performance with clear explanations</p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-gray-400" />
                   </div>
@@ -1594,40 +1838,6 @@ export default function MarketingHub() {
                       <p className="font-semibold">Analytics</p>
                       <p className="text-xs text-muted-foreground">Website traffic, visitor stats, and SEO performance data</p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-gray-400" />
-                  </div>
-
-                  {/* Campaigns Link */}
-                  <div 
-                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
-                    onClick={() => setActiveTab("campaigns")}
-                    data-testid="guide-link-campaigns"
-                  >
-                    <div className="w-10 h-10 rounded-md bg-red-500 flex items-center justify-center flex-shrink-0">
-                      <Target className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">Campaigns</p>
-                      <p className="text-xs text-muted-foreground">Track ROI on marketing spend - manual entry now, auto-sync later</p>
-                    </div>
-                    <Badge className="bg-red-100 text-red-700 text-xs mr-2">New</Badge>
-                    <ArrowRight className="w-5 h-5 text-gray-400" />
-                  </div>
-
-                  {/* Copy Tools Link */}
-                  <div 
-                    className="p-4 rounded-md border border-gray-200 dark:border-gray-700 hover-elevate cursor-pointer flex items-center gap-4"
-                    onClick={() => setActiveTab("ai-tools")}
-                    data-testid="guide-link-ai-tools"
-                  >
-                    <div className="w-10 h-10 rounded-md bg-purple-500 flex items-center justify-center flex-shrink-0">
-                      <Wand2 className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">Copy Tools</p>
-                      <p className="text-xs text-muted-foreground">Generate social posts, ad copy, and SMS messages with smart assistance</p>
-                    </div>
-                    <Badge className="bg-red-100 text-red-700 text-xs mr-2">New</Badge>
                     <ArrowRight className="w-5 h-5 text-gray-400" />
                   </div>
 
@@ -2521,13 +2731,9 @@ export default function MarketingHub() {
                     Add at least one image and one message to get started.
                   </p>
                   <div className="flex gap-2 justify-center">
-                    <Button variant="outline" onClick={() => setActiveTab("images")}>
-                      <ImageIcon className="w-4 h-4 mr-1" />
-                      Add Images
-                    </Button>
-                    <Button variant="outline" onClick={() => setActiveTab("messages")}>
-                      <MessageSquare className="w-4 h-4 mr-1" />
-                      Add Messages
+                    <Button variant="outline" onClick={() => setActiveTab("content")}>
+                      <Layers className="w-4 h-4 mr-1" />
+                      Go to Content Studio
                     </Button>
                   </div>
                 </GlassCard>
@@ -2763,6 +2969,37 @@ export default function MarketingHub() {
             </TabsContent>
 
             <TabsContent value="calendar" className="space-y-6">
+              {/* Calendar Hero */}
+              <div className="relative rounded-xl overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url('/assets/marketing/crew-06-measuring.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 to-[#1e3a5f]/70" />
+                <div className="relative z-10 p-6 md:p-8">
+                  <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-2">Content Calendar</h2>
+                  <p className="text-white/80 text-sm max-w-xl">
+                    Plan and schedule your posts in advance. A consistent posting schedule builds trust with your audience.
+                  </p>
+                </div>
+              </div>
+
+              {/* Educational Tip */}
+              <GlassCard className="p-4 border-l-4 border-l-[#1e3a5f]">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Scheduling Best Practices</h4>
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Consistency wins:</strong> Posting 3-4 times per week is better than posting daily one week and nothing the next. 
+                      <strong> Best times:</strong> Weekday mornings (7-9 AM) and evenings (5-7 PM) typically get the most engagement.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
               <GlassCard className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <Button variant="outline" size="sm" onClick={() => setCalendarWeekStart(addDays(calendarWeekStart, -7))} data-testid="button-prev-week">
@@ -2857,6 +3094,103 @@ export default function MarketingHub() {
             </TabsContent>
 
             <TabsContent value="analytics" className="space-y-6" data-testid="analytics-tab-content">
+              {/* Analytics Hero */}
+              <div className="relative rounded-xl overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url('/assets/marketing/commercial-office-05-lobby.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 to-[#1e3a5f]/70" />
+                <div className="relative z-10 p-6 md:p-8">
+                  <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-2">Analytics Center</h2>
+                  <p className="text-white/80 text-sm max-w-xl">
+                    Track your marketing performance with clear metrics. Each metric below includes an explanation of what it means and why it matters.
+                  </p>
+                </div>
+              </div>
+
+              {/* Understanding Your Metrics - Educational */}
+              <GlassCard className="p-4 border-l-4 border-l-[#1e3a5f]">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">How to Read Your Analytics</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Analytics help you understand what's working and what needs attention. 
+                      <strong> Evergreen content</strong> can be reused year-round (like "5 tips for choosing paint colors").
+                      <strong> Seasonal content</strong> is timely (like "Spring painting specials"). 
+                      A healthy mix is 70% evergreen, 30% seasonal.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Key Metrics Grid with Explanations */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <GlassCard className="p-4" data-testid="metric-total-content">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1e3a5f] to-[#2d4a6f] flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.total}</p>
+                      <p className="text-xs text-muted-foreground">Total Content</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-800 dark:text-blue-200">
+                    <strong>What this means:</strong> The total number of posts, images, and messages in your library. More content gives you more options for posting.
+                  </div>
+                </GlassCard>
+
+                <GlassCard className="p-4" data-testid="metric-published">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.posted}</p>
+                      <p className="text-xs text-muted-foreground">Published</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs text-green-800 dark:text-green-200">
+                    <strong>What this means:</strong> Content that has been posted to social media. Track this weekly to ensure consistent posting.
+                  </div>
+                </GlassCard>
+
+                <GlassCard className="p-4" data-testid="metric-scheduled">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{stats.scheduled}</p>
+                      <p className="text-xs text-muted-foreground">Scheduled</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-800 dark:text-amber-200">
+                    <strong>What this means:</strong> Posts ready to go live. Aim to always have 7+ days of content scheduled ahead.
+                  </div>
+                </GlassCard>
+
+                <GlassCard className="p-4" data-testid="metric-evergreen-ratio">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">{Math.round((stats.evergreen / Math.max(stats.total, 1)) * 100)}%</p>
+                      <p className="text-xs text-muted-foreground">Evergreen Ratio</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded text-xs text-purple-800 dark:text-purple-200">
+                    <strong>What this means:</strong> Percentage of reusable content. Target 70%+ evergreen for consistent posting without always creating new content.
+                  </div>
+                </GlassCard>
+              </div>
+
+              {/* Detailed Analytics */}
               <BentoGrid className="gap-4">
                 <BentoItem colSpan={3} mobileColSpan={6}>
                   <GlassCard className="p-4 h-full" data-testid="analytics-total-content">
@@ -4242,20 +4576,46 @@ export default function MarketingHub() {
 
             {/* PLAYBOOK TAB - Marketing Psychology */}
             <TabsContent value="playbook" className="space-y-6" data-testid="playbook-tab-content">
+              {/* Playbook Hero */}
+              <div className="relative rounded-xl overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url('/assets/marketing/general-01-color-consult.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 to-[#1e3a5f]/70" />
+                <div className="relative z-10 p-6 md:p-8">
+                  <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-2">Marketing Playbook</h2>
+                  <p className="text-white/80 text-sm max-w-xl">
+                    Proven psychological principles and strategies that drive customer action. Learn what works and why.
+                  </p>
+                </div>
+              </div>
+
+              {/* Educational Intro */}
+              <GlassCard className="p-4 border-l-4 border-l-[#1e3a5f]">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">How to Use the Playbook</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Each strategy below is based on proven marketing psychology. Click to expand and see specific tactics you can use in your social media posts, ads, and customer communications.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
               <GlassCard className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-yellow-500" />
-                    Marketing Psychology Playbook
+                    <Target className="w-5 h-5 text-[#1e3a5f]" />
+                    Psychology Strategies
                   </h3>
-                  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                    Strategy Guide
+                  <Badge variant="outline" className="bg-[#1e3a5f]/10 text-[#1e3a5f] border-[#1e3a5f]/30">
+                    6 Proven Tactics
                   </Badge>
                 </div>
-
-                <p className="text-sm text-muted-foreground mb-6">
-                  Proven psychological principles that drive customer action. Use these strategies to create compelling campaigns.
-                </p>
 
                 <Accordion type="single" collapsible className="space-y-3">
                   <AccordionItem value="social-proof" className="border rounded-md px-4 bg-blue-50/50 dark:bg-blue-900/10">
