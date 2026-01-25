@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Clock, CheckCircle2 } from "lucide-react";
+import { Clock, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import lumeLogo from "@assets/generated_images/lume_paint_minimalist_logo.png";
 
 interface LeadCaptureModalProps {
   tenantId?: string;
@@ -130,20 +131,19 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[90%] sm:max-w-md bg-gradient-to-br from-gray-50/95 to-white/95 border-gray-200/50 backdrop-blur-sm">
-        <DialogHeader className="text-center pb-2">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-2 rounded-full bg-gradient-to-br from-gray-700 to-gray-900">
-              <Sparkles className="w-5 h-5 text-white" />
+      <DialogContent className="max-w-[90%] sm:max-w-md p-0 border-2 border-[#1e3a5f] bg-transparent overflow-hidden">
+        <div className="m-1.5 border border-[#1e3a5f]/50 rounded-lg bg-gradient-to-br from-gray-50/95 to-white/95 backdrop-blur-sm p-6">
+          <DialogHeader className="text-center pb-2">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <img src={lumeLogo} alt="Lume Paint Co" className="w-16 h-16 object-contain" />
             </div>
-          </div>
-          <DialogTitle className="text-xl font-display text-gray-900">
-            Get Your Free Estimate
-          </DialogTitle>
-          <DialogDescription className="text-gray-600 text-sm">
-            Get your free estimate using our room visualizer tool - right from your phone!
-          </DialogDescription>
-        </DialogHeader>
+            <DialogTitle className="text-xl font-display text-[#1e3a5f]">
+              Get Your Free Estimate
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 text-sm">
+              Get your free estimate using our room visualizer tool - right from your phone!
+            </DialogDescription>
+          </DialogHeader>
 
         <div className="mt-4">
           <AnimatePresence mode="wait">
@@ -275,9 +275,10 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center justify-center gap-2 pt-4 text-xs text-gray-500">
-          <Clock className="w-3 h-3" />
-          <span>Response within 24 hours</span>
+          <div className="flex items-center justify-center gap-2 pt-4 text-xs text-gray-500">
+            <Clock className="w-3 h-3" />
+            <span>Response within 24 hours</span>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
