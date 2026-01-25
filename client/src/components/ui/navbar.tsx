@@ -191,11 +191,26 @@ export function Navbar() {
                 {/* Close button */}
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="mb-6 p-2 hover:bg-gray-100 rounded-lg transition-all"
+                  className="mb-4 p-2 hover:bg-gray-100 rounded-lg transition-all"
                   aria-label="Close menu"
                 >
                   <X size={24} className="text-gray-700" />
                 </button>
+
+                {/* Lume Branding - lumepaint tenant only */}
+                {tenant.id === "lumepaint" && (
+                  <div className="text-center mb-6 pb-4 border-b border-gray-200">
+                    <h2 
+                      className="text-4xl font-light tracking-wide text-gray-800"
+                      style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                    >
+                      Lume<sup className="text-sm align-super ml-0.5">™</sup>
+                    </h2>
+                    <p className="text-xs font-light tracking-[0.2em] uppercase text-gray-600 mt-1">
+                      Paint.co
+                    </p>
+                  </div>
+                )}
 
                 {/* Language Toggle - show for all tenants */}
                 <div className="mb-4 px-2">
