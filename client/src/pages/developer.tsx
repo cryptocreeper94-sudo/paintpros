@@ -2182,13 +2182,13 @@ export default function Developer() {
           animate="visible"
         >
         <BentoGrid>
-          {/* System Health */}
-          <BentoItem colSpan={4} rowSpan={1}>
+          {/* System Health - full width on mobile */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <SystemHealthCard />
           </BentoItem>
 
-          {/* SEO Tracker */}
-          <BentoItem colSpan={4} rowSpan={2}>
+          {/* SEO Tracker - full width on mobile */}
+          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={4}>
             <SeoTracker />
           </BentoItem>
 
@@ -2210,13 +2210,13 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          {/* Live Visitors Card */}
-          <BentoItem colSpan={4} rowSpan={1}>
+          {/* Live Visitors Card - full width on mobile */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <LiveVisitorsCard />
           </BentoItem>
 
-          {/* Layout Switcher Card */}
-          <BentoItem colSpan={4} rowSpan={1}>
+          {/* Layout Switcher Card - full width on mobile */}
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <GlassCard className={`h-full p-4 ${cardBackgroundStyles.accent}`} glow="accent">
               <div className="flex items-center gap-3 mb-3">
                 <motion.div 
@@ -2273,7 +2273,7 @@ export default function Developer() {
             </GlassCard>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={2}>
+          <BentoItem colSpan={4} rowSpan={2} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2307,7 +2307,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2334,7 +2334,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2361,7 +2361,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2385,7 +2385,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2409,7 +2409,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2433,7 +2433,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2457,7 +2457,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2481,7 +2481,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={8} rowSpan={1}>
+          <BentoItem colSpan={8} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2510,7 +2510,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2535,7 +2535,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2562,17 +2562,17 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <RoomScannerCard locked={false} accentColor="purple-400" />
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div className="h-full" variants={cardVariants} whileHover={hover3DSubtle}>
               <PinReferenceAccordion className="h-full" />
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={4} rowSpan={1}>
+          <BentoItem colSpan={4} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2597,7 +2597,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={6} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2621,7 +2621,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={6} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2645,7 +2645,7 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
-          <BentoItem colSpan={6} rowSpan={1}>
+          <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4}>
             <motion.div 
               className="h-full cursor-pointer" 
               variants={cardVariants}
@@ -2670,7 +2670,7 @@ export default function Developer() {
           </BentoItem>
 
           {/* Bookings Management */}
-          <BentoItem colSpan={6} rowSpan={2}>
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
             <motion.div 
               className="h-full" 
               variants={cardVariants}
@@ -2684,7 +2684,7 @@ export default function Developer() {
           </BentoItem>
 
           {/* Crew Management */}
-          <BentoItem colSpan={6} rowSpan={2}>
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
             <motion.div 
               className="h-full" 
               variants={cardVariants}
@@ -2698,7 +2698,7 @@ export default function Developer() {
           </BentoItem>
 
           {/* Version History - All Tenants */}
-          <BentoItem colSpan={6} rowSpan={2}>
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
             <motion.div 
               className="h-full" 
               variants={cardVariants}
@@ -2710,7 +2710,7 @@ export default function Developer() {
           </BentoItem>
 
           {/* Trade Verticals Expansion */}
-          <BentoItem colSpan={6} rowSpan={2}>
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
             <motion.div variants={cardVariants} className="h-full">
               <TradeVerticalsCard showFullDetails={true} />
             </motion.div>
