@@ -10,7 +10,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Clock, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import lumeLogo from "@assets/generated_images/lume_paint_minimalist_logo.png";
 
 interface LeadCaptureModalProps {
   tenantId?: string;
@@ -134,8 +133,9 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
       <DialogContent className="max-w-[90%] sm:max-w-md p-0 border-[3px] border-[#1e3a5f] bg-[#1e3a5f] overflow-hidden shadow-2xl">
         <div className="m-2 border-2 border-[#0f1f33] rounded-md shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-50 to-white p-6">
           <DialogHeader className="text-center pb-2">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <img src={lumeLogo} alt="Lume Paint Co" className="w-16 h-16 object-contain" />
+            <div className="mb-3">
+              <h2 className="font-display text-2xl text-[#1e3a5f] tracking-wide">Lume<span className="text-xs align-top">™</span> Paint Co</h2>
+              <p className="text-xs text-[#1e3a5f]/70 italic mt-0.5">Elevating the backdrop of your life.</p>
             </div>
             <DialogTitle className="text-xl font-display text-[#1e3a5f]">
               Get Your Free Estimate
