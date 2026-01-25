@@ -15,6 +15,7 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Palette,
   Star,
   X
@@ -109,9 +110,9 @@ export default function HomeLume() {
       
       <main className="min-h-screen bg-white">
         
-        {/* HERO - Full viewport, no scroll indication */}
+        {/* HERO - Full viewport with scroll indicator */}
         <section 
-          className="w-full h-[calc(100vh-48px)] flex items-center justify-center"
+          className="relative w-full h-[calc(100vh-48px)] flex items-center justify-center"
           style={{
             background: 'linear-gradient(to right, white 0%, #e5e7eb 25%, #9ca3af 50%, #e5e7eb 75%, white 100%)'
           }}
@@ -137,6 +138,26 @@ export default function HomeLume() {
             <p className="mt-4 text-lg md:text-xl font-light whitespace-nowrap" style={{ color: '#2d4a6f' }}>
               Elevating the backdrop of your life.
             </p>
+          </motion.div>
+          
+          {/* Scroll indicator */}
+          <motion.div
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            onClick={() => window.scrollTo({ top: window.innerHeight - 48, behavior: 'smooth' })}
+            data-testid="button-scroll-indicator"
+          >
+            <span className="text-xs tracking-widest uppercase mb-2" style={{ color: '#1e3a5f' }}>
+              Explore
+            </span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChevronDown className="w-6 h-6" style={{ color: '#1e3a5f' }} />
+            </motion.div>
           </motion.div>
         </section>
 
