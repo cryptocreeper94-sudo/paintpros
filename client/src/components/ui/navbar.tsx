@@ -15,7 +15,6 @@ export function Navbar() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
 
   const mainLinks = [
-    { name: "Home", href: "/", icon: Home },
     { name: "Services", href: "/services" },
     { name: "Portfolio", href: "/portfolio", enabled: tenant.features.portfolio },
     { name: "Pricing", href: "/pricing" },
@@ -98,6 +97,17 @@ export function Navbar() {
 
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
+        
+        {/* Home Button - right side to balance hamburger */}
+        <Link href="/">
+          <button 
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-2"
+            aria-label="Go home"
+            data-testid="button-home-header"
+          >
+            <Home className="w-5 h-5 text-gray-700" />
+          </button>
+        </Link>
         
         {/* Language Toggle - Desktop - show for all tenants */}
         <div className="hidden md:flex items-center mr-4">
