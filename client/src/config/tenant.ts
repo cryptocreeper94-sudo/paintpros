@@ -455,16 +455,16 @@ export const tradeWorksAI: TenantConfig = {
   credentials: {},
 };
 
-// RoofPros.io - Roofing trade vertical
+// TrustLayer Roofing - Roofing trade vertical
 export const roofPros: TenantConfig = {
   id: "roofpros",
   slug: "roofpros",
   tradeVertical: "roofing",
   subscriptionTier: "full_suite",
   
-  name: "RoofPros.io",
-  tagline: "Professional Roofing Solutions",
-  description: "Your trusted roofing professionals. Residential and commercial roofing, repairs, inspections, and installations.",
+  name: "TrustLayer Roofing",
+  tagline: "Trusted Roofing Professionals",
+  description: "Connecting you with trusted roofing professionals. Residential and commercial roofing, repairs, inspections, and installations.",
   
   theme: {
     primaryColor: "#dc2626",
@@ -500,9 +500,9 @@ export const roofPros: TenantConfig = {
   },
   
   seo: {
-    title: "RoofPros.io | Professional Roofing Solutions",
-    description: "Expert roofing services for residential and commercial properties. Free inspections, quality repairs, and complete roof installations.",
-    keywords: ["roofing", "roof repair", "roof installation", "roof inspection", "commercial roofing", "residential roofing"],
+    title: "TrustLayer Roofing | Trusted Roofing Professionals",
+    description: "Connect with trusted roofing professionals. Free inspections, quality repairs, and complete roof installations for residential and commercial properties.",
+    keywords: ["trusted roofing", "roof repair", "roof installation", "roof inspection", "commercial roofing", "residential roofing", "trustlayer"],
     serviceAreas: ["Nationwide"],
   },
   
@@ -522,16 +522,16 @@ export const roofPros: TenantConfig = {
   },
 };
 
-// HVACPros.io - HVAC trade vertical
+// TrustLayer HVAC - HVAC trade vertical
 export const hvacPros: TenantConfig = {
   id: "hvacpros",
   slug: "hvacpros",
   tradeVertical: "hvac",
   subscriptionTier: "full_suite",
   
-  name: "HVACPros.io",
-  tagline: "Climate Control Experts",
-  description: "Professional heating, ventilation, and air conditioning services. Installation, repair, and maintenance for all systems.",
+  name: "TrustLayer HVAC",
+  tagline: "Trusted Climate Experts",
+  description: "Connecting you with trusted HVAC professionals. Heating, ventilation, and air conditioning installation, repair, and maintenance.",
   
   theme: {
     primaryColor: "#0ea5e9",
@@ -567,9 +567,9 @@ export const hvacPros: TenantConfig = {
   },
   
   seo: {
-    title: "HVACPros.io | Climate Control Experts",
-    description: "Professional HVAC services including AC repair, heating installation, and maintenance. 24/7 emergency services available.",
-    keywords: ["hvac", "air conditioning", "heating", "ac repair", "furnace", "heat pump", "ductwork"],
+    title: "TrustLayer HVAC | Trusted Climate Experts",
+    description: "Connect with trusted HVAC professionals. AC repair, heating installation, and maintenance. 24/7 emergency services available.",
+    keywords: ["trusted hvac", "air conditioning", "heating", "ac repair", "furnace", "heat pump", "ductwork", "trustlayer"],
     serviceAreas: ["Nationwide"],
   },
   
@@ -589,16 +589,16 @@ export const hvacPros: TenantConfig = {
   },
 };
 
-// ElectricPros.io - Electrical trade vertical
+// TrustLayer Electric - Electrical trade vertical
 export const electricPros: TenantConfig = {
   id: "electricpros",
   slug: "electricpros",
   tradeVertical: "electrical",
   subscriptionTier: "full_suite",
   
-  name: "ElectricPros.io",
-  tagline: "Power Your World Safely",
-  description: "Licensed electrical contractors providing residential and commercial electrical services. Installations, repairs, and upgrades.",
+  name: "TrustLayer Electric",
+  tagline: "Trusted Electrical Professionals",
+  description: "Connecting you with licensed electrical contractors. Residential and commercial electrical services, installations, repairs, and upgrades.",
   
   theme: {
     primaryColor: "#eab308",
@@ -634,9 +634,9 @@ export const electricPros: TenantConfig = {
   },
   
   seo: {
-    title: "ElectricPros.io | Licensed Electrical Contractors",
-    description: "Expert electrical services for homes and businesses. Panel upgrades, rewiring, EV charger installation, and emergency repairs.",
-    keywords: ["electrician", "electrical contractor", "wiring", "panel upgrade", "ev charger", "electrical repair"],
+    title: "TrustLayer Electric | Trusted Electrical Professionals",
+    description: "Connect with licensed electrical contractors. Panel upgrades, rewiring, EV charger installation, and emergency repairs.",
+    keywords: ["trusted electrician", "electrical contractor", "wiring", "panel upgrade", "ev charger", "electrical repair", "trustlayer"],
     serviceAreas: ["Nationwide"],
   },
   
@@ -656,16 +656,16 @@ export const electricPros: TenantConfig = {
   },
 };
 
-// PlumbPros.io - Plumbing trade vertical
+// TrustLayer Plumbing - Plumbing trade vertical
 export const plumbPros: TenantConfig = {
   id: "plumbpros",
   slug: "plumbpros",
   tradeVertical: "plumbing",
   subscriptionTier: "full_suite",
   
-  name: "PlumbPros.io",
-  tagline: "Flow With Confidence",
-  description: "Professional plumbing services for residential and commercial properties. Repairs, installations, and emergency services.",
+  name: "TrustLayer Plumbing",
+  tagline: "Trusted Plumbing Professionals",
+  description: "Connecting you with trusted plumbing professionals. Repairs, installations, and emergency services for residential and commercial properties.",
   
   theme: {
     primaryColor: "#2563eb",
@@ -701,9 +701,9 @@ export const plumbPros: TenantConfig = {
   },
   
   seo: {
-    title: "PlumbPros.io | Professional Plumbing Services",
-    description: "Expert plumbing solutions for all your needs. Drain cleaning, water heater repair, pipe installation, and 24/7 emergency service.",
-    keywords: ["plumber", "plumbing", "drain cleaning", "water heater", "pipe repair", "emergency plumber"],
+    title: "TrustLayer Plumbing | Trusted Plumbing Professionals",
+    description: "Connect with trusted plumbing professionals. Drain cleaning, water heater repair, pipe installation, and 24/7 emergency service.",
+    keywords: ["trusted plumber", "plumbing", "drain cleaning", "water heater", "pipe repair", "emergency plumber", "trustlayer"],
     serviceAreas: ["Nationwide"],
   },
   
@@ -723,16 +723,16 @@ export const plumbPros: TenantConfig = {
   },
 };
 
-// LandscapePros.io - Landscaping trade vertical
+// TrustLayer Landscaping - Landscaping trade vertical
 export const landscapePros: TenantConfig = {
   id: "landscapepros",
   slug: "landscapepros",
   tradeVertical: "landscaping",
   subscriptionTier: "full_suite",
   
-  name: "LandscapePros.io",
-  tagline: "Transform Your Outdoor Space",
-  description: "Professional landscaping and lawn care services. Design, installation, and maintenance for beautiful outdoor spaces.",
+  name: "TrustLayer Landscaping",
+  tagline: "Trusted Outdoor Professionals",
+  description: "Connecting you with trusted landscaping professionals. Design, installation, and maintenance for beautiful outdoor spaces.",
   
   theme: {
     primaryColor: "#22c55e",
@@ -768,9 +768,9 @@ export const landscapePros: TenantConfig = {
   },
   
   seo: {
-    title: "LandscapePros.io | Professional Landscaping Services",
-    description: "Expert landscaping design and installation. Lawn care, hardscaping, irrigation, and outdoor living spaces.",
-    keywords: ["landscaping", "lawn care", "hardscape", "irrigation", "outdoor design", "garden"],
+    title: "TrustLayer Landscaping | Trusted Outdoor Professionals",
+    description: "Connect with trusted landscaping professionals. Lawn care, hardscaping, irrigation, and outdoor living spaces.",
+    keywords: ["trusted landscaping", "lawn care", "hardscape", "irrigation", "outdoor design", "garden", "trustlayer"],
     serviceAreas: ["Nationwide"],
   },
   
@@ -789,16 +789,16 @@ export const landscapePros: TenantConfig = {
   },
 };
 
-// BuildPros.io - General construction trade vertical
+// TrustLayer Construction - General construction trade vertical
 export const buildPros: TenantConfig = {
   id: "buildpros",
   slug: "buildpros",
   tradeVertical: "construction",
   subscriptionTier: "full_suite",
   
-  name: "BuildPros.io",
-  tagline: "Building Excellence",
-  description: "Full-service general contractors. New construction, remodeling, additions, and commercial buildouts.",
+  name: "TrustLayer Construction",
+  tagline: "Trusted Building Professionals",
+  description: "Connecting you with trusted general contractors. New construction, remodeling, additions, and commercial buildouts.",
   
   theme: {
     primaryColor: "#78716c",

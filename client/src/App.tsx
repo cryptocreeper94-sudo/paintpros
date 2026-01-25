@@ -61,6 +61,7 @@ import OpsAI from "@/pages/ops-ai";
 import TradeWorksApp from "@/pages/tradeworks-app";
 import Why40kFails from "@/pages/why-40k-fails";
 import TradeVerticals from "@/pages/trade-verticals";
+import TradeHome from "@/pages/trade-home";
 import EstimatorApp from "@/pages/estimator-app";
 import TradeToolkit from "@/pages/trade-toolkit";
 import CodeHub from "@/pages/code-hub";
@@ -174,6 +175,7 @@ function Router() {
       <Route path="/comparison" component={Why40kFails} />
       <Route path="/compare" component={Compare} />
       <Route path="/trade-verticals" component={TradeVerticals} />
+      <Route path="/trade-home" component={TradeHome} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/crew-lead" component={CrewLead} />
       <Route path="/contractor-application" component={ContractorApplication} />
