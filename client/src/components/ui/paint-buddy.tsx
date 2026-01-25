@@ -298,29 +298,29 @@ export function PaintBuddy() {
             className="fixed bottom-4 right-4 z-50 group"
             data-testid="button-paint-buddy-open"
           >
-            {/* Bow Tie SVG */}
+            {/* Bow Tie SVG - Sharp pointed edges */}
             <motion.div
-              className="w-10 h-10 flex items-center justify-center"
+              className="w-12 h-12 flex items-center justify-center"
               animate={{ rotate: [0, 3, -3, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
               <svg 
-                viewBox="0 0 100 50" 
-                className="w-10 h-5 drop-shadow-md"
+                viewBox="0 0 100 40" 
+                className="w-12 h-6 drop-shadow-md"
                 fill="currentColor"
               >
-                {/* Left wing */}
-                <path 
-                  d="M0 25 Q0 5 25 5 Q40 5 45 25 Q40 45 25 45 Q0 45 0 25Z" 
+                {/* Left wing - sharp triangular shape */}
+                <polygon 
+                  points="0,0 42,16 42,24 0,40" 
                   className="text-gray-700"
                 />
-                {/* Right wing */}
-                <path 
-                  d="M100 25 Q100 5 75 5 Q60 5 55 25 Q60 45 75 45 Q100 45 100 25Z" 
+                {/* Right wing - sharp triangular shape */}
+                <polygon 
+                  points="100,0 58,16 58,24 100,40" 
                   className="text-gray-700"
                 />
-                {/* Center knot */}
-                <circle cx="50" cy="25" r="8" className="text-gray-800" />
+                {/* Center knot - rectangle */}
+                <rect x="42" y="12" width="16" height="16" rx="2" className="text-gray-800" />
               </svg>
             </motion.div>
             <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
