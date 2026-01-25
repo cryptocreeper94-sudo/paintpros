@@ -13,6 +13,7 @@ import { useTenant } from "@/context/TenantContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Eye, EyeOff, Mail, Lock, User, Phone, Smartphone } from "lucide-react";
 import nppLogo from "@/assets/npp-logo.jpg";
+import authHeroImage from "@/assets/images/auth-hero.jpg";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -149,22 +150,52 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="flex items-center justify-center gap-8 w-full max-w-5xl">
-        {/* Left Logo - Lume Paint Co */}
-        <div className="hidden lg:flex flex-col items-center justify-center w-64 flex-shrink-0">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground" style={{ fontFamily: "'Playfair Display', serif" }}>
-              LUME
-            </h2>
-            <p className="text-lg text-muted-foreground tracking-widest uppercase" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Paint Co
-            </p>
-            <p className="text-xs text-muted-foreground italic mt-4">
-              "Elevating the backdrop of your life"
-            </p>
+    <div className="min-h-screen flex">
+      {/* Left Side - Professional Hero Image */}
+      <div 
+        className="hidden lg:flex lg:w-1/2 relative bg-cover bg-center"
+        style={{ backgroundImage: `url(${authHeroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Marketing Hub</h1>
+            <p className="text-lg text-white/80">Professional tools for growing your business</p>
+          </div>
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center flex-shrink-0">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-semibold">Mobile-Ready</p>
+                <p className="text-sm text-white/70">Access your marketing tools from anywhere</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center flex-shrink-0">
+                <Mail className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-semibold">Smart Content</p>
+                <p className="text-sm text-white/70">Generate posts, ads, and messages effortlessly</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>LUME</h2>
+              <p className="text-xs tracking-widest uppercase text-white/70">Paint Co</p>
+            </div>
+            <div className="w-px h-12 bg-white/30" />
+            <img src={nppLogo} alt="NPP" className="h-12 w-auto rounded-md opacity-90" />
           </div>
         </div>
+      </div>
+
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-4 bg-background">
+        <div className="w-full max-w-md">
 
         {/* Login Card - Center */}
         <Card className="w-full max-w-md flex-shrink-0">
@@ -474,18 +505,6 @@ export default function AuthPage() {
           )}
         </CardContent>
         </Card>
-
-        {/* Right Logo - NPP */}
-        <div className="hidden lg:flex flex-col items-center justify-center w-64 flex-shrink-0">
-          <img 
-            src={nppLogo} 
-            alt="Nashville Painting Professionals" 
-            className="w-full max-w-[200px] h-auto rounded-md"
-            data-testid="img-npp-logo"
-          />
-          <p className="text-xs text-muted-foreground italic mt-4 text-center">
-            "Transforming familiar spaces into extraordinary places"
-          </p>
         </div>
       </div>
     </div>
