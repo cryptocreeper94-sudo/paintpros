@@ -11,9 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/context/TenantContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Eye, EyeOff, Mail, Lock, User, Phone, Smartphone } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Phone, Smartphone, BarChart3, Calendar, Megaphone } from "lucide-react";
+import { motion } from "framer-motion";
 import nppLogo from "@/assets/npp-logo.jpg";
-import authHeroImage from "@/assets/images/auth-hero.jpg";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -151,45 +151,96 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Professional Hero Image */}
-      <div 
-        className="hidden lg:flex lg:w-1/2 relative bg-cover bg-center"
-        style={{ backgroundImage: `url(${authHeroImage})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Marketing Hub</h1>
-            <p className="text-lg text-white/80">Professional tools for growing your business</p>
-          </div>
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center flex-shrink-0">
-                <Smartphone className="w-5 h-5" />
+      {/* Left Side - Branded Gradient Hero */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl translate-x-1/4 translate-y-1/4" />
+        
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl font-bold mb-2">Marketing Hub Pro</h1>
+            <p className="text-lg text-white/80">Your central command for business growth</p>
+          </motion.div>
+          
+          {/* Features */}
+          <div className="space-y-5">
+            <motion.div 
+              className="flex items-start gap-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="w-10 h-10 rounded-md bg-purple-500/30 border border-purple-400/30 flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-purple-300" />
               </div>
               <div>
-                <p className="font-semibold">Mobile-Ready</p>
-                <p className="text-sm text-white/70">Access your marketing tools from anywhere</p>
+                <p className="font-semibold">Smart Scheduling</p>
+                <p className="text-sm text-white/70">Plan and organize your content calendar</p>
               </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center flex-shrink-0">
-                <Mail className="w-5 h-5" />
+            </motion.div>
+            <motion.div 
+              className="flex items-start gap-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <div className="w-10 h-10 rounded-md bg-amber-500/30 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                <Megaphone className="w-5 h-5 text-amber-300" />
               </div>
               <div>
-                <p className="font-semibold">Smart Content</p>
-                <p className="text-sm text-white/70">Generate posts, ads, and messages effortlessly</p>
+                <p className="font-semibold">Content Creation</p>
+                <p className="text-sm text-white/70">Generate posts, ads, and messages</p>
               </div>
-            </div>
+            </motion.div>
+            <motion.div 
+              className="flex items-start gap-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <div className="w-10 h-10 rounded-md bg-emerald-500/30 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="w-5 h-5 text-emerald-300" />
+              </div>
+              <div>
+                <p className="font-semibold">ROI Analytics</p>
+                <p className="text-sm text-white/70">Track performance and optimize spend</p>
+              </div>
+            </motion.div>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>LUME</h2>
-              <p className="text-xs tracking-widest uppercase text-white/70">Paint Co</p>
-            </div>
-            <div className="w-px h-12 bg-white/30" />
-            <img src={nppLogo} alt="NPP" className="h-12 w-auto rounded-md opacity-90" />
-          </div>
+          
+          {/* Tenant Logos */}
+          <motion.div 
+            className="flex items-center gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            {tenant.id === "lumepaint" || tenant.id === "lume" ? (
+              <div className="text-center">
+                <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>LUME</h2>
+                <p className="text-xs tracking-widest uppercase text-white/70">Paint Co</p>
+              </div>
+            ) : (
+              <img src={nppLogo} alt="Nashville Painting Professionals" className="h-14 w-auto rounded-md opacity-90" />
+            )}
+          </motion.div>
+          
+          {/* Footer */}
+          <motion.div 
+            className="pt-6 border-t border-white/10 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1 }}
+          >
+            <p className="text-xs text-white/50">Powered by Dark Wave Studios</p>
+            <p className="text-xs text-white/40 mt-1">&copy; 2026 All rights reserved</p>
+          </motion.div>
         </div>
       </div>
 
@@ -199,8 +250,8 @@ export default function AuthPage() {
 
         {/* Mobile Header - Only visible on smaller screens */}
         <div className="lg:hidden text-center mb-6">
-          <h1 className="text-2xl font-bold text-foreground mb-1">Marketing Hub</h1>
-          <p className="text-sm text-muted-foreground">Professional tools for your business</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Marketing Hub Pro</h1>
+          <p className="text-sm text-muted-foreground">Your central command for business growth</p>
         </div>
 
         {/* Login Card - Center */}
@@ -519,6 +570,12 @@ export default function AuthPage() {
           </div>
         </CardContent>
         </Card>
+        
+        {/* Mobile Footer - Only visible on smaller screens */}
+        <div className="lg:hidden text-center mt-6 pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground">Powered by Dark Wave Studios</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">&copy; 2026 All rights reserved</p>
+        </div>
         </div>
       </div>
     </div>
