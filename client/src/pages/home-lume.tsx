@@ -124,39 +124,62 @@ export default function HomeLume() {
             className="text-center px-4"
           >
             <h1 
-              className="text-6xl md:text-8xl lg:text-9xl 2xl:text-[12rem] font-light tracking-wide"
-              style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
+              className="font-light tracking-wide"
+              style={{ 
+                fontFamily: 'Playfair Display, Georgia, serif', 
+                color: '#1e3a5f',
+                fontSize: 'clamp(3.5rem, 12vw, 20rem)'
+              }}
             >
-              Lume<sup className="text-xl md:text-2xl lg:text-3xl 2xl:text-5xl align-super ml-1">™</sup>
+              Lume<sup 
+                className="align-super ml-1"
+                style={{ fontSize: 'clamp(1rem, 2vw, 4rem)' }}
+              >™</sup>
             </h1>
             <p 
-              className="text-sm md:text-base lg:text-lg 2xl:text-xl font-light tracking-[0.3em] uppercase mt-1 2xl:mt-2"
-              style={{ color: '#1e3a5f' }}
+              className="font-light tracking-[0.3em] uppercase"
+              style={{ 
+                color: '#1e3a5f',
+                fontSize: 'clamp(0.75rem, 1.5vw, 2rem)',
+                marginTop: 'clamp(0.25rem, 0.5vw, 1rem)'
+              }}
             >
               Paint.co
             </p>
-            <p className="mt-4 2xl:mt-6 text-lg md:text-xl lg:text-2xl 2xl:text-3xl font-light whitespace-nowrap" style={{ color: '#2d4a6f' }}>
+            <p 
+              className="font-light whitespace-nowrap" 
+              style={{ 
+                color: '#2d4a6f',
+                fontSize: 'clamp(1rem, 2.5vw, 3.5rem)',
+                marginTop: 'clamp(1rem, 2vw, 3rem)'
+              }}
+            >
               Elevating the backdrop of your life.
             </p>
           </motion.div>
           
           {/* Scroll indicator */}
           <motion.div
-            className="absolute bottom-8 2xl:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer"
+            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center cursor-pointer"
+            style={{ bottom: 'clamp(1.5rem, 3vw, 4rem)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.6 }}
             onClick={() => window.scrollTo({ top: window.innerHeight - 48, behavior: 'smooth' })}
             data-testid="button-scroll-indicator"
           >
-            <span className="text-xs 2xl:text-sm tracking-widest uppercase mb-2" style={{ color: '#1e3a5f' }}>
+            <span 
+              className="tracking-widest uppercase mb-2" 
+              style={{ color: '#1e3a5f', fontSize: 'clamp(0.65rem, 1vw, 1.25rem)' }}
+            >
               Explore
             </span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ width: 'clamp(1.5rem, 2.5vw, 3rem)', height: 'clamp(1.5rem, 2.5vw, 3rem)' }}
             >
-              <ChevronDown className="w-6 h-6 2xl:w-8 2xl:h-8" style={{ color: '#1e3a5f' }} />
+              <ChevronDown className="w-full h-full" style={{ color: '#1e3a5f' }} />
             </motion.div>
           </motion.div>
         </section>
