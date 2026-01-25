@@ -123,11 +123,20 @@ export default function HomeNPP() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-gray-900 leading-tight mb-4 md:mb-6">
+              <h1 
+                className="font-display font-bold text-gray-900 leading-tight"
+                style={{ 
+                  fontSize: 'clamp(2.25rem, 8vw, 12rem)',
+                  marginBottom: 'clamp(1rem, 2vw, 2rem)'
+                }}
+              >
                 Nashville Painting
                 <span className="block">Professionals</span>
               </h1>
-              <p className="text-sm md:text-2xl text-[#800000] max-w-2xl mx-auto md:mx-0">
+              <p 
+                className="text-[#800000] max-w-2xl mx-auto md:mx-0"
+                style={{ fontSize: 'clamp(0.875rem, 2.5vw, 3rem)' }}
+              >
                 Transforming familiar spaces into extraordinary places
               </p>
             </motion.div>

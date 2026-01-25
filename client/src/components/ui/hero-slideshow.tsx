@@ -300,16 +300,31 @@ export function HeroSlideshow() {
                   <Star className="w-3 h-3 fill-accent text-accent" />
                   {ratingBadge}
                 </div>
-                <h1 className="text-xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-1 md:mb-6 text-gray-800">
+                <h1 
+                  className="font-display font-bold leading-tight text-gray-800"
+                  style={{ 
+                    fontSize: 'clamp(1.25rem, 6vw, 10rem)',
+                    marginBottom: 'clamp(0.25rem, 1.5vw, 2rem)'
+                  }}
+                >
                   {currentSlide.title} <br className="hidden md:block" />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#6B5344]">
                     {currentSlide.subtitle}
                   </span>
                 </h1>
-                <p className="text-[11px] md:text-xl text-gray-600 font-semibold mb-2 md:mb-8 max-w-md leading-snug md:leading-relaxed">
+                <p 
+                  className="text-gray-600 font-semibold max-w-md leading-snug md:leading-relaxed"
+                  style={{ 
+                    fontSize: 'clamp(0.7rem, 2vw, 2.5rem)',
+                    marginBottom: 'clamp(0.5rem, 2vw, 3rem)'
+                  }}
+                >
                   {currentSlide.description}
                 </p>
-                <p className="text-[10px] md:text-sm text-gray-500 italic">
+                <p 
+                  className="text-gray-500 italic"
+                  style={{ fontSize: 'clamp(0.625rem, 1vw, 1.25rem)' }}
+                >
                   Swipe to see how we can help you
                 </p>
               </div>
@@ -348,11 +363,23 @@ export function HeroSlideshow() {
                     <Icon className="w-5 h-5 md:w-6 md:h-6 text-accent" />
                   </div>
                   
-                  <h2 className="text-lg md:text-2xl lg:text-3xl font-display font-bold text-foreground mb-2 md:mb-3">
+                  <h2 
+                    className="font-display font-bold text-foreground"
+                    style={{ 
+                      fontSize: 'clamp(1.125rem, 3vw, 4rem)',
+                      marginBottom: 'clamp(0.5rem, 1vw, 1.5rem)'
+                    }}
+                  >
                     {currentSlide.title}
                   </h2>
                   
-                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed mb-4 md:mb-5 max-w-md mx-auto md:mx-0">
+                  <p 
+                    className="text-muted-foreground leading-relaxed max-w-md mx-auto md:mx-0"
+                    style={{ 
+                      fontSize: 'clamp(0.75rem, 1.25vw, 1.5rem)',
+                      marginBottom: 'clamp(1rem, 1.5vw, 2rem)'
+                    }}
+                  >
                     {currentSlide.description}
                   </p>
                   
