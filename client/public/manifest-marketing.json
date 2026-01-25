@@ -1,9 +1,9 @@
 {
-  "name": "NPP Marketing Hub",
+  "name": "Marketing Hub Pro",
   "short_name": "Marketing",
-  "description": "Social media catalog, scheduling & analytics for Nashville Painting Professionals",
+  "description": "Professional marketing tools - social media, scheduling, analytics & content creation",
   "start_url": "/marketing-hub",
-  "scope": "/marketing-hub",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#1e1b4b",
   "theme_color": "#a855f7",

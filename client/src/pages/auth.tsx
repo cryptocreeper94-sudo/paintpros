@@ -475,34 +475,42 @@ export default function AuthPage() {
           </div>
 
           {/* Quick Access Install Button */}
-          {!isInstalled && (deferredPrompt || isIOS) && (
-            <div className="mt-4 pt-4 border-t border-border">
-              <div className="text-center space-y-2">
-                {deferredPrompt ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleInstallClick}
-                    className="gap-2"
-                    data-testid="button-install-pwa"
-                  >
-                    <Smartphone className="w-4 h-4" />
-                    Add to Home Screen for Quick Access
-                  </Button>
-                ) : isIOS ? (
-                  <div className="text-sm text-muted-foreground">
-                    <p className="flex items-center justify-center gap-1">
-                      <Smartphone className="w-4 h-4" />
-                      For quick access: tap Share, then "Add to Home Screen"
-                    </p>
-                  </div>
-                ) : null}
-                <p className="text-xs text-muted-foreground">
-                  Your session stays active for 30 days for convenience
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="text-center space-y-2">
+              {isInstalled ? (
+                <p className="text-sm text-green-600 dark:text-green-400 flex items-center justify-center gap-2">
+                  <Smartphone className="w-4 h-4" />
+                  Added to your device
                 </p>
-              </div>
+              ) : deferredPrompt ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleInstallClick}
+                  className="gap-2"
+                  data-testid="button-install-pwa"
+                >
+                  <Smartphone className="w-4 h-4" />
+                  Add to Home Screen for Quick Access
+                </Button>
+              ) : isIOS ? (
+                <div className="text-sm text-muted-foreground">
+                  <p className="flex items-center justify-center gap-1">
+                    <Smartphone className="w-4 h-4" />
+                    For quick access: tap Share, then "Add to Home Screen"
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Smartphone className="w-4 h-4" />
+                  Open on mobile to add to your home screen
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Your session stays active for 30 days for convenience
+              </p>
             </div>
-          )}
+          </div>
         </CardContent>
         </Card>
         </div>
