@@ -175,6 +175,32 @@ const pwaConfigs: Record<string, {
     iconPath: "/pwa/tradeworks",
     startUrl: "/tradeworks",
     categories: ["utilities", "productivity", "business"]
+  },
+  lumepaint: {
+    name: "Lume Paint Co",
+    shortName: "Lume",
+    description: "Elevating the backdrop of your life. Premium painting services in Murfreesboro, TN.",
+    backgroundColor: "#1e3a5f",
+    themeColor: "#1e3a5f",
+    iconPath: "/pwa/lume"
+  },
+  lume: {
+    name: "Lume Paint Co",
+    shortName: "Lume",
+    description: "Elevating the backdrop of your life. Premium painting services in Murfreesboro, TN.",
+    backgroundColor: "#1e3a5f",
+    themeColor: "#1e3a5f",
+    iconPath: "/pwa/lume"
+  },
+  marketing: {
+    name: "Marketing Hub Pro",
+    shortName: "Marketing",
+    description: "Professional marketing tools - social media, scheduling, analytics & content creation",
+    backgroundColor: "#1e1b4b",
+    themeColor: "#a855f7",
+    iconPath: "/pwa/marketing",
+    startUrl: "/marketing-hub",
+    categories: ["business", "productivity", "social"]
   }
 };
 
