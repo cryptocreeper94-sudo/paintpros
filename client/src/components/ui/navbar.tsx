@@ -66,7 +66,7 @@ export function Navbar() {
           )}
         </button>
         
-        {/* Center: Title - only show for demo tenant */}
+        {/* Center: Title - show for demo and lumepaint tenants */}
         {tenant.id === "demo" && (
           <div className="flex flex-col items-start ml-4 md:ml-8 min-w-0 flex-shrink">
             <div 
@@ -92,6 +92,26 @@ export function Navbar() {
               data-testid="text-header-tagline"
             >
               White-Label Websites for Painting Contractors
+            </div>
+          </div>
+        )}
+
+        {/* Lume Paint Co branding */}
+        {tenant.id === "lumepaint" && (
+          <div className="flex flex-col items-start ml-3 min-w-0 flex-shrink">
+            <div 
+              className="text-xl md:text-2xl font-display font-bold text-foreground"
+              style={{ letterSpacing: '0.02em' }}
+              data-testid="text-lume-title"
+            >
+              Lume
+            </div>
+            <div 
+              className="text-[10px] md:text-xs text-muted-foreground -mt-0.5"
+              style={{ letterSpacing: '0.05em' }}
+              data-testid="text-lume-domain"
+            >
+              Paint.co
             </div>
           </div>
         )}

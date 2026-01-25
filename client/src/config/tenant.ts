@@ -292,6 +292,9 @@ export const lumePaintCo: TenantConfig = {
   
   social: {
     googleReviews: "",
+    facebook: "https://facebook.com/lumepaintco",
+    twitter: "https://twitter.com/lumepaintco",
+    instagram: "https://instagram.com/lumepaintco",
   },
   
   theme: {
