@@ -277,22 +277,16 @@ export function Navbar() {
                     <Link href="/contractor-application">
                       <span 
                         className={cn(
-                          "flex items-center gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all",
-                          "bg-gradient-to-r from-accent/10 to-transparent hover:from-accent/20",
-                          "border border-accent/20 hover:border-accent/40",
-                          location === "/contractor-application" && "bg-accent/20 border-accent/50"
+                          "flex items-center gap-2 py-2 px-3 rounded-lg cursor-pointer transition-all",
+                          "bg-accent/5 hover:bg-accent/10",
+                          location === "/contractor-application" && "bg-accent/15"
                         )}
                         onClick={() => setIsOpen(false)}
                         data-testid="link-contractor-application"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                          <Briefcase className="w-4 h-4 text-accent" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-base font-medium text-foreground">Join Our Team</span>
-                          <p className="text-xs text-muted-foreground">Apply as a contractor</p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 opacity-50" />
+                        <Briefcase className="w-4 h-4 text-accent" />
+                        <span className="text-sm font-medium text-foreground">Join Our Team</span>
+                        <ChevronRight className="w-4 h-4 opacity-50 ml-auto" />
                       </span>
                     </Link>
                   </motion.div>

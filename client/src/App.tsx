@@ -171,8 +171,9 @@ function Router() {
       <Route path="/royalty-dashboard" component={RoyaltyDashboard} />
       <Route path="/partner" component={PartnerDashboard} />
       <Route path="/proposal-ryan" component={ProposalRyan} />
-      <Route path="/marketing" component={Marketing} />
+      <Route path="/marketing" component={MarketingHub} />
       <Route path="/marketing-hub" component={MarketingHub} />
+      <Route path="/marketing-old" component={Marketing} />
       <Route path="/marketing-overview" component={MarketingOverview} />
       <Route path="/install-marketing" component={InstallMarketingPWA} />
       <Route path="/ops" component={OpsAI} />
