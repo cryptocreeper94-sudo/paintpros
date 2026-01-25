@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
@@ -11,8 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { useTenant } from "@/context/TenantContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Phone, Smartphone } from "lucide-react";
 import nppLogo from "@/assets/npp-logo.jpg";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -37,9 +42,41 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const tenant = useTenant();
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+    
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstalled(true);
+        toast({ title: "Added to home screen!", description: "You can now access this quickly from your device." });
+      }
+      setDeferredPrompt(null);
+    }
+  };
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -405,6 +442,36 @@ export default function AuthPage() {
                 : "Already have an account? Sign in"}
             </Button>
           </div>
+
+          {/* Quick Access Install Button */}
+          {!isInstalled && (deferredPrompt || isIOS) && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="text-center space-y-2">
+                {deferredPrompt ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleInstallClick}
+                    className="gap-2"
+                    data-testid="button-install-pwa"
+                  >
+                    <Smartphone className="w-4 h-4" />
+                    Add to Home Screen for Quick Access
+                  </Button>
+                ) : isIOS ? (
+                  <div className="text-sm text-muted-foreground">
+                    <p className="flex items-center justify-center gap-1">
+                      <Smartphone className="w-4 h-4" />
+                      For quick access: tap Share, then "Add to Home Screen"
+                    </p>
+                  </div>
+                ) : null}
+                <p className="text-xs text-muted-foreground">
+                  Your session stays active for 30 days for convenience
+                </p>
+              </div>
+            </div>
+          )}
         </CardContent>
         </Card>
 
