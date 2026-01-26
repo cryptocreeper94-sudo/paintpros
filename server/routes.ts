@@ -2592,7 +2592,7 @@ Format the response as JSON with these fields:
         { role: "project_manager", pin: "6666", userName: "Garrett", mustChangePin: true },
         { role: "developer", pin: "0424", userName: "Jason", mustChangePin: false },
         { role: "crew_lead", pin: "3333", userName: "Crew Lead", mustChangePin: true },
-        { role: "marketing", pin: "88888", userName: "Marketing", mustChangePin: true },
+        { role: "marketing", pin: "8888", userName: "Marketing", mustChangePin: true },
         { role: "demo_viewer", pin: "7777", userName: "Demo", mustChangePin: false }
       ];
       

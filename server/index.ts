@@ -36,7 +36,7 @@ async function autoSeedDefaultPins(): Promise<void> {
       { role: "developer", pin: "0424", mustChangePin: false },   // Developer - Jason (override access)
       { role: "crew_lead", pin: "3333", mustChangePin: true },
       { role: "demo_viewer", pin: "7777", mustChangePin: false },
-      { role: "marketing", pin: "88888", mustChangePin: true }    // Marketing Partner - Logan
+      { role: "marketing", pin: "8888", mustChangePin: true }    // Marketing Partner - Logan
     ];
     
     let seededCount = 0;

@@ -48,7 +48,7 @@ interface Message {
 
 const PIN_CODES: Record<string, { name: string; role: string }> = {
   "1111": { name: "Ryan", role: "Owner" },
-  "88888": { name: "Logan", role: "Marketing" },
+  "8888": { name: "Logan", role: "Marketing" },
   "0424": { name: "Brian", role: "Developer" },
   "2024": { name: "Sidonie", role: "Partner" },
 };

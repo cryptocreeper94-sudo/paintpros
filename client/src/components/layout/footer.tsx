@@ -25,7 +25,7 @@ const PIN_ROUTES: Record<string, { route: string; role: string }> = {
   "1111": { route: "/owner", role: "Owner" },
   "4444": { route: "/admin", role: "Admin" },
   "0424": { route: "/developer", role: "Developer" },
-  "88888": { route: "/marketing-hub", role: "Marketing" },
+  "8888": { route: "/marketing-hub", role: "Marketing" },
   "5555": { route: "/project-manager", role: "Project Manager" },
   "7777": { route: "/crew-lead", role: "Crew Lead" },
 };
