@@ -845,7 +845,7 @@ export default function FieldTool() {
               <div className="grid grid-cols-3 gap-2">
                 <Card 
                   className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
-                  onClick={() => setActiveSection("messages")}
+                  onClick={() => setShowMessaging(true)}
                   data-testid="button-messaging"
                 >
                   <div className="flex flex-col items-center gap-1.5">
