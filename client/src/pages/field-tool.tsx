@@ -113,6 +113,9 @@ export default function FieldTool() {
   
   // Roles that should see the clock-in feature (only crew members)
   const showClockIn = ["crew", "crew_lead"].includes(userRole);
+  
+  // Accordion states for home screen
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -377,87 +380,157 @@ export default function FieldTool() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="p-4 space-y-4"
+            className="p-4 space-y-3"
           >
-            {/* Quick Actions Grid */}
-            <div>
-              <h2 className="text-sm font-medium text-gray-400 mb-3">Quick Actions</h2>
-              <div className="grid grid-cols-3 gap-3">
-                {quickActions.map((action, i) => (
-                  <Card 
-                    key={i}
-                    className="bg-gray-900/50 border-gray-800 p-4 text-center cursor-pointer hover:bg-gray-800/50 transition-colors"
-                    onClick={action.action}
-                  >
-                    <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center mx-auto mb-2`}>
-                      <action.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <p className="text-sm text-white">{action.label}</p>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Today's Jobs */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-medium text-gray-400">Today's Jobs</h2>
-                <Button variant="ghost" size="sm" className="text-xs" style={{ color: colors.primary }} onClick={() => setActiveSection("jobs")}>
-                  View All
-                </Button>
-              </div>
-              <div className="space-y-2">
-                {todaysJobs.length > 0 ? todaysJobs.slice(0, 3).map((job: any, i: number) => (
-                  <Card key={job.id || i} className="bg-gray-900/50 border-gray-800 p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="text-center min-w-[50px]">
-                          <p className="text-white font-medium">{job.timeSlot?.split(' ')[0] || '9:00'}</p>
-                          <p className="text-gray-500 text-xs">{job.timeSlot?.split(' ')[1] || 'AM'}</p>
-                        </div>
-                        <div className="w-px h-10 bg-gray-800" />
-                        <div>
-                          <p className="text-white font-medium">{job.customerName || 'Customer'}</p>
-                          <p className="text-gray-500 text-sm">{job.serviceType || 'Service'}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        {job.phone && (
-                          <Button size="icon" variant="ghost" className="h-9 w-9" asChild>
-                            <a href={`tel:${job.phone}`}><Phone className="w-4 h-4 text-gray-400" /></a>
-                          </Button>
-                        )}
-                        <Button size="icon" variant="ghost" className="h-9 w-9">
-                          <Navigation className="w-4 h-4 text-gray-400" />
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                )) : (
-                  <Card className="bg-gray-900/50 border-gray-800 p-6 text-center">
-                    <Calendar className="w-10 h-10 mx-auto mb-2 text-gray-600" />
-                    <p className="text-gray-500 text-sm">No jobs scheduled today</p>
-                  </Card>
-                )}
-              </div>
-            </div>
-
-            {/* AI Assistant Teaser */}
+            {/* Weather Quick Access - Always visible at top */}
             <Card 
-              className="p-4 border-0 cursor-pointer"
+              className="p-3 border-0 cursor-pointer"
+              style={{ background: `linear-gradient(135deg, #0ea5e920 0%, #06b6d410 100%)` }}
+              onClick={() => setShowWeather(true)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                    <Cloud className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">Weather</p>
+                    <p className="text-gray-400 text-xs">Tap to check conditions</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-500" />
+              </div>
+            </Card>
+
+            {/* Quick Tools Row - Compact horizontal scroll */}
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {[
+                { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
+                { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
+                { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
+                { icon: Store, label: "Stores", action: () => setActiveSection("stores"), color: "bg-green-500" },
+                { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), color: "bg-orange-500" },
+              ].map((tool, i) => (
+                <Card 
+                  key={i}
+                  className="flex-shrink-0 bg-gray-900/50 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/50 transition-colors"
+                  onClick={tool.action}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 ${tool.color} rounded-lg flex items-center justify-center`}>
+                      <tool.icon className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-white text-sm whitespace-nowrap">{tool.label}</span>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* AI Assistant - Prominent placement */}
+            <Card 
+              className="p-3 border-0 cursor-pointer"
               style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}10 100%)` }}
               onClick={() => setShowAIAssistant(true)}
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: colors.gradient }}>
-                  <Sparkles className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: colors.gradient }}>
+                  <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-white font-medium">AI Field Assistant</p>
-                  <p className="text-gray-400 text-sm">Voice commands, calculations, recommendations</p>
+                  <p className="text-white font-medium text-sm">AI Field Assistant</p>
+                  <p className="text-gray-400 text-xs">Voice commands & calculations</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400" />
+                <Mic className="w-5 h-5 text-gray-400" />
               </div>
+            </Card>
+
+            {/* Today's Jobs - Collapsible */}
+            <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
+              <div 
+                className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/30 transition-colors"
+                onClick={() => setExpandedSection(expandedSection === "jobs" ? null : "jobs")}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                    <ClipboardList className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">Today's Jobs</p>
+                    <p className="text-gray-500 text-xs">{todaysJobs.length} scheduled</p>
+                  </div>
+                </div>
+                <ChevronRight className={`w-4 h-4 text-gray-500 transition-transform ${expandedSection === "jobs" ? "rotate-90" : ""}`} />
+              </div>
+              {expandedSection === "jobs" && (
+                <div className="px-3 pb-3 space-y-2">
+                  {todaysJobs.length > 0 ? todaysJobs.slice(0, 3).map((job: any, i: number) => (
+                    <div key={job.id || i} className="p-2 rounded-lg bg-gray-800/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white text-sm font-medium">{job.timeSlot?.split(' ')[0] || '9:00'}</span>
+                          <span className="text-gray-500">-</span>
+                          <span className="text-gray-300 text-sm">{job.customerName || 'Customer'}</span>
+                        </div>
+                        <div className="flex gap-1">
+                          {job.phone && (
+                            <Button size="icon" variant="ghost" className="h-7 w-7" asChild>
+                              <a href={`tel:${job.phone}`}><Phone className="w-3 h-3 text-gray-400" /></a>
+                            </Button>
+                          )}
+                          <Button size="icon" variant="ghost" className="h-7 w-7">
+                            <Navigation className="w-3 h-3 text-gray-400" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )) : (
+                    <p className="text-gray-500 text-sm text-center py-2">No jobs scheduled today</p>
+                  )}
+                  <Button variant="ghost" size="sm" className="w-full text-xs" style={{ color: colors.primary }} onClick={() => setActiveSection("jobs")}>
+                    View All Jobs
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+            {/* Business Tools - Collapsible */}
+            <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
+              <div 
+                className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/30 transition-colors"
+                onClick={() => setExpandedSection(expandedSection === "business" ? null : "business")}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                    <Briefcase className="w-4 h-4 text-indigo-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">Business Tools</p>
+                    <p className="text-gray-500 text-xs">CRM, Analytics, Reports</p>
+                  </div>
+                </div>
+                <ChevronRight className={`w-4 h-4 text-gray-500 transition-transform ${expandedSection === "business" ? "rotate-90" : ""}`} />
+              </div>
+              {expandedSection === "business" && (
+                <div className="px-3 pb-3 grid grid-cols-2 gap-2">
+                  {[
+                    { icon: Megaphone, label: "Marketing", path: "/marketing-hub" },
+                    { icon: BarChart3, label: "Analytics", path: "/admin" },
+                    { icon: Users, label: "CRM", path: "/admin" },
+                    { icon: PieChart, label: "Reports", path: "/owner" },
+                    { icon: Shield, label: "Admin", path: "/admin" },
+                    { icon: Settings, label: "Settings", path: "/admin" },
+                  ].map((tool, i) => (
+                    <div 
+                      key={i}
+                      className="p-2 rounded-lg bg-gray-800/50 cursor-pointer hover:bg-gray-700/50 transition-colors flex items-center gap-2"
+                      onClick={() => window.location.href = tool.path}
+                    >
+                      <tool.icon className="w-4 h-4" style={{ color: colors.primary }} />
+                      <span className="text-white text-sm">{tool.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card>
           </motion.div>
         )}
