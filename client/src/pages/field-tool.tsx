@@ -181,8 +181,11 @@ export default function FieldTool() {
     if (currentUser.isAuthenticated && currentUser.role) {
       setIsAuthenticated(true);
       setUserRole(currentUser.role);
+      if (currentUser.userName) {
+        setUserName(currentUser.userName);
+      }
     }
-  }, [currentUser.isAuthenticated, currentUser.role]);
+  }, [currentUser.isAuthenticated, currentUser.role, currentUser.userName]);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);

@@ -24,11 +24,11 @@ interface AccessContextType {
 }
 
 const ACCESS_CONFIG: Record<Exclude<UserRole, null>, { accessMode: AccessMode; userName: string; canViewSalesData: boolean }> = {
-  admin: { accessMode: "live", userName: "Admin", canViewSalesData: true },
-  ops_manager: { accessMode: "live", userName: "Admin", canViewSalesData: true },
-  owner: { accessMode: "live", userName: "Owner", canViewSalesData: false },
-  project_manager: { accessMode: "view_only", userName: "Project Manager", canViewSalesData: false },
-  developer: { accessMode: "live", userName: "Developer", canViewSalesData: true },
+  admin: { accessMode: "live", userName: "Sidonie", canViewSalesData: true },
+  ops_manager: { accessMode: "live", userName: "Sidonie", canViewSalesData: true },
+  owner: { accessMode: "live", userName: "Ryan", canViewSalesData: false },
+  project_manager: { accessMode: "view_only", userName: "Garrett", canViewSalesData: false },
+  developer: { accessMode: "live", userName: "Jason", canViewSalesData: true },
   demo_viewer: { accessMode: "view_only", userName: "Demo Viewer", canViewSalesData: true },
   crew_lead: { accessMode: "view_only", userName: "Crew Lead", canViewSalesData: false },
   marketing: { accessMode: "live", userName: "Marketing", canViewSalesData: true },
