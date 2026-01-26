@@ -50,6 +50,7 @@ import {
   ArrowLeft,
   Zap,
   Brain,
+  LogOut,
   Sparkles,
   Upload,
   Image,
@@ -95,28 +96,86 @@ export default function FieldTool() {
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem("field_tool_user") || "Team Member";
   });
+  
+  // Authentication state - require PIN login
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem("field_tool_authenticated") === "true";
+  });
+  const [loginPin, setLoginPin] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [isVerifyingLogin, setIsVerifyingLogin] = useState(false);
+  
   const [userRole, setUserRole] = useState(() => {
-    // Check URL params first, then localStorage, then default to admin (hide clock-in by default for safety)
+    const sessionRole = sessionStorage.getItem("field_tool_role");
+    if (sessionRole) return sessionRole;
     const urlParams = new URLSearchParams(window.location.search);
     const roleParam = urlParams.get("role");
-    if (roleParam) {
-      localStorage.setItem("field_tool_role", roleParam);
-      return roleParam;
-    }
-    // Check if user logged in via admin/owner/developer dashboards
-    const dashboardRole = sessionStorage.getItem("dashboard_role");
-    if (dashboardRole) {
-      return dashboardRole;
-    }
-    return localStorage.getItem("field_tool_role") || "admin";
+    if (roleParam) return roleParam;
+    return "crew";
   });
   
   // Roles that should see the clock-in feature (only crew members)
   const showClockIn = ["crew", "crew_lead"].includes(userRole);
   
+  // Role to dashboard mapping
+  const roleDashboardMap: Record<string, string> = {
+    owner: "/owner",
+    ops_manager: "/admin",
+    admin: "/admin",
+    developer: "/developer",
+    project_manager: "/project-manager",
+    crew_lead: "/crew-lead",
+    marketing: "/marketing-hub",
+    demo_viewer: "/admin",
+  };
+  
   // Accordion states for home screen
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  
+  // PIN login handler
+  const handleLoginSubmit = async () => {
+    if (!loginPin || loginPin.length < 4) {
+      setLoginError("Enter your PIN");
+      return;
+    }
+    setIsVerifyingLogin(true);
+    setLoginError("");
+    try {
+      const res = await fetch("/api/auth/pin/verify-any", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: loginPin }),
+      });
+      const data = await res.json();
+      if (data.success && data.role) {
+        sessionStorage.setItem("field_tool_authenticated", "true");
+        sessionStorage.setItem("field_tool_role", data.role);
+        sessionStorage.setItem("dashboard_role", data.role);
+        setUserRole(data.role);
+        setIsAuthenticated(true);
+        setLoginPin("");
+      } else {
+        setLoginError("Invalid PIN. Please try again.");
+        setLoginPin("");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setLoginError("Connection error. Please try again.");
+    } finally {
+      setIsVerifyingLogin(false);
+    }
+  };
+  
+  // Logout handler
+  const handleLogout = () => {
+    sessionStorage.removeItem("field_tool_authenticated");
+    sessionStorage.removeItem("field_tool_role");
+    sessionStorage.removeItem("dashboard_role");
+    setIsAuthenticated(false);
+    setUserRole("crew");
+    setLoginPin("");
+  };
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -281,6 +340,66 @@ export default function FieldTool() {
     { id: "business", icon: Briefcase, label: "Business" },
   ];
 
+  // Login screen when not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-sm"
+        >
+          <div className="text-center mb-8">
+            <div 
+              className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ background: colors.gradient }}
+            >
+              <PaintBucket className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">{appName}</h1>
+            <p className="text-gray-400">{tenant?.tagline || "Field Operations"}</p>
+          </div>
+          
+          <Card className="bg-gray-900/50 border-gray-800 p-6">
+            <h2 className="text-lg font-semibold text-white text-center mb-4">Enter Your PIN</h2>
+            <form onSubmit={(e) => { e.preventDefault(); handleLoginSubmit(); }}>
+              <Input
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="••••"
+                value={loginPin}
+                onChange={(e) => setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 5))}
+                className="bg-gray-800 border-gray-700 text-center text-2xl tracking-[0.5em] h-14 mb-4"
+                maxLength={5}
+                autoFocus
+                data-testid="input-field-tool-pin"
+              />
+              {loginError && (
+                <p className="text-red-400 text-sm text-center mb-4">{loginError}</p>
+              )}
+              <Button 
+                type="submit"
+                className="w-full h-12"
+                style={{ background: colors.gradient }}
+                disabled={isVerifyingLogin || loginPin.length < 4}
+                data-testid="button-field-tool-login"
+              >
+                {isVerifyingLogin ? "Verifying..." : "Login"}
+              </Button>
+            </form>
+            
+            <div className="mt-6 pt-4 border-t border-gray-800">
+              <p className="text-xs text-gray-500 text-center">
+                Your PIN determines your access level and dashboard
+              </p>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white pb-20 overflow-x-hidden">
       {/* Header with tenant branding and personalized greeting */}
@@ -307,7 +426,9 @@ export default function FieldTool() {
                   {getTimeGreeting()}, <span style={{ color: colors.primary }}>{userName}</span>
                 </h1>
               </div>
-              <p className="text-xs text-gray-400">{appName} - {tenant?.tagline || "Field Operations"}</p>
+              <p className="text-xs text-gray-400">
+                {appName} • <span className="capitalize">{userRole.replace("_", " ")}</span>
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -511,24 +632,37 @@ export default function FieldTool() {
                 <ChevronRight className={`w-4 h-4 text-gray-500 transition-transform ${expandedSection === "business" ? "rotate-90" : ""}`} />
               </div>
               {expandedSection === "business" && (
-                <div className="px-3 pb-3 grid grid-cols-2 gap-2">
-                  {[
-                    { icon: Megaphone, label: "Marketing", path: "/marketing-hub" },
-                    { icon: BarChart3, label: "Analytics", path: "/admin" },
-                    { icon: Users, label: "CRM", path: "/admin" },
-                    { icon: PieChart, label: "Reports", path: "/owner" },
-                    { icon: Shield, label: "Admin", path: "/admin" },
-                    { icon: Settings, label: "Settings", path: "/admin" },
-                  ].map((tool, i) => (
-                    <div 
-                      key={i}
-                      className="p-2 rounded-lg bg-gray-800/50 cursor-pointer hover:bg-gray-700/50 transition-colors flex items-center gap-2"
-                      onClick={() => window.location.href = tool.path}
-                    >
-                      <tool.icon className="w-4 h-4" style={{ color: colors.primary }} />
-                      <span className="text-white text-sm">{tool.label}</span>
+                <div className="px-3 pb-3 space-y-2">
+                  <div 
+                    className="p-3 rounded-lg cursor-pointer hover:bg-gray-700/50 transition-colors flex items-center gap-3"
+                    style={{ background: `${colors.primary}20` }}
+                    onClick={() => window.location.href = roleDashboardMap[userRole] || "/admin"}
+                  >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: colors.gradient }}>
+                      <Briefcase className="w-5 h-5 text-white" />
                     </div>
-                  ))}
+                    <div className="flex-1">
+                      <p className="text-white font-medium">My Dashboard</p>
+                      <p className="text-gray-400 text-xs capitalize">{userRole.replace("_", " ")} Access</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { icon: Megaphone, label: "Marketing", path: "/marketing-hub" },
+                      { icon: BarChart3, label: "Analytics", path: roleDashboardMap[userRole] || "/admin" },
+                      { icon: Users, label: "CRM", path: roleDashboardMap[userRole] || "/admin" },
+                    ].map((tool, i) => (
+                      <div 
+                        key={i}
+                        className="p-2 rounded-lg bg-gray-800/50 cursor-pointer hover:bg-gray-700/50 transition-colors flex flex-col items-center gap-1"
+                        onClick={() => window.location.href = tool.path}
+                      >
+                        <tool.icon className="w-4 h-4" style={{ color: colors.primary }} />
+                        <span className="text-white text-xs">{tool.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </Card>
@@ -1276,14 +1410,30 @@ export default function FieldTool() {
                   </Card>
                   <Card 
                     className="bg-gray-900/50 border-gray-800 p-4 cursor-pointer active:scale-[0.98] transition-transform"
-                    onClick={() => window.location.href = '/admin'}
+                    onClick={() => window.location.href = roleDashboardMap[userRole] || '/admin'}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-white">Admin Dashboard</span>
+                      <span className="text-white">My Dashboard</span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </div>
                   </Card>
                 </div>
+              </div>
+              
+              {/* Logout */}
+              <div className="space-y-4 pt-4 border-t border-gray-800">
+                <Card 
+                  className="bg-red-900/20 border-red-800/50 p-4 cursor-pointer active:scale-[0.98] transition-transform"
+                  onClick={() => {
+                    handleLogout();
+                    setShowSettings(false);
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <LogOut className="w-5 h-5 text-red-400" />
+                    <span className="text-red-400 font-medium">Log Out</span>
+                  </div>
+                </Card>
               </div>
             </div>
           </motion.div>
