@@ -2700,20 +2700,18 @@ export default function FieldTool() {
               </Badge>
             </div>
 
-            {/* Quick Stats */}
+            {/* Quick Stats - Live Data */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Today's Revenue", value: "$2,450", icon: DollarSign, trend: "+12%" },
-                { label: "Active Leads", value: "23", icon: Target, trend: "+5" },
-                { label: "Pending Estimates", value: "8", icon: FileText, trend: "3 new" },
-                { label: "Jobs This Week", value: "12", icon: Calendar, trend: "On track" },
+                { label: "Today's Jobs", value: todaysJobs.length.toString(), icon: Calendar, trend: todaysJobs.length > 0 ? "Scheduled" : "No jobs today" },
+                { label: "Total Bookings", value: bookings.length.toString(), icon: FileText, trend: "All time" },
               ].map((stat, i) => (
                 <Card key={i} className="bg-gray-900/50 border-gray-800 p-3">
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-gray-500 text-xs">{stat.label}</p>
                       <p className="text-white text-xl font-bold">{stat.value}</p>
-                      <p className="text-green-400 text-xs">{stat.trend}</p>
+                      <p className="text-gray-400 text-xs">{stat.trend}</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${colors.primary}20` }}>
                       <stat.icon className="w-4 h-4" style={{ color: colors.primary }} />
