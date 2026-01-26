@@ -5049,10 +5049,10 @@ export default function MarketingHub() {
                     </ul>
                   </div>
                 </div>
-                <div className="mt-4 p-4 rounded-lg bg-red-500/10 border border-red-500/30">
-                  <p className="text-sm font-medium text-red-600 flex items-start gap-2">
+                <div className="mt-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                  <p className="text-sm font-medium text-amber-700 flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>Without full access, marketing cannot implement tools or produce measurable results. Results require access, time, and participation from everyone.</span>
+                    <span><strong>Current Blocker:</strong> Logins have been provided, but browser security/2FA sends confirmation to the owner's email or phone. To run ad campaigns and make payments, either add the marketing account as an authorized user on social media accounts, or provide a way to receive those confirmations in real-time.</span>
                   </p>
                 </div>
               </GlassCard>

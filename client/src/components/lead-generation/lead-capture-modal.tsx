@@ -148,13 +148,13 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
 
   // Tenant-specific branding
   const isLume = tenantId === "lumepaint";
-  const brandColor = isLume ? "#1e3a5f" : "#374151"; // Navy for Lume, gray for NPP
+  const brandColor = isLume ? "#1e3a5f" : "#166534"; // Navy for Lume, green for NPP
   const tagline = isLume ? "Elevating the backdrop of your life." : "Transforming familiar spaces into extraordinary places.";
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className={`max-w-[85%] sm:max-w-sm p-0 border-[3px] shadow-2xl max-h-[88vh] overflow-y-auto`} style={{ borderColor: brandColor, backgroundColor: brandColor }}>
-        <div className="m-1 border-2 rounded-md shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] bg-white p-3" style={{ borderColor: isLume ? "#0f1f33" : "#1f2937" }}>
+        <div className="m-1 border-2 rounded-md shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] bg-white p-3" style={{ borderColor: isLume ? "#0f1f33" : "#14532d" }}>
           <DialogHeader className="text-center pb-0">
             <div className="mb-1.5">
               {isLume ? (
