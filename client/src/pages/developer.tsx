@@ -2310,6 +2310,104 @@ export default function Developer() {
                   </div>
                 </div>
                 
+                {/* Billboard vs LSA Comparison */}
+                <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-red-500/5 to-green-500/5 border border-amber-500/30">
+                  <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-amber-500" />
+                    The $50K Question: Billboards vs Google LSA
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    {/* Billboard Column */}
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                      <h5 className="font-semibold text-red-600 mb-2">Billboard ($25,000+/year)</h5>
+                      <ul className="text-xs space-y-1.5">
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-red-500" />
+                          <span>Mid-size city: $1,500-$5,000/month</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-red-500" />
+                          <span>Design/production: $2,000-$5,000 extra</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-red-500" />
+                          <span>ROI: 6:1 average (but hard to track)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-red-500" />
+                          <span>No way to know which leads came from it</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-red-500" />
+                          <span>Brand awareness only - no direct leads</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    {/* LSA Column */}
+                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                      <h5 className="font-semibold text-green-600 mb-2">Google LSA ($2,000/month)</h5>
+                      <ul className="text-xs space-y-1.5">
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span><strong>Painters pay $20-$40 per lead</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span>$2,000/month = 50-100 leads</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span>50-60% close rate on LSA leads</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span>25-60 booked jobs per month</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span>"Google Guaranteed" badge = trust</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span>Pay only for actual leads (not views)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <span>Dispute bad leads and get refunds</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  {/* The Math */}
+                  <div className="p-3 rounded-lg bg-[#1e3a5f]/10 border border-[#1e3a5f]/30">
+                    <h5 className="font-semibold text-[#1e3a5f] mb-2">The Math (Same $24,000/year)</h5>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Billboard:</p>
+                        <p className="font-medium">1 billboard, unknown leads</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">LSA:</p>
+                        <p className="font-medium text-green-600">600-1,200 leads, 300-700 jobs</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      At avg $2,000/job, that's <strong className="text-green-600">$600K-$1.4M potential revenue</strong> from LSA vs. "hope people see the billboard"
+                    </p>
+                  </div>
+                  
+                  {/* Key Question */}
+                  <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                    <p className="text-sm font-medium text-amber-700">
+                      <strong>Ask Ryan:</strong> "Does Lume have Google LSA set up? If so, I need access to see performance. 
+                      If not, for the same money as one billboard, we could be getting 50+ leads a month with trackable ROI."
+                    </p>
+                  </div>
+                </div>
+                
                 {/* Bottom Line */}
                 <div className="mt-4 p-4 rounded-lg bg-[#1e3a5f]/10 border border-[#1e3a5f]/30">
                   <p className="text-sm font-medium text-[#1e3a5f]">
