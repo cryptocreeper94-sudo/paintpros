@@ -25,7 +25,7 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 | 1111 | Ryan | Owner | /owner |
 | 4444 | Sidonie | Admin/Ops Manager | /admin |
 | 0424 | Jason | Developer | /developer |
-| 88888 | Marketing | Marketing | /marketing-hub |
+| 8888 | Marketing | Marketing | /marketing-hub |
 | 5555 | Hank | Project Manager | /project-manager |
 | 6666 | Garrett | Project Manager | /project-manager |
 | 7777 | Demo | Demo Viewer | /admin |
