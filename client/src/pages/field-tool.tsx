@@ -2304,31 +2304,35 @@ export default function FieldTool() {
                 </div>
                 <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Field Tools</h3>
               </div>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 gap-3">
                 {[
-                  { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), color: "bg-green-600" },
-    { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
-                  { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), color: "bg-orange-500" },
-                  { icon: Store, label: "Stores", action: () => setActiveSection("stores"), color: "bg-green-500" },
-                  { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
-                  { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
-                  { icon: FileText, label: "Notes", action: () => setShowNotes(true), color: "bg-amber-500" },
-                  { icon: Upload, label: "Scan", action: () => setShowPhotoAI(true), color: "bg-cyan-500" },
-                  { icon: Package, label: "Materials", action: () => setActiveSection("stores"), color: "bg-teal-500" },
+                  { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), gradient: "from-emerald-500 to-green-600" },
+                  { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), gradient: "from-blue-500 to-indigo-600" },
+                  { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), gradient: "from-orange-500 to-amber-600" },
+                  { icon: Store, label: "Paint Stores", action: () => setActiveSection("stores"), gradient: "from-teal-500 to-cyan-600" },
+                  { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), gradient: "from-pink-500 to-rose-600" },
+                  { icon: Car, label: "Mileage", action: () => setShowMileage(true), gradient: "from-purple-500 to-violet-600" },
+                  { icon: FileText, label: "Job Notes", action: () => setShowNotes(true), gradient: "from-amber-500 to-yellow-600" },
+                  { icon: Upload, label: "Doc Scan", action: () => setShowPhotoAI(true), gradient: "from-cyan-500 to-sky-600" },
+                  { icon: Package, label: "Materials", action: () => setActiveSection("stores"), gradient: "from-lime-500 to-green-600" },
                 ].map((tool, i) => (
-                  <Card 
+                  <motion.div
                     key={i}
-                    className="bg-black/30 border-gray-700/30 p-2 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
+                    whileTap={{ scale: 0.95 }}
+                    className="cursor-pointer"
                     onClick={tool.action}
                     data-testid={`button-${tool.label.toLowerCase().replace(' ', '-')}`}
                   >
-                    <div className="flex flex-col items-center gap-1.5 py-1">
-                      <div className={`w-9 h-9 ${tool.color} rounded-lg flex items-center justify-center shadow-lg`}>
-                        <tool.icon className="w-4 h-4 text-white" />
+                    <Card className="bg-black/40 border-white/5 p-3 backdrop-blur-xl relative overflow-hidden group">
+                      <div className="absolute inset-0 opacity-0 group-active:opacity-20 transition-opacity bg-white" />
+                      <div className="flex flex-col items-center gap-2">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${tool.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
+                          <tool.icon className="w-5 h-5 text-white drop-shadow" />
+                        </div>
+                        <span className="text-white text-xs font-medium text-center">{tool.label}</span>
                       </div>
-                      <span className="text-white text-xs font-medium">{tool.label}</span>
-                    </div>
-                  </Card>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -2349,28 +2353,32 @@ export default function FieldTool() {
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { icon: Briefcase, label: "Dashboard", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", color: colors.primary },
-                  { icon: Megaphone, label: "Marketing", action: () => window.location.href = "/marketing", color: "#f59e0b" },
-                  { icon: Users, label: "CRM", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", color: "#3b82f6" },
-                  { icon: BarChart3, label: "Analytics", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", color: "#8b5cf6" },
-                  { icon: Receipt, label: "Invoicing", action: () => window.location.href = "/admin", color: "#10b981" },
-                  { icon: Target, label: "Leads", action: () => window.location.href = "/admin", color: "#ef4444" },
-                  { icon: PieChart, label: "Reports", action: () => window.location.href = "/owner", color: "#06b6d4" },
-                  { icon: Shield, label: "Admin", action: () => window.location.href = "/admin", color: "#6366f1" },
+                  { icon: Briefcase, label: "Dashboard", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", gradient: "from-slate-600 to-slate-700" },
+                  { icon: Megaphone, label: "Marketing", action: () => window.location.href = "/marketing", gradient: "from-amber-500 to-orange-600" },
+                  { icon: Users, label: "CRM", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", gradient: "from-blue-500 to-blue-600" },
+                  { icon: BarChart3, label: "Analytics", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", gradient: "from-violet-500 to-purple-600" },
+                  { icon: Receipt, label: "Invoicing", action: () => window.location.href = "/admin", gradient: "from-emerald-500 to-green-600" },
+                  { icon: Target, label: "Leads", action: () => window.location.href = "/admin", gradient: "from-red-500 to-rose-600" },
+                  { icon: PieChart, label: "Reports", action: () => window.location.href = "/owner", gradient: "from-cyan-500 to-teal-600" },
+                  { icon: Shield, label: "Admin", action: () => window.location.href = "/admin", gradient: "from-indigo-500 to-blue-600" },
                 ].map((tool, i) => (
-                  <Card 
+                  <motion.div
                     key={i}
-                    className="bg-black/30 border-gray-700/30 p-2 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
+                    whileTap={{ scale: 0.95 }}
+                    className="cursor-pointer"
                     onClick={tool.action}
                     data-testid={`button-biz-${tool.label.toLowerCase().replace(' ', '-')}`}
                   >
-                    <div className="flex flex-col items-center gap-1.5 py-1">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center shadow-lg" style={{ background: `${tool.color}40` }}>
-                        <tool.icon className="w-4 h-4" style={{ color: tool.color }} />
+                    <Card className="bg-black/40 border-white/5 p-2 backdrop-blur-xl relative overflow-hidden group">
+                      <div className="absolute inset-0 opacity-0 group-active:opacity-20 transition-opacity bg-white" />
+                      <div className="flex flex-col items-center gap-1.5 py-0.5">
+                        <div className={`w-10 h-10 bg-gradient-to-br ${tool.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
+                          <tool.icon className="w-4 h-4 text-white drop-shadow" />
+                        </div>
+                        <span className="text-white text-[10px] font-medium">{tool.label}</span>
                       </div>
-                      <span className="text-white text-xs font-medium">{tool.label}</span>
-                    </div>
-                  </Card>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -2389,43 +2397,30 @@ export default function FieldTool() {
                 </div>
                 <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Quick Actions</h3>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <Card 
-                  className="bg-black/30 border-gray-700/30 p-3 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
-                  onClick={() => setShowMessaging(true)}
-                  data-testid="button-messaging"
-                >
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-500/40 flex items-center justify-center shadow-lg">
-                      <Send className="w-5 h-5 text-indigo-300" />
-                    </div>
-                    <span className="text-white text-xs font-medium">Messages</span>
-                  </div>
-                </Card>
-                <Card 
-                  className="bg-black/30 border-gray-700/30 p-3 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
-                  onClick={() => setShowAIAssistant(true)}
-                  data-testid="button-voice"
-                >
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-10 h-10 rounded-lg bg-rose-500/40 flex items-center justify-center shadow-lg">
-                      <Mic className="w-5 h-5 text-rose-300" />
-                    </div>
-                    <span className="text-white text-xs font-medium">Voice AI</span>
-                  </div>
-                </Card>
-                <Card 
-                  className="bg-black/30 border-gray-700/30 p-3 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
-                  onClick={() => setShowPhotoAI(true)}
-                  data-testid="button-camera-quick"
-                >
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500/40 flex items-center justify-center shadow-lg">
-                      <Image className="w-5 h-5 text-emerald-300" />
-                    </div>
-                    <span className="text-white text-xs font-medium">Save Photo</span>
-                  </div>
-                </Card>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { icon: Send, label: "Messages", action: () => setShowMessaging(true), gradient: "from-indigo-500 to-purple-600", testId: "button-messaging" },
+                  { icon: Mic, label: "Voice AI", action: () => setShowAIAssistant(true), gradient: "from-rose-500 to-pink-600", testId: "button-voice" },
+                  { icon: Image, label: "Save Photo", action: () => setShowPhotoAI(true), gradient: "from-emerald-500 to-teal-600", testId: "button-camera-quick" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    whileTap={{ scale: 0.95 }}
+                    className="cursor-pointer"
+                    onClick={item.action}
+                    data-testid={item.testId}
+                  >
+                    <Card className="bg-black/40 border-white/5 p-3 backdrop-blur-xl relative overflow-hidden group">
+                      <div className="absolute inset-0 opacity-0 group-active:opacity-20 transition-opacity bg-white" />
+                      <div className="flex flex-col items-center gap-2">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
+                          <item.icon className="w-5 h-5 text-white drop-shadow" />
+                        </div>
+                        <span className="text-white text-xs font-medium">{item.label}</span>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
               </div>
             </div>
 
