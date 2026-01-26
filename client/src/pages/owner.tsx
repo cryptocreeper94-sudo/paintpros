@@ -46,6 +46,7 @@ import { TradeVerticalsCard } from "@/components/trade-verticals-card";
 import { BlogManager } from "@/components/blog-manager";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 import { PricingConfigPanel } from "@/components/pricing-config-panel";
+import { StripeConnectCard } from "@/components/stripe-connect-card";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -810,6 +811,13 @@ export default function Owner() {
                 <GlassCard className={`h-full p-4 ${cardBackgroundStyles.purple}`} glow="purple" hoverEffect="subtle">
                   <TeamManagementCard />
                 </GlassCard>
+              </motion.div>
+            </BentoItem>
+
+            {/* Stripe Payment Integration */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={11} whileHover={hover3DSubtle}>
+                <StripeConnectCard />
               </motion.div>
             </BentoItem>
 
