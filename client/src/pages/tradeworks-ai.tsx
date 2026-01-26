@@ -1607,6 +1607,7 @@ export default function TradeWorksAI() {
               variant="ghost" 
               size="sm" 
               className="text-slate-400 hover:text-white flex-col gap-1 h-auto py-2"
+              onClick={() => setSelectedCalculator(null)}
               data-testid="button-nav-history"
             >
               <History className="w-5 h-5" />

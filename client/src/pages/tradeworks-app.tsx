@@ -437,6 +437,7 @@ export default function TradeWorksApp() {
             variant="ghost" 
             size="icon"
             className="text-gray-400"
+            onClick={() => setActiveSection("tools")}
             data-testid="button-settings"
           >
             <Settings className="w-5 h-5" />
@@ -476,15 +477,16 @@ export default function TradeWorksApp() {
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { icon: <Plus className="w-5 h-5" />, label: "New Lead", color: "from-blue-500 to-blue-600" },
-                    { icon: <FileText className="w-5 h-5" />, label: "Estimate", color: "from-green-500 to-green-600" },
-                    { icon: <CreditCard className="w-5 h-5" />, label: "Invoice", color: "from-purple-500 to-purple-600" },
-                    { icon: <Calendar className="w-5 h-5" />, label: "Schedule", color: "from-orange-500 to-orange-600" },
+                    { icon: <Plus className="w-5 h-5" />, label: "New Lead", color: "from-blue-500 to-blue-600", action: () => setActiveSection("sales") },
+                    { icon: <FileText className="w-5 h-5" />, label: "Estimate", color: "from-green-500 to-green-600", action: () => setActiveSection("money") },
+                    { icon: <CreditCard className="w-5 h-5" />, label: "Invoice", color: "from-purple-500 to-purple-600", action: () => setActiveSection("money") },
+                    { icon: <Calendar className="w-5 h-5" />, label: "Schedule", color: "from-orange-500 to-orange-600", action: () => setActiveSection("schedule") },
                   ].map((action, i) => (
                     <Button
                       key={i}
                       variant="ghost"
                       className="h-auto py-3 flex flex-col items-center gap-2 bg-gray-900/50 border border-gray-800 rounded-xl"
+                      onClick={action.action}
                       data-testid={`button-quick-${action.label.toLowerCase().replace(' ', '-')}`}
                     >
                       <div className={`w-10 h-10 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center text-white`}>
