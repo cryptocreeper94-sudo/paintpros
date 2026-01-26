@@ -2654,13 +2654,13 @@ Format the response as JSON with these fields:
       
       // Verify session token
       const session = pinSessions.get(sessionToken);
-      if (!session || session.expires < Date.now()) {
+      if (!session || session.expiresAt < Date.now()) {
         res.status(401).json({ error: "Please log in with PIN first" });
         return;
       }
       
-      // Get user from session
-      const userPin = await storage.getUserPinByPin(session.pin);
+      // Get user from session by role
+      const userPin = await storage.getUserPinByRole(session.role);
       if (!userPin) {
         res.status(404).json({ error: "User not found" });
         return;
@@ -2720,13 +2720,13 @@ Format the response as JSON with these fields:
       
       // Verify session token - this authenticates the user
       const session = pinSessions.get(sessionToken);
-      if (!session || session.expires < Date.now()) {
+      if (!session || session.expiresAt < Date.now()) {
         res.status(401).json({ error: "Session expired. Please log in with PIN again." });
         return;
       }
       
-      // Get user from session (server-side identity resolution)
-      const userPin = await storage.getUserPinByPin(session.pin);
+      // Get user from session by role (server-side identity resolution)
+      const userPin = await storage.getUserPinByRole(session.role);
       if (!userPin) {
         res.status(404).json({ error: "User not found" });
         return;
