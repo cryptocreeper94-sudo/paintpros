@@ -261,6 +261,11 @@ export default function MarketingHub() {
   // DAM System State
   const [libraryImages, setLibraryImages] = useState<LibraryImage[]>([]);
   const [messageTemplates, setMessageTemplates] = useState<MessageTemplate[]>([]);
+  
+  // Fetch real photos from database (crew uploads)
+  const { data: dbImages } = useQuery<any[]>({
+    queryKey: ["/api/marketing/images", selectedTenant],
+  });
   const [contentBundles, setContentBundles] = useState<ContentBundle[]>([]);
   const [showAddImageModal, setShowAddImageModal] = useState(false);
   const [showAddMessageModal, setShowAddMessageModal] = useState(false);
@@ -297,6 +302,34 @@ export default function MarketingHub() {
   const [imageSubjectFilter, setImageSubjectFilter] = useState<string>("all");
   const [messageSubjectFilter, setMessageSubjectFilter] = useState<string>("all");
   const [isGeneratingMatch, setIsGeneratingMatch] = useState(false);
+  
+  // Combine library images with database photos from crew uploads
+  const allImages = useMemo(() => {
+    if (!dbImages || dbImages.length === 0) return libraryImages;
+    
+    // Convert database images to LibraryImage format
+    const convertedDbImages: LibraryImage[] = dbImages.map((img: any) => ({
+      id: `db-${img.id}`,
+      brand: img.tenantId as TenantBrand,
+      url: img.filePath,
+      subject: (img.category === "interior" ? "interior-walls" : 
+               img.category === "exterior" ? "exterior-home" : 
+               img.category === "cabinets" ? "cabinet-work" :
+               img.category === "commercial" ? "commercial-space" :
+               img.category === "trim" ? "trim-detail" :
+               img.category === "deck" ? "deck-staining" :
+               img.subcategory === "before" || img.subcategory === "after" ? "before-after" :
+               "general") as ImageSubject,
+      style: (img.subcategory === "before" || img.subcategory === "after" ? "before-after" : "finished-result") as ImageStyle,
+      season: "all-year" as ImageSeason,
+      quality: 5 as 1 | 2 | 3 | 4 | 5,
+      description: img.altText || img.filename,
+      tags: img.tags || [],
+      createdAt: img.createdAt || new Date().toISOString(),
+    }));
+    
+    return [...convertedDbImages, ...libraryImages];
+  }, [dbImages, libraryImages]);
 
   // Role-specific content - different messaging for different users
   const isMarketingRole = userRole === "marketing";
@@ -1519,7 +1552,7 @@ export default function MarketingHub() {
                   <TabsTrigger value="images" className="flex items-center gap-2 py-2.5">
                     <ImageIcon className="w-4 h-4" />
                     <span>Images</span>
-                    <Badge variant="secondary" className="text-xs">{libraryImages.filter(i => i.brand === selectedTenant).length}</Badge>
+                    <Badge variant="secondary" className="text-xs">{allImages.filter(i => i.brand === selectedTenant).length}</Badge>
                   </TabsTrigger>
                   <TabsTrigger value="messages" className="flex items-center gap-2 py-2.5">
                     <MessageSquare className="w-4 h-4" />
@@ -1577,7 +1610,7 @@ export default function MarketingHub() {
                   </div>
 
                   {/* Image Grid */}
-                  {libraryImages.filter(i => i.brand === selectedTenant).length === 0 ? (
+                  {allImages.filter(i => i.brand === selectedTenant).length === 0 ? (
                     <GlassCard className="p-8 text-center">
                       <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                       <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Images Yet</h4>
@@ -1591,7 +1624,7 @@ export default function MarketingHub() {
                     </GlassCard>
                   ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {libraryImages
+                      {allImages
                         .filter(img => img.brand === selectedTenant)
                         .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter)
                         .map(img => (
@@ -1606,7 +1639,10 @@ export default function MarketingHub() {
                               </div>
                             </div>
                             <div className="p-3">
-                              <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label}</Badge>
+                              <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label || img.subject}</Badge>
+                              {img.id.startsWith('db-') && (
+                                <Badge className="ml-1 text-xs bg-green-500/20 text-green-600">Field</Badge>
+                              )}
                             </div>
                           </GlassCard>
                         ))}
@@ -1681,7 +1717,7 @@ export default function MarketingHub() {
                     <Button 
                       onClick={async () => {
                         setIsGeneratingMatch(true);
-                        const tenantImages = libraryImages.filter(img => img.brand === selectedTenant);
+                        const tenantImages = allImages.filter(img => img.brand === selectedTenant);
                         const tenantMessages = messageTemplates.filter(msg => msg.brand === selectedTenant);
                         const newBundles: ContentBundle[] = [];
                         for (const image of tenantImages) {
@@ -1706,7 +1742,7 @@ export default function MarketingHub() {
                         localStorage.setItem("marketing_bundles", JSON.stringify(updated));
                         setIsGeneratingMatch(false);
                       }}
-                      disabled={isGeneratingMatch || libraryImages.length === 0 || messageTemplates.length === 0}
+                      disabled={isGeneratingMatch || allImages.length === 0 || messageTemplates.length === 0}
                       data-testid="button-generate-bundles"
                     >
                       {isGeneratingMatch ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wand2 className="w-4 h-4 mr-2" />}
@@ -1735,7 +1771,7 @@ export default function MarketingHub() {
                         .filter(b => b.brand === selectedTenant)
                         .slice(0, 6)
                         .map(bundle => {
-                          const image = libraryImages.find(i => i.id === bundle.imageId);
+                          const image = allImages.find(i => i.id === bundle.imageId);
                           const message = messageTemplates.find(m => m.id === bundle.messageId);
                           return (
                             <GlassCard key={bundle.id} className="p-4">
@@ -2589,12 +2625,12 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
-              {libraryImages.length === 0 ? (
+              {allImages.filter(img => img.brand === selectedTenant).length === 0 ? (
                 <GlassCard className="p-8 text-center">
                   <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Images Yet</h4>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    Add images to your library with subject tags. The AI will use these tags to match images with appropriate messages.
+                    Take photos from the Field Tool or add images manually. They'll appear here ready for social posts.
                   </p>
                   <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-first-image">
                     <Plus className="w-4 h-4 mr-1" />
@@ -2603,7 +2639,7 @@ export default function MarketingHub() {
                 </GlassCard>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {libraryImages
+                  {allImages
                     .filter(img => img.brand === selectedTenant)
                     .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter)
                     .map(img => (
@@ -2612,8 +2648,11 @@ export default function MarketingHub() {
                         <div className="space-y-1">
                           <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{img.description}</p>
                           <div className="flex flex-wrap gap-1">
-                            <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label}</Badge>
+                            <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label || img.subject}</Badge>
                             <Badge variant="outline" className="text-xs">{img.style}</Badge>
+                            {img.id.startsWith('db-') && (
+                              <Badge className="text-xs bg-green-500/20 text-green-600 border-green-500/30">Field Photo</Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map(n => (
@@ -2797,7 +2836,7 @@ export default function MarketingHub() {
                     onClick={async () => {
                       setIsGeneratingMatch(true);
                       // AI matching logic - match images with messages by subject
-                      const tenantImages = libraryImages.filter(img => img.brand === selectedTenant);
+                      const tenantImages = allImages.filter(img => img.brand === selectedTenant);
                       const tenantMessages = messageTemplates.filter(msg => msg.brand === selectedTenant);
                       const newBundles: ContentBundle[] = [];
                       
@@ -2825,7 +2864,7 @@ export default function MarketingHub() {
                       localStorage.setItem("marketing_bundles", JSON.stringify(updated));
                       setIsGeneratingMatch(false);
                     }}
-                    disabled={isGeneratingMatch || libraryImages.length === 0 || messageTemplates.length === 0}
+                    disabled={isGeneratingMatch || allImages.length === 0 || messageTemplates.length === 0}
                     data-testid="button-generate-bundles"
                   >
                     {isGeneratingMatch ? (
@@ -2871,7 +2910,7 @@ export default function MarketingHub() {
                   {contentBundles
                     .filter(b => b.brand === selectedTenant)
                     .map(bundle => {
-                      const image = libraryImages.find(i => i.id === bundle.imageId);
+                      const image = allImages.find(i => i.id === bundle.imageId);
                       const message = messageTemplates.find(m => m.id === bundle.messageId);
                       return (
                         <GlassCard key={bundle.id} className="p-4" data-testid={`card-content-bundle-${bundle.id}`}>

@@ -1672,6 +1672,11 @@ export default function FieldTool() {
   const [showWeather, setShowWeather] = useState(false);
   const [showMileage, setShowMileage] = useState(false);
   const [showPhotoAI, setShowPhotoAI] = useState(false);
+  const [photoType, setPhotoType] = useState<"before" | "after" | "progress" | "issue">("before");
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoCaption, setPhotoCaption] = useState("");
+  const [photoCategory, setPhotoCategory] = useState("interior");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [showQuickEstimate, setShowQuickEstimate] = useState(false);
   
   // Quick Estimate form state
@@ -3985,42 +3990,202 @@ export default function FieldTool() {
         </SheetContent>
       </Sheet>
 
-      {/* Photo AI Sheet */}
+      {/* Job Photos Sheet - Upload Before/After/Progress Photos */}
       <Sheet open={showPhotoAI} onOpenChange={setShowPhotoAI}>
-        <SheetContent side="bottom" className="h-[80vh] bg-gray-900 border-gray-800">
+        <SheetContent side="bottom" className="h-[85vh] bg-gray-900 border-gray-800 overflow-y-auto">
           <SheetHeader>
-            <SheetTitle className="text-white">AI Photo Analysis</SheetTitle>
+            <SheetTitle className="text-white flex items-center gap-2">
+              <Camera className="w-5 h-5" style={{ color: colors.primary }} />
+              Job Photos
+            </SheetTitle>
           </SheetHeader>
           <div className="mt-4 space-y-4">
-            <Card className="bg-gray-800 border-gray-700 p-8 text-center border-dashed">
-              <Camera className="w-12 h-12 mx-auto text-gray-500 mb-3" />
-              <p className="text-gray-400 mb-4">Take a photo or upload to analyze</p>
-              <div className="flex gap-3 justify-center">
-                <Button style={{ background: colors.primary }}>
-                  <Camera className="w-4 h-4 mr-2" /> Camera
-                </Button>
-                <Button variant="outline" className="border-gray-700">
-                  <Upload className="w-4 h-4 mr-2" /> Upload
-                </Button>
-              </div>
-            </Card>
-
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-400">AI Can Help With</h3>
+            {/* Photo Type Selection */}
+            <div className="grid grid-cols-4 gap-2">
               {[
-                { icon: Palette, label: "Color matching from photos" },
-                { icon: Calculator, label: "Estimate surface area" },
-                { icon: AlertCircle, label: "Identify surface issues" },
-                { icon: Package, label: "Suggest materials needed" },
-              ].map((item, i) => (
-                <Card key={i} className="bg-gray-800 border-gray-700 p-3">
-                  <div className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5" style={{ color: colors.primary }} />
-                    <span className="text-white text-sm">{item.label}</span>
-                  </div>
-                </Card>
+                { type: "before", label: "Before", color: "from-amber-500 to-orange-500" },
+                { type: "after", label: "After", color: "from-green-500 to-emerald-500" },
+                { type: "progress", label: "Progress", color: "from-blue-500 to-cyan-500" },
+                { type: "issue", label: "Issue", color: "from-red-500 to-rose-500" },
+              ].map((item) => (
+                <motion.button
+                  key={item.type}
+                  whileTap={{ scale: 0.95 }}
+                  data-testid={`button-photo-type-${item.type}`}
+                  onClick={() => setPhotoType(item.type as any)}
+                  className={`p-3 rounded-xl text-center transition-all ${
+                    photoType === item.type 
+                      ? `bg-gradient-to-br ${item.color} text-white` 
+                      : "bg-gray-800 border border-gray-700 text-gray-400"
+                  }`}
+                >
+                  <span className="text-sm font-medium">{item.label}</span>
+                </motion.button>
               ))}
             </div>
+
+            {/* Photo Capture Area */}
+            <Card className="bg-gray-800 border-gray-700 p-6 text-center border-dashed">
+              {photoPreview ? (
+                <div className="space-y-4">
+                  <img src={photoPreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                  <Button 
+                    variant="outline" 
+                    className="border-gray-700"
+                    onClick={() => setPhotoPreview(null)}
+                  >
+                    <X className="w-4 h-4 mr-2" /> Remove
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Camera className="w-12 h-12 mx-auto text-gray-500 mb-3" />
+                  <p className="text-gray-400 mb-4">
+                    {photoType === "before" && "Capture the area before painting"}
+                    {photoType === "after" && "Show off the finished result"}
+                    {photoType === "progress" && "Document work in progress"}
+                    {photoType === "issue" && "Photo any issues found"}
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <label className="cursor-pointer">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        capture="environment"
+                        className="hidden"
+                        data-testid="input-photo-camera"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <Button asChild style={{ background: colors.primary }}>
+                        <span><Camera className="w-4 h-4 mr-2" /> Camera</span>
+                      </Button>
+                    </label>
+                    <label className="cursor-pointer">
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        className="hidden"
+                        data-testid="input-photo-upload"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <Button asChild variant="outline" className="border-gray-700">
+                        <span><Upload className="w-4 h-4 mr-2" /> Upload</span>
+                      </Button>
+                    </label>
+                  </div>
+                </>
+              )}
+            </Card>
+
+            {/* Caption */}
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Caption (optional)</label>
+              <Input
+                placeholder="Add a description..."
+                value={photoCaption}
+                onChange={(e) => setPhotoCaption(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white"
+                data-testid="input-photo-caption"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Category</label>
+              <div className="grid grid-cols-3 gap-2">
+                {["interior", "exterior", "cabinets", "trim", "deck", "commercial"].map((cat) => (
+                  <button
+                    key={cat}
+                    data-testid={`button-photo-category-${cat}`}
+                    onClick={() => setPhotoCategory(cat)}
+                    className={`p-2 rounded-lg text-sm capitalize transition-all ${
+                      photoCategory === cat 
+                        ? "bg-white/10 border border-white/30 text-white" 
+                        : "bg-gray-800 border border-gray-700 text-gray-400"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Upload Button */}
+            <Button
+              data-testid="button-photo-save"
+              className="w-full"
+              size="lg"
+              style={{ background: colors.gradient }}
+              disabled={!photoPreview || isUploadingPhoto}
+              onClick={async () => {
+                if (!photoPreview) return;
+                setIsUploadingPhoto(true);
+                try {
+                  const res = await fetch("/api/marketing/images", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      tenantId: tenant.id,
+                      filename: `${photoType}-${Date.now()}.jpg`,
+                      filePath: photoPreview,
+                      altText: photoCaption || `${photoType} photo`,
+                      category: photoCategory,
+                      subcategory: photoType,
+                      tags: [photoType, photoCategory, userName || "crew"],
+                    }),
+                  });
+                  if (res.ok) {
+                    toast({
+                      title: "Photo Saved",
+                      description: "Your photo has been uploaded to the marketing library.",
+                    });
+                    setPhotoPreview(null);
+                    setPhotoCaption("");
+                    setShowPhotoAI(false);
+                  } else {
+                    throw new Error("Upload failed");
+                  }
+                } catch (err) {
+                  toast({
+                    title: "Upload Failed",
+                    description: "Could not save photo. Please try again.",
+                    variant: "destructive",
+                  });
+                } finally {
+                  setIsUploadingPhoto(false);
+                }
+              }}
+            >
+              {isUploadingPhoto ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Uploading...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Save to Marketing Library
+                </span>
+              )}
+            </Button>
+
+            <p className="text-gray-500 text-xs text-center">
+              Photos are saved to the Marketing Hub for use in social media and website galleries
+            </p>
           </div>
         </SheetContent>
       </Sheet>
