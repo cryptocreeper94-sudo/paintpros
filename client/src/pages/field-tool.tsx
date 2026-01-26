@@ -95,6 +95,24 @@ export default function FieldTool() {
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem("field_tool_user") || "Team Member";
   });
+  const [userRole, setUserRole] = useState(() => {
+    // Check URL params first, then localStorage, then default to admin (hide clock-in by default for safety)
+    const urlParams = new URLSearchParams(window.location.search);
+    const roleParam = urlParams.get("role");
+    if (roleParam) {
+      localStorage.setItem("field_tool_role", roleParam);
+      return roleParam;
+    }
+    // Check if user logged in via admin/owner/developer dashboards
+    const dashboardRole = sessionStorage.getItem("dashboard_role");
+    if (dashboardRole) {
+      return dashboardRole;
+    }
+    return localStorage.getItem("field_tool_role") || "admin";
+  });
+  
+  // Roles that should see the clock-in feature (only crew members)
+  const showClockIn = ["crew", "crew_lead"].includes(userRole);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -313,42 +331,44 @@ export default function FieldTool() {
         </div>
       </div>
 
-      {/* Clock In/Out Banner */}
-      <div className="px-4 py-3">
-        <Card 
-          className="p-4 border-0"
-          style={{ 
-            background: isClockedIn 
-              ? `linear-gradient(135deg, #22c55e20 0%, #16a34a20 100%)` 
-              : `linear-gradient(135deg, ${colors.primary}20 0%, ${colors.primary}10 100%)`,
-            borderColor: isClockedIn ? '#22c55e40' : `${colors.primary}40`
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isClockedIn ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
-                <span className="text-sm text-gray-400">
-                  {isClockedIn ? 'Clocked In' : 'Not Clocked In'}
-                </span>
+      {/* Clock In/Out Banner - Only shown to crew members */}
+      {showClockIn && (
+        <div className="px-4 py-3">
+          <Card 
+            className="p-4 border-0"
+            style={{ 
+              background: isClockedIn 
+                ? `linear-gradient(135deg, #22c55e20 0%, #16a34a20 100%)` 
+                : `linear-gradient(135deg, ${colors.primary}20 0%, ${colors.primary}10 100%)`,
+              borderColor: isClockedIn ? '#22c55e40' : `${colors.primary}40`
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${isClockedIn ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
+                  <span className="text-sm text-gray-400">
+                    {isClockedIn ? 'Clocked In' : 'Not Clocked In'}
+                  </span>
+                </div>
+                {isClockedIn && (
+                  <p className="text-2xl font-mono font-bold text-white mt-1">
+                    {formatElapsedTime(elapsedTime)}
+                  </p>
+                )}
               </div>
-              {isClockedIn && (
-                <p className="text-2xl font-mono font-bold text-white mt-1">
-                  {formatElapsedTime(elapsedTime)}
-                </p>
-              )}
+              <Button 
+                onClick={handleClockToggle}
+                className={isClockedIn ? 'bg-red-500 hover:bg-red-600' : ''}
+                style={!isClockedIn ? { background: colors.primary } : {}}
+              >
+                {isClockedIn ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+                {isClockedIn ? 'Clock Out' : 'Clock In'}
+              </Button>
             </div>
-            <Button 
-              onClick={handleClockToggle}
-              className={isClockedIn ? 'bg-red-500 hover:bg-red-600' : ''}
-              style={!isClockedIn ? { background: colors.primary } : {}}
-            >
-              {isClockedIn ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-              {isClockedIn ? 'Clock Out' : 'Clock In'}
-            </Button>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      )}
 
       <AnimatePresence mode="wait">
         {activeSection === "home" && (
@@ -581,7 +601,8 @@ export default function FieldTool() {
                   { icon: Users, label: "CRM", desc: "Leads & customers", path: "/admin" },
                   { icon: Receipt, label: "Invoicing", desc: "Bills & payments", path: "/admin" },
                   { icon: PieChart, label: "Reports", desc: "Performance data", path: "/owner" },
-                  { icon: Clock, label: "Time Tracking", desc: "Crew hours", action: () => setActiveSection("time") },
+                  // Time Tracking only shown to crew members
+                  ...(showClockIn ? [{ icon: Clock, label: "Time Tracking", desc: "Crew hours", action: () => setActiveSection("time") }] : []),
                   { icon: Shield, label: "Admin Panel", desc: "Full dashboard", path: "/admin" },
                   { icon: Settings, label: "Settings", desc: "Preferences", path: "/admin" },
                 ].map((tool, i) => (
@@ -645,7 +666,8 @@ export default function FieldTool() {
           </motion.div>
         )}
 
-        {activeSection === "time" && (
+        {/* Time Tracking Section - Only shown to crew members */}
+        {activeSection === "time" && showClockIn && (
           <motion.div
             key="time"
             initial={{ opacity: 0 }}
