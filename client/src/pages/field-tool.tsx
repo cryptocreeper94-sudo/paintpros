@@ -1539,6 +1539,19 @@ export default function FieldTool() {
   const [showWeather, setShowWeather] = useState(false);
   const [showMileage, setShowMileage] = useState(false);
   const [showPhotoAI, setShowPhotoAI] = useState(false);
+  const [showQuickEstimate, setShowQuickEstimate] = useState(false);
+  
+  // Quick Estimate form state
+  const [estimateInputs, setEstimateInputs] = useState({
+    squareFeet: "",
+    numRooms: "1",
+    numDoors: "0",
+    numWindows: "0",
+    includeCeiling: false,
+    includeTrim: false,
+    jobType: "interior" as "interior" | "exterior" | "commercial",
+    serviceType: "walls" as "walls" | "ceilings" | "trim" | "wallsAndTrim" | "fullJob",
+  });
   const [showRoomVisualizer, setShowRoomVisualizer] = useState(false);
   const [visualizerImage, setVisualizerImage] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState({ name: "Simply White", hex: "#F5F5F0" });
@@ -1557,6 +1570,102 @@ export default function FieldTool() {
   const { data: bookings = [] } = useQuery<any[]>({
     queryKey: ["/api/bookings"],
   });
+
+  // Fetch tenant's estimator pricing config
+  interface EstimatorConfig {
+    wallsPerSqFt: string;
+    ceilingsPerSqFt: string;
+    trimPerSqFt: string;
+    wallsAndTrimPerSqFt: string;
+    fullJobPerSqFt: string;
+    doorsPerUnit: string;
+    minimumJobAmount: string;
+    exteriorMultiplier: string;
+    commercialMultiplier: string;
+  }
+  
+  const { data: pricingConfig, isLoading: isPricingLoading } = useQuery<EstimatorConfig>({
+    queryKey: [`/api/estimator-config/${selectedTenant}`],
+    enabled: !!selectedTenant,
+  });
+
+  // Calculate estimate based on inputs and pricing config
+  const calculateEstimate = () => {
+    if (!pricingConfig) return { total: 0, breakdown: [] as {label: string, amount: number}[] };
+    
+    const sqFt = parseFloat(estimateInputs.squareFeet) || 0;
+    const doors = parseInt(estimateInputs.numDoors) || 0;
+    const breakdown: {label: string, amount: number}[] = [];
+    
+    // Get base rate based on service type
+    let baseRate = 0;
+    let serviceLabel = "";
+    switch (estimateInputs.serviceType) {
+      case "walls":
+        baseRate = parseFloat(pricingConfig.wallsPerSqFt) || 0;
+        serviceLabel = "Walls";
+        break;
+      case "ceilings":
+        baseRate = parseFloat(pricingConfig.ceilingsPerSqFt) || 0;
+        serviceLabel = "Ceilings";
+        break;
+      case "trim":
+        baseRate = parseFloat(pricingConfig.trimPerSqFt) || 0;
+        serviceLabel = "Trim";
+        break;
+      case "wallsAndTrim":
+        baseRate = parseFloat(pricingConfig.wallsAndTrimPerSqFt) || 0;
+        serviceLabel = "Walls & Trim";
+        break;
+      case "fullJob":
+        baseRate = parseFloat(pricingConfig.fullJobPerSqFt) || 0;
+        serviceLabel = "Full Job";
+        break;
+    }
+    
+    // Calculate base amount
+    const baseAmount = sqFt * baseRate;
+    if (baseAmount > 0) {
+      breakdown.push({ label: `${serviceLabel} (${sqFt} sq ft × $${baseRate.toFixed(2)})`, amount: baseAmount });
+    }
+    
+    // Add doors
+    const doorRate = parseFloat(pricingConfig.doorsPerUnit) || 0;
+    const doorAmount = doors * doorRate;
+    if (doorAmount > 0) {
+      breakdown.push({ label: `Doors (${doors} × $${doorRate.toFixed(2)})`, amount: doorAmount });
+    }
+    
+    // Calculate subtotal
+    let subtotal = baseAmount + doorAmount;
+    
+    // Apply multipliers
+    let multiplier = 1;
+    if (estimateInputs.jobType === "exterior") {
+      multiplier = parseFloat(pricingConfig.exteriorMultiplier) || 1;
+      if (multiplier !== 1) {
+        breakdown.push({ label: `Exterior adjustment (×${multiplier})`, amount: subtotal * (multiplier - 1) });
+      }
+    } else if (estimateInputs.jobType === "commercial") {
+      multiplier = parseFloat(pricingConfig.commercialMultiplier) || 1;
+      if (multiplier !== 1) {
+        breakdown.push({ label: `Commercial adjustment (×${multiplier})`, amount: subtotal * (multiplier - 1) });
+      }
+    }
+    
+    let total = subtotal * multiplier;
+    
+    // Apply minimum
+    const minimum = parseFloat(pricingConfig.minimumJobAmount) || 0;
+    if (total > 0 && total < minimum) {
+      breakdown.push({ label: `Minimum job amount`, amount: minimum - total });
+      total = minimum;
+    }
+    
+    return { total, breakdown };
+  };
+
+  const estimate = calculateEstimate();
 
   // Timer for clock
   useEffect(() => {
@@ -1687,6 +1796,7 @@ export default function FieldTool() {
 
   // Quick actions for field work
   const quickActions = [
+    { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), color: "bg-green-600" },
     { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
     { icon: Cloud, label: "Weather", action: () => setShowWeather(true), color: "bg-cyan-500" },
     { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
@@ -1952,7 +2062,8 @@ export default function FieldTool() {
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
+                  { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), color: "bg-green-600" },
+    { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
                   { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), color: "bg-orange-500" },
                   { icon: Store, label: "Stores", action: () => setActiveSection("stores"), color: "bg-green-500" },
                   { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
@@ -2253,6 +2364,7 @@ export default function FieldTool() {
             
             <div className="grid grid-cols-2 gap-3">
               {[
+                { icon: DollarSign, label: "Quick Estimate", desc: "On-site pricing", action: () => setShowQuickEstimate(true) },
                 { icon: Calculator, label: "Paint Calculator", desc: "Coverage & gallons", action: () => setShowCalculator(true) },
                 { icon: Palette, label: "Color Match", desc: "Find paint colors", action: () => setActiveSection("colors") },
                 { icon: Store, label: "Paint Stores", desc: "Nearby locations", action: () => setActiveSection("stores") },
@@ -2549,6 +2661,164 @@ export default function FieldTool() {
                 </div>
               </div>
             </Card>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Quick Estimate Sheet - Uses tenant pricing */}
+      <Sheet open={showQuickEstimate} onOpenChange={setShowQuickEstimate}>
+        <SheetContent side="bottom" className="h-[90vh] bg-gray-900 border-gray-800">
+          <SheetHeader>
+            <SheetTitle className="text-white flex items-center gap-2">
+              <DollarSign className="w-5 h-5" /> Quick Estimate
+              <Badge className="ml-2 text-xs" style={{ background: colors.primary }}>
+                {tenantLabel}
+              </Badge>
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-4 overflow-y-auto pb-20" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+            {isPricingLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+              </div>
+            ) : !pricingConfig ? (
+              <Card className="bg-yellow-900/30 border-yellow-800/50 p-4">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-400" />
+                  <div>
+                    <p className="text-yellow-400 font-medium text-sm">Pricing Not Configured</p>
+                    <p className="text-gray-400 text-xs">Ask your admin to set up pricing in the dashboard.</p>
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { value: "interior", label: "Interior" },
+                    { value: "exterior", label: "Exterior" },
+                    { value: "commercial", label: "Commercial" },
+                  ].map((type) => (
+                    <Button
+                      key={type.value}
+                      variant={estimateInputs.jobType === type.value ? "default" : "outline"}
+                      size="sm"
+                      className={estimateInputs.jobType === type.value ? "" : "border-gray-700 text-gray-300"}
+                      style={estimateInputs.jobType === type.value ? { background: colors.primary } : {}}
+                      onClick={() => setEstimateInputs({ ...estimateInputs, jobType: type.value as any })}
+                      data-testid={`estimate-type-${type.value}`}
+                    >
+                      {type.label}
+                    </Button>
+                  ))}
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-400 mb-2 block">Service Type</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "walls", label: "Walls Only" },
+                      { value: "ceilings", label: "Ceilings Only" },
+                      { value: "trim", label: "Trim Only" },
+                      { value: "wallsAndTrim", label: "Walls & Trim" },
+                      { value: "fullJob", label: "Full Room" },
+                    ].map((service) => (
+                      <Button
+                        key={service.value}
+                        variant={estimateInputs.serviceType === service.value ? "default" : "outline"}
+                        size="sm"
+                        className={`text-xs ${estimateInputs.serviceType === service.value ? "" : "border-gray-700 text-gray-300"}`}
+                        style={estimateInputs.serviceType === service.value ? { background: colors.primary } : {}}
+                        onClick={() => setEstimateInputs({ ...estimateInputs, serviceType: service.value as any })}
+                        data-testid={`estimate-service-${service.value}`}
+                      >
+                        {service.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-400 mb-1 block">Square Footage</label>
+                  <Input 
+                    type="number" 
+                    placeholder="Enter sq ft" 
+                    className="bg-gray-800 border-gray-700 text-lg"
+                    value={estimateInputs.squareFeet}
+                    onChange={(e) => setEstimateInputs({ ...estimateInputs, squareFeet: e.target.value })}
+                    data-testid="input-estimate-sqft"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-400 mb-1 block">Number of Doors</label>
+                  <Input 
+                    type="number" 
+                    placeholder="0" 
+                    className="bg-gray-800 border-gray-700"
+                    value={estimateInputs.numDoors}
+                    onChange={(e) => setEstimateInputs({ ...estimateInputs, numDoors: e.target.value })}
+                    data-testid="input-estimate-doors"
+                  />
+                </div>
+
+                {/* Estimate Result */}
+                <Card 
+                  className="p-4 border-0"
+                  style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}10 100%)` }}
+                >
+                  <div className="text-center mb-4">
+                    <p className="text-gray-400 text-sm">Estimated Total</p>
+                    <p className="text-4xl font-bold text-white">
+                      ${estimate.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  
+                  {estimate.breakdown.length > 0 && (
+                    <div className="space-y-2 border-t border-gray-700 pt-3">
+                      {estimate.breakdown.map((item, i) => (
+                        <div key={i} className="flex justify-between text-sm">
+                          <span className="text-gray-400">{item.label}</span>
+                          <span className="text-white">${item.amount.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+
+                <Card className="bg-blue-900/30 border-blue-800/50 p-4">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="w-5 h-5 text-blue-400 mt-0.5" />
+                    <div>
+                      <p className="text-blue-400 font-medium text-sm">On-Site Estimate</p>
+                      <p className="text-gray-400 text-xs mt-1">
+                        This uses your company's configured pricing. For a formal quote, direct customers to your website or send a proposal.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => {
+                    setEstimateInputs({
+                      squareFeet: "",
+                      numRooms: "1",
+                      numDoors: "0",
+                      numWindows: "0",
+                      includeCeiling: false,
+                      includeTrim: false,
+                      jobType: "interior",
+                      serviceType: "walls",
+                    });
+                  }}
+                  data-testid="button-clear-estimate"
+                >
+                  Clear & Start New
+                </Button>
+              </>
+            )}
           </div>
         </SheetContent>
       </Sheet>
