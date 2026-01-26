@@ -103,6 +103,18 @@ export interface TenantConfig {
     insured?: boolean;
     bonded?: boolean;
   };
+  
+  // Stripe configuration (multi-tenant billing)
+  stripe?: {
+    // If true, use platform's Stripe keys (for demo/TrustLayer)
+    usePlatformKeys?: boolean;
+    // Environment variable names for tenant-specific keys (not actual keys)
+    publishableKeyEnv?: string;
+    secretKeyEnv?: string;
+    webhookSecretEnv?: string;
+    // Account status
+    configured?: boolean;
+  };
 }
 
 // Nashville Painting Professionals - Beta Tenant
@@ -195,6 +207,15 @@ export const nashvillePaintingProfessionals: TenantConfig = {
     insured: true,
     bonded: false,
   },
+  
+  // NPP has their own Stripe account - needs to be configured
+  stripe: {
+    usePlatformKeys: false,
+    publishableKeyEnv: "NPP_STRIPE_PUBLISHABLE_KEY",
+    secretKeyEnv: "NPP_STRIPE_SECRET_KEY",
+    webhookSecretEnv: "NPP_STRIPE_WEBHOOK_SECRET",
+    configured: false, // Set to true once NPP provides their keys
+  },
 };
 
 // PaintPros.io Platform Demo (for sales presentations)
@@ -270,6 +291,12 @@ export const paintProsDemo: TenantConfig = {
     licensed: true,
     insured: true,
     bonded: true,
+  },
+  
+  // Demo/TrustLayer uses platform Stripe keys (your business account)
+  stripe: {
+    usePlatformKeys: true,
+    configured: true,
   },
 };
 
@@ -366,6 +393,15 @@ export const lumePaintCo: TenantConfig = {
     licensed: true,
     insured: true,
     bonded: false,
+  },
+  
+  // Lume has their own Stripe account - needs to be configured
+  stripe: {
+    usePlatformKeys: false,
+    publishableKeyEnv: "LUME_STRIPE_PUBLISHABLE_KEY",
+    secretKeyEnv: "LUME_STRIPE_SECRET_KEY",
+    webhookSecretEnv: "LUME_STRIPE_WEBHOOK_SECRET",
+    configured: false, // Set to true once Lume provides their keys
   },
 };
 
