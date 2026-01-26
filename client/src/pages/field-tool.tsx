@@ -85,6 +85,7 @@ import {
   Download,
   Smartphone,
   Loader2,
+  Mail,
   ExternalLink,
   RefreshCw
 } from "lucide-react";
@@ -1917,6 +1918,7 @@ export default function FieldTool() {
   const quickActions = [
     { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), color: "bg-green-600" },
     { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
+    { icon: Mail, label: "Email", action: () => window.open("https://mail.google.com", "_blank"), color: "bg-red-500" },
     { icon: Cloud, label: "Weather", action: () => setShowWeather(true), color: "bg-cyan-500" },
     { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
     { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
@@ -2485,12 +2487,12 @@ export default function FieldTool() {
               {[
                 { icon: DollarSign, label: "Quick Estimate", desc: "On-site pricing", action: () => setShowQuickEstimate(true) },
                 { icon: Calculator, label: "Paint Calculator", desc: "Coverage & gallons", action: () => setShowCalculator(true) },
+                { icon: Mail, label: "Email", desc: "Check inbox", action: () => window.open("https://mail.google.com", "_blank") },
                 { icon: Palette, label: "Color Match", desc: "Find paint colors", action: () => setActiveSection("colors") },
                 { icon: Store, label: "Paint Stores", desc: "Nearby locations", action: () => setActiveSection("stores") },
                 { icon: Cloud, label: "Weather", desc: "Check conditions", action: () => setShowWeather(true) },
                 { icon: Car, label: "Mileage", desc: "Track travel", action: () => setShowMileage(true) },
                 { icon: Camera, label: "Photo AI", desc: "Analyze photos", action: () => setShowPhotoAI(true) },
-                { icon: Package, label: "Materials", desc: "Order supplies", action: () => setActiveSection("stores") },
                 { icon: FileText, label: "Job Notes", desc: "Add notes/photos", action: () => setShowNotes(true) },
               ].map((tool, i) => (
                 <Card 
