@@ -2522,7 +2522,7 @@ Format the response as JSON with these fields:
 
   // POST /api/auth/pin/verify-any - Verify PIN against all users (for team login)
   // Store authenticated sessions for biometric registration (in-memory for demo)
-  const pinSessions = new Map<string, { userPinId: string, pin: string, role: string, expires: number }>();
+  const pinSessions = new Map<string, { userPinId: string, pin: string, role: string, userName?: string, expiresAt: number }>();
   
   app.post("/api/auth/pin/verify-any", async (req, res) => {
     try {
@@ -2541,7 +2541,8 @@ Format the response as JSON with these fields:
           userPinId: userPin.id,
           pin: pin,
           role: userPin.role,
-          expires: Date.now() + 60 * 60 * 1000, // 1 hour expiry
+          userName: userPin.userName || userPin.role,
+          expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour expiry
         });
         
         res.json({ 
