@@ -1034,9 +1034,27 @@ export default function TradeToolkit() {
   const [showScanner, setShowScanner] = useState(false);
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [currentPanel, setCurrentPanel] = useState('dashboard');
+  const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
   const { toast } = useToast();
   
   const appUrl = typeof window !== 'undefined' ? `${window.location.origin}/trade-toolkit` : '';
+
+  // Detect iOS devices
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
+    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as any).standalone;
+    
+    if (isIOSDevice && !isInStandaloneMode) {
+      setIsIOS(true);
+      // Show guide after a short delay if not dismissed before
+      const dismissed = localStorage.getItem('ios-install-guide-dismissed');
+      if (!dismissed) {
+        setTimeout(() => setShowIOSGuide(true), 2000);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleBeforeInstall = (e: Event) => {
@@ -1154,7 +1172,7 @@ export default function TradeToolkit() {
       <PremiumBackground />
       
       <div className="max-w-lg mx-auto px-4 py-4 pb-28">
-        {/* Install Banner */}
+        {/* Install Banner - Android */}
         {!isInstalled && deferredPrompt && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -1180,6 +1198,61 @@ export default function TradeToolkit() {
                   <Download className="w-4 h-4" />
                   Install
                 </Button>
+              </div>
+            </GlassPanel>
+          </motion.div>
+        )}
+
+        {/* Install Guide - iPhone/iOS */}
+        {isIOS && showIOSGuide && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4"
+          >
+            <GlassPanel glow className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0">
+                  <Smartphone className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-white text-sm">Add to Home Screen</h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-slate-400 hover:text-white"
+                      onClick={() => {
+                        setShowIOSGuide(false);
+                        localStorage.setItem('ios-install-guide-dismissed', 'true');
+                      }}
+                      data-testid="button-dismiss-ios-guide"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-3">Follow these steps to install on your iPhone:</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-slate-300">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">1</span>
+                      </div>
+                      <span>Tap the <Share2 className="w-4 h-4 inline text-blue-400" /> Share button at the bottom</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-300">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">2</span>
+                      </div>
+                      <span>Scroll down and tap "Add to Home Screen"</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-300">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">3</span>
+                      </div>
+                      <span>Tap "Add" in the top right corner</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </GlassPanel>
           </motion.div>
