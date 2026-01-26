@@ -47,6 +47,7 @@ import { BlogManager } from "@/components/blog-manager";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 import { PricingConfigPanel } from "@/components/pricing-config-panel";
 import { StripeConnectCard } from "@/components/stripe-connect-card";
+import { PaintSupplierAccounts } from "@/components/paint-supplier-accounts";
 
 const DEFAULT_OWNER_PIN = "1111";
 
@@ -818,6 +819,13 @@ export default function Owner() {
             <BentoItem colSpan={6} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={11} whileHover={hover3DSubtle}>
                 <StripeConnectCard />
+              </motion.div>
+            </BentoItem>
+
+            {/* Paint Supplier Accounts */}
+            <BentoItem colSpan={6} rowSpan={1}>
+              <motion.div className="h-full" variants={cardVariants} custom={12} whileHover={hover3DSubtle}>
+                <PaintSupplierAccounts />
               </motion.div>
             </BentoItem>
 
