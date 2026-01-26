@@ -1295,6 +1295,7 @@ export default function FieldTool() {
         setUserRole(data.role);
         if (data.userName) {
           setUserName(data.userName);
+          localStorage.setItem("field_tool_user", data.userName);
         }
         // Store session token for biometric registration (server-validated)
         if (data.sessionToken) {
@@ -1898,11 +1899,19 @@ export default function FieldTool() {
               </Card>
             </div>
 
-            {/* Field Tools Section - Always Visible */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Wrench className="w-4 h-4 text-gray-500" />
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Field Tools</h3>
+            {/* Field Tools Section - Boxed Container */}
+            <div 
+              className="rounded-xl p-3 border border-gray-700/50"
+              style={{ 
+                background: `linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%)`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+              }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <Wrench className="w-4 h-4 text-blue-400" />
+                </div>
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Field Tools</h3>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {[
@@ -1917,12 +1926,12 @@ export default function FieldTool() {
                 ].map((tool, i) => (
                   <Card 
                     key={i}
-                    className="bg-gray-900/60 border-gray-800 p-2 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                    className="bg-black/30 border-gray-700/30 p-2 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
                     onClick={tool.action}
                     data-testid={`button-${tool.label.toLowerCase().replace(' ', '-')}`}
                   >
                     <div className="flex flex-col items-center gap-1.5 py-1">
-                      <div className={`w-9 h-9 ${tool.color} rounded-lg flex items-center justify-center`}>
+                      <div className={`w-9 h-9 ${tool.color} rounded-lg flex items-center justify-center shadow-lg`}>
                         <tool.icon className="w-4 h-4 text-white" />
                       </div>
                       <span className="text-white text-xs font-medium">{tool.label}</span>
@@ -1932,11 +1941,19 @@ export default function FieldTool() {
               </div>
             </div>
 
-            {/* Business & Management Section - Always Visible */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Briefcase className="w-4 h-4 text-gray-500" />
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Business Tools</h3>
+            {/* Business & Management Section - Boxed Container */}
+            <div 
+              className="rounded-xl p-3 border border-gray-700/50"
+              style={{ 
+                background: `linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(236, 72, 153, 0.05) 100%)`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+              }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                  <Briefcase className="w-4 h-4 text-purple-400" />
+                </div>
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Business Tools</h3>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {[
@@ -1951,12 +1968,12 @@ export default function FieldTool() {
                 ].map((tool, i) => (
                   <Card 
                     key={i}
-                    className="bg-gray-900/60 border-gray-800 p-2 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                    className="bg-black/30 border-gray-700/30 p-2 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
                     onClick={tool.action}
                     data-testid={`button-biz-${tool.label.toLowerCase().replace(' ', '-')}`}
                   >
                     <div className="flex flex-col items-center gap-1.5 py-1">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: `${tool.color}30` }}>
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center shadow-lg" style={{ background: `${tool.color}40` }}>
                         <tool.icon className="w-4 h-4" style={{ color: tool.color }} />
                       </div>
                       <span className="text-white text-xs font-medium">{tool.label}</span>
@@ -1966,45 +1983,53 @@ export default function FieldTool() {
               </div>
             </div>
 
-            {/* Communication & Quick Actions Row */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Send className="w-4 h-4 text-gray-500" />
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Quick Actions</h3>
+            {/* Communication & Quick Actions Row - Boxed Container */}
+            <div 
+              className="rounded-xl p-3 border border-gray-700/50"
+              style={{ 
+                background: `linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%)`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+              }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                  <Send className="w-4 h-4 text-indigo-400" />
+                </div>
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Quick Actions</h3>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <Card 
-                  className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                  className="bg-black/30 border-gray-700/30 p-3 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
                   onClick={() => setShowMessaging(true)}
                   data-testid="button-messaging"
                 >
                   <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-500/30 flex items-center justify-center">
-                      <Send className="w-5 h-5 text-indigo-400" />
+                    <div className="w-10 h-10 rounded-lg bg-indigo-500/40 flex items-center justify-center shadow-lg">
+                      <Send className="w-5 h-5 text-indigo-300" />
                     </div>
                     <span className="text-white text-xs font-medium">Messages</span>
                   </div>
                 </Card>
                 <Card 
-                  className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                  className="bg-black/30 border-gray-700/30 p-3 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
                   onClick={() => setShowAIAssistant(true)}
                   data-testid="button-voice"
                 >
                   <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-10 h-10 rounded-lg bg-rose-500/30 flex items-center justify-center">
-                      <Mic className="w-5 h-5 text-rose-400" />
+                    <div className="w-10 h-10 rounded-lg bg-rose-500/40 flex items-center justify-center shadow-lg">
+                      <Mic className="w-5 h-5 text-rose-300" />
                     </div>
                     <span className="text-white text-xs font-medium">Voice AI</span>
                   </div>
                 </Card>
                 <Card 
-                  className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                  className="bg-black/30 border-gray-700/30 p-3 cursor-pointer hover:bg-gray-800/50 active:scale-[0.96] transition-all backdrop-blur-sm"
                   onClick={() => setShowPhotoAI(true)}
                   data-testid="button-camera-quick"
                 >
                   <div className="flex flex-col items-center gap-1.5">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500/30 flex items-center justify-center">
-                      <Image className="w-5 h-5 text-emerald-400" />
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/40 flex items-center justify-center shadow-lg">
+                      <Image className="w-5 h-5 text-emerald-300" />
                     </div>
                     <span className="text-white text-xs font-medium">Save Photo</span>
                   </div>
