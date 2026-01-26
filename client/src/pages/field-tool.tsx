@@ -3835,16 +3835,31 @@ export default function FieldTool() {
                         {biometricSetupStatus}
                       </p>
                     )}
-                    <Button
-                      className="w-full"
-                      variant="outline"
-                      onClick={handleBiometricSetup}
-                      disabled={isBiometricRegistering || !sessionToken}
-                    >
-                      <Fingerprint className="w-4 h-4 mr-2" />
-                      {isBiometricRegistering ? "Setting up..." : 
-                       !sessionToken ? "Log in with PIN first" : "Set Up Biometric Login"}
-                    </Button>
+                    {!sessionToken ? (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-400">
+                          To set up biometric login, please log out and log back in with your PIN. This is a security requirement.
+                        </p>
+                        <Button
+                          className="w-full"
+                          variant="outline"
+                          disabled
+                        >
+                          <Fingerprint className="w-4 h-4 mr-2" />
+                          Fresh Login Required
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={handleBiometricSetup}
+                        disabled={isBiometricRegistering}
+                      >
+                        <Fingerprint className="w-4 h-4 mr-2" />
+                        {isBiometricRegistering ? "Setting up..." : "Set Up Biometric Login"}
+                      </Button>
+                    )}
                   </Card>
                 </div>
               )}
