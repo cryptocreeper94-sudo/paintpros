@@ -1012,12 +1012,16 @@ export default function MarketingHub() {
               <div className="space-y-8">
                 {/* Dual Brand Logos */}
                 <div className="space-y-6">
-                  {/* Lume Emblem */}
+                  {/* Lume Emblem - matches home-lume.tsx branding */}
                   <div>
-                    <h2 className="text-3xl font-display font-bold">
-                      Lume Paint Co<span className="text-lg align-super">™</span>
+                    <h2 
+                      className="text-3xl font-light tracking-wide"
+                      style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                    >
+                      Lume<sup className="text-sm align-super ml-0.5">™</sup>
                     </h2>
-                    <p className="text-white/70 italic text-sm">Elevating the backdrop of your life</p>
+                    <p className="text-white/80 font-light tracking-[0.2em] uppercase text-sm -mt-1">Paint.co</p>
+                    <p className="text-white/70 italic text-sm mt-2">Elevating the backdrop of your life</p>
                   </div>
                   
                   {/* Divider */}
@@ -1084,10 +1088,16 @@ export default function MarketingHub() {
                     
                     {/* Dual Logos */}
                     <div className="flex items-center justify-center gap-4">
-                      {/* Lume */}
+                      {/* Lume - matches home-lume.tsx branding */}
                       <div className="text-center">
-                        <p className="font-display font-bold text-lg">Lume Paint Co<span className="text-xs align-super">™</span></p>
-                        <p className="text-white/60 text-xs italic">Elevating the backdrop of your life</p>
+                        <p 
+                          className="font-light tracking-wide text-xl"
+                          style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
+                        >
+                          Lume<sup className="text-[8px] align-super ml-0.5">™</sup>
+                        </p>
+                        <p className="text-white/80 font-light tracking-[0.15em] uppercase text-[10px] -mt-0.5">Paint.co</p>
+                        <p className="text-white/60 text-xs italic mt-1">Elevating the backdrop of your life</p>
                       </div>
                       
                       {/* Divider */}
