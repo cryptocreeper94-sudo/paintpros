@@ -20,14 +20,22 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 - **Lume Paint Co**: Dark navy blue (#1e3a5f) - used for titles, text accents, and buttons. Service area is Murfreesboro, TN (20-mile radius).
 
 ## Quick Reference - PIN Access
-| PIN | Role | Dashboard |
-|-----|------|-----------|
-| 1111 | Owner | /owner |
-| 4444 | Admin | /admin |
-| 0424 | Developer | /developer |
-| 88888 | Marketing | /marketing-hub |
-| 5555 | Project Manager | /project-manager |
-| 7777 | Crew Lead | /crew-lead |
+| PIN | User | Role | Dashboard |
+|-----|------|------|-----------|
+| 1111 | Ryan | Owner | /owner |
+| 4444 | Sidonie | Admin/Ops Manager | /admin |
+| 0424 | Jason | Developer | /developer |
+| 88888 | Marketing | Marketing | /marketing-hub |
+| 5555 | Hank | Project Manager | /project-manager |
+| 6666 | Garrett | Project Manager | /project-manager |
+| 7777 | Demo | Demo Viewer | /admin |
+| 3333 | Crew Lead | Crew Lead | /crew-lead |
+
+### Biometric Login (WebAuthn)
+- Users can set up fingerprint/Face ID authentication after logging in with PIN
+- Biometric credentials are stored in `webauthn_credentials` table
+- Available on devices that support platform authenticators (iOS Touch/Face ID, Android fingerprint)
+- Setup: Field Tool → Settings → Quick Login → "Set Up Biometric Login"
 
 ## System Architecture
 

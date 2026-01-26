@@ -9,6 +9,7 @@ import {
   type CrmActivity, type InsertCrmActivity, crmActivities,
   type CrmNote, type InsertCrmNote, crmNotes,
   type UserPin, type InsertUserPin, userPins,
+  type WebauthnCredential, type InsertWebauthnCredential, webauthnCredentials,
   type BlockchainStamp, type InsertBlockchainStamp, blockchainStamps,
   type Hallmark, type InsertHallmark, hallmarks,
   type HallmarkAudit, type InsertHallmarkAudit, hallmarkAudit,
@@ -234,6 +235,13 @@ export interface IStorage {
   getUserPinByPin(pin: string): Promise<UserPin | undefined>;
   createOrUpdateUserPin(data: InsertUserPin): Promise<UserPin>;
   updateUserPin(role: string, pin: string, mustChangePin: boolean): Promise<UserPin | undefined>;
+  
+  // WebAuthn Credentials (Biometric login)
+  getWebauthnCredentialByCredentialId(credentialId: string): Promise<WebauthnCredential | undefined>;
+  getWebauthnCredentialsByUserPinId(userPinId: string): Promise<WebauthnCredential[]>;
+  createWebauthnCredential(data: InsertWebauthnCredential): Promise<WebauthnCredential>;
+  updateWebauthnCredentialCounter(id: string, counter: number): Promise<void>;
+  deleteWebauthnCredential(id: string): Promise<void>;
   
   // Blockchain Stamps
   createBlockchainStamp(stamp: InsertBlockchainStamp): Promise<BlockchainStamp>;
@@ -1249,6 +1257,33 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userPins.role, role))
       .returning();
     return result;
+  }
+
+  // WebAuthn Credentials (Biometric login)
+  async getWebauthnCredentialByCredentialId(credentialId: string): Promise<WebauthnCredential | undefined> {
+    const [result] = await db.select().from(webauthnCredentials)
+      .where(eq(webauthnCredentials.credentialId, credentialId));
+    return result;
+  }
+
+  async getWebauthnCredentialsByUserPinId(userPinId: string): Promise<WebauthnCredential[]> {
+    return await db.select().from(webauthnCredentials)
+      .where(eq(webauthnCredentials.userPinId, userPinId));
+  }
+
+  async createWebauthnCredential(data: InsertWebauthnCredential): Promise<WebauthnCredential> {
+    const [result] = await db.insert(webauthnCredentials).values(data).returning();
+    return result;
+  }
+
+  async updateWebauthnCredentialCounter(id: string, counter: number): Promise<void> {
+    await db.update(webauthnCredentials)
+      .set({ counter, lastUsedAt: new Date() })
+      .where(eq(webauthnCredentials.id, id));
+  }
+
+  async deleteWebauthnCredential(id: string): Promise<void> {
+    await db.delete(webauthnCredentials).where(eq(webauthnCredentials.id, id));
   }
 
   // Blockchain Stamps

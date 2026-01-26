@@ -74,7 +74,8 @@ import {
   PieChart,
   Activity,
   Layers,
-  Crown
+  Crown,
+  Fingerprint
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 
@@ -106,6 +107,13 @@ export default function FieldTool() {
   const [loginPin, setLoginPin] = useState("");
   const [loginError, setLoginError] = useState("");
   const [isVerifyingLogin, setIsVerifyingLogin] = useState(false);
+  
+  // Biometric authentication state
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [isBiometricLoading, setIsBiometricLoading] = useState(false);
+  const [isBiometricRegistering, setIsBiometricRegistering] = useState(false);
+  const [biometricSetupStatus, setBiometricSetupStatus] = useState<string | null>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null); // Store session token for biometric setup
   
   const [userRole, setUserRole] = useState(() => {
     const sessionRole = sessionStorage.getItem("field_tool_role");
@@ -158,6 +166,10 @@ export default function FieldTool() {
         if (data.userName) {
           setUserName(data.userName);
         }
+        // Store session token for biometric registration (server-validated)
+        if (data.sessionToken) {
+          setSessionToken(data.sessionToken);
+        }
         setIsAuthenticated(true);
         setLoginPin("");
       } else {
@@ -190,6 +202,194 @@ export default function FieldTool() {
       }
     }
   }, [currentUser.isAuthenticated, currentUser.role, currentUser.userName]);
+  
+  // Check biometric availability on mount
+  useEffect(() => {
+    const checkBiometric = async () => {
+      if (window.PublicKeyCredential) {
+        try {
+          const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+          setBiometricAvailable(available);
+        } catch (e) {
+          setBiometricAvailable(false);
+        }
+      }
+    };
+    checkBiometric();
+  }, []);
+  
+  // Biometric login handler
+  const handleBiometricLogin = async () => {
+    setIsBiometricLoading(true);
+    setLoginError("");
+    try {
+      // Get authentication options from server
+      const optionsRes = await fetch("/api/auth/webauthn/auth-options");
+      const options = await optionsRes.json();
+      
+      // Convert challenge to ArrayBuffer
+      const challengeBuffer = Uint8Array.from(atob(options.challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      
+      // Request credential from authenticator
+      const credential = await navigator.credentials.get({
+        publicKey: {
+          challenge: challengeBuffer,
+          rpId: options.rpId,
+          timeout: options.timeout,
+          userVerification: options.userVerification as UserVerificationRequirement,
+        },
+      }) as PublicKeyCredential;
+      
+      if (!credential) {
+        setLoginError("Biometric authentication cancelled");
+        return;
+      }
+      
+      const response = credential.response as AuthenticatorAssertionResponse;
+      
+      // Send to server for verification
+      const authRes = await fetch("/api/auth/webauthn/authenticate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: options.sessionId,
+          credential: {
+            id: credential.id,
+            rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+            response: {
+              authenticatorData: btoa(String.fromCharCode(...new Uint8Array(response.authenticatorData))),
+              clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
+              signature: btoa(String.fromCharCode(...new Uint8Array(response.signature))),
+              counter: 0, // Server will extract from authenticatorData
+            },
+            type: credential.type,
+          },
+        }),
+      });
+      
+      const authData = await authRes.json();
+      
+      if (authData.success && authData.role) {
+        accessLogin(authData.role as UserRole, authData.userName || undefined);
+        setUserRole(authData.role);
+        if (authData.userName) {
+          setUserName(authData.userName);
+        }
+        setIsAuthenticated(true);
+      } else {
+        setLoginError(authData.error || "Biometric login failed. Use PIN instead.");
+      }
+    } catch (error: any) {
+      console.error("Biometric login error:", error);
+      if (error.name === "NotAllowedError") {
+        setLoginError("Biometric cancelled. Use PIN instead.");
+      } else {
+        setLoginError("Biometric not set up. Login with PIN first.");
+      }
+    } finally {
+      setIsBiometricLoading(false);
+    }
+  };
+  
+  // Biometric registration handler (for settings)
+  const handleBiometricSetup = async () => {
+    if (!biometricAvailable) {
+      setBiometricSetupStatus("Biometric not available on this device");
+      return;
+    }
+    
+    if (!sessionToken) {
+      setBiometricSetupStatus("Please log in with PIN first");
+      return;
+    }
+    
+    setIsBiometricRegistering(true);
+    setBiometricSetupStatus(null);
+    
+    try {
+      // Get registration options from server (authenticated by session token)
+      const optionsRes = await fetch("/api/auth/webauthn/register-options", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionToken }),
+      });
+      if (!optionsRes.ok) {
+        const errorData = await optionsRes.json().catch(() => ({}));
+        setBiometricSetupStatus(errorData.error || "Failed to get registration options");
+        return;
+      }
+      const options = await optionsRes.json();
+      
+      // Convert challenge and user.id to ArrayBuffer
+      const challengeBuffer = Uint8Array.from(atob(options.challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      const userIdBuffer = Uint8Array.from(atob(options.user.id.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      
+      // Create credential
+      const credential = await navigator.credentials.create({
+        publicKey: {
+          challenge: challengeBuffer,
+          rp: options.rp,
+          user: {
+            ...options.user,
+            id: userIdBuffer,
+          },
+          pubKeyCredParams: options.pubKeyCredParams,
+          timeout: options.timeout,
+          attestation: options.attestation as AttestationConveyancePreference,
+          authenticatorSelection: {
+            authenticatorAttachment: "platform" as AuthenticatorAttachment,
+            userVerification: "required" as UserVerificationRequirement,
+            residentKey: "preferred" as ResidentKeyRequirement,
+          },
+        },
+      }) as PublicKeyCredential;
+      
+      if (!credential) {
+        setBiometricSetupStatus("Biometric setup cancelled");
+        return;
+      }
+      
+      const response = credential.response as AuthenticatorAttestationResponse;
+      
+      // Register with server (authenticated by session token)
+      const registerRes = await fetch("/api/auth/webauthn/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionToken, // Server validates session and determines user
+          credential: {
+            id: credential.id,
+            rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+            response: {
+              attestationObject: btoa(String.fromCharCode(...new Uint8Array(response.attestationObject))),
+              clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
+            },
+            type: credential.type,
+          },
+          deviceName: navigator.userAgent.includes("iPhone") ? "iPhone" : 
+                      navigator.userAgent.includes("Android") ? "Android" : "Device",
+        }),
+      });
+      
+      const registerData = await registerRes.json();
+      
+      if (registerData.success) {
+        setBiometricSetupStatus("Fingerprint/Face ID set up successfully!");
+      } else {
+        setBiometricSetupStatus(registerData.error || "Failed to set up biometric");
+      }
+    } catch (error: any) {
+      console.error("Biometric setup error:", error);
+      if (error.name === "NotAllowedError") {
+        setBiometricSetupStatus("Setup cancelled");
+      } else {
+        setBiometricSetupStatus("Failed to set up biometric authentication");
+      }
+    } finally {
+      setIsBiometricRegistering(false);
+    }
+  };
+  
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -403,7 +603,24 @@ export default function FieldTool() {
               </Button>
             </form>
             
-            <div className="mt-6 pt-4 border-t border-gray-800">
+            {/* Biometric Login Option */}
+            {biometricAvailable && (
+              <div className="mt-4 pt-4 border-t border-gray-800">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 border-gray-700 text-gray-300"
+                  onClick={handleBiometricLogin}
+                  disabled={isBiometricLoading}
+                  data-testid="button-biometric-login"
+                >
+                  <Fingerprint className="w-5 h-5 mr-2" />
+                  {isBiometricLoading ? "Verifying..." : "Use Fingerprint / Face ID"}
+                </Button>
+              </div>
+            )}
+            
+            <div className="mt-4 pt-4 border-t border-gray-800">
               <p className="text-xs text-gray-500 text-center">
                 Your PIN determines your access level and dashboard
               </p>
@@ -1389,6 +1606,39 @@ export default function FieldTool() {
                   </Button>
                 </Card>
               </div>
+
+              {/* Biometric Setup - Only show if biometric is available */}
+              {biometricAvailable && (
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">Quick Login</h3>
+                  <Card className="bg-gray-900/50 border-gray-800 p-4 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                        <Fingerprint className="w-5 h-5 text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">Fingerprint / Face ID</p>
+                        <p className="text-xs text-gray-400">Skip PIN entry on this device</p>
+                      </div>
+                    </div>
+                    {biometricSetupStatus && (
+                      <p className={`text-sm ${biometricSetupStatus.includes('success') ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {biometricSetupStatus}
+                      </p>
+                    )}
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      onClick={handleBiometricSetup}
+                      disabled={isBiometricRegistering || !sessionToken}
+                    >
+                      <Fingerprint className="w-4 h-4 mr-2" />
+                      {isBiometricRegistering ? "Setting up..." : 
+                       !sessionToken ? "Log in with PIN first" : "Set Up Biometric Login"}
+                    </Button>
+                  </Card>
+                </div>
+              )}
 
               {/* App Info */}
               <div className="space-y-4">

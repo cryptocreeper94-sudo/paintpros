@@ -350,6 +350,27 @@ export const insertUserPinSchema = createInsertSchema(userPins).omit({
 export type InsertUserPin = z.infer<typeof insertUserPinSchema>;
 export type UserPin = typeof userPins.$inferSelect;
 
+// WebAuthn Credentials - Biometric login (fingerprint/Face ID)
+export const webauthnCredentials = pgTable("webauthn_credentials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userPinId: varchar("user_pin_id").notNull().references(() => userPins.id, { onDelete: "cascade" }),
+  credentialId: text("credential_id").notNull().unique(), // Base64 encoded credential ID
+  publicKey: text("public_key").notNull(), // Base64 encoded public key
+  counter: integer("counter").notNull().default(0), // Signature counter for replay protection
+  deviceName: text("device_name"), // "iPhone", "Pixel", etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastUsedAt: timestamp("last_used_at"),
+});
+
+export const insertWebauthnCredentialSchema = createInsertSchema(webauthnCredentials).omit({
+  id: true,
+  createdAt: true,
+  lastUsedAt: true,
+});
+
+export type InsertWebauthnCredential = z.infer<typeof insertWebauthnCredentialSchema>;
+export type WebauthnCredential = typeof webauthnCredentials.$inferSelect;
+
 // Blockchain Stamps - Solana document hashing
 export const blockchainStamps = pgTable("blockchain_stamps", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

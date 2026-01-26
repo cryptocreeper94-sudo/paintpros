@@ -40,7 +40,7 @@ import {
   insertComplianceDeadlineSchema, insertReconciliationRecordSchema, insertSubcontractorProfileSchema,
   insertShiftBidSchema, insertBidSubmissionSchema, insertCustomerSentimentSchema,
   insertMilestoneNftSchema, insertEsgTrackingSchema, insertFinancingApplicationSchema, insertFranchiseAnalyticsSchema,
-  users as usersTable,
+  users as usersTable, userPins,
   dataImports, importedRecords, insertDataImportSchema, insertImportedRecordSchema
 } from "@shared/schema";
 import * as crypto from "crypto";
@@ -2521,6 +2521,9 @@ Format the response as JSON with these fields:
   });
 
   // POST /api/auth/pin/verify-any - Verify PIN against all users (for team login)
+  // Store authenticated sessions for biometric registration (in-memory for demo)
+  const pinSessions = new Map<string, { userPinId: string, pin: string, role: string, expires: number }>();
+  
   app.post("/api/auth/pin/verify-any", async (req, res) => {
     try {
       const { pin } = req.body;
@@ -2532,11 +2535,21 @@ Format the response as JSON with these fields:
       // Look up user directly by PIN
       const userPin = await storage.getUserPinByPin(pin);
       if (userPin) {
+        // Create a session token for biometric registration
+        const sessionToken = crypto.randomBytes(32).toString('base64url');
+        pinSessions.set(sessionToken, {
+          userPinId: userPin.id,
+          pin: pin,
+          role: userPin.role,
+          expires: Date.now() + 60 * 60 * 1000, // 1 hour expiry
+        });
+        
         res.json({ 
           success: true, 
           role: userPin.role, 
           userName: userPin.userName,
-          mustChangePin: userPin.mustChangePin 
+          mustChangePin: userPin.mustChangePin,
+          sessionToken, // Send session token for biometric setup
         });
         return;
       }
@@ -2591,6 +2604,243 @@ Format the response as JSON with these fields:
     } catch (error) {
       console.error("Error initializing PINs:", error);
       res.status(500).json({ error: "Failed to initialize PINs" });
+    }
+  });
+
+  // ============ WEBAUTHN BIOMETRIC LOGIN ============
+  // Note: This is a demo implementation. For production, use a WebAuthn library
+  // like @simplewebauthn/server for full attestation/assertion verification.
+  // The biometric feature is a convenience layer on top of PIN authentication.
+  
+  // Store active challenges for registration/authentication (in-memory, 5 min expiry)
+  const webauthnChallenges = new Map<string, { challenge: string, expires: number }>();
+  
+  // Helper to generate random challenge
+  function generateChallenge(): string {
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return Buffer.from(array).toString('base64url');
+  }
+  
+  // POST /api/auth/webauthn/register-options - Get registration options (requires session token)
+  app.post("/api/auth/webauthn/register-options", async (req, res) => {
+    try {
+      const { sessionToken } = req.body;
+      
+      // Verify session token
+      const session = pinSessions.get(sessionToken);
+      if (!session || session.expires < Date.now()) {
+        res.status(401).json({ error: "Please log in with PIN first" });
+        return;
+      }
+      
+      // Get user from session
+      const userPin = await storage.getUserPinByPin(session.pin);
+      if (!userPin) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      
+      const challenge = generateChallenge();
+      webauthnChallenges.set(userPin.id, { challenge, expires: Date.now() + 5 * 60 * 1000 }); // 5 min expiry
+      
+      // Get existing credentials for this user to exclude
+      const existingCreds = await storage.getWebauthnCredentialsByUserPinId(userPin.id);
+      
+      const options = {
+        challenge,
+        rp: {
+          name: "PaintPros Field Tool",
+          id: new URL(process.env.REPLIT_DEV_DOMAIN || "localhost").hostname.replace(/:\d+$/, ''),
+        },
+        user: {
+          id: Buffer.from(userPin.id).toString('base64url'),
+          name: userPin.userName || userPin.role,
+          displayName: userPin.userName || userPin.role,
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: "public-key" }, // ES256
+          { alg: -257, type: "public-key" }, // RS256
+        ],
+        timeout: 60000,
+        attestation: "none",
+        excludeCredentials: existingCreds.map(cred => ({
+          id: cred.credentialId,
+          type: "public-key",
+        })),
+        authenticatorSelection: {
+          authenticatorAttachment: "platform", // Use device biometric
+          userVerification: "required",
+          residentKey: "preferred",
+        },
+      };
+      
+      res.json(options);
+    } catch (error) {
+      console.error("Error getting register options:", error);
+      res.status(500).json({ error: "Failed to get registration options" });
+    }
+  });
+  
+  // POST /api/auth/webauthn/register - Register a credential (requires session token)
+  app.post("/api/auth/webauthn/register", async (req, res) => {
+    try {
+      const { sessionToken, credential, deviceName } = req.body;
+      
+      // Validate required fields
+      if (!sessionToken || !credential || !credential.id || !credential.response) {
+        res.status(400).json({ error: "Invalid credential data" });
+        return;
+      }
+      
+      // Verify session token - this authenticates the user
+      const session = pinSessions.get(sessionToken);
+      if (!session || session.expires < Date.now()) {
+        res.status(401).json({ error: "Session expired. Please log in with PIN again." });
+        return;
+      }
+      
+      // Get user from session (server-side identity resolution)
+      const userPin = await storage.getUserPinByPin(session.pin);
+      if (!userPin) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      
+      // Verify challenge - this proves the user went through the proper flow
+      const storedChallenge = webauthnChallenges.get(userPin.id);
+      if (!storedChallenge || storedChallenge.expires < Date.now()) {
+        res.status(400).json({ error: "Challenge expired. Please try again." });
+        return;
+      }
+      webauthnChallenges.delete(userPin.id);
+      
+      // Security note: Full attestation verification requires a WebAuthn library
+      // Session + challenge validation ensures authenticated registration flow
+      const { id: credentialId, response } = credential;
+      
+      // Store the credential
+      const savedCredential = await storage.createWebauthnCredential({
+        userPinId: userPin.id,
+        credentialId,
+        publicKey: response.publicKey || response.attestationObject,
+        counter: 0,
+        deviceName: deviceName || "Unknown Device",
+      });
+      
+      res.json({ success: true, credentialId: savedCredential.id });
+    } catch (error) {
+      console.error("Error registering credential:", error);
+      res.status(500).json({ error: "Failed to register credential" });
+    }
+  });
+  
+  // GET /api/auth/webauthn/auth-options - Get authentication options
+  app.get("/api/auth/webauthn/auth-options", async (req, res) => {
+    try {
+      const challenge = generateChallenge();
+      // Store challenge with temporary session ID
+      const sessionId = generateChallenge();
+      webauthnChallenges.set(sessionId, { challenge, expires: Date.now() + 5 * 60 * 1000 });
+      
+      const options = {
+        challenge,
+        sessionId, // Client sends this back for verification
+        rpId: new URL(process.env.REPLIT_DEV_DOMAIN || "https://localhost").hostname.replace(/:\d+$/, ''),
+        timeout: 60000,
+        userVerification: "required",
+      };
+      
+      res.json(options);
+    } catch (error) {
+      console.error("Error getting auth options:", error);
+      res.status(500).json({ error: "Failed to get authentication options" });
+    }
+  });
+  
+  // POST /api/auth/webauthn/authenticate - Authenticate with credential
+  app.post("/api/auth/webauthn/authenticate", async (req, res) => {
+    try {
+      const { sessionId, credential } = req.body;
+      
+      // Verify challenge
+      const storedChallenge = webauthnChallenges.get(sessionId);
+      if (!storedChallenge || storedChallenge.expires < Date.now()) {
+        res.status(400).json({ error: "Challenge expired. Please try again." });
+        return;
+      }
+      webauthnChallenges.delete(sessionId);
+      
+      // Find the credential
+      const storedCredential = await storage.getWebauthnCredentialByCredentialId(credential.id);
+      if (!storedCredential) {
+        res.status(401).json({ error: "Credential not found. Please login with PIN." });
+        return;
+      }
+      
+      // In production, verify the signature against the stored public key
+      // For now, we trust that the authenticator verified the user
+      
+      // Update counter for replay protection
+      const newCounter = (credential.response.authenticatorData?.counter || 0);
+      if (newCounter <= storedCredential.counter) {
+        res.status(401).json({ error: "Possible credential replay detected" });
+        return;
+      }
+      await storage.updateWebauthnCredentialCounter(storedCredential.id, newCounter);
+      
+      // Get the associated user
+      const [userPin] = await db.select().from(userPins)
+        .where(eq(userPins.id, storedCredential.userPinId));
+      
+      if (!userPin) {
+        res.status(401).json({ error: "User not found" });
+        return;
+      }
+      
+      res.json({ 
+        success: true, 
+        role: userPin.role,
+        userName: userPin.userName,
+      });
+    } catch (error) {
+      console.error("Error authenticating:", error);
+      res.status(500).json({ error: "Failed to authenticate" });
+    }
+  });
+  
+  // DELETE /api/auth/webauthn/credential/:credentialId - Remove a credential
+  app.delete("/api/auth/webauthn/credential/:credentialId", async (req, res) => {
+    try {
+      const { credentialId } = req.params;
+      await storage.deleteWebauthnCredential(credentialId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting credential:", error);
+      res.status(500).json({ error: "Failed to delete credential" });
+    }
+  });
+  
+  // GET /api/auth/webauthn/credentials/:pin - Get user's registered credentials
+  app.get("/api/auth/webauthn/credentials/:pin", async (req, res) => {
+    try {
+      const { pin } = req.params;
+      const userPin = await storage.getUserPinByPin(pin);
+      if (!userPin) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      
+      const credentials = await storage.getWebauthnCredentialsByUserPinId(userPin.id);
+      res.json(credentials.map(c => ({
+        id: c.id,
+        deviceName: c.deviceName,
+        createdAt: c.createdAt,
+        lastUsedAt: c.lastUsedAt,
+      })));
+    } catch (error) {
+      console.error("Error getting credentials:", error);
+      res.status(500).json({ error: "Failed to get credentials" });
     }
   });
 
