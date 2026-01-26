@@ -744,6 +744,276 @@ function TimeCardSection({
   );
 }
 
+interface Job {
+  id: string;
+  customerName: string;
+  serviceType: string;
+  address: string;
+  date: string;
+  timeSlot: string;
+  status: string;
+  phone?: string;
+  progress: number;
+  notes: string[];
+  photos: string[];
+}
+
+function JobDetailsSection({ 
+  job, 
+  colors, 
+  onBack,
+  onExportTimeCards
+}: { 
+  job: Job; 
+  colors: { primary: string; secondary: string }; 
+  onBack: () => void;
+  onExportTimeCards: () => void;
+}) {
+  const [activeTab, setActiveTab] = useState<"overview" | "progress" | "photos" | "time">("overview");
+  const [progress, setProgress] = useState(job.progress || 0);
+  const [jobNotes, setJobNotes] = useState(job.notes || []);
+  const [newNote, setNewNote] = useState("");
+  const [photos, setPhotos] = useState<string[]>(job.photos || []);
+
+  const progressStages = [
+    { label: "Not Started", value: 0 },
+    { label: "Prep Work", value: 25 },
+    { label: "Priming", value: 50 },
+    { label: "Painting", value: 75 },
+    { label: "Complete", value: 100 },
+  ];
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPhotos(prev => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const addNote = () => {
+    if (newNote.trim()) {
+      const noteWithTimestamp = `${new Date().toLocaleString()}: ${newNote}`;
+      setJobNotes(prev => [noteWithTimestamp, ...prev]);
+      setNewNote("");
+    }
+  };
+
+  return (
+    <motion.div
+      key="job-details"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="p-4 space-y-4"
+    >
+      <div className="flex items-center gap-3 mb-2">
+        <Button size="icon" variant="ghost" onClick={onBack} data-testid="button-job-back">
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-white">{job.serviceType}</h2>
+          <p className="text-gray-400 text-sm">{job.customerName}</p>
+        </div>
+        <Badge 
+          className={progress === 100 ? "bg-green-600" : "bg-gray-700"}
+        >
+          {progress}%
+        </Badge>
+      </div>
+
+      <Card className="bg-gray-900/50 border-gray-800 p-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-gray-300">
+            <MapPin className="w-4 h-4" style={{ color: colors.primary }} />
+            <span className="text-sm">{job.address || "Address not provided"}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-300">
+            <Calendar className="w-4 h-4" style={{ color: colors.primary }} />
+            <span className="text-sm">{job.date ? format(new Date(job.date), 'MMM d, yyyy') : 'Date TBD'} at {job.timeSlot || '9:00 AM'}</span>
+          </div>
+          {job.phone && (
+            <div className="flex items-center gap-2 text-gray-300">
+              <Phone className="w-4 h-4" style={{ color: colors.primary }} />
+              <a href={`tel:${job.phone}`} className="text-sm underline">{job.phone}</a>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {[
+          { id: "overview", label: "Overview", icon: FileText },
+          { id: "progress", label: "Progress", icon: Activity },
+          { id: "photos", label: "Photos", icon: Camera },
+          { id: "time", label: "Time Cards", icon: Clock },
+        ].map((tab) => (
+          <Button
+            key={tab.id}
+            size="sm"
+            variant={activeTab === tab.id ? "default" : "outline"}
+            onClick={() => setActiveTab(tab.id as any)}
+            style={activeTab === tab.id ? { background: colors.primary } : {}}
+            data-testid={`tab-job-${tab.id}`}
+          >
+            <tab.icon className="w-4 h-4 mr-1" />
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
+      {activeTab === "overview" && (
+        <div className="space-y-4">
+          <Card className="bg-gray-900/50 border-gray-800 p-4">
+            <h3 className="text-white font-medium mb-3">Job Notes</h3>
+            <div className="flex gap-2 mb-3">
+              <Input
+                placeholder="Add a note..."
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addNote()}
+                className="bg-gray-800 border-gray-700 text-white"
+                data-testid="input-job-note"
+              />
+              <Button 
+                size="icon" 
+                onClick={addNote}
+                style={{ background: colors.primary }}
+                data-testid="button-add-note"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {jobNotes.length > 0 ? jobNotes.map((note, i) => (
+                <div key={i} className="text-sm text-gray-300 p-2 bg-gray-800/50 rounded">
+                  {note}
+                </div>
+              )) : (
+                <p className="text-gray-500 text-sm">No notes yet</p>
+              )}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {activeTab === "progress" && (
+        <div className="space-y-4">
+          <Card className="bg-gray-900/50 border-gray-800 p-4">
+            <h3 className="text-white font-medium mb-4">Job Progress</h3>
+            <div className="h-3 bg-gray-800 rounded-full overflow-hidden mb-4">
+              <div 
+                className="h-full rounded-full transition-all"
+                style={{ background: colors.primary, width: `${progress}%` }}
+              />
+            </div>
+            <div className="space-y-2">
+              {progressStages.map((stage) => (
+                <Button
+                  key={stage.value}
+                  variant={progress >= stage.value ? "default" : "outline"}
+                  className="w-full justify-start"
+                  style={progress >= stage.value ? { background: colors.primary } : {}}
+                  onClick={() => setProgress(stage.value)}
+                  data-testid={`button-progress-${stage.value}`}
+                >
+                  <CheckCircle className={`w-4 h-4 mr-2 ${progress >= stage.value ? 'text-white' : 'text-gray-500'}`} />
+                  {stage.label}
+                </Button>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {activeTab === "photos" && (
+        <div className="space-y-4">
+          <Card className="bg-gray-900/50 border-gray-800 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-medium">Job Photos</h3>
+              <label className="cursor-pointer">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  multiple 
+                  className="hidden" 
+                  onChange={handlePhotoUpload}
+                  data-testid="input-photo-upload"
+                />
+                <Button size="sm" style={{ background: colors.primary }} asChild>
+                  <span><Camera className="w-4 h-4 mr-1" /> Add Photo</span>
+                </Button>
+              </label>
+            </div>
+            
+            {photos.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {photos.map((photo, i) => (
+                  <div key={i} className="aspect-square rounded-lg overflow-hidden bg-gray-800">
+                    <img src={photo} alt={`Job photo ${i + 1}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Camera className="w-12 h-12 mx-auto mb-2 text-gray-600" />
+                <p className="text-gray-500">No photos yet</p>
+                <p className="text-gray-600 text-sm">Upload before/during/after photos</p>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {activeTab === "time" && (
+        <div className="space-y-4">
+          <Card className="bg-gray-900/50 border-gray-800 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-medium">Crew Time Cards</h3>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={onExportTimeCards}
+                data-testid="button-export-job-time"
+              >
+                <Download className="w-4 h-4 mr-1" /> Export
+              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              {[
+                { name: "You", hours: 6.5, date: "Today" },
+                { name: "Mike J.", hours: 6.5, date: "Today" },
+                { name: "Dave S.", hours: 4.0, date: "Today" },
+              ].map((entry, i) => (
+                <div key={i} className="flex items-center justify-between p-2 bg-gray-800/50 rounded">
+                  <div>
+                    <p className="text-white text-sm">{entry.name}</p>
+                    <p className="text-gray-500 text-xs">{entry.date}</p>
+                  </div>
+                  <Badge className="bg-gray-700">{entry.hours} hrs</Badge>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Total Job Hours</span>
+                <span className="text-white font-bold">17.0 hrs</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return "Good morning";
@@ -762,6 +1032,7 @@ export default function FieldTool() {
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
   const { login: accessLogin, logout: accessLogout, currentUser } = useAccess();
   const [activeSection, setActiveSection] = useState("home");
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem("field_tool_user") || "Team Member";
   });
@@ -1115,8 +1386,10 @@ export default function FieldTool() {
   // Get tenant-specific branding
   const getTenantColors = () => {
     const primaryColor = tenant?.theme?.primaryColor || "#f97316";
+    const secondaryColor = tenant?.theme?.accentColor || "#3b82f6";
     return {
       primary: primaryColor,
+      secondary: secondaryColor,
       gradient: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}dd 100%)`,
     };
   };
@@ -1596,7 +1869,7 @@ export default function FieldTool() {
           </motion.div>
         )}
 
-        {activeSection === "jobs" && (
+        {activeSection === "jobs" && !selectedJob && (
           <motion.div
             key="jobs"
             initial={{ opacity: 0 }}
@@ -1604,39 +1877,85 @@ export default function FieldTool() {
             exit={{ opacity: 0 }}
             className="p-4 space-y-4"
           >
-            <h2 className="text-lg font-semibold text-white">All Jobs</h2>
+            <div className="flex items-center gap-3 mb-2">
+              <Button size="icon" variant="ghost" onClick={() => setActiveSection("home")} data-testid="button-jobs-back">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <h2 className="text-lg font-semibold text-white">All Jobs</h2>
+            </div>
             <div className="space-y-3">
-              {bookings.length > 0 ? bookings.map((job: any, i: number) => (
-                <Card key={job.id || i} className="bg-gray-900/50 border-gray-800 p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <p className="text-white font-medium">{job.customerName || 'Customer'}</p>
-                      <p className="text-gray-500 text-sm">{job.serviceType || 'Service'}</p>
-                      {job.date && (
-                        <p className="text-gray-600 text-xs mt-1">
-                          {format(new Date(job.date), 'MMM d')} at {job.timeSlot || '9:00 AM'}
-                        </p>
-                      )}
+              {bookings.length > 0 ? bookings.map((job: any, i: number) => {
+                const jobData: Job = {
+                  id: job.id || `job-${i}`,
+                  customerName: job.customerName || 'Customer',
+                  serviceType: job.serviceType || 'Service',
+                  address: job.address || '',
+                  date: job.date || '',
+                  timeSlot: job.timeSlot || '9:00 AM',
+                  status: job.status || 'Scheduled',
+                  phone: job.phone,
+                  progress: 0,
+                  notes: [],
+                  photos: []
+                };
+                return (
+                  <Card 
+                    key={job.id || i} 
+                    className="bg-gray-900/50 border-gray-800 p-4 cursor-pointer hover:bg-gray-800/50 transition-colors"
+                    onClick={() => {
+                      setSelectedJob(jobData);
+                      setActiveSection("job-details");
+                    }}
+                    data-testid={`card-job-${i}`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p className="text-white font-medium">{jobData.customerName}</p>
+                        <p className="text-gray-500 text-sm">{jobData.serviceType}</p>
+                        {job.date && (
+                          <p className="text-gray-600 text-xs mt-1">
+                            {format(new Date(job.date), 'MMM d')} at {jobData.timeSlot}
+                          </p>
+                        )}
+                      </div>
+                      <Badge className={job.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
+                        {jobData.status}
+                      </Badge>
                     </div>
-                    <Badge className={job.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
-                      {job.status || 'Scheduled'}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-2 mt-3">
-                    {job.phone && (
-                      <Button size="sm" variant="outline" className="flex-1 border-gray-700" asChild>
-                        <a href={`tel:${job.phone}`}><Phone className="w-3 h-3 mr-1" /> Call</a>
+                    <div className="flex gap-2 mt-3">
+                      {job.phone && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1 border-gray-700" 
+                          onClick={(e) => { e.stopPropagation(); window.location.href = `tel:${job.phone}`; }}
+                        >
+                          <Phone className="w-3 h-3 mr-1" /> Call
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1 border-gray-700"
+                        onClick={(e) => { e.stopPropagation(); }}
+                      >
+                        <Navigation className="w-3 h-3 mr-1" /> Navigate
                       </Button>
-                    )}
-                    <Button size="sm" variant="outline" className="flex-1 border-gray-700">
-                      <Navigation className="w-3 h-3 mr-1" /> Navigate
-                    </Button>
-                    <Button size="sm" style={{ background: colors.primary }}>
-                      <FileText className="w-3 h-3 mr-1" /> Notes
-                    </Button>
-                  </div>
-                </Card>
-              )) : (
+                      <Button 
+                        size="sm" 
+                        style={{ background: colors.primary }}
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setSelectedJob(jobData);
+                          setActiveSection("job-details");
+                        }}
+                      >
+                        <ChevronRight className="w-3 h-3" /> View
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              }) : (
                 <Card className="bg-gray-900/50 border-gray-800 p-8 text-center">
                   <ClipboardList className="w-12 h-12 mx-auto mb-2 text-gray-600" />
                   <p className="text-gray-500">No jobs scheduled</p>
@@ -1644,6 +1963,27 @@ export default function FieldTool() {
               )}
             </div>
           </motion.div>
+        )}
+
+        {activeSection === "job-details" && selectedJob && (
+          <JobDetailsSection
+            job={selectedJob}
+            colors={colors}
+            onBack={() => {
+              setSelectedJob(null);
+              setActiveSection("jobs");
+            }}
+            onExportTimeCards={() => {
+              const csv = `Job,Employee,Hours\n"${selectedJob.serviceType}","You",6.5\n"${selectedJob.serviceType}","Mike J.",6.5\n"${selectedJob.serviceType}","Dave S.",4.0`;
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `job_timecard_${new Date().toISOString().split('T')[0]}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          />
         )}
 
         {activeSection === "tools" && (
@@ -2410,9 +2750,9 @@ export default function FieldTool() {
       {/* Internal Messaging Widget */}
       {showMessaging && (
         <MessagingWidget
-          currentUserId={currentUser.name || userName}
+          currentUserId={currentUser.userName || userName}
           currentUserRole={userRole}
-          currentUserName={currentUser.name || userName}
+          currentUserName={currentUser.userName || userName}
         />
       )}
     </div>
