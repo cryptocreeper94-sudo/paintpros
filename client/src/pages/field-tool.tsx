@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import {
   Home,
   Calendar,
@@ -125,6 +126,151 @@ const CATEGORY_CONFIG: Record<SearchCategory, { label: string; icon: any; query:
     query: ""
   }
 };
+
+async function generateTimeCardPDF(
+  tenantName: string, 
+  entries: Array<{ date: string; clockIn: string; clockOut: string; hours: number; break?: number }>,
+  employeeName: string
+): Promise<void> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 792]);
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  
+  let y = 740;
+  
+  page.drawText(`${tenantName} - Time Card Report`, {
+    x: 50, y, size: 18, font: boldFont, color: rgb(0.12, 0.23, 0.37)
+  });
+  y -= 25;
+  
+  page.drawText(`Employee: ${employeeName}`, { x: 50, y, size: 12, font });
+  y -= 15;
+  page.drawText(`Generated: ${format(new Date(), 'MMMM d, yyyy h:mm a')}`, { x: 50, y, size: 10, font, color: rgb(0.5, 0.5, 0.5) });
+  y -= 30;
+  
+  page.drawText('Date', { x: 50, y, size: 10, font: boldFont });
+  page.drawText('Clock In', { x: 150, y, size: 10, font: boldFont });
+  page.drawText('Clock Out', { x: 250, y, size: 10, font: boldFont });
+  page.drawText('Break', { x: 350, y, size: 10, font: boldFont });
+  page.drawText('Hours', { x: 450, y, size: 10, font: boldFont });
+  y -= 5;
+  
+  page.drawLine({ start: { x: 50, y }, end: { x: 520, y }, thickness: 1, color: rgb(0.8, 0.8, 0.8) });
+  y -= 15;
+  
+  let totalHours = 0;
+  for (const entry of entries) {
+    page.drawText(entry.date, { x: 50, y, size: 9, font });
+    page.drawText(entry.clockIn, { x: 150, y, size: 9, font });
+    page.drawText(entry.clockOut, { x: 250, y, size: 9, font });
+    page.drawText(entry.break ? `${entry.break} min` : '-', { x: 350, y, size: 9, font });
+    page.drawText(entry.hours.toFixed(1), { x: 450, y, size: 9, font });
+    totalHours += entry.hours;
+    y -= 18;
+    if (y < 100) break;
+  }
+  
+  y -= 10;
+  page.drawLine({ start: { x: 50, y }, end: { x: 520, y }, thickness: 1, color: rgb(0.8, 0.8, 0.8) });
+  y -= 18;
+  page.drawText('Total Hours:', { x: 350, y, size: 11, font: boldFont });
+  page.drawText(totalHours.toFixed(1), { x: 450, y, size: 11, font: boldFont });
+  
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `timecard_${employeeName.replace(/\s+/g, '_')}_${format(new Date(), 'yyyy-MM-dd')}.pdf`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+async function generateJobReportPDF(
+  tenantName: string,
+  job: Job,
+  timeEntries: Array<{ employee: string; hours: number }>
+): Promise<void> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 792]);
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  
+  let y = 740;
+  
+  page.drawText(`${tenantName} - Job Report`, {
+    x: 50, y, size: 18, font: boldFont, color: rgb(0.12, 0.23, 0.37)
+  });
+  y -= 30;
+  
+  page.drawText('Job Details', { x: 50, y, size: 14, font: boldFont });
+  y -= 20;
+  
+  const details = [
+    ['Customer:', job.customerName],
+    ['Service:', job.serviceType],
+    ['Address:', job.address || 'Not specified'],
+    ['Date:', job.date ? format(new Date(job.date), 'MMMM d, yyyy') : 'Not scheduled'],
+    ['Status:', job.status],
+    ['Progress:', `${job.progress}%`]
+  ];
+  
+  for (const [label, value] of details) {
+    page.drawText(label, { x: 50, y, size: 10, font: boldFont });
+    page.drawText(value, { x: 130, y, size: 10, font });
+    y -= 16;
+  }
+  y -= 20;
+  
+  if (job.notes && job.notes.length > 0) {
+    page.drawText('Notes', { x: 50, y, size: 14, font: boldFont });
+    y -= 18;
+    for (const note of job.notes.slice(0, 5)) {
+      const noteText = note.length > 80 ? note.substring(0, 77) + '...' : note;
+      page.drawText(`• ${noteText}`, { x: 50, y, size: 9, font });
+      y -= 14;
+    }
+    y -= 10;
+  }
+  
+  page.drawText('Time Tracking', { x: 50, y, size: 14, font: boldFont });
+  y -= 20;
+  
+  page.drawText('Employee', { x: 50, y, size: 10, font: boldFont });
+  page.drawText('Hours', { x: 350, y, size: 10, font: boldFont });
+  y -= 5;
+  page.drawLine({ start: { x: 50, y }, end: { x: 420, y }, thickness: 1, color: rgb(0.8, 0.8, 0.8) });
+  y -= 15;
+  
+  let totalHours = 0;
+  for (const entry of timeEntries) {
+    page.drawText(entry.employee, { x: 50, y, size: 9, font });
+    page.drawText(entry.hours.toFixed(1), { x: 350, y, size: 9, font });
+    totalHours += entry.hours;
+    y -= 16;
+  }
+  
+  y -= 5;
+  page.drawLine({ start: { x: 50, y }, end: { x: 420, y }, thickness: 1, color: rgb(0.8, 0.8, 0.8) });
+  y -= 15;
+  page.drawText('Total:', { x: 280, y, size: 10, font: boldFont });
+  page.drawText(totalHours.toFixed(1) + ' hours', { x: 350, y, size: 10, font: boldFont });
+  
+  y -= 40;
+  page.drawText(`Report generated: ${format(new Date(), 'MMMM d, yyyy h:mm a')}`, { 
+    x: 50, y, size: 8, font, color: rgb(0.5, 0.5, 0.5) 
+  });
+  
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `job_report_${job.id}_${format(new Date(), 'yyyy-MM-dd')}.pdf`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
 function FindNearbySection({ colors, onBack }: { colors: { primary: string; secondary: string }; onBack: () => void }) {
   const [places, setPlaces] = useState<NearbyPlace[]>([]);
@@ -573,6 +719,23 @@ function TimeCardSection({
     URL.revokeObjectURL(url);
   };
 
+  const exportToPDF = () => {
+    const weekDays = getWeekDays();
+    const entries = weekDays.map(day => ({
+      date: day.name,
+      clockIn: day.isToday && clockedIn ? format(clockInTime!, 'h:mm a') : '8:00 AM',
+      clockOut: day.isToday && !clockedIn && (weeklyEntries[day.date] || 0) > 0 ? format(new Date(), 'h:mm a') : '5:00 PM',
+      hours: weeklyEntries[day.date] || 0,
+      break: 30
+    })).filter(e => e.hours > 0);
+    
+    if (entries.length === 0) {
+      entries.push({ date: 'No entries', clockIn: '-', clockOut: '-', hours: 0 });
+    }
+    
+    generateTimeCardPDF(tenantName, entries, userName);
+  };
+
   const weekDays = getWeekDays();
 
   return (
@@ -590,14 +753,24 @@ function TimeCardSection({
           </Button>
           <h2 className="text-lg font-semibold text-white">Time Tracking</h2>
         </div>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={exportToCSV}
-          data-testid="button-export-csv"
-        >
-          <Download className="w-4 h-4 mr-1" /> Export
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={exportToCSV}
+            data-testid="button-export-csv"
+          >
+            <Download className="w-4 h-4 mr-1" /> CSV
+          </Button>
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={exportToPDF}
+            data-testid="button-export-pdf"
+          >
+            <FileText className="w-4 h-4 mr-1" /> PDF
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-2">
@@ -762,12 +935,14 @@ function JobDetailsSection({
   job, 
   colors, 
   onBack,
-  onExportTimeCards
+  onExportTimeCards,
+  tenantName
 }: { 
   job: Job; 
   colors: { primary: string; secondary: string }; 
   onBack: () => void;
   onExportTimeCards: () => void;
+  tenantName: string;
 }) {
   const [activeTab, setActiveTab] = useState<"overview" | "progress" | "photos" | "time">("overview");
   const [progress, setProgress] = useState(job.progress || 0);
@@ -975,14 +1150,31 @@ function JobDetailsSection({
           <Card className="bg-gray-900/50 border-gray-800 p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-medium">Crew Time Cards</h3>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={onExportTimeCards}
-                data-testid="button-export-job-time"
-              >
-                <Download className="w-4 h-4 mr-1" /> Export
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={onExportTimeCards}
+                  data-testid="button-export-job-csv"
+                >
+                  <Download className="w-4 h-4 mr-1" /> CSV
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    const timeEntries = [
+                      { employee: "You", hours: 6.5 },
+                      { employee: "Mike J.", hours: 6.5 },
+                      { employee: "Dave S.", hours: 4.0 },
+                    ];
+                    generateJobReportPDF(tenantName, job, timeEntries);
+                  }}
+                  data-testid="button-export-job-pdf"
+                >
+                  <FileText className="w-4 h-4 mr-1" /> PDF
+                </Button>
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -1969,6 +2161,7 @@ export default function FieldTool() {
           <JobDetailsSection
             job={selectedJob}
             colors={colors}
+            tenantName={tenant?.name || "Field Tool"}
             onBack={() => {
               setSelectedJob(null);
               setActiveSection("jobs");
