@@ -103,7 +103,7 @@ const DASHBOARD_ROLES: DashboardRole[] = [
       "Release Management",
       "Blockchain Stamping",
       "Integration Setup",
-      "Orbit Ecosystem",
+      "TrustLayer",
       "Technical Roadmap"
     ]
   }

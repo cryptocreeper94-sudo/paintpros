@@ -727,7 +727,7 @@ const translations: Record<Language, Record<string, string>> = {
     'tour.weather': 'Weather & Utilities',
     'tour.weatherDesc': 'Real-time weather forecasts and useful utilities like paint calculator and mileage tracker.',
     'tour.integration': 'Ecosystem Integration',
-    'tour.integrationDesc': 'Sync with calendars, messaging, and the ORBIT ecosystem. Stay connected.',
+    'tour.integrationDesc': 'Sync with calendars, messaging, and the TrustLayer platform. Stay connected.',
     'tour.ready': 'You\'re Ready!',
     'tour.readyDesc': 'You now know the Field Tool basics. Explore and discover more features as you work.',
     'tour.next': 'Next',

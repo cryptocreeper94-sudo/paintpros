@@ -65,7 +65,7 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 
 ### Ecosystem Integration
 - **DarkWave Studios:** Central ecosystem hub for code sharing.
-- **ORBIT Ecosystem Hub:** Connected for payroll sync, staffing, and health checks.
+- **TrustLayer Hub:** Connected for payroll sync, staffing, and health checks.
 
 ### Database Schema
 Key tables cover leads, estimates, SEO, bookings, availability, blockchain stamps, page views, document assets, hallmarks, crew management, internal messaging, AI credits, Google Calendar, Google LSA, and blog posts.
@@ -77,7 +77,7 @@ Key tables cover leads, estimates, SEO, bookings, availability, blockchain stamp
 - **Stripe:** Payment processing.
 - **Coinbase Commerce:** Alternative payment processing.
 - **OpenAI API:** Powers AI features and content generation.
-- **Orbit Ecosystem:** Custom integration for various business functions.
+- **TrustLayer Platform:** Custom integration for various business functions.
 - **Open-Meteo API:** Real-time weather data.
 - **RainViewer API:** Animated weather radar tiles.
 - **OpenStreetMap:** Base maps for weather radar.

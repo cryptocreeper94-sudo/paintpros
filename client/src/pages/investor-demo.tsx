@@ -708,7 +708,7 @@ export default function InvestorDemo() {
                   { icon: Globe, title: "$2.2T+ TAM", desc: "Multi-vertical expansion across 7 trade categories" },
                   { icon: Brain, title: "AI Moat", desc: "6 proprietary AI modules competitors can't replicate" },
                   { icon: Building, title: "Recurring Revenue", desc: "87% gross margin with strong unit economics" },
-                  { icon: Network, title: "Network Effects", desc: "Orbit Workforce Network creates sticky ecosystem" }
+                  { icon: Network, title: "Network Effects", desc: "TrustLayer Workforce Network creates sticky ecosystem" }
                 ].map((item) => (
                   <div key={item.title} className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-accent/10 flex-shrink-0">

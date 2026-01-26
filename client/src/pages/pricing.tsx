@@ -60,7 +60,7 @@ const LICENSING_TIERS = [
       "Everything in Professional",
       "Multi-tenant management console",
       "Shared asset libraries across locations",
-      "Orbit ecosystem integrations",
+      "TrustLayer integrations",
       "Dedicated account manager",
       "Compliance & audit trail",
     ],

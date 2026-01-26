@@ -141,10 +141,10 @@ export default function CodeHub() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-destructive">
                 <Code2 className="h-5 w-5" />
-                Orbit Ecosystem Disconnected
+                TrustLayer Disconnected
               </CardTitle>
               <CardDescription>
-                Unable to connect to the ORBIT Staffing Ecosystem Hub. Please check credentials and try again.
+                Unable to connect to the TrustLayer Hub. Please check credentials and try again.
               </CardDescription>
             </CardHeader>
           </Card>

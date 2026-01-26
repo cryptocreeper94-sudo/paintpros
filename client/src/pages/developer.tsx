@@ -1087,7 +1087,7 @@ FRANCHISE CORE ($799/month + $99/location)
 • Everything in Professional
 • Multi-tenant management console
 • Shared asset libraries
-• Orbit ecosystem integrations
+• TrustLayer integrations
 • Dedicated account manager
 • Compliance & audit trail
 
@@ -2769,7 +2769,7 @@ export default function Developer() {
                   </motion.div>
                   <h3 className="text-xl font-bold">Darkwave Dev Hub</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Connected to Orbit ecosystem</p>
+                <p className="text-sm text-muted-foreground">Connected to TrustLayer</p>
               </GlassCard>
             </motion.div>
           </BentoItem>

@@ -41,7 +41,7 @@ const PAINTPROS_FEATURES = [
   { feature: "Multi-location support", us: true, them: true },
   { feature: "Premium design (Bento Grid)", us: true, them: false },
   { feature: "SEO management tools", us: true, them: false },
-  { feature: "Orbit ecosystem integration", us: true, them: false },
+  { feature: "TrustLayer integration", us: true, them: false },
   { feature: "Multi-trade vertical expansion", us: true, them: false },
 ];
 
@@ -132,7 +132,7 @@ KEY DIFFERENTIATORS
 • Blockchain verification (competitors: none)
 • Premium Bento Grid design (competitors: none)
 • SEO management tools (competitors: none)
-• Orbit ecosystem integration (competitors: none)
+• TrustLayer integration (competitors: none)
 • Custom development available (priced separately)
 
 TRUE COST COMPARISON
@@ -510,7 +510,7 @@ Ecosystem: https://darkwavestudios.io`;
                   {[
                     { icon: <Zap className="w-4 h-4 text-yellow-400" />, title: "Industry Specialization", desc: "Built for painters, not generic field service" },
                     { icon: <Shield className="w-4 h-4 text-purple-400" />, title: "Blockchain Trust", desc: "Solana verification for document integrity" },
-                    { icon: <Layers className="w-4 h-4 text-blue-400" />, title: "Orbit Ecosystem", desc: "Connected payroll, staffing, dev tools" },
+                    { icon: <Layers className="w-4 h-4 text-blue-400" />, title: "TrustLayer", desc: "Connected payroll, staffing, dev tools" },
                     { icon: <Award className="w-4 h-4 text-accent" />, title: "Premium Design", desc: "Modern Bento Grid + glassmorphism" },
                   ].map((item) => (
                     <div key={item.title} className="flex items-start gap-3">
