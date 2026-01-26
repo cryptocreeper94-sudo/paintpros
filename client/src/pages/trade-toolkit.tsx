@@ -58,6 +58,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ColorScanner } from '@/components/color-scanner';
+import { ColorVisualizer } from '@/components/color-visualizer';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -939,6 +940,14 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
         <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider px-1">{t('toolkit.tools')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <FeatureTile
+            icon={Camera}
+            label={t('toolkit.roomVisualizer') || 'Room Visualizer'}
+            sublabel={t('toolkit.roomVisualizerDesc') || 'See paint colors on your walls'}
+            color="bg-gradient-to-br from-pink-500 to-rose-600"
+            onClick={() => onNavigate('visualizer')}
+            badge={t('common.new')}
+          />
+          <FeatureTile
             icon={Ruler}
             label={t('toolkit.measure')}
             sublabel={t('toolkit.measureDesc')}
@@ -947,11 +956,10 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
           />
           <FeatureTile
             icon={Palette}
-            label={t('trade.painting')}
-            sublabel={t('toolkit.materialsDesc')}
+            label={t('toolkit.colorMatch') || 'Color Match'}
+            sublabel={t('toolkit.colorMatchDesc') || 'Scan & match any color'}
             color="bg-gradient-to-br from-purple-500 to-purple-600"
             onClick={() => onNavigate('paint')}
-            badge={t('common.new')}
           />
           <FeatureTile
             icon={DollarSign}
@@ -1024,6 +1032,7 @@ export default function TradeToolkit() {
   const [copied, setCopied] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [showVisualizer, setShowVisualizer] = useState(false);
   const [currentPanel, setCurrentPanel] = useState('dashboard');
   const { toast } = useToast();
   
@@ -1113,6 +1122,14 @@ export default function TradeToolkit() {
     }
   };
 
+  const handleNavigate = (panel: string) => {
+    if (panel === 'visualizer') {
+      setShowVisualizer(true);
+    } else {
+      setCurrentPanel(panel);
+    }
+  };
+
   const renderPanel = () => {
     switch (currentPanel) {
       case 'measure':
@@ -1128,7 +1145,7 @@ export default function TradeToolkit() {
       case 'tools':
         return <QuickToolsPanel onBack={() => setCurrentPanel('dashboard')} />;
       default:
-        return <Dashboard onNavigate={setCurrentPanel} />;
+        return <Dashboard onNavigate={handleNavigate} />;
     }
   };
 
@@ -1239,6 +1256,12 @@ export default function TradeToolkit() {
             description: `${color.name} - ${color.hex}` 
           });
         }}
+      />
+
+      {/* Room Visualizer Modal */}
+      <ColorVisualizer 
+        isOpen={showVisualizer}
+        onClose={() => setShowVisualizer(false)}
       />
     </div>
   );

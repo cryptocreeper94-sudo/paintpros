@@ -321,6 +321,8 @@ const translations: Record<Language, Record<string, string>> = {
     'trade.landscaping': 'Landscaping',
     
     // Trade Toolkit Features
+    'toolkit.roomVisualizer': 'Room Visualizer',
+    'toolkit.roomVisualizerDesc': 'See paint colors on your walls',
     'toolkit.measure': 'Measure',
     'toolkit.measureDesc': 'Room & wall calculations',
     'toolkit.materials': 'Materials',
@@ -1046,6 +1048,8 @@ const translations: Record<Language, Record<string, string>> = {
     'trade.landscaping': 'Jardinería',
     
     // Trade Toolkit Features
+    'toolkit.roomVisualizer': 'Visualizador de Habitación',
+    'toolkit.roomVisualizerDesc': 'Ve los colores en tus paredes',
     'toolkit.measure': 'Medir',
     'toolkit.measureDesc': 'Cálculos de habitación y pared',
     'toolkit.materials': 'Materiales',
