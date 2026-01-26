@@ -95,6 +95,7 @@ import {
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { useI18n } from "@/lib/i18n";
 
 // Professional marketing images for Field Tool - Ultra Premium
 import crewTeamImage from "@/assets/marketing/crew-01-team-interior.png";
@@ -1241,6 +1242,7 @@ export default function FieldTool() {
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
   const { login: accessLogin, logout: accessLogout, currentUser } = useAccess();
   const { toast } = useToast();
+  const { t, language, setLanguage } = useI18n();
   
   // Get the active tenant config based on switcher selection
   const tenant = getTenantById(selectedTenant) || defaultTenant;
@@ -2352,69 +2354,83 @@ export default function FieldTool() {
     );
   }
   
-  // Onboarding steps content based on tenant
+  // Onboarding steps content based on tenant - with translations
   const onboardingSteps = [
     {
       icon: PaintBucket,
       iconColor: "from-blue-500 to-blue-600",
-      title: `Welcome to ${tenant.name}`,
-      subtitle: "Your Business in Your Pocket",
-      description: "This tool puts everything you need in the field at your fingertips. Let's take a quick tour of what you can do.",
+      title: `${t('tour.welcome')} - ${tenant.name}`,
+      subtitle: language === 'es' ? "Tu Negocio en Tu Bolsillo" : "Your Business in Your Pocket",
+      description: t('tour.welcomeDesc'),
     },
     {
       icon: Briefcase,
       iconColor: "from-emerald-500 to-emerald-600",
-      title: "Field Tools",
-      subtitle: "Built for the Job Site",
-      description: "Create instant estimates on the spot, track your hours, snap job photos, log mileage for reimbursement, and capture notes. Everything syncs to the office automatically.",
-      features: ["Quick Estimate", "Time Clock", "Job Photos", "Mileage Tracker", "Field Notes"],
+      title: t('tour.fieldTools'),
+      subtitle: language === 'es' ? "Diseñado para el Trabajo" : "Built for the Job Site",
+      description: t('tour.fieldToolsDesc'),
+      features: language === 'es' 
+        ? ["Cotización Rápida", "Reloj de Tiempo", "Fotos del Trabajo", "Seguimiento de Kilometraje", "Notas de Campo"]
+        : ["Quick Estimate", "Time Clock", "Job Photos", "Mileage Tracker", "Field Notes"],
     },
     {
       icon: Target,
       iconColor: "from-purple-500 to-purple-600",
-      title: "Business Tools",
-      subtitle: "Manage Your Pipeline",
-      description: "View and manage leads, schedule jobs, look up client info, and see today's appointments. Stay connected to what's happening at the office.",
-      features: ["Lead Management", "Job Scheduling", "Client Directory", "Today's Jobs"],
+      title: t('tour.businessTools'),
+      subtitle: language === 'es' ? "Gestiona Tu Pipeline" : "Manage Your Pipeline",
+      description: t('tour.businessToolsDesc'),
+      features: language === 'es' 
+        ? ["Gestión de Leads", "Programación de Trabajos", "Directorio de Clientes", "Trabajos de Hoy"]
+        : ["Lead Management", "Job Scheduling", "Client Directory", "Today's Jobs"],
     },
     {
       icon: Megaphone,
       iconColor: "from-amber-500 to-orange-600",
-      title: "Marketing Hub",
-      subtitle: "Grow Your Business",
-      description: "Access the full marketing dashboard to manage content, track campaign performance, plan your calendar, and monitor your marketing budget and ROI.",
-      features: ["Content Studio", "Analytics", "Calendar", "Playbook", "Budget Tracking"],
+      title: t('tour.marketing'),
+      subtitle: language === 'es' ? "Haz Crecer Tu Negocio" : "Grow Your Business",
+      description: t('tour.marketingDesc'),
+      features: language === 'es' 
+        ? ["Estudio de Contenido", "Analíticas", "Calendario", "Guía", "Control de Presupuesto"]
+        : ["Content Studio", "Analytics", "Calendar", "Playbook", "Budget Tracking"],
     },
     {
       icon: BarChart3,
       iconColor: "from-violet-500 to-purple-600",
-      title: "Role-Based Dashboards",
-      subtitle: "See What Matters to You",
-      description: "Each team member sees a dashboard tailored to their role. Owners see financials, managers see projects, crew leads see job assignments.",
-      features: ["Owner Dashboard", "Admin Panel", "Project Manager View", "Crew Lead Tools"],
+      title: language === 'es' ? "Paneles por Rol" : "Role-Based Dashboards",
+      subtitle: language === 'es' ? "Ve Lo Que Te Importa" : "See What Matters to You",
+      description: language === 'es' 
+        ? "Cada miembro del equipo ve un panel adaptado a su rol. Los dueños ven finanzas, los gerentes ven proyectos, los líderes de equipo ven asignaciones."
+        : "Each team member sees a dashboard tailored to their role. Owners see financials, managers see projects, crew leads see job assignments.",
+      features: language === 'es' 
+        ? ["Panel del Dueño", "Panel de Admin", "Vista del Gerente", "Herramientas del Líder"]
+        : ["Owner Dashboard", "Admin Panel", "Project Manager View", "Crew Lead Tools"],
     },
     {
       icon: Sun,
       iconColor: "from-sky-400 to-blue-500",
-      title: "Weather & Utilities",
-      subtitle: "Plan Your Day",
-      description: "Check real-time weather conditions before heading to a job site. Use the built-in calculator and other quick utilities right from your pocket.",
-      features: ["Live Weather", "Radar Maps", "Calculator", "Voice Assistant"],
+      title: t('tour.weather'),
+      subtitle: language === 'es' ? "Planifica Tu Día" : "Plan Your Day",
+      description: t('tour.weatherDesc'),
+      features: language === 'es' 
+        ? ["Clima en Vivo", "Mapas de Radar", "Calculadora", "Asistente de Voz"]
+        : ["Live Weather", "Radar Maps", "Calculator", "Voice Assistant"],
     },
     {
       icon: Layers,
       iconColor: "from-teal-500 to-cyan-600",
-      title: "Everything Connected",
-      subtitle: "Seamless Integration",
-      description: "What you capture in the field flows directly to the back office. Estimates become proposals, time entries sync to payroll, and photos attach to job records.",
+      title: t('tour.integration'),
+      subtitle: language === 'es' ? "Integración Perfecta" : "Seamless Integration",
+      description: t('tour.integrationDesc'),
     },
     {
       icon: Crown,
       iconColor: "from-blue-600 to-indigo-600",
       useGradientStyle: true,
-      title: "Ready to Go",
-      subtitle: "You're All Set",
-      description: `Welcome to ${tenant.name}. Tap any tool to get started, and you can always access this tour again from Settings.`,
+      title: t('tour.ready'),
+      subtitle: language === 'es' ? "¡Estás Listo!" : "You're All Set",
+      description: language === 'es' 
+        ? `Bienvenido a ${tenant.name}. Toca cualquier herramienta para comenzar, y siempre puedes acceder a este tour desde Configuración.`
+        : `Welcome to ${tenant.name}. Tap any tool to get started, and you can always access this tour again from Settings.`,
     },
   ];
   
@@ -2517,9 +2533,9 @@ export default function FieldTool() {
                     }
                   }}
                 >
-                  {isLastStep ? "Get Started" : (
+                  {isLastStep ? t('tour.finish') : (
                     <>
-                      Next
+                      {t('tour.next')}
                       <ChevronRight className="w-4 h-4 ml-1" />
                     </>
                   )}
@@ -2533,7 +2549,7 @@ export default function FieldTool() {
                   className="w-full mt-3 text-sm text-gray-500"
                   onClick={completeOnboarding}
                 >
-                  Skip tour
+                  {t('tour.skip')}
                 </Button>
               )}
             </div>
@@ -3996,17 +4012,17 @@ export default function FieldTool() {
           <SheetHeader>
             <SheetTitle className="text-white flex items-center gap-2">
               <Camera className="w-5 h-5" style={{ color: colors.primary }} />
-              Job Photos
+              {t('photo.title')}
             </SheetTitle>
           </SheetHeader>
           <div className="mt-4 space-y-4">
             {/* Photo Type Selection */}
             <div className="grid grid-cols-4 gap-2">
               {[
-                { type: "before", label: "Before", color: "from-amber-500 to-orange-500" },
-                { type: "after", label: "After", color: "from-green-500 to-emerald-500" },
-                { type: "progress", label: "Progress", color: "from-blue-500 to-cyan-500" },
-                { type: "issue", label: "Issue", color: "from-red-500 to-rose-500" },
+                { type: "before", label: t('photo.before'), color: "from-amber-500 to-orange-500" },
+                { type: "after", label: t('photo.after'), color: "from-green-500 to-emerald-500" },
+                { type: "progress", label: t('photo.progress'), color: "from-blue-500 to-cyan-500" },
+                { type: "issue", label: t('photo.issue'), color: "from-red-500 to-rose-500" },
               ].map((item) => (
                 <motion.button
                   key={item.type}
@@ -4041,10 +4057,10 @@ export default function FieldTool() {
                 <>
                   <Camera className="w-12 h-12 mx-auto text-gray-500 mb-3" />
                   <p className="text-gray-400 mb-4">
-                    {photoType === "before" && "Capture the area before painting"}
-                    {photoType === "after" && "Show off the finished result"}
-                    {photoType === "progress" && "Document work in progress"}
-                    {photoType === "issue" && "Photo any issues found"}
+                    {photoType === "before" && t('photo.captureArea')}
+                    {photoType === "after" && t('photo.showResult')}
+                    {photoType === "progress" && t('photo.documentProgress')}
+                    {photoType === "issue" && t('photo.photoIssues')}
                   </p>
                   <div className="flex gap-3 justify-center">
                     <label className="cursor-pointer">
@@ -4064,7 +4080,7 @@ export default function FieldTool() {
                         }}
                       />
                       <Button asChild style={{ background: colors.primary }}>
-                        <span><Camera className="w-4 h-4 mr-2" /> Camera</span>
+                        <span><Camera className="w-4 h-4 mr-2" /> {t('photo.camera')}</span>
                       </Button>
                     </label>
                     <label className="cursor-pointer">
@@ -4083,7 +4099,7 @@ export default function FieldTool() {
                         }}
                       />
                       <Button asChild variant="outline" className="border-gray-700">
-                        <span><Upload className="w-4 h-4 mr-2" /> Upload</span>
+                        <span><Upload className="w-4 h-4 mr-2" /> {t('photo.upload')}</span>
                       </Button>
                     </label>
                   </div>
@@ -4093,9 +4109,9 @@ export default function FieldTool() {
 
             {/* Caption */}
             <div>
-              <label className="text-sm text-gray-400 mb-2 block">Caption (optional)</label>
+              <label className="text-sm text-gray-400 mb-2 block">{t('photo.caption')}</label>
               <Input
-                placeholder="Add a description..."
+                placeholder={t('photo.addDescription')}
                 value={photoCaption}
                 onChange={(e) => setPhotoCaption(e.target.value)}
                 className="bg-gray-800 border-gray-700 text-white"
@@ -4105,20 +4121,27 @@ export default function FieldTool() {
 
             {/* Category */}
             <div>
-              <label className="text-sm text-gray-400 mb-2 block">Category</label>
+              <label className="text-sm text-gray-400 mb-2 block">{t('photo.category')}</label>
               <div className="grid grid-cols-3 gap-2">
-                {["interior", "exterior", "cabinets", "trim", "deck", "commercial"].map((cat) => (
+                {[
+                  { key: "interior", label: t('photo.interior') },
+                  { key: "exterior", label: t('photo.exterior') },
+                  { key: "cabinets", label: t('photo.cabinets') },
+                  { key: "trim", label: t('photo.trim') },
+                  { key: "deck", label: t('photo.deck') },
+                  { key: "commercial", label: t('photo.commercial') },
+                ].map((cat) => (
                   <button
-                    key={cat}
-                    data-testid={`button-photo-category-${cat}`}
-                    onClick={() => setPhotoCategory(cat)}
-                    className={`p-2 rounded-lg text-sm capitalize transition-all ${
-                      photoCategory === cat 
+                    key={cat.key}
+                    data-testid={`button-photo-category-${cat.key}`}
+                    onClick={() => setPhotoCategory(cat.key)}
+                    className={`p-2 rounded-lg text-sm transition-all ${
+                      photoCategory === cat.key 
                         ? "bg-white/10 border border-white/30 text-white" 
                         : "bg-gray-800 border border-gray-700 text-gray-400"
                     }`}
                   >
-                    {cat}
+                    {cat.label}
                   </button>
                 ))}
               </div>
@@ -4150,8 +4173,8 @@ export default function FieldTool() {
                   });
                   if (res.ok) {
                     toast({
-                      title: "Photo Saved",
-                      description: "Your photo has been uploaded to the marketing library.",
+                      title: t('photo.saved'),
+                      description: t('photo.savedDesc'),
                     });
                     setPhotoPreview(null);
                     setPhotoCaption("");
@@ -4161,8 +4184,8 @@ export default function FieldTool() {
                   }
                 } catch (err) {
                   toast({
-                    title: "Upload Failed",
-                    description: "Could not save photo. Please try again.",
+                    title: t('photo.failed'),
+                    description: t('photo.failedDesc'),
                     variant: "destructive",
                   });
                 } finally {
@@ -4173,18 +4196,18 @@ export default function FieldTool() {
               {isUploadingPhoto ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Uploading...
+                  {t('photo.uploading')}
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Save to Marketing Library
+                  {t('photo.saveToLibrary')}
                 </span>
               )}
             </Button>
 
             <p className="text-gray-500 text-xs text-center">
-              Photos are saved to the Marketing Hub for use in social media and website galleries
+              {t('photo.note')}
             </p>
           </div>
         </SheetContent>
@@ -4382,6 +4405,33 @@ export default function FieldTool() {
                   >
                     Save Name
                   </Button>
+                </Card>
+              </div>
+
+              {/* Language Toggle */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">
+                  {language === 'es' ? 'Idioma' : 'Language'}
+                </h3>
+                <Card className="bg-gray-900/50 border-gray-800 p-4">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={language === 'en' ? 'default' : 'outline'}
+                      className="flex-1"
+                      onClick={() => setLanguage('en')}
+                      data-testid="button-language-en"
+                    >
+                      English
+                    </Button>
+                    <Button
+                      variant={language === 'es' ? 'default' : 'outline'}
+                      className="flex-1"
+                      onClick={() => setLanguage('es')}
+                      data-testid="button-language-es"
+                    >
+                      Español
+                    </Button>
+                  </div>
                 </Card>
               </div>
 
