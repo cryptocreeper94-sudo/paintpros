@@ -31,6 +31,12 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 | 7777 | Demo | Demo Viewer | /admin |
 | 3333 | Crew Lead | Crew Lead | /crew-lead |
 
+### First-Time PIN Change Requirement
+- Users with `mustChangePin: true` are required to create a new personal PIN on first login
+- This prevents users from keeping default/shared PINs
+- After changing PIN, `mustChangePin` is set to false and user proceeds to the Field Tool
+- Developer (0424) and Demo (7777) accounts are exempt from this requirement
+
 ### Biometric Login (WebAuthn)
 - Users can set up fingerprint/Face ID authentication after logging in with PIN
 - Biometric credentials are stored in `webauthn_credentials` table

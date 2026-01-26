@@ -87,7 +87,8 @@ import {
   Loader2,
   Mail,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  KeyRound
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
@@ -1253,6 +1254,12 @@ export default function FieldTool() {
   const [loginPin, setLoginPin] = useState("");
   const [loginError, setLoginError] = useState("");
   const [isVerifyingLogin, setIsVerifyingLogin] = useState(false);
+  const [showPinChange, setShowPinChange] = useState(false);
+  const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [pinChangeError, setPinChangeError] = useState("");
+  const [isChangingPin, setIsChangingPin] = useState(false);
+  const [tempLoginData, setTempLoginData] = useState<any>(null);
   
   // Biometric authentication state
   const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -1308,6 +1315,14 @@ export default function FieldTool() {
       });
       const data = await res.json();
       if (data.success && data.role) {
+        // Check if PIN change is required
+        if (data.mustChangePin) {
+          setTempLoginData({ ...data, originalPin: loginPin });
+          setShowPinChange(true);
+          setLoginPin("");
+          return;
+        }
+        
         // Use shared AccessContext for authentication across all dashboards
         // Pass the userName from the API response for personalized greeting
         accessLogin(data.role as UserRole, data.userName || undefined);
@@ -1343,6 +1358,66 @@ export default function FieldTool() {
     setLoginPin("");
     setSessionToken(null);
     localStorage.removeItem("field_tool_session_token");
+  };
+  
+  // PIN change handler
+  const handlePinChange = async () => {
+    if (!tempLoginData) return;
+    
+    if (newPin.length < 4) {
+      setPinChangeError("PIN must be at least 4 digits");
+      return;
+    }
+    if (newPin !== confirmPin) {
+      setPinChangeError("PINs do not match");
+      return;
+    }
+    
+    setIsChangingPin(true);
+    setPinChangeError("");
+    
+    try {
+      const res = await fetch("/api/auth/pin/change", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role: tempLoginData.role,
+          currentPin: loginPin || tempLoginData.originalPin,
+          newPin: newPin,
+        }),
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        // Complete login after PIN change
+        accessLogin(tempLoginData.role as UserRole, tempLoginData.userName || undefined);
+        setUserRole(tempLoginData.role);
+        if (tempLoginData.userName) {
+          setUserName(tempLoginData.userName);
+          localStorage.setItem("field_tool_user", tempLoginData.userName);
+        }
+        if (tempLoginData.sessionToken) {
+          setSessionToken(tempLoginData.sessionToken);
+          localStorage.setItem("field_tool_session_token", tempLoginData.sessionToken);
+        }
+        setIsAuthenticated(true);
+        setShowPinChange(false);
+        setNewPin("");
+        setConfirmPin("");
+        setTempLoginData(null);
+        toast({
+          title: "PIN Updated",
+          description: "Your new PIN has been saved. Use it next time you log in.",
+        });
+      } else {
+        setPinChangeError(data.error || "Failed to change PIN");
+      }
+    } catch (error) {
+      console.error("PIN change error:", error);
+      setPinChangeError("Connection error. Please try again.");
+    } finally {
+      setIsChangingPin(false);
+    }
   };
   
   // Sync with AccessContext on mount
@@ -2161,6 +2236,97 @@ export default function FieldTool() {
             </motion.div>
           </motion.div>
         </div>
+      </div>
+    );
+  }
+  
+  // PIN Change Required Dialog
+  if (showPinChange && tempLoginData) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md"
+        >
+          <Card className="bg-gray-900/80 border-white/10 backdrop-blur-xl p-6">
+            <div className="text-center mb-6">
+              <div 
+                className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+                style={{ background: colors.gradient }}
+              >
+                <KeyRound className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-white">Create Your PIN</h2>
+              <p className="text-gray-400 text-sm mt-2">
+                Welcome, {tempLoginData.userName}! Please create a new personal PIN to continue.
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">New PIN (4+ digits)</label>
+                <Input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Enter new PIN"
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                  className="bg-gray-800 border-gray-700 text-white text-center text-xl tracking-widest"
+                  maxLength={8}
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">Confirm PIN</label>
+                <Input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Confirm new PIN"
+                  value={confirmPin}
+                  onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                  className="bg-gray-800 border-gray-700 text-white text-center text-xl tracking-widest"
+                  maxLength={8}
+                />
+              </div>
+              
+              {pinChangeError && (
+                <p className="text-red-400 text-sm text-center">{pinChangeError}</p>
+              )}
+              
+              <Button
+                className="w-full"
+                size="lg"
+                style={{ background: colors.gradient }}
+                onClick={handlePinChange}
+                disabled={isChangingPin || newPin.length < 4 || confirmPin.length < 4}
+              >
+                {isChangingPin ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </span>
+                ) : "Save New PIN"}
+              </Button>
+              
+              <Button
+                variant="ghost"
+                className="w-full text-gray-400"
+                onClick={() => {
+                  setShowPinChange(false);
+                  setTempLoginData(null);
+                  setNewPin("");
+                  setConfirmPin("");
+                  setPinChangeError("");
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
       </div>
     );
   }
