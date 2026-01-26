@@ -409,6 +409,341 @@ function FindNearbySection({ colors, onBack }: { colors: { primary: string; seco
   );
 }
 
+interface CrewMember {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  clockedIn?: boolean;
+  clockInTime?: Date;
+}
+
+interface TimeEntry {
+  id: string;
+  date: string;
+  hoursWorked: number;
+  memberName: string;
+  status: string;
+}
+
+function TimeCardSection({ 
+  colors, 
+  onBack,
+  userName,
+  userRole
+}: { 
+  colors: { primary: string; secondary: string }; 
+  onBack: () => void;
+  userName: string;
+  userRole: string | null;
+}) {
+  const [activeTab, setActiveTab] = useState<"clock" | "history" | "crew">("clock");
+  const [isClockedIn, setIsClockedIn] = useState(false);
+  const [clockInTime, setClockInTime] = useState<Date | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [crewMembers, setCrewMembers] = useState<CrewMember[]>([
+    { id: "1", firstName: "Mike", lastName: "Johnson", role: "Painter", clockedIn: false },
+    { id: "2", firstName: "Dave", lastName: "Smith", role: "Apprentice", clockedIn: false },
+    { id: "3", firstName: "Chris", lastName: "Williams", role: "Helper", clockedIn: false },
+  ]);
+  const [weeklyEntries, setWeeklyEntries] = useState<Record<string, number>>({});
+  const [savingEntry, setSavingEntry] = useState(false);
+
+  const isCrewLead = userRole === "crew_lead";
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isClockedIn && clockInTime) {
+      interval = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - clockInTime.getTime()) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isClockedIn, clockInTime]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("field_tool_clock_state");
+    if (saved) {
+      const { clockedIn, clockInTimeStr } = JSON.parse(saved);
+      if (clockedIn && clockInTimeStr) {
+        setIsClockedIn(true);
+        setClockInTime(new Date(clockInTimeStr));
+      }
+    }
+    const savedEntries = localStorage.getItem("field_tool_weekly_entries");
+    if (savedEntries) {
+      setWeeklyEntries(JSON.parse(savedEntries));
+    }
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleClockToggle = async () => {
+    if (isClockedIn && clockInTime) {
+      const hoursWorked = elapsedTime / 3600;
+      const today = new Date().toISOString().split('T')[0];
+      
+      const updatedEntries = { ...weeklyEntries };
+      updatedEntries[today] = (updatedEntries[today] || 0) + hoursWorked;
+      setWeeklyEntries(updatedEntries);
+      localStorage.setItem("field_tool_weekly_entries", JSON.stringify(updatedEntries));
+      
+      setIsClockedIn(false);
+      setClockInTime(null);
+      setElapsedTime(0);
+      localStorage.removeItem("field_tool_clock_state");
+    } else {
+      const now = new Date();
+      setIsClockedIn(true);
+      setClockInTime(now);
+      setElapsedTime(0);
+      localStorage.setItem("field_tool_clock_state", JSON.stringify({
+        clockedIn: true,
+        clockInTimeStr: now.toISOString()
+      }));
+    }
+  };
+
+  const toggleCrewClock = (memberId: string) => {
+    setCrewMembers(prev => prev.map(m => {
+      if (m.id === memberId) {
+        if (m.clockedIn) {
+          return { ...m, clockedIn: false, clockInTime: undefined };
+        } else {
+          return { ...m, clockedIn: true, clockInTime: new Date() };
+        }
+      }
+      return m;
+    }));
+  };
+
+  const getWeekDays = () => {
+    const days = [];
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(monday);
+      day.setDate(monday.getDate() + i);
+      days.push({
+        date: day.toISOString().split('T')[0],
+        name: day.toLocaleDateString('en-US', { weekday: 'short' }),
+        isToday: day.toDateString() === today.toDateString()
+      });
+    }
+    return days;
+  };
+
+  const getTotalWeeklyHours = () => {
+    const weekDays = getWeekDays();
+    return weekDays.reduce((sum, day) => sum + (weeklyEntries[day.date] || 0), 0);
+  };
+
+  const exportToCSV = () => {
+    const weekDays = getWeekDays();
+    let csv = "Employee,";
+    csv += weekDays.map(d => d.name).join(",");
+    csv += ",Total\n";
+    
+    csv += `"${userName}",`;
+    csv += weekDays.map(d => (weeklyEntries[d.date] || 0).toFixed(2)).join(",");
+    csv += `,${getTotalWeeklyHours().toFixed(2)}\n`;
+    
+    if (isCrewLead) {
+      crewMembers.forEach(member => {
+        csv += `"${member.firstName} ${member.lastName}",`;
+        csv += weekDays.map(() => "0.00").join(",");
+        csv += ",0.00\n";
+      });
+    }
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `timecard_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const weekDays = getWeekDays();
+
+  return (
+    <motion.div
+      key="timecard"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="p-4 space-y-4"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <Button size="icon" variant="ghost" onClick={onBack} data-testid="button-time-back">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h2 className="text-lg font-semibold text-white">Time Tracking</h2>
+        </div>
+        <Button 
+          size="sm" 
+          variant="outline"
+          onClick={exportToCSV}
+          data-testid="button-export-csv"
+        >
+          <Download className="w-4 h-4 mr-1" /> Export
+        </Button>
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant={activeTab === "clock" ? "default" : "outline"}
+          onClick={() => setActiveTab("clock")}
+          style={activeTab === "clock" ? { background: colors.primary } : {}}
+          data-testid="tab-clock"
+        >
+          <Timer className="w-4 h-4 mr-1" /> Clock
+        </Button>
+        <Button
+          size="sm"
+          variant={activeTab === "history" ? "default" : "outline"}
+          onClick={() => setActiveTab("history")}
+          style={activeTab === "history" ? { background: colors.primary } : {}}
+          data-testid="tab-history"
+        >
+          <Calendar className="w-4 h-4 mr-1" /> Week
+        </Button>
+        {isCrewLead && (
+          <Button
+            size="sm"
+            variant={activeTab === "crew" ? "default" : "outline"}
+            onClick={() => setActiveTab("crew")}
+            style={activeTab === "crew" ? { background: colors.primary } : {}}
+            data-testid="tab-crew"
+          >
+            <Users className="w-4 h-4 mr-1" /> Crew
+          </Button>
+        )}
+      </div>
+
+      {activeTab === "clock" && (
+        <Card className="bg-gray-900/50 border-gray-800 p-6 text-center">
+          <div className={`w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ${isClockedIn ? 'bg-green-500/20' : 'bg-gray-800'}`}>
+            <Timer className={`w-10 h-10 ${isClockedIn ? 'text-green-400' : 'text-gray-500'}`} />
+          </div>
+          <p className="text-4xl font-mono font-bold text-white mb-2">
+            {formatTime(elapsedTime)}
+          </p>
+          <p className="text-gray-500 mb-4">
+            {isClockedIn ? `Started at ${clockInTime?.toLocaleTimeString()}` : 'Ready to start'}
+          </p>
+          <Button 
+            size="lg"
+            onClick={handleClockToggle}
+            className={isClockedIn ? 'bg-red-500 hover:bg-red-600' : ''}
+            style={!isClockedIn ? { background: colors.primary } : {}}
+            data-testid="button-clock-toggle"
+          >
+            {isClockedIn ? 'Clock Out' : 'Clock In'}
+          </Button>
+          
+          <div className="mt-4 pt-4 border-t border-gray-800">
+            <p className="text-sm text-gray-400">Today's Total</p>
+            <p className="text-xl font-mono text-white">
+              {((weeklyEntries[new Date().toISOString().split('T')[0]] || 0) + (isClockedIn ? elapsedTime / 3600 : 0)).toFixed(2)} hrs
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {activeTab === "history" && (
+        <div className="space-y-3">
+          <Card className="bg-gray-900/50 border-gray-800 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-gray-400 text-sm">Week Total</span>
+              <Badge style={{ background: colors.primary }}>{getTotalWeeklyHours().toFixed(1)} hrs</Badge>
+            </div>
+            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all"
+                style={{ 
+                  background: colors.primary,
+                  width: `${Math.min((getTotalWeeklyHours() / 40) * 100, 100)}%`
+                }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">{(40 - getTotalWeeklyHours()).toFixed(1)} hrs remaining to 40</p>
+          </Card>
+          
+          {weekDays.map((day) => (
+            <Card 
+              key={day.date} 
+              className={`bg-gray-900/50 border-gray-800 p-3 ${day.isToday ? 'ring-1' : ''}`}
+              style={day.isToday ? { borderColor: colors.primary } : {}}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-medium">{day.name}</span>
+                  {day.isToday && <Badge className="bg-green-600 text-white text-xs">Today</Badge>}
+                </div>
+                <span className="text-gray-300 font-mono">
+                  {(weeklyEntries[day.date] || 0).toFixed(2)} hrs
+                </span>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {activeTab === "crew" && isCrewLead && (
+        <div className="space-y-3">
+          <Card className="bg-gray-900/50 border-gray-800 p-3">
+            <p className="text-gray-400 text-sm mb-2">Crew Status</p>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-green-600">{crewMembers.filter(m => m.clockedIn).length} Active</Badge>
+              <Badge className="bg-gray-700">{crewMembers.filter(m => !m.clockedIn).length} Off</Badge>
+            </div>
+          </Card>
+          
+          {crewMembers.map((member) => (
+            <Card key={member.id} className="bg-gray-900/50 border-gray-800 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white font-medium">{member.firstName} {member.lastName}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge className="bg-gray-800 text-gray-400">{member.role}</Badge>
+                    {member.clockedIn && (
+                      <span className="text-green-400 text-xs flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        Active
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => toggleCrewClock(member.id)}
+                  className={member.clockedIn ? 'bg-red-500 hover:bg-red-600' : ''}
+                  style={!member.clockedIn ? { background: colors.primary } : {}}
+                  data-testid={`button-crew-clock-${member.id}`}
+                >
+                  {member.clockedIn ? 'Out' : 'In'}
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return "Good morning";
@@ -1467,52 +1802,12 @@ export default function FieldTool() {
 
         {/* Time Tracking Section - Only shown to crew members */}
         {activeSection === "time" && showClockIn && (
-          <motion.div
-            key="time"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="p-4 space-y-4"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <Button size="icon" variant="ghost" onClick={() => setActiveSection("business")}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <h2 className="text-lg font-semibold text-white">Time Tracking</h2>
-            </div>
-            
-            <Card className="bg-gray-900/50 border-gray-800 p-6 text-center">
-              <div className={`w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ${isClockedIn ? 'bg-green-500/20' : 'bg-gray-800'}`}>
-                <Timer className={`w-10 h-10 ${isClockedIn ? 'text-green-400' : 'text-gray-500'}`} />
-              </div>
-              <p className="text-4xl font-mono font-bold text-white mb-2">
-                {formatElapsedTime(elapsedTime)}
-              </p>
-              <p className="text-gray-500 mb-4">
-                {isClockedIn ? `Started at ${clockInTime?.toLocaleTimeString()}` : 'Ready to start'}
-              </p>
-              <Button 
-                size="lg"
-                onClick={handleClockToggle}
-                className={isClockedIn ? 'bg-red-500 hover:bg-red-600' : ''}
-                style={!isClockedIn ? { background: colors.primary } : {}}
-              >
-                {isClockedIn ? 'Clock Out' : 'Clock In'}
-              </Button>
-            </Card>
-
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-400">This Week</h3>
-              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day, i) => (
-                <Card key={day} className="bg-gray-900/50 border-gray-800 p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white">{day}</span>
-                    <span className="text-gray-400 font-mono">{i < 3 ? "8:00" : "0:00"}</span>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </motion.div>
+          <TimeCardSection 
+            colors={colors}
+            onBack={() => setActiveSection("business")}
+            userName={userName}
+            userRole={currentUser?.role || null}
+          />
         )}
 
         {activeSection === "stores" && (
