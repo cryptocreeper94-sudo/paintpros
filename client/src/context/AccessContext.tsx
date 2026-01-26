@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react";
 
-export type UserRole = "admin" | "owner" | "project_manager" | "developer" | "demo_viewer" | "crew_lead" | "ops_manager" | null;
+export type UserRole = "admin" | "owner" | "project_manager" | "developer" | "demo_viewer" | "crew_lead" | "ops_manager" | "marketing" | null;
 export type AccessMode = "live" | "view_only";
 
 export interface UserAccess {
@@ -31,6 +31,7 @@ const ACCESS_CONFIG: Record<Exclude<UserRole, null>, { accessMode: AccessMode; u
   developer: { accessMode: "live", userName: "Developer", canViewSalesData: true },
   demo_viewer: { accessMode: "view_only", userName: "Demo Viewer", canViewSalesData: true },
   crew_lead: { accessMode: "view_only", userName: "Crew Lead", canViewSalesData: false },
+  marketing: { accessMode: "live", userName: "Marketing", canViewSalesData: true },
 };
 
 const defaultUser: UserAccess = {

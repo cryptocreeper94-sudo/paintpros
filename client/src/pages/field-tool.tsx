@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { useTenant } from "@/context/TenantContext";
+import { useAccess, UserRole } from "@/context/AccessContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -92,14 +93,15 @@ function getGreetingIcon(hour: number) {
 
 export default function FieldTool() {
   const tenant = useTenant();
+  const { login: accessLogin, logout: accessLogout, currentUser } = useAccess();
   const [activeSection, setActiveSection] = useState("home");
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem("field_tool_user") || "Team Member";
   });
   
-  // Authentication state - require PIN login
+  // Authentication state - use shared AccessContext
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem("field_tool_authenticated") === "true";
+    return currentUser.isAuthenticated;
   });
   const [loginPin, setLoginPin] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -149,9 +151,8 @@ export default function FieldTool() {
       });
       const data = await res.json();
       if (data.success && data.role) {
-        sessionStorage.setItem("field_tool_authenticated", "true");
-        sessionStorage.setItem("field_tool_role", data.role);
-        sessionStorage.setItem("dashboard_role", data.role);
+        // Use shared AccessContext for authentication across all dashboards
+        accessLogin(data.role as UserRole);
         setUserRole(data.role);
         setIsAuthenticated(true);
         setLoginPin("");
@@ -169,13 +170,19 @@ export default function FieldTool() {
   
   // Logout handler
   const handleLogout = () => {
-    sessionStorage.removeItem("field_tool_authenticated");
-    sessionStorage.removeItem("field_tool_role");
-    sessionStorage.removeItem("dashboard_role");
+    accessLogout();
     setIsAuthenticated(false);
     setUserRole("crew");
     setLoginPin("");
   };
+  
+  // Sync with AccessContext on mount
+  useEffect(() => {
+    if (currentUser.isAuthenticated && currentUser.role) {
+      setIsAuthenticated(true);
+      setUserRole(currentUser.role);
+    }
+  }, [currentUser.isAuthenticated, currentUser.role]);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
