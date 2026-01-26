@@ -20,6 +20,7 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 - **Demo/TradeWorks** - Full 8-trade toolkit demo at tradeworksai.io
 - **NPP (Nashville Painting Professionals)** - NPP-branded Field Tool
 - **Lume Paint Co** - Lume-branded Field Tool
+- **NPP/Lume Toggle** - Built-in toggle in Field Tool header to switch between NPP and Lume, changing all branding/data
 
 ### Marketing Hub Tenants
 - **TrustLayer Marketing Suite** - TrustLayer-branded marketing hub
