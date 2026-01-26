@@ -75,10 +75,13 @@ import {
   Activity,
   Layers,
   Crown,
-  Fingerprint
+  Fingerprint,
+  Download,
+  Smartphone
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
@@ -95,6 +98,7 @@ function getGreetingIcon(hour: number) {
 
 export default function FieldTool() {
   const tenant = useTenant();
+  const { canInstall, isInstalled, promptInstall } = usePWAInstall();
   const { login: accessLogin, logout: accessLogout, currentUser } = useAccess();
   const [activeSection, setActiveSection] = useState("home");
   const [userName, setUserName] = useState(() => {
@@ -1710,6 +1714,46 @@ export default function FieldTool() {
                   </Card>
                 </div>
               )}
+
+              {/* Install App */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">Install App</h3>
+                <Card className="bg-gray-900/50 border-gray-800 p-4 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${colors.primary}20` }}>
+                      <Smartphone className="w-5 h-5" style={{ color: colors.primary }} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">Add to Home Screen</p>
+                      <p className="text-xs text-gray-400">Use as a standalone app</p>
+                    </div>
+                  </div>
+                  {isInstalled ? (
+                    <div className="flex items-center gap-2 text-green-400 text-sm">
+                      <CheckCircle className="w-4 h-4" />
+                      <span>App is installed</span>
+                    </div>
+                  ) : canInstall ? (
+                    <Button
+                      className="w-full"
+                      style={{ background: colors.primary }}
+                      onClick={promptInstall}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Install App
+                    </Button>
+                  ) : (
+                    <div className="text-sm text-gray-500 space-y-2">
+                      <p>To install on your device:</p>
+                      <ul className="list-disc list-inside space-y-1 text-xs">
+                        <li><strong>iPhone/iPad:</strong> Tap Share → "Add to Home Screen"</li>
+                        <li><strong>Android:</strong> Tap Menu (⋮) → "Add to Home Screen"</li>
+                        <li><strong>Desktop:</strong> Look for install icon in address bar</li>
+                      </ul>
+                    </div>
+                  )}
+                </Card>
+              </div>
 
               {/* App Info */}
               <div className="space-y-4">
