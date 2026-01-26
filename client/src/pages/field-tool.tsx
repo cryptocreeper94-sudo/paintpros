@@ -135,7 +135,7 @@ export default function FieldTool() {
     developer: "/developer",
     project_manager: "/project-manager",
     crew_lead: "/crew-lead",
-    marketing: "/marketing-hub",
+    marketing: "/marketing",
     demo_viewer: "/admin",
   };
   
@@ -884,7 +884,7 @@ export default function FieldTool() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { icon: Megaphone, label: "Marketing", path: "/marketing-hub" },
+                      { icon: Megaphone, label: "Marketing", path: "/marketing" },
                       { icon: BarChart3, label: "Analytics", path: roleDashboardMap[userRole] || "/admin" },
                       { icon: Users, label: "CRM", path: roleDashboardMap[userRole] || "/admin" },
                     ].map((tool, i) => (
@@ -1038,7 +1038,7 @@ export default function FieldTool() {
               <h3 className="text-sm font-medium text-gray-400">Management Tools</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Megaphone, label: "Marketing Hub", desc: "Campaigns & social", path: "/marketing-hub" },
+                  { icon: Megaphone, label: "Marketing Hub", desc: "Campaigns & social", path: "/marketing" },
                   { icon: BarChart3, label: "Analytics", desc: "Traffic & insights", path: "/admin" },
                   { icon: Users, label: "CRM", desc: "Leads & customers", path: "/admin" },
                   { icon: Receipt, label: "Invoicing", desc: "Bills & payments", path: "/admin" },
@@ -1074,7 +1074,7 @@ export default function FieldTool() {
                 <Card 
                   className="p-4 border-0 cursor-pointer active:scale-[0.98] transition-transform"
                   style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}10 100%)` }}
-                  onClick={() => window.location.href = '/marketing-hub'}
+                  onClick={() => window.location.href = '/marketing'}
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: colors.gradient }}>

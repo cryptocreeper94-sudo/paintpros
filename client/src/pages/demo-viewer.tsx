@@ -279,7 +279,7 @@ export default function DemoViewer() {
               <motion.div variants={cardVariants}>
                 <GlassCard 
                   className="p-6 h-full cursor-pointer group"
-                  onClick={() => setLocation("/marketing-hub")}
+                  onClick={() => setLocation("/marketing")}
                   data-testid="card-marketing"
                 >
                   <div className="p-3 bg-amber-500/20 rounded-xl w-fit mb-4">
