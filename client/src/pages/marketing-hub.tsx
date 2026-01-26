@@ -5081,10 +5081,10 @@ export default function MarketingHub() {
                     </ul>
                   </div>
                 </div>
-                <div className="mt-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                  <p className="text-sm font-medium text-amber-700 flex items-start gap-2">
-                    <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span><strong>Current Blocker:</strong> Logins have been provided, but browser security/2FA sends confirmation to the owner's email or phone. To run ad campaigns and make payments, either add the marketing account as an authorized user on social media accounts, or provide a way to receive those confirmations in real-time.</span>
+                <div className="mt-4 p-4 rounded-lg bg-[#1e3a5f]/10 border border-[#1e3a5f]/30">
+                  <p className="text-sm text-[#1e3a5f] flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>This tracking system is ready to use. Once everyone is logging expenses and leads, we'll have real ROI data to optimize our marketing spend.</span>
                   </p>
                 </div>
               </GlassCard>

@@ -2183,6 +2183,145 @@ export default function Developer() {
           animate="visible"
         >
         <BentoGrid>
+          {/* Meeting Prep - Talking Points */}
+          <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4}>
+            <motion.div className="h-full" variants={cardVariants} custom={0}>
+              <GlassCard className="h-full p-4 md:p-6 border-l-4 border-amber-500" glow="gold" hoverEffect={false}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-amber-500/10">
+                    <FileText className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">Meeting Prep - Talking Points</h3>
+                    <p className="text-xs text-muted-foreground">For tomorrow's meeting with Ryan</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Current Situation */}
+                  <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                    <h4 className="font-semibold text-amber-600 mb-2 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      Current Situation
+                    </h4>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>No historical ROI data exists - never been tracked</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>$2,000/month marketing budget agreed upon</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>Meta Business account needs owner approval to complete setup</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>Payment system tied to owner's devices - can't run paid campaigns</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>Car wrap & billboards being discussed ($50k+) - no formal plan</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  {/* What's Needed */}
+                  <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
+                    <h4 className="font-semibold text-green-600 mb-2 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      What's Needed to Move Forward
+                    </h4>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span><strong>Credit card access:</strong> Marketing card with $2,000 limit as discussed</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span><strong>Meta approval:</strong> 2 minutes to approve new business account setup</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span><strong>Communication:</strong> Timely responses when access is requested</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span><strong>Expense reporting:</strong> Log any marketing spend in the tracking system</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  {/* The Ask */}
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <h4 className="font-semibold text-blue-600 mb-2 flex items-center gap-2">
+                      <Target className="w-4 h-4" />
+                      The Ask (Keep It Simple)
+                    </h4>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-blue-600 min-w-[20px]">1.</span>
+                        <span>Give me access to run paid campaigns (card or add me as authorized user)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-blue-600 min-w-[20px]">2.</span>
+                        <span>Approve the Meta Business account so I can set up Facebook/Instagram ads</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-blue-600 min-w-[20px]">3.</span>
+                        <span>Log any marketing expenses (billboards, car wraps, etc.) in the system</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-blue-600 min-w-[20px]">4.</span>
+                        <span>Respond when I ask for access - don't leave me waiting</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  {/* Industry Benchmarks */}
+                  <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                    <h4 className="font-semibold text-purple-600 mb-2 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4" />
+                      Industry Benchmarks (Middle TN)
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="text-center p-2 bg-background/50 rounded">
+                        <p className="font-bold text-lg text-purple-600">$85</p>
+                        <p className="text-xs text-muted-foreground">Avg Cost/Lead</p>
+                      </div>
+                      <div className="text-center p-2 bg-background/50 rounded">
+                        <p className="font-bold text-lg text-purple-600">4:1</p>
+                        <p className="text-xs text-muted-foreground">Google Ads ROI</p>
+                      </div>
+                      <div className="text-center p-2 bg-background/50 rounded">
+                        <p className="font-bold text-lg text-purple-600">42:1</p>
+                        <p className="text-xs text-muted-foreground">Email ROI</p>
+                      </div>
+                      <div className="text-center p-2 bg-background/50 rounded">
+                        <p className="font-bold text-lg text-purple-600">3-5%</p>
+                        <p className="text-xs text-muted-foreground">Website Conv.</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 italic">
+                      We can compare our results to these once we start tracking.
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Bottom Line */}
+                <div className="mt-4 p-4 rounded-lg bg-[#1e3a5f]/10 border border-[#1e3a5f]/30">
+                  <p className="text-sm font-medium text-[#1e3a5f]">
+                    <strong>Bottom Line:</strong> I'm here to do the job. The tracking system is built and ready. 
+                    But I can't show results without access to implement the tools. Give me the access, 
+                    participate in tracking expenses, and let's build the data to prove what works.
+                  </p>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           {/* Estimator Pricing Configuration */}
           <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
             <PricingConfigPanel />
