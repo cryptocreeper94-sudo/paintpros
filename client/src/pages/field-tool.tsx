@@ -78,6 +78,7 @@ import {
   Fingerprint
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
+import { MessagingWidget } from "@/components/messaging-widget";
 
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
@@ -142,6 +143,7 @@ export default function FieldTool() {
   // Accordion states for home screen
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showMessaging, setShowMessaging] = useState(false);
   
   // PIN login handler
   const handleLoginSubmit = async () => {
@@ -843,7 +845,7 @@ export default function FieldTool() {
               <div className="grid grid-cols-3 gap-2">
                 <Card 
                   className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
-                  onClick={() => {/* Toggle messaging system */}}
+                  onClick={() => setShowMessaging(true)}
                   data-testid="button-messaging"
                 >
                   <div className="flex flex-col items-center gap-1.5">
@@ -1772,6 +1774,15 @@ export default function FieldTool() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Internal Messaging Widget */}
+      {showMessaging && (
+        <MessagingWidget
+          currentUserId={currentUser.name || userName}
+          currentUserRole={userRole}
+          currentUserName={currentUser.name || userName}
+        />
+      )}
     </div>
   );
 }
