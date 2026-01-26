@@ -1366,8 +1366,23 @@ export default function MarketingHub() {
             <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 via-[#1e3a5f]/80 to-transparent" />
             <div className="relative z-10 p-8 md:p-12">
               <div className="max-w-xl">
-                <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-3">
-                  Your Marketing Command Center
+                {/* Brand Identity - matches home-lume.tsx styling */}
+                <div className="mb-4">
+                  <h1 
+                    className="font-light tracking-wide text-white"
+                    style={{ fontFamily: 'Playfair Display, Georgia, serif', fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
+                  >
+                    Lume<sup className="align-super ml-0.5" style={{ fontSize: 'clamp(0.5rem, 1vw, 1rem)' }}>™</sup>
+                  </h1>
+                  <p 
+                    className="font-light tracking-[0.2em] uppercase text-white/90"
+                    style={{ fontSize: 'clamp(0.6rem, 1vw, 1rem)' }}
+                  >
+                    Paint.co
+                  </p>
+                </div>
+                <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-3">
+                  Marketing Command Center
                 </h2>
                 <p className="text-white/80 mb-6">
                   Create, schedule, and track all your marketing content in one place. 
