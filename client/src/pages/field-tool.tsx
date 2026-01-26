@@ -736,96 +736,168 @@ export default function FieldTool() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="p-4 space-y-3"
+            className="p-3 space-y-3 pb-24"
           >
-            {/* Weather Quick Access - Always visible at top */}
-            <Card 
-              className="p-3 border-0 cursor-pointer"
-              style={{ background: `linear-gradient(135deg, #0ea5e920 0%, #06b6d410 100%)` }}
-              onClick={() => setShowWeather(true)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
-                    <Cloud className="w-5 h-5 text-cyan-400" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">Weather</p>
-                    <p className="text-gray-400 text-xs">Tap to check conditions</p>
-                  </div>
+            {/* Top Row: Weather + AI Assistant side by side */}
+            <div className="grid grid-cols-2 gap-2">
+              <Card 
+                className="p-3 border-0 cursor-pointer active:scale-[0.98] transition-transform"
+                style={{ background: `linear-gradient(135deg, #0ea5e930 0%, #06b6d420 100%)` }}
+                onClick={() => setShowWeather(true)}
+                data-testid="button-weather"
+              >
+                <div className="flex flex-col items-center text-center gap-1">
+                  <Cloud className="w-6 h-6 text-cyan-400" />
+                  <p className="text-white font-medium text-sm">Weather</p>
+                  <p className="text-cyan-400/70 text-xs">Check conditions</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              </div>
-            </Card>
-
-            {/* Quick Tools Row - Compact horizontal scroll */}
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {[
-                { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
-                { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
-                { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
-                { icon: Store, label: "Stores", action: () => setActiveSection("stores"), color: "bg-green-500" },
-                { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), color: "bg-orange-500" },
-              ].map((tool, i) => (
-                <Card 
-                  key={i}
-                  className="flex-shrink-0 bg-gray-900/50 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/50 transition-colors"
-                  onClick={tool.action}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 ${tool.color} rounded-lg flex items-center justify-center`}>
-                      <tool.icon className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-white text-sm whitespace-nowrap">{tool.label}</span>
-                  </div>
-                </Card>
-              ))}
+              </Card>
+              <Card 
+                className="p-3 border-0 cursor-pointer active:scale-[0.98] transition-transform"
+                style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}15 100%)` }}
+                onClick={() => setShowAIAssistant(true)}
+                data-testid="button-ai-assistant"
+              >
+                <div className="flex flex-col items-center text-center gap-1">
+                  <Sparkles className="w-6 h-6" style={{ color: colors.primary }} />
+                  <p className="text-white font-medium text-sm">AI Assistant</p>
+                  <p className="text-gray-400 text-xs">Voice & chat</p>
+                </div>
+              </Card>
             </div>
 
-            {/* AI Assistant - Prominent placement */}
-            <Card 
-              className="p-3 border-0 cursor-pointer"
-              style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}10 100%)` }}
-              onClick={() => setShowAIAssistant(true)}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: colors.gradient }}>
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-white font-medium text-sm">AI Field Assistant</p>
-                  <p className="text-gray-400 text-xs">Voice commands & calculations</p>
-                </div>
-                <Mic className="w-5 h-5 text-gray-400" />
+            {/* Field Tools Section - Always Visible */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Wrench className="w-4 h-4 text-gray-500" />
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Field Tools</h3>
               </div>
-            </Card>
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
+                  { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), color: "bg-orange-500" },
+                  { icon: Store, label: "Stores", action: () => setActiveSection("stores"), color: "bg-green-500" },
+                  { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
+                  { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
+                  { icon: FileText, label: "Notes", action: () => setShowNotes(true), color: "bg-amber-500" },
+                  { icon: Upload, label: "Scan", action: () => setShowPhotoAI(true), color: "bg-cyan-500" },
+                  { icon: Package, label: "Materials", action: () => setActiveSection("stores"), color: "bg-teal-500" },
+                ].map((tool, i) => (
+                  <Card 
+                    key={i}
+                    className="bg-gray-900/60 border-gray-800 p-2 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                    onClick={tool.action}
+                    data-testid={`button-${tool.label.toLowerCase().replace(' ', '-')}`}
+                  >
+                    <div className="flex flex-col items-center gap-1.5 py-1">
+                      <div className={`w-9 h-9 ${tool.color} rounded-lg flex items-center justify-center`}>
+                        <tool.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="text-white text-xs font-medium">{tool.label}</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
 
-            {/* Today's Jobs - Collapsible */}
-            <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
-              <div 
-                className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/30 transition-colors"
-                onClick={() => setExpandedSection(expandedSection === "jobs" ? null : "jobs")}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <ClipboardList className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">Today's Jobs</p>
-                    <p className="text-gray-500 text-xs">{todaysJobs.length} scheduled</p>
-                  </div>
-                </div>
-                <ChevronRight className={`w-4 h-4 text-gray-500 transition-transform ${expandedSection === "jobs" ? "rotate-90" : ""}`} />
+            {/* Business & Management Section - Always Visible */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Briefcase className="w-4 h-4 text-gray-500" />
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Business Tools</h3>
               </div>
-              {expandedSection === "jobs" && (
-                <div className="px-3 pb-3 space-y-2">
-                  {todaysJobs.length > 0 ? todaysJobs.slice(0, 3).map((job: any, i: number) => (
-                    <div key={job.id || i} className="p-2 rounded-lg bg-gray-800/50">
-                      <div className="flex items-center justify-between">
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { icon: Briefcase, label: "Dashboard", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", color: colors.primary },
+                  { icon: Megaphone, label: "Marketing", action: () => window.location.href = "/marketing", color: "#f59e0b" },
+                  { icon: Users, label: "CRM", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", color: "#3b82f6" },
+                  { icon: BarChart3, label: "Analytics", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", color: "#8b5cf6" },
+                  { icon: Receipt, label: "Invoicing", action: () => window.location.href = "/admin", color: "#10b981" },
+                  { icon: Target, label: "Leads", action: () => window.location.href = "/admin", color: "#ef4444" },
+                  { icon: PieChart, label: "Reports", action: () => window.location.href = "/owner", color: "#06b6d4" },
+                  { icon: Shield, label: "Admin", action: () => window.location.href = "/admin", color: "#6366f1" },
+                ].map((tool, i) => (
+                  <Card 
+                    key={i}
+                    className="bg-gray-900/60 border-gray-800 p-2 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                    onClick={tool.action}
+                    data-testid={`button-biz-${tool.label.toLowerCase().replace(' ', '-')}`}
+                  >
+                    <div className="flex flex-col items-center gap-1.5 py-1">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: `${tool.color}30` }}>
+                        <tool.icon className="w-4 h-4" style={{ color: tool.color }} />
+                      </div>
+                      <span className="text-white text-xs font-medium">{tool.label}</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Communication & Quick Actions Row */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Send className="w-4 h-4 text-gray-500" />
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Quick Actions</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <Card 
+                  className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                  onClick={() => {/* Toggle messaging system */}}
+                  data-testid="button-messaging"
+                >
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-500/30 flex items-center justify-center">
+                      <Send className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <span className="text-white text-xs font-medium">Messages</span>
+                  </div>
+                </Card>
+                <Card 
+                  className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                  onClick={() => setShowAIAssistant(true)}
+                  data-testid="button-voice"
+                >
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 rounded-lg bg-rose-500/30 flex items-center justify-center">
+                      <Mic className="w-5 h-5 text-rose-400" />
+                    </div>
+                    <span className="text-white text-xs font-medium">Voice AI</span>
+                  </div>
+                </Card>
+                <Card 
+                  className="bg-gray-900/60 border-gray-800 p-3 cursor-pointer hover:bg-gray-800/70 active:scale-[0.96] transition-all"
+                  onClick={() => setShowPhotoAI(true)}
+                  data-testid="button-camera-quick"
+                >
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/30 flex items-center justify-center">
+                      <Image className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <span className="text-white text-xs font-medium">Save Photo</span>
+                  </div>
+                </Card>
+              </div>
+            </div>
+
+            {/* Today's Jobs - Compact Preview */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <ClipboardList className="w-4 h-4 text-gray-500" />
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Today's Jobs</h3>
+                </div>
+                <Badge variant="outline" className="text-xs border-gray-700 text-gray-400">{todaysJobs.length} scheduled</Badge>
+              </div>
+              <Card className="bg-gray-900/60 border-gray-800 p-3">
+                {todaysJobs.length > 0 ? (
+                  <div className="space-y-2">
+                    {todaysJobs.slice(0, 2).map((job: any, i: number) => (
+                      <div key={job.id || i} className="flex items-center justify-between p-2 rounded-lg bg-gray-800/50">
                         <div className="flex items-center gap-2">
                           <span className="text-white text-sm font-medium">{job.timeSlot?.split(' ')[0] || '9:00'}</span>
                           <span className="text-gray-500">-</span>
-                          <span className="text-gray-300 text-sm">{job.customerName || 'Customer'}</span>
+                          <span className="text-gray-300 text-sm truncate max-w-[120px]">{job.customerName || 'Customer'}</span>
                         </div>
                         <div className="flex gap-1">
                           {job.phone && (
@@ -838,69 +910,22 @@ export default function FieldTool() {
                           </Button>
                         </div>
                       </div>
-                    </div>
-                  )) : (
-                    <p className="text-gray-500 text-sm text-center py-2">No jobs scheduled today</p>
-                  )}
-                  <Button variant="ghost" size="sm" className="w-full text-xs" style={{ color: colors.primary }} onClick={() => setActiveSection("jobs")}>
-                    View All Jobs
-                  </Button>
-                </div>
-              )}
-            </Card>
-
-            {/* Business Tools - Collapsible */}
-            <Card className="bg-gray-900/50 border-gray-800 overflow-hidden">
-              <div 
-                className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/30 transition-colors"
-                onClick={() => setExpandedSection(expandedSection === "business" ? null : "business")}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                    <Briefcase className="w-4 h-4 text-indigo-400" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">Business Tools</p>
-                    <p className="text-gray-500 text-xs">CRM, Analytics, Reports</p>
-                  </div>
-                </div>
-                <ChevronRight className={`w-4 h-4 text-gray-500 transition-transform ${expandedSection === "business" ? "rotate-90" : ""}`} />
-              </div>
-              {expandedSection === "business" && (
-                <div className="px-3 pb-3 space-y-2">
-                  <div 
-                    className="p-3 rounded-lg cursor-pointer hover:bg-gray-700/50 transition-colors flex items-center gap-3"
-                    style={{ background: `${colors.primary}20` }}
-                    onClick={() => window.location.href = roleDashboardMap[userRole] || "/admin"}
-                  >
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: colors.gradient }}>
-                      <Briefcase className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-white font-medium">My Dashboard</p>
-                      <p className="text-gray-400 text-xs capitalize">{userRole.replace("_", " ")} Access</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { icon: Megaphone, label: "Marketing", path: "/marketing" },
-                      { icon: BarChart3, label: "Analytics", path: roleDashboardMap[userRole] || "/admin" },
-                      { icon: Users, label: "CRM", path: roleDashboardMap[userRole] || "/admin" },
-                    ].map((tool, i) => (
-                      <div 
-                        key={i}
-                        className="p-2 rounded-lg bg-gray-800/50 cursor-pointer hover:bg-gray-700/50 transition-colors flex flex-col items-center gap-1"
-                        onClick={() => window.location.href = tool.path}
-                      >
-                        <tool.icon className="w-4 h-4" style={{ color: colors.primary }} />
-                        <span className="text-white text-xs">{tool.label}</span>
-                      </div>
                     ))}
+                    <Button variant="ghost" size="sm" className="w-full text-xs mt-1" style={{ color: colors.primary }} onClick={() => setActiveSection("jobs")}>
+                      View All Jobs
+                    </Button>
                   </div>
-                </div>
-              )}
-            </Card>
+                ) : (
+                  <div className="text-center py-3">
+                    <ClipboardList className="w-8 h-8 mx-auto mb-1 text-gray-600" />
+                    <p className="text-gray-500 text-sm">No jobs scheduled today</p>
+                    <Button variant="ghost" size="sm" className="mt-2 text-xs" style={{ color: colors.primary }} onClick={() => setActiveSection("jobs")}>
+                      View All Jobs
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            </div>
           </motion.div>
         )}
 
