@@ -1533,6 +1533,11 @@ export default function FieldTool() {
   const [showWeather, setShowWeather] = useState(false);
   const [showMileage, setShowMileage] = useState(false);
   const [showPhotoAI, setShowPhotoAI] = useState(false);
+  const [showRoomVisualizer, setShowRoomVisualizer] = useState(false);
+  const [visualizerImage, setVisualizerImage] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState({ name: "Simply White", hex: "#F5F5F0" });
+  const [colorOpacity, setColorOpacity] = useState(0.35);
+  const visualizerFileInputRef = useRef<HTMLInputElement>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [fieldNotes, setFieldNotes] = useState(() => {
     return localStorage.getItem("field_tool_notes") || "";
@@ -2393,14 +2398,32 @@ export default function FieldTool() {
             <Card 
               className="p-4 border-0 cursor-pointer"
               style={{ background: `linear-gradient(135deg, ${colors.primary}30 0%, ${colors.primary}10 100%)` }}
-              onClick={() => setShowPhotoAI(true)}
+              onClick={() => setShowRoomVisualizer(true)}
+              data-testid="card-room-visualizer"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: colors.gradient }}>
+                  <Image className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white font-medium">Room Visualizer</p>
+                  <p className="text-gray-400 text-sm">Preview colors on walls in real-time</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </Card>
+
+            <Card 
+              className="p-4 border-0 cursor-pointer"
+              style={{ background: `linear-gradient(135deg, ${colors.primary}20 0%, ${colors.primary}05 100%)` }}
+              onClick={() => setShowPhotoAI(true)}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-800">
                   <Camera className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-white font-medium">AI Color Match</p>
+                  <p className="text-white font-medium">Color Match</p>
                   <p className="text-gray-400 text-sm">Take a photo to find matching paints</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -2589,6 +2612,210 @@ export default function FieldTool() {
                 </Card>
               ))}
             </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Room Visualizer Sheet */}
+      <Sheet open={showRoomVisualizer} onOpenChange={(open) => {
+        setShowRoomVisualizer(open);
+        if (!open) setVisualizerImage(null);
+      }}>
+        <SheetContent side="bottom" className="h-[95vh] bg-gray-900 border-gray-800">
+          <SheetHeader>
+            <SheetTitle className="text-white flex items-center gap-2">
+              <Palette className="w-5 h-5" /> Room Visualizer
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-4 h-full overflow-y-auto pb-20">
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              ref={visualizerFileInputRef}
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    setVisualizerImage(event.target?.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+
+            {!visualizerImage ? (
+              <Card className="bg-gray-800 border-gray-700 p-8 text-center border-dashed">
+                <Image className="w-16 h-16 mx-auto text-gray-500 mb-4" />
+                <p className="text-gray-300 font-medium mb-2">Take a photo of the room</p>
+                <p className="text-gray-500 text-sm mb-6">Show your customer how different colors will look on their walls</p>
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    style={{ background: colors.primary }}
+                    onClick={() => visualizerFileInputRef.current?.click()}
+                    data-testid="button-visualizer-camera"
+                  >
+                    <Camera className="w-4 h-4 mr-2" /> Take Photo
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="border-gray-700"
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.onchange = (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setVisualizerImage(event.target?.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      };
+                      input.click();
+                    }}
+                    data-testid="button-visualizer-upload"
+                  >
+                    <Upload className="w-4 h-4 mr-2" /> Upload
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <>
+                <div className="relative rounded-xl overflow-hidden">
+                  <div className="relative">
+                    <img 
+                      src={visualizerImage} 
+                      alt="Room preview" 
+                      className="w-full rounded-xl"
+                    />
+                    <div 
+                      className="absolute inset-0 pointer-events-none rounded-xl"
+                      style={{ 
+                        background: selectedColor.hex,
+                        opacity: colorOpacity,
+                        mixBlendMode: 'multiply'
+                      }}
+                    />
+                  </div>
+                  <div className="absolute top-3 right-3 flex gap-2">
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      className="bg-black/50 backdrop-blur-sm"
+                      onClick={() => setVisualizerImage(null)}
+                      data-testid="button-visualizer-new-photo"
+                    >
+                      <RefreshCw className="w-4 h-4 text-white" />
+                    </Button>
+                  </div>
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <Card className="bg-black/70 backdrop-blur-sm border-0 p-3">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-10 h-10 rounded-lg border-2 border-white"
+                          style={{ background: selectedColor.hex }}
+                        />
+                        <div className="flex-1">
+                          <p className="text-white font-medium text-sm">{selectedColor.name}</p>
+                          <p className="text-gray-400 text-xs">{selectedColor.hex}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-400">Color Intensity</label>
+                    <span className="text-white text-sm">{Math.round(colorOpacity * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="0.8"
+                    step="0.05"
+                    value={colorOpacity}
+                    onChange={(e) => setColorOpacity(parseFloat(e.target.value))}
+                    className="w-full accent-primary"
+                    style={{ accentColor: colors.primary }}
+                    data-testid="slider-color-intensity"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-gray-400">Select Color</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { name: "Simply White", hex: "#F5F5F0" },
+                      { name: "Agreeable Gray", hex: "#D5D0C8" },
+                      { name: "Repose Gray", hex: "#C2BDB6" },
+                      { name: "Accessible Beige", hex: "#D4C8B5" },
+                      { name: "Alabaster", hex: "#F2EDE3" },
+                      { name: "Extra White", hex: "#F1F1EF" },
+                      { name: "Snowbound", hex: "#EBE8E1" },
+                      { name: "Pure White", hex: "#F0EDE5" },
+                      { name: "Naval", hex: "#34495e" },
+                      { name: "Tricorn Black", hex: "#2c2c2c" },
+                      { name: "Sea Salt", hex: "#c8d5c9" },
+                      { name: "Mindful Gray", hex: "#b3ada5" },
+                      { name: "Urbane Bronze", hex: "#54504a" },
+                      { name: "Iron Ore", hex: "#4a4a4a" },
+                      { name: "Shoji White", hex: "#e8e4d8" },
+                      { name: "Rainwashed", hex: "#c4d4d3" },
+                    ].map((color, i) => (
+                      <Card 
+                        key={i} 
+                        className={`p-2 text-center cursor-pointer transition-all ${
+                          selectedColor.hex === color.hex 
+                            ? 'ring-2 ring-offset-2 ring-offset-gray-900' 
+                            : 'bg-gray-900/50 border-gray-800'
+                        }`}
+                        style={{ 
+                          '--tw-ring-color': selectedColor.hex === color.hex ? colors.primary : undefined
+                        } as React.CSSProperties}
+                        onClick={() => setSelectedColor(color)}
+                        data-testid={`color-swatch-${i}`}
+                      >
+                        <div 
+                          className="w-full aspect-square rounded-lg mb-1 border border-gray-700"
+                          style={{ background: color.hex }}
+                        />
+                        <p className="text-white text-xs truncate">{color.name}</p>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <Card className="bg-blue-900/30 border-blue-800/50 p-4">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="w-5 h-5 text-blue-400 mt-0.5" />
+                    <div>
+                      <p className="text-blue-400 font-medium text-sm">How to Use</p>
+                      <p className="text-gray-400 text-xs mt-1">
+                        Swipe through colors to show customers different options. Adjust the intensity slider for lighter or bolder previews. Great for quick consultations on-site!
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Button 
+                  className="w-full" 
+                  style={{ background: colors.primary }}
+                  onClick={() => {
+                    setVisualizerImage(null);
+                    setShowRoomVisualizer(false);
+                  }}
+                  data-testid="button-visualizer-done"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" /> Done
+                </Button>
+              </>
+            )}
           </div>
         </SheetContent>
       </Sheet>
