@@ -966,6 +966,17 @@ export default function MarketingHub() {
     refetchInterval: 30000,
   });
 
+  // Lead Source Attribution Query - Real data from leads and bookings
+  const { data: leadSources } = useQuery<Record<string, number>>({
+    queryKey: ["/api/leads/sources", selectedTenant],
+    queryFn: async () => {
+      const res = await fetch(`/api/leads/sources?tenantId=${selectedTenant}`);
+      if (!res.ok) return {};
+      return res.json();
+    },
+    refetchInterval: 60000,
+  });
+
   const stats = useMemo(() => {
     const brandPosts = posts.filter(p => p.brand === selectedTenant);
     return {
@@ -5097,22 +5108,48 @@ export default function MarketingHub() {
                   This data shows which marketing efforts are driving real leads.
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                  {[
-                    { source: "Facebook", count: 12, color: "bg-blue-500" },
-                    { source: "Google", count: 5, color: "bg-red-500" },
-                    { source: "Billboard", count: 3, color: "bg-green-500" },
-                    { source: "Referral", count: 2, color: "bg-purple-500" },
-                    { source: "Car Wrap", count: 2, color: "bg-orange-500" },
-                    { source: "Yard Sign", count: 1, color: "bg-yellow-500" },
-                    { source: "Other", count: 1, color: "bg-gray-500" },
-                  ].map((source, idx) => (
-                    <div key={idx} className="text-center p-3 rounded-lg bg-muted/30">
-                      <div className={`w-8 h-8 rounded-full ${source.color} mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold`}>
-                        {source.count}
-                      </div>
-                      <p className="text-xs font-medium">{source.source}</p>
-                    </div>
-                  ))}
+                  {(() => {
+                    const sourceLabels: Record<string, { label: string; color: string }> = {
+                      google: { label: "Google", color: "bg-red-500" },
+                      facebook: { label: "Facebook", color: "bg-blue-500" },
+                      instagram: { label: "Instagram", color: "bg-pink-500" },
+                      billboard: { label: "Billboard", color: "bg-green-500" },
+                      car_wrap: { label: "Car Wrap", color: "bg-orange-500" },
+                      yard_sign: { label: "Yard Sign", color: "bg-yellow-500" },
+                      flyer: { label: "Flyer", color: "bg-teal-500" },
+                      referral: { label: "Referral", color: "bg-purple-500" },
+                      nextdoor: { label: "Nextdoor", color: "bg-emerald-500" },
+                      yelp: { label: "Yelp", color: "bg-rose-500" },
+                      homeadvisor: { label: "HomeAdvisor", color: "bg-cyan-500" },
+                      repeat: { label: "Repeat", color: "bg-indigo-500" },
+                      other: { label: "Other", color: "bg-gray-500" },
+                      unknown: { label: "Not Specified", color: "bg-slate-400" },
+                    };
+                    
+                    const sources = leadSources || {};
+                    const entries = Object.entries(sources).sort((a, b) => b[1] - a[1]);
+                    
+                    if (entries.length === 0) {
+                      return (
+                        <div className="col-span-full text-center py-8 text-muted-foreground">
+                          <Target className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                          <p>No lead source data yet. As customers fill out forms and select how they heard about you, the data will appear here.</p>
+                        </div>
+                      );
+                    }
+                    
+                    return entries.map(([key, count], idx) => {
+                      const info = sourceLabels[key] || { label: key, color: "bg-gray-500" };
+                      return (
+                        <div key={idx} className="text-center p-3 rounded-lg bg-muted/30">
+                          <div className={`w-8 h-8 rounded-full ${info.color} mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold`}>
+                            {count}
+                          </div>
+                          <p className="text-xs font-medium">{info.label}</p>
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </GlassCard>
 

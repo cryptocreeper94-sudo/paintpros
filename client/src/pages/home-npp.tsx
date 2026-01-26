@@ -33,6 +33,7 @@ import {
 import { motion } from "framer-motion";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { HeroSlideshow } from "@/components/ui/hero-slideshow";
+import { LeadCaptureModal } from "@/components/lead-generation/lead-capture-modal";
 
 // Import images
 import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
@@ -1040,6 +1041,9 @@ export default function HomeNPP() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Lead Capture Popup Modal */}
+      <LeadCaptureModal tenantId="npp" tenantName="Nashville Painting Professionals" />
     </PageLayout>
   );
 }

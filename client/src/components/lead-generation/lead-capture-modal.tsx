@@ -146,29 +146,45 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
     );
   }
 
+  // Tenant-specific branding
+  const isLume = tenantId === "lumepaint";
+  const brandColor = isLume ? "#1e3a5f" : "#374151"; // Navy for Lume, gray for NPP
+  const tagline = isLume ? "Elevating the backdrop of your life." : "Transforming familiar spaces into extraordinary places.";
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[85%] sm:max-w-sm p-0 border-[3px] border-[#1e3a5f] bg-[#1e3a5f] shadow-2xl max-h-[88vh] overflow-y-auto">
-        <div className="m-1 border-2 border-[#0f1f33] rounded-md shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] bg-white p-3">
+      <DialogContent className={`max-w-[85%] sm:max-w-sm p-0 border-[3px] shadow-2xl max-h-[88vh] overflow-y-auto`} style={{ borderColor: brandColor, backgroundColor: brandColor }}>
+        <div className="m-1 border-2 rounded-md shadow-[inset_0_2px_6px_rgba(0,0,0,0.3)] bg-white p-3" style={{ borderColor: isLume ? "#0f1f33" : "#1f2937" }}>
           <DialogHeader className="text-center pb-0">
             <div className="mb-1.5">
-              <h2 
-                className="text-xl font-light tracking-wide"
-                style={{ fontFamily: 'Playfair Display, Georgia, serif', color: '#1e3a5f' }}
-              >
-                Lume<sup className="text-[7px] align-super ml-0.5">™</sup>
-              </h2>
-              <p 
-                className="text-[8px] font-light tracking-[0.2em] uppercase -mt-0.5"
-                style={{ color: '#1e3a5f' }}
-              >
-                Paint.co
-              </p>
-              <p className="mt-0.5 text-[11px] font-light" style={{ color: '#2d4a6f' }}>
-                Elevating the backdrop of your life.
+              {isLume ? (
+                <>
+                  <h2 
+                    className="text-xl font-light tracking-wide"
+                    style={{ fontFamily: 'Playfair Display, Georgia, serif', color: brandColor }}
+                  >
+                    Lume<sup className="text-[7px] align-super ml-0.5">™</sup>
+                  </h2>
+                  <p 
+                    className="text-[8px] font-light tracking-[0.2em] uppercase -mt-0.5"
+                    style={{ color: brandColor }}
+                  >
+                    Paint.co
+                  </p>
+                </>
+              ) : (
+                <h2 
+                  className="text-lg font-semibold tracking-wide"
+                  style={{ color: brandColor }}
+                >
+                  {tenantName}
+                </h2>
+              )}
+              <p className="mt-0.5 text-[11px] font-light" style={{ color: isLume ? "#2d4a6f" : "#6b7280" }}>
+                {tagline}
               </p>
             </div>
-            <DialogTitle className="text-sm font-display text-[#1e3a5f]">
+            <DialogTitle className="text-sm font-display" style={{ color: brandColor }}>
               Get Your Free Estimate
             </DialogTitle>
             <DialogDescription className="text-gray-600 text-[11px]">
@@ -223,7 +239,8 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                 </div>
                 <Button
                   onClick={() => setStep(2)}
-                  className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white h-8 text-sm"
+                  className="w-full text-white h-8 text-sm"
+                  style={{ backgroundColor: brandColor }}
                   disabled={!formData.name || !formData.phone}
                   data-testid="button-modal-next"
                 >
@@ -310,7 +327,8 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                   </Button>
                   <Button
                     onClick={handleSubmit}
-                    className="flex-1 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white h-8 text-sm"
+                    className="flex-1 text-white h-8 text-sm"
+                    style={{ backgroundColor: brandColor }}
                     disabled={leadMutation.isPending}
                     data-testid="button-modal-submit"
                   >

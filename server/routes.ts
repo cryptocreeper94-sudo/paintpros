@@ -5916,6 +5916,34 @@ Do not include any text before or after the JSON.`
     const scores = await storage.getLeadScores(tenantId);
     res.json(scores);
   });
+
+  // Lead source attribution for Marketing Hub
+  app.get("/api/leads/sources", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "lumepaint";
+      const allLeads = await storage.getLeads();
+      const tenantLeads = allLeads.filter(l => l.tenantId === tenantId);
+      
+      // Count leads by referral source
+      const sourceCounts: Record<string, number> = {};
+      for (const lead of tenantLeads) {
+        const source = lead.referralSource || "unknown";
+        sourceCounts[source] = (sourceCounts[source] || 0) + 1;
+      }
+      
+      // Also get bookings with referral sources
+      const tenantBookings = await storage.getBookings(tenantId);
+      for (const booking of tenantBookings) {
+        const source = booking.referralSource || "unknown";
+        sourceCounts[source] = (sourceCounts[source] || 0) + 1;
+      }
+      
+      res.json(sourceCounts);
+    } catch (error) {
+      console.error("Error fetching lead sources:", error);
+      res.status(500).json({ error: "Failed to fetch lead sources" });
+    }
+  });
   
   app.post("/api/leads/score-ai", async (req, res) => {
     try {
