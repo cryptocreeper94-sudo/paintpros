@@ -4367,6 +4367,7 @@ export default function FieldTool() {
                 <p className="text-red-400 text-sm">{translatorError}</p>
                 {translatorError === t('translator.needCredits') && (
                   <Button
+                    data-testid="button-translator-buy-credits"
                     variant="outline"
                     size="sm"
                     className="mt-3 border-red-500/50 text-red-400"
