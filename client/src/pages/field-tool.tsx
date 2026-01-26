@@ -91,7 +91,10 @@ import {
   RefreshCw,
   KeyRound,
   HelpCircle,
-  PlayCircle
+  PlayCircle,
+  Languages,
+  Square,
+  Volume2 as VolumeIcon
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
@@ -1680,6 +1683,18 @@ export default function FieldTool() {
   const [photoCategory, setPhotoCategory] = useState("interior");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [showQuickEstimate, setShowQuickEstimate] = useState(false);
+  const [showTranslator, setShowTranslator] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [translatorResult, setTranslatorResult] = useState<{
+    originalText: string;
+    translatedText: string;
+    detectedLanguage: string;
+    audioBase64?: string;
+  } | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatorError, setTranslatorError] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   
   // Quick Estimate form state
   const [estimateInputs, setEstimateInputs] = useState({
@@ -2768,8 +2783,8 @@ export default function FieldTool() {
                   { icon: Store, label: "Paint Stores", action: () => setActiveSection("stores"), gradient: "from-teal-500 to-cyan-600" },
                   { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), gradient: "from-pink-500 to-rose-600" },
                   { icon: Car, label: "Mileage", action: () => setShowMileage(true), gradient: "from-purple-500 to-violet-600" },
+                  { icon: Languages, label: t('translator.title'), action: () => setShowTranslator(true), gradient: "from-indigo-500 to-purple-600" },
                   { icon: FileText, label: "Job Notes", action: () => setShowNotes(true), gradient: "from-amber-500 to-yellow-600" },
-                  { icon: Upload, label: "Doc Scan", action: () => setShowPhotoAI(true), gradient: "from-cyan-500 to-sky-600" },
                   { icon: Package, label: "Materials", action: () => setActiveSection("stores"), gradient: "from-lime-500 to-green-600" },
                 ].map((tool, i) => (
                   <motion.div
@@ -4209,6 +4224,201 @@ export default function FieldTool() {
             <p className="text-gray-500 text-xs text-center">
               {t('photo.note')}
             </p>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Live Translator Sheet */}
+      <Sheet open={showTranslator} onOpenChange={setShowTranslator}>
+        <SheetContent side="bottom" className="h-[85vh] bg-gray-900 border-gray-800 overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-white flex items-center gap-2">
+              <Languages className="w-5 h-5" style={{ color: colors.primary }} />
+              {t('translator.title')}
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-6">
+            {/* Credit Info Banner */}
+            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">{t('translator.creditsInfo')}</p>
+                <p className="text-gray-400 text-xs">{t('translator.subtitle')}</p>
+              </div>
+            </div>
+
+            {/* Recording Button */}
+            <div className="flex flex-col items-center gap-4">
+              <motion.button
+                data-testid="button-translator-record"
+                whileTap={{ scale: 0.95 }}
+                onClick={async () => {
+                  if (isRecording) {
+                    // Stop recording
+                    if (mediaRecorderRef.current) {
+                      mediaRecorderRef.current.stop();
+                    }
+                    setIsRecording(false);
+                  } else {
+                    // Start recording
+                    setTranslatorError(null);
+                    setTranslatorResult(null);
+                    try {
+                      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                      const mediaRecorder = new MediaRecorder(stream);
+                      mediaRecorderRef.current = mediaRecorder;
+                      audioChunksRef.current = [];
+
+                      mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                          audioChunksRef.current.push(event.data);
+                        }
+                      };
+
+                      mediaRecorder.onstop = async () => {
+                        stream.getTracks().forEach(track => track.stop());
+                        setIsTranslating(true);
+                        
+                        try {
+                          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                          const reader = new FileReader();
+                          
+                          reader.onloadend = async () => {
+                            const base64Audio = (reader.result as string).split(',')[1];
+                            
+                            const response = await fetch('/api/translate/complete', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                tenantId: tenant.id,
+                                audioBase64: base64Audio,
+                              }),
+                            });
+
+                            if (!response.ok) {
+                              const error = await response.json();
+                              if (error.needsCredits) {
+                                setTranslatorError(t('translator.needCredits'));
+                              } else {
+                                setTranslatorError(t('translator.error'));
+                              }
+                              setIsTranslating(false);
+                              return;
+                            }
+
+                            const result = await response.json();
+                            setTranslatorResult({
+                              originalText: result.originalText,
+                              translatedText: result.translatedText,
+                              detectedLanguage: result.detectedLanguage,
+                              audioBase64: result.audioBase64,
+                            });
+                            setIsTranslating(false);
+                          };
+                          
+                          reader.readAsDataURL(audioBlob);
+                        } catch (error) {
+                          setTranslatorError(t('translator.error'));
+                          setIsTranslating(false);
+                        }
+                      };
+
+                      mediaRecorder.start();
+                      setIsRecording(true);
+                    } catch (error) {
+                      setTranslatorError(t('translator.noMic'));
+                    }
+                  }
+                }}
+                className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${
+                  isRecording 
+                    ? 'bg-red-500 animate-pulse' 
+                    : isTranslating
+                    ? 'bg-gray-700'
+                    : 'bg-gradient-to-br from-indigo-500 to-purple-600'
+                }`}
+                disabled={isTranslating}
+              >
+                {isTranslating ? (
+                  <Loader2 className="w-12 h-12 text-white animate-spin" />
+                ) : isRecording ? (
+                  <Square className="w-10 h-10 text-white" />
+                ) : (
+                  <Mic className="w-12 h-12 text-white" />
+                )}
+              </motion.button>
+              
+              <p className="text-gray-400 text-sm">
+                {isTranslating 
+                  ? t('translator.translating')
+                  : isRecording 
+                  ? t('translator.recording')
+                  : t('translator.tapToSpeak')
+                }
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {translatorError && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-center">
+                <AlertCircle className="w-6 h-6 text-red-400 mx-auto mb-2" />
+                <p className="text-red-400 text-sm">{translatorError}</p>
+                {translatorError === t('translator.needCredits') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3 border-red-500/50 text-red-400"
+                    onClick={() => window.location.href = '/credits'}
+                  >
+                    {t('translator.buyCredits')}
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {/* Translation Results */}
+            {translatorResult && (
+              <div className="space-y-4">
+                {/* Original Text */}
+                <Card className="bg-black/40 border-white/10 p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs">
+                      {t('translator.original')}
+                    </Badge>
+                    <Badge className="bg-indigo-500/20 text-indigo-300 text-xs">
+                      {t('translator.detected')}: {translatorResult.detectedLanguage === 'es' ? 'Español' : 'English'}
+                    </Badge>
+                  </div>
+                  <p className="text-white">{translatorResult.originalText}</p>
+                </Card>
+
+                {/* Translated Text */}
+                <Card className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/30 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className="bg-indigo-500/30 text-indigo-200 text-xs">
+                      {t('translator.translated')}
+                    </Badge>
+                    {translatorResult.audioBase64 && (
+                      <motion.button
+                        data-testid="button-play-translation"
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const audio = new Audio(`data:audio/mpeg;base64,${translatorResult.audioBase64}`);
+                          audio.play();
+                        }}
+                        className="flex items-center gap-1 text-indigo-300 text-sm hover:text-indigo-200"
+                      >
+                        <Volume2 className="w-4 h-4" />
+                        {t('translator.playTranslation')}
+                      </motion.button>
+                    )}
+                  </div>
+                  <p className="text-white text-lg font-medium">{translatorResult.translatedText}</p>
+                </Card>
+              </div>
+            )}
           </div>
         </SheetContent>
       </Sheet>

@@ -670,6 +670,23 @@ const translations: Record<Language, Record<string, string>> = {
     'photo.savedDesc': 'Your photo has been uploaded to the marketing library.',
     'photo.failed': 'Upload Failed',
     'photo.failedDesc': 'Could not save photo. Please try again.',
+    
+    // Live Translator
+    'translator.title': 'Translator',
+    'translator.subtitle': 'Speak in English or Spanish and get instant translation',
+    'translator.tapToSpeak': 'Tap to Speak',
+    'translator.recording': 'Recording...',
+    'translator.translating': 'Translating...',
+    'translator.stop': 'Stop',
+    'translator.playTranslation': 'Play Translation',
+    'translator.original': 'Original',
+    'translator.translated': 'Translation',
+    'translator.creditsInfo': '50 credits per minute of translation',
+    'translator.needCredits': 'Insufficient Credits',
+    'translator.buyCredits': 'Purchase more credits to use the translator',
+    'translator.error': 'Translation failed. Please try again.',
+    'translator.noMic': 'Microphone access required',
+    'translator.detected': 'Detected',
     'photo.note': 'Photos are saved to the Marketing Hub for use in social media and website galleries',
     
     // Onboarding tour
@@ -1356,6 +1373,23 @@ const translations: Record<Language, Record<string, string>> = {
     'photo.savedDesc': 'Tu foto ha sido subida a la biblioteca de marketing.',
     'photo.failed': 'Error al Subir',
     'photo.failedDesc': 'No se pudo guardar la foto. Inténtalo de nuevo.',
+    
+    // Live Translator
+    'translator.title': 'Traductor',
+    'translator.subtitle': 'Habla en inglés o español y obtén traducción instantánea',
+    'translator.tapToSpeak': 'Toca para Hablar',
+    'translator.recording': 'Grabando...',
+    'translator.translating': 'Traduciendo...',
+    'translator.stop': 'Detener',
+    'translator.playTranslation': 'Reproducir Traducción',
+    'translator.original': 'Original',
+    'translator.translated': 'Traducción',
+    'translator.creditsInfo': '50 créditos por minuto de traducción',
+    'translator.needCredits': 'Créditos Insuficientes',
+    'translator.buyCredits': 'Compra más créditos para usar el traductor',
+    'translator.error': 'La traducción falló. Inténtalo de nuevo.',
+    'translator.noMic': 'Se requiere acceso al micrófono',
+    'translator.detected': 'Detectado',
     'photo.note': 'Las fotos se guardan en el Hub de Marketing para usar en redes sociales y galerías del sitio web',
     
     // Onboarding tour
