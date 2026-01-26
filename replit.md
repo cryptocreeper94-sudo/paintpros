@@ -157,6 +157,12 @@ Key tables include:
 - **Express:** API server
 
 ## Recent Changes (January 2026)
+- **NEW: Marketing ROI Tracker Redesign** - Budget tab now includes:
+  - "Starting From Zero" status showing no historical data exists
+  - Industry benchmarks for Middle TN painting companies ($85/lead, 4:1 Google ROI, 42:1 Email ROI)
+  - "What's Required" accountability section (Owner provides access, Marketing implements)
+  - Timeline expectations (Month 1 setup, Months 2-3 build data, Months 4+ optimize)
+  - Clear 4-step tracking process explanation
 - **NEW: Marketing Budget Tracker** - 5th tab in Marketing Hub for tracking spend, ROI, and lead attribution by channel
 - **NEW: Lead Source Tracking** - "How did you hear about us?" dropdown on estimate form and booking wizard captures referral source (billboard, Facebook, Google, car wrap, yard sign, referral, etc.)
 - **NEW: Marketing Hub Redesign** - Complete restructure from 12 tabs to 5 tabs (Content Studio, Analytics Center, Calendar, Playbook, Budget)
