@@ -402,6 +402,10 @@ export default function FieldTool() {
   const [showWeather, setShowWeather] = useState(false);
   const [showMileage, setShowMileage] = useState(false);
   const [showPhotoAI, setShowPhotoAI] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [fieldNotes, setFieldNotes] = useState(() => {
+    return localStorage.getItem("field_tool_notes") || "";
+  });
   const [showSettings, setShowSettings] = useState(false);
   const [editingName, setEditingName] = useState(userName);
   const recognitionRef = useRef<any>(null);
@@ -969,7 +973,7 @@ export default function FieldTool() {
                 { icon: Car, label: "Mileage", desc: "Track travel", action: () => setShowMileage(true) },
                 { icon: Camera, label: "Photo AI", desc: "Analyze photos", action: () => setShowPhotoAI(true) },
                 { icon: Package, label: "Materials", desc: "Order supplies", action: () => setActiveSection("stores") },
-                { icon: FileText, label: "Job Notes", desc: "Add notes/photos", action: () => setActiveSection("jobs") },
+                { icon: FileText, label: "Job Notes", desc: "Add notes/photos", action: () => setShowNotes(true) },
               ].map((tool, i) => (
                 <Card 
                   key={i}
@@ -1448,6 +1452,46 @@ export default function FieldTool() {
                 </Card>
               ))}
             </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Field Notes Sheet */}
+      <Sheet open={showNotes} onOpenChange={setShowNotes}>
+        <SheetContent side="bottom" className="h-[85vh] bg-gray-900 border-gray-800">
+          <SheetHeader>
+            <SheetTitle className="text-white">Field Notes</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-4 h-full flex flex-col">
+            <Textarea 
+              placeholder="Add your notes here... Job details, customer requests, measurements, issues to address, etc."
+              className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 flex-1 min-h-[300px] resize-none"
+              value={fieldNotes}
+              onChange={(e) => {
+                setFieldNotes(e.target.value);
+                localStorage.setItem("field_tool_notes", e.target.value);
+              }}
+            />
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1 border-gray-700"
+                onClick={() => {
+                  setFieldNotes("");
+                  localStorage.removeItem("field_tool_notes");
+                }}
+              >
+                Clear Notes
+              </Button>
+              <Button 
+                className="flex-1"
+                style={{ background: colors.primary }}
+                onClick={() => setShowNotes(false)}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" /> Done
+              </Button>
+            </div>
+            <p className="text-gray-500 text-xs text-center">Notes are saved automatically to your device</p>
           </div>
         </SheetContent>
       </Sheet>
