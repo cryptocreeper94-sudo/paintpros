@@ -1259,7 +1259,9 @@ export default function FieldTool() {
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isBiometricRegistering, setIsBiometricRegistering] = useState(false);
   const [biometricSetupStatus, setBiometricSetupStatus] = useState<string | null>(null);
-  const [sessionToken, setSessionToken] = useState<string | null>(null); // Store session token for biometric setup
+  const [sessionToken, setSessionToken] = useState<string | null>(() => {
+    return localStorage.getItem("field_tool_session_token");
+  }); // Store session token for biometric setup
   
   const [userRole, setUserRole] = useState(() => {
     const sessionRole = sessionStorage.getItem("field_tool_role");
@@ -1317,6 +1319,7 @@ export default function FieldTool() {
         // Store session token for biometric registration (server-validated)
         if (data.sessionToken) {
           setSessionToken(data.sessionToken);
+          localStorage.setItem("field_tool_session_token", data.sessionToken);
         }
         setIsAuthenticated(true);
         setLoginPin("");
@@ -1338,6 +1341,8 @@ export default function FieldTool() {
     setIsAuthenticated(false);
     setUserRole("crew");
     setLoginPin("");
+    setSessionToken(null);
+    localStorage.removeItem("field_tool_session_token");
   };
   
   // Sync with AccessContext on mount
@@ -3835,30 +3840,19 @@ export default function FieldTool() {
                         {biometricSetupStatus}
                       </p>
                     )}
-                    {!sessionToken ? (
-                      <div className="space-y-2">
-                        <p className="text-xs text-gray-400">
-                          To set up biometric login, please log out and log back in with your PIN. This is a security requirement.
-                        </p>
-                        <Button
-                          className="w-full"
-                          variant="outline"
-                          disabled
-                        >
-                          <Fingerprint className="w-4 h-4 mr-2" />
-                          Fresh Login Required
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={handleBiometricSetup}
-                        disabled={isBiometricRegistering}
-                      >
-                        <Fingerprint className="w-4 h-4 mr-2" />
-                        {isBiometricRegistering ? "Setting up..." : "Set Up Biometric Login"}
-                      </Button>
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      onClick={handleBiometricSetup}
+                      disabled={isBiometricRegistering || !sessionToken}
+                    >
+                      <Fingerprint className="w-4 h-4 mr-2" />
+                      {isBiometricRegistering ? "Setting up..." : "Set Up Biometric Login"}
+                    </Button>
+                    {!sessionToken && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        Log in with your PIN to enable biometric setup
+                      </p>
                     )}
                   </Card>
                 </div>
