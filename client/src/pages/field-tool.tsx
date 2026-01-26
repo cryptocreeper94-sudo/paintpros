@@ -1445,6 +1445,27 @@ export default function FieldTool() {
     }
   };
   
+  // Get fresh session token for biometric setup
+  const refreshSessionToken = async () => {
+    try {
+      // Request a fresh session token from server
+      const res = await fetch("/api/auth/session/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: userRole, userName }),
+      });
+      const data = await res.json();
+      if (data.success && data.sessionToken) {
+        setSessionToken(data.sessionToken);
+        localStorage.setItem("field_tool_session_token", data.sessionToken);
+        return data.sessionToken;
+      }
+    } catch (error) {
+      console.error("Failed to refresh session token:", error);
+    }
+    return null;
+  };
+
   // Biometric registration handler (for settings)
   const handleBiometricSetup = async () => {
     if (!biometricAvailable) {
@@ -1452,9 +1473,15 @@ export default function FieldTool() {
       return;
     }
     
-    if (!sessionToken) {
-      setBiometricSetupStatus("Please log in with PIN first");
-      return;
+    // Get fresh token if we don't have one
+    let token = sessionToken;
+    if (!token) {
+      setBiometricSetupStatus("Getting security token...");
+      token = await refreshSessionToken();
+      if (!token) {
+        setBiometricSetupStatus("Could not get security token. Please try again.");
+        return;
+      }
     }
     
     setIsBiometricRegistering(true);
@@ -1465,7 +1492,7 @@ export default function FieldTool() {
       const optionsRes = await fetch("/api/auth/webauthn/register-options", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionToken }),
+        body: JSON.stringify({ sessionToken: token }),
       });
       if (!optionsRes.ok) {
         const errorData = await optionsRes.json().catch(() => ({}));
@@ -1510,7 +1537,7 @@ export default function FieldTool() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionToken, // Server validates session and determines user
+          sessionToken: token, // Server validates session and determines user
           credential: {
             id: credential.id,
             rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
@@ -3842,16 +3869,11 @@ export default function FieldTool() {
                       className="w-full"
                       variant="outline"
                       onClick={handleBiometricSetup}
-                      disabled={isBiometricRegistering || !sessionToken}
+                      disabled={isBiometricRegistering}
                     >
                       <Fingerprint className="w-4 h-4 mr-2" />
                       {isBiometricRegistering ? "Setting up..." : "Set Up Biometric Login"}
                     </Button>
-                    {!sessionToken && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        Log in with your PIN to enable biometric setup
-                      </p>
-                    )}
                   </Card>
                 </div>
               )}

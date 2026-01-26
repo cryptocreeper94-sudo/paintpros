@@ -2561,6 +2561,31 @@ Format the response as JSON with these fields:
     }
   });
 
+  // POST /api/auth/session/refresh - Get fresh session token for authenticated users
+  app.post("/api/auth/session/refresh", async (req, res) => {
+    try {
+      const { role, userName } = req.body;
+      if (!role) {
+        res.status(400).json({ success: false, error: "Role required" });
+        return;
+      }
+      
+      // Generate a fresh session token for the authenticated user
+      const sessionToken = crypto.randomBytes(32).toString('base64url');
+      pinSessions.set(sessionToken, {
+        role,
+        userName: userName || role,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      });
+      
+      res.json({ success: true, sessionToken });
+    } catch (error) {
+      console.error("Error refreshing session:", error);
+      res.status(500).json({ success: false, error: "Failed to refresh session" });
+    }
+  });
+
   // POST /api/auth/pin/change - Change PIN
   app.post("/api/auth/pin/change", async (req, res) => {
     try {
