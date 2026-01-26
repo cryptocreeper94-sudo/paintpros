@@ -27,7 +27,7 @@ const ACCESS_CONFIG: Record<Exclude<UserRole, null>, { accessMode: AccessMode; u
   admin: { accessMode: "live", userName: "Sidonie", canViewSalesData: true },
   ops_manager: { accessMode: "live", userName: "Sidonie", canViewSalesData: true },
   owner: { accessMode: "live", userName: "Ryan", canViewSalesData: false },
-  project_manager: { accessMode: "view_only", userName: "Garrett", canViewSalesData: false },
+  project_manager: { accessMode: "view_only", userName: "Hank", canViewSalesData: false },
   developer: { accessMode: "live", userName: "Jason", canViewSalesData: true },
   demo_viewer: { accessMode: "view_only", userName: "Demo Viewer", canViewSalesData: true },
   crew_lead: { accessMode: "view_only", userName: "Crew Lead", canViewSalesData: false },
