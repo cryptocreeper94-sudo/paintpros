@@ -1562,7 +1562,9 @@ export default function FieldTool() {
     includeCeiling: false,
     includeTrim: false,
     jobType: "interior" as "interior" | "exterior" | "commercial",
-    serviceType: "walls" as "walls" | "ceilings" | "trim" | "wallsAndTrim" | "fullJob",
+    serviceType: "walls" as "walls" | "ceilings" | "trim" | "wallsAndTrim" | "fullJob" | "cabinets",
+    cabinetDoors: "0",
+    cabinetDrawers: "0",
   });
   const [estimateCustomer, setEstimateCustomer] = useState({
     firstName: "",
@@ -1600,6 +1602,8 @@ export default function FieldTool() {
     wallsAndTrimPerSqFt: string;
     fullJobPerSqFt: string;
     doorsPerUnit: string;
+    cabinetDoorsPerUnit: string;
+    cabinetDrawersPerUnit: string;
     minimumJobAmount: string;
     exteriorMultiplier: string;
     commercialMultiplier: string;
@@ -1642,6 +1646,11 @@ export default function FieldTool() {
         baseRate = parseFloat(pricingConfig.fullJobPerSqFt) || 0;
         serviceLabel = "Full Job";
         break;
+      case "cabinets":
+        // Cabinets use per-piece pricing, not sq ft
+        baseRate = 0;
+        serviceLabel = "Cabinets";
+        break;
     }
     
     // Calculate base amount
@@ -1657,8 +1666,28 @@ export default function FieldTool() {
       breakdown.push({ label: `Doors (${doors} × $${doorRate.toFixed(2)})`, amount: doorAmount });
     }
     
+    // Add cabinet pricing if cabinets service type selected
+    let cabinetAmount = 0;
+    if (estimateInputs.serviceType === "cabinets") {
+      const cabDoors = parseInt(estimateInputs.cabinetDoors) || 0;
+      const cabDrawers = parseInt(estimateInputs.cabinetDrawers) || 0;
+      const cabDoorRate = parseFloat(pricingConfig.cabinetDoorsPerUnit) || 85;
+      const cabDrawerRate = parseFloat(pricingConfig.cabinetDrawersPerUnit) || 45;
+      
+      if (cabDoors > 0) {
+        const cabDoorAmount = cabDoors * cabDoorRate;
+        breakdown.push({ label: `Cabinet Doors (${cabDoors} × $${cabDoorRate.toFixed(2)})`, amount: cabDoorAmount });
+        cabinetAmount += cabDoorAmount;
+      }
+      if (cabDrawers > 0) {
+        const cabDrawerAmount = cabDrawers * cabDrawerRate;
+        breakdown.push({ label: `Cabinet Drawers (${cabDrawers} × $${cabDrawerRate.toFixed(2)})`, amount: cabDrawerAmount });
+        cabinetAmount += cabDrawerAmount;
+      }
+    }
+    
     // Calculate subtotal
-    let subtotal = baseAmount + doorAmount;
+    let subtotal = baseAmount + doorAmount + cabinetAmount;
     
     // Apply multipliers
     let multiplier = 1;
@@ -2996,6 +3025,7 @@ export default function FieldTool() {
                       { value: "trim", label: "Trim Only" },
                       { value: "wallsAndTrim", label: "Walls & Trim" },
                       { value: "fullJob", label: "Full Room" },
+                      { value: "cabinets", label: "Cabinets" },
                     ].map((service) => (
                       <Button
                         key={service.value}
@@ -3035,6 +3065,40 @@ export default function FieldTool() {
                     data-testid="input-estimate-doors"
                   />
                 </div>
+
+                {/* Cabinet-specific inputs */}
+                {estimateInputs.serviceType === "cabinets" && (
+                  <div className="space-y-3 p-3 rounded-lg border border-amber-500/30 bg-amber-500/10">
+                    <p className="text-amber-400 text-xs font-medium flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-400" />
+                      Cabinet Pricing (per piece)
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm text-gray-400 mb-1 block">Cabinet Doors</label>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          className="bg-gray-800 border-gray-700"
+                          value={estimateInputs.cabinetDoors}
+                          onChange={(e) => setEstimateInputs({ ...estimateInputs, cabinetDoors: e.target.value })}
+                          data-testid="input-estimate-cabinet-doors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-400 mb-1 block">Drawers</label>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          className="bg-gray-800 border-gray-700"
+                          value={estimateInputs.cabinetDrawers}
+                          onChange={(e) => setEstimateInputs({ ...estimateInputs, cabinetDrawers: e.target.value })}
+                          data-testid="input-estimate-cabinet-drawers"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Estimate Result */}
                 <Card 
