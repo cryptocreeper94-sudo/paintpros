@@ -968,8 +968,8 @@ export default function FieldTool() {
                 { icon: Cloud, label: "Weather", desc: "Check conditions", action: () => setShowWeather(true) },
                 { icon: Car, label: "Mileage", desc: "Track travel", action: () => setShowMileage(true) },
                 { icon: Camera, label: "Photo AI", desc: "Analyze photos", action: () => setShowPhotoAI(true) },
-                { icon: Package, label: "Materials", desc: "Order supplies", action: () => {} },
-                { icon: FileText, label: "Job Notes", desc: "Add notes/photos", action: () => {} },
+                { icon: Package, label: "Materials", desc: "Order supplies", action: () => setActiveSection("stores") },
+                { icon: FileText, label: "Job Notes", desc: "Add notes/photos", action: () => setActiveSection("jobs") },
               ].map((tool, i) => (
                 <Card 
                   key={i}
