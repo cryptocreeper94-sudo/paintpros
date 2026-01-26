@@ -333,8 +333,9 @@ export type CrmNote = typeof crmNotes.$inferSelect;
 // User PIN settings (for forced PIN change on first login)
 export const userPins = pgTable("user_pins", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  role: text("role").notNull().unique(), // ops_manager, owner
-  pin: text("pin").notNull(),
+  role: text("role").notNull(), // ops_manager, owner, project_manager
+  pin: text("pin").notNull().unique(), // PIN is unique per person
+  userName: text("user_name"), // Personalized name (Hank, Garrett, etc.)
   mustChangePin: boolean("must_change_pin").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
