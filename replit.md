@@ -10,6 +10,11 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 - Never say "AI" or "app" - use "room visualizer tool", "estimator tool", "instant estimation" instead
 - Always use lucide-react icons, never emoji
 
+## Key URLs
+- **tradeworksai.io** - Main demo URL for the full TradeWorks AI Field Tool (complete 8-trade toolkit)
+- `/field-tool` - Full Field Tool with 85+ calculators, biometric login, crew management
+- `/trade-toolkit` - Lite customer-facing version with Room Visualizer, Measure, and Color Match
+
 ## System Architecture
 
 ### Multi-Tenant Architecture
