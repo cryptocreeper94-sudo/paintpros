@@ -92,8 +92,10 @@ import {
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
 
-// Professional marketing images for Field Tool
+// Professional marketing images for Field Tool - Ultra Premium
 import crewTeamImage from "@/assets/marketing/crew-01-team-interior.png";
+import exteriorHouseImage from "@/assets/marketing/exterior-01-house-white.png";
+import interiorLivingImage from "@/assets/marketing/interior-01-living-room-gray.png";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { useToast } from "@/hooks/use-toast";
 
@@ -1937,82 +1939,167 @@ export default function FieldTool() {
     { id: "business", icon: Briefcase, label: "Business" },
   ];
 
-  // Login screen when not authenticated
+  // Login screen when not authenticated - ULTRA PREMIUM
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm"
-        >
-          {/* Hero Image */}
-          <div className="relative rounded-2xl overflow-hidden mb-6 h-40">
-            <img 
-              src={crewTeamImage} 
-              alt="Professional painting crew" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4">
-              <h1 className="text-xl font-bold text-white mb-1">{appName}</h1>
-              <p className="text-gray-300 text-sm">{tenant?.tagline || "Field Operations"}</p>
-            </div>
-          </div>
-          
-          <Card className="bg-gray-900/50 border-gray-800 p-6">
-            <h2 className="text-lg font-semibold text-white text-center mb-4">Enter Your PIN</h2>
-            <form onSubmit={(e) => { e.preventDefault(); handleLoginSubmit(); }}>
-              <Input
-                type="password"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="••••"
-                value={loginPin}
-                onChange={(e) => setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 5))}
-                className="bg-gray-800 border-gray-700 text-center text-2xl tracking-[0.5em] h-14 mb-4"
-                maxLength={5}
-                autoFocus
-                data-testid="input-field-tool-pin"
-              />
-              {loginError && (
-                <p className="text-red-400 text-sm text-center mb-4">{loginError}</p>
-              )}
-              <Button 
-                type="submit"
-                className="w-full h-12"
-                style={{ background: colors.gradient }}
-                disabled={isVerifyingLogin || loginPin.length < 4}
-                data-testid="button-field-tool-login"
+      <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        {/* Full-screen background image with overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src={crewTeamImage} 
+            alt="Professional painting crew" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
+        </div>
+        
+        {/* Floating particles/glow effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
+            style={{ background: colors.gradient }}
+          />
+          <div 
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl opacity-15"
+            style={{ background: colors.gradient }}
+          />
+        </div>
+        
+        {/* Content */}
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="w-full max-w-sm"
+          >
+            {/* Premium Logo/Brand Section */}
+            <div className="text-center mb-8">
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl border border-white/10"
+                style={{ 
+                  background: `linear-gradient(135deg, ${colors.gradient.split(',')[0]?.replace('linear-gradient(135deg,', '').trim() || colors.primary}, ${colors.primary})`,
+                  boxShadow: `0 20px 60px ${colors.primary}40`
+                }}
               >
-                {isVerifyingLogin ? "Verifying..." : "Login"}
-              </Button>
-            </form>
-            
-            {/* Biometric Login Option */}
-            {biometricAvailable && (
-              <div className="mt-4 pt-4 border-t border-gray-800">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full h-12 border-gray-700 text-gray-300"
-                  onClick={handleBiometricLogin}
-                  disabled={isBiometricLoading}
-                  data-testid="button-biometric-login"
-                >
-                  <Fingerprint className="w-5 h-5 mr-2" />
-                  {isBiometricLoading ? "Verifying..." : "Use Fingerprint / Face ID"}
-                </Button>
-              </div>
-            )}
-            
-            <div className="mt-4 pt-4 border-t border-gray-800">
-              <p className="text-xs text-gray-500 text-center">
-                Your PIN determines your access level and dashboard
-              </p>
+                <PaintBucket className="w-12 h-12 text-white drop-shadow-lg" />
+              </motion.div>
+              <motion.h1 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-3xl font-bold text-white mb-2 tracking-tight"
+              >
+                {appName}
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-gray-300 text-lg font-light"
+              >
+                {tenant?.tagline || "Field Operations"}
+              </motion.p>
             </div>
-          </Card>
-        </motion.div>
+            
+            {/* Premium Glass Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Card className="backdrop-blur-xl bg-white/5 border border-white/10 p-8 shadow-2xl rounded-3xl">
+                <h2 className="text-xl font-semibold text-white text-center mb-6">Welcome Back</h2>
+                <form onSubmit={(e) => { e.preventDefault(); handleLoginSubmit(); }}>
+                  <div className="relative mb-6">
+                    <Input
+                      type="password"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      placeholder="Enter PIN"
+                      value={loginPin}
+                      onChange={(e) => setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 5))}
+                      className="bg-white/5 border-white/20 text-center text-3xl tracking-[0.5em] h-16 rounded-2xl focus:border-white/40 focus:ring-2 focus:ring-white/20 placeholder:text-gray-500 placeholder:text-base placeholder:tracking-normal"
+                      maxLength={5}
+                      autoFocus
+                      data-testid="input-field-tool-pin"
+                    />
+                  </div>
+                  {loginError && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-400 text-sm text-center mb-4 bg-red-500/10 py-2 px-4 rounded-xl"
+                    >
+                      {loginError}
+                    </motion.p>
+                  )}
+                  <Button 
+                    type="submit"
+                    size="lg"
+                    className="w-full text-lg font-semibold rounded-2xl"
+                    style={{ 
+                      background: colors.gradient,
+                      boxShadow: `0 10px 40px ${colors.primary}50`
+                    }}
+                    disabled={isVerifyingLogin || loginPin.length < 4}
+                    data-testid="button-field-tool-login"
+                  >
+                    {isVerifyingLogin ? (
+                      <span className="flex items-center gap-2">
+                        <motion.div 
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                        >
+                          <RefreshCw className="w-5 h-5" />
+                        </motion.div>
+                        Verifying...
+                      </span>
+                    ) : "Sign In"}
+                  </Button>
+                </form>
+                
+                {/* Biometric Login Option */}
+                {biometricAvailable && (
+                  <div className="mt-6 pt-6 border-t border-white/10">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      className="w-full border-white/20 text-white bg-white/5 rounded-2xl"
+                      onClick={handleBiometricLogin}
+                      disabled={isBiometricLoading}
+                      data-testid="button-biometric-login"
+                    >
+                      <Fingerprint className="w-6 h-6 mr-3" />
+                      {isBiometricLoading ? "Verifying..." : "Use Biometrics"}
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            </motion.div>
+            
+            {/* Premium Footer */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="mt-8 text-center"
+            >
+              <p className="text-gray-500 text-sm">
+                Secure access for field professionals
+              </p>
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <Shield className="w-4 h-4 text-green-500" />
+                <span className="text-green-500 text-xs font-medium">Enterprise Security</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -2146,6 +2233,35 @@ export default function FieldTool() {
             exit={{ opacity: 0 }}
             className="p-3 space-y-3 pb-24"
           >
+            {/* Premium Hero Banner */}
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative rounded-2xl overflow-hidden h-32"
+            >
+              <img 
+                src={interiorLivingImage} 
+                alt="Premium interior" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+              <div className="absolute inset-0 flex items-center p-4">
+                <div>
+                  <PersonalizedGreeting userName={userName} className="text-white/90 text-sm" />
+                  <h2 className="text-xl font-bold text-white mt-1">Ready to work</h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge 
+                      className="text-xs border-0"
+                      style={{ background: `${colors.primary}40`, color: colors.primary }}
+                    >
+                      <Activity className="w-3 h-3 mr-1" />
+                      Active
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Top Row: Weather + AI Assistant side by side */}
             <div className="grid grid-cols-2 gap-2">
               <Card 
@@ -2368,13 +2484,31 @@ export default function FieldTool() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="p-4 space-y-4"
+            className="p-3 space-y-3"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <Button size="icon" variant="ghost" onClick={() => setActiveSection("home")} data-testid="button-jobs-back">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <h2 className="text-lg font-semibold text-white">All Jobs</h2>
+            {/* Premium Jobs Hero */}
+            <div className="relative rounded-2xl overflow-hidden h-28">
+              <img 
+                src={exteriorHouseImage} 
+                alt="Professional exterior" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-transparent" />
+              <div className="absolute inset-0 flex items-center p-4">
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="mr-3 text-white" 
+                  onClick={() => setActiveSection("home")} 
+                  data-testid="button-jobs-back"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Your Jobs</h2>
+                  <p className="text-gray-300 text-sm">{bookings.length} active projects</p>
+                </div>
+              </div>
             </div>
             <div className="space-y-3">
               {bookings.length > 0 ? bookings.map((job: any, i: number) => {
@@ -2658,13 +2792,30 @@ export default function FieldTool() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="p-4 space-y-4"
+            className="p-3 space-y-3"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <Button size="icon" variant="ghost" onClick={() => setActiveSection("home")}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <h2 className="text-lg font-semibold text-white">Color Tools</h2>
+            {/* Premium Colors Hero */}
+            <div className="relative rounded-2xl overflow-hidden h-28">
+              <img 
+                src={interiorLivingImage} 
+                alt="Beautiful interior" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-transparent" />
+              <div className="absolute inset-0 flex items-center p-4">
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="mr-3 text-white" 
+                  onClick={() => setActiveSection("home")}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Color Tools</h2>
+                  <p className="text-gray-300 text-sm">Visualize and explore colors</p>
+                </div>
+              </div>
             </div>
 
             <Card 
