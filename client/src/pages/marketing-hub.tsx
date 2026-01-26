@@ -1024,21 +1024,25 @@ export default function MarketingHub() {
                     <p className="text-white/70 italic text-sm mt-2">Elevating the backdrop of your life</p>
                   </div>
                   
-                  {/* Divider */}
-                  <div className="flex items-center gap-4">
-                    <div className="h-px flex-1 bg-white/30" />
-                    <span className="text-white/50 text-sm">&</span>
-                    <div className="h-px flex-1 bg-white/30" />
-                  </div>
-                  
-                  {/* NPP Logo */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 inline-block">
+                </div>
+                
+                {/* Divider */}
+                <div className="flex items-center gap-4">
+                  <div className="h-px flex-1 bg-white/30" />
+                  <span className="text-white/50 text-sm">&</span>
+                  <div className="h-px flex-1 bg-white/30" />
+                </div>
+                
+                {/* NPP Section - aligned with Lume */}
+                <div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 inline-block mb-2">
                     <img 
                       src={nppLogo} 
                       alt="Nashville Painting Professionals" 
-                      className="h-20 w-auto object-contain"
+                      className="h-24 w-auto object-contain"
                     />
                   </div>
+                  <p className="text-white/70 italic text-sm">Transforming familiar spaces into extraordinary places</p>
                 </div>
                 
                 <p className="text-lg text-white/80 max-w-md">
@@ -1101,15 +1105,18 @@ export default function MarketingHub() {
                       </div>
                       
                       {/* Divider */}
-                      <div className="w-px h-10 bg-white/30" />
+                      <div className="w-px h-12 bg-white/30" />
                       
-                      {/* NPP */}
-                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                        <img 
-                          src={nppLogo} 
-                          alt="NPP" 
-                          className="h-10 w-auto object-contain"
-                        />
+                      {/* NPP - with tagline */}
+                      <div className="text-center">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 inline-block">
+                          <img 
+                            src={nppLogo} 
+                            alt="NPP" 
+                            className="h-14 w-auto object-contain"
+                          />
+                        </div>
+                        <p className="text-white/60 text-[9px] italic mt-1 max-w-[100px]">Transforming familiar spaces into extraordinary places</p>
                       </div>
                     </div>
                   </div>
