@@ -152,8 +152,12 @@ export default function FieldTool() {
       const data = await res.json();
       if (data.success && data.role) {
         // Use shared AccessContext for authentication across all dashboards
-        accessLogin(data.role as UserRole);
+        // Pass the userName from the API response for personalized greeting
+        accessLogin(data.role as UserRole, data.userName || undefined);
         setUserRole(data.role);
+        if (data.userName) {
+          setUserName(data.userName);
+        }
         setIsAuthenticated(true);
         setLoginPin("");
       } else {

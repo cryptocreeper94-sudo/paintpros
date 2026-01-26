@@ -2520,7 +2520,7 @@ Format the response as JSON with these fields:
     }
   });
 
-  // POST /api/auth/pin/verify-any - Verify PIN against all roles (for team login)
+  // POST /api/auth/pin/verify-any - Verify PIN against all users (for team login)
   app.post("/api/auth/pin/verify-any", async (req, res) => {
     try {
       const { pin } = req.body;
@@ -2529,15 +2529,16 @@ Format the response as JSON with these fields:
         return;
       }
       
-      // Check all possible roles for this PIN
-      const roles = ["ops_manager", "owner", "project_manager", "developer", "crew_lead", "demo_viewer", "area_manager", "marketing"];
-      
-      for (const role of roles) {
-        const userPin = await storage.getUserPinByRole(role);
-        if (userPin && userPin.pin === pin) {
-          res.json({ success: true, role, mustChangePin: userPin.mustChangePin });
-          return;
-        }
+      // Look up user directly by PIN
+      const userPin = await storage.getUserPinByPin(pin);
+      if (userPin) {
+        res.json({ 
+          success: true, 
+          role: userPin.role, 
+          userName: userPin.userName,
+          mustChangePin: userPin.mustChangePin 
+        });
+        return;
       }
       
       res.json({ success: false, message: "Invalid PIN" });
@@ -2572,12 +2573,14 @@ Format the response as JSON with these fields:
   app.post("/api/auth/pin/init", async (req, res) => {
     try {
       const defaultPins = [
-        { role: "ops_manager", pin: "4444", mustChangePin: true },  // Admin - Sidonie
-        { role: "owner", pin: "1111", mustChangePin: true },        // Owner - Ryan
-        { role: "project_manager", pin: "5555", mustChangePin: true }, // Project Managers
-        { role: "developer", pin: "0424", mustChangePin: false },   // Developer - Jason
-        { role: "crew_lead", pin: "3333", mustChangePin: true },
-        { role: "demo_viewer", pin: "7777", mustChangePin: false }
+        { role: "ops_manager", pin: "4444", userName: "Sidonie", mustChangePin: true },
+        { role: "owner", pin: "1111", userName: "Ryan", mustChangePin: true },
+        { role: "project_manager", pin: "5555", userName: "Hank", mustChangePin: true },
+        { role: "project_manager", pin: "6666", userName: "Garrett", mustChangePin: true },
+        { role: "developer", pin: "0424", userName: "Jason", mustChangePin: false },
+        { role: "crew_lead", pin: "3333", userName: "Crew Lead", mustChangePin: true },
+        { role: "marketing", pin: "88888", userName: "Marketing", mustChangePin: true },
+        { role: "demo_viewer", pin: "7777", userName: "Demo", mustChangePin: false }
       ];
       
       for (const pinData of defaultPins) {

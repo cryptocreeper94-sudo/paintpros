@@ -231,6 +231,7 @@ export interface IStorage {
   
   // User PINs
   getUserPinByRole(role: string): Promise<UserPin | undefined>;
+  getUserPinByPin(pin: string): Promise<UserPin | undefined>;
   createOrUpdateUserPin(data: InsertUserPin): Promise<UserPin>;
   updateUserPin(role: string, pin: string, mustChangePin: boolean): Promise<UserPin | undefined>;
   
@@ -1220,14 +1221,20 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db.select().from(userPins).where(eq(userPins.role, role));
     return result;
   }
+  
+  async getUserPinByPin(pin: string): Promise<UserPin | undefined> {
+    const [result] = await db.select().from(userPins).where(eq(userPins.pin, pin));
+    return result;
+  }
 
   async createOrUpdateUserPin(data: InsertUserPin): Promise<UserPin> {
-    const existing = await this.getUserPinByRole(data.role);
-    if (existing) {
+    // Check if this PIN already exists
+    const existingByPin = await this.getUserPinByPin(data.pin);
+    if (existingByPin) {
       const [result] = await db
         .update(userPins)
         .set({ ...data, updatedAt: new Date() })
-        .where(eq(userPins.role, data.role))
+        .where(eq(userPins.pin, data.pin))
         .returning();
       return result;
     }
