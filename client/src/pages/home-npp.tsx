@@ -105,7 +105,7 @@ export default function HomeNPP() {
       <main className="min-h-screen">
         
         {/* HERO SECTION - Mobile-First Centered Layout */}
-        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50/70 to-white/70 px-4 py-12 pb-[100px] md:py-20 md:pb-20">
+        <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50/70 to-white/70 px-4 pt-4 pb-[100px] md:pt-20 md:pb-20">
           {/* Desktop painters image - z-0 to stay behind text */}
           <div className="pointer-events-none absolute inset-0 z-0 hidden md:block">
             <div className="absolute bottom-[135px] right-[-80px] h-[80%] w-[60%]">
