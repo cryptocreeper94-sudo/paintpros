@@ -29,6 +29,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
     projectType: "",
     timeline: "",
     notes: "",
+    referralSource: "",
   });
 
   // Show modal after a short delay on first visit
@@ -57,6 +58,7 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
         projectType: data.projectType,
         timeline: data.timeline,
         notes: data.notes,
+        referralSource: data.referralSource,
         tenantId,
       });
     },
@@ -101,6 +103,22 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
     "Within 2 weeks",
     "Within a month",
     "Just exploring options",
+  ];
+
+  const referralSources = [
+    { value: "google", label: "Google Search" },
+    { value: "facebook", label: "Facebook" },
+    { value: "instagram", label: "Instagram" },
+    { value: "billboard", label: "Billboard" },
+    { value: "car_wrap", label: "Car Wrap / Vehicle" },
+    { value: "yard_sign", label: "Yard Sign" },
+    { value: "flyer", label: "Flyer / Door Hanger" },
+    { value: "referral", label: "Friend / Family Referral" },
+    { value: "nextdoor", label: "Nextdoor" },
+    { value: "yelp", label: "Yelp" },
+    { value: "homeadvisor", label: "HomeAdvisor / Angi" },
+    { value: "repeat", label: "Previous Customer" },
+    { value: "other", label: "Other" },
   ];
 
   if (submitted) {
@@ -250,6 +268,22 @@ export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Pa
                     <SelectContent>
                       {timelines.map((time) => (
                         <SelectItem key={time} value={time}>{time}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-0.5">
+                  <Label className="text-gray-700 text-[11px]">How did you hear about us?</Label>
+                  <Select
+                    value={formData.referralSource}
+                    onValueChange={(value) => setFormData({ ...formData, referralSource: value })}
+                  >
+                    <SelectTrigger className="bg-white/80 border-gray-200 h-8 text-sm" data-testid="select-modal-referral">
+                      <SelectValue placeholder="Select one (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {referralSources.map((source) => (
+                        <SelectItem key={source.value} value={source.value}>{source.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

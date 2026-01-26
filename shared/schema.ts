@@ -69,12 +69,14 @@ export const leads = pgTable("leads", {
   budget: text("budget"),
   description: text("description"),
   source: text("source").default("website"), // 'website', 'marketplace', 'referral', etc.
+  referralSource: text("referral_source"), // How did you hear about us? (google, facebook, billboard, etc.)
   status: text("lead_status").default("new"), // 'new', 'contacted', 'qualified', 'converted'
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
   index("idx_leads_tenant_id").on(table.tenantId),
   index("idx_leads_timeline").on(table.timeline),
   index("idx_leads_source").on(table.source),
+  index("idx_leads_referral_source").on(table.referralSource),
 ]);
 
 export const insertLeadSchema = createInsertSchema(leads).omit({
