@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { useTenant } from "@/context/TenantContext";
+import { getTenantById } from "@/config/tenant";
 import { useAccess, UserRole } from "@/context/AccessContext";
+import { useTenantFilter, TENANTS } from "@/components/tenant-switcher";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1220,9 +1222,13 @@ function getGreetingIcon(hour: number) {
 }
 
 export default function FieldTool() {
-  const tenant = useTenant();
+  const defaultTenant = useTenant();
+  const { selectedTenant, setSelectedTenant, tenantLabel } = useTenantFilter();
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
   const { login: accessLogin, logout: accessLogout, currentUser } = useAccess();
+  
+  // Get the active tenant config based on switcher selection
+  const tenant = getTenantById(selectedTenant) || defaultTenant;
   const [activeSection, setActiveSection] = useState("home");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [userName, setUserName] = useState(() => {
@@ -1824,6 +1830,32 @@ export default function FieldTool() {
             >
               <Settings className="w-5 h-5" />
             </Button>
+          </div>
+        </div>
+        
+        {/* Compact Tenant Switcher */}
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs text-gray-500">Company:</span>
+          <div className="flex gap-1">
+            {TENANTS.map((t) => (
+              <Button
+                key={t.id}
+                size="sm"
+                variant={selectedTenant === t.id ? "default" : "ghost"}
+                className={`h-7 px-3 text-xs ${
+                  selectedTenant === t.id 
+                    ? '' 
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                style={selectedTenant === t.id ? { 
+                  background: t.id === 'npp' ? '#4a5d23' : '#1e3a5f'
+                } : {}}
+                onClick={() => setSelectedTenant(t.id)}
+                data-testid={`field-tenant-${t.id}`}
+              >
+                {t.shortName}
+              </Button>
+            ))}
           </div>
         </div>
       </div>
