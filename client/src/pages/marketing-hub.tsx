@@ -27,7 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Megaphone, Instagram, Facebook, Home, Calendar, 
   TrendingUp, Clock, CheckCircle, AlertTriangle, Edit, 
-  Trash2, Plus, Copy, Lock, User, Mic,
+  Trash2, Plus, Copy, Lock, User, Mic, X,
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
   FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2,
@@ -4917,39 +4917,212 @@ export default function MarketingHub() {
                       <DollarSign className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-white">Budget & Spend Tracker</h2>
-                      <p className="text-white/80">Track every marketing dollar and measure ROI</p>
+                      <h2 className="text-2xl md:text-3xl font-bold text-white">Marketing ROI Tracker</h2>
+                      <p className="text-white/80">Track spending, measure results, prove what works</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* How This Works */}
+              {/* CURRENT STATUS - The Reality */}
+              <GlassCard className="p-6 border-l-4 border-amber-500 bg-amber-500/5">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  Current Status: Starting From Zero
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <p className="font-medium">No historical ROI data exists. We cannot show what's working because nothing has been tracked.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                    <div className="p-3 rounded-lg bg-background/50 border border-amber-500/20">
+                      <p className="font-medium text-amber-600 mb-1">What We Don't Have:</p>
+                      <ul className="text-muted-foreground space-y-1">
+                        <li className="flex items-center gap-2"><X className="w-3 h-3 text-red-500" /> Historical lead source data</li>
+                        <li className="flex items-center gap-2"><X className="w-3 h-3 text-red-500" /> Past marketing spend records</li>
+                        <li className="flex items-center gap-2"><X className="w-3 h-3 text-red-500" /> Cost-per-lead by channel</li>
+                        <li className="flex items-center gap-2"><X className="w-3 h-3 text-red-500" /> ROI comparison data</li>
+                      </ul>
+                    </div>
+                    <div className="p-3 rounded-lg bg-background/50 border border-green-500/20">
+                      <p className="font-medium text-green-600 mb-1">What We're Building:</p>
+                      <ul className="text-muted-foreground space-y-1">
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> Expense tracking by category</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> Lead source attribution</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> ROI calculator</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> Monthly reporting</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* INDUSTRY BENCHMARKS */}
+              <GlassCard className="p-6 border-l-4 border-[#1e3a5f]">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#1e3a5f]" />
+                  Industry Benchmarks: Middle Tennessee Painting Companies
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  These are average numbers for painting companies in our market. Once we start tracking, we can compare our actual results to these benchmarks.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <p className="text-2xl font-bold text-[#1e3a5f]">$85</p>
+                    <p className="text-xs text-muted-foreground">Avg Cost Per Lead</p>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <p className="text-2xl font-bold text-[#1e3a5f]">42:1</p>
+                    <p className="text-xs text-muted-foreground">Email Marketing ROI</p>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <p className="text-2xl font-bold text-[#1e3a5f]">4:1</p>
+                    <p className="text-xs text-muted-foreground">Google Ads ROI</p>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <p className="text-2xl font-bold text-[#1e3a5f]">3-5%</p>
+                    <p className="text-xs text-muted-foreground">Website Conversion Rate</p>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 rounded-lg bg-muted/30 text-sm">
+                  <p className="font-medium mb-2">What These Numbers Mean:</p>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li><strong>Cost Per Lead:</strong> On average, painting companies spend $85 in marketing to get one potential customer to reach out.</li>
+                    <li><strong>ROI (Return on Investment):</strong> A 4:1 ROI means for every $1 spent, you get $4 back in revenue.</li>
+                    <li><strong>Conversion Rate:</strong> Of every 100 website visitors, 3-5 will request an estimate.</li>
+                  </ul>
+                </div>
+              </GlassCard>
+
+              {/* WHAT'S REQUIRED - The Deal */}
+              <GlassCard className="p-6 border-l-4 border-blue-500">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-500" />
+                  What's Required: Everyone Participates
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Marketing ROI tracking only works when everyone does their part. Here's the breakdown:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <h4 className="font-semibold text-blue-600 mb-3 flex items-center gap-2">
+                      <Building2 className="w-4 h-4" /> Owner/Management Provides:
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Budget Access:</strong> Clear monthly budget ($2,000) and ability to spend it</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Social Media Access:</strong> Full admin access to all business social accounts</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Payment Method:</strong> Card or payment access to run paid campaigns</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Expense Reporting:</strong> Report any marketing spend made outside this system</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
+                    <h4 className="font-semibold text-green-600 mb-3 flex items-center gap-2">
+                      <User className="w-4 h-4" /> Marketing Implements:
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Strategy:</strong> Research channels, recommend budget allocation</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Content:</strong> Create posts, ads, and campaigns</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Tracking:</strong> Log all expenses, monitor lead sources</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span><strong>Reporting:</strong> Monthly ROI reports showing what's working</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-4 p-4 rounded-lg bg-red-500/10 border border-red-500/30">
+                  <p className="text-sm font-medium text-red-600 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Without full access, marketing cannot implement tools or produce measurable results. Results require access, time, and participation from everyone.</span>
+                  </p>
+                </div>
+              </GlassCard>
+
+              {/* TIMELINE EXPECTATIONS */}
+              <GlassCard className="p-6 border-l-4 border-purple-500">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-purple-500" />
+                  Timeline: What to Expect
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                    <p className="text-sm font-semibold text-purple-600 mb-2">Month 1: Setup</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li>Gain access to all platforms</li>
+                      <li>Inventory current spending</li>
+                      <li>Start tracking lead sources</li>
+                      <li>Establish baseline metrics</li>
+                    </ul>
+                  </div>
+                  <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                    <p className="text-sm font-semibold text-purple-600 mb-2">Months 2-3: Build Data</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li>Run initial campaigns</li>
+                      <li>Collect lead source data</li>
+                      <li>Track cost per lead by channel</li>
+                      <li>Adjust based on early results</li>
+                    </ul>
+                  </div>
+                  <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                    <p className="text-sm font-semibold text-purple-600 mb-2">Months 4+: Optimize</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li>Shift budget to what works</li>
+                      <li>Cut channels that underperform</li>
+                      <li>Compare to industry benchmarks</li>
+                      <li>Show real ROI numbers</li>
+                    </ul>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-4 italic">
+                  Marketing results build over time. We cannot show ROI without first collecting the data. The sooner tracking starts, the sooner we can prove what works.
+                </p>
+              </GlassCard>
+
+              {/* HOW TO USE THIS SYSTEM */}
               <GlassCard className="p-6 border-l-4 border-[#1e3a5f]">
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
-                  How This Works
+                  How This Tracking System Works
                 </h3>
-                <p className="text-muted-foreground mb-4">
-                  The Budget Tracker helps you log every marketing expense - billboards, car wraps, digital ads, and more. 
-                  When leads come in and select how they heard about you, we can connect the dots and show you which 
-                  marketing channels are actually working.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
-                    <Receipt className="w-6 h-6 text-[#1e3a5f] mb-2" />
-                    <h4 className="font-medium">Log Expenses</h4>
-                    <p className="text-sm text-muted-foreground">Record every marketing spend with category, date, and cost</p>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20 text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center mx-auto mb-3 font-bold">1</div>
+                    <h4 className="font-medium text-sm">Set Budget</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Define monthly marketing budget ($2,000)</p>
                   </div>
-                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
-                    <Target className="w-6 h-6 text-[#1e3a5f] mb-2" />
-                    <h4 className="font-medium">Track Results</h4>
-                    <p className="text-sm text-muted-foreground">See which channels bring the most leads and revenue</p>
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20 text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center mx-auto mb-3 font-bold">2</div>
+                    <h4 className="font-medium text-sm">Log Expenses</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Record every spend with category and amount</p>
                   </div>
-                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
-                    <BarChart3 className="w-6 h-6 text-[#1e3a5f] mb-2" />
-                    <h4 className="font-medium">Generate Reports</h4>
-                    <p className="text-sm text-muted-foreground">Show stakeholders exactly where money is going</p>
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20 text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center mx-auto mb-3 font-bold">3</div>
+                    <h4 className="font-medium text-sm">Track Leads</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Customers tell us how they found us</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20 text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center mx-auto mb-3 font-bold">4</div>
+                    <h4 className="font-medium text-sm">See ROI</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Calculator shows cost-per-lead by channel</p>
                   </div>
                 </div>
               </GlassCard>
