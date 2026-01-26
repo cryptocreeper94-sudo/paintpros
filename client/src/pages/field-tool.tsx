@@ -77,11 +77,337 @@ import {
   Crown,
   Fingerprint,
   Download,
-  Smartphone
+  Smartphone,
+  Loader2,
+  ExternalLink,
+  RefreshCw
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+
+interface NearbyPlace {
+  name: string;
+  address: string;
+  distance: number;
+  lat: number;
+  lon: number;
+  category: string;
+  phone?: string;
+}
+
+type SearchCategory = "paint" | "food" | "hardware" | "gas" | "custom";
+
+const CATEGORY_CONFIG: Record<SearchCategory, { label: string; icon: any; query: string }> = {
+  paint: {
+    label: "Paint Stores",
+    icon: PaintBucket,
+    query: `node["shop"="paint"](around:16000,LAT,LON);node["name"~"Sherwin-Williams|Benjamin Moore|PPG|Behr|Valspar|Dutch Boy",i](around:16000,LAT,LON);node["shop"="doityourself"]["name"~"Home Depot|Lowes|Lowe's|Menards|Ace Hardware",i](around:16000,LAT,LON);`
+  },
+  food: {
+    label: "Restaurants",
+    icon: Store,
+    query: `node["amenity"="restaurant"](around:8000,LAT,LON);node["amenity"="fast_food"](around:8000,LAT,LON);node["amenity"="cafe"](around:8000,LAT,LON);`
+  },
+  hardware: {
+    label: "Hardware",
+    icon: Wrench,
+    query: `node["shop"="hardware"](around:16000,LAT,LON);node["shop"="doityourself"](around:16000,LAT,LON);node["name"~"Home Depot|Lowes|Lowe's|Menards|Ace Hardware|Harbor Freight|Northern Tool|True Value",i](around:16000,LAT,LON);`
+  },
+  gas: {
+    label: "Gas Stations",
+    icon: Car,
+    query: `node["amenity"="fuel"](around:8000,LAT,LON);`
+  },
+  custom: {
+    label: "Search",
+    icon: MapPin,
+    query: ""
+  }
+};
+
+function FindNearbySection({ colors, onBack }: { colors: { primary: string; secondary: string }; onBack: () => void }) {
+  const [places, setPlaces] = useState<NearbyPlace[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [activeCategory, setActiveCategory] = useState<SearchCategory>("paint");
+  const [customSearch, setCustomSearch] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 3959;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const searchNearby = async (lat: number, lon: number, category: SearchCategory, searchTerm?: string) => {
+    setLoading(true);
+    setError(null);
+    setHasSearched(true);
+    
+    try {
+      let queryPart = "";
+      if (category === "custom" && searchTerm) {
+        queryPart = `node["name"~"${searchTerm}",i](around:16000,${lat},${lon});node["amenity"](around:8000,${lat},${lon});node["shop"](around:8000,${lat},${lon});`;
+      } else {
+        queryPart = CATEGORY_CONFIG[category].query.replace(/LAT/g, lat.toString()).replace(/LON/g, lon.toString());
+      }
+      
+      const query = `[out:json][timeout:25];(${queryPart});out body;`;
+      
+      const response = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        body: query
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch places');
+      
+      const data = await response.json();
+      
+      let results: NearbyPlace[] = data.elements
+        .filter((el: any) => el.tags?.name)
+        .map((el: any) => {
+          const name = el.tags?.name || 'Unknown';
+          const street = el.tags?.['addr:street'] || '';
+          const housenumber = el.tags?.['addr:housenumber'] || '';
+          const city = el.tags?.['addr:city'] || '';
+          const address = [housenumber, street, city].filter(Boolean).join(' ') || 'Address not available';
+          
+          let cat = el.tags?.amenity || el.tags?.shop || 'place';
+          if (category === "custom" && searchTerm) {
+            if (name.toLowerCase().includes(searchTerm.toLowerCase())) {
+              cat = searchTerm;
+            }
+          }
+          
+          return {
+            name,
+            address,
+            distance: calculateDistance(lat, lon, el.lat, el.lon),
+            lat: el.lat,
+            lon: el.lon,
+            category: cat,
+            phone: el.tags?.phone
+          };
+        });
+      
+      if (category === "custom" && searchTerm) {
+        results = results.filter((p: NearbyPlace) => 
+          p.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      results.sort((a: NearbyPlace, b: NearbyPlace) => a.distance - b.distance);
+      setPlaces(results.slice(0, 15));
+      
+      if (results.length === 0) {
+        setError(`No ${CATEGORY_CONFIG[category].label.toLowerCase()} found nearby.`);
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      setError('Could not search. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getLocation = (category?: SearchCategory) => {
+    setLoading(true);
+    setError(null);
+    
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      setLoading(false);
+      return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lon: longitude });
+        searchNearby(latitude, longitude, category || activeCategory);
+      },
+      (err) => {
+        console.error('Geolocation error:', err);
+        setError('Could not get your location. Please enable location services.');
+        setLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
+  };
+
+  const handleCategoryChange = (cat: SearchCategory) => {
+    setActiveCategory(cat);
+    setPlaces([]);
+    if (cat !== "custom" && userLocation) {
+      searchNearby(userLocation.lat, userLocation.lon, cat);
+    } else if (cat !== "custom") {
+      getLocation(cat);
+    }
+  };
+
+  const handleCustomSearch = () => {
+    if (!customSearch.trim()) return;
+    if (userLocation) {
+      searchNearby(userLocation.lat, userLocation.lon, "custom", customSearch);
+    } else {
+      getLocation("custom");
+    }
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  const openDirections = (place: NearbyPlace) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lon}`;
+    window.open(url, '_blank');
+  };
+
+  const callPlace = (phone: string) => {
+    window.location.href = `tel:${phone}`;
+  };
+
+  return (
+    <motion.div
+      key="stores"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="p-4 space-y-4"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <Button size="icon" variant="ghost" onClick={onBack} data-testid="button-nearby-back">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h2 className="text-lg font-semibold text-white">Find Nearby</h2>
+        </div>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          onClick={() => getLocation()}
+          disabled={loading}
+          data-testid="button-refresh-location"
+        >
+          <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+        </Button>
+      </div>
+      
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {(Object.keys(CATEGORY_CONFIG) as SearchCategory[]).map((cat) => {
+          const config = CATEGORY_CONFIG[cat];
+          const Icon = config.icon;
+          return (
+            <Button
+              key={cat}
+              size="sm"
+              variant={activeCategory === cat ? "default" : "outline"}
+              onClick={() => handleCategoryChange(cat)}
+              className="flex-shrink-0"
+              style={activeCategory === cat ? { background: colors.primary } : {}}
+              data-testid={`button-category-${cat}`}
+            >
+              <Icon className="w-4 h-4 mr-1" />
+              {config.label}
+            </Button>
+          );
+        })}
+      </div>
+      
+      {activeCategory === "custom" && (
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search for anything..."
+            value={customSearch}
+            onChange={(e) => setCustomSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCustomSearch()}
+            className="bg-gray-900 border-gray-700 text-white"
+            data-testid="input-custom-search"
+          />
+          <Button 
+            onClick={handleCustomSearch}
+            style={{ background: colors.primary }}
+            data-testid="button-search"
+          >
+            Search
+          </Button>
+        </div>
+      )}
+      
+      {loading && places.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-gray-400 mb-4" />
+          <p className="text-gray-400">Finding places near you...</p>
+        </div>
+      )}
+      
+      {error && (
+        <Card className="bg-red-900/20 border-red-800 p-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <p className="text-red-300 text-sm">{error}</p>
+          </div>
+          <Button 
+            className="mt-3 w-full" 
+            variant="outline" 
+            onClick={() => getLocation()}
+            data-testid="button-retry-location"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" /> Try Again
+          </Button>
+        </Card>
+      )}
+      
+      {hasSearched && !loading && places.length === 0 && !error && (
+        <Card className="bg-gray-900/50 border-gray-800 p-4">
+          <p className="text-gray-400 text-center">No results found nearby.</p>
+        </Card>
+      )}
+      
+      {places.map((place, i) => (
+        <Card key={i} className="bg-gray-900/50 border-gray-800 p-4" data-testid={`card-place-${i}`}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-medium truncate">{place.name}</p>
+              <p className="text-gray-400 text-sm truncate">{place.address}</p>
+              <Badge className="mt-2 bg-gray-800 text-gray-300 capitalize">{place.category}</Badge>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <Badge className="bg-gray-800 text-gray-400">{place.distance.toFixed(1)} mi</Badge>
+              <div className="flex gap-2">
+                {place.phone && (
+                  <Button 
+                    size="icon" 
+                    variant="outline" 
+                    onClick={() => callPlace(place.phone!)}
+                    data-testid={`button-call-${i}`}
+                  >
+                    <Phone className="w-4 h-4" />
+                  </Button>
+                )}
+                <Button 
+                  size="sm" 
+                  style={{ background: colors.primary }}
+                  onClick={() => openDirections(place)}
+                  data-testid={`button-directions-${i}`}
+                >
+                  <Navigation className="w-3 h-3 mr-1" /> Go
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </motion.div>
+  );
+}
 
 function getTimeGreeting(): string {
   const hour = new Date().getHours();
@@ -1190,43 +1516,10 @@ export default function FieldTool() {
         )}
 
         {activeSection === "stores" && (
-          <motion.div
-            key="stores"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="p-4 space-y-4"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <Button size="icon" variant="ghost" onClick={() => setActiveSection("home")}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <h2 className="text-lg font-semibold text-white">Nearby Paint Stores</h2>
-            </div>
-            
-            {[
-              { name: "Sherwin-Williams", address: "123 Main St", distance: "0.8 mi", hours: "7am-6pm" },
-              { name: "Benjamin Moore", address: "456 Oak Ave", distance: "1.2 mi", hours: "8am-5pm" },
-              { name: "PPG Paints", address: "789 Pine Rd", distance: "2.1 mi", hours: "7am-7pm" },
-              { name: "Home Depot", address: "321 Commerce Blvd", distance: "3.5 mi", hours: "6am-10pm" },
-            ].map((store, i) => (
-              <Card key={i} className="bg-gray-900/50 border-gray-800 p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-white font-medium">{store.name}</p>
-                    <p className="text-gray-500 text-sm">{store.address}</p>
-                    <p className="text-gray-600 text-xs mt-1">{store.hours}</p>
-                  </div>
-                  <div className="text-right">
-                    <Badge className="bg-gray-800 text-gray-400 mb-2">{store.distance}</Badge>
-                    <Button size="sm" style={{ background: colors.primary }}>
-                      <Navigation className="w-3 h-3 mr-1" /> Go
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </motion.div>
+          <FindNearbySection 
+            colors={colors} 
+            onBack={() => setActiveSection("home")} 
+          />
         )}
 
         {activeSection === "colors" && (
