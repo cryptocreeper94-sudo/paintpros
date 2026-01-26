@@ -36,6 +36,7 @@ import {
   Settings,
   CalendarDays,
   ChevronRight,
+  ChevronLeft,
   Play,
   Pause,
   CheckCircle,
@@ -88,7 +89,9 @@ import {
   Mail,
   ExternalLink,
   RefreshCw,
-  KeyRound
+  KeyRound,
+  HelpCircle,
+  PlayCircle
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
@@ -1432,6 +1435,17 @@ export default function FieldTool() {
     }
   }, [currentUser.isAuthenticated, currentUser.role, currentUser.userName]);
   
+  // Show onboarding for first-time users after authentication
+  useEffect(() => {
+    if (isAuthenticated) {
+      const hasSeenOnboarding = localStorage.getItem(`field_tool_onboarding_${tenant.id}`);
+      if (!hasSeenOnboarding) {
+        setShowOnboarding(true);
+        setOnboardingStep(0);
+      }
+    }
+  }, [isAuthenticated, tenant.id]);
+  
   // Check biometric availability on mount
   useEffect(() => {
     const checkBiometric = async () => {
@@ -1693,6 +1707,8 @@ export default function FieldTool() {
   });
   const [showSettings, setShowSettings] = useState(false);
   const [editingName, setEditingName] = useState(userName);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
   const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -2330,9 +2346,177 @@ export default function FieldTool() {
       </div>
     );
   }
+  
+  // Onboarding steps content based on tenant
+  const onboardingSteps = [
+    {
+      icon: PaintBucket,
+      iconColor: "from-blue-500 to-blue-600",
+      title: `Welcome to ${tenant.name}`,
+      subtitle: "Your Business in Your Pocket",
+      description: "This tool puts everything you need in the field at your fingertips. Let's take a quick tour of what you can do.",
+    },
+    {
+      icon: Briefcase,
+      iconColor: "from-emerald-500 to-emerald-600",
+      title: "Field Tools",
+      subtitle: "Built for the Job Site",
+      description: "Create instant estimates, track your time, take job photos, log mileage, and capture field notes. Everything syncs automatically with the office.",
+      features: ["Quick Estimate", "Time Clock", "Job Photos", "Mileage Tracker", "Field Notes"],
+    },
+    {
+      icon: Target,
+      iconColor: "from-purple-500 to-purple-600",
+      title: "Business Tools",
+      subtitle: "Manage Your Pipeline",
+      description: "View leads, schedule jobs, manage clients, and see today's appointments. Stay connected to what's happening at the office from anywhere.",
+      features: ["Lead Management", "Job Scheduling", "Client Directory", "Today's Jobs"],
+    },
+    {
+      icon: Layers,
+      iconColor: "from-amber-500 to-amber-600",
+      title: "Everything Connected",
+      subtitle: "Seamless Integration",
+      description: "What you capture in the field flows directly to the back office. Estimates become proposals, time entries sync to payroll, and photos attach to job records.",
+    },
+    {
+      icon: Crown,
+      iconColor: "from-blue-600 to-indigo-600",
+      useGradientStyle: true,
+      title: "Ready to Go",
+      subtitle: "You're All Set",
+      description: `Welcome to ${tenant.name}. Tap any tool to get started, and you can always access this tour again from Settings.`,
+    },
+  ];
+  
+  // Onboarding Modal
+  const OnboardingModal = () => {
+    if (!showOnboarding) return null;
+    
+    const step = onboardingSteps[onboardingStep];
+    const isLastStep = onboardingStep === onboardingSteps.length - 1;
+    const IconComponent = step.icon;
+    
+    const completeOnboarding = () => {
+      localStorage.setItem(`field_tool_onboarding_${tenant.id}`, "true");
+      setShowOnboarding(false);
+      setOnboardingStep(0);
+    };
+    
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <motion.div
+          key={onboardingStep}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-md"
+        >
+          <Card className="bg-black/40 border-white/5 backdrop-blur-xl overflow-hidden">
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+                  className={`w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-gradient-to-br ${step.iconColor}`}
+                  style={(step as any).useGradientStyle ? { background: colors.gradient } : undefined}
+                >
+                  <IconComponent className="w-10 h-10 text-white" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-white">{step.title}</h2>
+                <p className="text-sm font-medium mt-1" style={{ color: tenant.theme.primaryColor }}>{step.subtitle}</p>
+              </div>
+              
+              <p className="text-gray-300 text-center mb-6 leading-relaxed">{step.description}</p>
+              
+              {step.features && (
+                <div className="grid grid-cols-2 gap-2 mb-6">
+                  {step.features.map((feature, idx) => (
+                    <motion.div
+                      key={feature}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + idx * 0.1 }}
+                      className="flex items-center gap-2 text-sm text-gray-400"
+                    >
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+              
+              <div className="flex justify-center gap-1.5 mb-6">
+                {onboardingSteps.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`h-1.5 rounded-full transition-all ${
+                      idx === onboardingStep 
+                        ? "w-6 bg-white" 
+                        : idx < onboardingStep 
+                          ? "w-1.5 bg-white/60" 
+                          : "w-1.5 bg-white/20"
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <div className="flex gap-3">
+                {onboardingStep > 0 && (
+                  <Button
+                    data-testid="button-onboarding-back"
+                    variant="outline"
+                    className="flex-1 border-white/20 text-gray-300"
+                    onClick={() => setOnboardingStep(prev => prev - 1)}
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    Back
+                  </Button>
+                )}
+                <Button
+                  data-testid={isLastStep ? "button-onboarding-start" : "button-onboarding-next"}
+                  className="flex-1"
+                  size="lg"
+                  style={{ background: colors.gradient }}
+                  onClick={() => {
+                    if (isLastStep) {
+                      completeOnboarding();
+                    } else {
+                      setOnboardingStep(prev => prev + 1);
+                    }
+                  }}
+                >
+                  {isLastStep ? "Get Started" : (
+                    <>
+                      Next
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              {!isLastStep && (
+                <Button
+                  data-testid="button-onboarding-skip"
+                  variant="ghost"
+                  className="w-full mt-3 text-sm text-gray-500"
+                  onClick={completeOnboarding}
+                >
+                  Skip tour
+                </Button>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-black text-white pb-20 overflow-x-hidden">
+      <OnboardingModal />
       {/* Header with tenant branding and personalized greeting */}
       <div 
         className="sticky top-0 z-40 px-4 py-3 backdrop-blur-xl border-b border-white/10"
@@ -4081,6 +4265,35 @@ export default function FieldTool() {
                       </ul>
                     </div>
                   )}
+                </Card>
+              </div>
+
+              {/* Help & Support */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">Help</h3>
+                <Card className="bg-gray-900/50 border-gray-800 p-4 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                      <HelpCircle className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">Quick Tour</p>
+                      <p className="text-xs text-gray-400">Learn what this tool can do</p>
+                    </div>
+                  </div>
+                  <Button
+                    data-testid="button-help-tour"
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => {
+                      setShowSettings(false);
+                      setOnboardingStep(0);
+                      setShowOnboarding(true);
+                    }}
+                  >
+                    <PlayCircle className="w-4 h-4 mr-2" />
+                    View Tour Again
+                  </Button>
                 </Card>
               </div>
 
