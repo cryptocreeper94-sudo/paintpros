@@ -91,6 +91,9 @@ import {
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
+
+// Professional marketing images for Field Tool
+import crewTeamImage from "@/assets/marketing/crew-01-team-interior.png";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { useToast } from "@/hooks/use-toast";
 
@@ -1342,6 +1345,7 @@ export default function FieldTool() {
       setUserRole(currentUser.role);
       if (currentUser.userName) {
         setUserName(currentUser.userName);
+        localStorage.setItem("field_tool_user", currentUser.userName); // Keep localStorage in sync
       }
     }
   }, [currentUser.isAuthenticated, currentUser.role, currentUser.userName]);
@@ -1942,15 +1946,18 @@ export default function FieldTool() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-sm"
         >
-          <div className="text-center mb-8">
-            <div 
-              className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{ background: colors.gradient }}
-            >
-              <PaintBucket className="w-10 h-10 text-white" />
+          {/* Hero Image */}
+          <div className="relative rounded-2xl overflow-hidden mb-6 h-40">
+            <img 
+              src={crewTeamImage} 
+              alt="Professional painting crew" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4">
+              <h1 className="text-xl font-bold text-white mb-1">{appName}</h1>
+              <p className="text-gray-300 text-sm">{tenant?.tagline || "Field Operations"}</p>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">{appName}</h1>
-            <p className="text-gray-400">{tenant?.tagline || "Field Operations"}</p>
           </div>
           
           <Card className="bg-gray-900/50 border-gray-800 p-6">
