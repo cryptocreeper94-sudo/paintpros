@@ -5,6 +5,7 @@ export const AI_ACTION_COSTS: Record<string, number> = {
   photo_analysis: 10,
   voice_response: 8,
   document_analysis: 15,
+  live_translation_minute: 50, // ~$0.50/min - includes STT + translation + TTS
 };
 
 export const CREDIT_PACKS: Record<string, { 

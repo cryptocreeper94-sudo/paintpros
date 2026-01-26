@@ -8948,6 +8948,311 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // ============ LIVE TRANSLATOR (ElevenLabs) ============
+  
+  // POST /api/translate/speech-to-text - Convert speech to text using ElevenLabs Scribe
+  app.post("/api/translate/speech-to-text", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, audioBase64 } = req.body;
+      
+      if (!tenantId || !audioBase64) {
+        res.status(400).json({ error: "tenantId and audioBase64 are required" });
+        return;
+      }
+
+      const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
+      if (!elevenLabsKey) {
+        res.status(500).json({ error: "ElevenLabs API key not configured" });
+        return;
+      }
+
+      // Check credits before processing
+      const { checkCredits } = await import("./aiCredits");
+      const creditCheck = await checkCredits(tenantId, "live_translation_minute");
+      if (!creditCheck.success) {
+        res.status(402).json({ 
+          error: creditCheck.error,
+          needsCredits: true,
+          currentBalance: creditCheck.currentBalance 
+        });
+        return;
+      }
+
+      // Convert base64 to buffer
+      const audioBuffer = Buffer.from(audioBase64, 'base64');
+      
+      // Create form data for ElevenLabs speech-to-text
+      const formData = new FormData();
+      const blob = new Blob([audioBuffer], { type: 'audio/webm' });
+      formData.append('audio', blob, 'audio.webm');
+      formData.append('model_id', 'scribe_v1');
+
+      const sttResponse = await fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+        method: 'POST',
+        headers: {
+          'xi-api-key': elevenLabsKey,
+        },
+        body: formData as any,
+      });
+
+      if (!sttResponse.ok) {
+        const error = await sttResponse.text();
+        console.error("ElevenLabs STT error:", error);
+        res.status(500).json({ error: "Speech recognition failed" });
+        return;
+      }
+
+      const sttResult = await sttResponse.json() as { text: string; detected_language?: string };
+      
+      res.json({
+        text: sttResult.text,
+        detectedLanguage: sttResult.detected_language || 'unknown'
+      });
+    } catch (error) {
+      console.error("Error in speech-to-text:", error);
+      res.status(500).json({ error: "Failed to transcribe speech" });
+    }
+  });
+
+  // POST /api/translate/text - Translate text using OpenAI
+  app.post("/api/translate/text", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, text, fromLanguage, toLanguage } = req.body;
+      
+      if (!tenantId || !text) {
+        res.status(400).json({ error: "tenantId and text are required" });
+        return;
+      }
+
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const sourceLang = fromLanguage || 'auto-detect';
+      const targetLang = toLanguage || (fromLanguage === 'es' ? 'en' : 'es');
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a professional translator. Translate the following text ${sourceLang === 'auto-detect' ? 'from the detected language' : `from ${sourceLang}`} to ${targetLang}. Only respond with the translation, nothing else. Keep the same tone and meaning.`
+          },
+          {
+            role: "user",
+            content: text
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 1000,
+      });
+
+      const translatedText = completion.choices[0]?.message?.content || '';
+      
+      res.json({
+        originalText: text,
+        translatedText,
+        fromLanguage: fromLanguage || 'auto',
+        toLanguage: targetLang
+      });
+    } catch (error) {
+      console.error("Error in translation:", error);
+      res.status(500).json({ error: "Failed to translate text" });
+    }
+  });
+
+  // POST /api/translate/text-to-speech - Convert translated text to speech
+  app.post("/api/translate/text-to-speech", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, text, language } = req.body;
+      
+      if (!tenantId || !text) {
+        res.status(400).json({ error: "tenantId and text are required" });
+        return;
+      }
+
+      const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
+      if (!elevenLabsKey) {
+        res.status(500).json({ error: "ElevenLabs API key not configured" });
+        return;
+      }
+
+      // Use multilingual model for Spanish/English
+      // Voice IDs: Rachel (female) or Adam (male) - both support multilingual
+      const voiceId = "21m00Tcm4TlvDq8ikWAM"; // Rachel - works for both languages
+      
+      const ttsResponse = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Accept": "audio/mpeg",
+            "Content-Type": "application/json",
+            "xi-api-key": elevenLabsKey,
+          },
+          body: JSON.stringify({
+            text: text.slice(0, 5000),
+            model_id: "eleven_multilingual_v2", // Supports 29 languages
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.75,
+            },
+          }),
+        }
+      );
+
+      if (!ttsResponse.ok) {
+        const error = await ttsResponse.text();
+        console.error("ElevenLabs TTS error:", error);
+        res.status(500).json({ error: "Text-to-speech failed" });
+        return;
+      }
+
+      const audioBuffer = await ttsResponse.arrayBuffer();
+      const buffer = Buffer.from(audioBuffer);
+      
+      res.set({
+        "Content-Type": "audio/mpeg",
+        "Content-Length": buffer.length.toString(),
+      });
+      res.send(buffer);
+    } catch (error) {
+      console.error("Error in TTS:", error);
+      res.status(500).json({ error: "Failed to generate speech" });
+    }
+  });
+
+  // POST /api/translate/complete - Full translation flow (STT + translate + TTS)
+  app.post("/api/translate/complete", isAuthenticated, async (req, res) => {
+    try {
+      const { tenantId, audioBase64, targetLanguage } = req.body;
+      
+      if (!tenantId || !audioBase64) {
+        res.status(400).json({ error: "tenantId and audioBase64 are required" });
+        return;
+      }
+
+      const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
+      if (!elevenLabsKey) {
+        res.status(500).json({ error: "ElevenLabs API key not configured" });
+        return;
+      }
+
+      // Check credits (1 minute minimum)
+      const { checkCredits, deductCreditsAfterUsage } = await import("./aiCredits");
+      const creditCheck = await checkCredits(tenantId, "live_translation_minute");
+      if (!creditCheck.success) {
+        res.status(402).json({ 
+          error: creditCheck.error,
+          needsCredits: true,
+          currentBalance: creditCheck.currentBalance 
+        });
+        return;
+      }
+
+      const startTime = Date.now();
+
+      // Step 1: Speech to Text
+      const audioBuffer = Buffer.from(audioBase64, 'base64');
+      const formData = new FormData();
+      const blob = new Blob([audioBuffer], { type: 'audio/webm' });
+      formData.append('audio', blob, 'audio.webm');
+      formData.append('model_id', 'scribe_v1');
+
+      const sttResponse = await fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+        method: 'POST',
+        headers: { 'xi-api-key': elevenLabsKey },
+        body: formData as any,
+      });
+
+      if (!sttResponse.ok) {
+        res.status(500).json({ error: "Speech recognition failed" });
+        return;
+      }
+
+      const sttResult = await sttResponse.json() as { text: string; language?: string };
+      const originalText = sttResult.text;
+      const detectedLang = sttResult.language || 'en';
+
+      // Step 2: Translate using OpenAI
+      const openai = new OpenAI({
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      });
+
+      const toLang = targetLanguage || (detectedLang === 'es' ? 'English' : 'Spanish');
+      
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `Translate the following to ${toLang}. Only respond with the translation.`
+          },
+          { role: "user", content: originalText }
+        ],
+        temperature: 0.3,
+        max_tokens: 1000,
+      });
+
+      const translatedText = completion.choices[0]?.message?.content || '';
+
+      // Step 3: Text to Speech
+      const voiceId = "21m00Tcm4TlvDq8ikWAM";
+      const ttsResponse = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Accept": "audio/mpeg",
+            "Content-Type": "application/json",
+            "xi-api-key": elevenLabsKey,
+          },
+          body: JSON.stringify({
+            text: translatedText.slice(0, 5000),
+            model_id: "eleven_multilingual_v2",
+            voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+          }),
+        }
+      );
+
+      if (!ttsResponse.ok) {
+        res.status(500).json({ error: "Text-to-speech failed" });
+        return;
+      }
+
+      const audioOutputBuffer = await ttsResponse.arrayBuffer();
+      const audioBase64Output = Buffer.from(audioOutputBuffer).toString('base64');
+
+      // Calculate duration and deduct credits
+      const durationMs = Date.now() - startTime;
+      const minutes = Math.max(1, Math.ceil(durationMs / 60000)); // Minimum 1 minute
+      
+      // Deduct credits for each minute used
+      for (let i = 0; i < minutes; i++) {
+        await deductCreditsAfterUsage(tenantId, "live_translation_minute", {
+          originalText: originalText.slice(0, 100),
+          translatedText: translatedText.slice(0, 100),
+          fromLanguage: detectedLang,
+          toLanguage: toLang,
+        });
+      }
+
+      res.json({
+        originalText,
+        translatedText,
+        audioBase64: audioBase64Output,
+        detectedLanguage: detectedLang,
+        targetLanguage: toLang,
+        creditsUsed: minutes * 50,
+      });
+    } catch (error) {
+      console.error("Error in complete translation:", error);
+      res.status(500).json({ error: "Translation failed" });
+    }
+  });
+
   // ============ DOCUMENT ASSETS - Tenant-aware document hashing ============
 
   // POST /api/document-assets - Create a document asset with hallmark number
