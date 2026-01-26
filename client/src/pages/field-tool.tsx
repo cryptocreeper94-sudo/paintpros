@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,8 +31,10 @@ import {
   FileText,
   DollarSign,
   Users,
+  User,
   Wrench,
   Settings,
+  CalendarDays,
   ChevronRight,
   Play,
   Pause,
@@ -88,6 +91,7 @@ import {
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { useToast } from "@/hooks/use-toast";
 
 interface NearbyPlace {
   name: string;
@@ -1226,6 +1230,7 @@ export default function FieldTool() {
   const { selectedTenant, setSelectedTenant, tenantLabel } = useTenantFilter();
   const { canInstall, isInstalled, promptInstall } = usePWAInstall();
   const { login: accessLogin, logout: accessLogout, currentUser } = useAccess();
+  const { toast } = useToast();
   
   // Get the active tenant config based on switcher selection
   const tenant = getTenantById(selectedTenant) || defaultTenant;
@@ -1552,6 +1557,15 @@ export default function FieldTool() {
     jobType: "interior" as "interior" | "exterior" | "commercial",
     serviceType: "walls" as "walls" | "ceilings" | "trim" | "wallsAndTrim" | "fullJob",
   });
+  const [estimateCustomer, setEstimateCustomer] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+  const [showEstimateActions, setShowEstimateActions] = useState(false);
+  const [isSendingEstimate, setIsSendingEstimate] = useState(false);
   const [showRoomVisualizer, setShowRoomVisualizer] = useState(false);
   const [visualizerImage, setVisualizerImage] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState({ name: "Simply White", hex: "#F5F5F0" });
@@ -1666,6 +1680,111 @@ export default function FieldTool() {
   };
 
   const estimate = calculateEstimate();
+
+  // Send estimate via email
+  const sendEstimate = async () => {
+    if (!estimateCustomer.email || !estimateCustomer.firstName) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter customer name and email to send the estimate.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!estimateCustomer.phone) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter customer phone number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSendingEstimate(true);
+    try {
+      // Map service type to expected format
+      const isWalls = estimateInputs.serviceType === "walls" || estimateInputs.serviceType === "wallsAndTrim" || estimateInputs.serviceType === "fullJob";
+      const isTrim = estimateInputs.serviceType === "trim" || estimateInputs.serviceType === "wallsAndTrim" || estimateInputs.serviceType === "fullJob";
+      const isCeilings = estimateInputs.serviceType === "ceilings" || estimateInputs.serviceType === "fullJob";
+      
+      const estimateData = {
+        tenantId: selectedTenant,
+        customer: {
+          firstName: estimateCustomer.firstName,
+          lastName: estimateCustomer.lastName || "Customer",
+          email: estimateCustomer.email,
+          phone: estimateCustomer.phone,
+          address: estimateCustomer.address || "On-site estimate",
+        },
+        services: {
+          walls: isWalls,
+          trim: isTrim,
+          ceilings: isCeilings,
+          doors: parseInt(estimateInputs.numDoors) > 0,
+          cabinets: false,
+        },
+        measurements: {
+          squareFootage: parseFloat(estimateInputs.squareFeet) || 0,
+          doorCount: parseInt(estimateInputs.numDoors) || 0,
+        },
+        colors: [{
+          colorId: selectedColor.hex,
+          colorName: selectedColor.name,
+          hexValue: selectedColor.hex,
+          brand: "Selected",
+          colorCode: selectedColor.hex,
+          surface: "walls" as const,
+        }],
+        pricing: {
+          tier: estimateInputs.jobType,
+          tierName: `${estimateInputs.jobType.charAt(0).toUpperCase() + estimateInputs.jobType.slice(1)} ${estimateInputs.serviceType}`,
+          total: estimate.total,
+        },
+      };
+      
+      const response = await fetch("/api/estimates/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(estimateData),
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Estimate Sent",
+          description: `Estimate sent to ${estimateCustomer.email} and your office.`,
+        });
+        setShowQuickEstimate(false);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to send estimate");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send estimate. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingEstimate(false);
+    }
+  };
+
+  // Navigate to booking with pre-filled data
+  const goToBooking = () => {
+    // Store estimate data for booking wizard
+    const bookingData = {
+      serviceType: estimateInputs.jobType,
+      customerFirstName: estimateCustomer.firstName,
+      customerLastName: estimateCustomer.lastName,
+      customerEmail: estimateCustomer.email,
+      customerPhone: estimateCustomer.phone,
+      customerAddress: estimateCustomer.address,
+      projectDescription: `${estimateInputs.serviceType.charAt(0).toUpperCase() + estimateInputs.serviceType.slice(1)} painting - ${estimateInputs.squareFeet} sq ft. Color: ${selectedColor.name}. Estimated: $${estimate.total.toFixed(2)}`,
+    };
+    localStorage.setItem("prefill_booking", JSON.stringify(bookingData));
+    window.location.href = "/book";
+  };
 
   // Timer for clock
   useEffect(() => {
@@ -2786,21 +2905,135 @@ export default function FieldTool() {
                   )}
                 </Card>
 
+                {/* Color Reference from Visualizer */}
+                <Card className="bg-gray-800/50 border-gray-700 p-3">
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-10 h-10 rounded-lg border-2 border-gray-600"
+                      style={{ background: selectedColor.hex }}
+                    />
+                    <div className="flex-1">
+                      <p className="text-gray-400 text-xs">Selected Color</p>
+                      <p className="text-white font-medium text-sm">{selectedColor.name}</p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-gray-600"
+                      onClick={() => {
+                        setShowQuickEstimate(false);
+                        setShowRoomVisualizer(true);
+                      }}
+                      data-testid="button-change-color"
+                    >
+                      <Palette className="w-4 h-4 mr-1" /> Change
+                    </Button>
+                  </div>
+                </Card>
+
+                {/* Customer Info Section */}
+                <Card className="bg-gray-800/50 border-gray-700 p-4">
+                  <h4 className="text-white font-medium text-sm mb-3 flex items-center gap-2">
+                    <User className="w-4 h-4" /> Customer Information
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-gray-400 text-xs">First Name</Label>
+                      <Input 
+                        className="bg-gray-900 border-gray-700 text-white mt-1"
+                        placeholder="John"
+                        value={estimateCustomer.firstName}
+                        onChange={(e) => setEstimateCustomer({ ...estimateCustomer, firstName: e.target.value })}
+                        data-testid="input-customer-first-name"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-400 text-xs">Last Name</Label>
+                      <Input 
+                        className="bg-gray-900 border-gray-700 text-white mt-1"
+                        placeholder="Smith"
+                        value={estimateCustomer.lastName}
+                        onChange={(e) => setEstimateCustomer({ ...estimateCustomer, lastName: e.target.value })}
+                        data-testid="input-customer-last-name"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <Label className="text-gray-400 text-xs">Email</Label>
+                    <Input 
+                      className="bg-gray-900 border-gray-700 text-white mt-1"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={estimateCustomer.email}
+                      onChange={(e) => setEstimateCustomer({ ...estimateCustomer, email: e.target.value })}
+                      data-testid="input-customer-email"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <Label className="text-gray-400 text-xs">Phone</Label>
+                    <Input 
+                      className="bg-gray-900 border-gray-700 text-white mt-1"
+                      type="tel"
+                      placeholder="(615) 555-1234"
+                      value={estimateCustomer.phone}
+                      onChange={(e) => setEstimateCustomer({ ...estimateCustomer, phone: e.target.value })}
+                      data-testid="input-customer-phone"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <Label className="text-gray-400 text-xs">Address</Label>
+                    <Input 
+                      className="bg-gray-900 border-gray-700 text-white mt-1"
+                      placeholder="123 Main St, Nashville, TN"
+                      value={estimateCustomer.address}
+                      onChange={(e) => setEstimateCustomer({ ...estimateCustomer, address: e.target.value })}
+                      data-testid="input-customer-address"
+                    />
+                  </div>
+                </Card>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    className="w-full"
+                    style={{ background: colors.primary }}
+                    onClick={sendEstimate}
+                    disabled={isSendingEstimate || estimate.total === 0}
+                    data-testid="button-send-estimate"
+                  >
+                    {isSendingEstimate ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4 mr-2" />
+                    )}
+                    Send Estimate
+                  </Button>
+                  <Button 
+                    className="w-full border-gray-600"
+                    variant="outline"
+                    onClick={goToBooking}
+                    disabled={estimate.total === 0}
+                    data-testid="button-book-appointment"
+                  >
+                    <CalendarDays className="w-4 h-4 mr-2" /> Book Appointment
+                  </Button>
+                </div>
+
                 <Card className="bg-blue-900/30 border-blue-800/50 p-4">
                   <div className="flex items-start gap-3">
                     <Sparkles className="w-5 h-5 text-blue-400 mt-0.5" />
                     <div>
-                      <p className="text-blue-400 font-medium text-sm">On-Site Estimate</p>
+                      <p className="text-blue-400 font-medium text-sm">Complete On-Site Estimate</p>
                       <p className="text-gray-400 text-xs mt-1">
-                        This uses your company's configured pricing. For a formal quote, direct customers to your website or send a proposal.
+                        Send the estimate directly to the customer and your office, or book an appointment on the spot.
                       </p>
                     </div>
                   </div>
                 </Card>
 
                 <Button 
-                  className="w-full" 
-                  variant="outline"
+                  className="w-full text-gray-500" 
+                  variant="ghost"
                   onClick={() => {
                     setEstimateInputs({
                       squareFeet: "",
@@ -2811,6 +3044,13 @@ export default function FieldTool() {
                       includeTrim: false,
                       jobType: "interior",
                       serviceType: "walls",
+                    });
+                    setEstimateCustomer({
+                      firstName: "",
+                      lastName: "",
+                      email: "",
+                      phone: "",
+                      address: "",
                     });
                   }}
                   data-testid="button-clear-estimate"

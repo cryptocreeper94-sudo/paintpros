@@ -59,17 +59,34 @@ const steps = [
 export function BookingWizard({ lead }: BookingWizardProps) {
   const tenant = useTenant();
   const [currentStep, setCurrentStep] = useState(1);
-  const [bookingData, setBookingData] = useState<BookingData>({
-    serviceType: "",
-    scheduledDate: null,
-    scheduledTime: "",
-    customerFirstName: lead?.firstName || "",
-    customerLastName: lead?.lastName || "",
-    customerEmail: lead?.email || "",
-    customerPhone: lead?.phone || "",
-    customerAddress: "",
-    projectDescription: "",
-    referralSource: "",
+  
+  // Use lazy initializer to safely read prefill data from localStorage (only runs once)
+  const [bookingData, setBookingData] = useState<BookingData>(() => {
+    let prefillData = null;
+    if (typeof window !== 'undefined') {
+      try {
+        const prefill = localStorage.getItem("prefill_booking");
+        if (prefill) {
+          prefillData = JSON.parse(prefill);
+          localStorage.removeItem("prefill_booking"); // Clear after reading
+        }
+      } catch (e) {
+        console.error("Error reading prefill data:", e);
+      }
+    }
+    
+    return {
+      serviceType: prefillData?.serviceType || "",
+      scheduledDate: null,
+      scheduledTime: "",
+      customerFirstName: prefillData?.customerFirstName || lead?.firstName || "",
+      customerLastName: prefillData?.customerLastName || lead?.lastName || "",
+      customerEmail: prefillData?.customerEmail || lead?.email || "",
+      customerPhone: prefillData?.customerPhone || lead?.phone || "",
+      customerAddress: prefillData?.customerAddress || "",
+      projectDescription: prefillData?.projectDescription || "",
+      referralSource: prefillData?.referralSource || "",
+    };
   });
   const [submittedBooking, setSubmittedBooking] = useState<any>(null);
   
