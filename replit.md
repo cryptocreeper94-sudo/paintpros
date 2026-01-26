@@ -52,6 +52,35 @@ The design emphasizes a "Sparkle and Shine" aesthetic, utilizing a Bento Grid la
 - **Mobile Pattern:** Carousels are central for horizontal scrolling on mobile, often containing `GlassCard` and `Accordion` components
 - **Design Rule:** Never add hover/active classes to Button components (they handle it internally)
 
+### Ultra Premium Design System (January 2026)
+All tools and dashboards must follow this consistent ultra-premium design language:
+
+**Core Elements:**
+- **Glass Morphism Cards:** `bg-black/40 border-white/5 backdrop-blur-xl` for all card containers
+- **Gradient Icons:** `bg-gradient-to-br from-[color]-500 to-[color]-600 rounded-xl` for tool icons
+- **Motion Animations:** Framer Motion `whileTap={{ scale: 0.95 }}` for interactive elements
+- **Hero Banners:** Full-width photo backgrounds with gradient overlays (`from-black/85 via-black/60 to-transparent`)
+- **Premium Shadows:** `shadow-lg` on icon containers, `shadow-2xl` on login elements
+
+**Color Consistency (per tenant):**
+- Each tenant uses `tenant.theme.primaryColor` for accents
+- `colors.gradient` for branded buttons and glows
+- All tenants share the same design language, only brand colors change
+
+**Login Screens:**
+- Full-screen background image from marketing assets
+- Floating glow orbs using tenant primary color at 20% opacity
+- Glass morphism card with `size="lg"` buttons
+- Enterprise Security badge in footer
+
+**Dashboard Sections:**
+- 3-column grids for Field Tools and Quick Actions
+- 4-column grids for Business Tools (smaller icons)
+- Section headers with colored icon badges
+- Consistent gradient backgrounds on section containers
+
+**Applies to:** Field Tool, Marketing Hub, all trade verticals (TradeWorks, RoofPros, HVAC, Electric, Plumbing, Landscaping, Construction)
+
 ### Key Pages (73 total)
 - **Customer-Facing**: home-lume.tsx (395 lines), estimate-lume.tsx (634 lines), book.tsx (32 lines + BookingWizard 459 lines)
 - **Admin Dashboards**: admin.tsx (838 lines), owner.tsx, marketing-hub.tsx, crew-lead.tsx, project-manager.tsx, developer.tsx
