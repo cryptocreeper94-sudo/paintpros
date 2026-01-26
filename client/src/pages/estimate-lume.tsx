@@ -27,6 +27,7 @@ interface EstimateData {
   email: string;
   phone: string;
   address: string;
+  referralSource: string;
   serviceType: "interior" | "exterior" | "cabinets" | "";
   rooms: {
     living: boolean;
@@ -68,6 +69,7 @@ export default function EstimateLume() {
     email: "",
     phone: "",
     address: "",
+    referralSource: "",
     serviceType: "",
     rooms: {
       living: false,
@@ -105,6 +107,7 @@ export default function EstimateLume() {
           phone: formData.phone,
           address: formData.address,
         },
+        referralSource: formData.referralSource,
         services: {
           type: formData.serviceType,
           rooms: formData.rooms,
@@ -312,6 +315,32 @@ export default function EstimateLume() {
                         data-testid="input-address"
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="referralSource">How did you hear about us?</Label>
+                    <select
+                      id="referralSource"
+                      value={data.referralSource}
+                      onChange={(e) => updateField("referralSource", e.target.value)}
+                      className="mt-1 w-full h-10 px-3 rounded-md border border-gray-300 bg-white text-sm focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+                      data-testid="select-referral-source"
+                    >
+                      <option value="">Select an option...</option>
+                      <option value="google">Google Search</option>
+                      <option value="facebook">Facebook</option>
+                      <option value="instagram">Instagram</option>
+                      <option value="billboard">Billboard</option>
+                      <option value="car_wrap">Car Wrap / Vehicle</option>
+                      <option value="yard_sign">Yard Sign</option>
+                      <option value="flyer">Flyer / Door Hanger</option>
+                      <option value="referral">Friend / Family Referral</option>
+                      <option value="nextdoor">Nextdoor</option>
+                      <option value="yelp">Yelp</option>
+                      <option value="homeadvisor">HomeAdvisor / Angi</option>
+                      <option value="repeat">Previous Customer</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                 </div>
               </div>

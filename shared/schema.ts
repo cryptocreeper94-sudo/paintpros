@@ -931,6 +931,9 @@ export const bookings = pgTable("bookings", {
   internalNotes: text("internal_notes"),
   customerNotes: text("customer_notes"),
   
+  // Lead tracking
+  referralSource: text("referral_source"), // How did you hear about us?
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -939,6 +942,7 @@ export const bookings = pgTable("bookings", {
   index("idx_bookings_scheduled_date").on(table.scheduledDate),
   index("idx_bookings_status").on(table.status),
   index("idx_bookings_customer_email").on(table.customerEmail),
+  index("idx_bookings_referral_source").on(table.referralSource),
 ]);
 
 export const insertBookingSchema = createInsertSchema(bookings).omit({
@@ -5534,4 +5538,106 @@ export type MarketingCategory = typeof MARKETING_CATEGORIES[number];
 export const MARKETING_PLATFORMS = ['instagram', 'facebook', 'nextdoor'] as const;
 export type MarketingPlatform = typeof MARKETING_PLATFORMS[number];
 
+// ============ MARKETING BUDGET & EXPENSES ============
+
+// Marketing Expense Categories
+export const MARKETING_EXPENSE_CATEGORIES = [
+  'billboard',
+  'car_wrap',
+  'yard_sign',
+  'flyer_door_hanger',
+  'direct_mail',
+  'print_ad',
+  'radio',
+  'tv',
+  'facebook_ads',
+  'google_ads',
+  'instagram_ads',
+  'nextdoor_ads',
+  'yelp_ads',
+  'homeadvisor',
+  'sponsorship',
+  'event',
+  'promo_item',
+  'other'
+] as const;
+
+export type MarketingExpenseCategory = typeof MARKETING_EXPENSE_CATEGORIES[number];
+
+// Marketing Expenses Table - Track all marketing spend
+export const marketingExpenses = pgTable("marketing_expenses", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Expense details
+  title: text("title").notNull(), // "I-24 Billboard - January"
+  description: text("description"),
+  category: text("category").notNull(), // from MARKETING_EXPENSE_CATEGORIES
+  vendor: text("vendor"), // "Lamar Advertising"
+  
+  // Financials
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  budgetedAmount: decimal("budgeted_amount", { precision: 10, scale: 2 }), // What was planned
+  
+  // Timing
+  expenseDate: timestamp("expense_date").notNull(),
+  startDate: timestamp("start_date"), // For ongoing campaigns (billboard start)
+  endDate: timestamp("end_date"), // For ongoing campaigns (billboard end)
+  isRecurring: boolean("is_recurring").default(false),
+  recurringFrequency: text("recurring_frequency"), // 'monthly', 'weekly', 'yearly'
+  
+  // Tracking
+  campaignName: text("campaign_name"), // Link to a campaign
+  invoiceNumber: text("invoice_number"),
+  receiptUrl: text("receipt_url"), // Link to uploaded receipt
+  
+  // Attribution
+  leadsGenerated: integer("leads_generated").default(0),
+  revenueGenerated: decimal("revenue_generated", { precision: 10, scale: 2 }).default("0"),
+  
+  // Status
+  status: text("status").default("active"), // 'planned', 'active', 'completed', 'cancelled'
+  
+  // Audit
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_expenses_tenant").on(table.tenantId),
+  index("idx_marketing_expenses_category").on(table.category),
+  index("idx_marketing_expenses_date").on(table.expenseDate),
+  index("idx_marketing_expenses_status").on(table.status),
+]);
+
+export const insertMarketingExpenseSchema = createInsertSchema(marketingExpenses).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertMarketingExpense = z.infer<typeof insertMarketingExpenseSchema>;
+export type MarketingExpense = typeof marketingExpenses.$inferSelect;
+
+// Marketing Budgets Table - Monthly budget targets
+export const marketingBudgets = pgTable("marketing_budgets", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Time period
+  year: integer("year").notNull(),
+  month: integer("month").notNull(), // 1-12
+  
+  // Budget amounts by category (stored as JSON for flexibility)
+  totalBudget: decimal("total_budget", { precision: 10, scale: 2 }).notNull(),
+  categoryBudgets: jsonb("category_budgets"), // { billboard: 500, facebook_ads: 300, ... }
+  
+  // Notes
+  notes: text("notes"),
+  
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_marketing_budgets_tenant").on(table.tenantId),
+  index("idx_marketing_budgets_period").on(table.year, table.month),
+]);
+
+export const insertMarketingBudgetSchema = createInsertSchema(marketingBudgets).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertMarketingBudget = z.infer<typeof insertMarketingBudgetSchema>;
+export type MarketingBudget = typeof marketingBudgets.$inferSelect;
 

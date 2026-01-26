@@ -38,6 +38,7 @@ interface BookingData {
   customerPhone: string;
   customerAddress: string;
   projectDescription: string;
+  referralSource: string;
 }
 
 const serviceTypes = [
@@ -68,6 +69,7 @@ export function BookingWizard({ lead }: BookingWizardProps) {
     customerPhone: lead?.phone || "",
     customerAddress: "",
     projectDescription: "",
+    referralSource: "",
   });
   const [submittedBooking, setSubmittedBooking] = useState<any>(null);
   
@@ -111,6 +113,7 @@ export function BookingWizard({ lead }: BookingWizardProps) {
         projectDescription: data.projectDescription,
         scheduledDate: data.scheduledDate?.toISOString(),
         scheduledTime: data.scheduledTime,
+        referralSource: data.referralSource,
       });
       return res.json();
     },
@@ -191,6 +194,7 @@ export function BookingWizard({ lead }: BookingWizardProps) {
       customerPhone: lead?.phone || "",
       customerAddress: "",
       projectDescription: "",
+      referralSource: "",
     });
     setSubmittedBooking(null);
   };
@@ -383,6 +387,31 @@ export function BookingWizard({ lead }: BookingWizardProps) {
                   rows={3}
                   data-testid="input-description"
                 />
+              </div>
+              <div>
+                <Label htmlFor="referralSource">How did you hear about us?</Label>
+                <select
+                  id="referralSource"
+                  value={bookingData.referralSource}
+                  onChange={(e) => setBookingData(prev => ({ ...prev, referralSource: e.target.value }))}
+                  className="mt-1 w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+                  data-testid="select-referral-source"
+                >
+                  <option value="">Select an option...</option>
+                  <option value="google">Google Search</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="billboard">Billboard</option>
+                  <option value="car_wrap">Car Wrap / Vehicle</option>
+                  <option value="yard_sign">Yard Sign</option>
+                  <option value="flyer">Flyer / Door Hanger</option>
+                  <option value="referral">Friend / Family Referral</option>
+                  <option value="nextdoor">Nextdoor</option>
+                  <option value="yelp">Yelp</option>
+                  <option value="homeadvisor">HomeAdvisor / Angi</option>
+                  <option value="repeat">Previous Customer</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
             </div>
           )}

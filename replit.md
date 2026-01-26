@@ -59,13 +59,14 @@ The design emphasizes a "Sparkle and Shine" aesthetic, utilizing a Bento Grid la
 - **Internal Messaging System:** Real-time, floating chat widget with Socket.IO, speech-to-text, typing indicators, unread counts, and role-based badges
 
 ### Marketing Hub Features (Redesigned January 2026)
-The Marketing Hub has been completely redesigned as a premium $100k enterprise product with 4 streamlined tabs:
+The Marketing Hub has been completely redesigned as a premium $100k enterprise product with 5 streamlined tabs:
 
-**Tab Structure (4 tabs replacing previous 12):**
+**Tab Structure (5 tabs replacing previous 12):**
 1. **Content Studio** - Sub-tabs for Image Library, Message Templates, and Social Bundles with photo-realistic hero images
 2. **Analytics Center** - All metrics with educational explanations (What it means, Why it matters)
 3. **Calendar** - Weekly content scheduling with best practices tips
 4. **Playbook** - Marketing psychology strategies (Social Proof, Scarcity, Reciprocity, Authority, etc.)
+5. **Budget** - Marketing spend tracker with expense logging, ROI tracking, and lead attribution (NEW)
 
 **Design Features:**
 - Photo-realistic hero images throughout using existing marketing assets
@@ -148,7 +149,9 @@ Key tables include:
 - **Express:** API server
 
 ## Recent Changes (January 2026)
-- **NEW: Marketing Hub Redesign** - Complete restructure from 12 tabs to 4 tabs (Content Studio, Analytics Center, Calendar, Playbook)
+- **NEW: Marketing Budget Tracker** - 5th tab in Marketing Hub for tracking spend, ROI, and lead attribution by channel
+- **NEW: Lead Source Tracking** - "How did you hear about us?" dropdown on estimate form and booking wizard captures referral source (billboard, Facebook, Google, car wrap, yard sign, referral, etc.)
+- **NEW: Marketing Hub Redesign** - Complete restructure from 12 tabs to 5 tabs (Content Studio, Analytics Center, Calendar, Playbook, Budget)
 - **NEW: Photo-realistic hero images** - Each Marketing Hub tab now has professional hero imagery with navy blue gradient overlays
 - **NEW: Educational content** - Every section includes "How This Works" explanations, metric definitions with "What it means" and "Why it matters"
 - **NEW: Fluid viewport scaling** - All tenant hero sections now scale smoothly from mobile to 4K/TV displays using clamp()
@@ -156,6 +159,7 @@ Key tables include:
 - **NEW: Lume PWA** - Full PWA support with navy blue branding, custom icons and splash screen
 - **NEW: Pricing Config Panel** - Estimator pricing now editable from Admin/Owner/Developer dashboards
 - **All 5 PWAs configured**: Lume, NPP, PaintPros/Demo, TradeWorks, Marketing Hub
+- Social media auto-posting disabled until proper business accounts are connected
 - Privacy Policy updated to January 25, 2026
 - Added Marketing Psychology Playbook with 6 proven strategies
 - Connected PaintPros to ORBIT Ecosystem Hub with working credentials

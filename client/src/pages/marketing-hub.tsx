@@ -31,7 +31,8 @@ import {
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
   LayoutGrid, Search, ChevronLeft, ChevronRight,
   FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2,
-  ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut, BookOpen, ArrowRight, Play, Link
+  ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut, BookOpen, ArrowRight, Play, Link,
+  DollarSign, Receipt, PieChart as PieChartIcon, Wallet
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
@@ -244,7 +245,7 @@ export default function MarketingHub() {
     setStayLoggedIn(false);
   };
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [activeTab, setActiveTab] = useState<"content" | "analytics" | "calendar" | "playbook">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "analytics" | "calendar" | "playbook" | "budget">("content");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -1422,6 +1423,15 @@ export default function MarketingHub() {
                 <BookOpen className="w-4 h-4" />
                 <span className="hidden sm:inline">Playbook</span>
                 <span className="sm:hidden">Learn</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="budget" 
+                className="flex items-center justify-center gap-2 py-3 text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-md transition-all" 
+                data-testid="tab-budget"
+              >
+                <DollarSign className="w-4 h-4" />
+                <span className="hidden sm:inline">Budget</span>
+                <span className="sm:hidden">$</span>
               </TabsTrigger>
             </TabsList>
 
@@ -4875,6 +4885,255 @@ export default function MarketingHub() {
                     <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-green-50 dark:bg-green-900/20">
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                       <span className="text-sm">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            </TabsContent>
+
+            {/* BUDGET TAB - Marketing Spend Tracker */}
+            <TabsContent value="budget" className="space-y-6" data-testid="budget-tab-content">
+              {/* Budget Hero */}
+              <div className="relative rounded-xl overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${commercialLobby})` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/95 via-[#1e3a5f]/80 to-transparent" />
+                <div className="relative z-10 p-8 md:p-12">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 rounded-xl bg-white/10 backdrop-blur">
+                      <DollarSign className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-white">Budget & Spend Tracker</h2>
+                      <p className="text-white/80">Track every marketing dollar and measure ROI</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* How This Works */}
+              <GlassCard className="p-6 border-l-4 border-[#1e3a5f]">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
+                  How This Works
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  The Budget Tracker helps you log every marketing expense - billboards, car wraps, digital ads, and more. 
+                  When leads come in and select how they heard about you, we can connect the dots and show you which 
+                  marketing channels are actually working.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <Receipt className="w-6 h-6 text-[#1e3a5f] mb-2" />
+                    <h4 className="font-medium">Log Expenses</h4>
+                    <p className="text-sm text-muted-foreground">Record every marketing spend with category, date, and cost</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <Target className="w-6 h-6 text-[#1e3a5f] mb-2" />
+                    <h4 className="font-medium">Track Results</h4>
+                    <p className="text-sm text-muted-foreground">See which channels bring the most leads and revenue</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <BarChart3 className="w-6 h-6 text-[#1e3a5f] mb-2" />
+                    <h4 className="font-medium">Generate Reports</h4>
+                    <p className="text-sm text-muted-foreground">Show stakeholders exactly where money is going</p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Monthly Budget Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <GlassCard className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Monthly Budget</span>
+                    <Wallet className="w-4 h-4 text-[#1e3a5f]" />
+                  </div>
+                  <p className="text-2xl font-bold">$2,000</p>
+                  <p className="text-xs text-muted-foreground mt-1">Set your target</p>
+                </GlassCard>
+                <GlassCard className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Spent This Month</span>
+                    <Receipt className="w-4 h-4 text-orange-500" />
+                  </div>
+                  <p className="text-2xl font-bold">$850</p>
+                  <p className="text-xs text-green-600 mt-1">42.5% of budget used</p>
+                </GlassCard>
+                <GlassCard className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Leads This Month</span>
+                    <Users className="w-4 h-4 text-green-500" />
+                  </div>
+                  <p className="text-2xl font-bold">23</p>
+                  <p className="text-xs text-muted-foreground mt-1">From all channels</p>
+                </GlassCard>
+                <GlassCard className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Cost Per Lead</span>
+                    <TrendingUp className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <p className="text-2xl font-bold">$36.96</p>
+                  <p className="text-xs text-muted-foreground mt-1">$850 ÷ 23 leads</p>
+                </GlassCard>
+              </div>
+
+              {/* Expense Categories */}
+              <GlassCard className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold">Spending by Category</h3>
+                  <Button size="sm" className="bg-[#1e3a5f] hover:bg-[#1e3a5f]/90" data-testid="button-add-expense">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Expense
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Category Breakdown */}
+                  <div className="space-y-3">
+                    {[
+                      { category: "Billboard", amount: 400, leads: 3, iconType: "billboard" },
+                      { category: "Facebook Ads", amount: 200, leads: 12, iconType: "facebook" },
+                      { category: "Google Ads", amount: 150, leads: 5, iconType: "search" },
+                      { category: "Car Wrap", amount: 100, leads: 2, iconType: "car" },
+                      { category: "Yard Signs", amount: 0, leads: 1, iconType: "pin" },
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover-elevate transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center">
+                            {item.iconType === "billboard" && <LayoutGrid className="w-4 h-4 text-[#1e3a5f]" />}
+                            {item.iconType === "facebook" && <Facebook className="w-4 h-4 text-[#1e3a5f]" />}
+                            {item.iconType === "search" && <Search className="w-4 h-4 text-[#1e3a5f]" />}
+                            {item.iconType === "car" && <Home className="w-4 h-4 text-[#1e3a5f]" />}
+                            {item.iconType === "pin" && <MapPin className="w-4 h-4 text-[#1e3a5f]" />}
+                          </div>
+                          <div>
+                            <p className="font-medium">{item.category}</p>
+                            <p className="text-xs text-muted-foreground">{item.leads} leads attributed</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold">${item.amount}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.leads > 0 ? `$${(item.amount / item.leads).toFixed(0)}/lead` : "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Visual Breakdown */}
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="w-48 h-48 rounded-full border-8 border-[#1e3a5f] flex items-center justify-center">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold">$850</p>
+                        <p className="text-sm text-muted-foreground">Total Spent</p>
+                      </div>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[#1e3a5f]" />
+                        <span>Digital: $350 (41%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-[#1e3a5f]/60" />
+                        <span>Traditional: $500 (59%)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+
+              {/* Recent Expenses Log */}
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Recent Expenses</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b text-left text-sm text-muted-foreground">
+                        <th className="pb-3 font-medium">Date</th>
+                        <th className="pb-3 font-medium">Description</th>
+                        <th className="pb-3 font-medium">Category</th>
+                        <th className="pb-3 font-medium">Vendor</th>
+                        <th className="pb-3 font-medium text-right">Amount</th>
+                        <th className="pb-3 font-medium text-right">Leads</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      {[
+                        { date: "Jan 15", desc: "I-24 Billboard - Month 1", category: "Billboard", vendor: "Lamar", amount: 400, leads: 3 },
+                        { date: "Jan 12", desc: "Facebook Campaign - Winter Special", category: "Facebook Ads", vendor: "Meta", amount: 150, leads: 8 },
+                        { date: "Jan 10", desc: "Google Local Services", category: "Google Ads", vendor: "Google", amount: 100, leads: 4 },
+                        { date: "Jan 8", desc: "Company Truck Wrap", category: "Car Wrap", vendor: "Sign Pro", amount: 100, leads: 2 },
+                        { date: "Jan 5", desc: "Facebook Boost - Before/After", category: "Facebook Ads", vendor: "Meta", amount: 50, leads: 4 },
+                        { date: "Jan 3", desc: "Google Search Ads", category: "Google Ads", vendor: "Google", amount: 50, leads: 1 },
+                      ].map((expense, idx) => (
+                        <tr key={idx} className="border-b border-muted/30 hover:bg-muted/20">
+                          <td className="py-3">{expense.date}</td>
+                          <td className="py-3">{expense.desc}</td>
+                          <td className="py-3">
+                            <Badge variant="outline" className="text-xs">{expense.category}</Badge>
+                          </td>
+                          <td className="py-3 text-muted-foreground">{expense.vendor}</td>
+                          <td className="py-3 text-right font-medium">${expense.amount}</td>
+                          <td className="py-3 text-right">
+                            <span className={expense.leads > 0 ? "text-green-600" : "text-muted-foreground"}>
+                              {expense.leads}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </GlassCard>
+
+              {/* Lead Source Attribution */}
+              <GlassCard className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Lead Source Attribution</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  When customers fill out the estimate form, they tell us how they found you. 
+                  This data shows which marketing efforts are driving real leads.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {[
+                    { source: "Facebook", count: 12, color: "bg-blue-500" },
+                    { source: "Google", count: 5, color: "bg-red-500" },
+                    { source: "Billboard", count: 3, color: "bg-green-500" },
+                    { source: "Referral", count: 2, color: "bg-purple-500" },
+                    { source: "Car Wrap", count: 2, color: "bg-orange-500" },
+                    { source: "Yard Sign", count: 1, color: "bg-yellow-500" },
+                    { source: "Other", count: 1, color: "bg-gray-500" },
+                  ].map((source, idx) => (
+                    <div key={idx} className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className={`w-8 h-8 rounded-full ${source.color} mx-auto mb-2 flex items-center justify-center text-white text-xs font-bold`}>
+                        {source.count}
+                      </div>
+                      <p className="text-xs font-medium">{source.source}</p>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+
+              {/* Tips for ROI Tracking */}
+              <GlassCard className="p-6 bg-gradient-to-r from-[#1e3a5f]/5 to-transparent">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
+                  Tips for Better ROI Tracking
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    "Log expenses as soon as they happen - don't wait until month end",
+                    "Ask every lead 'How did you hear about us?' on calls too",
+                    "Track recurring expenses like billboard rentals separately from one-time costs",
+                    "Review this data monthly to shift budget toward what's working",
+                    "Compare cost-per-lead across channels to find your best performers",
+                    "Document campaign names so you can compare similar campaigns over time"
+                  ].map((tip, idx) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{tip}</span>
                     </div>
                   ))}
                 </div>

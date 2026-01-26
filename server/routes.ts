@@ -8869,7 +8869,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
   // POST /api/bookings - Create a new booking
   app.post("/api/bookings", async (req, res) => {
     try {
-      const { customerName, customerEmail, customerPhone, customerAddress, serviceType, projectDescription, scheduledDate, scheduledTime, customerNotes, tenantId } = req.body;
+      const { customerName, customerEmail, customerPhone, customerAddress, serviceType, projectDescription, scheduledDate, scheduledTime, customerNotes, tenantId, referralSource } = req.body;
       
       if (!customerName || !customerEmail || !serviceType || !scheduledDate || !scheduledTime) {
         res.status(400).json({ error: "Missing required fields: customerName, customerEmail, serviceType, scheduledDate, scheduledTime" });
@@ -8886,7 +8886,8 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         projectDescription,
         scheduledDate: new Date(scheduledDate),
         scheduledTime,
-        customerNotes
+        customerNotes,
+        referralSource: referralSource || null
       });
 
       // Send email notification for new booking
