@@ -2280,45 +2280,70 @@ export default function Developer() {
                     </ul>
                   </div>
                   
-                  {/* NPP Focus & Lume "Confusion" Counter */}
+                  {/* The "Confusion" Argument - NPP New Site */}
                   <div className="p-4 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
                     <h4 className="font-semibold text-cyan-600 mb-2 flex items-center gap-2">
                       <Globe className="w-4 h-4" />
-                      The NPP/Lume Question
+                      The "Confusion" Argument (Our New NPP Site)
                     </h4>
                     <div className="text-sm space-y-3">
                       <div className="p-2 rounded bg-cyan-500/10">
                         <p className="font-medium text-cyan-700 mb-1">His Concern:</p>
-                        <p className="text-muted-foreground italic">"Focus on NPP until Lume LLC is approved. The new site will confuse customers."</p>
+                        <p className="text-muted-foreground italic">"Using the new NPP site we built will confuse customers who see the WordPress site."</p>
+                      </div>
+                      <div className="p-2 rounded bg-red-500/10">
+                        <p className="font-medium text-red-700 mb-1">The WordPress Reality:</p>
+                        <ul className="space-y-1.5">
+                          <li className="flex items-start gap-2">
+                            <AlertCircle className="w-3 h-3 mt-1 flex-shrink-0 text-red-600" />
+                            <span>Locked into contract for another year</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <AlertCircle className="w-3 h-3 mt-1 flex-shrink-0 text-red-600" />
+                            <span>It's a brochure site with no real function</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <AlertCircle className="w-3 h-3 mt-1 flex-shrink-0 text-red-600" />
+                            <span><strong>It's not generating leads</strong> - nothing to confuse</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <AlertCircle className="w-3 h-3 mt-1 flex-shrink-0 text-red-600" />
+                            <span>The "leads" that were there? Already handled - just showing as unread</span>
+                          </li>
+                        </ul>
                       </div>
                       <div className="p-2 rounded bg-green-500/10">
-                        <p className="font-medium text-green-700 mb-1">The Reality:</p>
+                        <p className="font-medium text-green-700 mb-1">Why Our New Site Helps:</p>
                         <ul className="space-y-1.5">
                           <li className="flex items-start gap-2">
                             <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
-                            <span>NPP has Google LSA - I can work on that TODAY if given access</span>
+                            <span>It's <strong>additional exposure</strong>, not a replacement</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
-                            <span>The new Lume site doesn't replace anything - it's <strong>additional exposure</strong></span>
+                            <span>Has real tools: instant estimates, room visualization, booking</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
-                            <span>Different markets: NPP = Nashville, Lume = Murfreesboro (20-mile radius)</span>
+                            <span>Can add banner: "Visit our main site at [WordPress URL]"</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
-                            <span>We can add a banner: "Visit our main site at [legacy URL]" if he wants</span>
+                            <span>Can label as "New Tools Beta" or "Estimator Preview"</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
-                            <span>Or label it "Beta" or "New Tools Preview" - gives context without replacing</span>
+                            <span>If WordPress isn't generating leads, you're not losing anything</span>
                           </li>
                         </ul>
                       </div>
                       <div className="p-2 rounded bg-amber-500/10">
                         <p className="font-medium text-amber-700 mb-1">How to Frame It:</p>
-                        <p className="text-sm">"Think of it like having two storefronts. The new site has modern tools - instant estimates, room visualization - that attract a different type of customer. People who find it aren't 'confused,' they're impressed. And anyone who wants the original experience can click right through to the legacy site. It's not either/or - it's more reach."</p>
+                        <p className="text-sm">"The WordPress site is a brochure - it looks nice but doesn't do anything. Our new site has real tools that generate real leads. People who find it aren't 'confused' - they're getting instant estimates and booking jobs. That's not confusion, that's conversion. And if someone wants the WordPress experience, we put a link right at the top."</p>
+                      </div>
+                      <div className="p-2 rounded bg-[#1e3a5f]/10">
+                        <p className="font-medium text-[#1e3a5f] mb-1">The Bottom Line:</p>
+                        <p className="text-sm">"If the WordPress site was generating leads, I'd understand the concern. But it's not. So what exactly are we protecting? A year from now when that contract ends, we need something ready. That's what this is."</p>
                       </div>
                     </div>
                   </div>
@@ -2337,19 +2362,20 @@ export default function Developer() {
                           <li>• Connect leads to our tracking system</li>
                           <li>• Optimize based on what's working</li>
                           <li>• Run social campaigns</li>
+                          <li>• Launch our new NPP site alongside WordPress</li>
                         </ul>
                       </div>
                       <div className="p-2 rounded bg-background/50">
-                        <p className="font-medium text-emerald-600">For Lume (no LSA yet):</p>
+                        <p className="font-medium text-emerald-600">For Lume (waiting on LLC):</p>
                         <ul className="text-xs space-y-1 mt-1">
-                          <li>• Launch the new site as "Beta/Preview"</li>
-                          <li>• Link to legacy site for reassurance</li>
+                          <li>• Site is ready - just needs approval to go live</li>
+                          <li>• Can label as "Beta" or "Preview"</li>
                           <li>• Start building SEO presence</li>
                           <li>• Get LSA set up once LLC approved</li>
                         </ul>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">Both can happen in parallel. Working on NPP doesn't mean Lume sits idle.</p>
+                    <p className="text-xs text-muted-foreground mt-2">Both can happen in parallel. The new sites are extra reach, not replacements.</p>
                   </div>
                   
                   {/* Industry Benchmarks */}
