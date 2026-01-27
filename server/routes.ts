@@ -2780,10 +2780,21 @@ Format the response as JSON with these fields:
       const sessionId = generateChallenge();
       webauthnChallenges.set(sessionId, { challenge, expires: Date.now() + 5 * 60 * 1000 });
       
+      // Get the correct RP ID from the request origin (same as registration)
+      const origin = req.headers.origin || req.headers.referer || '';
+      let rpId = 'localhost';
+      try {
+        if (origin) {
+          rpId = new URL(origin).hostname;
+        }
+      } catch (e) {
+        console.log('Could not parse origin for rpId, using localhost');
+      }
+      
       const options = {
         challenge,
         sessionId, // Client sends this back for verification
-        rpId: new URL(process.env.REPLIT_DEV_DOMAIN || "https://localhost").hostname.replace(/:\d+$/, ''),
+        rpId,
         timeout: 60000,
         userVerification: "required",
       };
