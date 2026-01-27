@@ -2829,13 +2829,31 @@ Format the response as JSON with these fields:
       // In production, verify the signature against the stored public key
       // For now, we trust that the authenticator verified the user
       
-      // Update counter for replay protection
-      const newCounter = (credential.response.authenticatorData?.counter || 0);
-      if (newCounter <= storedCredential.counter) {
+      // Extract counter from authenticatorData bytes (bytes 33-36 are the counter as big-endian uint32)
+      let newCounter = 0;
+      try {
+        if (credential.response.authenticatorData) {
+          const authDataBuffer = Buffer.from(credential.response.authenticatorData, 'base64');
+          // Counter is at bytes 33-36 (after 32-byte rpIdHash and 1-byte flags)
+          if (authDataBuffer.length >= 37) {
+            newCounter = authDataBuffer.readUInt32BE(33);
+          }
+        }
+      } catch (e) {
+        console.log("Could not parse counter from authenticatorData, skipping replay check");
+      }
+      
+      // Only check replay if we have a valid counter from the authenticator
+      // Some authenticators don't increment the counter properly
+      if (newCounter > 0 && newCounter <= storedCredential.counter) {
         res.status(401).json({ error: "Possible credential replay detected" });
         return;
       }
-      await storage.updateWebauthnCredentialCounter(storedCredential.id, newCounter);
+      
+      // Update the counter if it's valid
+      if (newCounter > 0) {
+        await storage.updateWebauthnCredentialCounter(storedCredential.id, newCounter);
+      }
       
       // Get the associated user
       const [userPin] = await db.select().from(userPins)
