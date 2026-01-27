@@ -589,10 +589,18 @@ function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: {
         onContinue={handleDismissBestPractices}
       />
       
-      <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4">
-        <ChevronLeft className="w-4 h-4" />
-        <span className="text-sm">Back to Dashboard</span>
-      </button>
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+          <ChevronLeft className="w-4 h-4" />
+          <span className="text-sm">Back to Dashboard</span>
+        </button>
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white hover:bg-white/10 gap-1" data-testid="button-home-colormatch">
+            <Home className="w-4 h-4" />
+            Home
+          </Button>
+        </Link>
+      </div>
 
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
