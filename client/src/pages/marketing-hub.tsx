@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 import { useState, useEffect, useMemo } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // Marketing Hub hero images
 import crewTeamPhoto from "@/assets/marketing/crew-10-team-photo.png";
@@ -45,6 +46,43 @@ import categoryBeforeAfter from "@/assets/marketing/category-before-after.jpg";
 import categoryTeamAction from "@/assets/marketing/category-team-action.jpg";
 import categoryGeneral from "@/assets/marketing/category-general.jpg";
 
+// Exterior home images
+import exterior01CurbAppeal from "@/assets/marketing/exterior-01-curb-appeal.jpg";
+import exterior02Modern from "@/assets/marketing/exterior-02-modern.jpg";
+import exterior03Traditional from "@/assets/marketing/exterior-03-traditional.jpg";
+import exterior04Luxury from "@/assets/marketing/exterior-04-luxury.jpg";
+import exterior05Suburban from "@/assets/marketing/exterior-05-suburban.jpg";
+import exterior06Colonial from "@/assets/marketing/exterior-06-colonial.jpg";
+import exterior07Ranch from "@/assets/marketing/exterior-07-ranch.jpg";
+import exterior08Craftsman from "@/assets/marketing/exterior-08-craftsman.jpg";
+import exterior09Twostory from "@/assets/marketing/exterior-09-twostory.jpg";
+import exterior10Porch from "@/assets/marketing/exterior-10-porch.jpg";
+import exterior11Historic from "@/assets/marketing/exterior-11-historic.jpg";
+import exterior12Garage from "@/assets/marketing/exterior-12-garage.jpg";
+
+// Interior images
+import interior01Living from "@/assets/marketing/interior-01-living.jpg";
+import interior02Bedroom from "@/assets/marketing/interior-02-bedroom.jpg";
+import interior03Kitchen from "@/assets/marketing/interior-03-kitchen.jpg";
+import interior04Dining from "@/assets/marketing/interior-04-dining.jpg";
+import interior05Office from "@/assets/marketing/interior-05-office.jpg";
+import interior06Bathroom from "@/assets/marketing/interior-06-bathroom.jpg";
+import interior07Nursery from "@/assets/marketing/interior-07-nursery.jpg";
+import interior08Accent from "@/assets/marketing/interior-08-accent.jpg";
+import interior09Open from "@/assets/marketing/interior-09-open.jpg";
+
+// Other category images
+import deck01Backyard from "@/assets/marketing/deck-01-backyard.jpg";
+import trim01Crown from "@/assets/marketing/trim-01-crown.jpg";
+import trim02Baseboard from "@/assets/marketing/trim-02-baseboard.jpg";
+import door01Front from "@/assets/marketing/door-01-front.jpg";
+import door02Interior from "@/assets/marketing/door-02-interior.jpg";
+import commercial01Office from "@/assets/marketing/commercial-01-office.jpg";
+import commercial02Retail from "@/assets/marketing/commercial-02-retail.jpg";
+import team01Crew from "@/assets/marketing/team-01-crew.jpg";
+import beforeafter01Room from "@/assets/marketing/beforeafter-01-room.jpg";
+import general02Swatches from "@/assets/marketing/general-02-swatches.jpg";
+
 // Brand logos
 import nppLogo from "@/assets/branding/logo-npp-vertical.jpg";
 import { motion, AnimatePresence } from "framer-motion";
@@ -60,7 +98,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft } from "lucide-react";
+import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download } from "lucide-react";
 import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -126,7 +164,7 @@ interface ContentBundle {
   brand: TenantBrand;
   imageId: string;
   messageId: string;
-  status: "suggested" | "approved" | "scheduled" | "posted";
+  status: "suggested" | "circulating" | "posted" | "removed" | "approved" | "scheduled";
   scheduledDate?: string;
   platform: "instagram" | "facebook" | "nextdoor" | "twitter" | "linkedin" | "google" | "all";
   createdAt: string;
@@ -249,6 +287,7 @@ const SAMPLE_SEASONAL_LUME: Partial<SocialPost>[] = [
 
 export default function MarketingHub() {
   const tenant = useTenant();
+  const { toast } = useToast();
   const { selectedTenant, setSelectedTenant } = useTenantFilter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState("");
@@ -532,37 +571,37 @@ export default function MarketingHub() {
       // Full image library - 60 NPP + 60 Lume = 120 total
       const nppImages: LibraryImage[] = [
         // NPP Interior Walls (15)
-        { id: "npp-int-1", brand: "npp", url: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&h=300&fit=crop", description: "Living room transformation - fresh white walls", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["living room", "white", "modern"], createdAt: new Date().toISOString() },
-        { id: "npp-int-2", brand: "npp", url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop", description: "Modern apartment interior refresh", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["apartment", "modern", "clean"], createdAt: new Date().toISOString() },
-        { id: "npp-int-3", brand: "npp", url: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop", description: "Bedroom accent wall in navy", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["bedroom", "accent wall", "navy"], createdAt: new Date().toISOString() },
-        { id: "npp-int-4", brand: "npp", url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop", description: "Kitchen walls bright and clean", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["kitchen", "bright", "clean"], createdAt: new Date().toISOString() },
-        { id: "npp-int-5", brand: "npp", url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400&h=300&fit=crop", description: "Master bedroom calming colors", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["bedroom", "calming", "neutral"], createdAt: new Date().toISOString() },
-        { id: "npp-int-6", brand: "npp", url: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400&h=300&fit=crop", description: "Home office professional finish", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["office", "professional", "home"], createdAt: new Date().toISOString() },
-        { id: "npp-int-7", brand: "npp", url: "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=400&h=300&fit=crop", description: "Guest bedroom welcoming warmth", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["bedroom", "warm", "welcoming"], createdAt: new Date().toISOString() },
-        { id: "npp-int-8", brand: "npp", url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop", description: "Bathroom fresh paint update", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["bathroom", "fresh", "update"], createdAt: new Date().toISOString() },
-        { id: "npp-int-9", brand: "npp", url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop", description: "Open concept living space", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["open concept", "living", "modern"], createdAt: new Date().toISOString() },
-        { id: "npp-int-10", brand: "npp", url: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&h=300&fit=crop", description: "Dining room elegant finish", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["dining", "elegant", "formal"], createdAt: new Date().toISOString() },
-        { id: "npp-int-11", brand: "npp", url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop", description: "Hallway bright transformation", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["hallway", "bright", "clean"], createdAt: new Date().toISOString() },
-        { id: "npp-int-12", brand: "npp", url: "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=400&h=300&fit=crop", description: "Nursery soft colors", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["nursery", "soft", "baby"], createdAt: new Date().toISOString() },
-        { id: "npp-int-13", brand: "npp", url: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400&h=300&fit=crop", description: "Laundry room refresh", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["laundry", "clean", "bright"], createdAt: new Date().toISOString() },
-        { id: "npp-int-14", brand: "npp", url: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop", description: "Basement family room makeover", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["basement", "family room", "cozy"], createdAt: new Date().toISOString() },
-        { id: "npp-int-15", brand: "npp", url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop", description: "Sunroom cheerful update", subject: "interior-walls", style: "finished-result", season: "spring", quality: 5, tags: ["sunroom", "cheerful", "bright"], createdAt: new Date().toISOString() },
+        { id: "npp-int-1", brand: "npp", url: interior01Living, description: "Living room transformation - fresh white walls", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["living room", "white", "modern"], createdAt: new Date().toISOString() },
+        { id: "npp-int-2", brand: "npp", url: interior09Open, description: "Modern apartment interior refresh", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["apartment", "modern", "clean"], createdAt: new Date().toISOString() },
+        { id: "npp-int-3", brand: "npp", url: interior08Accent, description: "Bedroom accent wall in navy", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["bedroom", "accent wall", "navy"], createdAt: new Date().toISOString() },
+        { id: "npp-int-4", brand: "npp", url: interior03Kitchen, description: "Kitchen walls bright and clean", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["kitchen", "bright", "clean"], createdAt: new Date().toISOString() },
+        { id: "npp-int-5", brand: "npp", url: interior02Bedroom, description: "Master bedroom calming colors", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["bedroom", "calming", "neutral"], createdAt: new Date().toISOString() },
+        { id: "npp-int-6", brand: "npp", url: interior05Office, description: "Home office professional finish", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["office", "professional", "home"], createdAt: new Date().toISOString() },
+        { id: "npp-int-7", brand: "npp", url: interior02Bedroom, description: "Guest bedroom welcoming warmth", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["bedroom", "warm", "welcoming"], createdAt: new Date().toISOString() },
+        { id: "npp-int-8", brand: "npp", url: interior06Bathroom, description: "Bathroom fresh paint update", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["bathroom", "fresh", "update"], createdAt: new Date().toISOString() },
+        { id: "npp-int-9", brand: "npp", url: interior09Open, description: "Open concept living space", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["open concept", "living", "modern"], createdAt: new Date().toISOString() },
+        { id: "npp-int-10", brand: "npp", url: interior04Dining, description: "Dining room elegant finish", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["dining", "elegant", "formal"], createdAt: new Date().toISOString() },
+        { id: "npp-int-11", brand: "npp", url: interior09Open, description: "Hallway bright transformation", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["hallway", "bright", "clean"], createdAt: new Date().toISOString() },
+        { id: "npp-int-12", brand: "npp", url: interior07Nursery, description: "Nursery soft colors", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["nursery", "soft", "baby"], createdAt: new Date().toISOString() },
+        { id: "npp-int-13", brand: "npp", url: interior09Open, description: "Laundry room refresh", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["laundry", "clean", "bright"], createdAt: new Date().toISOString() },
+        { id: "npp-int-14", brand: "npp", url: interior01Living, description: "Basement family room makeover", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["basement", "family room", "cozy"], createdAt: new Date().toISOString() },
+        { id: "npp-int-15", brand: "npp", url: interior08Accent, description: "Sunroom cheerful update", subject: "interior-walls", style: "finished-result", season: "spring", quality: 5, tags: ["sunroom", "cheerful", "bright"], createdAt: new Date().toISOString() },
         // NPP Exterior (15)
-        { id: "npp-ext-1", brand: "npp", url: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&h=300&fit=crop", description: "Exterior home curb appeal boost", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["exterior", "curb appeal", "home"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-2", brand: "npp", url: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop", description: "Modern home exterior finish", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["modern", "exterior", "sleek"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-3", brand: "npp", url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop", description: "Traditional home fresh paint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["traditional", "classic", "home"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-4", brand: "npp", url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop", description: "Luxury home exterior detail", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["luxury", "detail", "premium"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-5", brand: "npp", url: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=400&h=300&fit=crop", description: "Suburban home transformation", subject: "exterior-home", style: "before-after", season: "summer", quality: 5, tags: ["suburban", "family", "transformation"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-6", brand: "npp", url: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=400&h=300&fit=crop", description: "Colonial style home repaint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["colonial", "classic", "repaint"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-7", brand: "npp", url: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop", description: "Ranch home exterior update", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["ranch", "single story", "update"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-8", brand: "npp", url: "https://images.unsplash.com/photo-1600573472572-8aba7a8a1a6b?w=400&h=300&fit=crop", description: "Craftsman home character preserved", subject: "exterior-home", style: "finished-result", season: "fall", quality: 5, tags: ["craftsman", "character", "detail"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-9", brand: "npp", url: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=400&h=300&fit=crop", description: "Two-story home complete repaint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["two-story", "complete", "family"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-10", brand: "npp", url: "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=400&h=300&fit=crop", description: "Porch and siding refresh", subject: "exterior-home", style: "finished-result", season: "spring", quality: 4, tags: ["porch", "siding", "refresh"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-11", brand: "npp", url: "https://images.unsplash.com/photo-1600566752447-f4e219adffef?w=400&h=300&fit=crop", description: "Garage door and trim update", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["garage", "trim", "detail"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-12", brand: "npp", url: "https://images.unsplash.com/photo-1600607688066-890987f18a86?w=400&h=300&fit=crop", description: "Front entry makeover", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["entry", "front door", "welcoming"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-13", brand: "npp", url: "https://images.unsplash.com/photo-1600566752734-2a0cd58f8e68?w=400&h=300&fit=crop", description: "Shutters and accent colors", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["shutters", "accent", "color"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-14", brand: "npp", url: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&h=300&fit=crop", description: "Historic home preservation", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["historic", "preservation", "classic"], createdAt: new Date().toISOString() },
-        { id: "npp-ext-15", brand: "npp", url: "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=400&h=300&fit=crop", description: "New construction final paint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["new construction", "final", "fresh"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-1", brand: "npp", url: exterior01CurbAppeal, description: "Exterior home curb appeal boost", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["exterior", "curb appeal", "home"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-2", brand: "npp", url: exterior02Modern, description: "Modern home exterior finish", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["modern", "exterior", "sleek"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-3", brand: "npp", url: exterior03Traditional, description: "Traditional home fresh paint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["traditional", "classic", "home"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-4", brand: "npp", url: exterior04Luxury, description: "Luxury home exterior detail", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["luxury", "detail", "premium"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-5", brand: "npp", url: exterior05Suburban, description: "Suburban home transformation", subject: "exterior-home", style: "before-after", season: "summer", quality: 5, tags: ["suburban", "family", "transformation"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-6", brand: "npp", url: exterior06Colonial, description: "Colonial style home repaint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["colonial", "classic", "repaint"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-7", brand: "npp", url: exterior07Ranch, description: "Ranch home exterior update", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["ranch", "single story", "update"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-8", brand: "npp", url: exterior08Craftsman, description: "Craftsman home character preserved", subject: "exterior-home", style: "finished-result", season: "fall", quality: 5, tags: ["craftsman", "character", "detail"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-9", brand: "npp", url: exterior09Twostory, description: "Two-story home complete repaint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["two-story", "complete", "family"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-10", brand: "npp", url: exterior10Porch, description: "Porch and siding refresh", subject: "exterior-home", style: "finished-result", season: "spring", quality: 4, tags: ["porch", "siding", "refresh"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-11", brand: "npp", url: exterior12Garage, description: "Garage door and trim update", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["garage", "trim", "detail"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-12", brand: "npp", url: door01Front, description: "Front entry makeover", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["entry", "front door", "welcoming"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-13", brand: "npp", url: exterior11Historic, description: "Shutters and accent colors", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["shutters", "accent", "color"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-14", brand: "npp", url: exterior11Historic, description: "Historic home preservation", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["historic", "preservation", "classic"], createdAt: new Date().toISOString() },
+        { id: "npp-ext-15", brand: "npp", url: exterior02Modern, description: "New construction final paint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["new construction", "final", "fresh"], createdAt: new Date().toISOString() },
         // NPP Cabinets (10)
         { id: "npp-cab-1", brand: "npp", url: cabinetWhiteKitchen, description: "White kitchen cabinet refresh", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 5, tags: ["kitchen", "white", "cabinets"], createdAt: new Date().toISOString() },
         { id: "npp-cab-2", brand: "npp", url: cabinetNavyBlue, description: "Navy blue cabinet transformation", subject: "cabinet-work", style: "before-after", season: "all-year", quality: 5, tags: ["navy", "modern", "transformation"], createdAt: new Date().toISOString() },
@@ -575,62 +614,62 @@ export default function MarketingHub() {
         { id: "npp-cab-9", brand: "npp", url: cabinetOfficeBuiltin, description: "Office built-in cabinetry", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 4, tags: ["office", "built-in", "professional"], createdAt: new Date().toISOString() },
         { id: "npp-cab-10", brand: "npp", url: cabinetEntertainment, description: "Entertainment center refinish", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 4, tags: ["entertainment", "living room", "refinish"], createdAt: new Date().toISOString() },
         // NPP Trim/Doors (10)
-        { id: "npp-trim-1", brand: "npp", url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", description: "Crown molding detail work", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["crown molding", "detail", "elegant"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-2", brand: "npp", url: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop", description: "Baseboard refresh clean lines", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 4, tags: ["baseboard", "clean", "crisp"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-3", brand: "npp", url: "https://images.unsplash.com/photo-1558618140-f0c2c6b09ec6?w=400&h=300&fit=crop", description: "Window trim precision", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 4, tags: ["window", "trim", "precision"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-4", brand: "npp", url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", description: "Door frame refinish", subject: "door-painting", style: "finished-result", season: "all-year", quality: 4, tags: ["door frame", "refinish", "detail"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-5", brand: "npp", url: "https://images.unsplash.com/photo-1558618669-5c9e5b10f0f4?w=400&h=300&fit=crop", description: "Interior doors bold color", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["interior doors", "bold", "statement"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-6", brand: "npp", url: "https://images.unsplash.com/photo-1558618693-df6f9b19c90d?w=400&h=300&fit=crop", description: "Front door welcoming red", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["front door", "red", "welcoming"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-7", brand: "npp", url: "https://images.unsplash.com/photo-1558618723-d41614eb9423?w=400&h=300&fit=crop", description: "Stair railing refresh", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 4, tags: ["stairs", "railing", "refresh"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-8", brand: "npp", url: "https://images.unsplash.com/photo-1558618776-5e0d0f91d8b4?w=400&h=300&fit=crop", description: "Wainscoting classic elegance", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["wainscoting", "classic", "elegant"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-9", brand: "npp", url: "https://images.unsplash.com/photo-1558618798-7b9f1a2cc4a5?w=400&h=300&fit=crop", description: "Black interior doors modern", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["black doors", "modern", "contrast"], createdAt: new Date().toISOString() },
-        { id: "npp-trim-10", brand: "npp", url: "https://images.unsplash.com/photo-1558618839-7ac9a77d2f5b?w=400&h=300&fit=crop", description: "Fireplace mantel refinish", subject: "trim-detail", style: "finished-result", season: "fall", quality: 5, tags: ["fireplace", "mantel", "cozy"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-1", brand: "npp", url: trim01Crown, description: "Crown molding detail work", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["crown molding", "detail", "elegant"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-2", brand: "npp", url: trim02Baseboard, description: "Baseboard refresh clean lines", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 4, tags: ["baseboard", "clean", "crisp"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-3", brand: "npp", url: trim01Crown, description: "Window trim precision", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 4, tags: ["window", "trim", "precision"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-4", brand: "npp", url: door02Interior, description: "Door frame refinish", subject: "door-painting", style: "finished-result", season: "all-year", quality: 4, tags: ["door frame", "refinish", "detail"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-5", brand: "npp", url: door02Interior, description: "Interior doors bold color", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["interior doors", "bold", "statement"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-6", brand: "npp", url: door01Front, description: "Front door welcoming red", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["front door", "red", "welcoming"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-7", brand: "npp", url: trim02Baseboard, description: "Stair railing refresh", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 4, tags: ["stairs", "railing", "refresh"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-8", brand: "npp", url: trim01Crown, description: "Wainscoting classic elegance", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["wainscoting", "classic", "elegant"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-9", brand: "npp", url: door02Interior, description: "Black interior doors modern", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["black doors", "modern", "contrast"], createdAt: new Date().toISOString() },
+        { id: "npp-trim-10", brand: "npp", url: trim01Crown, description: "Fireplace mantel refinish", subject: "trim-detail", style: "finished-result", season: "fall", quality: 5, tags: ["fireplace", "mantel", "cozy"], createdAt: new Date().toISOString() },
         // NPP Commercial/General (10)
-        { id: "npp-com-1", brand: "npp", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop", description: "Office building lobby fresh", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["office", "commercial", "professional"], createdAt: new Date().toISOString() },
-        { id: "npp-com-2", brand: "npp", url: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=400&h=300&fit=crop", description: "Retail storefront update", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["retail", "storefront", "business"], createdAt: new Date().toISOString() },
-        { id: "npp-com-3", brand: "npp", url: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=300&fit=crop", description: "Restaurant interior ambiance", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["restaurant", "ambiance", "dining"], createdAt: new Date().toISOString() },
-        { id: "npp-com-4", brand: "npp", url: "https://images.unsplash.com/photo-1497366412874-3415097a27e7?w=400&h=300&fit=crop", description: "Medical office clean professional", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 4, tags: ["medical", "clean", "professional"], createdAt: new Date().toISOString() },
-        { id: "npp-com-5", brand: "npp", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop", description: "Conference room executive finish", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["conference", "executive", "corporate"], createdAt: new Date().toISOString() },
-        { id: "npp-gen-1", brand: "npp", url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", description: "Paint swatches color selection", subject: "general", style: "action-shot", season: "all-year", quality: 4, tags: ["swatches", "colors", "selection"], createdAt: new Date().toISOString() },
-        { id: "npp-gen-2", brand: "npp", url: "https://images.unsplash.com/photo-1558618044-8b2f26e6f2d8?w=400&h=300&fit=crop", description: "Professional painter at work", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["painter", "professional", "work"], createdAt: new Date().toISOString() },
-        { id: "npp-gen-3", brand: "npp", url: "https://images.unsplash.com/photo-1558618072-3d0c3c2c0e8c?w=400&h=300&fit=crop", description: "Team collaboration on site", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["team", "collaboration", "site"], createdAt: new Date().toISOString() },
-        { id: "npp-gen-4", brand: "npp", url: "https://images.unsplash.com/photo-1558618106-4f4c5f0f3e9d?w=400&h=300&fit=crop", description: "Before and after dramatic", subject: "before-after", style: "before-after", season: "all-year", quality: 5, tags: ["before after", "dramatic", "transformation"], createdAt: new Date().toISOString() },
-        { id: "npp-gen-5", brand: "npp", url: "https://images.unsplash.com/photo-1558618141-ef3c7c2d06f9?w=400&h=300&fit=crop", description: "Color consultation service", subject: "general", style: "action-shot", season: "all-year", quality: 4, tags: ["consultation", "color", "service"], createdAt: new Date().toISOString() },
+        { id: "npp-com-1", brand: "npp", url: commercial01Office, description: "Office building lobby fresh", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["office", "commercial", "professional"], createdAt: new Date().toISOString() },
+        { id: "npp-com-2", brand: "npp", url: commercial02Retail, description: "Retail storefront update", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["retail", "storefront", "business"], createdAt: new Date().toISOString() },
+        { id: "npp-com-3", brand: "npp", url: commercial01Office, description: "Restaurant interior ambiance", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["restaurant", "ambiance", "dining"], createdAt: new Date().toISOString() },
+        { id: "npp-com-4", brand: "npp", url: commercial02Retail, description: "Medical office clean professional", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 4, tags: ["medical", "clean", "professional"], createdAt: new Date().toISOString() },
+        { id: "npp-com-5", brand: "npp", url: commercial01Office, description: "Conference room executive finish", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["conference", "executive", "corporate"], createdAt: new Date().toISOString() },
+        { id: "npp-gen-1", brand: "npp", url: general02Swatches, description: "Paint swatches color selection", subject: "general", style: "action-shot", season: "all-year", quality: 4, tags: ["swatches", "colors", "selection"], createdAt: new Date().toISOString() },
+        { id: "npp-gen-2", brand: "npp", url: team01Crew, description: "Professional painter at work", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["painter", "professional", "work"], createdAt: new Date().toISOString() },
+        { id: "npp-gen-3", brand: "npp", url: team01Crew, description: "Team collaboration on site", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["team", "collaboration", "site"], createdAt: new Date().toISOString() },
+        { id: "npp-gen-4", brand: "npp", url: beforeafter01Room, description: "Before and after dramatic", subject: "before-after", style: "before-after", season: "all-year", quality: 5, tags: ["before after", "dramatic", "transformation"], createdAt: new Date().toISOString() },
+        { id: "npp-gen-5", brand: "npp", url: general02Swatches, description: "Color consultation service", subject: "general", style: "action-shot", season: "all-year", quality: 4, tags: ["consultation", "color", "service"], createdAt: new Date().toISOString() },
       ];
       
       const lumeImages: LibraryImage[] = [
         // Lume Interior Walls (15)
-        { id: "lume-int-1", brand: "lumepaint", url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop", description: "Elevated living space design", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["elevated", "design", "living"], createdAt: new Date().toISOString() },
-        { id: "lume-int-2", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&h=300&fit=crop", description: "Sophisticated bedroom retreat", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["sophisticated", "bedroom", "retreat"], createdAt: new Date().toISOString() },
-        { id: "lume-int-3", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=400&h=300&fit=crop", description: "Minimalist aesthetic walls", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["minimalist", "aesthetic", "clean"], createdAt: new Date().toISOString() },
-        { id: "lume-int-4", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?w=400&h=300&fit=crop", description: "Warm neutral palette living", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["warm", "neutral", "inviting"], createdAt: new Date().toISOString() },
-        { id: "lume-int-5", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop", description: "Luxury master suite finish", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["luxury", "master suite", "premium"], createdAt: new Date().toISOString() },
-        { id: "lume-int-6", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566753104-685f4f24cb4d?w=400&h=300&fit=crop", description: "Zen bathroom sanctuary", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["zen", "bathroom", "sanctuary"], createdAt: new Date().toISOString() },
-        { id: "lume-int-7", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=300&fit=crop", description: "Home office inspiration", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["office", "inspiration", "productivity"], createdAt: new Date().toISOString() },
-        { id: "lume-int-8", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600607688066-890987f18a86?w=400&h=300&fit=crop", description: "Dining room sophistication", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["dining", "sophisticated", "entertaining"], createdAt: new Date().toISOString() },
-        { id: "lume-int-9", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400&h=300&fit=crop", description: "Reading nook cozy corner", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["reading nook", "cozy", "corner"], createdAt: new Date().toISOString() },
-        { id: "lume-int-10", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=400&h=300&fit=crop", description: "Kids room playful colors", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["kids", "playful", "fun"], createdAt: new Date().toISOString() },
-        { id: "lume-int-11", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop", description: "Gallery wall backdrop", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["gallery", "art", "backdrop"], createdAt: new Date().toISOString() },
-        { id: "lume-int-12", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop", description: "Entryway first impression", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["entryway", "first impression", "welcoming"], createdAt: new Date().toISOString() },
-        { id: "lume-int-13", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566752447-f4e219adffef?w=400&h=300&fit=crop", description: "Mudroom organized style", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["mudroom", "organized", "functional"], createdAt: new Date().toISOString() },
-        { id: "lume-int-14", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566752734-2a0cd58f8e68?w=400&h=300&fit=crop", description: "Closet organization upgrade", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["closet", "organization", "upgrade"], createdAt: new Date().toISOString() },
-        { id: "lume-int-15", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=400&h=300&fit=crop", description: "Bonus room versatile space", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["bonus room", "versatile", "flexible"], createdAt: new Date().toISOString() },
+        { id: "lume-int-1", brand: "lumepaint", url: interior01Living, description: "Elevated living space design", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["elevated", "design", "living"], createdAt: new Date().toISOString() },
+        { id: "lume-int-2", brand: "lumepaint", url: interior02Bedroom, description: "Sophisticated bedroom retreat", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["sophisticated", "bedroom", "retreat"], createdAt: new Date().toISOString() },
+        { id: "lume-int-3", brand: "lumepaint", url: interior09Open, description: "Minimalist aesthetic walls", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["minimalist", "aesthetic", "clean"], createdAt: new Date().toISOString() },
+        { id: "lume-int-4", brand: "lumepaint", url: interior01Living, description: "Warm neutral palette living", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["warm", "neutral", "inviting"], createdAt: new Date().toISOString() },
+        { id: "lume-int-5", brand: "lumepaint", url: interior02Bedroom, description: "Luxury master suite finish", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["luxury", "master suite", "premium"], createdAt: new Date().toISOString() },
+        { id: "lume-int-6", brand: "lumepaint", url: interior06Bathroom, description: "Zen bathroom sanctuary", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["zen", "bathroom", "sanctuary"], createdAt: new Date().toISOString() },
+        { id: "lume-int-7", brand: "lumepaint", url: interior05Office, description: "Home office inspiration", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["office", "inspiration", "productivity"], createdAt: new Date().toISOString() },
+        { id: "lume-int-8", brand: "lumepaint", url: interior04Dining, description: "Dining room sophistication", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["dining", "sophisticated", "entertaining"], createdAt: new Date().toISOString() },
+        { id: "lume-int-9", brand: "lumepaint", url: interior01Living, description: "Reading nook cozy corner", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["reading nook", "cozy", "corner"], createdAt: new Date().toISOString() },
+        { id: "lume-int-10", brand: "lumepaint", url: interior07Nursery, description: "Kids room playful colors", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["kids", "playful", "fun"], createdAt: new Date().toISOString() },
+        { id: "lume-int-11", brand: "lumepaint", url: interior08Accent, description: "Gallery wall backdrop", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["gallery", "art", "backdrop"], createdAt: new Date().toISOString() },
+        { id: "lume-int-12", brand: "lumepaint", url: interior09Open, description: "Entryway first impression", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 5, tags: ["entryway", "first impression", "welcoming"], createdAt: new Date().toISOString() },
+        { id: "lume-int-13", brand: "lumepaint", url: interior09Open, description: "Mudroom organized style", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["mudroom", "organized", "functional"], createdAt: new Date().toISOString() },
+        { id: "lume-int-14", brand: "lumepaint", url: interior02Bedroom, description: "Closet organization upgrade", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["closet", "organization", "upgrade"], createdAt: new Date().toISOString() },
+        { id: "lume-int-15", brand: "lumepaint", url: interior01Living, description: "Bonus room versatile space", subject: "interior-walls", style: "finished-result", season: "all-year", quality: 4, tags: ["bonus room", "versatile", "flexible"], createdAt: new Date().toISOString() },
         // Lume Exterior (15)
-        { id: "lume-ext-1", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop", description: "Elegant home exterior elevation", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["elegant", "elevation", "curb appeal"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-2", brand: "lumepaint", url: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop", description: "Contemporary architecture paint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["contemporary", "architecture", "modern"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-3", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop", description: "Charming cottage exterior", subject: "exterior-home", style: "finished-result", season: "spring", quality: 5, tags: ["cottage", "charming", "quaint"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-4", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600573472572-8aba7a8a1a6b?w=400&h=300&fit=crop", description: "Farmhouse style refresh", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["farmhouse", "style", "rustic"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-5", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=400&h=300&fit=crop", description: "Mediterranean villa tones", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["mediterranean", "villa", "warm"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-6", brand: "lumepaint", url: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=400&h=300&fit=crop", description: "Beach house coastal colors", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["beach", "coastal", "relaxed"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-7", brand: "lumepaint", url: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=400&h=300&fit=crop", description: "Mountain retreat exterior", subject: "exterior-home", style: "finished-result", season: "fall", quality: 5, tags: ["mountain", "retreat", "nature"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-8", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&h=300&fit=crop", description: "Urban townhome update", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["urban", "townhome", "city"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-9", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=400&h=300&fit=crop", description: "Lakefront property beauty", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["lakefront", "waterfront", "scenic"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-10", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566752734-2a0cd58f8e68?w=400&h=300&fit=crop", description: "Garden shed charming update", subject: "exterior-home", style: "finished-result", season: "spring", quality: 4, tags: ["shed", "garden", "charming"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-11", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566752447-f4e219adffef?w=400&h=300&fit=crop", description: "Fence and gate refresh", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["fence", "gate", "boundary"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-12", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600607688066-890987f18a86?w=400&h=300&fit=crop", description: "Pergola outdoor living", subject: "deck-staining", style: "finished-result", season: "summer", quality: 5, tags: ["pergola", "outdoor", "entertainment"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-13", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400&h=300&fit=crop", description: "Pool house cabana style", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["pool house", "cabana", "resort"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-14", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=400&h=300&fit=crop", description: "Greenhouse glass and trim", subject: "exterior-home", style: "finished-result", season: "spring", quality: 4, tags: ["greenhouse", "garden", "botanical"], createdAt: new Date().toISOString() },
-        { id: "lume-ext-15", brand: "lumepaint", url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop", description: "Outdoor kitchen setup", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["outdoor kitchen", "cooking", "entertaining"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-1", brand: "lumepaint", url: exterior01CurbAppeal, description: "Elegant home exterior elevation", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["elegant", "elevation", "curb appeal"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-2", brand: "lumepaint", url: exterior02Modern, description: "Contemporary architecture paint", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["contemporary", "architecture", "modern"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-3", brand: "lumepaint", url: exterior07Ranch, description: "Charming cottage exterior", subject: "exterior-home", style: "finished-result", season: "spring", quality: 5, tags: ["cottage", "charming", "quaint"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-4", brand: "lumepaint", url: exterior08Craftsman, description: "Farmhouse style refresh", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 5, tags: ["farmhouse", "style", "rustic"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-5", brand: "lumepaint", url: exterior09Twostory, description: "Mediterranean villa tones", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["mediterranean", "villa", "warm"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-6", brand: "lumepaint", url: exterior05Suburban, description: "Beach house coastal colors", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["beach", "coastal", "relaxed"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-7", brand: "lumepaint", url: exterior06Colonial, description: "Mountain retreat exterior", subject: "exterior-home", style: "finished-result", season: "fall", quality: 5, tags: ["mountain", "retreat", "nature"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-8", brand: "lumepaint", url: exterior11Historic, description: "Urban townhome update", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["urban", "townhome", "city"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-9", brand: "lumepaint", url: exterior03Traditional, description: "Lakefront property beauty", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["lakefront", "waterfront", "scenic"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-10", brand: "lumepaint", url: exterior12Garage, description: "Garden shed charming update", subject: "exterior-home", style: "finished-result", season: "spring", quality: 4, tags: ["shed", "garden", "charming"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-11", brand: "lumepaint", url: exterior10Porch, description: "Fence and gate refresh", subject: "exterior-home", style: "finished-result", season: "all-year", quality: 4, tags: ["fence", "gate", "boundary"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-12", brand: "lumepaint", url: deck01Backyard, description: "Pergola outdoor living", subject: "deck-staining", style: "finished-result", season: "summer", quality: 5, tags: ["pergola", "outdoor", "entertainment"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-13", brand: "lumepaint", url: exterior04Luxury, description: "Pool house cabana style", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["pool house", "cabana", "resort"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-14", brand: "lumepaint", url: exterior05Suburban, description: "Greenhouse glass and trim", subject: "exterior-home", style: "finished-result", season: "spring", quality: 4, tags: ["greenhouse", "garden", "botanical"], createdAt: new Date().toISOString() },
+        { id: "lume-ext-15", brand: "lumepaint", url: exterior01CurbAppeal, description: "Outdoor kitchen setup", subject: "exterior-home", style: "finished-result", season: "summer", quality: 5, tags: ["outdoor kitchen", "cooking", "entertaining"], createdAt: new Date().toISOString() },
         // Lume Cabinets (10)
         { id: "lume-cab-1", brand: "lumepaint", url: cabinetWhiteKitchen, description: "Designer kitchen cabinets", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 5, tags: ["designer", "kitchen", "luxury"], createdAt: new Date().toISOString() },
         { id: "lume-cab-2", brand: "lumepaint", url: cabinetGrayKitchen, description: "Sage green cabinet trend", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 5, tags: ["sage", "green", "trendy"], createdAt: new Date().toISOString() },
@@ -643,27 +682,27 @@ export default function MarketingHub() {
         { id: "lume-cab-9", brand: "lumepaint", url: cabinetLaundryRoom, description: "Craft room storage solution", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 4, tags: ["craft room", "storage", "creative"], createdAt: new Date().toISOString() },
         { id: "lume-cab-10", brand: "lumepaint", url: cabinetEntertainment, description: "Media room cabinet design", subject: "cabinet-work", style: "finished-result", season: "all-year", quality: 5, tags: ["media room", "entertainment", "design"], createdAt: new Date().toISOString() },
         // Lume Trim/Doors (10)
-        { id: "lume-trim-1", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", description: "Architectural molding detail", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["architectural", "molding", "detail"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-2", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop", description: "Custom millwork finishing", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["custom", "millwork", "craftsmanship"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-3", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618140-f0c2c6b09ec6?w=400&h=300&fit=crop", description: "French door elegance", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["french doors", "elegant", "glass"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-4", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618669-5c9e5b10f0f4?w=400&h=300&fit=crop", description: "Statement entry door", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["entry", "statement", "grand"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-5", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618693-df6f9b19c90d?w=400&h=300&fit=crop", description: "Barn door rustic charm", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["barn door", "rustic", "charm"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-6", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618723-d41614eb9423?w=400&h=300&fit=crop", description: "Grand staircase railing", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["staircase", "grand", "elegant"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-7", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618776-5e0d0f91d8b4?w=400&h=300&fit=crop", description: "Coffered ceiling luxury", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["coffered ceiling", "luxury", "architectural"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-8", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618798-7b9f1a2cc4a5?w=400&h=300&fit=crop", description: "Pocket doors space saving", subject: "door-painting", style: "finished-result", season: "all-year", quality: 4, tags: ["pocket doors", "space saving", "modern"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-9", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618839-7ac9a77d2f5b?w=400&h=300&fit=crop", description: "Picture frame wall panels", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["wall panels", "picture frame", "elegant"], createdAt: new Date().toISOString() },
-        { id: "lume-trim-10", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618044-8b2f26e6f2d8?w=400&h=300&fit=crop", description: "Shiplap accent wall", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["shiplap", "accent", "texture"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-1", brand: "lumepaint", url: trim01Crown, description: "Architectural molding detail", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["architectural", "molding", "detail"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-2", brand: "lumepaint", url: trim02Baseboard, description: "Custom millwork finishing", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["custom", "millwork", "craftsmanship"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-3", brand: "lumepaint", url: door01Front, description: "French door elegance", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["french doors", "elegant", "glass"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-4", brand: "lumepaint", url: door01Front, description: "Statement entry door", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["entry", "statement", "grand"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-5", brand: "lumepaint", url: door02Interior, description: "Barn door rustic charm", subject: "door-painting", style: "finished-result", season: "all-year", quality: 5, tags: ["barn door", "rustic", "charm"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-6", brand: "lumepaint", url: trim01Crown, description: "Grand staircase railing", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["staircase", "grand", "elegant"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-7", brand: "lumepaint", url: trim02Baseboard, description: "Coffered ceiling luxury", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["coffered ceiling", "luxury", "architectural"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-8", brand: "lumepaint", url: door02Interior, description: "Pocket doors space saving", subject: "door-painting", style: "finished-result", season: "all-year", quality: 4, tags: ["pocket doors", "space saving", "modern"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-9", brand: "lumepaint", url: trim01Crown, description: "Picture frame wall panels", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["wall panels", "picture frame", "elegant"], createdAt: new Date().toISOString() },
+        { id: "lume-trim-10", brand: "lumepaint", url: trim02Baseboard, description: "Shiplap accent wall", subject: "trim-detail", style: "finished-result", season: "all-year", quality: 5, tags: ["shiplap", "accent", "texture"], createdAt: new Date().toISOString() },
         // Lume Commercial/General (10)
-        { id: "lume-com-1", brand: "lumepaint", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop", description: "Boutique hotel lobby", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["hotel", "boutique", "luxury"], createdAt: new Date().toISOString() },
-        { id: "lume-com-2", brand: "lumepaint", url: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=400&h=300&fit=crop", description: "Upscale salon interior", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["salon", "upscale", "beauty"], createdAt: new Date().toISOString() },
-        { id: "lume-com-3", brand: "lumepaint", url: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=300&fit=crop", description: "Fine dining atmosphere", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["fine dining", "atmosphere", "elegant"], createdAt: new Date().toISOString() },
-        { id: "lume-com-4", brand: "lumepaint", url: "https://images.unsplash.com/photo-1497366412874-3415097a27e7?w=400&h=300&fit=crop", description: "Spa wellness center", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["spa", "wellness", "relaxation"], createdAt: new Date().toISOString() },
-        { id: "lume-com-5", brand: "lumepaint", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop", description: "Art gallery exhibition space", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["gallery", "art", "exhibition"], createdAt: new Date().toISOString() },
-        { id: "lume-gen-1", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop", description: "Curated color palette", subject: "general", style: "action-shot", season: "all-year", quality: 5, tags: ["curated", "palette", "design"], createdAt: new Date().toISOString() },
-        { id: "lume-gen-2", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618044-8b2f26e6f2d8?w=400&h=300&fit=crop", description: "Artisan craftsman at work", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["artisan", "craftsman", "skill"], createdAt: new Date().toISOString() },
-        { id: "lume-gen-3", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618072-3d0c3c2c0e8c?w=400&h=300&fit=crop", description: "Expert team precision", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["expert", "precision", "team"], createdAt: new Date().toISOString() },
-        { id: "lume-gen-4", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618106-4f4c5f0f3e9d?w=400&h=300&fit=crop", description: "Stunning transformation reveal", subject: "before-after", style: "before-after", season: "all-year", quality: 5, tags: ["transformation", "reveal", "stunning"], createdAt: new Date().toISOString() },
-        { id: "lume-gen-5", brand: "lumepaint", url: "https://images.unsplash.com/photo-1558618141-ef3c7c2d06f9?w=400&h=300&fit=crop", description: "Design consultation session", subject: "general", style: "action-shot", season: "all-year", quality: 5, tags: ["design", "consultation", "expert"], createdAt: new Date().toISOString() },
+        { id: "lume-com-1", brand: "lumepaint", url: commercial01Office, description: "Boutique hotel lobby", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["hotel", "boutique", "luxury"], createdAt: new Date().toISOString() },
+        { id: "lume-com-2", brand: "lumepaint", url: commercial02Retail, description: "Upscale salon interior", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["salon", "upscale", "beauty"], createdAt: new Date().toISOString() },
+        { id: "lume-com-3", brand: "lumepaint", url: commercial01Office, description: "Fine dining atmosphere", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["fine dining", "atmosphere", "elegant"], createdAt: new Date().toISOString() },
+        { id: "lume-com-4", brand: "lumepaint", url: commercial02Retail, description: "Spa wellness center", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["spa", "wellness", "relaxation"], createdAt: new Date().toISOString() },
+        { id: "lume-com-5", brand: "lumepaint", url: commercial01Office, description: "Art gallery exhibition space", subject: "commercial-space", style: "finished-result", season: "all-year", quality: 5, tags: ["gallery", "art", "exhibition"], createdAt: new Date().toISOString() },
+        { id: "lume-gen-1", brand: "lumepaint", url: general02Swatches, description: "Curated color palette", subject: "general", style: "action-shot", season: "all-year", quality: 5, tags: ["curated", "palette", "design"], createdAt: new Date().toISOString() },
+        { id: "lume-gen-2", brand: "lumepaint", url: team01Crew, description: "Artisan craftsman at work", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["artisan", "craftsman", "skill"], createdAt: new Date().toISOString() },
+        { id: "lume-gen-3", brand: "lumepaint", url: team01Crew, description: "Expert team precision", subject: "team-action", style: "action-shot", season: "all-year", quality: 5, tags: ["expert", "precision", "team"], createdAt: new Date().toISOString() },
+        { id: "lume-gen-4", brand: "lumepaint", url: beforeafter01Room, description: "Stunning transformation reveal", subject: "before-after", style: "before-after", season: "all-year", quality: 5, tags: ["transformation", "reveal", "stunning"], createdAt: new Date().toISOString() },
+        { id: "lume-gen-5", brand: "lumepaint", url: general02Swatches, description: "Design consultation session", subject: "general", style: "action-shot", season: "all-year", quality: 5, tags: ["design", "consultation", "expert"], createdAt: new Date().toISOString() },
       ];
       
       const allImages = [...nppImages, ...lumeImages];
@@ -1825,9 +1864,92 @@ export default function MarketingHub() {
                                   <p className="text-sm text-gray-900 dark:text-white line-clamp-2 mb-2">
                                     {message?.content || "No message"}
                                   </p>
-                                  <div className="flex gap-1">
+                                  <div className="flex items-center gap-1 flex-wrap">
                                     <Badge variant="outline" className="text-xs">{bundle.platform}</Badge>
-                                    <Badge variant="secondary" className="text-xs">{bundle.status}</Badge>
+                                    <select
+                                      className="text-xs px-2 py-1 rounded border bg-background"
+                                      value={bundle.status}
+                                      onChange={(e) => {
+                                        const updated = contentBundles.map(b => 
+                                          b.id === bundle.id ? {...b, status: e.target.value as ContentBundle['status']} : b
+                                        );
+                                        setContentBundles(updated);
+                                        localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                                      }}
+                                      data-testid={`select-status-${bundle.id}`}
+                                    >
+                                      <option value="suggested">Suggested</option>
+                                      <option value="circulating">Circulating</option>
+                                      <option value="posted">Posted</option>
+                                      <option value="removed">Removed</option>
+                                    </select>
+                                  </div>
+                                  <div className="flex gap-1 mt-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={async () => {
+                                        if (image) {
+                                          const response = await fetch(image.url);
+                                          const blob = await response.blob();
+                                          const url = URL.createObjectURL(blob);
+                                          const a = document.createElement('a');
+                                          a.href = url;
+                                          a.download = `${bundle.platform}-${image.description.replace(/\s+/g, '-').toLowerCase()}.jpg`;
+                                          document.body.appendChild(a);
+                                          a.click();
+                                          document.body.removeChild(a);
+                                          URL.revokeObjectURL(url);
+                                        }
+                                      }}
+                                      data-testid={`button-download-image-${bundle.id}`}
+                                    >
+                                      <Download className="w-3 h-3 mr-1" />
+                                      Image
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        if (message) {
+                                          navigator.clipboard.writeText(message.content);
+                                          toast({ title: "Copied!", description: "Message copied to clipboard" });
+                                        }
+                                      }}
+                                      data-testid={`button-copy-message-${bundle.id}`}
+                                    >
+                                      <Copy className="w-3 h-3 mr-1" />
+                                      Copy
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={async () => {
+                                        if (image && message) {
+                                          const response = await fetch(image.url);
+                                          const blob = await response.blob();
+                                          const url = URL.createObjectURL(blob);
+                                          const a = document.createElement('a');
+                                          a.href = url;
+                                          a.download = `${bundle.platform}-${image.description.replace(/\s+/g, '-').toLowerCase()}.jpg`;
+                                          document.body.appendChild(a);
+                                          a.click();
+                                          document.body.removeChild(a);
+                                          URL.revokeObjectURL(url);
+                                          navigator.clipboard.writeText(message.content);
+                                          toast({ title: "Bundle Downloaded!", description: "Image saved and message copied to clipboard - ready to post!" });
+                                          const updated = contentBundles.map(b => 
+                                            b.id === bundle.id ? {...b, status: 'circulating' as ContentBundle['status']} : b
+                                          );
+                                          setContentBundles(updated);
+                                          localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                                        }
+                                      }}
+                                      data-testid={`button-download-bundle-${bundle.id}`}
+                                    >
+                                      <Download className="w-3 h-3 mr-1" />
+                                      Both
+                                    </Button>
                                   </div>
                                 </div>
                               </div>
