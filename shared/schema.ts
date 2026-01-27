@@ -5714,3 +5714,91 @@ export const insertFieldCaptureSchema = createInsertSchema(fieldCaptures).omit({
 export type InsertFieldCapture = z.infer<typeof insertFieldCaptureSchema>;
 export type FieldCapture = typeof fieldCaptures.$inferSelect;
 
+// Meta Business Suite Integration - Store Facebook/Instagram connection per tenant
+export const metaIntegrations = pgTable("meta_integrations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().unique(),
+  
+  // Meta App credentials (stored securely - only IDs, secrets in env vars)
+  appId: text("app_id"),
+  
+  // Facebook Page connection
+  facebookPageId: text("facebook_page_id"),
+  facebookPageName: text("facebook_page_name"),
+  facebookPageAccessToken: text("facebook_page_access_token"), // Long-lived or System User token
+  facebookConnected: boolean("facebook_connected").default(false),
+  
+  // Instagram Business Account connection
+  instagramAccountId: text("instagram_account_id"),
+  instagramUsername: text("instagram_username"),
+  instagramConnected: boolean("instagram_connected").default(false),
+  
+  // Token metadata
+  tokenExpiresAt: timestamp("token_expires_at"),
+  tokenType: text("token_type").default("long_lived"), // 'short_lived', 'long_lived', 'system_user'
+  
+  // Connection status
+  lastSyncAt: timestamp("last_sync_at"),
+  lastError: text("last_error"),
+  
+  // Analytics cache
+  facebookFollowers: integer("facebook_followers"),
+  facebookReach: integer("facebook_reach"),
+  instagramFollowers: integer("instagram_followers"),
+  instagramReach: integer("instagram_reach"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_meta_integrations_tenant").on(table.tenantId),
+]);
+
+export const insertMetaIntegrationSchema = createInsertSchema(metaIntegrations).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertMetaIntegration = z.infer<typeof insertMetaIntegrationSchema>;
+export type MetaIntegration = typeof metaIntegrations.$inferSelect;
+
+// Scheduled Social Posts - Track posts scheduled via Meta API
+export const scheduledPosts = pgTable("scheduled_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Content
+  message: text("message").notNull(),
+  messageEs: text("message_es"), // Spanish version
+  imageUrl: text("image_url"),
+  
+  // Targeting
+  platform: text("platform").notNull(), // 'facebook', 'instagram', 'both'
+  language: text("language").default("en"), // 'en', 'es', 'both'
+  
+  // Scheduling
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  publishedAt: timestamp("published_at"),
+  
+  // Status tracking
+  status: text("status").default("scheduled"), // 'scheduled', 'publishing', 'published', 'failed'
+  
+  // Meta API response
+  facebookPostId: text("facebook_post_id"),
+  instagramMediaId: text("instagram_media_id"),
+  errorMessage: text("error_message"),
+  
+  // Analytics (populated after publishing)
+  impressions: integer("impressions"),
+  reach: integer("reach"),
+  engagement: integer("engagement"),
+  clicks: integer("clicks"),
+  
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_scheduled_posts_tenant").on(table.tenantId),
+  index("idx_scheduled_posts_status").on(table.status),
+  index("idx_scheduled_posts_scheduled").on(table.scheduledAt),
+]);
+
+export const insertScheduledPostSchema = createInsertSchema(scheduledPosts).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertScheduledPost = z.infer<typeof insertScheduledPostSchema>;
+export type ScheduledPost = typeof scheduledPosts.$inferSelect;
+

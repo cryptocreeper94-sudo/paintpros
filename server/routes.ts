@@ -42,7 +42,9 @@ import {
   insertMilestoneNftSchema, insertEsgTrackingSchema, insertFinancingApplicationSchema, insertFranchiseAnalyticsSchema,
   users as usersTable, userPins,
   dataImports, importedRecords, insertDataImportSchema, insertImportedRecordSchema,
-  fieldCaptures, jobs
+  fieldCaptures, jobs,
+  metaIntegrations, insertMetaIntegrationSchema,
+  scheduledPosts, insertScheduledPostSchema
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -11010,6 +11012,410 @@ function getWindDirection(degrees: number): string {
   const index = Math.round(degrees / 22.5) % 16;
   return directions[index];
 }
+
+// ============ META BUSINESS SUITE INTEGRATION ============
+
+// Get Meta integration status for a tenant
+app.get("/api/meta/:tenantId/status", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const [integration] = await db
+      .select()
+      .from(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId))
+      .limit(1);
+    
+    if (!integration) {
+      return res.json({
+        connected: false,
+        facebook: { connected: false },
+        instagram: { connected: false }
+      });
+    }
+    
+    res.json({
+      connected: integration.facebookConnected || integration.instagramConnected,
+      facebook: {
+        connected: integration.facebookConnected,
+        pageId: integration.facebookPageId,
+        pageName: integration.facebookPageName,
+        followers: integration.facebookFollowers,
+        reach: integration.facebookReach
+      },
+      instagram: {
+        connected: integration.instagramConnected,
+        accountId: integration.instagramAccountId,
+        username: integration.instagramUsername,
+        followers: integration.instagramFollowers,
+        reach: integration.instagramReach
+      },
+      tokenType: integration.tokenType,
+      tokenExpiresAt: integration.tokenExpiresAt,
+      lastSyncAt: integration.lastSyncAt,
+      lastError: integration.lastError
+    });
+  } catch (error) {
+    console.error("Error fetching Meta integration status:", error);
+    res.status(500).json({ error: "Failed to fetch Meta integration status" });
+  }
+});
+
+// Save/update Meta integration credentials
+app.post("/api/meta/:tenantId/connect", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { 
+      appId, 
+      facebookPageId, 
+      facebookPageName,
+      facebookPageAccessToken,
+      instagramAccountId,
+      instagramUsername,
+      tokenType
+    } = req.body;
+    
+    // Check if integration already exists
+    const [existing] = await db
+      .select()
+      .from(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId))
+      .limit(1);
+    
+    const integrationData = {
+      tenantId,
+      appId,
+      facebookPageId,
+      facebookPageName,
+      facebookPageAccessToken,
+      facebookConnected: !!facebookPageAccessToken,
+      instagramAccountId,
+      instagramUsername,
+      instagramConnected: !!instagramAccountId,
+      tokenType: tokenType || "long_lived",
+      lastSyncAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    if (existing) {
+      await db
+        .update(metaIntegrations)
+        .set(integrationData)
+        .where(eq(metaIntegrations.tenantId, tenantId));
+    } else {
+      await db.insert(metaIntegrations).values(integrationData);
+    }
+    
+    res.json({ success: true, message: "Meta integration saved successfully" });
+  } catch (error) {
+    console.error("Error saving Meta integration:", error);
+    res.status(500).json({ error: "Failed to save Meta integration" });
+  }
+});
+
+// Test Meta API connection
+app.post("/api/meta/:tenantId/test", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    
+    const [integration] = await db
+      .select()
+      .from(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId))
+      .limit(1);
+    
+    if (!integration || !integration.facebookPageAccessToken) {
+      return res.status(400).json({ error: "No Meta integration configured" });
+    }
+    
+    // Test Facebook API connection
+    const fbResponse = await fetch(
+      `https://graph.facebook.com/v21.0/me?access_token=${integration.facebookPageAccessToken}`
+    );
+    
+    if (!fbResponse.ok) {
+      const error = await fbResponse.json();
+      await db
+        .update(metaIntegrations)
+        .set({ lastError: error.error?.message || "Connection test failed", updatedAt: new Date() })
+        .where(eq(metaIntegrations.tenantId, tenantId));
+      return res.status(400).json({ error: error.error?.message || "Connection test failed" });
+    }
+    
+    const fbData = await fbResponse.json();
+    
+    // Update last sync and clear errors
+    await db
+      .update(metaIntegrations)
+      .set({ lastSyncAt: new Date(), lastError: null, updatedAt: new Date() })
+      .where(eq(metaIntegrations.tenantId, tenantId));
+    
+    res.json({ 
+      success: true, 
+      message: "Connection test successful",
+      data: fbData
+    });
+  } catch (error) {
+    console.error("Error testing Meta connection:", error);
+    res.status(500).json({ error: "Failed to test Meta connection" });
+  }
+});
+
+// Post to Facebook
+app.post("/api/meta/:tenantId/post/facebook", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { message, imageUrl } = req.body;
+    
+    const [integration] = await db
+      .select()
+      .from(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId))
+      .limit(1);
+    
+    if (!integration || !integration.facebookConnected) {
+      return res.status(400).json({ error: "Facebook not connected" });
+    }
+    
+    let postUrl = `https://graph.facebook.com/v21.0/${integration.facebookPageId}/feed`;
+    let postData: any = {
+      message,
+      access_token: integration.facebookPageAccessToken
+    };
+    
+    // If there's an image, post as photo instead
+    if (imageUrl) {
+      postUrl = `https://graph.facebook.com/v21.0/${integration.facebookPageId}/photos`;
+      postData = {
+        url: imageUrl,
+        caption: message,
+        access_token: integration.facebookPageAccessToken
+      };
+    }
+    
+    const response = await fetch(postUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(postData)
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      return res.status(400).json({ error: result.error?.message || "Failed to post" });
+    }
+    
+    res.json({ 
+      success: true, 
+      postId: result.id || result.post_id,
+      message: "Posted successfully to Facebook"
+    });
+  } catch (error) {
+    console.error("Error posting to Facebook:", error);
+    res.status(500).json({ error: "Failed to post to Facebook" });
+  }
+});
+
+// Post to Instagram (2-step process: create media container, then publish)
+app.post("/api/meta/:tenantId/post/instagram", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { caption, imageUrl } = req.body;
+    
+    if (!imageUrl) {
+      return res.status(400).json({ error: "Image URL is required for Instagram posts" });
+    }
+    
+    const [integration] = await db
+      .select()
+      .from(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId))
+      .limit(1);
+    
+    if (!integration || !integration.instagramConnected) {
+      return res.status(400).json({ error: "Instagram not connected" });
+    }
+    
+    // Step 1: Create media container
+    const containerResponse = await fetch(
+      `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          image_url: imageUrl,
+          caption: caption || '',
+          access_token: integration.facebookPageAccessToken!
+        })
+      }
+    );
+    
+    const containerResult = await containerResponse.json();
+    
+    if (!containerResponse.ok) {
+      return res.status(400).json({ error: containerResult.error?.message || "Failed to create media container" });
+    }
+    
+    const creationId = containerResult.id;
+    
+    // Step 2: Publish the media
+    const publishResponse = await fetch(
+      `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          creation_id: creationId,
+          access_token: integration.facebookPageAccessToken!
+        })
+      }
+    );
+    
+    const publishResult = await publishResponse.json();
+    
+    if (!publishResponse.ok) {
+      return res.status(400).json({ error: publishResult.error?.message || "Failed to publish media" });
+    }
+    
+    res.json({ 
+      success: true, 
+      mediaId: publishResult.id,
+      message: "Posted successfully to Instagram"
+    });
+  } catch (error) {
+    console.error("Error posting to Instagram:", error);
+    res.status(500).json({ error: "Failed to post to Instagram" });
+  }
+});
+
+// Schedule a post for later
+app.post("/api/meta/:tenantId/schedule", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    const { message, messageEs, imageUrl, platform, language, scheduledAt, createdBy } = req.body;
+    
+    const [post] = await db
+      .insert(scheduledPosts)
+      .values({
+        tenantId,
+        message,
+        messageEs,
+        imageUrl,
+        platform: platform || 'both',
+        language: language || 'en',
+        scheduledAt: new Date(scheduledAt),
+        status: 'scheduled',
+        createdBy
+      })
+      .returning();
+    
+    res.json({ success: true, post });
+  } catch (error) {
+    console.error("Error scheduling post:", error);
+    res.status(500).json({ error: "Failed to schedule post" });
+  }
+});
+
+// Get scheduled posts for a tenant
+app.get("/api/meta/:tenantId/scheduled", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    
+    const posts = await db
+      .select()
+      .from(scheduledPosts)
+      .where(eq(scheduledPosts.tenantId, tenantId))
+      .orderBy(desc(scheduledPosts.scheduledAt));
+    
+    res.json(posts);
+  } catch (error) {
+    console.error("Error fetching scheduled posts:", error);
+    res.status(500).json({ error: "Failed to fetch scheduled posts" });
+  }
+});
+
+// Fetch analytics from Meta
+app.get("/api/meta/:tenantId/analytics", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    
+    const [integration] = await db
+      .select()
+      .from(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId))
+      .limit(1);
+    
+    if (!integration || !integration.facebookConnected) {
+      return res.json({
+        facebook: { followers: 0, reach: 0, engagement: 0, posts: 0 },
+        instagram: { followers: 0, reach: 0, engagement: 0, posts: 0 }
+      });
+    }
+    
+    // Fetch Facebook Page insights
+    let facebookData = { followers: 0, reach: 0, engagement: 0, posts: 0 };
+    let instagramData = { followers: 0, reach: 0, engagement: 0, posts: 0 };
+    
+    try {
+      // Get Facebook Page data
+      if (integration.facebookPageId) {
+        const fbPageResponse = await fetch(
+          `https://graph.facebook.com/v21.0/${integration.facebookPageId}?fields=followers_count,fan_count&access_token=${integration.facebookPageAccessToken}`
+        );
+        if (fbPageResponse.ok) {
+          const fbPage = await fbPageResponse.json();
+          facebookData.followers = fbPage.followers_count || fbPage.fan_count || 0;
+        }
+      }
+      
+      // Get Instagram data
+      if (integration.instagramAccountId) {
+        const igResponse = await fetch(
+          `https://graph.facebook.com/v21.0/${integration.instagramAccountId}?fields=followers_count,media_count&access_token=${integration.facebookPageAccessToken}`
+        );
+        if (igResponse.ok) {
+          const igData = await igResponse.json();
+          instagramData.followers = igData.followers_count || 0;
+          instagramData.posts = igData.media_count || 0;
+        }
+      }
+      
+      // Update cached analytics in database
+      await db
+        .update(metaIntegrations)
+        .set({
+          facebookFollowers: facebookData.followers,
+          instagramFollowers: instagramData.followers,
+          lastSyncAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(metaIntegrations.tenantId, tenantId));
+        
+    } catch (apiError) {
+      console.error("Error fetching Meta analytics:", apiError);
+    }
+    
+    res.json({ facebook: facebookData, instagram: instagramData });
+  } catch (error) {
+    console.error("Error in Meta analytics:", error);
+    res.status(500).json({ error: "Failed to fetch analytics" });
+  }
+});
+
+// Disconnect Meta integration
+app.delete("/api/meta/:tenantId/disconnect", async (req, res) => {
+  try {
+    const { tenantId } = req.params;
+    
+    await db
+      .delete(metaIntegrations)
+      .where(eq(metaIntegrations.tenantId, tenantId));
+    
+    res.json({ success: true, message: "Meta integration disconnected" });
+  } catch (error) {
+    console.error("Error disconnecting Meta:", error);
+    res.status(500).json({ error: "Failed to disconnect Meta integration" });
+  }
+});
 
 // ============ INVESTOR PDF DECK ============
 
