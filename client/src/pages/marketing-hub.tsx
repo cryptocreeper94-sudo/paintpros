@@ -2846,6 +2846,105 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
+              {/* Educational Posts - Tips & Knowledge */}
+              <GlassCard className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                  <h4 className="font-bold text-gray-900 dark:text-white">Educational Posts</h4>
+                  <Badge variant="secondary" className="text-xs">Quick Add</Badge>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
+                  Share your expertise! Educational content builds trust and positions you as the go-to painting professional.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {[
+                    { 
+                      title: "Prep is Everything", 
+                      IconComponent: Layers,
+                      content: "Pro tip: 80% of a great paint job happens BEFORE the brush touches the wall. Proper prep includes cleaning, sanding, priming, and taping. Skip these steps and you'll see it in the finish. Here's what our prep process looks like...",
+                      subject: "general" as ImageSubject
+                    },
+                    { 
+                      title: "Paint Sheen Guide", 
+                      IconComponent: Sparkles,
+                      content: "Choosing the right sheen matters! Flat = hides imperfections (ceilings), Eggshell = low sheen (living rooms), Satin = easy clean (kitchens/baths), Semi-gloss = durable (trim/doors), Gloss = high shine (cabinets). Save this for your next project!",
+                      subject: "general" as ImageSubject
+                    },
+                    { 
+                      title: "Color Psychology", 
+                      IconComponent: Palette,
+                      content: "Did you know colors affect your mood? Blue = calm & productive (perfect for offices). Yellow = energizing (great for kitchens). Green = relaxing (ideal for bedrooms). What feeling do you want in your space? We can help you choose!",
+                      subject: "interior-walls" as ImageSubject
+                    },
+                    { 
+                      title: "When to Repaint", 
+                      IconComponent: Clock,
+                      content: "How often should you repaint? Interior walls: 5-7 years. High-traffic areas: 2-3 years. Exterior: 5-10 years (depending on climate). Cabinets: 3-5 years. Notice peeling, fading, or chalking? It's time! DM us for a free assessment.",
+                      subject: "exterior-home" as ImageSubject
+                    },
+                    { 
+                      title: "DIY vs Pro", 
+                      IconComponent: Users,
+                      content: "When to DIY vs hire a pro: DIY for small touch-ups and accent walls. Call the pros for high ceilings, exteriors, cabinets, and lead paint. We see DIY disasters every week - save yourself the headache (and ladder injuries). Questions? We're here to help!",
+                      subject: "general" as ImageSubject
+                    },
+                    { 
+                      title: "Seasonal Tips", 
+                      IconComponent: Calendar,
+                      content: "Best time to paint? Spring and fall are ideal - moderate temps (50-85°F) help paint cure properly. Summer heat can cause bubbling. Winter cold prevents proper adhesion. Planning a project? Book now for the perfect painting weather!",
+                      subject: "exterior-home" as ImageSubject
+                    },
+                    { 
+                      title: "Cabinet Care", 
+                      IconComponent: Home,
+                      content: "Painted cabinets looking tired? Here's how to keep them fresh: Clean with mild soap monthly. Avoid harsh chemicals. Touch up chips immediately. Keep humidity controlled. With proper care, painted cabinets last 8-10 years!",
+                      subject: "cabinet-work" as ImageSubject
+                    },
+                    { 
+                      title: "Color Trends", 
+                      IconComponent: TrendingUp,
+                      content: "2024 Color Trends: Warm neutrals are IN (think greige, warm white, soft beige). Bold accent walls in deep blues and forest greens. Black trim is having a moment! What color are you considering? Drop it below!",
+                      subject: "interior-walls" as ImageSubject
+                    },
+                    { 
+                      title: "Deck Maintenance", 
+                      IconComponent: TreePine,
+                      content: "Deck looking rough? Here's the fix: Power wash gently. Let dry 48+ hours. Apply quality stain/sealer. Recoat every 2-3 years. Pro tip: Stain in shade, not direct sun! Need help? We've got you covered.",
+                      subject: "deck-staining" as ImageSubject
+                    }
+                  ].map((template, idx) => (
+                    <Button 
+                      key={idx}
+                      variant="outline" 
+                      size="sm"
+                      className="justify-start text-left h-auto py-2 px-3"
+                      onClick={() => {
+                        const newMessage: MessageTemplate = {
+                          id: `msg-edu-${Date.now()}-${idx}`,
+                          brand: selectedTenant,
+                          content: template.content,
+                          subject: template.subject,
+                          tone: "professional" as MessageTone,
+                          cta: "none" as MessageCTA,
+                          platform: "all",
+                          hashtags: ["paintingtips", "protips", "homeimprovement"],
+                          createdAt: new Date().toISOString(),
+                        };
+                        const updated = [...messageTemplates, newMessage];
+                        setMessageTemplates(updated);
+                        localStorage.setItem("marketing_messages", JSON.stringify(updated));
+                      }}
+                      data-testid={`button-edu-${idx}`}
+                    >
+                      <div className="w-6 h-6 rounded bg-blue-100 dark:bg-blue-800 flex items-center justify-center mr-2 flex-shrink-0">
+                        <template.IconComponent className="w-3 h-3 text-blue-700 dark:text-blue-200" />
+                      </div>
+                      <span className="text-xs">{template.title}</span>
+                    </Button>
+                  ))}
+                </div>
+              </GlassCard>
+
               {messageTemplates.length === 0 ? (
                 <GlassCard className="p-8 text-center">
                   <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
