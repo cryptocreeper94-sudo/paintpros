@@ -30,7 +30,18 @@ import {
   Languages,
   CheckCircle,
   AlertCircle,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Presentation,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Palette,
+  FileText,
+  Target,
+  Megaphone,
+  DollarSign
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/language-toggle";
@@ -100,6 +111,289 @@ const mockAnalytics = {
   },
 };
 
+// Presentation slides with audience view and speaker notes
+const presentationSlides = [
+  {
+    id: 0,
+    title: "Marketing Suite",
+    subtitle: "Your Complete Marketing Command Center",
+    icon: TrendingUp,
+    iconColor: "text-pink-500",
+    bgGradient: "from-pink-500/20 to-purple-500/20",
+    bullets: [
+      "One dashboard for all your marketing",
+      "Create, schedule, and track content",
+      "Built specifically for painting contractors"
+    ],
+    speakerNotes: "This is our central hub for everything marketing-related. Instead of juggling multiple apps and platforms, everything lives here. We designed this specifically for the painting industry - so it speaks your language and understands your business."
+  },
+  {
+    id: 1,
+    title: "Content Studio",
+    subtitle: "Tab 1: Ready-to-Post Content Library",
+    icon: Palette,
+    iconColor: "text-purple-500",
+    bgGradient: "from-purple-500/20 to-indigo-500/20",
+    bullets: [
+      "Professional images organized by category",
+      "Pre-written captions for each platform",
+      "Download and post in under 2 minutes",
+      "Before/After photos from your jobs"
+    ],
+    speakerNotes: "Think of this as your content library. We've got professional images organized by type - interior, exterior, cabinets, decks. Each one comes with copy-paste captions already written for Facebook, Instagram, and Nextdoor. Your crews submit their Before/After photos, and we add them to the library so content stays fresh."
+  },
+  {
+    id: 2,
+    title: "Analytics Center",
+    subtitle: "Tab 2: Know What's Working",
+    icon: BarChart3,
+    iconColor: "text-blue-500",
+    bgGradient: "from-blue-500/20 to-cyan-500/20",
+    bullets: [
+      "Track engagement across all platforms",
+      "See which posts generate the most leads",
+      "Monthly performance reports",
+      "Competitor benchmarking"
+    ],
+    speakerNotes: "No more guessing what works. This shows you exactly which posts are getting engagement, which ones are actually generating phone calls, and how you stack up against competitors. Over time, the system learns what content performs best for your specific audience."
+  },
+  {
+    id: 3,
+    title: "Content Calendar",
+    subtitle: "Tab 3: Never Miss a Posting Day",
+    icon: CalendarIcon,
+    iconColor: "text-green-500",
+    bgGradient: "from-green-500/20 to-emerald-500/20",
+    bullets: [
+      "Smart posting schedule (MWF/TThSat)",
+      "Seasonal content suggestions",
+      "Holiday and event reminders",
+      "Drag-and-drop planning"
+    ],
+    speakerNotes: "The calendar tells you what to post and when. Monday, Wednesday, Friday we do project showcases - the Before/After stuff. Tuesday, Thursday, Saturday is tips and engagement content. Sunday is your planning day. It even reminds you about seasonal content and holidays."
+  },
+  {
+    id: 4,
+    title: "Marketing Playbook",
+    subtitle: "Tab 4: Proven Strategies That Work",
+    icon: Target,
+    iconColor: "text-amber-500",
+    bgGradient: "from-amber-500/20 to-orange-500/20",
+    bullets: [
+      "Step-by-step campaign guides",
+      "Seasonal promotion templates",
+      "Review generation strategies",
+      "Referral program blueprints"
+    ],
+    speakerNotes: "This is where the real strategy lives. We've compiled proven marketing playbooks specifically for painters. Want to run a spring special? There's a step-by-step guide. Need more Google reviews? There's a system for that. Referral program? We've got templates ready to go."
+  },
+  {
+    id: 5,
+    title: "Budget Tracker",
+    subtitle: "Tab 5: Track Every Marketing Dollar",
+    icon: DollarSign,
+    iconColor: "text-emerald-500",
+    bgGradient: "from-emerald-500/20 to-green-500/20",
+    bullets: [
+      "Monthly budget allocation",
+      "Spend tracking by channel",
+      "ROI calculations per campaign",
+      "Cost-per-lead visibility"
+    ],
+    speakerNotes: "This is the accountability piece. We track every dollar spent on marketing and tie it back to results. You'll see exactly what your cost-per-lead is for each channel. No more wondering if that Facebook ad was worth it - you'll have the data."
+  },
+  {
+    id: 6,
+    title: "What We Need to Get Started",
+    subtitle: "Quick Setup Requirements",
+    icon: Settings,
+    iconColor: "text-slate-500",
+    bgGradient: "from-slate-500/20 to-gray-500/20",
+    bullets: [
+      "Meta Business Suite access approval",
+      "Marketing budget confirmation",
+      "Content approval workflow setup",
+      "5 minutes of your time"
+    ],
+    speakerNotes: "To make this fully operational, we need access to Meta Business Suite - that's the Facebook and Instagram connection. The current account triggers fraud alerts when I try to access it, so we need to set that up together. Once connected, everything flows automatically."
+  }
+];
+
+// Presentation Mode Component
+function PresentationMode({ onClose }: { onClose: () => void }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showNotes, setShowNotes] = useState(true);
+  
+  const slide = presentationSlides[currentSlide];
+  const SlideIcon = slide.icon;
+  
+  const nextSlide = () => {
+    if (currentSlide < presentationSlides.length - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+  
+  const prevSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+  
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    } else if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+  
+  return (
+    <motion.div 
+      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      data-testid="presentation-mode"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-border/50">
+        <div className="flex items-center gap-4">
+          <Badge variant="outline" className="text-xs">
+            Slide {currentSlide + 1} of {presentationSlides.length}
+          </Badge>
+          <span className="text-sm text-muted-foreground">Use arrow keys or buttons to navigate</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowNotes(!showNotes)}
+            data-testid="button-toggle-notes"
+          >
+            {showNotes ? <ChevronDown className="w-4 h-4 mr-1" /> : <ChevronUp className="w-4 h-4 mr-1" />}
+            {showNotes ? "Hide" : "Show"} Speaker Notes
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onClose} data-testid="button-close-presentation">
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Slide Content - What the audience sees */}
+        <div className="flex-1 flex items-center justify-center p-8">
+          <motion.div 
+            key={currentSlide}
+            className="max-w-4xl w-full"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <GlassCard className={`p-8 md:p-12 bg-gradient-to-br ${slide.bgGradient}`}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-16 h-16 rounded-2xl bg-background/50 flex items-center justify-center`}>
+                  <SlideIcon className={`w-8 h-8 ${slide.iconColor}`} />
+                </div>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold">{slide.title}</h1>
+                  <p className="text-lg text-muted-foreground">{slide.subtitle}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4 mt-8">
+                {slide.bullets.map((bullet, idx) => (
+                  <motion.div 
+                    key={idx}
+                    className="flex items-start gap-4"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 + 0.2 }}
+                  >
+                    <div className={`w-8 h-8 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0`}>
+                      <CheckCircle className={`w-5 h-5 ${slide.iconColor}`} />
+                    </div>
+                    <p className="text-lg md:text-xl pt-1">{bullet}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+        
+        {/* Speaker Notes Panel - What you see */}
+        {showNotes && (
+          <motion.div 
+            className="border-t border-border/50 bg-amber-500/5 p-4"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+          >
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-amber-500" />
+                <span className="text-sm font-semibold text-amber-600">Your Talking Points:</span>
+              </div>
+              <p className="text-sm leading-relaxed">{slide.speakerNotes}</p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+      
+      {/* Navigation */}
+      <div className="flex items-center justify-between p-4 border-t border-border/50">
+        <Button
+          variant="outline"
+          onClick={prevSlide}
+          disabled={currentSlide === 0}
+          data-testid="button-prev-slide"
+        >
+          <ChevronLeft className="w-4 h-4 mr-2" />
+          Previous
+        </Button>
+        
+        {/* Slide indicators */}
+        <div className="flex items-center gap-2">
+          {presentationSlides.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-2 h-2 rounded-full transition-all ${
+                idx === currentSlide 
+                  ? "w-6 bg-primary" 
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+              onClick={() => setCurrentSlide(idx)}
+              data-testid={`button-slide-${idx}`}
+            />
+          ))}
+        </div>
+        
+        <Button
+          variant={currentSlide === presentationSlides.length - 1 ? "default" : "outline"}
+          onClick={currentSlide === presentationSlides.length - 1 ? onClose : nextSlide}
+          data-testid="button-next-slide"
+        >
+          {currentSlide === presentationSlides.length - 1 ? (
+            <>
+              Done
+              <CheckCircle className="w-4 h-4 ml-2" />
+            </>
+          ) : (
+            <>
+              Next
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </>
+          )}
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
 export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
   const { t } = useI18n();
   const [selectedTenant, setSelectedTenant] = useState(TENANTS[0].id);
@@ -114,6 +408,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
 
   const [facebookConnected, setFacebookConnected] = useState(false);
   const [instagramConnected, setInstagramConnected] = useState(false);
+  const [showPresentation, setShowPresentation] = useState(false);
 
   const currentTenant = TENANTS.find(t => t.id === selectedTenant) || TENANTS[0];
 
@@ -184,6 +479,16 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowPresentation(true)}
+            className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border-pink-500/30 hover:border-pink-500/50"
+            data-testid="button-start-tour"
+          >
+            <Presentation className="w-4 h-4 mr-2 text-pink-500" />
+            Start Tour
+          </Button>
           <LanguageToggle variant="compact" />
           {showTenantSwitcher && (
             <Select value={selectedTenant} onValueChange={setSelectedTenant}>
@@ -204,6 +509,11 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
           )}
         </div>
       </div>
+      
+      {/* Presentation Mode Overlay */}
+      {showPresentation && (
+        <PresentationMode onClose={() => setShowPresentation(false)} />
+      )}
 
       {/* Connection Status */}
       <div className="grid grid-cols-2 gap-3">
