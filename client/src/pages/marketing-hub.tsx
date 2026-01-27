@@ -146,6 +146,19 @@ interface LibraryImage {
 
 type MessageTone = "professional" | "friendly" | "promotional" | "educational" | "urgent";
 type MessageCTA = "book-now" | "get-quote" | "learn-more" | "call-us" | "visit-site" | "none";
+type ContentType = "educational" | "gamified" | "sales" | "seasonal" | "evergreen" | "testimonial" | "behind-scenes";
+type SocialPlatform = "instagram" | "facebook" | "nextdoor" | "x" | "linkedin" | "google" | "all";
+
+// Platform character limits
+const PLATFORM_CHAR_LIMITS: Record<SocialPlatform, { limit: number; name: string; icon?: string }> = {
+  x: { limit: 280, name: 'X (Twitter)' },
+  instagram: { limit: 2200, name: 'Instagram' },
+  facebook: { limit: 63206, name: 'Facebook' },
+  nextdoor: { limit: 2000, name: 'Nextdoor' },
+  linkedin: { limit: 3000, name: 'LinkedIn' },
+  google: { limit: 1500, name: 'Google Business' },
+  all: { limit: 280, name: 'All Platforms' }, // Use strictest limit for "all"
+};
 
 interface MessageTemplate {
   id: string;
@@ -154,7 +167,8 @@ interface MessageTemplate {
   subject: ImageSubject;
   tone: MessageTone;
   cta: MessageCTA;
-  platform: "instagram" | "facebook" | "nextdoor" | "twitter" | "linkedin" | "google" | "all";
+  platform: SocialPlatform;
+  contentType?: ContentType;
   hashtags: string[];
   createdAt: string;
 }
@@ -166,8 +180,8 @@ interface ContentBundle {
   messageId: string;
   status: "suggested" | "circulating" | "posted" | "removed" | "approved" | "scheduled";
   scheduledDate?: string;
-  platform: "instagram" | "facebook" | "nextdoor" | "twitter" | "linkedin" | "google" | "all";
-  contentType: "organic" | "paid_ad";
+  platform: SocialPlatform;
+  postType: "organic" | "paid_ad";
   targetAudience?: string;
   budgetRange?: string;
   ctaButton?: "learn_more" | "shop_now" | "contact_us" | "get_quote" | "book_now";
@@ -996,16 +1010,16 @@ export default function MarketingHub() {
         { id: "npp-nd-14", brand: "npp", platform: "nextdoor", content: "Need a commercial painter? Nashville Painting Professionals handles businesses too. We transform familiar commercial spaces into extraordinary professional environments.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-15", brand: "npp", platform: "nextdoor", content: "Neighbors, we're offering free color consultations this month! Not sure what color to choose? Let us help you envision your familiar space as something extraordinary.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         // NPP Twitter/X (10)
-        { id: "npp-tw-1", brand: "npp", platform: "twitter", content: "Transforming familiar spaces into extraordinary places. That's the NPP difference. #NashvillePainting", subject: "general", tone: "professional", cta: "get-quote", hashtags: ["#NashvillePainting", "#HomeImprovement"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-2", brand: "npp", platform: "twitter", content: "Before: familiar. After: extraordinary. Another Nashville home transformed! #BeforeAndAfter", subject: "before-after", tone: "friendly", cta: "call-us", hashtags: ["#BeforeAndAfter", "#PaintTransformation"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-3", brand: "npp", platform: "twitter", content: "Curb appeal that turns heads. Transforming Nashville exteriors from familiar to extraordinary. Free estimates!", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#CurbAppeal", "#ExteriorPainting"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-4", brand: "npp", platform: "twitter", content: "Cabinet painting = kitchen transformation. From familiar to extraordinary on any budget.", subject: "cabinet-work", tone: "friendly", cta: "get-quote", hashtags: ["#KitchenGoals", "#CabinetPainting"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-5", brand: "npp", platform: "twitter", content: "It's in the details. Extraordinary trim work that makes familiar spaces special. #Craftsmanship", subject: "trim-detail", tone: "professional", cta: "call-us", hashtags: ["#Craftsmanship", "#TrimWork"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-6", brand: "npp", platform: "twitter", content: "Spring = painting season! Ready to transform your familiar space? Let's talk extraordinary. #SpringRefresh", subject: "general", tone: "friendly", cta: "get-quote", hashtags: ["#SpringRefresh", "#HomeMakeover"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-7", brand: "npp", platform: "twitter", content: "Nashville businesses trust NPP for extraordinary commercial painting. Professional spaces deserve professional painters.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialPainting", "#NashvilleBusiness"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-8", brand: "npp", platform: "twitter", content: "Color confidence looks good on you. Let us help transform familiar to extraordinary. #ColorConsultation", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: ["#ColorConsultation", "#InteriorDesign"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-9", brand: "npp", platform: "twitter", content: "Another happy Nashville homeowner! We love transforming familiar spaces. Thanks for trusting NPP!", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#HappyCustomers", "#NashvilleLiving"], createdAt: new Date().toISOString() },
-        { id: "npp-tw-10", brand: "npp", platform: "twitter", content: "Bold moves = extraordinary results. Don't fear the color! #StatementWalls #PaintPros", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: ["#StatementWalls", "#BoldColors"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-1", brand: "npp", platform: "x", content: "Transforming familiar spaces into extraordinary places. That's the NPP difference. #NashvillePainting", subject: "general", tone: "professional", cta: "get-quote", hashtags: ["#NashvillePainting", "#HomeImprovement"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-2", brand: "npp", platform: "x", content: "Before: familiar. After: extraordinary. Another Nashville home transformed! #BeforeAndAfter", subject: "before-after", tone: "friendly", cta: "call-us", hashtags: ["#BeforeAndAfter", "#PaintTransformation"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-3", brand: "npp", platform: "x", content: "Curb appeal that turns heads. Transforming Nashville exteriors from familiar to extraordinary. Free estimates!", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#CurbAppeal", "#ExteriorPainting"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-4", brand: "npp", platform: "x", content: "Cabinet painting = kitchen transformation. From familiar to extraordinary on any budget.", subject: "cabinet-work", tone: "friendly", cta: "get-quote", hashtags: ["#KitchenGoals", "#CabinetPainting"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-5", brand: "npp", platform: "x", content: "It's in the details. Extraordinary trim work that makes familiar spaces special. #Craftsmanship", subject: "trim-detail", tone: "professional", cta: "call-us", hashtags: ["#Craftsmanship", "#TrimWork"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-6", brand: "npp", platform: "x", content: "Spring = painting season! Ready to transform your familiar space? Let's talk extraordinary. #SpringRefresh", subject: "general", tone: "friendly", cta: "get-quote", hashtags: ["#SpringRefresh", "#HomeMakeover"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-7", brand: "npp", platform: "x", content: "Nashville businesses trust NPP for extraordinary commercial painting. Professional spaces deserve professional painters.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialPainting", "#NashvilleBusiness"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-8", brand: "npp", platform: "x", content: "Color confidence looks good on you. Let us help transform familiar to extraordinary. #ColorConsultation", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: ["#ColorConsultation", "#InteriorDesign"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-9", brand: "npp", platform: "x", content: "Another happy Nashville homeowner! We love transforming familiar spaces. Thanks for trusting NPP!", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#HappyCustomers", "#NashvilleLiving"], createdAt: new Date().toISOString() },
+        { id: "npp-tw-10", brand: "npp", platform: "x", content: "Bold moves = extraordinary results. Don't fear the color! #StatementWalls #PaintPros", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: ["#StatementWalls", "#BoldColors"], createdAt: new Date().toISOString() },
         // NPP LinkedIn (10)
         { id: "npp-li-1", brand: "npp", platform: "linkedin", content: "At Nashville Painting Professionals, we believe every space has extraordinary potential. Our mission is transforming familiar spaces into extraordinary places through expert craftsmanship, premium materials, and exceptional service. Connect with us to discuss your next project.", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#NashvilleBusiness", "#ProfessionalPainting", "#QualityCraftsmanship"], createdAt: new Date().toISOString() },
         { id: "npp-li-2", brand: "npp", platform: "linkedin", content: "Commercial spaces reflect your brand. Nashville Painting Professionals transforms familiar office environments into extraordinary professional spaces. From lobbies to conference rooms, we deliver results that impress clients and motivate teams.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialPainting", "#OfficeDesign", "#BusinessImage"], createdAt: new Date().toISOString() },
@@ -1065,16 +1079,16 @@ export default function MarketingHub() {
         { id: "lume-nd-14", brand: "lumepaint", platform: "nextdoor", content: "Boutique businesses deserve elevated spaces. Lume Paint Co serves local shops, salons, and offices with the same care we bring to homes.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "lume-nd-15", brand: "lumepaint", platform: "nextdoor", content: "Complimentary color consultations for neighbors! Not sure what color to choose? Let our design-trained team help you envision the perfect elevated palette.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         // Lume Twitter/X (10)
-        { id: "lume-tw-1", brand: "lumepaint", platform: "twitter", content: "We elevate the backdrop of your life. That's the Lume promise. #LumePaintCo #ElevatedLiving", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#LumePaintCo", "#ElevatedLiving"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-2", brand: "lumepaint", platform: "twitter", content: "Before: ordinary. After: elevated. The Lume transformation. #BeforeAfter #Elevated", subject: "before-after", tone: "friendly", cta: "get-quote", hashtags: ["#BeforeAfter", "#Elevated"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-3", brand: "lumepaint", platform: "twitter", content: "Curb appeal, elevated. First impressions that last. #ExteriorDesign #LumePaintCo", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#ExteriorDesign", "#CurbAppeal"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-4", brand: "lumepaint", platform: "twitter", content: "Kitchen cabinets = kitchen soul. Elevate yours. #KitchenDesign #CabinetGoals", subject: "cabinet-work", tone: "friendly", cta: "call-us", hashtags: ["#KitchenDesign", "#CabinetGoals"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-5", brand: "lumepaint", platform: "twitter", content: "In the details, we find excellence. Elevated trim work that defines spaces. #Craftsmanship", subject: "trim-detail", tone: "professional", cta: "get-quote", hashtags: ["#Craftsmanship", "#Details"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-6", brand: "lumepaint", platform: "twitter", content: "Spring = renewal. Time to elevate the backdrop of your life. #SpringDesign #FreshStart", subject: "general", tone: "friendly", cta: "get-quote", hashtags: ["#SpringDesign", "#FreshStart"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-7", brand: "lumepaint", platform: "twitter", content: "Commercial spaces, elevated. Where business meets beautiful. #CommercialDesign", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialDesign", "#ElevatedBusiness"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-8", brand: "lumepaint", platform: "twitter", content: "Color is personal. We help you find yours. Elevated expression awaits. #ColorConsulting", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: ["#ColorConsulting", "#DesignVoice"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-9", brand: "lumepaint", platform: "twitter", content: "Another backdrop elevated. Another client delighted. That's what we live for. #ClientLove", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#ClientLove", "#ElevatedResults"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-10", brand: "lumepaint", platform: "twitter", content: "Bold color choices = elevated living. Don't hold back. #BoldDesign #StatementSpaces", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: ["#BoldDesign", "#StatementSpaces"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-1", brand: "lumepaint", platform: "x", content: "We elevate the backdrop of your life. That's the Lume promise. #LumePaintCo #ElevatedLiving", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#LumePaintCo", "#ElevatedLiving"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-2", brand: "lumepaint", platform: "x", content: "Before: ordinary. After: elevated. The Lume transformation. #BeforeAfter #Elevated", subject: "before-after", tone: "friendly", cta: "get-quote", hashtags: ["#BeforeAfter", "#Elevated"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-3", brand: "lumepaint", platform: "x", content: "Curb appeal, elevated. First impressions that last. #ExteriorDesign #LumePaintCo", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#ExteriorDesign", "#CurbAppeal"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-4", brand: "lumepaint", platform: "x", content: "Kitchen cabinets = kitchen soul. Elevate yours. #KitchenDesign #CabinetGoals", subject: "cabinet-work", tone: "friendly", cta: "call-us", hashtags: ["#KitchenDesign", "#CabinetGoals"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-5", brand: "lumepaint", platform: "x", content: "In the details, we find excellence. Elevated trim work that defines spaces. #Craftsmanship", subject: "trim-detail", tone: "professional", cta: "get-quote", hashtags: ["#Craftsmanship", "#Details"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-6", brand: "lumepaint", platform: "x", content: "Spring = renewal. Time to elevate the backdrop of your life. #SpringDesign #FreshStart", subject: "general", tone: "friendly", cta: "get-quote", hashtags: ["#SpringDesign", "#FreshStart"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-7", brand: "lumepaint", platform: "x", content: "Commercial spaces, elevated. Where business meets beautiful. #CommercialDesign", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialDesign", "#ElevatedBusiness"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-8", brand: "lumepaint", platform: "x", content: "Color is personal. We help you find yours. Elevated expression awaits. #ColorConsulting", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: ["#ColorConsulting", "#DesignVoice"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-9", brand: "lumepaint", platform: "x", content: "Another backdrop elevated. Another client delighted. That's what we live for. #ClientLove", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#ClientLove", "#ElevatedResults"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-10", brand: "lumepaint", platform: "x", content: "Bold color choices = elevated living. Don't hold back. #BoldDesign #StatementSpaces", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: ["#BoldDesign", "#StatementSpaces"], createdAt: new Date().toISOString() },
         // Lume LinkedIn (10)
         { id: "lume-li-1", brand: "lumepaint", platform: "linkedin", content: "At Lume Paint Co, we believe spaces shape experiences. Our mission is elevating the backdrop of your life through artisan craftsmanship, premium materials, and thoughtful design. Connect with us to discuss how we can elevate your next project.", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#LuxuryPainting", "#ArtisanCraftsmanship", "#ElevatedDesign"], createdAt: new Date().toISOString() },
         { id: "lume-li-2", brand: "lumepaint", platform: "linkedin", content: "Boutique commercial spaces deserve elevated attention. Lume Paint Co brings residential-quality care to salons, spas, boutiques, and professional offices. Your space is your brand - let us elevate it.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#BoutiqueDesign", "#CommercialPainting", "#BrandExperience"], createdAt: new Date().toISOString() },
@@ -2051,7 +2065,7 @@ export default function MarketingHub() {
                                 brand: selectedTenant,
                                 platform: msg.platform,
                                 status: "suggested",
-                                contentType: "organic",
+                                postType: "organic",
                                 createdAt: new Date().toISOString(),
                               });
                             }
@@ -2158,7 +2172,7 @@ export default function MarketingHub() {
                         Add images and messages first, then generate smart bundles.
                       </p>
                     </GlassCard>
-                  ) : contentBundles.filter(b => b.brand === selectedTenant && (contentTypeFilter === "all" || b.contentType === contentTypeFilter)).length === 0 ? (
+                  ) : contentBundles.filter(b => b.brand === selectedTenant && (contentTypeFilter === "all" || b.postType === contentTypeFilter)).length === 0 ? (
                     <GlassCard className="p-6 text-center">
                       <Search className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-1">No {contentTypeFilter === "paid_ad" ? "Paid Ads" : "Organic Posts"} Found</h4>
@@ -2169,7 +2183,7 @@ export default function MarketingHub() {
                   ) : (
                     <div className="grid md:grid-cols-2 gap-4">
                       {contentBundles
-                        .filter(b => b.brand === selectedTenant && (contentTypeFilter === "all" || b.contentType === contentTypeFilter))
+                        .filter(b => b.brand === selectedTenant && (contentTypeFilter === "all" || b.postType === contentTypeFilter))
                         .slice(0, 6)
                         .map(bundle => {
                           const image = allImages.find(i => i.id === bundle.imageId);
@@ -2189,9 +2203,9 @@ export default function MarketingHub() {
                                   <div className="flex items-center gap-1 flex-wrap">
                                     <Badge 
                                       variant="outline" 
-                                      className={`text-xs ${bundle.contentType === "paid_ad" ? "border-orange-400 text-orange-600 dark:text-orange-400" : "border-green-400 text-green-600 dark:text-green-400"}`}
+                                      className={`text-xs ${bundle.postType === "paid_ad" ? "border-orange-400 text-orange-600 dark:text-orange-400" : "border-green-400 text-green-600 dark:text-green-400"}`}
                                     >
-                                      {bundle.contentType === "paid_ad" ? (
+                                      {bundle.postType === "paid_ad" ? (
                                         <><DollarSign className="w-3 h-3 mr-1" />Ad</>
                                       ) : (
                                         <><FileText className="w-3 h-3 mr-1" />Post</>
@@ -2201,9 +2215,9 @@ export default function MarketingHub() {
                                       size="sm"
                                       variant="ghost"
                                       onClick={() => {
-                                        const newType: ContentBundle['contentType'] = bundle.contentType === "paid_ad" ? "organic" : "paid_ad";
+                                        const newType: ContentBundle['postType'] = bundle.postType === "paid_ad" ? "organic" : "paid_ad";
                                         const updated = contentBundles.map(b => 
-                                          b.id === bundle.id ? {...b, contentType: newType} : b
+                                          b.id === bundle.id ? {...b, postType: newType} : b
                                         );
                                         setContentBundles(updated);
                                         localStorage.setItem("marketing_bundles", JSON.stringify(updated));
@@ -2214,7 +2228,7 @@ export default function MarketingHub() {
                                       }}
                                       data-testid={`toggle-content-type-${bundle.id}`}
                                     >
-                                      {bundle.contentType === "paid_ad" ? "Make Post" : "Make Ad"}
+                                      {bundle.postType === "paid_ad" ? "Make Post" : "Make Ad"}
                                     </Button>
                                     <Badge variant="outline" className="text-xs">{bundle.platform}</Badge>
                                     <select
@@ -3721,7 +3735,7 @@ export default function MarketingHub() {
                               brand: selectedTenant,
                               platform: msg.platform,
                               status: "suggested",
-                              contentType: "organic",
+                              postType: "organic",
                               createdAt: new Date().toISOString(),
                             });
                           }
@@ -6567,7 +6581,7 @@ export default function MarketingHub() {
             </div>
 
             {/* Ad Spend (for paid ads) */}
-            {editingMetricsBundle?.contentType === "paid_ad" && (
+            {editingMetricsBundle?.postType === "paid_ad" && (
               <div>
                 <h4 className="text-sm font-medium mb-2">Ad Spend</h4>
                 <div className="grid grid-cols-2 gap-3">
