@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/lib/i18n';
+import { getCurrentTenant } from '@/config/tenant';
 import { LanguageToggle } from '@/components/language-toggle';
 import { 
   Calculator, 
@@ -54,7 +55,8 @@ import {
   Award,
   Crown,
   CheckCircle,
-  Eye
+  Eye,
+  Settings
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -68,6 +70,16 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+// Default pricing per category (materials included in all rates)
+const DEFAULT_PRICING = {
+  wallsPerSqFt: 3.50,            // Walls - includes paint & labor
+  ceilingsPerSqFt: 2.75,         // Ceilings - includes paint & labor
+  trimPerLinearFt: 2.25,         // Trim/baseboards - includes paint & labor
+  doorsPerUnit: 85,              // Per door - includes paint & labor
+  cabinetsPerDoor: 125,          // Per cabinet door - includes paint & labor
+  markupPercent: 25,             // Standard markup
+};
+
 // Shared estimate data across all tools
 interface EstimateData {
   // From Measure Panel
@@ -80,7 +92,7 @@ interface EstimateData {
   selectedColors: Array<{ name: string; hex: string; brand?: string }>;
   // From Visualizer  
   roomImageUrl?: string;
-  // Pricing
+  // Pricing (editable by Owner/Admin/Developer) - all rates include materials
   pricePerSqFt: number;
   laborHours: string;
   hourlyRate: string;
@@ -727,21 +739,34 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
 }
 
 // Complete Estimate Panel - combines all tools
-function CompleteEstimatePanel({ onBack, estimateData, onClearEstimate }: { 
+// Uses pricing per category (all rates include materials)
+function CompleteEstimatePanel({ onBack, estimateData, onClearEstimate, userRole }: { 
   onBack: () => void;
   estimateData: EstimateData;
   onClearEstimate: () => void;
+  userRole?: string;
 }) {
   const { toast } = useToast();
-  const pricePerSqFt = estimateData.pricePerSqFt || 3.50;
-  const laborRate = parseFloat(estimateData.hourlyRate) || 45;
-  const laborHours = parseFloat(estimateData.laborHours) || Math.ceil(estimateData.wallSqFt / 150) || 0;
+  const tenant = getCurrentTenant();
   
-  const paintCost = estimateData.wallSqFt * pricePerSqFt;
-  const laborCost = laborHours * laborRate;
-  const materialCost = Math.ceil(estimateData.wallSqFt / 350) * 45; // ~$45/gallon estimate
-  const subtotal = paintCost + laborCost + materialCost;
-  const markup = subtotal * 0.25;
+  // Get role from localStorage if not passed (for Trade Toolkit standalone use)
+  const currentRole = userRole || localStorage.getItem('trade_toolkit_role') || '';
+  const canEditPricing = ['owner', 'admin', 'developer'].includes(currentRole);
+  
+  // Editable pricing state - uses tenant config or defaults
+  const [showPricingEditor, setShowPricingEditor] = useState(false);
+  const [pricing, setPricing] = useState({
+    wallsPerSqFt: tenant?.pricing?.wallsPerSqFt || DEFAULT_PRICING.wallsPerSqFt,
+    ceilingsPerSqFt: tenant?.pricing?.ceilingsPerSqFt || DEFAULT_PRICING.ceilingsPerSqFt,
+    trimPerLinearFt: tenant?.pricing?.trimPerLinearFt || DEFAULT_PRICING.trimPerLinearFt,
+    doorsPerUnit: tenant?.pricing?.doorsPerUnit || DEFAULT_PRICING.doorsPerUnit,
+    markupPercent: DEFAULT_PRICING.markupPercent,
+  });
+  
+  // Calculate totals using pricing (all rates include materials)
+  const wallsCost = estimateData.wallSqFt * pricing.wallsPerSqFt;
+  const subtotal = wallsCost; // Can add ceilings, trim, doors if measured
+  const markup = subtotal * (pricing.markupPercent / 100);
   const total = subtotal + markup;
   
   const handleSendToOffice = async () => {
@@ -755,11 +780,11 @@ function CompleteEstimatePanel({ onBack, estimateData, onClearEstimate }: {
       },
       colors: estimateData.selectedColors,
       pricing: {
-        paintCost,
-        laborCost,
-        materialCost,
+        wallsCost,
+        subtotal,
         markup,
-        total
+        total,
+        rates: pricing
       },
       createdAt: new Date().toISOString()
     };
@@ -876,25 +901,84 @@ Total: $${total.toFixed(2)}`;
       {/* Pricing Summary */}
       {estimateData.wallSqFt > 0 && (
         <GlassPanel className="p-5">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-green-400" />
-            Pricing Summary
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-green-400" />
+              Pricing Summary
+            </h3>
+            {canEditPricing && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowPricingEditor(!showPricingEditor)}
+                className="text-xs text-slate-400 hover:text-white"
+              >
+                <Settings className="w-3 h-3 mr-1" />
+                {showPricingEditor ? 'Hide Rates' : 'Edit Rates'}
+              </Button>
+            )}
+          </div>
+          
+          {/* Editable Pricing Rates - Only for Owner/Admin/Developer */}
+          {showPricingEditor && canEditPricing && (
+            <div className="mb-4 p-3 bg-white/5 rounded-lg border border-white/10">
+              <p className="text-xs text-amber-400 mb-3 flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                Admin: Adjust rates (includes materials)
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-slate-400 text-xs mb-1 block">Walls $/sq ft</Label>
+                  <Input
+                    type="number"
+                    step="0.25"
+                    value={pricing.wallsPerSqFt}
+                    onChange={(e) => setPricing({ ...pricing, wallsPerSqFt: parseFloat(e.target.value) || 0 })}
+                    className="bg-white/5 border-white/10 text-white h-9"
+                  />
+                </div>
+                <div>
+                  <Label className="text-slate-400 text-xs mb-1 block">Markup %</Label>
+                  <Input
+                    type="number"
+                    value={pricing.markupPercent}
+                    onChange={(e) => setPricing({ ...pricing, markupPercent: parseFloat(e.target.value) || 0 })}
+                    className="bg-white/5 border-white/10 text-white h-9"
+                  />
+                </div>
+                <div>
+                  <Label className="text-slate-400 text-xs mb-1 block">Ceilings $/sq ft</Label>
+                  <Input
+                    type="number"
+                    step="0.25"
+                    value={pricing.ceilingsPerSqFt}
+                    onChange={(e) => setPricing({ ...pricing, ceilingsPerSqFt: parseFloat(e.target.value) || 0 })}
+                    className="bg-white/5 border-white/10 text-white h-9"
+                  />
+                </div>
+                <div>
+                  <Label className="text-slate-400 text-xs mb-1 block">Doors $/each</Label>
+                  <Input
+                    type="number"
+                    value={pricing.doorsPerUnit}
+                    onChange={(e) => setPricing({ ...pricing, doorsPerUnit: parseFloat(e.target.value) || 0 })}
+                    className="bg-white/5 border-white/10 text-white h-9"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Paint ({estimateData.wallSqFt.toLocaleString()} sq ft @ ${pricePerSqFt}/sqft)</span>
-              <span className="text-white">${paintCost.toFixed(2)}</span>
+              <span className="text-slate-400">Walls ({estimateData.wallSqFt.toLocaleString()} sq ft @ ${pricing.wallsPerSqFt.toFixed(2)}/sqft)</span>
+              <span className="text-white">${wallsCost.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Labor ({laborHours} hrs @ ${laborRate}/hr)</span>
-              <span className="text-white">${laborCost.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Materials ({Math.ceil(estimateData.wallSqFt / 350)} gallons)</span>
-              <span className="text-white">${materialCost.toFixed(2)}</span>
+            <div className="flex justify-between text-sm text-slate-500 text-xs">
+              <span>Includes paint + labor</span>
             </div>
             <div className="flex justify-between text-sm border-t border-white/10 pt-2">
-              <span className="text-slate-400">Markup (25%)</span>
+              <span className="text-slate-400">Markup ({pricing.markupPercent}%)</span>
               <span className="text-white">${markup.toFixed(2)}</span>
             </div>
             <div className="flex justify-between pt-3 border-t border-white/10">
