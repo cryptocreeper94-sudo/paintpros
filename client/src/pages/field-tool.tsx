@@ -99,6 +99,9 @@ import {
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
 import { useI18n } from "@/lib/i18n";
+import { ColorScanner } from "@/components/color-scanner";
+import { ColorVisualizer } from "@/components/color-visualizer";
+import { Ruler, Eye } from "lucide-react";
 
 // Professional marketing images for Field Tool - Ultra Premium
 import crewTeamImage from "@/assets/marketing/crew-01-team-interior.png";
@@ -1683,6 +1686,8 @@ export default function FieldTool() {
   const [photoCategory, setPhotoCategory] = useState("interior");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [showQuickEstimate, setShowQuickEstimate] = useState(false);
+  const [showColorScanner, setShowColorScanner] = useState(false);
+  const [selectedColorForVisualizer, setSelectedColorForVisualizer] = useState<{ hex: string; name: string } | null>(null);
   const [showTranslator, setShowTranslator] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [translatorResult, setTranslatorResult] = useState<{
@@ -3420,6 +3425,54 @@ export default function FieldTool() {
             </SheetTitle>
           </SheetHeader>
           <div className="mt-4 space-y-4 overflow-y-auto pb-20" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+            {/* Tool Buttons - Use tools to auto-fill data */}
+            <Card className="bg-gray-800/50 border-gray-700 p-3">
+              <p className="text-xs text-gray-400 mb-2">Use Tools to Auto-Fill</p>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => {
+                    setShowQuickEstimate(false);
+                    toast({ title: "Measure Tool", description: "Use the Trade Toolkit for measurement tools" });
+                  }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-blue-500/20 border border-blue-500/30 hover:bg-blue-500/30 transition-all"
+                  data-testid="button-tool-measure"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <Ruler className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-[10px] text-white font-medium">Measure</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setShowQuickEstimate(false);
+                    setShowColorScanner(true);
+                  }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-purple-500/20 border border-purple-500/30 hover:bg-purple-500/30 transition-all"
+                  data-testid="button-tool-colormatch"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                    <Palette className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-[10px] text-white font-medium">Color Match</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setShowQuickEstimate(false);
+                    setShowRoomVisualizer(true);
+                  }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-pink-500/20 border border-pink-500/30 hover:bg-pink-500/30 transition-all"
+                  data-testid="button-tool-visualizer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+                    <Eye className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-[10px] text-white font-medium">Visualizer</span>
+                </button>
+              </div>
+            </Card>
+
             {isPricingLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
@@ -4819,6 +4872,25 @@ export default function FieldTool() {
           currentUserName={currentUser.userName || userName}
         />
       )}
+
+      {/* Color Scanner Modal */}
+      <ColorScanner
+        isOpen={showColorScanner}
+        onClose={() => setShowColorScanner(false)}
+        onColorSelect={(color: { hex: string; name: string }) => {
+          setSelectedColorForVisualizer(color);
+          setShowColorScanner(false);
+          toast({ title: "Color Selected", description: `${color.name} added to estimate` });
+        }}
+      />
+
+      {/* Room Visualizer Modal - Uses existing showRoomVisualizer state */}
+      <ColorVisualizer
+        isOpen={showRoomVisualizer}
+        onClose={() => setShowRoomVisualizer(false)}
+        initialColor={selectedColorForVisualizer || undefined}
+        tenantId={selectedTenant}
+      />
     </div>
   );
 }
