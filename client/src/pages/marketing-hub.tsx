@@ -33,6 +33,18 @@ import cabinetTwoTone from "@/assets/marketing/cabinet-two-tone.jpg";
 import cabinetOfficeBuiltin from "@/assets/marketing/cabinet-office-builtin.jpg";
 import cabinetEntertainment from "@/assets/marketing/cabinet-entertainment.jpg";
 
+// Category carousel images
+import categoryInteriorWalls from "@/assets/marketing/category-interior-walls.jpg";
+import categoryExteriorHome from "@/assets/marketing/category-exterior-home.jpg";
+import categoryCabinetWork from "@/assets/marketing/category-cabinet-work.jpg";
+import categoryDeckStaining from "@/assets/marketing/category-deck-staining.jpg";
+import categoryTrimDetail from "@/assets/marketing/category-trim-detail.jpg";
+import categoryDoorPainting from "@/assets/marketing/category-door-painting.jpg";
+import categoryCommercialSpace from "@/assets/marketing/category-commercial-space.jpg";
+import categoryBeforeAfter from "@/assets/marketing/category-before-after.jpg";
+import categoryTeamAction from "@/assets/marketing/category-team-action.jpg";
+import categoryGeneral from "@/assets/marketing/category-general.jpg";
+
 // Brand logos
 import nppLogo from "@/assets/branding/logo-npp-vertical.jpg";
 import { motion, AnimatePresence } from "framer-motion";
@@ -120,17 +132,17 @@ interface ContentBundle {
   createdAt: string;
 }
 
-const IMAGE_SUBJECTS: { id: ImageSubject; label: string }[] = [
-  { id: "interior-walls", label: "Interior Walls" },
-  { id: "exterior-home", label: "Exterior Home" },
-  { id: "cabinet-work", label: "Cabinet Work" },
-  { id: "deck-staining", label: "Deck Staining" },
-  { id: "trim-detail", label: "Trim & Detail" },
-  { id: "door-painting", label: "Door Painting" },
-  { id: "commercial-space", label: "Commercial Space" },
-  { id: "before-after", label: "Before/After" },
-  { id: "team-action", label: "Team Action" },
-  { id: "general", label: "General/Brand" },
+const IMAGE_SUBJECTS: { id: ImageSubject; label: string; image: string }[] = [
+  { id: "interior-walls", label: "Interior Walls", image: categoryInteriorWalls },
+  { id: "exterior-home", label: "Exterior Home", image: categoryExteriorHome },
+  { id: "cabinet-work", label: "Cabinet Work", image: categoryCabinetWork },
+  { id: "deck-staining", label: "Deck Staining", image: categoryDeckStaining },
+  { id: "trim-detail", label: "Trim & Detail", image: categoryTrimDetail },
+  { id: "door-painting", label: "Door Painting", image: categoryDoorPainting },
+  { id: "commercial-space", label: "Commercial Space", image: categoryCommercialSpace },
+  { id: "before-after", label: "Before/After", image: categoryBeforeAfter },
+  { id: "team-action", label: "Team Action", image: categoryTeamAction },
+  { id: "general", label: "General/Brand", image: categoryGeneral },
 ];
 
 const IMAGE_STYLES: { id: ImageStyle; label: string }[] = [
@@ -1598,27 +1610,43 @@ export default function MarketingHub() {
                     </p>
                   </div>
 
-                  {/* Subject Filter */}
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant={imageSubjectFilter === "all" ? "default" : "outline"}
-                      onClick={() => setImageSubjectFilter("all")}
-                      className={imageSubjectFilter === "all" ? "bg-[#1e3a5f]" : ""}
-                    >
-                      All
-                    </Button>
-                    {IMAGE_SUBJECTS.slice(0, 6).map(subject => (
-                      <Button
-                        key={subject.id}
-                        size="sm"
-                        variant={imageSubjectFilter === subject.id ? "default" : "outline"}
-                        onClick={() => setImageSubjectFilter(subject.id)}
-                        className={imageSubjectFilter === subject.id ? "bg-[#1e3a5f]" : ""}
+                  {/* Subject Filter Carousel */}
+                  <div className="overflow-x-auto pb-2 -mx-2 px-2">
+                    <div className="flex gap-3" style={{ minWidth: "max-content" }}>
+                      <button
+                        onClick={() => setImageSubjectFilter("all")}
+                        className={`relative flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden group transition-all ${
+                          imageSubjectFilter === "all" ? "ring-2 ring-[#1e3a5f] ring-offset-2" : ""
+                        }`}
+                        data-testid="filter-all-subjects"
                       >
-                        {subject.label}
-                      </Button>
-                    ))}
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-center">
+                          <LayoutGrid className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-end p-1.5">
+                          <span className="text-white text-xs font-medium drop-shadow-lg">All</span>
+                        </div>
+                      </button>
+                      {IMAGE_SUBJECTS.map(subject => (
+                        <button
+                          key={subject.id}
+                          onClick={() => setImageSubjectFilter(subject.id)}
+                          className={`relative flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden group transition-all ${
+                            imageSubjectFilter === subject.id ? "ring-2 ring-[#1e3a5f] ring-offset-2" : ""
+                          }`}
+                          data-testid={`filter-${subject.id}`}
+                        >
+                          <img 
+                            src={subject.image} 
+                            alt={subject.label} 
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/60 transition-colors flex items-end p-1.5">
+                            <span className="text-white text-xs font-medium drop-shadow-lg leading-tight">{subject.label}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Image Grid */}
@@ -2606,7 +2634,7 @@ export default function MarketingHub() {
 
             {/* IMAGES TAB - Image Library with Tags */}
             <TabsContent value="images" className="space-y-6">
-              <GlassCard className="p-4">
+              <GlassCard className="p-4 space-y-4">
                 <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -2617,22 +2645,48 @@ export default function MarketingHub() {
                       Tagged images that the AI can match with message templates
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Select value={imageSubjectFilter} onValueChange={setImageSubjectFilter}>
-                      <SelectTrigger className="w-40" data-testid="select-image-subject">
-                        <SelectValue placeholder="All Subjects" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Subjects</SelectItem>
-                        {IMAGE_SUBJECTS.map(s => (
-                          <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-image">
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Image
-                    </Button>
+                  <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-image">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Image
+                  </Button>
+                </div>
+                
+                {/* Subject Filter Carousel */}
+                <div className="overflow-x-auto pb-2 -mx-2 px-2">
+                  <div className="flex gap-3" style={{ minWidth: "max-content" }}>
+                    <button
+                      onClick={() => setImageSubjectFilter("all")}
+                      className={`relative flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden group transition-all ${
+                        imageSubjectFilter === "all" ? "ring-2 ring-[#1e3a5f] ring-offset-2" : ""
+                      }`}
+                      data-testid="images-filter-all-subjects"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-center">
+                        <LayoutGrid className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-end p-1.5">
+                        <span className="text-white text-xs font-medium drop-shadow-lg">All</span>
+                      </div>
+                    </button>
+                    {IMAGE_SUBJECTS.map(subject => (
+                      <button
+                        key={subject.id}
+                        onClick={() => setImageSubjectFilter(subject.id)}
+                        className={`relative flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden group transition-all ${
+                          imageSubjectFilter === subject.id ? "ring-2 ring-[#1e3a5f] ring-offset-2" : ""
+                        }`}
+                        data-testid={`images-filter-${subject.id}`}
+                      >
+                        <img 
+                          src={subject.image} 
+                          alt={subject.label} 
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/60 transition-colors flex items-end p-1.5">
+                          <span className="text-white text-xs font-medium drop-shadow-lg leading-tight">{subject.label}</span>
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </GlassCard>
