@@ -173,14 +173,19 @@ function FeatureTile({
 }
 
 // Measure Panel
-function MeasurePanel({ onBack }: { onBack: () => void }) {
-  const [roomLength, setRoomLength] = useState('');
-  const [roomWidth, setRoomWidth] = useState('');
-  const [ceilingHeight, setCeilingHeight] = useState('8');
+function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: { 
+  onBack: () => void; 
+  estimateData?: EstimateData;
+  onUpdateEstimate?: (data: Partial<EstimateData>) => void;
+}) {
+  const [roomLength, setRoomLength] = useState(estimateData?.roomLength || '');
+  const [roomWidth, setRoomWidth] = useState(estimateData?.roomWidth || '');
+  const [ceilingHeight, setCeilingHeight] = useState(estimateData?.ceilingHeight || '8');
   const [ladderHeight, setLadderHeight] = useState('');
   const [wastePercent, setWastePercent] = useState('10');
   const [materialQty, setMaterialQty] = useState('');
   const { t } = useI18n();
+  const { toast } = useToast();
 
   const floorSqFt = roomLength && roomWidth ? parseFloat(roomLength) * parseFloat(roomWidth) : 0;
   const wallSqFt = roomLength && roomWidth && ceilingHeight 
@@ -191,6 +196,19 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
   const materialWithWaste = materialQty && wastePercent 
     ? parseFloat(materialQty) * (1 + parseFloat(wastePercent) / 100) 
     : 0;
+  
+  const handleAddToEstimate = () => {
+    if (onUpdateEstimate && floorSqFt > 0) {
+      onUpdateEstimate({
+        roomLength,
+        roomWidth,
+        ceilingHeight,
+        floorSqFt,
+        wallSqFt
+      });
+      toast({ title: 'Added to Estimate', description: `${wallSqFt.toLocaleString()} sq ft of walls added` });
+    }
+  };
 
   return (
     <motion.div
@@ -255,20 +273,32 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
           />
         </div>
         {floorSqFt > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl p-4 text-center border border-blue-500/20">
-              <p className="text-2xl font-bold text-blue-400">{floorSqFt.toLocaleString()}</p>
-              <p className="text-xs text-slate-400">{t('toolkit.floorSF')}</p>
+          <>
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl p-4 text-center border border-blue-500/20">
+                <p className="text-2xl font-bold text-blue-400">{floorSqFt.toLocaleString()}</p>
+                <p className="text-xs text-slate-400">{t('toolkit.floorSF')}</p>
+              </div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl p-4 text-center border border-purple-500/20">
+                <p className="text-2xl font-bold text-purple-400">{wallSqFt.toLocaleString()}</p>
+                <p className="text-xs text-slate-400">{t('toolkit.wallSF')}</p>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 rounded-xl p-4 text-center border border-cyan-500/20">
+                <p className="text-2xl font-bold text-cyan-400">{totalSqFt.toLocaleString()}</p>
+                <p className="text-xs text-slate-400">{t('toolkit.totalSF')}</p>
+              </div>
             </div>
-            <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl p-4 text-center border border-purple-500/20">
-              <p className="text-2xl font-bold text-purple-400">{wallSqFt.toLocaleString()}</p>
-              <p className="text-xs text-slate-400">{t('toolkit.wallSF')}</p>
-            </div>
-            <div className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 rounded-xl p-4 text-center border border-cyan-500/20">
-              <p className="text-2xl font-bold text-cyan-400">{totalSqFt.toLocaleString()}</p>
-              <p className="text-xs text-slate-400">{t('toolkit.totalSF')}</p>
-            </div>
-          </div>
+            {onUpdateEstimate && (
+              <Button 
+                onClick={handleAddToEstimate}
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                data-testid="button-add-measure-to-estimate"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Add to Complete Estimate
+              </Button>
+            )}
+          </>
         )}
       </GlassPanel>
 
@@ -328,9 +358,14 @@ function MeasurePanel({ onBack }: { onBack: () => void }) {
 }
 
 // Paint Panel
-function PaintPanel({ onBack, onOpenScanner }: { onBack: () => void; onOpenScanner: () => void }) {
+function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: { 
+  onBack: () => void; 
+  onOpenScanner: () => void;
+  estimateData?: EstimateData;
+  onAddColor?: (color: { name: string; hex: string; brand?: string }) => void;
+}) {
   const [gallonCoverage] = useState(350);
-  const [sqFtToPaint, setSqFtToPaint] = useState('');
+  const [sqFtToPaint, setSqFtToPaint] = useState(estimateData?.wallSqFt?.toString() || '');
   const [coats, setCoats] = useState('2');
   
   const gallonsNeeded = sqFtToPaint && coats 
@@ -569,6 +604,221 @@ function EstimatePanel({ onBack }: { onBack: () => void }) {
           </div>
         )}
       </GlassPanel>
+    </motion.div>
+  );
+}
+
+// Complete Estimate Panel - combines all tools
+function CompleteEstimatePanel({ onBack, estimateData, onClearEstimate }: { 
+  onBack: () => void;
+  estimateData: EstimateData;
+  onClearEstimate: () => void;
+}) {
+  const { toast } = useToast();
+  const pricePerSqFt = estimateData.pricePerSqFt || 3.50;
+  const laborRate = parseFloat(estimateData.hourlyRate) || 45;
+  const laborHours = parseFloat(estimateData.laborHours) || Math.ceil(estimateData.wallSqFt / 150) || 0;
+  
+  const paintCost = estimateData.wallSqFt * pricePerSqFt;
+  const laborCost = laborHours * laborRate;
+  const materialCost = Math.ceil(estimateData.wallSqFt / 350) * 45; // ~$45/gallon estimate
+  const subtotal = paintCost + laborCost + materialCost;
+  const markup = subtotal * 0.25;
+  const total = subtotal + markup;
+  
+  const handleSendToOffice = async () => {
+    const estimateSummary = {
+      measurements: {
+        roomLength: estimateData.roomLength,
+        roomWidth: estimateData.roomWidth,
+        ceilingHeight: estimateData.ceilingHeight,
+        wallSqFt: estimateData.wallSqFt,
+        floorSqFt: estimateData.floorSqFt
+      },
+      colors: estimateData.selectedColors,
+      pricing: {
+        paintCost,
+        laborCost,
+        materialCost,
+        markup,
+        total
+      },
+      createdAt: new Date().toISOString()
+    };
+    
+    // Save to localStorage for now (would send to API in production)
+    const savedEstimates = JSON.parse(localStorage.getItem('field_estimates') || '[]');
+    savedEstimates.push(estimateSummary);
+    localStorage.setItem('field_estimates', JSON.stringify(savedEstimates));
+    
+    toast({
+      title: 'Estimate Sent',
+      description: 'Complete estimate has been sent to the office for review.'
+    });
+  };
+  
+  const handleShare = async () => {
+    const text = `Estimate Summary
+Room: ${estimateData.roomLength}' x ${estimateData.roomWidth}' x ${estimateData.ceilingHeight}' ceiling
+Wall Area: ${estimateData.wallSqFt.toLocaleString()} sq ft
+Colors: ${estimateData.selectedColors.map(c => c.name).join(', ') || 'Not selected'}
+Total: $${total.toFixed(2)}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Paint Estimate', text });
+      } catch (err) {
+        await navigator.clipboard.writeText(text);
+        toast({ title: 'Copied to clipboard' });
+      }
+    } else {
+      await navigator.clipboard.writeText(text);
+      toast({ title: 'Copied to clipboard' });
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-4"
+    >
+      <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4">
+        <ChevronLeft className="w-4 h-4" />
+        <span className="text-sm">Back to Dashboard</span>
+      </button>
+
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
+          <FileText className="w-7 h-7 text-white" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-white">Complete Estimate</h2>
+          <p className="text-sm text-slate-400">Full job package ready to send</p>
+        </div>
+      </div>
+
+      {/* Room Measurements */}
+      <GlassPanel className="p-5">
+        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+          <Ruler className="w-4 h-4 text-blue-400" />
+          Room Measurements
+        </h3>
+        {estimateData.wallSqFt > 0 ? (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-blue-500/10 rounded-xl p-3 text-center border border-blue-500/20">
+              <p className="text-lg font-bold text-blue-400">{estimateData.roomLength}' x {estimateData.roomWidth}'</p>
+              <p className="text-xs text-slate-400">Room Size</p>
+            </div>
+            <div className="bg-purple-500/10 rounded-xl p-3 text-center border border-purple-500/20">
+              <p className="text-lg font-bold text-purple-400">{estimateData.wallSqFt.toLocaleString()} sq ft</p>
+              <p className="text-xs text-slate-400">Wall Area</p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-4 text-slate-500">
+            <Ruler className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">No measurements added yet</p>
+            <p className="text-xs">Use the Measure tool to add room dimensions</p>
+          </div>
+        )}
+      </GlassPanel>
+
+      {/* Selected Colors */}
+      <GlassPanel className="p-5">
+        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+          <Palette className="w-4 h-4 text-purple-400" />
+          Selected Colors
+        </h3>
+        {estimateData.selectedColors.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {estimateData.selectedColors.map((color, idx) => (
+              <div key={idx} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                <div 
+                  className="w-6 h-6 rounded-full border border-white/20" 
+                  style={{ backgroundColor: color.hex }}
+                />
+                <div>
+                  <p className="text-sm text-white font-medium">{color.name}</p>
+                  {color.brand && <p className="text-xs text-slate-400">{color.brand}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-slate-500">
+            <Palette className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">No colors selected yet</p>
+            <p className="text-xs">Use Color Match to scan and add colors</p>
+          </div>
+        )}
+      </GlassPanel>
+
+      {/* Pricing Summary */}
+      {estimateData.wallSqFt > 0 && (
+        <GlassPanel className="p-5">
+          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-green-400" />
+            Pricing Summary
+          </h3>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Paint ({estimateData.wallSqFt.toLocaleString()} sq ft @ ${pricePerSqFt}/sqft)</span>
+              <span className="text-white">${paintCost.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Labor ({laborHours} hrs @ ${laborRate}/hr)</span>
+              <span className="text-white">${laborCost.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Materials ({Math.ceil(estimateData.wallSqFt / 350)} gallons)</span>
+              <span className="text-white">${materialCost.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm border-t border-white/10 pt-2">
+              <span className="text-slate-400">Markup (25%)</span>
+              <span className="text-white">${markup.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between pt-3 border-t border-white/10">
+              <span className="text-white font-semibold text-lg">Total</span>
+              <span className="text-3xl font-bold text-green-400">${total.toFixed(2)}</span>
+            </div>
+          </div>
+        </GlassPanel>
+      )}
+
+      {/* Action Buttons */}
+      <div className="space-y-3">
+        <Button 
+          onClick={handleSendToOffice}
+          disabled={estimateData.wallSqFt === 0}
+          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 h-12"
+          data-testid="button-send-to-office"
+        >
+          <FileText className="w-5 h-5 mr-2" />
+          Send to Office
+        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button 
+            onClick={handleShare}
+            variant="outline"
+            className="border-white/10 text-white hover:bg-white/5"
+            data-testid="button-share-estimate"
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+          <Button 
+            onClick={onClearEstimate}
+            variant="outline"
+            className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+            data-testid="button-clear-estimate"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Clear
+          </Button>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -895,7 +1145,7 @@ function QuickToolsPanel({ onBack }: { onBack: () => void }) {
 }
 
 // Main Dashboard
-function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
+function Dashboard({ onNavigate, hasEstimateData }: { onNavigate: (panel: string) => void; hasEstimateData?: boolean }) {
   const [weather, setWeather] = useState<any>(null);
   const { t } = useI18n();
   
@@ -987,6 +1237,14 @@ function Dashboard({ onNavigate }: { onNavigate: (panel: string) => void }) {
             onClick={() => onNavigate('estimate')}
           />
           <FeatureTile
+            icon={FileText}
+            label="Complete Estimate"
+            sublabel="Full package to send"
+            color="bg-gradient-to-br from-amber-500 to-orange-600"
+            onClick={() => onNavigate('complete-estimate')}
+            badge={hasEstimateData ? "In Progress" : undefined}
+          />
+          <FeatureTile
             icon={Cloud}
             label={t('toolkit.weather')}
             sublabel={t('toolkit.paintingConditions')}
@@ -1055,6 +1313,49 @@ export default function TradeToolkit() {
   const [showIOSGuide, setShowIOSGuide] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const { toast } = useToast();
+  
+  // Shared estimate data across all tools
+  const [estimateData, setEstimateData] = useState<EstimateData>({
+    roomLength: '',
+    roomWidth: '',
+    ceilingHeight: '8',
+    floorSqFt: 0,
+    wallSqFt: 0,
+    selectedColors: [],
+    pricePerSqFt: 3.50,
+    laborHours: '',
+    hourlyRate: '45'
+  });
+  
+  const updateEstimate = (data: Partial<EstimateData>) => {
+    setEstimateData(prev => ({ ...prev, ...data }));
+  };
+  
+  const addColorToEstimate = (color: { name: string; hex: string; brand?: string }) => {
+    setEstimateData(prev => ({
+      ...prev,
+      selectedColors: [...prev.selectedColors.filter(c => c.hex !== color.hex), color]
+    }));
+    toast({ title: 'Color Added', description: `${color.name} added to estimate` });
+  };
+  
+  const clearEstimate = () => {
+    setEstimateData({
+      roomLength: '',
+      roomWidth: '',
+      ceilingHeight: '8',
+      floorSqFt: 0,
+      wallSqFt: 0,
+      selectedColors: [],
+      pricePerSqFt: 3.50,
+      laborHours: '',
+      hourlyRate: '45'
+    });
+    toast({ title: 'Estimate Cleared', description: 'Starting fresh' });
+  };
+  
+  // Check if estimate has any data
+  const hasEstimateData = estimateData.wallSqFt > 0 || estimateData.selectedColors.length > 0;
   
   const appUrl = typeof window !== 'undefined' ? `${window.location.origin}/trade-toolkit` : '';
 
@@ -1169,11 +1470,13 @@ export default function TradeToolkit() {
   const renderPanel = () => {
     switch (currentPanel) {
       case 'measure':
-        return <MeasurePanel onBack={() => setCurrentPanel('dashboard')} />;
+        return <MeasurePanel onBack={() => setCurrentPanel('dashboard')} estimateData={estimateData} onUpdateEstimate={updateEstimate} />;
       case 'paint':
-        return <PaintPanel onBack={() => setCurrentPanel('dashboard')} onOpenScanner={() => setShowScanner(true)} />;
+        return <PaintPanel onBack={() => setCurrentPanel('dashboard')} onOpenScanner={() => setShowScanner(true)} estimateData={estimateData} onAddColor={addColorToEstimate} />;
       case 'estimate':
         return <EstimatePanel onBack={() => setCurrentPanel('dashboard')} />;
+      case 'complete-estimate':
+        return <CompleteEstimatePanel onBack={() => setCurrentPanel('dashboard')} estimateData={estimateData} onClearEstimate={clearEstimate} />;
       case 'weather':
         return <WeatherPanel onBack={() => setCurrentPanel('dashboard')} />;
       case 'stores':
@@ -1181,7 +1484,7 @@ export default function TradeToolkit() {
       case 'tools':
         return <QuickToolsPanel onBack={() => setCurrentPanel('dashboard')} />;
       default:
-        return <Dashboard onNavigate={handleNavigate} />;
+        return <Dashboard onNavigate={handleNavigate} hasEstimateData={hasEstimateData} />;
     }
   };
 
@@ -1342,10 +1645,7 @@ export default function TradeToolkit() {
         isOpen={showScanner}
         onClose={() => setShowScanner(false)}
         onColorSelect={(color) => {
-          toast({ 
-            title: 'Color matched!', 
-            description: `${color.name} - ${color.hex}` 
-          });
+          addColorToEstimate(color);
         }}
       />
 
