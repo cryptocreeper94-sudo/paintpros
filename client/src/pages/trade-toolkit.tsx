@@ -82,6 +82,31 @@ const DEFAULT_PRICING = {
   markupPercent: 25,             // Standard markup
 };
 
+// Credit tracking utility for Trade Toolkit tools
+async function useToolCredits(
+  tenantId: string, 
+  toolType: 'measure_scan' | 'color_match' | 'room_visualizer' | 'complete_estimate',
+  metadata?: Record<string, unknown>
+): Promise<{ success: boolean; cost?: number; newBalance?: number; error?: string }> {
+  try {
+    const response = await fetch('/api/toolkit/use-credits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenantId, toolType, metadata })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      return { success: false, error: error.error || 'Failed to use credits' };
+    }
+    
+    return await response.json();
+  } catch (err) {
+    console.error('Credit deduction error:', err);
+    return { success: false, error: 'Network error' };
+  }
+}
+
 // Shared estimate data across all tools
 interface EstimateData {
   // From Measure Panel
@@ -325,8 +350,25 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
     ? parseFloat(materialQty) * (1 + parseFloat(wastePercent) / 100) 
     : 0;
   
-  const handleAddToEstimate = () => {
+  const handleAddToEstimate = async () => {
     if (onUpdateEstimate && floorSqFt > 0) {
+      // Deduct credits for measure tool usage
+      const tenant = getCurrentTenant();
+      const creditResult = await useToolCredits(tenant?.id || 'demo', 'measure_scan', {
+        wallSqFt,
+        floorSqFt,
+        roomDimensions: `${roomLength}x${roomWidth}x${ceilingHeight}`
+      });
+      
+      if (!creditResult.success) {
+        toast({
+          title: 'Insufficient Credits',
+          description: creditResult.error || 'Please purchase more credits to continue.',
+          variant: 'destructive'
+        });
+        return;
+      }
+      
       onUpdateEstimate({
         roomLength,
         roomWidth,
@@ -334,7 +376,7 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
         floorSqFt,
         wallSqFt
       });
-      toast({ title: 'Added to Estimate', description: `${wallSqFt.toLocaleString()} sq ft of walls added` });
+      toast({ title: 'Added to Estimate', description: `${wallSqFt.toLocaleString()} sq ft added. (${creditResult.cost} credits used)` });
     }
   };
 
@@ -960,6 +1002,22 @@ function CompleteEstimatePanel({ onBack, estimateData, onClearEstimate, userRole
   const total = subtotal + markup;
   
   const handleSendToOffice = async () => {
+    // Deduct credits for generating complete estimate
+    const creditResult = await useToolCredits(tenant?.id || 'demo', 'complete_estimate', {
+      wallSqFt: estimateData.wallSqFt,
+      colorsCount: estimateData.selectedColors.length,
+      total
+    });
+    
+    if (!creditResult.success) {
+      toast({
+        title: 'Insufficient Credits',
+        description: creditResult.error || 'Please purchase more credits to continue.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     const estimateSummary = {
       measurements: {
         roomLength: estimateData.roomLength,
@@ -986,7 +1044,7 @@ function CompleteEstimatePanel({ onBack, estimateData, onClearEstimate, userRole
     
     toast({
       title: 'Estimate Sent',
-      description: 'Complete estimate has been sent to the office for review.'
+      description: `Complete estimate sent to office. (${creditResult.cost} credits used)`
     });
   };
   
@@ -2054,8 +2112,28 @@ export default function TradeToolkit() {
       <ColorScanner 
         isOpen={showScanner}
         onClose={() => setShowScanner(false)}
-        onColorSelect={(color) => {
+        onColorSelect={async (color) => {
+          // Deduct credits for color match usage
+          const tenant = getCurrentTenant();
+          const creditResult = await useToolCredits(tenant?.id || 'demo', 'color_match', {
+            colorName: color.name,
+            colorHex: color.hex
+          });
+          
+          if (!creditResult.success) {
+            toast({
+              title: 'Insufficient Credits',
+              description: creditResult.error || 'Please purchase more credits to continue.',
+              variant: 'destructive'
+            });
+            return;
+          }
+          
           addColorToEstimate(color);
+          toast({
+            title: 'Color Added',
+            description: `${color.name} added to estimate. (${creditResult.cost} credits used)`
+          });
         }}
       />
 
@@ -2071,6 +2149,7 @@ export default function TradeToolkit() {
       <ColorVisualizer 
         isOpen={showVisualizer}
         onClose={() => setShowVisualizer(false)}
+        tenantId={getCurrentTenant()?.id || 'demo'}
       />
     </div>
   );

@@ -1,21 +1,25 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Camera, Paintbrush, Loader2, Download, RotateCcw, Palette, Sparkles, CheckCircle } from "lucide-react";
+import { X, Upload, Camera, Paintbrush, Loader2, Download, RotateCcw, Palette, Sparkles, CheckCircle, HelpCircle, Zap, AlertCircle } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import type { PaintColor } from "@shared/schema";
 
 interface ColorVisualizerProps {
   isOpen: boolean;
   onClose: () => void;
   initialColor?: { hex: string; name: string };
+  tenantId?: string;
 }
 
-export function ColorVisualizer({ isOpen, onClose, initialColor }: ColorVisualizerProps) {
+export function ColorVisualizer({ isOpen, onClose, initialColor, tenantId = 'demo' }: ColorVisualizerProps) {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<{ hex: string; name: string } | null>(initialColor || null);
+  const { toast } = useToast();
   const [intensity, setIntensity] = useState([50]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
@@ -64,6 +68,28 @@ export function ColorVisualizer({ isOpen, onClose, initialColor }: ColorVisualiz
     setIsProcessing(true);
 
     try {
+      // Deduct credits for room visualizer usage
+      const creditResponse = await fetch('/api/toolkit/use-credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          tenantId, 
+          toolType: 'room_visualizer',
+          metadata: { colorName: selectedColor.name, colorHex: selectedColor.hex }
+        })
+      });
+      
+      if (!creditResponse.ok) {
+        const creditError = await creditResponse.json();
+        toast({
+          title: 'Insufficient Credits',
+          description: creditError.error || 'Please purchase more credits to continue.',
+          variant: 'destructive'
+        });
+        setIsProcessing(false);
+        return; // Block visualization if credits are insufficient
+      }
+
       const response = await fetch("/api/color-visualize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -178,12 +204,21 @@ export function ColorVisualizer({ isOpen, onClose, initialColor }: ColorVisualiz
               <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-accent/30 to-gold-400/20 flex items-center justify-center border border-accent/30">
                 <Paintbrush className="w-7 h-7 text-accent" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-gray-900 mb-2">AI Color Visualizer</h2>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h2 className="text-xl sm:text-2xl font-display font-bold text-gray-900">Room Visualizer</h2>
+                <Badge className="bg-amber-100 text-amber-700 text-[10px] border-0">
+                  <Zap className="w-2.5 h-2.5 mr-0.5" />
+                  10 credits
+                </Badge>
+              </div>
               <p className="text-gray-600 text-sm mb-3">
                 Upload a photo of your wall and see how different paint colors would look
               </p>
               <div className="bg-accent/5 border border-accent/20 rounded-lg p-3 text-left max-w-md mx-auto">
-                <p className="text-xs font-medium text-accent mb-1">Tips for Best Results:</p>
+                <p className="text-xs font-medium text-accent mb-1 flex items-center gap-1">
+                  <HelpCircle className="w-3 h-3" />
+                  Tips for Best Results:
+                </p>
                 <ul className="text-xs text-gray-600 space-y-0.5">
                   <li>Use well-lit photos with natural daylight</li>
                   <li>Capture flat wall surfaces for accurate color preview</li>

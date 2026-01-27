@@ -1507,6 +1507,48 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/toolkit/use-credits - Deduct credits for Trade Toolkit tool usage
+  app.post("/api/toolkit/use-credits", async (req, res) => {
+    try {
+      const { tenantId, toolType, metadata } = req.body;
+      
+      const validTools = ['measure_scan', 'color_match', 'room_visualizer', 'complete_estimate'];
+      if (!tenantId || !toolType || !validTools.includes(toolType)) {
+        res.status(400).json({ error: "Invalid tenantId or toolType" });
+        return;
+      }
+
+      // Check and deduct credits
+      const checkResult = await checkCredits(tenantId, toolType);
+      if (!checkResult.success) {
+        res.status(402).json({ 
+          error: checkResult.error,
+          currentBalance: checkResult.currentBalance || 0
+        });
+        return;
+      }
+
+      const deductResult = await deductCreditsAfterUsage(tenantId, toolType, {
+        ...metadata,
+        source: 'trade_toolkit'
+      });
+
+      if (!deductResult.success) {
+        res.status(500).json({ error: deductResult.error });
+        return;
+      }
+
+      res.json({ 
+        success: true, 
+        cost: getActionCost(toolType),
+        newBalance: deductResult.newBalance 
+      });
+    } catch (error) {
+      console.error("Error using toolkit credits:", error);
+      res.status(500).json({ error: "Failed to process credit usage" });
+    }
+  });
+
   // ============ SEO TAGS ============
   
   // POST /api/seo-tags - Create a new SEO tag

@@ -73,7 +73,8 @@ When crews start submitting their own Before & After photos:
 - Trade Toolkit camera can capture and send images directly to Content Studio
 - Goal: Build library deep enough that content rarely repeats
 - Content never truly "retires" - it goes dormant and resurfaces when analytics suggest it's optimal
-- **AI Credits System:** Prepaid model for metered features with subscription tiers and credit packs, integrated with Stripe for payments.
+- **Trade Toolkit Credits:** Tools deduct credits when used - Measure Tool (5 credits), Color Match (8 credits), Room Visualizer (10 credits), Complete Estimate (15 credits). Credits tracked via `/api/toolkit/use-credits` endpoint. Best practices modal shows on first use of each tool with tips for best results; help button in header allows re-viewing tips.
+- **Credits System:** Prepaid model for metered features with subscription tiers and credit packs, integrated with Stripe for payments.
 - **Live Translator:** Real-time speech translation (English/Spanish) using ElevenLabs STT + OpenAI translation + ElevenLabs TTS. Costs 50 credits/minute (~$0.50/min profit margin).
 - **AI-Powered Features:** Includes Proposal Writer, Smart Lead Scoring, Voice-to-Estimate, Follow-up Optimizer, Profit Margin Optimizer, and Seasonal Demand Forecasting.
 - **Customer Experience Features:** Customer Portal, Real-Time Crew GPS, Digital Tip Jar, and Before/After Gallery.
