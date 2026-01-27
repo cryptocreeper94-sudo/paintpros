@@ -219,10 +219,9 @@ const presentationSlides = [
   }
 ];
 
-// Presentation Mode Component
+// Presentation Mode Component - Clean view for audience (no speaker notes)
 function PresentationMode({ onClose }: { onClose: () => void }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [showNotes, setShowNotes] = useState(true);
   
   const slide = presentationSlides[currentSlide];
   const SlideIcon = slide.icon;
@@ -266,82 +265,51 @@ function PresentationMode({ onClose }: { onClose: () => void }) {
           <Badge variant="outline" className="text-xs">
             Slide {currentSlide + 1} of {presentationSlides.length}
           </Badge>
-          <span className="text-sm text-muted-foreground">Use arrow keys or buttons to navigate</span>
+          <span className="text-sm text-muted-foreground">Marketing Hub Overview</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowNotes(!showNotes)}
-            data-testid="button-toggle-notes"
-          >
-            {showNotes ? <ChevronDown className="w-4 h-4 mr-1" /> : <ChevronUp className="w-4 h-4 mr-1" />}
-            {showNotes ? "Hide" : "Show"} Speaker Notes
-          </Button>
-          <Button variant="ghost" size="icon" onClick={onClose} data-testid="button-close-presentation">
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
+        <Button variant="ghost" size="icon" onClick={onClose} data-testid="button-close-presentation">
+          <X className="w-5 h-5" />
+        </Button>
       </div>
       
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Slide Content - What the audience sees */}
-        <div className="flex-1 flex items-center justify-center p-8">
-          <motion.div 
-            key={currentSlide}
-            className="max-w-4xl w-full"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <GlassCard className={`p-8 md:p-12 bg-gradient-to-br ${slide.bgGradient}`}>
-              <div className="flex items-center gap-4 mb-6">
-                <div className={`w-16 h-16 rounded-2xl bg-background/50 flex items-center justify-center`}>
-                  <SlideIcon className={`w-8 h-8 ${slide.iconColor}`} />
-                </div>
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-bold">{slide.title}</h1>
-                  <p className="text-lg text-muted-foreground">{slide.subtitle}</p>
-                </div>
+      {/* Main Content Area - Clean slide for audience */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <motion.div 
+          key={currentSlide}
+          className="max-w-4xl w-full"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <GlassCard className={`p-8 md:p-12 bg-gradient-to-br ${slide.bgGradient}`}>
+            <div className="flex items-center gap-4 mb-6">
+              <div className={`w-16 h-16 rounded-2xl bg-background/50 flex items-center justify-center`}>
+                <SlideIcon className={`w-8 h-8 ${slide.iconColor}`} />
               </div>
-              
-              <div className="space-y-4 mt-8">
-                {slide.bullets.map((bullet, idx) => (
-                  <motion.div 
-                    key={idx}
-                    className="flex items-start gap-4"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 + 0.2 }}
-                  >
-                    <div className={`w-8 h-8 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0`}>
-                      <CheckCircle className={`w-5 h-5 ${slide.iconColor}`} />
-                    </div>
-                    <p className="text-lg md:text-xl pt-1">{bullet}</p>
-                  </motion.div>
-                ))}
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold">{slide.title}</h1>
+                <p className="text-lg text-muted-foreground">{slide.subtitle}</p>
               </div>
-            </GlassCard>
-          </motion.div>
-        </div>
-        
-        {/* Speaker Notes Panel - What you see */}
-        {showNotes && (
-          <motion.div 
-            className="border-t border-border/50 bg-amber-500/5 p-4"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-          >
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-4 h-4 text-amber-500" />
-                <span className="text-sm font-semibold text-amber-600">Your Talking Points:</span>
-              </div>
-              <p className="text-sm leading-relaxed">{slide.speakerNotes}</p>
             </div>
-          </motion.div>
-        )}
+            
+            <div className="space-y-4 mt-8">
+              {slide.bullets.map((bullet, idx) => (
+                <motion.div 
+                  key={idx}
+                  className="flex items-start gap-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 + 0.2 }}
+                >
+                  <div className={`w-8 h-8 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0`}>
+                    <CheckCircle className={`w-5 h-5 ${slide.iconColor}`} />
+                  </div>
+                  <p className="text-lg md:text-xl pt-1">{bullet}</p>
+                </motion.div>
+              ))}
+            </div>
+          </GlassCard>
+        </motion.div>
       </div>
       
       {/* Navigation */}
@@ -393,6 +361,9 @@ function PresentationMode({ onClose }: { onClose: () => void }) {
     </motion.div>
   );
 }
+
+// Export the slides data so Developer page can use the speaker notes
+export { presentationSlides };
 
 export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
   const { t } = useI18n();

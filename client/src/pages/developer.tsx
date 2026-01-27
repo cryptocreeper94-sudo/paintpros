@@ -40,9 +40,10 @@ import { SystemHealthCard } from "@/components/system-health-card";
 import { SeoTracker } from "@/components/seo/SeoTracker";
 import { BlogManager } from "@/components/blog-manager";
 import { useAccess } from "@/context/AccessContext";
-import { MarketingHub } from "@/components/marketing-hub";
+import { MarketingHub, presentationSlides } from "@/components/marketing-hub";
 import { TenantSwitcher, useTenantFilter } from "@/components/tenant-switcher";
 import { PricingConfigPanel } from "@/components/pricing-config-panel";
+import { Presentation, ChevronLeft, ChevronRight } from "lucide-react";
 
 const DEVELOPER_PIN = "0424";
 
@@ -1463,6 +1464,117 @@ function BusinessRoadmapContent() {
   );
 }
 
+// Speaker Notes Panel - Your talking points while audience follows slides in Marketing Hub
+function SpeakerNotesPanel() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const slide = presentationSlides[currentSlide];
+  
+  return (
+    <GlassCard className="h-full p-4 md:p-6 border-l-4 border-purple-500" glow="accent" hoverEffect={false}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-purple-500/10">
+            <Presentation className="w-5 h-5 text-purple-500" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold">Presentation Speaker Notes</h3>
+            <p className="text-xs text-muted-foreground">Have them open Marketing Hub and click "Start Tour" - follow along here</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium px-3 py-1 rounded-full bg-purple-500/10 text-purple-500">
+            Slide {currentSlide + 1} of {presentationSlides.length}
+          </span>
+        </div>
+      </div>
+      
+      {/* Slide Navigation */}
+      <div className="flex items-center gap-2 mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
+          disabled={currentSlide === 0}
+          data-testid="button-notes-prev"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        
+        <div className="flex-1 flex items-center gap-1 justify-center">
+          {presentationSlides.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-2 h-2 rounded-full transition-all ${
+                idx === currentSlide 
+                  ? "w-6 bg-purple-500" 
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+              onClick={() => setCurrentSlide(idx)}
+              data-testid={`button-notes-slide-${idx}`}
+            />
+          ))}
+        </div>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCurrentSlide(Math.min(presentationSlides.length - 1, currentSlide + 1))}
+          disabled={currentSlide === presentationSlides.length - 1}
+          data-testid="button-notes-next"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
+      
+      {/* Current Slide Info */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* What they see */}
+        <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="w-4 h-4 text-blue-500" />
+            <span className="text-sm font-semibold text-blue-600">What They See:</span>
+          </div>
+          <h4 className="font-bold text-lg mb-1">{slide.title}</h4>
+          <p className="text-sm text-muted-foreground mb-3">{slide.subtitle}</p>
+          <ul className="space-y-1 text-sm">
+            {slide.bullets.map((bullet, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-500" />
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* Your talking points */}
+        <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <div className="flex items-center gap-2 mb-2">
+            <FileText className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-semibold text-amber-600">Your Talking Points:</span>
+          </div>
+          <p className="text-sm leading-relaxed">{slide.speakerNotes}</p>
+          
+          {currentSlide === presentationSlides.length - 1 && (
+            <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+              <p className="text-sm font-medium text-red-600">
+                Key Point: We need Meta Business Suite access set up together to avoid fraud alerts. This is blocking everything else.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Quick reminders */}
+      <div className="mt-4 p-3 rounded-lg bg-[#1e3a5f]/10 border border-[#1e3a5f]/30">
+        <p className="text-xs text-[#1e3a5f]">
+          <strong>Remember:</strong> The slides they see are different from what you're reading - paraphrase naturally. Use arrow keys or buttons to stay in sync with their screen.
+        </p>
+      </div>
+    </GlassCard>
+  );
+}
+
 export default function Developer() {
   const { login, currentUser } = useAccess();
   const isSessionAuth = currentUser.isAuthenticated && currentUser.role === "developer";
@@ -2684,6 +2796,13 @@ export default function Developer() {
                   </div>
                 </div>
               </GlassCard>
+            </motion.div>
+          </BentoItem>
+
+          {/* Presentation Speaker Notes - Your talking points while they follow along */}
+          <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4}>
+            <motion.div className="h-full" variants={cardVariants} custom={2}>
+              <SpeakerNotesPanel />
             </motion.div>
           </BentoItem>
 
