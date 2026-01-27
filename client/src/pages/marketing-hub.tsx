@@ -305,6 +305,209 @@ const SAMPLE_SEASONAL_LUME: Partial<SocialPost>[] = [
   { content: "Holiday entertaining? Lume can refresh your space before the guests arrive.", category: "general", platform: "facebook" },
 ];
 
+// Weekly posting schedule: MWF = Rotation A, TThSat = Rotation B, Sunday = Planning
+const WEEKLY_SCHEDULE = {
+  0: { rotation: 'planning', label: 'Sunday Planning', description: 'Review week performance & plan ahead' },
+  1: { rotation: 'A', label: 'Monday - Rotation A', description: 'Showcase project or before/after' },
+  2: { rotation: 'B', label: 'Tuesday - Rotation B', description: 'Tips, education, or team spotlight' },
+  3: { rotation: 'A', label: 'Wednesday - Rotation A', description: 'Customer testimonial or review' },
+  4: { rotation: 'B', label: 'Thursday - Rotation B', description: 'Behind the scenes or process' },
+  5: { rotation: 'A', label: 'Friday - Rotation A', description: 'Weekend inspiration or seasonal' },
+  6: { rotation: 'B', label: 'Saturday - Rotation B', description: 'Community engagement or local' },
+};
+
+// Content categories for each rotation
+const ROTATION_CATEGORIES = {
+  A: ['exterior', 'interior', 'cabinets', 'before-after'], // Project showcase rotation
+  B: ['team', 'tips', 'general', 'commercial'], // Engagement rotation
+};
+
+interface TodaysSuggestedPostProps {
+  contentBundles: any[];
+  allImages: any[];
+  messageTemplates: any[];
+}
+
+function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { contentBundles: any[], allImages: any[], messageTemplates: any[] }) {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const schedule = WEEKLY_SCHEDULE[dayOfWeek as keyof typeof WEEKLY_SCHEDULE];
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Get suggested content based on rotation
+  const getSuggestedContent = () => {
+    if (schedule.rotation === 'planning') {
+      return null; // Sunday is planning day
+    }
+    
+    const rotationCategories = ROTATION_CATEGORIES[schedule.rotation as 'A' | 'B'];
+    
+    // Try to find a bundle first
+    const matchingBundle = contentBundles.find(b => 
+      rotationCategories.some(cat => b.category?.toLowerCase().includes(cat))
+    );
+    
+    if (matchingBundle) {
+      return {
+        type: 'bundle',
+        data: matchingBundle,
+        image: matchingBundle.imageUrl,
+        message: matchingBundle.message || messageTemplates.find(m => m.category === matchingBundle.category)?.content
+      };
+    }
+    
+    // Fall back to matching image + message
+    const matchingImage = allImages.find(img => 
+      rotationCategories.some(cat => img.category?.toLowerCase().includes(cat))
+    );
+    const matchingMessage = messageTemplates.find(m => 
+      rotationCategories.some(cat => m.category?.toLowerCase().includes(cat))
+    );
+    
+    if (matchingImage || matchingMessage) {
+      return {
+        type: 'suggested',
+        image: matchingImage?.url || matchingImage?.src,
+        message: matchingMessage?.content,
+        category: matchingImage?.category || matchingMessage?.category
+      };
+    }
+    
+    // Default suggestions if no matching content
+    return {
+      type: 'default',
+      message: schedule.description,
+      category: rotationCategories[0]
+    };
+  };
+  
+  const suggestion = getSuggestedContent();
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative overflow-hidden rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent"
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-400/20 to-transparent rounded-bl-full" />
+      
+      <div className="relative p-4 md:p-5">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                Today's Suggested Post
+                <Badge variant="outline" className="text-xs bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300">
+                  {schedule.rotation === 'planning' ? 'Plan Day' : `Rotation ${schedule.rotation}`}
+                </Badge>
+              </h3>
+              <p className="text-xs text-muted-foreground">{schedule.label}</p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-xs"
+          >
+            {isExpanded ? 'Less' : 'More'}
+          </Button>
+        </div>
+        
+        {schedule.rotation === 'planning' ? (
+          <div className="bg-white/50 dark:bg-white/5 rounded-lg p-4 border border-white/20">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+              <strong>Sunday Planning Day</strong> - Review this week's performance and prepare next week's content.
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-blue-500/10 rounded-lg p-2 text-center">
+                <p className="font-medium text-blue-700 dark:text-blue-300">MWF Posts</p>
+                <p className="text-muted-foreground">Projects & Showcases</p>
+              </div>
+              <div className="bg-purple-500/10 rounded-lg p-2 text-center">
+                <p className="font-medium text-purple-700 dark:text-purple-300">TThSat Posts</p>
+                <p className="text-muted-foreground">Tips & Engagement</p>
+              </div>
+            </div>
+          </div>
+        ) : suggestion ? (
+          <div className="flex gap-4">
+            {suggestion.image && (
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
+                <img src={suggestion.image} alt="Suggested" className="w-full h-full object-cover" />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-2 line-clamp-2">
+                {suggestion.message || schedule.description}
+              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                {suggestion.category && (
+                  <Badge variant="secondary" className="text-xs capitalize">{suggestion.category}</Badge>
+                )}
+                <Badge variant="outline" className="text-xs">
+                  <Instagram className="w-3 h-3 mr-1" />
+                  Best for Instagram
+                </Badge>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Add content to your library to get personalized suggestions.</p>
+        )}
+        
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mt-4 pt-4 border-t border-white/10"
+          >
+            <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">This Week's Schedule</h4>
+            <div className="grid grid-cols-7 gap-1 text-center">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                <div 
+                  key={i} 
+                  className={`py-1.5 rounded text-xs ${
+                    i === dayOfWeek 
+                      ? 'bg-amber-500 text-white font-bold' 
+                      : WEEKLY_SCHEDULE[i as keyof typeof WEEKLY_SCHEDULE].rotation === 'A'
+                        ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                        : WEEKLY_SCHEDULE[i as keyof typeof WEEKLY_SCHEDULE].rotation === 'B'
+                          ? 'bg-purple-500/20 text-purple-700 dark:text-purple-300'
+                          : 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center gap-4 mt-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500" /> MWF: Projects</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500" /> TThSat: Engagement</span>
+            </div>
+          </motion.div>
+        )}
+        
+        {schedule.rotation !== 'planning' && (
+          <div className="flex gap-2 mt-4">
+            <Button size="sm" className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
+              <Copy className="w-3.5 h-3.5 mr-1.5" />
+              Copy to Post
+            </Button>
+            <Button size="sm" variant="outline" className="flex-1">
+              <ArrowRight className="w-3.5 h-3.5 mr-1.5" />
+              Schedule
+            </Button>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function MarketingHub() {
   const tenant = useTenant();
   const { toast } = useToast();
@@ -1616,6 +1819,13 @@ export default function MarketingHub() {
                   </p>
                 </div>
               </div>
+
+              {/* AI Suggested Post Today */}
+              <TodaysSuggestedPost 
+                contentBundles={contentBundles.filter(b => b.brand === selectedTenant)}
+                allImages={allImages.filter(i => i.brand === selectedTenant)}
+                messageTemplates={messageTemplates.filter(m => m.brand === selectedTenant)}
+              />
 
               {/* How This Works - Educational */}
               <GlassCard className="p-4 border-l-4 border-l-[#1e3a5f]">
