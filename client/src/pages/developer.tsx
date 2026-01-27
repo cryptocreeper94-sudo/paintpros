@@ -2518,6 +2518,175 @@ export default function Developer() {
             </motion.div>
           </BentoItem>
 
+          {/* Marketing System Overview - Talking Points */}
+          <BentoItem colSpan={12} rowSpan={2} mobileColSpan={4}>
+            <motion.div className="h-full" variants={cardVariants} custom={1}>
+              <GlassCard className="h-full p-4 md:p-6 border-l-4 border-[#1e3a5f]" glow="accent" hoverEffect={false}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-[#1e3a5f]/10">
+                    <Target className="w-5 h-5 text-[#1e3a5f]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">Marketing System Overview</h3>
+                    <p className="text-xs text-muted-foreground">How it works - Meeting Talking Points</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* The Problem We Solve */}
+                  <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
+                    <h4 className="font-semibold text-red-600 mb-3 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      The Problem We Solve
+                    </h4>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>Painting companies struggle with <strong>consistent marketing</strong></span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>No time to create social media posts</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>Don't know what content works</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>Before/After photos sit unused on phones</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Circle className="w-2 h-2 mt-1.5 flex-shrink-0 fill-current" />
+                        <span>No way to track what marketing is working</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  {/* How Our System Works */}
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/5 border border-[#1e3a5f]/20">
+                    <h4 className="font-semibold text-[#1e3a5f] mb-3 flex items-center gap-2">
+                      <Layers className="w-4 h-4" />
+                      How Our System Works
+                    </h4>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-[#1e3a5f] min-w-[20px]">1.</span>
+                        <span><strong>Content Studio</strong> - Pre-made social media posts ready to download and share</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-[#1e3a5f] min-w-[20px]">2.</span>
+                        <span><strong>Image Library</strong> - Professional photos organized by category (interior, exterior, cabinets, etc.)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-[#1e3a5f] min-w-[20px]">3.</span>
+                        <span><strong>Message Templates</strong> - Copy-paste captions for each platform (Facebook, Instagram, Nextdoor)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-[#1e3a5f] min-w-[20px]">4.</span>
+                        <span><strong>Content Calendar</strong> - Suggests what to post each day (MWF project photos, TThSat tips/engagement)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-bold text-[#1e3a5f] min-w-[20px]">5.</span>
+                        <span><strong>Analytics</strong> - Track what content gets the most engagement</span>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  {/* The Benefits */}
+                  <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
+                    <h4 className="font-semibold text-green-600 mb-3 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      The Benefits
+                    </h4>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <span><strong>Save 5+ hours/week</strong> - No more creating posts from scratch</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <span><strong>Consistent presence</strong> - Always have something to post</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <span><strong>Professional quality</strong> - Templates written by marketing pros</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <span><strong>Platform-specific</strong> - Right format for each social network</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <span><strong>Learn what works</strong> - Analytics show which posts get leads</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                {/* The Daily Workflow */}
+                <div className="mt-4 p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
+                  <h4 className="font-semibold text-purple-600 mb-3 flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    The Daily Workflow (5 Minutes)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm">
+                    <div className="text-center p-3 bg-background/50 rounded-lg">
+                      <div className="font-bold text-lg text-purple-600">1</div>
+                      <p className="text-xs">Open Content Studio</p>
+                    </div>
+                    <div className="text-center p-3 bg-background/50 rounded-lg">
+                      <div className="font-bold text-lg text-purple-600">2</div>
+                      <p className="text-xs">See "Today's Suggested Post"</p>
+                    </div>
+                    <div className="text-center p-3 bg-background/50 rounded-lg">
+                      <div className="font-bold text-lg text-purple-600">3</div>
+                      <p className="text-xs">Download image + copy message</p>
+                    </div>
+                    <div className="text-center p-3 bg-background/50 rounded-lg">
+                      <div className="font-bold text-lg text-purple-600">4</div>
+                      <p className="text-xs">Paste into Facebook/Instagram</p>
+                    </div>
+                    <div className="text-center p-3 bg-background/50 rounded-lg">
+                      <div className="font-bold text-lg text-purple-600">5</div>
+                      <p className="text-xs">Mark as Posted - Done!</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Key Talking Points */}
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                    <h4 className="font-semibold text-amber-600 mb-2 flex items-center gap-2">
+                      <Radio className="w-4 h-4" />
+                      Say This
+                    </h4>
+                    <ul className="text-sm space-y-2 italic">
+                      <li>"It's like having a marketing team in your pocket"</li>
+                      <li>"No more staring at a blank screen wondering what to post"</li>
+                      <li>"Every post is designed to get engagement and leads"</li>
+                      <li>"Crews submit their photos, we turn them into marketing gold"</li>
+                      <li>"Track everything - know exactly what's working"</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-4 rounded-lg bg-[#1e3a5f]/10 border border-[#1e3a5f]/30">
+                    <h4 className="font-semibold text-[#1e3a5f] mb-2 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4" />
+                      The Vision
+                    </h4>
+                    <p className="text-sm">
+                      "Right now we're manually downloading and posting. <strong>Phase 2</strong> connects directly 
+                      to Meta Business Suite for auto-posting. <strong>Phase 3</strong> adds performance tracking 
+                      so we know which posts actually generate calls. The foundation is built - we just need 
+                      to start using it and the data will tell us what works best."
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </BentoItem>
+
           {/* Estimator Pricing Configuration */}
           <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
             <PricingConfigPanel />
