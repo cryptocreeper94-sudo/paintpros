@@ -347,6 +347,11 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
   const dayOfWeek = today.getDay();
   const schedule = WEEKLY_SCHEDULE[dayOfWeek as keyof typeof WEEKLY_SCHEDULE];
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+  const [editedMessage, setEditedMessage] = useState('');
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const { toast } = useToast();
   
   // Get suggested content based on rotation
   const getSuggestedContent = () => {
@@ -366,6 +371,7 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
         type: 'bundle',
         data: matchingBundle,
         image: matchingBundle.imageUrl,
+        imageId: matchingBundle.imageId,
         message: matchingBundle.message || messageTemplates.find(m => m.category === matchingBundle.category)?.content
       };
     }
@@ -382,6 +388,7 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
       return {
         type: 'suggested',
         image: matchingImage?.url || matchingImage?.src,
+        imageId: matchingImage?.id,
         message: matchingMessage?.content,
         category: matchingImage?.category || matchingMessage?.category
       };
@@ -396,6 +403,52 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
   };
   
   const suggestion = getSuggestedContent();
+  
+  // Get current display image and message (edited or suggested)
+  const currentImage = selectedImageId 
+    ? allImages.find(i => i.id === selectedImageId) 
+    : (suggestion?.imageId ? allImages.find(i => i.id === suggestion.imageId) : null);
+  const currentImageUrl = currentImage?.url || currentImage?.src || suggestion?.image;
+  const currentMessage = editedMessage || suggestion?.message || '';
+  
+  // Initialize edited values when entering edit mode
+  const handleStartEdit = () => {
+    setEditedMessage(suggestion?.message || '');
+    setSelectedImageId(suggestion?.imageId || null);
+    setIsEditing(true);
+  };
+  
+  // Copy message to clipboard
+  const handleCopyMessage = async () => {
+    await navigator.clipboard.writeText(currentMessage);
+    toast({ title: 'Message Copied', description: 'Ready to paste into your social media app' });
+  };
+  
+  // Download image
+  const handleDownloadImage = async () => {
+    if (!currentImageUrl) return;
+    try {
+      const response = await fetch(currentImageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `suggested-post-${new Date().toISOString().split('T')[0]}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      toast({ title: 'Image Downloaded', description: 'Ready to upload to your social media' });
+    } catch (err) {
+      toast({ title: 'Download Failed', description: 'Could not download image', variant: 'destructive' });
+    }
+  };
+  
+  // Save edited post
+  const handleSave = () => {
+    setIsEditing(false);
+    toast({ title: 'Post Updated', description: 'Your customized post is ready to download' });
+  };
   
   return (
     <motion.div
@@ -448,26 +501,74 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
             </div>
           </div>
         ) : suggestion ? (
-          <div className="flex gap-4">
-            {suggestion.image && (
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
-                <img src={suggestion.image} alt="Suggested" className="w-full h-full object-cover" />
+          <div className="space-y-3">
+            {/* Edit Mode: Image Picker */}
+            {isEditing && showImagePicker ? (
+              <div className="bg-white/50 dark:bg-white/5 rounded-lg p-3 border border-white/20">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">Select Image</span>
+                  <Button size="sm" variant="ghost" onClick={() => setShowImagePicker(false)}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto">
+                  {allImages.slice(0, 12).map(img => (
+                    <button
+                      key={img.id}
+                      onClick={() => { setSelectedImageId(img.id); setShowImagePicker(false); }}
+                      className={`w-full aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedImageId === img.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-transparent hover:border-white/30'
+                      }`}
+                    >
+                      <img src={img.url || img.src} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-4">
+                {currentImageUrl && (
+                  <div className="relative group">
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
+                      <img src={currentImageUrl} alt="Suggested" className="w-full h-full object-cover" />
+                    </div>
+                    {isEditing && (
+                      <button 
+                        onClick={() => setShowImagePicker(true)}
+                        className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Edit className="w-4 h-4 text-white" />
+                      </button>
+                    )}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  {isEditing ? (
+                    <Textarea
+                      value={editedMessage}
+                      onChange={(e) => setEditedMessage(e.target.value)}
+                      className="text-sm min-h-[60px] bg-white/50 dark:bg-white/5 border-white/20"
+                      placeholder="Edit your message..."
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2 line-clamp-2">
+                      {currentMessage || schedule.description}
+                    </p>
+                  )}
+                  {!isEditing && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {suggestion.category && (
+                        <Badge variant="secondary" className="text-xs capitalize">{suggestion.category}</Badge>
+                      )}
+                      <Badge variant="outline" className="text-xs">
+                        <Instagram className="w-3 h-3 mr-1" />
+                        Best for Instagram
+                      </Badge>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-2 line-clamp-2">
-                {suggestion.message || schedule.description}
-              </p>
-              <div className="flex items-center gap-2 flex-wrap">
-                {suggestion.category && (
-                  <Badge variant="secondary" className="text-xs capitalize">{suggestion.category}</Badge>
-                )}
-                <Badge variant="outline" className="text-xs">
-                  <Instagram className="w-3 h-3 mr-1" />
-                  Best for Instagram
-                </Badge>
-              </div>
-            </div>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">Add content to your library to get personalized suggestions.</p>
@@ -507,14 +608,32 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
         
         {schedule.rotation !== 'planning' && (
           <div className="flex gap-2 mt-4">
-            <Button size="sm" className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-              <Copy className="w-3.5 h-3.5 mr-1.5" />
-              Copy to Post
-            </Button>
-            <Button size="sm" variant="outline" className="flex-1">
-              <ArrowRight className="w-3.5 h-3.5 mr-1.5" />
-              Schedule
-            </Button>
+            {isEditing ? (
+              <>
+                <Button size="sm" onClick={handleSave} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700">
+                  <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
+                  Save
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="flex-1">
+                  <X className="w-3.5 h-3.5 mr-1.5" />
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button size="sm" variant="outline" onClick={handleStartEdit} data-testid="button-edit-suggested">
+                  <Edit className="w-3.5 h-3.5" />
+                </Button>
+                <Button size="sm" onClick={handleCopyMessage} className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
+                  <Copy className="w-3.5 h-3.5 mr-1.5" />
+                  Copy Message
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleDownloadImage} className="flex-1">
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
+                  Download Image
+                </Button>
+              </>
+            )}
           </div>
         )}
       </div>
