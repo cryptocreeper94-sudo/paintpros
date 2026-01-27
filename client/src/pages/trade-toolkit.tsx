@@ -634,6 +634,31 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
         )}
       </GlassPanel>
 
+      {/* Manual Square Footage Entry - use this if not using Measure tool */}
+      <GlassPanel className="p-5">
+        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+          <Ruler className="w-4 h-4 text-blue-400" />
+          Square Footage
+          {hasMeasurements && <Badge variant="secondary" className="ml-2 text-xs bg-green-500/20 text-green-300">From Tool</Badge>}
+        </h3>
+        <div>
+          <Label className="text-slate-400 text-xs mb-1.5 block">Wall Square Feet {hasMeasurements ? '(auto-filled from Measure tool)' : '(enter manually or use Measure tool)'}</Label>
+          <Input 
+            type="number" 
+            value={sqFt} 
+            onChange={(e) => setSqFt(e.target.value)}
+            placeholder="500"
+            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 h-12 text-lg"
+          />
+        </div>
+        {parseFloat(sqFt) > 0 && (
+          <div className="mt-3 bg-blue-500/10 rounded-xl p-3 text-center border border-blue-500/20">
+            <p className="text-2xl font-bold text-blue-400">{parseFloat(sqFt).toLocaleString()} sq ft</p>
+            <p className="text-xs text-slate-400">@ ${(3.50).toFixed(2)}/sqft = ${(parseFloat(sqFt) * 3.50).toFixed(2)}</p>
+          </div>
+        )}
+      </GlassPanel>
+
       <GlassPanel className="p-5">
         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
           <Clock className="w-4 h-4 text-blue-400" />
