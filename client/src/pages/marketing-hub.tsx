@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -172,6 +172,20 @@ interface ContentBundle {
   budgetRange?: string;
   ctaButton?: "learn_more" | "shop_now" | "contact_us" | "get_quote" | "book_now";
   createdAt: string;
+  postedAt?: string;
+  metrics?: {
+    impressions: number;
+    reach: number;
+    clicks: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    saves: number;
+    leads: number;
+    conversions: number;
+    spend?: number;
+    revenue?: number;
+  };
 }
 
 type ContentTypeFilter = "all" | "organic" | "paid_ad";
@@ -340,6 +354,20 @@ export default function MarketingHub() {
   const [showAddImageModal, setShowAddImageModal] = useState(false);
   const [showAddMessageModal, setShowAddMessageModal] = useState(false);
   const [metaConnected, setMetaConnected] = useState(false);
+  const [editingMetricsBundle, setEditingMetricsBundle] = useState<ContentBundle | null>(null);
+  const [metricsForm, setMetricsForm] = useState({
+    impressions: 0,
+    reach: 0,
+    clicks: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    saves: 0,
+    leads: 0,
+    conversions: 0,
+    spend: 0,
+    revenue: 0
+  });
   
   // Notes/Notepad state
   interface TeamNote {
@@ -1635,6 +1663,10 @@ export default function MarketingHub() {
                     <span>Bundles</span>
                     <Badge variant="secondary" className="text-xs">{contentBundles.filter(b => b.brand === selectedTenant).length}</Badge>
                   </TabsTrigger>
+                  <TabsTrigger value="performance" className="flex items-center gap-2 py-2.5">
+                    <BarChart3 className="w-4 h-4" />
+                    <span>Performance</span>
+                  </TabsTrigger>
                 </TabsList>
 
                 {/* Images Sub-Tab */}
@@ -2077,6 +2109,236 @@ export default function MarketingHub() {
                         })}
                     </div>
                   )}
+                </TabsContent>
+
+                {/* Performance Analytics Sub-Tab */}
+                <TabsContent value="performance" className="space-y-6">
+                  {/* How-To Guide */}
+                  <GlassCard className="p-5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                        <Lightbulb className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">How to Track Content Performance</h3>
+                        <ol className="text-sm text-gray-600 dark:text-gray-300 space-y-2 list-decimal list-inside">
+                          <li><strong>Download & Post:</strong> Use the "Both" button on any bundle to download the image and copy the message</li>
+                          <li><strong>Update Status:</strong> After posting to social media, change the bundle status to "Posted"</li>
+                          <li><strong>Log Metrics:</strong> Click "Add Metrics" to record engagement data from your social platform</li>
+                          <li><strong>Review Insights:</strong> Check the charts below to see which content types perform best</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </GlassCard>
+
+                  {/* Key Metrics Overview */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {(() => {
+                      const postedBundles = contentBundles.filter(b => b.brand === selectedTenant && b.status === "posted" && b.metrics);
+                      const totalImpressions = postedBundles.reduce((sum, b) => sum + (b.metrics?.impressions || 0), 0);
+                      const totalClicks = postedBundles.reduce((sum, b) => sum + (b.metrics?.clicks || 0), 0);
+                      const totalLeads = postedBundles.reduce((sum, b) => sum + (b.metrics?.leads || 0), 0);
+                      const totalConversions = postedBundles.reduce((sum, b) => sum + (b.metrics?.conversions || 0), 0);
+                      return (
+                        <>
+                          <GlassCard className="p-4 text-center" data-testid="card-total-impressions">
+                            <Eye className="w-6 h-6 mx-auto mb-2 text-blue-500" />
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white" data-testid="text-total-impressions">{totalImpressions.toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground">Total Impressions</p>
+                          </GlassCard>
+                          <GlassCard className="p-4 text-center" data-testid="card-total-clicks">
+                            <Target className="w-6 h-6 mx-auto mb-2 text-green-500" />
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white" data-testid="text-total-clicks">{totalClicks.toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground">Total Clicks</p>
+                          </GlassCard>
+                          <GlassCard className="p-4 text-center" data-testid="card-total-leads">
+                            <Users className="w-6 h-6 mx-auto mb-2 text-purple-500" />
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white" data-testid="text-total-leads">{totalLeads}</p>
+                            <p className="text-xs text-muted-foreground">Leads Generated</p>
+                          </GlassCard>
+                          <GlassCard className="p-4 text-center" data-testid="card-total-conversions">
+                            <CheckCircle className="w-6 h-6 mx-auto mb-2 text-orange-500" />
+                            <p className="text-2xl font-bold text-gray-900 dark:text-white" data-testid="text-total-conversions">{totalConversions}</p>
+                            <p className="text-xs text-muted-foreground">Conversions</p>
+                          </GlassCard>
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Performance by Category */}
+                  <GlassCard className="p-5">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                      <PieChartIcon className="w-5 h-5 text-primary" />
+                      Performance by Image Category
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Track which types of images resonate most with your audience. Categories with higher engagement rates should be prioritized.
+                    </p>
+                    {(() => {
+                      const postedBundles = contentBundles.filter(b => b.brand === selectedTenant && b.status === "posted" && b.metrics);
+                      const categoryData = IMAGE_SUBJECTS.map(subject => {
+                        const bundles = postedBundles.filter(b => {
+                          const image = allImages.find(i => i.id === b.imageId);
+                          return image?.subject === subject.id;
+                        });
+                        const totalEngagement = bundles.reduce((sum, b) => 
+                          sum + (b.metrics?.likes || 0) + (b.metrics?.comments || 0) + (b.metrics?.shares || 0), 0
+                        );
+                        const avgEngagement = bundles.length > 0 ? Math.round(totalEngagement / bundles.length) : 0;
+                        return { name: subject.label, count: bundles.length, engagement: totalEngagement, avg: avgEngagement };
+                      }).filter(d => d.count > 0);
+                      
+                      if (categoryData.length === 0) {
+                        return (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                            <p>No posted content with metrics yet.</p>
+                            <p className="text-xs mt-1">Post content and add metrics to see performance data.</p>
+                          </div>
+                        );
+                      }
+                      
+                      return (
+                        <div className="space-y-3">
+                          {categoryData.sort((a, b) => b.engagement - a.engagement).map(cat => (
+                            <div key={cat.name} className="flex items-center gap-3" data-testid={`row-category-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                              <div className="w-28 text-sm font-medium text-gray-700 dark:text-gray-300">{cat.name}</div>
+                              <div className="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                                  style={{ width: `${Math.min(100, (cat.engagement / Math.max(...categoryData.map(c => c.engagement))) * 100)}%` }}
+                                />
+                              </div>
+                              <div className="w-20 text-right text-sm">
+                                <span className="font-semibold text-gray-900 dark:text-white" data-testid={`text-engagement-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}>{cat.engagement}</span>
+                                <span className="text-muted-foreground ml-1">eng</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </GlassCard>
+
+                  {/* Performance by Platform */}
+                  <GlassCard className="p-5">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-primary" />
+                      Performance by Platform
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Compare results across different social platforms to focus your efforts where they have the most impact.
+                    </p>
+                    {(() => {
+                      const postedBundles = contentBundles.filter(b => b.brand === selectedTenant && b.status === "posted" && b.metrics);
+                      const platforms = ["facebook", "instagram", "nextdoor", "linkedin", "google"];
+                      const platformData = platforms.map(platform => {
+                        const bundles = postedBundles.filter(b => b.platform === platform || b.platform === "all");
+                        const totalLeads = bundles.reduce((sum, b) => sum + (b.metrics?.leads || 0), 0);
+                        const totalClicks = bundles.reduce((sum, b) => sum + (b.metrics?.clicks || 0), 0);
+                        return { name: platform.charAt(0).toUpperCase() + platform.slice(1), posts: bundles.length, leads: totalLeads, clicks: totalClicks };
+                      }).filter(d => d.posts > 0);
+                      
+                      if (platformData.length === 0) {
+                        return (
+                          <div className="text-center py-6 text-muted-foreground text-sm">
+                            No platform data available yet.
+                          </div>
+                        );
+                      }
+                      
+                      return (
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                          {platformData.map(p => (
+                            <div key={p.name} className="text-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg" data-testid={`card-platform-${p.name.toLowerCase()}`}>
+                              <p className="font-semibold text-gray-900 dark:text-white">{p.name}</p>
+                              <p className="text-xs text-muted-foreground">{p.posts} posts</p>
+                              <p className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`text-leads-${p.name.toLowerCase()}`}>{p.leads} leads</p>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </GlassCard>
+
+                  {/* Posted Content with Metrics */}
+                  <GlassCard className="p-5">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-primary" />
+                      Posted Content Log
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      All content marked as "Posted" appears here. Add metrics from your social platforms to track performance.
+                    </p>
+                    {(() => {
+                      const postedBundles = contentBundles.filter(b => b.brand === selectedTenant && b.status === "posted");
+                      if (postedBundles.length === 0) {
+                        return (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <Calendar className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                            <p>No posted content yet.</p>
+                            <p className="text-xs mt-1">Mark bundles as "Posted" after sharing on social media.</p>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className="space-y-3">
+                          {postedBundles.map(bundle => {
+                            const image = allImages.find(i => i.id === bundle.imageId);
+                            const message = messageTemplates.find(m => m.id === bundle.messageId);
+                            return (
+                              <div key={bundle.id} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg" data-testid={`row-posted-bundle-${bundle.id}`}>
+                                {image && (
+                                  <img src={image.url} alt="" className="w-12 h-12 rounded object-cover" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-900 dark:text-white truncate">{message?.content.substring(0, 50)}...</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge variant="outline" className="text-xs">{bundle.platform}</Badge>
+                                    {bundle.postedAt && (
+                                      <span className="text-xs text-muted-foreground">
+                                        Posted {new Date(bundle.postedAt).toLocaleDateString()}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                {bundle.metrics ? (
+                                  <div className="text-right text-xs">
+                                    <p className="text-gray-900 dark:text-white font-medium">{bundle.metrics.impressions.toLocaleString()} views</p>
+                                    <p className="text-muted-foreground">{bundle.metrics.leads} leads</p>
+                                  </div>
+                                ) : null}
+                                <Button
+                                  size="sm"
+                                  variant={bundle.metrics ? "outline" : "default"}
+                                  onClick={() => {
+                                    setEditingMetricsBundle(bundle);
+                                    setMetricsForm({
+                                      impressions: bundle.metrics?.impressions || 0,
+                                      reach: bundle.metrics?.reach || 0,
+                                      clicks: bundle.metrics?.clicks || 0,
+                                      likes: bundle.metrics?.likes || 0,
+                                      comments: bundle.metrics?.comments || 0,
+                                      shares: bundle.metrics?.shares || 0,
+                                      saves: bundle.metrics?.saves || 0,
+                                      leads: bundle.metrics?.leads || 0,
+                                      conversions: bundle.metrics?.conversions || 0,
+                                      spend: bundle.metrics?.spend || 0,
+                                      revenue: bundle.metrics?.revenue || 0
+                                    });
+                                  }}
+                                  data-testid={`button-edit-metrics-${bundle.id}`}
+                                >
+                                  {bundle.metrics ? "Edit" : "Add Metrics"}
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </GlassCard>
                 </TabsContent>
               </Tabs>
             </TabsContent>
@@ -5973,6 +6235,191 @@ export default function MarketingHub() {
             }}
             onCancel={() => setShowAddMessageModal(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Metrics Editing Modal */}
+      <Dialog open={!!editingMetricsBundle} onOpenChange={(open) => !open && setEditingMetricsBundle(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              {editingMetricsBundle?.metrics ? "Edit Metrics" : "Add Metrics"}
+            </DialogTitle>
+            <DialogDescription>
+              Enter the engagement data from your social media platform. This helps track what content performs best.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Where to find this data */}
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs text-blue-800 dark:text-blue-200">
+              <strong>Where to find these numbers:</strong>
+              <ul className="mt-1 space-y-1 list-disc list-inside">
+                <li><strong>Facebook:</strong> Click on post → View Insights</li>
+                <li><strong>Instagram:</strong> Tap post → View Insights</li>
+                <li><strong>Nextdoor:</strong> Check post engagement stats</li>
+              </ul>
+            </div>
+
+            {/* Engagement Metrics */}
+            <div>
+              <h4 className="text-sm font-medium mb-2">Engagement</h4>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label className="text-xs">Impressions</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.impressions}
+                    onChange={(e) => setMetricsForm({...metricsForm, impressions: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-impressions"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Reach</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.reach}
+                    onChange={(e) => setMetricsForm({...metricsForm, reach: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-reach"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Clicks</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.clicks}
+                    onChange={(e) => setMetricsForm({...metricsForm, clicks: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-clicks"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Social Interactions */}
+            <div>
+              <h4 className="text-sm font-medium mb-2">Social Interactions</h4>
+              <div className="grid grid-cols-4 gap-3">
+                <div>
+                  <Label className="text-xs">Likes</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.likes}
+                    onChange={(e) => setMetricsForm({...metricsForm, likes: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-likes"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Comments</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.comments}
+                    onChange={(e) => setMetricsForm({...metricsForm, comments: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-comments"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Shares</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.shares}
+                    onChange={(e) => setMetricsForm({...metricsForm, shares: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-shares"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Saves</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.saves}
+                    onChange={(e) => setMetricsForm({...metricsForm, saves: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-saves"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Business Results */}
+            <div>
+              <h4 className="text-sm font-medium mb-2">Business Results</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Leads Generated</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.leads}
+                    onChange={(e) => setMetricsForm({...metricsForm, leads: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-leads"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Inquiries from this post</p>
+                </div>
+                <div>
+                  <Label className="text-xs">Conversions</Label>
+                  <Input 
+                    type="number" 
+                    value={metricsForm.conversions}
+                    onChange={(e) => setMetricsForm({...metricsForm, conversions: Math.max(0, parseInt(e.target.value) || 0)})}
+                    data-testid="input-conversions"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Jobs booked from this post</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Ad Spend (for paid ads) */}
+            {editingMetricsBundle?.contentType === "paid_ad" && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">Ad Spend</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Amount Spent ($)</Label>
+                    <Input 
+                      type="number" 
+                      value={metricsForm.spend}
+                      onChange={(e) => setMetricsForm({...metricsForm, spend: Math.max(0, parseFloat(e.target.value) || 0)})}
+                      data-testid="input-spend"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Revenue Generated ($)</Label>
+                    <Input 
+                      type="number" 
+                      value={metricsForm.revenue}
+                      onChange={(e) => setMetricsForm({...metricsForm, revenue: Math.max(0, parseFloat(e.target.value) || 0)})}
+                      data-testid="input-revenue"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingMetricsBundle(null)} data-testid="button-cancel-metrics">
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (editingMetricsBundle) {
+                  const updated = contentBundles.map(b => 
+                    b.id === editingMetricsBundle.id 
+                      ? {...b, metrics: metricsForm, postedAt: b.postedAt || new Date().toISOString()} 
+                      : b
+                  );
+                  setContentBundles(updated);
+                  localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                  toast({
+                    title: "Metrics Saved",
+                    description: "Performance data has been recorded for this content."
+                  });
+                  setEditingMetricsBundle(null);
+                }
+              }}
+              data-testid="button-save-metrics"
+            >
+              Save Metrics
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </PageLayout>

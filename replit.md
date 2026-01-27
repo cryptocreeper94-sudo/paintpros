@@ -55,6 +55,7 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **Internal Messaging System:** Real-time chat widget with Socket.IO, speech-to-text, and role-based badges.
 - **Marketing Hub:** Redesigned with 5 tabs: Content Studio, Analytics Center, Calendar, Playbook, and Budget. Features photo-realistic hero images, educational content, and marketing psychology strategies.
 - **Content Studio Features:** Image Library with category filters, Message Templates, Content Bundles (image + message pairs), download/copy buttons for social media distribution, status tracking (Suggested/Circulating/Posted/Removed), Organic Posts vs Paid Ads distinction.
+- **Performance Analytics:** Track content performance by image category, platform, and content type. Metrics include impressions, reach, clicks, likes, comments, shares, saves, leads generated, and conversions. Performance insights help identify what content works best.
 - **Meta Business Suite Integration (Pending):** UI placeholder ready for Facebook/Instagram auto-posting. Requires Meta Developer credentials: App ID, App Secret, Page Access Token, Instagram Business Account ID. When connected, enables scheduled posts and engagement tracking.
 - **AI Credits System:** Prepaid model for metered features with subscription tiers and credit packs, integrated with Stripe for payments.
 - **Live Translator:** Real-time speech translation (English/Spanish) using ElevenLabs STT + OpenAI translation + ElevenLabs TTS. Costs 50 credits/minute (~$0.50/min profit margin).
