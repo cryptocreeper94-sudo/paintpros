@@ -1,9 +1,6 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = 'paintpros-v1';
+const CACHE_NAME = 'paintpros-v2';
 const urlsToCache = [
-  '/',
-  '/marketing-hub',
-  '/tradeworks',
   '/manifest.json',
   '/manifest-marketing.json',
   '/manifest-tradeworks.json',
@@ -26,19 +23,36 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - NETWORK FIRST strategy for pages, cache for assets
 self.addEventListener('fetch', (event) => {
+  // For navigation requests (HTML pages), always go to network first
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          // Only use cache if network fails (offline)
+          return caches.match('/');
+        })
+    );
+    return;
+  }
+  
+  // For other requests (JS, CSS, images), try network first, then cache
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+        // Cache successful responses for offline use
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
       })
       .catch(() => {
-        // If both fail, return offline page for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
+        // Fall back to cache if network fails
+        return caches.match(event.request);
       })
   );
 });
