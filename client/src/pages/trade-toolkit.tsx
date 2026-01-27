@@ -52,7 +52,9 @@ import {
   BarChart3,
   Target,
   Award,
-  Crown
+  Crown,
+  CheckCircle,
+  Eye
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -484,20 +486,34 @@ function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: {
   );
 }
 
-// Estimate Panel
-function EstimatePanel({ onBack }: { onBack: () => void }) {
-  const [sqFt, setSqFt] = useState('');
+// Estimate Panel - now receives data from Measure and Color Match tools
+function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, onGoToColorMatch }: { 
+  onBack: () => void;
+  estimateData?: EstimateData;
+  onGoToComplete?: () => void;
+  onGoToMeasure?: () => void;
+  onGoToColorMatch?: () => void;
+}) {
+  // Pre-populate from Measure tool data
+  const [sqFt, setSqFt] = useState(estimateData?.wallSqFt?.toString() || '');
   const [pricePerSqFt, setPricePerSqFt] = useState('3.50');
   const [materialCost, setMaterialCost] = useState('');
-  const [laborHours, setLaborHours] = useState('');
-  const [hourlyRate, setHourlyRate] = useState('45');
+  const [laborHours, setLaborHours] = useState(estimateData?.laborHours || '');
+  const [hourlyRate, setHourlyRate] = useState(estimateData?.hourlyRate || '45');
   const [markup, setMarkup] = useState('30');
 
-  const laborTotal = laborHours && hourlyRate ? parseFloat(laborHours) * parseFloat(hourlyRate) : 0;
-  const materialTotal = materialCost ? parseFloat(materialCost) : 0;
+  // Calculate labor hours from sq ft if not set
+  const calculatedLaborHours = laborHours || (sqFt ? Math.ceil(parseFloat(sqFt) / 150).toString() : '');
+  
+  const laborTotal = calculatedLaborHours && hourlyRate ? parseFloat(calculatedLaborHours) * parseFloat(hourlyRate) : 0;
+  const materialTotal = materialCost ? parseFloat(materialCost) : (sqFt ? Math.ceil(parseFloat(sqFt) / 350) * 45 : 0);
   const subtotal = laborTotal + materialTotal;
   const markupAmount = subtotal * (parseFloat(markup) / 100);
   const grandTotal = subtotal + markupAmount;
+  
+  // Check what data is available
+  const hasMeasurements = estimateData && estimateData.wallSqFt > 0;
+  const hasColors = estimateData && estimateData.selectedColors.length > 0;
 
   return (
     <motion.div
@@ -520,6 +536,91 @@ function EstimatePanel({ onBack }: { onBack: () => void }) {
           <p className="text-sm text-slate-400">Quick job pricing</p>
         </div>
       </div>
+
+      {/* Tool Launch Options - Use tools to auto-populate data */}
+      <GlassPanel glow className="p-4">
+        <h3 className="text-white font-semibold mb-3 text-sm">Use Tools to Auto-Fill</h3>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={onGoToMeasure}
+            className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+              hasMeasurements 
+                ? 'bg-blue-500/20 border-blue-500/50 text-blue-300' 
+                : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
+            }`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              hasMeasurements ? 'bg-blue-500' : 'bg-gradient-to-br from-blue-500 to-blue-600'
+            }`}>
+              <Ruler className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-medium text-white">Measure</p>
+              <p className="text-[10px] text-slate-400">
+                {hasMeasurements ? `${estimateData?.wallSqFt} sq ft` : 'Get sq ft'}
+              </p>
+            </div>
+            {hasMeasurements && <CheckCircle className="w-4 h-4 text-green-400 absolute top-1 right-1" />}
+          </button>
+          
+          <button
+            onClick={onGoToColorMatch}
+            className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+              hasColors 
+                ? 'bg-purple-500/20 border-purple-500/50 text-purple-300' 
+                : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
+            }`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              hasColors ? 'bg-purple-500' : 'bg-gradient-to-br from-purple-500 to-purple-600'
+            }`}>
+              <Palette className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-medium text-white">Color Match</p>
+              <p className="text-[10px] text-slate-400">
+                {hasColors ? `${estimateData?.selectedColors.length} colors` : 'Scan colors'}
+              </p>
+            </div>
+          </button>
+          
+          <button
+            onClick={onGoToColorMatch}
+            className="flex flex-col items-center gap-2 p-3 rounded-xl border bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20 transition-all"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+              <Eye className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-medium text-white">Visualizer</p>
+              <p className="text-[10px] text-slate-400">Preview walls</p>
+            </div>
+          </button>
+        </div>
+        
+        {/* Show collected data summary */}
+        {(hasMeasurements || hasColors) && (
+          <div className="mt-3 pt-3 border-t border-white/10">
+            <div className="flex flex-wrap gap-2">
+              {hasMeasurements && (
+                <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+                  <Ruler className="w-3 h-3 mr-1" />
+                  {estimateData?.roomLength}' x {estimateData?.roomWidth}' = {estimateData?.wallSqFt} sq ft
+                </Badge>
+              )}
+              {hasColors && estimateData?.selectedColors.map((color, idx) => (
+                <Badge key={idx} variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                  <span 
+                    className="w-3 h-3 rounded-full mr-1.5 border border-white/20" 
+                    style={{ backgroundColor: color.hex }}
+                  />
+                  {color.name}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+      </GlassPanel>
 
       <GlassPanel className="p-5">
         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -604,6 +705,23 @@ function EstimatePanel({ onBack }: { onBack: () => void }) {
           </div>
         )}
       </GlassPanel>
+
+      {/* Generate Complete Estimate Button */}
+      {(hasMeasurements || grandTotal > 0) && (
+        <GlassPanel glow className="p-4">
+          <Button
+            onClick={onGoToComplete}
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 h-12 text-base font-semibold"
+          >
+            <FileText className="w-5 h-5 mr-2" />
+            Generate Complete Estimate
+            <ChevronRight className="w-5 h-5 ml-2" />
+          </Button>
+          <p className="text-center text-xs text-slate-400 mt-2">
+            Create a full estimate package to send to customer
+          </p>
+        </GlassPanel>
+      )}
     </motion.div>
   );
 }
@@ -1474,7 +1592,13 @@ export default function TradeToolkit() {
       case 'paint':
         return <PaintPanel onBack={() => setCurrentPanel('dashboard')} onOpenScanner={() => setShowScanner(true)} estimateData={estimateData} onAddColor={addColorToEstimate} />;
       case 'estimate':
-        return <EstimatePanel onBack={() => setCurrentPanel('dashboard')} />;
+        return <EstimatePanel 
+          onBack={() => setCurrentPanel('dashboard')} 
+          estimateData={estimateData}
+          onGoToComplete={() => setCurrentPanel('complete-estimate')}
+          onGoToMeasure={() => setCurrentPanel('measure')}
+          onGoToColorMatch={() => setCurrentPanel('paint')}
+        />;
       case 'complete-estimate':
         return <CompleteEstimatePanel onBack={() => setCurrentPanel('dashboard')} estimateData={estimateData} onClearEstimate={clearEstimate} />;
       case 'weather':
