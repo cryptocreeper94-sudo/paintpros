@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/lib/i18n';
 import { getCurrentTenant } from '@/config/tenant';
+import { Link } from 'wouter';
 import { LanguageToggle } from '@/components/language-toggle';
 import { 
   Calculator, 
@@ -1612,8 +1613,19 @@ function Dashboard({ onNavigate, hasEstimateData }: { onNavigate: (panel: string
       animate={{ opacity: 1 }}
       className="space-y-6"
     >
-      {/* Language Toggle */}
-      <div className="flex justify-end">
+      {/* Navigation Header */}
+      <div className="flex items-center justify-between">
+        <Link href="/">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-white hover:bg-white/10 gap-1"
+            data-testid="button-home-nav"
+          >
+            <Home className="w-4 h-4" />
+            Home
+          </Button>
+        </Link>
         <LanguageToggle variant="compact" className="text-white hover:bg-white/10" />
       </div>
 
