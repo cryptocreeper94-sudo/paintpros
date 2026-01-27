@@ -66,6 +66,24 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+// Shared estimate data across all tools
+interface EstimateData {
+  // From Measure Panel
+  roomLength: string;
+  roomWidth: string;
+  ceilingHeight: string;
+  floorSqFt: number;
+  wallSqFt: number;
+  // From Color Match
+  selectedColors: Array<{ name: string; hex: string; brand?: string }>;
+  // From Visualizer  
+  roomImageUrl?: string;
+  // Pricing
+  pricePerSqFt: number;
+  laborHours: string;
+  hourlyRate: string;
+}
+
 // Premium animated gradient background
 function PremiumBackground() {
   return (
