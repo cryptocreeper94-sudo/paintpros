@@ -98,7 +98,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download } from "lucide-react";
+import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download, Share2, ExternalLink } from "lucide-react";
 import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -167,8 +167,14 @@ interface ContentBundle {
   status: "suggested" | "circulating" | "posted" | "removed" | "approved" | "scheduled";
   scheduledDate?: string;
   platform: "instagram" | "facebook" | "nextdoor" | "twitter" | "linkedin" | "google" | "all";
+  contentType: "organic" | "paid_ad";
+  targetAudience?: string;
+  budgetRange?: string;
+  ctaButton?: "learn_more" | "shop_now" | "contact_us" | "get_quote" | "book_now";
   createdAt: string;
 }
+
+type ContentTypeFilter = "all" | "organic" | "paid_ad";
 
 const IMAGE_SUBJECTS: { id: ImageSubject; label: string; image: string }[] = [
   { id: "interior-walls", label: "Interior Walls", image: categoryInteriorWalls },
@@ -330,8 +336,10 @@ export default function MarketingHub() {
     queryKey: ["/api/marketing/images", selectedTenant],
   });
   const [contentBundles, setContentBundles] = useState<ContentBundle[]>([]);
+  const [contentTypeFilter, setContentTypeFilter] = useState<ContentTypeFilter>("all");
   const [showAddImageModal, setShowAddImageModal] = useState(false);
   const [showAddMessageModal, setShowAddMessageModal] = useState(false);
+  const [metaConnected, setMetaConnected] = useState(false);
   
   // Notes/Notepad state
   interface TeamNote {
@@ -1811,6 +1819,7 @@ export default function MarketingHub() {
                                 brand: selectedTenant,
                                 platform: msg.platform,
                                 status: "suggested",
+                                contentType: "organic",
                                 createdAt: new Date().toISOString(),
                               });
                             }
@@ -1836,6 +1845,79 @@ export default function MarketingHub() {
                     </p>
                   </div>
 
+                  {/* Content Type Filter */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-medium text-muted-foreground">Filter:</span>
+                    <Button 
+                      size="sm" 
+                      variant={contentTypeFilter === "all" ? "default" : "outline"}
+                      onClick={() => setContentTypeFilter("all")}
+                      data-testid="filter-all"
+                    >
+                      All
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={contentTypeFilter === "organic" ? "default" : "outline"}
+                      onClick={() => setContentTypeFilter("organic")}
+                      data-testid="filter-organic"
+                    >
+                      <FileText className="w-3 h-3 mr-1" />
+                      Organic Posts
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={contentTypeFilter === "paid_ad" ? "default" : "outline"}
+                      onClick={() => setContentTypeFilter("paid_ad")}
+                      data-testid="filter-paid-ads"
+                    >
+                      <DollarSign className="w-3 h-3 mr-1" />
+                      Paid Ads
+                    </Button>
+                  </div>
+
+                  {/* Meta Integration Banner */}
+                  <GlassCard className="p-4 border-2 border-dashed border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-900/20">
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                          <Share2 className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">Meta Business Suite</h4>
+                          <p className="text-xs text-muted-foreground">
+                            {metaConnected 
+                              ? "Connected - Auto-posting enabled" 
+                              : "Connect to enable auto-posting to Facebook & Instagram"}
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant={metaConnected ? "outline" : "default"}
+                        size="sm"
+                        onClick={() => {
+                          toast({
+                            title: "Coming Soon",
+                            description: "Meta Business Suite integration will be available once developer access is configured."
+                          });
+                        }}
+                        data-testid="button-connect-meta"
+                      >
+                        {metaConnected ? (
+                          <>
+                            <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                            Connected
+                          </>
+                        ) : (
+                          <>
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Connect Meta
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </GlassCard>
+
                   {contentBundles.filter(b => b.brand === selectedTenant).length === 0 ? (
                     <GlassCard className="p-8 text-center">
                       <Wand2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
@@ -1844,10 +1926,18 @@ export default function MarketingHub() {
                         Add images and messages first, then generate smart bundles.
                       </p>
                     </GlassCard>
+                  ) : contentBundles.filter(b => b.brand === selectedTenant && (contentTypeFilter === "all" || b.contentType === contentTypeFilter)).length === 0 ? (
+                    <GlassCard className="p-6 text-center">
+                      <Search className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-1">No {contentTypeFilter === "paid_ad" ? "Paid Ads" : "Organic Posts"} Found</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Try a different filter or convert some bundles to {contentTypeFilter === "paid_ad" ? "ads" : "posts"}.
+                      </p>
+                    </GlassCard>
                   ) : (
                     <div className="grid md:grid-cols-2 gap-4">
                       {contentBundles
-                        .filter(b => b.brand === selectedTenant)
+                        .filter(b => b.brand === selectedTenant && (contentTypeFilter === "all" || b.contentType === contentTypeFilter))
                         .slice(0, 6)
                         .map(bundle => {
                           const image = allImages.find(i => i.id === bundle.imageId);
@@ -1865,6 +1955,35 @@ export default function MarketingHub() {
                                     {message?.content || "No message"}
                                   </p>
                                   <div className="flex items-center gap-1 flex-wrap">
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs ${bundle.contentType === "paid_ad" ? "border-orange-400 text-orange-600 dark:text-orange-400" : "border-green-400 text-green-600 dark:text-green-400"}`}
+                                    >
+                                      {bundle.contentType === "paid_ad" ? (
+                                        <><DollarSign className="w-3 h-3 mr-1" />Ad</>
+                                      ) : (
+                                        <><FileText className="w-3 h-3 mr-1" />Post</>
+                                      )}
+                                    </Badge>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        const newType: ContentBundle['contentType'] = bundle.contentType === "paid_ad" ? "organic" : "paid_ad";
+                                        const updated = contentBundles.map(b => 
+                                          b.id === bundle.id ? {...b, contentType: newType} : b
+                                        );
+                                        setContentBundles(updated);
+                                        localStorage.setItem("marketing_bundles", JSON.stringify(updated));
+                                        toast({
+                                          title: newType === "paid_ad" ? "Converted to Ad" : "Converted to Post",
+                                          description: `This bundle is now marked as a ${newType === "paid_ad" ? "paid advertisement" : "organic post"}.`
+                                        });
+                                      }}
+                                      data-testid={`toggle-content-type-${bundle.id}`}
+                                    >
+                                      {bundle.contentType === "paid_ad" ? "Make Post" : "Make Ad"}
+                                    </Button>
                                     <Badge variant="outline" className="text-xs">{bundle.platform}</Badge>
                                     <select
                                       className="text-xs px-2 py-1 rounded border bg-background"
@@ -3140,6 +3259,7 @@ export default function MarketingHub() {
                               brand: selectedTenant,
                               platform: msg.platform,
                               status: "suggested",
+                              contentType: "organic",
                               createdAt: new Date().toISOString(),
                             });
                           }
