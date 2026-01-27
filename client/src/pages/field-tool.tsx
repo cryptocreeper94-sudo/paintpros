@@ -2738,7 +2738,7 @@ export default function FieldTool() {
               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
               <div className="absolute inset-0 flex items-center p-4">
                 <div>
-                  <PersonalizedGreeting userName={userName} className="text-white/90 text-sm" />
+                  <p className="text-white/70 text-sm">{appName}</p>
                   <h2 className="text-xl font-bold text-white mt-1">Ready to work</h2>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge 
