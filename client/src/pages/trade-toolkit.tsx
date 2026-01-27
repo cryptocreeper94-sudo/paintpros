@@ -56,7 +56,9 @@ import {
   Crown,
   CheckCircle,
   Eye,
-  Settings
+  Settings,
+  Info,
+  HelpCircle
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -118,6 +120,104 @@ function GlassPanel({ children, className = '', glow = false }: { children: Reac
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl pointer-events-none" />
       <div className="relative">{children}</div>
     </div>
+  );
+}
+
+// Best practices tips for each tool
+const TOOL_BEST_PRACTICES: Record<string, { title: string; tips: string[] }> = {
+  measure: {
+    title: 'Measure Tool - Best Practices',
+    tips: [
+      'Include a reference object in frame (door, outlet, or tape measure)',
+      'Stand back to capture the full wall in one shot',
+      'Ensure good lighting - avoid harsh shadows',
+      'Hold phone level and steady for best accuracy',
+      'For large rooms, measure walls individually'
+    ]
+  },
+  color_match: {
+    title: 'Color Match - Best Practices',
+    tips: [
+      'Use natural daylight for most accurate color capture',
+      'Avoid direct sunlight which can wash out colors',
+      'Get close to the surface - fill most of the frame',
+      'Include a white reference (paper, wall) nearby if possible',
+      'Capture multiple spots for painted surfaces with wear'
+    ]
+  },
+  room_visualizer: {
+    title: 'Room Visualizer - Best Practices',
+    tips: [
+      'Photograph walls straight-on, not at an angle',
+      'Include ceiling and floor edges in the frame',
+      'Good lighting shows color more accurately',
+      'Clear the area of clutter for cleaner preview',
+      'Take photos of each wall you want to visualize'
+    ]
+  }
+};
+
+// Tool credit costs (matches server/aiCredits.ts)
+const TOOL_CREDIT_COSTS: Record<string, number> = {
+  measure_scan: 5,
+  color_match: 8,
+  room_visualizer: 10,
+  complete_estimate: 15
+};
+
+// Best Practices Modal Component
+function BestPracticesModal({ 
+  tool, 
+  isOpen, 
+  onClose, 
+  onContinue 
+}: { 
+  tool: keyof typeof TOOL_BEST_PRACTICES; 
+  isOpen: boolean; 
+  onClose: () => void;
+  onContinue: () => void;
+}) {
+  const practices = TOOL_BEST_PRACTICES[tool];
+  if (!practices || !isOpen) return null;
+  
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-slate-900 border-white/10 text-white max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-lg">
+            <Info className="w-5 h-5 text-blue-400" />
+            {practices.title}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p className="text-sm text-slate-400">
+            Follow these tips for the best results:
+          </p>
+          <ul className="space-y-2">
+            {practices.tips.map((tip, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-sm">
+                <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                <span className="text-slate-300">{tip}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
+            <p className="text-xs text-amber-300 flex items-center gap-1">
+              <Zap className="w-3 h-3" />
+              This tool uses {TOOL_CREDIT_COSTS[tool === 'measure' ? 'measure_scan' : tool]} credits per use
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={onClose} variant="outline" className="flex-1 border-white/10">
+              Cancel
+            </Button>
+            <Button onClick={onContinue} className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600">
+              Got It - Continue
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -198,8 +298,22 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
   const [ladderHeight, setLadderHeight] = useState('');
   const [wastePercent, setWastePercent] = useState('10');
   const [materialQty, setMaterialQty] = useState('');
+  const [showBestPractices, setShowBestPractices] = useState(false);
   const { t } = useI18n();
   const { toast } = useToast();
+  
+  // Show best practices on first visit
+  useEffect(() => {
+    const hasSeenMeasure = localStorage.getItem('paintpros-seen-measure-tips');
+    if (!hasSeenMeasure) {
+      setShowBestPractices(true);
+    }
+  }, []);
+  
+  const handleDismissBestPractices = () => {
+    localStorage.setItem('paintpros-seen-measure-tips', 'true');
+    setShowBestPractices(false);
+  };
 
   const floorSqFt = roomLength && roomWidth ? parseFloat(roomLength) * parseFloat(roomWidth) : 0;
   const wallSqFt = roomLength && roomWidth && ceilingHeight 
@@ -231,19 +345,37 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-4"
     >
+      <BestPracticesModal 
+        tool="measure" 
+        isOpen={showBestPractices} 
+        onClose={() => setShowBestPractices(false)}
+        onContinue={handleDismissBestPractices}
+      />
+      
       <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4">
         <ChevronLeft className="w-4 h-4" />
         <span className="text-sm">{t('common.back')}</span>
       </button>
 
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-          <Ruler className="w-7 h-7 text-white" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <Ruler className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">Measure Tool</h2>
+            <p className="text-sm text-slate-400">{t('toolkit.measureDesc')}</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-bold text-white">{t('toolkit.measure')}</h2>
-          <p className="text-sm text-slate-400">{t('toolkit.measureDesc')}</p>
-        </div>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => setShowBestPractices(true)}
+          className="text-slate-400 hover:text-white hover:bg-white/10"
+          data-testid="button-measure-help"
+        >
+          <HelpCircle className="w-5 h-5" />
+        </Button>
       </div>
 
       <GlassPanel className="p-5">
@@ -381,10 +513,24 @@ function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: {
   const [gallonCoverage] = useState(350);
   const [sqFtToPaint, setSqFtToPaint] = useState(estimateData?.wallSqFt?.toString() || '');
   const [coats, setCoats] = useState('2');
+  const [showBestPractices, setShowBestPractices] = useState(false);
   
   const gallonsNeeded = sqFtToPaint && coats 
     ? Math.ceil((parseFloat(sqFtToPaint) * parseFloat(coats)) / gallonCoverage) 
     : 0;
+    
+  // Show best practices on first visit
+  useEffect(() => {
+    const hasSeenColorMatch = localStorage.getItem('paintpros-seen-colormatch-tips');
+    if (!hasSeenColorMatch) {
+      setShowBestPractices(true);
+    }
+  }, []);
+  
+  const handleDismissBestPractices = () => {
+    localStorage.setItem('paintpros-seen-colormatch-tips', 'true');
+    setShowBestPractices(false);
+  };
 
   return (
     <motion.div
@@ -393,19 +539,37 @@ function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-4"
     >
+      <BestPracticesModal 
+        tool="color_match" 
+        isOpen={showBestPractices} 
+        onClose={() => setShowBestPractices(false)}
+        onContinue={handleDismissBestPractices}
+      />
+      
       <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4">
         <ChevronLeft className="w-4 h-4" />
         <span className="text-sm">Back to Dashboard</span>
       </button>
 
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
-          <Palette className="w-7 h-7 text-white" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+            <Palette className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">Color Match</h2>
+            <p className="text-sm text-slate-400">Match & calculate paint needs</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-bold text-white">Paint Tools</h2>
-          <p className="text-sm text-slate-400">Color matching & calculations</p>
-        </div>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => setShowBestPractices(true)}
+          className="text-slate-400 hover:text-white hover:bg-white/10"
+          data-testid="button-colormatch-help"
+        >
+          <HelpCircle className="w-5 h-5" />
+        </Button>
       </div>
 
       <motion.button
@@ -413,6 +577,7 @@ function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: {
         className="w-full"
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
+        data-testid="button-color-scanner"
       >
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 p-[1px]">
           <div className="bg-slate-900/90 backdrop-blur rounded-2xl p-5">
@@ -422,10 +587,10 @@ function PaintPanel({ onBack, onOpenScanner, estimateData, onAddColor }: {
               </div>
               <div className="flex-1 text-left">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-white">Color Match Scanner</h3>
+                  <h3 className="font-bold text-white">Color Match</h3>
                   <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] border-0">
-                    <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                    PRO
+                    <Zap className="w-2.5 h-2.5 mr-0.5" />
+                    {TOOL_CREDIT_COSTS.color_match} credits
                   </Badge>
                 </div>
                 <p className="text-sm text-slate-300">Scan any surface to find matching paint colors</p>
@@ -1536,6 +1701,7 @@ export default function TradeToolkit() {
   const [shareOpen, setShareOpen] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showVisualizer, setShowVisualizer] = useState(false);
+  const [showVisualizerTips, setShowVisualizerTips] = useState(false);
   const [currentPanel, setCurrentPanel] = useState('dashboard');
   const [showIOSGuide, setShowIOSGuide] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -1688,10 +1854,21 @@ export default function TradeToolkit() {
 
   const handleNavigate = (panel: string) => {
     if (panel === 'visualizer') {
-      setShowVisualizer(true);
+      const hasSeenVisualizerTips = localStorage.getItem('paintpros-seen-visualizer-tips');
+      if (!hasSeenVisualizerTips) {
+        setShowVisualizerTips(true);
+      } else {
+        setShowVisualizer(true);
+      }
     } else {
       setCurrentPanel(panel);
     }
+  };
+  
+  const handleVisualizerTipsConfirm = () => {
+    localStorage.setItem('paintpros-seen-visualizer-tips', 'true');
+    setShowVisualizerTips(false);
+    setShowVisualizer(true);
   };
 
   const renderPanel = () => {
@@ -1882,6 +2059,14 @@ export default function TradeToolkit() {
         }}
       />
 
+      {/* Room Visualizer Best Practices Modal */}
+      <BestPracticesModal 
+        tool="room_visualizer" 
+        isOpen={showVisualizerTips} 
+        onClose={() => setShowVisualizerTips(false)}
+        onContinue={handleVisualizerTipsConfirm}
+      />
+      
       {/* Room Visualizer Modal */}
       <ColorVisualizer 
         isOpen={showVisualizer}
