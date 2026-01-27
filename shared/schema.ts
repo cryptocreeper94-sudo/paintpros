@@ -5665,3 +5665,52 @@ export const insertMarketingBudgetSchema = createInsertSchema(marketingBudgets).
 export type InsertMarketingBudget = z.infer<typeof insertMarketingBudgetSchema>;
 export type MarketingBudget = typeof marketingBudgets.$inferSelect;
 
+// Field Captures - Store measurements, colors, and photos from field tools
+export const fieldCaptures = pgTable("field_captures", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull().default("demo"),
+  
+  // Job reference - can be linked to existing job or just a name
+  jobId: varchar("job_id").references(() => jobs.id),
+  jobName: text("job_name"), // Manual job name entry (e.g., "Smith Residence")
+  
+  // Capture type
+  captureType: text("capture_type").notNull(), // 'measurement', 'color', 'photo', 'visualizer'
+  
+  // Measurement data
+  roomLength: decimal("room_length", { precision: 10, scale: 2 }),
+  roomWidth: decimal("room_width", { precision: 10, scale: 2 }),
+  ceilingHeight: decimal("ceiling_height", { precision: 10, scale: 2 }),
+  wallSqFt: decimal("wall_sq_ft", { precision: 10, scale: 2 }),
+  floorSqFt: decimal("floor_sq_ft", { precision: 10, scale: 2 }),
+  
+  // Color data
+  colorName: text("color_name"),
+  colorHex: text("color_hex"),
+  colorBrand: text("color_brand"),
+  colorCode: text("color_code"),
+  
+  // Photo/visualizer data
+  imageUrl: text("image_url"),
+  imageBase64: text("image_base64"),
+  
+  // Notes
+  notes: text("notes"),
+  roomName: text("room_name"), // e.g., "Living Room", "Master Bedroom"
+  
+  // Who captured it
+  capturedBy: text("captured_by"),
+  capturedByRole: text("captured_by_role"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_field_captures_tenant").on(table.tenantId),
+  index("idx_field_captures_job").on(table.jobId),
+  index("idx_field_captures_job_name").on(table.jobName),
+  index("idx_field_captures_type").on(table.captureType),
+]);
+
+export const insertFieldCaptureSchema = createInsertSchema(fieldCaptures).omit({ id: true, createdAt: true });
+export type InsertFieldCapture = z.infer<typeof insertFieldCaptureSchema>;
+export type FieldCapture = typeof fieldCaptures.$inferSelect;
+

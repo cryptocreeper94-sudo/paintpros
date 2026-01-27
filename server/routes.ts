@@ -4,7 +4,7 @@ import { Server as SocketServer } from "socket.io";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { storage } from "./storage";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, isNotNull } from "drizzle-orm";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -41,7 +41,8 @@ import {
   insertShiftBidSchema, insertBidSubmissionSchema, insertCustomerSentimentSchema,
   insertMilestoneNftSchema, insertEsgTrackingSchema, insertFinancingApplicationSchema, insertFranchiseAnalyticsSchema,
   users as usersTable, userPins,
-  dataImports, importedRecords, insertDataImportSchema, insertImportedRecordSchema
+  dataImports, importedRecords, insertDataImportSchema, insertImportedRecordSchema,
+  fieldCaptures, jobs
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -4176,6 +4177,119 @@ Do not include any text before or after the JSON.`
     } catch (error) {
       console.error("Error fetching job updates:", error);
       res.status(500).json({ error: "Failed to fetch job updates" });
+    }
+  });
+
+  // ============ FIELD CAPTURES ============
+  
+  // POST /api/field-captures - Save a field capture (measurement, color, photo)
+  app.post("/api/field-captures", async (req, res) => {
+    try {
+      const { 
+        tenantId = "demo",
+        jobId,
+        jobName,
+        captureType,
+        roomLength,
+        roomWidth,
+        ceilingHeight,
+        wallSqFt,
+        floorSqFt,
+        colorName,
+        colorHex,
+        colorBrand,
+        colorCode,
+        imageUrl,
+        imageBase64,
+        notes,
+        roomName,
+        capturedBy,
+        capturedByRole
+      } = req.body;
+      
+      if (!captureType) {
+        res.status(400).json({ error: "captureType is required" });
+        return;
+      }
+      
+      const capture = await db.insert(fieldCaptures).values({
+        tenantId,
+        jobId: jobId || null,
+        jobName: jobName || null,
+        captureType,
+        roomLength: roomLength || null,
+        roomWidth: roomWidth || null,
+        ceilingHeight: ceilingHeight || null,
+        wallSqFt: wallSqFt || null,
+        floorSqFt: floorSqFt || null,
+        colorName: colorName || null,
+        colorHex: colorHex || null,
+        colorBrand: colorBrand || null,
+        colorCode: colorCode || null,
+        imageUrl: imageUrl || null,
+        imageBase64: imageBase64 || null,
+        notes: notes || null,
+        roomName: roomName || null,
+        capturedBy: capturedBy || null,
+        capturedByRole: capturedByRole || null,
+      }).returning();
+      
+      res.status(201).json(capture[0]);
+    } catch (error) {
+      console.error("Error saving field capture:", error);
+      res.status(500).json({ error: "Failed to save field capture" });
+    }
+  });
+  
+  // GET /api/field-captures - Get field captures for a tenant
+  app.get("/api/field-captures", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      const jobName = req.query.jobName as string;
+      const jobId = req.query.jobId as string;
+      const captureType = req.query.captureType as string;
+      
+      let query = db.select().from(fieldCaptures).where(eq(fieldCaptures.tenantId, tenantId));
+      
+      // Apply filters
+      const conditions = [eq(fieldCaptures.tenantId, tenantId)];
+      if (jobName) conditions.push(eq(fieldCaptures.jobName, jobName));
+      if (jobId) conditions.push(eq(fieldCaptures.jobId, jobId));
+      if (captureType) conditions.push(eq(fieldCaptures.captureType, captureType));
+      
+      const captures = await db.select().from(fieldCaptures).where(and(...conditions)).orderBy(desc(fieldCaptures.createdAt));
+      res.json(captures);
+    } catch (error) {
+      console.error("Error fetching field captures:", error);
+      res.status(500).json({ error: "Failed to fetch field captures" });
+    }
+  });
+  
+  // GET /api/field-captures/jobs - Get list of unique job names for dropdown
+  app.get("/api/field-captures/jobs", async (req, res) => {
+    try {
+      const tenantId = (req.query.tenantId as string) || "demo";
+      
+      // Get unique job names from field captures
+      const captureJobNames = await db.selectDistinct({ jobName: fieldCaptures.jobName })
+        .from(fieldCaptures)
+        .where(and(
+          eq(fieldCaptures.tenantId, tenantId),
+          isNotNull(fieldCaptures.jobName)
+        ));
+      
+      // Get actual jobs from jobs table
+      const actualJobs = await db.select({ id: jobs.id, title: jobs.title, jobNumber: jobs.jobNumber })
+        .from(jobs)
+        .where(eq(jobs.tenantId, tenantId));
+      
+      res.json({
+        recentJobNames: captureJobNames.map(c => c.jobName).filter(Boolean),
+        existingJobs: actualJobs
+      });
+    } catch (error) {
+      console.error("Error fetching job names:", error);
+      res.status(500).json({ error: "Failed to fetch job names" });
     }
   });
 

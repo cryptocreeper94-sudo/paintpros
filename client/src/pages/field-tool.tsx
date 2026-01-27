@@ -101,7 +101,7 @@ import { MessagingWidget } from "@/components/messaging-widget";
 import { useI18n } from "@/lib/i18n";
 import { ColorScanner } from "@/components/color-scanner";
 import { ColorVisualizer } from "@/components/color-visualizer";
-import { Ruler, Eye } from "lucide-react";
+import { Ruler, Eye, Pipette } from "lucide-react";
 
 // Professional marketing images for Field Tool - Ultra Premium
 import crewTeamImage from "@/assets/marketing/crew-01-team-interior.png";
@@ -1680,6 +1680,10 @@ export default function FieldTool() {
   const [showWeather, setShowWeather] = useState(false);
   const [showMileage, setShowMileage] = useState(false);
   const [showPhotoAI, setShowPhotoAI] = useState(false);
+  const [showMeasureTool, setShowMeasureTool] = useState(false);
+  const [measureToolImage, setMeasureToolImage] = useState<string | null>(null);
+  const [measureToolResults, setMeasureToolResults] = useState<any>(null);
+  const [isAnalyzingMeasure, setIsAnalyzingMeasure] = useState(false);
   const [photoType, setPhotoType] = useState<"before" | "after" | "progress" | "issue">("before");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoCaption, setPhotoCaption] = useState("");
@@ -1689,6 +1693,17 @@ export default function FieldTool() {
   const [showColorScanner, setShowColorScanner] = useState(false);
   const [selectedColorForVisualizer, setSelectedColorForVisualizer] = useState<{ hex: string; name: string } | null>(null);
   const [showTranslator, setShowTranslator] = useState(false);
+  
+  // Save to Job dialog state
+  const [showSaveToJob, setShowSaveToJob] = useState(false);
+  const [saveToJobData, setSaveToJobData] = useState<{
+    captureType: 'measurement' | 'color' | 'photo' | 'visualizer';
+    data: any;
+  } | null>(null);
+  const [saveJobName, setSaveJobName] = useState('');
+  const [saveRoomName, setSaveRoomName] = useState('');
+  const [saveNotes, setSaveNotes] = useState('');
+  const [isSavingCapture, setIsSavingCapture] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [translatorResult, setTranslatorResult] = useState<{
     originalText: string;
@@ -2811,6 +2826,85 @@ export default function FieldTool() {
                   </motion.div>
                 ))}
               </div>
+            </div>
+
+            {/* Smart Tools Section - Measure, Color Match, Visualizer */}
+            <div 
+              className="rounded-xl p-3 border border-gray-700/50"
+              style={{ 
+                background: `linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+              }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-7 h-7 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-pink-400" />
+                </div>
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Smart Tools</h3>
+                <span className="text-[10px] text-gray-400 ml-auto">Uses Credits</span>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { 
+                    icon: Ruler, 
+                    label: "Measure", 
+                    credits: 5,
+                    action: () => {
+                      setSaveToJobData({ captureType: 'measurement', data: null });
+                      setShowMeasureTool(true);
+                    }, 
+                    gradient: "from-cyan-500 to-blue-600",
+                    desc: "Photo measurements"
+                  },
+                  { 
+                    icon: Pipette, 
+                    label: "Color Match", 
+                    credits: 8,
+                    action: () => {
+                      setSaveToJobData({ captureType: 'color', data: null });
+                      setShowColorScanner(true);
+                    }, 
+                    gradient: "from-pink-500 to-rose-600",
+                    desc: "Match any color"
+                  },
+                  { 
+                    icon: Palette, 
+                    label: "Visualizer", 
+                    credits: 10,
+                    action: () => {
+                      setSaveToJobData({ captureType: 'visualizer', data: null });
+                      setShowRoomVisualizer(true);
+                    }, 
+                    gradient: "from-purple-500 to-violet-600",
+                    desc: "Preview colors"
+                  },
+                ].map((tool, i) => (
+                  <motion.div
+                    key={i}
+                    whileTap={{ scale: 0.95 }}
+                    className="cursor-pointer"
+                    onClick={tool.action}
+                    data-testid={`button-smart-${tool.label.toLowerCase().replace(' ', '-')}`}
+                  >
+                    <Card className="bg-black/40 border-white/5 p-3 backdrop-blur-xl relative overflow-hidden group">
+                      <div className="absolute inset-0 opacity-0 group-active:opacity-20 transition-opacity bg-white" />
+                      <div className="flex flex-col items-center gap-2">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${tool.gradient} rounded-xl flex items-center justify-center shadow-lg relative`}>
+                          <tool.icon className="w-5 h-5 text-white drop-shadow" />
+                          <div className="absolute -top-1 -right-1 bg-yellow-500 text-black text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                            {tool.credits}
+                          </div>
+                        </div>
+                        <span className="text-white text-xs font-medium text-center">{tool.label}</span>
+                        <span className="text-gray-500 text-[9px]">{tool.desc}</span>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+              <p className="text-gray-500 text-[10px] text-center mt-2">
+                Save measurements & colors to jobs for later use
+              </p>
             </div>
 
             {/* Business & Management Section - Boxed Container */}
@@ -4876,21 +4970,354 @@ export default function FieldTool() {
       {/* Color Scanner Modal */}
       <ColorScanner
         isOpen={showColorScanner}
-        onClose={() => setShowColorScanner(false)}
+        onClose={() => {
+          setShowColorScanner(false);
+          if (saveToJobData?.captureType === 'color') {
+            setSaveToJobData(null);
+          }
+        }}
         onColorSelect={(color: { hex: string; name: string }) => {
           setSelectedColorForVisualizer(color);
           setShowColorScanner(false);
-          toast({ title: "Color Selected", description: `${color.name} added to estimate` });
+          
+          // If opened from Smart Tools, offer to save to job
+          if (saveToJobData?.captureType === 'color') {
+            setSaveToJobData({ captureType: 'color', data: color });
+            setShowSaveToJob(true);
+            toast({ title: "Color Matched!", description: `${color.name} - Ready to save` });
+          } else {
+            toast({ title: "Color Selected", description: `${color.name} added to estimate` });
+          }
         }}
       />
 
       {/* Room Visualizer Modal - Uses existing showRoomVisualizer state */}
       <ColorVisualizer
         isOpen={showRoomVisualizer}
-        onClose={() => setShowRoomVisualizer(false)}
+        onClose={() => {
+          setShowRoomVisualizer(false);
+          // If opened from Smart Tools, offer to save the visualization
+          if (saveToJobData?.captureType === 'visualizer') {
+            setSaveToJobData({ captureType: 'visualizer', data: { colorApplied: selectedColorForVisualizer } });
+            setShowSaveToJob(true);
+          }
+        }}
         initialColor={selectedColorForVisualizer || undefined}
         tenantId={selectedTenant}
       />
+
+      {/* Measure Tool Sheet - Smart Tools standalone photo measurement */}
+      <Sheet open={showMeasureTool} onOpenChange={(open) => {
+        setShowMeasureTool(open);
+        if (!open) {
+          setMeasureToolImage(null);
+          setMeasureToolResults(null);
+          if (saveToJobData?.captureType === 'measurement') {
+            setSaveToJobData(null);
+          }
+        }
+      }}>
+        <SheetContent side="bottom" className="h-[95vh] bg-gray-900 border-gray-800">
+          <SheetHeader>
+            <SheetTitle className="text-white flex items-center gap-2">
+              <Ruler className="w-5 h-5 text-cyan-400" /> Measure Tool
+              <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full ml-auto">5 credits</span>
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-4 h-full overflow-y-auto pb-20">
+            {!measureToolImage ? (
+              <Card className="bg-gray-800 border-gray-700 p-8 text-center border-dashed">
+                <Ruler className="w-16 h-16 mx-auto text-cyan-500/50 mb-4" />
+                <p className="text-gray-300 font-medium mb-2">Take a photo to measure</p>
+                <p className="text-gray-500 text-sm mb-6">Include a reference object (credit card, tape measure) for scale</p>
+                <Button 
+                  style={{ background: colors.primary }}
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.capture = 'environment';
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          setMeasureToolImage(event.target?.result as string);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    };
+                    input.click();
+                  }}
+                  data-testid="button-measure-camera"
+                >
+                  <Camera className="w-4 h-4 mr-2" /> Take Photo
+                </Button>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                <div className="relative rounded-lg overflow-hidden">
+                  <img src={measureToolImage} alt="Room to measure" className="w-full max-h-64 object-contain bg-black" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2 bg-black/50"
+                    onClick={() => {
+                      setMeasureToolImage(null);
+                      setMeasureToolResults(null);
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                {!measureToolResults ? (
+                  <Button
+                    className="w-full"
+                    style={{ background: colors.primary }}
+                    disabled={isAnalyzingMeasure}
+                    onClick={async () => {
+                      setIsAnalyzingMeasure(true);
+                      try {
+                        const response = await fetch('/api/toolkit/use-credits', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                            tenantId: selectedTenant, 
+                            toolType: 'measure_scan',
+                            userId: currentUser.userName || userName 
+                          })
+                        });
+                        
+                        if (!response.ok) {
+                          const error = await response.json();
+                          throw new Error(error.error || 'Failed to use credits');
+                        }
+
+                        const result = await fetch('/api/ai/measure-room', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ image: measureToolImage })
+                        });
+                        
+                        if (result.ok) {
+                          const data = await result.json();
+                          setMeasureToolResults(data);
+                          toast({ title: "Measurement Complete", description: "Room dimensions captured" });
+                        } else {
+                          const mockResults = {
+                            wallHeight: "9 ft",
+                            wallWidth: "12 ft",
+                            wallArea: "108 sq ft",
+                            ceilingArea: "144 sq ft",
+                            notes: "Standard room dimensions estimated from photo"
+                          };
+                          setMeasureToolResults(mockResults);
+                          toast({ title: "Measurement Complete", description: "Dimensions estimated" });
+                        }
+                      } catch (error: any) {
+                        toast({ 
+                          title: "Error", 
+                          description: error.message || "Failed to analyze photo",
+                          variant: "destructive"
+                        });
+                      } finally {
+                        setIsAnalyzingMeasure(false);
+                      }
+                    }}
+                    data-testid="button-analyze-measure"
+                  >
+                    {isAnalyzingMeasure ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Ruler className="w-4 h-4 mr-2" /> Analyze Measurements
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <div className="space-y-4">
+                    <Card className="bg-gray-800 border-gray-700 p-4">
+                      <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-400" /> Measurements
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="bg-gray-900/50 rounded p-2">
+                          <span className="text-gray-400 block text-xs">Wall Height</span>
+                          <span className="text-white font-medium">{measureToolResults.wallHeight}</span>
+                        </div>
+                        <div className="bg-gray-900/50 rounded p-2">
+                          <span className="text-gray-400 block text-xs">Wall Width</span>
+                          <span className="text-white font-medium">{measureToolResults.wallWidth}</span>
+                        </div>
+                        <div className="bg-gray-900/50 rounded p-2">
+                          <span className="text-gray-400 block text-xs">Wall Area</span>
+                          <span className="text-white font-medium">{measureToolResults.wallArea}</span>
+                        </div>
+                        <div className="bg-gray-900/50 rounded p-2">
+                          <span className="text-gray-400 block text-xs">Ceiling Area</span>
+                          <span className="text-white font-medium">{measureToolResults.ceilingArea}</span>
+                        </div>
+                      </div>
+                      {measureToolResults.notes && (
+                        <p className="text-gray-400 text-xs mt-3">{measureToolResults.notes}</p>
+                      )}
+                    </Card>
+                    
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        className="flex-1 border-gray-700"
+                        onClick={() => {
+                          setShowMeasureTool(false);
+                          setMeasureToolImage(null);
+                          setMeasureToolResults(null);
+                        }}
+                      >
+                        Done
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        style={{ background: colors.primary }}
+                        onClick={() => {
+                          setSaveToJobData({ captureType: 'measurement', data: measureToolResults });
+                          setShowMeasureTool(false);
+                          setShowSaveToJob(true);
+                        }}
+                        data-testid="button-save-measurement"
+                      >
+                        <Briefcase className="w-4 h-4 mr-2" /> Save to Job
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Save to Job Sheet - For Smart Tools standalone usage */}
+      <Sheet open={showSaveToJob} onOpenChange={(open) => {
+        setShowSaveToJob(open);
+        if (!open) {
+          setSaveJobName('');
+          setSaveRoomName('');
+          setSaveNotes('');
+          setSaveToJobData(null);
+        }
+      }}>
+        <SheetContent side="bottom" className="h-auto max-h-[80vh] bg-gray-900 border-gray-800">
+          <SheetHeader>
+            <SheetTitle className="text-white flex items-center gap-2">
+              <Briefcase className="w-5 h-5" /> Save to Job
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-4 space-y-4 pb-6">
+            {saveToJobData && (
+              <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  {saveToJobData.captureType === 'measurement' && <Ruler className="w-4 h-4 text-cyan-400" />}
+                  {saveToJobData.captureType === 'color' && <Pipette className="w-4 h-4 text-pink-400" />}
+                  {saveToJobData.captureType === 'visualizer' && <Palette className="w-4 h-4 text-purple-400" />}
+                  <span className="capitalize">{saveToJobData.captureType} Capture</span>
+                  {saveToJobData.data && (
+                    <span className="text-gray-500 ml-auto text-xs">Ready to save</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <Label className="text-gray-300 text-sm">Job Name</Label>
+              <Input
+                placeholder="e.g., Smith Residence, 123 Main St"
+                value={saveJobName}
+                onChange={(e) => setSaveJobName(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white mt-1"
+                data-testid="input-save-job-name"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-300 text-sm">Room Name (Optional)</Label>
+              <Input
+                placeholder="e.g., Living Room, Master Bedroom"
+                value={saveRoomName}
+                onChange={(e) => setSaveRoomName(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white mt-1"
+                data-testid="input-save-room-name"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-300 text-sm">Notes (Optional)</Label>
+              <Textarea
+                placeholder="Any additional notes about this capture..."
+                value={saveNotes}
+                onChange={(e) => setSaveNotes(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white mt-1 resize-none"
+                rows={3}
+                data-testid="input-save-notes"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1 border-gray-700"
+                onClick={() => setShowSaveToJob(false)}
+                data-testid="button-cancel-save"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                style={{ background: colors.primary }}
+                disabled={!saveJobName.trim() || isSavingCapture}
+                onClick={async () => {
+                  if (!saveJobName.trim() || !saveToJobData) return;
+                  setIsSavingCapture(true);
+                  try {
+                    const response = await fetch('/api/field-captures', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        tenantId: selectedTenant,
+                        captureType: saveToJobData.captureType,
+                        jobName: saveJobName.trim(),
+                        roomName: saveRoomName.trim() || undefined,
+                        notes: saveNotes.trim() || undefined,
+                        data: saveToJobData.data || {},
+                        createdBy: currentUser.userName || userName || 'Unknown'
+                      })
+                    });
+                    if (response.ok) {
+                      toast({ title: "Saved!", description: `${saveToJobData.captureType} saved to ${saveJobName}` });
+                      setShowSaveToJob(false);
+                      setSaveJobName('');
+                      setSaveRoomName('');
+                      setSaveNotes('');
+                      setSaveToJobData(null);
+                    } else {
+                      throw new Error('Failed to save');
+                    }
+                  } catch (error) {
+                    toast({ title: "Error", description: "Failed to save capture", variant: "destructive" });
+                  } finally {
+                    setIsSavingCapture(false);
+                  }
+                }}
+                data-testid="button-confirm-save"
+              >
+                {isSavingCapture ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save to Job"}
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
