@@ -2673,11 +2673,22 @@ Format the response as JSON with these fields:
       // Get existing credentials for this user to exclude
       const existingCreds = await storage.getWebauthnCredentialsByUserPinId(userPin.id);
       
+      // Get the correct RP ID from the request origin
+      const origin = req.headers.origin || req.headers.referer || '';
+      let rpId = 'localhost';
+      try {
+        if (origin) {
+          rpId = new URL(origin).hostname;
+        }
+      } catch (e) {
+        // fallback to localhost
+      }
+      
       const options = {
         challenge,
         rp: {
           name: "PaintPros Field Tool",
-          id: new URL(process.env.REPLIT_DEV_DOMAIN || "localhost").hostname.replace(/:\d+$/, ''),
+          id: rpId,
         },
         user: {
           id: Buffer.from(userPin.id).toString('base64url'),
