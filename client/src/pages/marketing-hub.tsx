@@ -1560,55 +1560,45 @@ export default function MarketingHub() {
             </div>
           </div>
 
+          {/* Category Navigation Carousel */}
+          <div className="mb-6">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+              {[
+                { id: 'content', label: 'Content Studio', icon: Layers, image: interiorLivingRoom },
+                { id: 'analytics', label: 'Analytics', icon: BarChart3, image: crewMeasuring },
+                { id: 'calendar', label: 'Calendar', icon: Calendar, image: colorConsult },
+                { id: 'playbook', label: 'Playbook', icon: BookOpen, image: crewTeamPhoto },
+                { id: 'budget', label: 'Budget', icon: DollarSign, image: commercialLobby },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                  className={`relative flex-shrink-0 w-28 md:w-36 h-20 md:h-24 rounded-xl overflow-hidden snap-start transition-all duration-300 ${
+                    activeTab === tab.id 
+                      ? 'ring-2 ring-[#1e3a5f] ring-offset-2 ring-offset-background scale-[1.02]' 
+                      : 'opacity-70 hover:opacity-100'
+                  }`}
+                  data-testid={`tab-${tab.id}`}
+                >
+                  <img 
+                    src={tab.image} 
+                    alt={tab.label}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-2 flex items-center gap-1.5">
+                    <tab.icon className="w-3.5 h-3.5 text-white shrink-0" />
+                    <span className="text-white text-xs font-medium truncate">{tab.label}</span>
+                  </div>
+                  {activeTab === tab.id && (
+                    <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            {/* 5-Tab Navigation - Icon + Label stacked on mobile */}
-            <TabsList className="flex w-full mb-6 h-auto p-1.5 bg-[#1e3a5f]/5 dark:bg-[#1e3a5f]/20 rounded-xl gap-1">
-              <TabsTrigger 
-                value="content" 
-                className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2.5 md:py-3 text-xs md:text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-lg transition-all min-w-0" 
-                data-testid="tab-content"
-              >
-                <Layers className="w-5 h-5 md:w-4 md:h-4 shrink-0" />
-                <span className="hidden md:inline">Content Studio</span>
-                <span className="md:hidden text-[10px] leading-tight text-center">Content</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="analytics" 
-                className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2.5 md:py-3 text-xs md:text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-lg transition-all min-w-0" 
-                data-testid="tab-analytics"
-              >
-                <BarChart3 className="w-5 h-5 md:w-4 md:h-4 shrink-0" />
-                <span className="hidden md:inline">Analytics</span>
-                <span className="md:hidden text-[10px] leading-tight text-center">Stats</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="calendar" 
-                className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2.5 md:py-3 text-xs md:text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-lg transition-all min-w-0" 
-                data-testid="tab-calendar"
-              >
-                <Calendar className="w-5 h-5 md:w-4 md:h-4 shrink-0" />
-                <span className="hidden md:inline">Calendar</span>
-                <span className="md:hidden text-[10px] leading-tight text-center">Calendar</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="playbook" 
-                className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2.5 md:py-3 text-xs md:text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-lg transition-all min-w-0" 
-                data-testid="tab-playbook"
-              >
-                <BookOpen className="w-5 h-5 md:w-4 md:h-4 shrink-0" />
-                <span className="hidden md:inline">Playbook</span>
-                <span className="md:hidden text-[10px] leading-tight text-center">Learn</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="budget" 
-                className="flex-1 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2.5 md:py-3 text-xs md:text-sm font-medium data-[state=active]:bg-[#1e3a5f] data-[state=active]:text-white rounded-lg transition-all min-w-0" 
-                data-testid="tab-budget"
-              >
-                <DollarSign className="w-5 h-5 md:w-4 md:h-4 shrink-0" />
-                <span className="hidden md:inline">Budget</span>
-                <span className="md:hidden text-[10px] leading-tight text-center">Budget</span>
-              </TabsTrigger>
-            </TabsList>
 
             {/* CONTENT STUDIO TAB - Images, Messages, Social Posts */}
             <TabsContent value="content" className="space-y-6" data-testid="content-tab">
