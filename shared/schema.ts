@@ -5783,11 +5783,25 @@ export const scheduledPosts = pgTable("scheduled_posts", {
   instagramMediaId: text("instagram_media_id"),
   errorMessage: text("error_message"),
   
+  // Content categorization (for learning what works)
+  contentType: text("content_type"), // 'project_showcase', 'before_after', 'tip', 'testimonial', 'seasonal', 'engagement', 'educational'
+  contentCategory: text("content_category"), // 'interior', 'exterior', 'cabinets', 'deck', 'commercial'
+  rotationType: text("rotation_type"), // 'A' (MWF project showcases) or 'B' (TThSat engagement)
+  
   // Analytics (populated after publishing)
   impressions: integer("impressions"),
   reach: integer("reach"),
   engagement: integer("engagement"),
   clicks: integer("clicks"),
+  likes: integer("likes"),
+  comments: integer("comments"),
+  shares: integer("shares"),
+  saves: integer("saves"),
+  leadsGenerated: integer("leads_generated"),
+  
+  // Performance scoring (calculated over time)
+  performanceScore: real("performance_score"), // 0-100 score based on engagement rate
+  lastAnalyticsSync: timestamp("last_analytics_sync"),
   
   createdBy: text("created_by"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -5796,9 +5810,71 @@ export const scheduledPosts = pgTable("scheduled_posts", {
   index("idx_scheduled_posts_tenant").on(table.tenantId),
   index("idx_scheduled_posts_status").on(table.status),
   index("idx_scheduled_posts_scheduled").on(table.scheduledAt),
+  index("idx_scheduled_posts_content_type").on(table.contentType),
 ]);
 
 export const insertScheduledPostSchema = createInsertSchema(scheduledPosts).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertScheduledPost = z.infer<typeof insertScheduledPostSchema>;
 export type ScheduledPost = typeof scheduledPosts.$inferSelect;
+
+// Content Performance Analytics - Historical tracking per content piece
+export const contentAnalytics = pgTable("content_analytics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  postId: varchar("post_id").references(() => scheduledPosts.id),
+  
+  // Snapshot timestamp
+  snapshotAt: timestamp("snapshot_at").defaultNow().notNull(),
+  
+  // Metrics at this point in time
+  impressions: integer("impressions").default(0),
+  reach: integer("reach").default(0),
+  likes: integer("likes").default(0),
+  comments: integer("comments").default(0),
+  shares: integer("shares").default(0),
+  saves: integer("saves").default(0),
+  clicks: integer("clicks").default(0),
+  videoViews: integer("video_views").default(0),
+  
+  // Calculated metrics
+  engagementRate: real("engagement_rate"), // (likes + comments + shares) / reach * 100
+  clickThroughRate: real("click_through_rate"), // clicks / impressions * 100
+  
+}, (table) => [
+  index("idx_content_analytics_tenant").on(table.tenantId),
+  index("idx_content_analytics_post").on(table.postId),
+  index("idx_content_analytics_snapshot").on(table.snapshotAt),
+]);
+
+export type ContentAnalytics = typeof contentAnalytics.$inferSelect;
+
+// Content Performance Summary - Aggregated insights per content type
+export const contentPerformanceSummary = pgTable("content_performance_summary", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // What this summary is for
+  contentType: text("content_type").notNull(), // 'project_showcase', 'before_after', etc.
+  contentCategory: text("content_category"), // 'interior', 'exterior', etc.
+  platform: text("platform").notNull(), // 'facebook', 'instagram'
+  
+  // Aggregated metrics
+  totalPosts: integer("total_posts").default(0),
+  avgImpressions: real("avg_impressions"),
+  avgReach: real("avg_reach"),
+  avgEngagementRate: real("avg_engagement_rate"),
+  avgClickThroughRate: real("avg_click_through_rate"),
+  
+  // Best performing times
+  bestDayOfWeek: integer("best_day_of_week"), // 0-6 (Sunday-Saturday)
+  bestHourOfDay: integer("best_hour_of_day"), // 0-23
+  
+  // Scores
+  overallScore: real("overall_score"), // 0-100
+  
+  lastCalculatedAt: timestamp("last_calculated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_content_summary_tenant").on(table.tenantId),
+  index("idx_content_summary_type").on(table.contentType),
+]);
 
