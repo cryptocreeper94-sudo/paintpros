@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { GlassCard } from "@/components/ui/glass-card";
 import { motion } from "framer-motion";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { 
   Facebook, 
   Instagram, 
@@ -41,7 +43,9 @@ import {
   FileText,
   Target,
   Megaphone,
-  DollarSign
+  DollarSign,
+  RefreshCw,
+  Loader2
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/language-toggle";
@@ -382,6 +386,70 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
   const [showPresentation, setShowPresentation] = useState(false);
 
   const currentTenant = TENANTS.find(t => t.id === selectedTenant) || TENANTS[0];
+
+  // Fetch real Meta connection status
+  const { data: metaStatus, refetch: refetchMetaStatus } = useQuery({
+    queryKey: ['/api/meta', selectedTenant, 'status'],
+    queryFn: async () => {
+      const res = await fetch(`/api/meta/${selectedTenant}/status`);
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 30000,
+  });
+
+  // Fetch real analytics from Meta
+  const { data: metaAnalytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery({
+    queryKey: ['/api/meta', selectedTenant, 'analytics'],
+    queryFn: async () => {
+      const res = await fetch(`/api/meta/${selectedTenant}/analytics`);
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 60000,
+  });
+
+  // Fetch real scheduled posts from database
+  const { data: dbScheduledPosts, refetch: refetchScheduledPosts } = useQuery({
+    queryKey: ['/api/meta', selectedTenant, 'scheduled'],
+    queryFn: async () => {
+      const res = await fetch(`/api/meta/${selectedTenant}/scheduled`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  // Fetch performance summary
+  const { data: performanceSummary } = useQuery({
+    queryKey: ['/api/meta', selectedTenant, 'performance-summary'],
+    queryFn: async () => {
+      const res = await fetch(`/api/meta/${selectedTenant}/performance-summary`);
+      if (!res.ok) return null;
+      return res.json();
+    },
+  });
+
+  // Sync analytics mutation
+  const syncAnalyticsMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest('POST', `/api/meta/${selectedTenant}/sync-analytics`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/meta', selectedTenant] });
+    },
+  });
+
+  // Update connection status from Meta API response
+  useEffect(() => {
+    if (metaStatus) {
+      setFacebookConnected(metaStatus.facebookConnected || false);
+      setInstagramConnected(metaStatus.instagramConnected || false);
+    }
+  }, [metaStatus]);
+
+  // Get real analytics or fallback to mock
+  const analytics = metaAnalytics || mockAnalytics;
 
   const handleAutoTranslate = async () => {
     if (!postContent.trim()) return;
@@ -755,12 +823,35 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="mt-4">
+          {/* Sync Button */}
+          <div className="flex justify-end mb-4">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => syncAnalyticsMutation.mutate()}
+              disabled={syncAnalyticsMutation.isPending}
+              data-testid="button-sync-analytics"
+            >
+              {syncAnalyticsMutation.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              {syncAnalyticsMutation.isPending ? 'Syncing...' : 'Sync Analytics'}
+            </Button>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             {/* Facebook Analytics */}
             <GlassCard className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Facebook className="w-5 h-5 text-blue-500" />
                 <h3 className="font-semibold">Facebook</h3>
+                {facebookConnected && (
+                  <Badge variant="outline" className="ml-auto bg-green-500/10 text-green-500 border-green-500/30 text-xs">
+                    Live
+                  </Badge>
+                )}
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -768,28 +859,28 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
                     <Users className="w-4 h-4" />
                     {t('marketing.followers') || 'Followers'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.facebook.followers.toLocaleString()}</span>
+                  <span className="font-medium">{analytics.facebook.followers.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Eye className="w-4 h-4" />
                     {t('marketing.reach') || 'Reach (30d)'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.facebook.reach.toLocaleString()}</span>
+                  <span className="font-medium">{analytics.facebook.reach.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Heart className="w-4 h-4" />
                     {t('marketing.engagement') || 'Engagement'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.facebook.engagement}%</span>
+                  <span className="font-medium">{analytics.facebook.engagement}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Send className="w-4 h-4" />
                     {t('marketing.posts') || 'Posts'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.facebook.posts}</span>
+                  <span className="font-medium">{analytics.facebook.posts}</span>
                 </div>
               </div>
             </GlassCard>
@@ -799,6 +890,11 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
               <div className="flex items-center gap-2 mb-4">
                 <Instagram className="w-5 h-5 text-pink-500" />
                 <h3 className="font-semibold">Instagram</h3>
+                {instagramConnected && (
+                  <Badge variant="outline" className="ml-auto bg-green-500/10 text-green-500 border-green-500/30 text-xs">
+                    Live
+                  </Badge>
+                )}
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -806,28 +902,28 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
                     <Users className="w-4 h-4" />
                     {t('marketing.followers') || 'Followers'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.instagram.followers.toLocaleString()}</span>
+                  <span className="font-medium">{analytics.instagram.followers.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Eye className="w-4 h-4" />
                     {t('marketing.reach') || 'Reach (30d)'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.instagram.reach.toLocaleString()}</span>
+                  <span className="font-medium">{analytics.instagram.reach.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Heart className="w-4 h-4" />
                     {t('marketing.engagement') || 'Engagement'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.instagram.engagement}%</span>
+                  <span className="font-medium">{analytics.instagram.engagement}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Send className="w-4 h-4" />
                     {t('marketing.posts') || 'Posts'}
                   </span>
-                  <span className="font-medium">{mockAnalytics.instagram.posts}</span>
+                  <span className="font-medium">{analytics.instagram.posts}</span>
                 </div>
               </div>
             </GlassCard>
@@ -838,23 +934,56 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
             <h3 className="font-semibold mb-4">{t('marketing.performanceSummary') || 'Performance Summary'}</h3>
             <div className="grid grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-blue-500">{(mockAnalytics.facebook.followers + mockAnalytics.instagram.followers).toLocaleString()}</div>
+                <div className="text-2xl font-bold text-blue-500">{(analytics.facebook.followers + analytics.instagram.followers).toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">{t('marketing.totalFollowers') || 'Total Followers'}</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-500">{(mockAnalytics.facebook.reach + mockAnalytics.instagram.reach).toLocaleString()}</div>
+                <div className="text-2xl font-bold text-green-500">{(analytics.facebook.reach + analytics.instagram.reach).toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">{t('marketing.totalReach') || 'Total Reach'}</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-purple-500">{((mockAnalytics.facebook.engagement + mockAnalytics.instagram.engagement) / 2).toFixed(1)}%</div>
+                <div className="text-2xl font-bold text-purple-500">{((analytics.facebook.engagement + analytics.instagram.engagement) / 2).toFixed(1)}%</div>
                 <div className="text-xs text-muted-foreground">{t('marketing.avgEngagement') || 'Avg Engagement'}</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-orange-500">{mockAnalytics.facebook.posts + mockAnalytics.instagram.posts}</div>
+                <div className="text-2xl font-bold text-orange-500">{analytics.facebook.posts + analytics.instagram.posts}</div>
                 <div className="text-xs text-muted-foreground">{t('marketing.totalPosts') || 'Total Posts'}</div>
               </div>
             </div>
           </GlassCard>
+
+          {/* Performance Insights */}
+          {performanceSummary && performanceSummary.recommendations?.length > 0 && (
+            <GlassCard className="p-4 mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-5 h-5 text-yellow-500" />
+                <h3 className="font-semibold">Performance Insights</h3>
+              </div>
+              <div className="space-y-2">
+                {performanceSummary.recommendations.map((rec: string, idx: number) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm">
+                    <TrendingUp className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                    <span>{rec}</span>
+                  </div>
+                ))}
+              </div>
+              {performanceSummary.byContentType && Object.keys(performanceSummary.byContentType).length > 0 && (
+                <div className="mt-4 pt-4 border-t border-border/50">
+                  <h4 className="text-sm font-medium mb-2">Content Type Performance</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(performanceSummary.byContentType).map(([type, data]: [string, any]) => (
+                      <div key={type} className="p-2 rounded-lg bg-background/50 text-xs">
+                        <div className="font-medium capitalize">{type.replace(/_/g, ' ')}</div>
+                        <div className="text-muted-foreground">
+                          {data.count} posts | Score: {data.avgScore?.toFixed(0) || 0}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </GlassCard>
+          )}
         </TabsContent>
       </Tabs>
     </div>
