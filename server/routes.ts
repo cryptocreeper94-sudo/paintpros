@@ -4,7 +4,7 @@ import { Server as SocketServer } from "socket.io";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { storage } from "./storage";
 import { db } from "./db";
-import { eq, desc, and, isNotNull } from "drizzle-orm";
+import { eq, desc, and, isNotNull, lte } from "drizzle-orm";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -11320,6 +11320,424 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error disconnecting Meta:", error);
       res.status(500).json({ error: "Failed to disconnect Meta integration" });
+    }
+  });
+
+  // ============ POST INSIGHTS & ANALYTICS ============
+  
+  // Fetch detailed insights for a specific Facebook post
+  app.get("/api/meta/:tenantId/post/:postId/insights", async (req, res) => {
+    try {
+      const { tenantId, postId } = req.params;
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken) {
+        return res.status(400).json({ error: "Meta not connected" });
+      }
+      
+      // Fetch post insights from Meta
+      const insightsResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${postId}/insights?metric=post_impressions,post_impressions_unique,post_engaged_users,post_clicks,post_reactions_by_type_total&access_token=${integration.facebookPageAccessToken}`
+      );
+      
+      const insightsData: any = await insightsResponse.json();
+      
+      if (insightsData.error) {
+        console.error("Meta insights error:", insightsData.error);
+        return res.status(400).json({ error: insightsData.error.message });
+      }
+      
+      // Parse insights
+      const insights: Record<string, number> = {};
+      if (insightsData.data) {
+        for (const metric of insightsData.data) {
+          insights[metric.name] = metric.values[0]?.value || 0;
+        }
+      }
+      
+      // Fetch basic post data (likes, comments, shares)
+      const postResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${postId}?fields=likes.summary(true),comments.summary(true),shares&access_token=${integration.facebookPageAccessToken}`
+      );
+      
+      const postData: any = await postResponse.json();
+      
+      const result = {
+        impressions: insights.post_impressions || 0,
+        reach: insights.post_impressions_unique || 0,
+        engagement: insights.post_engaged_users || 0,
+        clicks: insights.post_clicks || 0,
+        likes: postData.likes?.summary?.total_count || 0,
+        comments: postData.comments?.summary?.total_count || 0,
+        shares: postData.shares?.count || 0,
+        reactions: insights.post_reactions_by_type_total || {}
+      };
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching post insights:", error);
+      res.status(500).json({ error: "Failed to fetch post insights" });
+    }
+  });
+
+  // Sync analytics for all published posts
+  app.post("/api/meta/:tenantId/sync-analytics", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken) {
+        return res.status(400).json({ error: "Meta not connected" });
+      }
+      
+      // Get all published posts for this tenant
+      const posts = await db
+        .select()
+        .from(scheduledPosts)
+        .where(
+          and(
+            eq(scheduledPosts.tenantId, tenantId),
+            eq(scheduledPosts.status, 'published')
+          )
+        );
+      
+      let syncedCount = 0;
+      
+      for (const post of posts) {
+        if (!post.facebookPostId) continue;
+        
+        try {
+          // Fetch insights for this post
+          const insightsResponse = await fetch(
+            `https://graph.facebook.com/v21.0/${post.facebookPostId}/insights?metric=post_impressions,post_impressions_unique,post_engaged_users,post_clicks&access_token=${integration.facebookPageAccessToken}`
+          );
+          
+          const insightsData: any = await insightsResponse.json();
+          
+          const insights: Record<string, number> = {};
+          if (insightsData.data) {
+            for (const metric of insightsData.data) {
+              insights[metric.name] = metric.values[0]?.value || 0;
+            }
+          }
+          
+          // Fetch basic post data
+          const postResponse = await fetch(
+            `https://graph.facebook.com/v21.0/${post.facebookPostId}?fields=likes.summary(true),comments.summary(true),shares&access_token=${integration.facebookPageAccessToken}`
+          );
+          
+          const postData: any = await postResponse.json();
+          
+          const likes = postData.likes?.summary?.total_count || 0;
+          const comments = postData.comments?.summary?.total_count || 0;
+          const shares = postData.shares?.count || 0;
+          const reach = insights.post_impressions_unique || 0;
+          
+          // Calculate engagement rate
+          const engagementRate = reach > 0 ? ((likes + comments + shares) / reach) * 100 : 0;
+          
+          // Calculate performance score (0-100)
+          const performanceScore = Math.min(100, engagementRate * 10);
+          
+          // Update post with analytics
+          await db
+            .update(scheduledPosts)
+            .set({
+              impressions: insights.post_impressions || 0,
+              reach,
+              engagement: insights.post_engaged_users || 0,
+              clicks: insights.post_clicks || 0,
+              likes,
+              comments,
+              shares,
+              performanceScore,
+              lastAnalyticsSync: new Date(),
+              updatedAt: new Date()
+            })
+            .where(eq(scheduledPosts.id, post.id));
+          
+          syncedCount++;
+        } catch (postError) {
+          console.error(`Error syncing post ${post.id}:`, postError);
+        }
+      }
+      
+      res.json({ success: true, syncedCount, totalPosts: posts.length });
+    } catch (error) {
+      console.error("Error syncing analytics:", error);
+      res.status(500).json({ error: "Failed to sync analytics" });
+    }
+  });
+
+  // Get content performance summary by type
+  app.get("/api/meta/:tenantId/performance-summary", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      // Get all published posts with analytics
+      const posts = await db
+        .select()
+        .from(scheduledPosts)
+        .where(
+          and(
+            eq(scheduledPosts.tenantId, tenantId),
+            eq(scheduledPosts.status, 'published')
+          )
+        );
+      
+      // Group by content type
+      const byContentType: Record<string, { count: number; totalReach: number; totalEngagement: number; avgScore: number }> = {};
+      const byCategory: Record<string, { count: number; totalReach: number; avgScore: number }> = {};
+      
+      for (const post of posts) {
+        const type = post.contentType || 'uncategorized';
+        const category = post.contentCategory || 'uncategorized';
+        
+        if (!byContentType[type]) {
+          byContentType[type] = { count: 0, totalReach: 0, totalEngagement: 0, avgScore: 0 };
+        }
+        byContentType[type].count++;
+        byContentType[type].totalReach += post.reach || 0;
+        byContentType[type].totalEngagement += (post.likes || 0) + (post.comments || 0) + (post.shares || 0);
+        byContentType[type].avgScore = (byContentType[type].avgScore * (byContentType[type].count - 1) + (post.performanceScore || 0)) / byContentType[type].count;
+        
+        if (!byCategory[category]) {
+          byCategory[category] = { count: 0, totalReach: 0, avgScore: 0 };
+        }
+        byCategory[category].count++;
+        byCategory[category].totalReach += post.reach || 0;
+        byCategory[category].avgScore = (byCategory[category].avgScore * (byCategory[category].count - 1) + (post.performanceScore || 0)) / byCategory[category].count;
+      }
+      
+      // Find best performing content type
+      let bestContentType = null;
+      let bestScore = 0;
+      for (const [type, data] of Object.entries(byContentType)) {
+        if (data.avgScore > bestScore) {
+          bestScore = data.avgScore;
+          bestContentType = type;
+        }
+      }
+      
+      res.json({
+        totalPosts: posts.length,
+        byContentType,
+        byCategory,
+        bestPerforming: bestContentType,
+        recommendations: bestContentType ? [
+          `"${bestContentType}" content performs best - post more of this type`,
+          `Average engagement rate: ${(bestScore / 10).toFixed(1)}%`
+        ] : []
+      });
+    } catch (error) {
+      console.error("Error fetching performance summary:", error);
+      res.status(500).json({ error: "Failed to fetch performance summary" });
+    }
+  });
+
+  // ============ AUTOMATED POST SCHEDULER ============
+  
+  // Run the scheduler to publish due posts
+  app.post("/api/meta/run-scheduler", async (req, res) => {
+    try {
+      const now = new Date();
+      
+      // Find all posts that are scheduled and due
+      const duePosts = await db
+        .select()
+        .from(scheduledPosts)
+        .where(
+          and(
+            eq(scheduledPosts.status, 'scheduled'),
+            lte(scheduledPosts.scheduledAt, now)
+          )
+        );
+      
+      let publishedCount = 0;
+      let failedCount = 0;
+      
+      for (const post of duePosts) {
+        // Get the integration for this tenant
+        const [integration] = await db
+          .select()
+          .from(metaIntegrations)
+          .where(eq(metaIntegrations.tenantId, post.tenantId))
+          .limit(1);
+        
+        if (!integration?.facebookPageAccessToken) {
+          await db
+            .update(scheduledPosts)
+            .set({
+              status: 'failed',
+              errorMessage: 'Meta not connected for tenant',
+              updatedAt: new Date()
+            })
+            .where(eq(scheduledPosts.id, post.id));
+          failedCount++;
+          continue;
+        }
+        
+        // Mark as publishing
+        await db
+          .update(scheduledPosts)
+          .set({ status: 'publishing', updatedAt: new Date() })
+          .where(eq(scheduledPosts.id, post.id));
+        
+        try {
+          // Post to Facebook
+          if (post.platform === 'facebook' || post.platform === 'both') {
+            const fbResponse = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.facebookPageId}/feed`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: post.message,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            
+            const fbResult: any = await fbResponse.json();
+            
+            if (fbResult.error) {
+              throw new Error(fbResult.error.message);
+            }
+            
+            await db
+              .update(scheduledPosts)
+              .set({
+                facebookPostId: fbResult.id,
+                status: 'published',
+                publishedAt: new Date(),
+                updatedAt: new Date()
+              })
+              .where(eq(scheduledPosts.id, post.id));
+            
+            publishedCount++;
+          }
+          
+          // Instagram posting would go here with image upload logic
+          
+        } catch (postError: any) {
+          await db
+            .update(scheduledPosts)
+            .set({
+              status: 'failed',
+              errorMessage: postError.message,
+              updatedAt: new Date()
+            })
+            .where(eq(scheduledPosts.id, post.id));
+          failedCount++;
+        }
+      }
+      
+      res.json({
+        success: true,
+        duePosts: duePosts.length,
+        published: publishedCount,
+        failed: failedCount
+      });
+    } catch (error) {
+      console.error("Error running scheduler:", error);
+      res.status(500).json({ error: "Failed to run scheduler" });
+    }
+  });
+
+  // Schedule post with content categorization
+  app.post("/api/meta/:tenantId/schedule-post", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { 
+        message, 
+        messageEs, 
+        imageUrl, 
+        platform, 
+        language, 
+        scheduledAt, 
+        contentType,
+        contentCategory,
+        rotationType,
+        createdBy 
+      } = req.body;
+      
+      const [post] = await db
+        .insert(scheduledPosts)
+        .values({
+          tenantId,
+          message,
+          messageEs,
+          imageUrl,
+          platform: platform || 'facebook',
+          language: language || 'en',
+          scheduledAt: new Date(scheduledAt),
+          contentType,
+          contentCategory,
+          rotationType,
+          status: 'scheduled',
+          createdBy
+        })
+        .returning();
+      
+      res.json({ success: true, post });
+    } catch (error) {
+      console.error("Error scheduling post:", error);
+      res.status(500).json({ error: "Failed to schedule post" });
+    }
+  });
+
+  // Get content rotation schedule suggestions
+  app.get("/api/meta/:tenantId/schedule-suggestions", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const now = new Date();
+      
+      // MWF = Rotation A (project showcases), TThSat = Rotation B (engagement/tips)
+      const suggestions = [];
+      
+      for (let i = 1; i <= 14; i++) {
+        const date = new Date(now);
+        date.setDate(date.getDate() + i);
+        const dayOfWeek = date.getDay();
+        
+        // Skip Sunday (0)
+        if (dayOfWeek === 0) continue;
+        
+        let rotationType, contentSuggestion;
+        
+        if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
+          // Mon, Wed, Fri - Rotation A
+          rotationType = 'A';
+          contentSuggestion = 'Project showcase, Before/After, Completed work';
+        } else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 6) {
+          // Tue, Thu, Sat - Rotation B
+          rotationType = 'B';
+          contentSuggestion = 'Tips, Educational, Engagement, Testimonial';
+        }
+        
+        suggestions.push({
+          date: date.toISOString().split('T')[0],
+          dayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek],
+          rotationType,
+          contentSuggestion,
+          suggestedTime: '10:00 AM CST'
+        });
+      }
+      
+      res.json(suggestions);
+    } catch (error) {
+      console.error("Error getting schedule suggestions:", error);
+      res.status(500).json({ error: "Failed to get schedule suggestions" });
     }
   });
 
