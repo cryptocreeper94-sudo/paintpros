@@ -2811,6 +2811,78 @@ export default function Developer() {
             <PricingConfigPanel />
           </BentoItem>
 
+          {/* Meta Connection Helper */}
+          <BentoItem colSpan={6} rowSpan={2} mobileColSpan={4}>
+            <GlassCard className="h-full p-4" glow="accent">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">Meta Connection Setup</h3>
+                  <p className="text-xs text-muted-foreground">Copy instructions for Meta Developer access</p>
+                </div>
+              </div>
+              <div className="bg-black/20 rounded-lg p-3 text-xs font-mono mb-3 max-h-48 overflow-y-auto">
+                <pre className="whitespace-pre-wrap text-foreground/80">{`GETTING META CREDENTIALS FOR PAINTPROS
+
+1. Go to: developers.facebook.com/tools/explorer/
+
+2. Select your app (or create one at developers.facebook.com/apps → "Business" type)
+
+3. Click "User or Page" → "Get Page Access Token"
+
+4. Select "Nashville Painting Professionals" page
+
+5. Add permissions: pages_manage_posts, pages_read_engagement, instagram_basic, instagram_content_publish
+
+6. Click "Generate Access Token" and copy it
+
+7. In the query box, paste this and click Submit:
+   me/accounts?fields=id,name,instagram_business_account
+
+8. Send me these 4 values:
+   • App ID (from app dashboard top left)
+   • Page Access Token (the long token generated)
+   • Facebook Page ID (the "id" from query result)
+   • Instagram Business Account ID (from instagram_business_account.id)`}</pre>
+              </div>
+              <Button
+                className="w-full gap-2"
+                onClick={() => {
+                  const text = `GETTING META CREDENTIALS FOR PAINTPROS
+
+1. Go to: developers.facebook.com/tools/explorer/
+
+2. Select your app (or create one at developers.facebook.com/apps → "Business" type)
+
+3. Click "User or Page" → "Get Page Access Token"
+
+4. Select "Nashville Painting Professionals" page
+
+5. Add permissions: pages_manage_posts, pages_read_engagement, instagram_basic, instagram_content_publish
+
+6. Click "Generate Access Token" and copy it
+
+7. In the query box, paste this and click Submit:
+   me/accounts?fields=id,name,instagram_business_account
+
+8. Send me these 4 values:
+   • App ID (from app dashboard top left)
+   • Page Access Token (the long token generated)
+   • Facebook Page ID (the "id" from query result)
+   • Instagram Business Account ID (from instagram_business_account.id)`;
+                  navigator.clipboard.writeText(text);
+                  toast.success('Instructions copied to clipboard!');
+                }}
+                data-testid="button-copy-meta-instructions"
+              >
+                <Copy className="w-4 h-4" />
+                Copy All Instructions
+              </Button>
+            </GlassCard>
+          </BentoItem>
+
           {/* System Health - full width on mobile */}
           <BentoItem colSpan={3} rowSpan={1} mobileColSpan={4}>
             <SystemHealthCard />
