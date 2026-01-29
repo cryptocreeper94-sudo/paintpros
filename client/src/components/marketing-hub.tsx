@@ -369,6 +369,469 @@ function PresentationMode({ onClose }: { onClose: () => void }) {
 // Export the slides data so Developer page can use the speaker notes
 export { presentationSlides };
 
+// Content Library Tab Component
+function ContentLibraryTab({ tenantId }: { tenantId: string }) {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newContent, setNewContent] = useState({
+    title: '',
+    message: '',
+    imageUrl: '',
+    contentType: 'project_showcase',
+    rotationType: 'A'
+  });
+
+  const { data: contentItems = [], refetch } = useQuery({
+    queryKey: ['/api/content-library', tenantId],
+    queryFn: async () => {
+      const res = await fetch(`/api/content-library/${tenantId}`);
+      return res.json();
+    }
+  });
+
+  const { data: schedule = [] } = useQuery({
+    queryKey: ['/api/auto-posting', tenantId, 'schedule'],
+    queryFn: async () => {
+      const res = await fetch(`/api/auto-posting/${tenantId}/schedule`);
+      return res.json();
+    }
+  });
+
+  const addContent = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/content-library/${tenantId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newContent)
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      refetch();
+      setShowAddForm(false);
+      setNewContent({ title: '', message: '', imageUrl: '', contentType: 'project_showcase', rotationType: 'A' });
+    }
+  });
+
+  const setupDefaultSchedule = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/auto-posting/${tenantId}/setup-default`, { method: 'POST' });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auto-posting', tenantId, 'schedule'] });
+    }
+  });
+
+  const contentTypes = [
+    { value: 'project_showcase', label: 'Project Showcase', badge: 'A' },
+    { value: 'before_after', label: 'Before & After', badge: 'A' },
+    { value: 'tip', label: 'Tip', badge: 'B' },
+    { value: 'testimonial', label: 'Testimonial', badge: 'B' },
+    { value: 'educational', label: 'Educational', badge: 'B' },
+    { value: 'engagement', label: 'Engagement', badge: 'B' },
+    { value: 'seasonal', label: 'Seasonal', badge: 'any' }
+  ];
+
+  return (
+    <div className="space-y-4">
+      <GlassCard className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold">Content Library</h3>
+            <p className="text-sm text-muted-foreground">
+              {contentItems.length} items | Auto-posts 3-4x daily (MWF: Showcases, TThSat: Tips)
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setupDefaultSchedule.mutate()}
+              disabled={setupDefaultSchedule.isPending}
+              data-testid="button-setup-schedule"
+            >
+              {setupDefaultSchedule.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4 mr-2" />}
+              Setup Auto-Post
+            </Button>
+            <Button size="sm" onClick={() => setShowAddForm(true)} data-testid="button-add-content">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Content
+            </Button>
+          </div>
+        </div>
+
+        {showAddForm && (
+          <div className="mb-4 p-4 border border-border rounded-lg bg-background/50 space-y-3">
+            <Input
+              placeholder="Content title..."
+              value={newContent.title}
+              onChange={(e) => setNewContent({ ...newContent, title: e.target.value })}
+              data-testid="input-content-title"
+            />
+            <Textarea
+              placeholder="Post message..."
+              value={newContent.message}
+              onChange={(e) => setNewContent({ ...newContent, message: e.target.value })}
+              rows={3}
+              data-testid="input-content-message"
+            />
+            <Input
+              placeholder="Image URL (optional)"
+              value={newContent.imageUrl}
+              onChange={(e) => setNewContent({ ...newContent, imageUrl: e.target.value })}
+              data-testid="input-content-image"
+            />
+            <div className="flex gap-3">
+              <Select value={newContent.contentType} onValueChange={(v) => setNewContent({ ...newContent, contentType: v })}>
+                <SelectTrigger className="w-48" data-testid="select-content-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {contentTypes.map(t => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={newContent.rotationType} onValueChange={(v) => setNewContent({ ...newContent, rotationType: v })}>
+                <SelectTrigger className="w-32" data-testid="select-rotation">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="A">Rotation A (MWF)</SelectItem>
+                  <SelectItem value="B">Rotation B (TThSat)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowAddForm(false)}>Cancel</Button>
+              <Button size="sm" onClick={() => addContent.mutate()} disabled={!newContent.title || !newContent.message || addContent.isPending}>
+                {addContent.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add Content'}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {schedule.length > 0 && (
+          <div className="mb-4 p-3 border border-green-500/30 bg-green-500/10 rounded-lg">
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium">
+              <CheckCircle className="w-4 h-4" />
+              Auto-posting active: {schedule.length} scheduled slots per week
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Posts at 8am, 12pm, 5pm, 8pm Mon-Sat CST
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          {contentItems.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p>No content in library yet. Add your first post!</p>
+            </div>
+          ) : (
+            contentItems.map((item: any) => (
+              <div key={item.id} className="p-3 border border-border rounded-lg hover-elevate">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium">{item.title}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {contentTypes.find(t => t.value === item.contentType)?.label || item.contentType}
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        Rotation {item.rotationType}
+                      </Badge>
+                      {item.status === 'active' && (
+                        <Badge className="text-xs bg-green-500/20 text-green-600">Active</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{item.message}</p>
+                    {item.timesUsed > 0 && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Used {item.timesUsed}x | Last: {item.lastUsedAt ? new Date(item.lastUsedAt).toLocaleDateString() : 'Never'}
+                      </p>
+                    )}
+                  </div>
+                  {item.imageUrl && (
+                    <img src={item.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover ml-3" />
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </GlassCard>
+    </div>
+  );
+}
+
+// Ad Campaigns Tab Component
+function AdCampaignsTab({ tenantId }: { tenantId: string }) {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newCampaign, setNewCampaign] = useState({
+    name: '',
+    objective: 'OUTCOME_AWARENESS',
+    dailyBudget: '25',
+    adMessage: '',
+    adHeadline: '',
+    targetingRadius: 25,
+    ageMin: 25,
+    ageMax: 65,
+    destinationUrl: ''
+  });
+
+  const { data: campaigns = [], refetch } = useQuery({
+    queryKey: ['/api/ad-campaigns', tenantId],
+    queryFn: async () => {
+      const res = await fetch(`/api/ad-campaigns/${tenantId}`);
+      return res.json();
+    }
+  });
+
+  const createCampaign = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/ad-campaigns/${tenantId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCampaign)
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      refetch();
+      setShowCreateForm(false);
+      setNewCampaign({
+        name: '', objective: 'OUTCOME_AWARENESS', dailyBudget: '25', adMessage: '',
+        adHeadline: '', targetingRadius: 25, ageMin: 25, ageMax: 65, destinationUrl: ''
+      });
+    }
+  });
+
+  const launchCampaign = useMutation({
+    mutationFn: async (campaignId: string) => {
+      const res = await fetch(`/api/ad-campaigns/${tenantId}/${campaignId}/launch`, { method: 'POST' });
+      return res.json();
+    },
+    onSuccess: () => refetch()
+  });
+
+  const syncCampaign = useMutation({
+    mutationFn: async (campaignId: string) => {
+      const res = await fetch(`/api/ad-campaigns/${tenantId}/${campaignId}/sync`, { method: 'POST' });
+      return res.json();
+    },
+    onSuccess: () => refetch()
+  });
+
+  const objectives = [
+    { value: 'OUTCOME_AWARENESS', label: 'Brand Awareness' },
+    { value: 'OUTCOME_TRAFFIC', label: 'Website Traffic' },
+    { value: 'OUTCOME_ENGAGEMENT', label: 'Engagement' },
+    { value: 'OUTCOME_LEADS', label: 'Lead Generation' }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-500/20 text-green-600';
+      case 'pending': return 'bg-yellow-500/20 text-yellow-600';
+      case 'paused': return 'bg-gray-500/20 text-gray-600';
+      case 'failed': return 'bg-red-500/20 text-red-600';
+      default: return 'bg-blue-500/20 text-blue-600';
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <GlassCard className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold">Ad Campaigns</h3>
+            <p className="text-sm text-muted-foreground">
+              Local targeting: Nashville & Middle Tennessee (25-mile radius)
+            </p>
+          </div>
+          <Button size="sm" onClick={() => setShowCreateForm(true)} data-testid="button-create-campaign">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Campaign
+          </Button>
+        </div>
+
+        {showCreateForm && (
+          <div className="mb-4 p-4 border border-border rounded-lg bg-background/50 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                placeholder="Campaign name..."
+                value={newCampaign.name}
+                onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
+                data-testid="input-campaign-name"
+              />
+              <Select value={newCampaign.objective} onValueChange={(v) => setNewCampaign({ ...newCampaign, objective: v })}>
+                <SelectTrigger data-testid="select-objective">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {objectives.map(o => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">Daily Budget ($)</label>
+                <Input
+                  type="number"
+                  value={newCampaign.dailyBudget}
+                  onChange={(e) => setNewCampaign({ ...newCampaign, dailyBudget: e.target.value })}
+                  data-testid="input-budget"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Radius (miles)</label>
+                <Input
+                  type="number"
+                  value={newCampaign.targetingRadius}
+                  onChange={(e) => setNewCampaign({ ...newCampaign, targetingRadius: parseInt(e.target.value) })}
+                  data-testid="input-radius"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Age Range</label>
+                <div className="flex gap-1 items-center">
+                  <Input
+                    type="number"
+                    value={newCampaign.ageMin}
+                    onChange={(e) => setNewCampaign({ ...newCampaign, ageMin: parseInt(e.target.value) })}
+                    className="w-16"
+                  />
+                  <span className="text-xs">-</span>
+                  <Input
+                    type="number"
+                    value={newCampaign.ageMax}
+                    onChange={(e) => setNewCampaign({ ...newCampaign, ageMax: parseInt(e.target.value) })}
+                    className="w-16"
+                  />
+                </div>
+              </div>
+            </div>
+            <Input
+              placeholder="Ad headline..."
+              value={newCampaign.adHeadline}
+              onChange={(e) => setNewCampaign({ ...newCampaign, adHeadline: e.target.value })}
+              data-testid="input-headline"
+            />
+            <Textarea
+              placeholder="Ad message..."
+              value={newCampaign.adMessage}
+              onChange={(e) => setNewCampaign({ ...newCampaign, adMessage: e.target.value })}
+              rows={2}
+              data-testid="input-ad-message"
+            />
+            <Input
+              placeholder="Destination URL..."
+              value={newCampaign.destinationUrl}
+              onChange={(e) => setNewCampaign({ ...newCampaign, destinationUrl: e.target.value })}
+              data-testid="input-destination"
+            />
+            <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs text-blue-600 dark:text-blue-400">
+              <Target className="w-4 h-4 inline mr-1" />
+              Targeting: Nashville, TN + {newCampaign.targetingRadius} mile radius | Ages {newCampaign.ageMin}-{newCampaign.ageMax}
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowCreateForm(false)}>Cancel</Button>
+              <Button size="sm" onClick={() => createCampaign.mutate()} disabled={!newCampaign.name || createCampaign.isPending}>
+                {createCampaign.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Draft'}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {campaigns.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Megaphone className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p>No ad campaigns yet. Create your first campaign!</p>
+            </div>
+          ) : (
+            campaigns.map((campaign: any) => (
+              <div key={campaign.id} className="p-4 border border-border rounded-lg hover-elevate">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold">{campaign.name}</span>
+                      <Badge className={getStatusColor(campaign.status)}>{campaign.status}</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {objectives.find(o => o.value === campaign.objective)?.label || campaign.objective}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      ${campaign.dailyBudget}/day | {campaign.targetingCity}, {campaign.targetingState} ({campaign.targetingRadius}mi)
+                    </p>
+                    
+                    {(campaign.impressions > 0 || campaign.clicks > 0) && (
+                      <div className="grid grid-cols-5 gap-2 text-xs mt-2">
+                        <div className="p-2 bg-background/50 rounded text-center">
+                          <div className="font-bold text-blue-500">{campaign.impressions?.toLocaleString() || 0}</div>
+                          <div className="text-muted-foreground">Impressions</div>
+                        </div>
+                        <div className="p-2 bg-background/50 rounded text-center">
+                          <div className="font-bold text-green-500">{campaign.reach?.toLocaleString() || 0}</div>
+                          <div className="text-muted-foreground">Reach</div>
+                        </div>
+                        <div className="p-2 bg-background/50 rounded text-center">
+                          <div className="font-bold text-purple-500">{campaign.clicks || 0}</div>
+                          <div className="text-muted-foreground">Clicks</div>
+                        </div>
+                        <div className="p-2 bg-background/50 rounded text-center">
+                          <div className="font-bold text-orange-500">${campaign.spent || '0'}</div>
+                          <div className="text-muted-foreground">Spent</div>
+                        </div>
+                        <div className="p-2 bg-background/50 rounded text-center">
+                          <div className="font-bold text-yellow-500">{campaign.leads || 0}</div>
+                          <div className="text-muted-foreground">Leads</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {campaign.status === 'draft' && (
+                      <Button 
+                        size="sm" 
+                        onClick={() => launchCampaign.mutate(campaign.id)}
+                        disabled={launchCampaign.isPending}
+                        data-testid={`button-launch-${campaign.id}`}
+                      >
+                        {launchCampaign.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Launch'}
+                      </Button>
+                    )}
+                    {campaign.metaCampaignId && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => syncCampaign.mutate(campaign.id)}
+                        disabled={syncCampaign.isPending}
+                        data-testid={`button-sync-${campaign.id}`}
+                      >
+                        {syncCampaign.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {campaign.errorMessage && (
+                  <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-600">
+                    {campaign.errorMessage}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </GlassCard>
+    </div>
+  );
+}
+
 export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
   const { t } = useI18n();
   const [selectedTenant, setSelectedTenant] = useState(TENANTS[0].id);
@@ -611,18 +1074,26 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="compose" data-testid="tab-compose">
             <Send className="w-4 h-4 mr-2" />
-            {t('marketing.compose') || 'Compose'}
+            Compose
+          </TabsTrigger>
+          <TabsTrigger value="content-library" data-testid="tab-content-library">
+            <FileText className="w-4 h-4 mr-2" />
+            Content
+          </TabsTrigger>
+          <TabsTrigger value="ads" data-testid="tab-ads">
+            <Megaphone className="w-4 h-4 mr-2" />
+            Ads
           </TabsTrigger>
           <TabsTrigger value="calendar" data-testid="tab-calendar">
             <CalendarIcon className="w-4 h-4 mr-2" />
-            {t('marketing.calendar') || 'Calendar'}
+            Calendar
           </TabsTrigger>
           <TabsTrigger value="analytics" data-testid="tab-analytics">
             <BarChart3 className="w-4 h-4 mr-2" />
-            {t('marketing.analytics') || 'Analytics'}
+            Analytics
           </TabsTrigger>
         </TabsList>
 
@@ -768,6 +1239,16 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
               </div>
             </div>
           </GlassCard>
+        </TabsContent>
+
+        {/* Content Library Tab */}
+        <TabsContent value="content-library" className="mt-4">
+          <ContentLibraryTab tenantId={selectedTenant} />
+        </TabsContent>
+
+        {/* Ad Campaigns Tab */}
+        <TabsContent value="ads" className="mt-4">
+          <AdCampaignsTab tenantId={selectedTenant} />
         </TabsContent>
 
         {/* Calendar Tab */}

@@ -5788,6 +5788,9 @@ export const scheduledPosts = pgTable("scheduled_posts", {
   contentCategory: text("content_category"), // 'interior', 'exterior', 'cabinets', 'deck', 'commercial'
   rotationType: text("rotation_type"), // 'A' (MWF project showcases) or 'B' (TThSat engagement)
   
+  // Link to content library for performance tracking
+  contentLibraryId: varchar("content_library_id"),
+  
   // Analytics (populated after publishing)
   impressions: integer("impressions"),
   reach: integer("reach"),
@@ -5876,5 +5879,128 @@ export const contentPerformanceSummary = pgTable("content_performance_summary", 
 }, (table) => [
   index("idx_content_summary_tenant").on(table.tenantId),
   index("idx_content_summary_type").on(table.contentType),
+]);
+
+// Content Library - Reusable content pieces for automated posting
+export const contentLibrary = pgTable("content_library", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Content
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  messageEs: text("message_es"), // Spanish version
+  imageUrl: text("image_url"),
+  
+  // Categorization
+  contentType: text("content_type").notNull(), // 'project_showcase', 'before_after', 'tip', 'testimonial', 'seasonal', 'engagement', 'educational'
+  contentCategory: text("content_category"), // 'interior', 'exterior', 'cabinets', 'deck', 'commercial'
+  tags: text("tags").array(),
+  
+  // Rotation settings
+  rotationType: text("rotation_type"), // 'A' (MWF) or 'B' (TThSat)
+  
+  // Usage tracking
+  timesUsed: integer("times_used").default(0),
+  lastUsedAt: timestamp("last_used_at"),
+  performanceScore: real("performance_score"),
+  
+  // Status
+  status: text("status").default("active"), // 'active', 'paused', 'archived'
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_content_library_tenant").on(table.tenantId),
+  index("idx_content_library_type").on(table.contentType),
+  index("idx_content_library_status").on(table.status),
+]);
+
+export type ContentLibraryItem = typeof contentLibrary.$inferSelect;
+
+// Auto-Posting Schedule - Define when posts should go out
+export const autoPostingSchedule = pgTable("auto_posting_schedule", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Schedule settings
+  dayOfWeek: integer("day_of_week").notNull(), // 0-6 (Sunday-Saturday)
+  hourOfDay: integer("hour_of_day").notNull(), // 0-23
+  minuteOfHour: integer("minute_of_hour").default(0), // 0-59
+  
+  // Content selection
+  rotationType: text("rotation_type"), // 'A', 'B', or null for any
+  contentType: text("content_type"), // specific type or null for any
+  
+  // Platform
+  platform: text("platform").default("facebook"), // 'facebook', 'instagram', 'both'
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  lastExecutedAt: timestamp("last_executed_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_auto_schedule_tenant").on(table.tenantId),
+  index("idx_auto_schedule_active").on(table.isActive),
+]);
+
+// Ad Campaigns - Facebook/Instagram paid campaigns
+export const adCampaigns = pgTable("ad_campaigns", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Campaign basics
+  name: text("name").notNull(),
+  objective: text("objective").notNull(), // 'AWARENESS', 'TRAFFIC', 'ENGAGEMENT', 'LEADS', 'SALES'
+  
+  // Budget
+  dailyBudget: decimal("daily_budget", { precision: 10, scale: 2 }),
+  lifetimeBudget: decimal("lifetime_budget", { precision: 10, scale: 2 }),
+  
+  // Schedule
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  
+  // Targeting - Nashville/Middle Tennessee
+  targetingRadius: integer("targeting_radius").default(25), // miles from Nashville
+  targetingCity: text("targeting_city").default("Nashville"),
+  targetingState: text("targeting_state").default("Tennessee"),
+  targetingZipCodes: text("targeting_zip_codes").array(),
+  ageMin: integer("age_min").default(25),
+  ageMax: integer("age_max").default(65),
+  interests: text("interests").array(), // ['home improvement', 'interior design', etc.]
+  
+  // Creative
+  adMessage: text("ad_message"),
+  adImageUrl: text("ad_image_url"),
+  adHeadline: text("ad_headline"),
+  adDescription: text("ad_description"),
+  callToAction: text("call_to_action").default("LEARN_MORE"), // 'LEARN_MORE', 'GET_QUOTE', 'CONTACT_US', 'BOOK_NOW'
+  destinationUrl: text("destination_url"),
+  
+  // Meta API IDs
+  metaCampaignId: text("meta_campaign_id"),
+  metaAdSetId: text("meta_ad_set_id"),
+  metaAdId: text("meta_ad_id"),
+  
+  // Status & Analytics
+  status: text("status").default("draft"), // 'draft', 'pending', 'active', 'paused', 'completed', 'failed'
+  impressions: integer("impressions").default(0),
+  reach: integer("reach").default(0),
+  clicks: integer("clicks").default(0),
+  leads: integer("leads").default(0),
+  spent: decimal("spent", { precision: 10, scale: 2 }).default("0"),
+  costPerClick: decimal("cost_per_click", { precision: 10, scale: 4 }),
+  costPerLead: decimal("cost_per_lead", { precision: 10, scale: 2 }),
+  
+  lastSyncAt: timestamp("last_sync_at"),
+  errorMessage: text("error_message"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_ad_campaigns_tenant").on(table.tenantId),
+  index("idx_ad_campaigns_status").on(table.status),
 ]);
 

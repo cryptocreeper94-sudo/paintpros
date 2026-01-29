@@ -44,7 +44,8 @@ import {
   dataImports, importedRecords, insertDataImportSchema, insertImportedRecordSchema,
   fieldCaptures, jobs,
   metaIntegrations, insertMetaIntegrationSchema,
-  scheduledPosts, insertScheduledPostSchema
+  scheduledPosts, insertScheduledPostSchema,
+  contentLibrary, autoPostingSchedule, adCampaigns
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -11472,7 +11473,48 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         }
       }
       
-      res.json({ success: true, syncedCount, totalPosts: posts.length });
+      // Now update content library performance scores based on directly linked posts
+      const contentItems = await db
+        .select()
+        .from(contentLibrary)
+        .where(eq(contentLibrary.tenantId, tenantId));
+      
+      let contentItemsUpdated = 0;
+      
+      for (const item of contentItems) {
+        // Find posts directly linked to this content library item
+        const linkedPosts = await db
+          .select()
+          .from(scheduledPosts)
+          .where(
+            and(
+              eq(scheduledPosts.tenantId, tenantId),
+              eq(scheduledPosts.status, 'published'),
+              eq(scheduledPosts.contentLibraryId, item.id)
+            )
+          );
+        
+        if (linkedPosts.length > 0) {
+          // Calculate average performance score from linked posts only
+          const avgScore = linkedPosts.reduce((sum, p) => sum + (p.performanceScore || 0), 0) / linkedPosts.length;
+          
+          await db
+            .update(contentLibrary)
+            .set({
+              performanceScore: avgScore,
+              timesUsed: linkedPosts.length,
+              lastUsedAt: linkedPosts.sort((a, b) => 
+                new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()
+              )[0]?.publishedAt || null,
+              updatedAt: new Date()
+            })
+            .where(eq(contentLibrary.id, item.id));
+          
+          contentItemsUpdated++;
+        }
+      }
+      
+      res.json({ success: true, syncedCount, totalPosts: posts.length, contentItemsUpdated });
     } catch (error) {
       console.error("Error syncing analytics:", error);
       res.status(500).json({ error: "Failed to sync analytics" });
@@ -11738,6 +11780,474 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error getting schedule suggestions:", error);
       res.status(500).json({ error: "Failed to get schedule suggestions" });
+    }
+  });
+
+  // ============ CONTENT LIBRARY ============
+
+  // Get all content library items for a tenant
+  app.get("/api/content-library/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const items = await db
+        .select()
+        .from(contentLibrary)
+        .where(eq(contentLibrary.tenantId, tenantId))
+        .orderBy(desc(contentLibrary.createdAt));
+      res.json(items);
+    } catch (error) {
+      console.error("Error fetching content library:", error);
+      res.status(500).json({ error: "Failed to fetch content library" });
+    }
+  });
+
+  // Add content to library
+  app.post("/api/content-library/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { title, message, messageEs, imageUrl, contentType, contentCategory, rotationType, tags } = req.body;
+      
+      const [item] = await db
+        .insert(contentLibrary)
+        .values({
+          tenantId,
+          title,
+          message,
+          messageEs,
+          imageUrl,
+          contentType,
+          contentCategory,
+          rotationType,
+          tags,
+          status: 'active'
+        })
+        .returning();
+      
+      res.json({ success: true, item });
+    } catch (error) {
+      console.error("Error adding to content library:", error);
+      res.status(500).json({ error: "Failed to add content" });
+    }
+  });
+
+  // Update content library item
+  app.patch("/api/content-library/:tenantId/:itemId", async (req, res) => {
+    try {
+      const { itemId } = req.params;
+      const updates = req.body;
+      
+      const [item] = await db
+        .update(contentLibrary)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(contentLibrary.id, itemId))
+        .returning();
+      
+      res.json({ success: true, item });
+    } catch (error) {
+      console.error("Error updating content:", error);
+      res.status(500).json({ error: "Failed to update content" });
+    }
+  });
+
+  // Delete content library item
+  app.delete("/api/content-library/:tenantId/:itemId", async (req, res) => {
+    try {
+      const { itemId } = req.params;
+      await db.delete(contentLibrary).where(eq(contentLibrary.id, itemId));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting content:", error);
+      res.status(500).json({ error: "Failed to delete content" });
+    }
+  });
+
+  // ============ AUTO-POSTING SCHEDULE ============
+
+  // Get posting schedule for a tenant
+  app.get("/api/auto-posting/:tenantId/schedule", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const schedule = await db
+        .select()
+        .from(autoPostingSchedule)
+        .where(eq(autoPostingSchedule.tenantId, tenantId))
+        .orderBy(autoPostingSchedule.dayOfWeek, autoPostingSchedule.hourOfDay);
+      res.json(schedule);
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+      res.status(500).json({ error: "Failed to fetch schedule" });
+    }
+  });
+
+  // Set up default posting schedule (3-4 times daily)
+  app.post("/api/auto-posting/:tenantId/setup-default", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      // Delete existing schedule
+      await db.delete(autoPostingSchedule).where(eq(autoPostingSchedule.tenantId, tenantId));
+      
+      // Create 3-4 posts per day schedule (Mon-Sat)
+      const schedule = [];
+      const postTimes = [
+        { hour: 8, minute: 0 },   // 8 AM
+        { hour: 12, minute: 0 },  // 12 PM
+        { hour: 17, minute: 0 },  // 5 PM
+        { hour: 20, minute: 0 },  // 8 PM (optional 4th post)
+      ];
+      
+      // Mon-Sat (1-6)
+      for (let day = 1; day <= 6; day++) {
+        const rotationType = (day === 1 || day === 3 || day === 5) ? 'A' : 'B';
+        const numPosts = (day === 6) ? 3 : 4; // 3 posts on Saturday, 4 on other days
+        
+        for (let i = 0; i < numPosts; i++) {
+          schedule.push({
+            tenantId,
+            dayOfWeek: day,
+            hourOfDay: postTimes[i].hour,
+            minuteOfHour: postTimes[i].minute,
+            rotationType,
+            platform: 'facebook',
+            isActive: true
+          });
+        }
+      }
+      
+      await db.insert(autoPostingSchedule).values(schedule);
+      
+      const created = await db
+        .select()
+        .from(autoPostingSchedule)
+        .where(eq(autoPostingSchedule.tenantId, tenantId));
+      
+      res.json({ success: true, schedule: created, message: `Created ${created.length} scheduled posts per week` });
+    } catch (error) {
+      console.error("Error setting up schedule:", error);
+      res.status(500).json({ error: "Failed to set up schedule" });
+    }
+  });
+
+  // Execute auto-posting (run this hourly via cron)
+  app.post("/api/auto-posting/execute", async (req, res) => {
+    try {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentHour = now.getHours();
+      
+      // Find all schedules that should run now
+      const dueSchedules = await db
+        .select()
+        .from(autoPostingSchedule)
+        .where(
+          and(
+            eq(autoPostingSchedule.isActive, true),
+            eq(autoPostingSchedule.dayOfWeek, currentDay),
+            eq(autoPostingSchedule.hourOfDay, currentHour)
+          )
+        );
+      
+      let postedCount = 0;
+      
+      for (const schedule of dueSchedules) {
+        // Check if already executed this hour
+        if (schedule.lastExecutedAt) {
+          const lastExec = new Date(schedule.lastExecutedAt);
+          if (lastExec.getDate() === now.getDate() && lastExec.getHours() === currentHour) {
+            continue; // Already posted this hour
+          }
+        }
+        
+        // Get integration for this tenant
+        const [integration] = await db
+          .select()
+          .from(metaIntegrations)
+          .where(eq(metaIntegrations.tenantId, schedule.tenantId))
+          .limit(1);
+        
+        if (!integration?.facebookPageAccessToken) continue;
+        
+        // Get random content from library matching rotation type
+        const contentQuery = db
+          .select()
+          .from(contentLibrary)
+          .where(
+            and(
+              eq(contentLibrary.tenantId, schedule.tenantId),
+              eq(contentLibrary.status, 'active'),
+              schedule.rotationType ? eq(contentLibrary.rotationType, schedule.rotationType) : undefined
+            )
+          );
+        
+        const availableContent = await contentQuery;
+        
+        if (availableContent.length === 0) continue;
+        
+        // Pick content (prefer least recently used)
+        const content = availableContent.sort((a, b) => {
+          if (!a.lastUsedAt) return -1;
+          if (!b.lastUsedAt) return 1;
+          return new Date(a.lastUsedAt).getTime() - new Date(b.lastUsedAt).getTime();
+        })[0];
+        
+        // Post to Facebook
+        try {
+          let postResult;
+          
+          if (content.imageUrl) {
+            const response = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.facebookPageId}/photos`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  url: content.imageUrl,
+                  message: content.message,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            postResult = await response.json();
+          } else {
+            const response = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.facebookPageId}/feed`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: content.message,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            postResult = await response.json();
+          }
+          
+          if (postResult.id || postResult.post_id) {
+            // Update content usage
+            await db
+              .update(contentLibrary)
+              .set({
+                timesUsed: (content.timesUsed || 0) + 1,
+                lastUsedAt: new Date(),
+                updatedAt: new Date()
+              })
+              .where(eq(contentLibrary.id, content.id));
+            
+            // Update schedule last executed
+            await db
+              .update(autoPostingSchedule)
+              .set({ lastExecutedAt: new Date() })
+              .where(eq(autoPostingSchedule.id, schedule.id));
+            
+            // Log the post to scheduled posts table with link to content library
+            await db.insert(scheduledPosts).values({
+              tenantId: schedule.tenantId,
+              message: content.message,
+              imageUrl: content.imageUrl,
+              platform: 'facebook',
+              scheduledAt: now,
+              publishedAt: now,
+              status: 'published',
+              facebookPostId: postResult.post_id || postResult.id,
+              contentType: content.contentType,
+              contentCategory: content.contentCategory,
+              rotationType: content.rotationType,
+              contentLibraryId: content.id // Link for performance tracking
+            });
+            
+            postedCount++;
+          }
+        } catch (postError) {
+          console.error(`Error posting for ${schedule.tenantId}:`, postError);
+        }
+      }
+      
+      res.json({ success: true, dueSchedules: dueSchedules.length, posted: postedCount });
+    } catch (error) {
+      console.error("Error executing auto-posting:", error);
+      res.status(500).json({ error: "Failed to execute auto-posting" });
+    }
+  });
+
+  // ============ AD CAMPAIGNS ============
+
+  // Get all campaigns for a tenant
+  app.get("/api/ad-campaigns/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const campaigns = await db
+        .select()
+        .from(adCampaigns)
+        .where(eq(adCampaigns.tenantId, tenantId))
+        .orderBy(desc(adCampaigns.createdAt));
+      res.json(campaigns);
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+      res.status(500).json({ error: "Failed to fetch campaigns" });
+    }
+  });
+
+  // Create ad campaign (draft)
+  app.post("/api/ad-campaigns/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const campaignData = req.body;
+      
+      const [campaign] = await db
+        .insert(adCampaigns)
+        .values({
+          tenantId,
+          ...campaignData,
+          status: 'draft',
+          // Default Nashville targeting
+          targetingCity: campaignData.targetingCity || 'Nashville',
+          targetingState: campaignData.targetingState || 'Tennessee',
+          targetingRadius: campaignData.targetingRadius || 25,
+          ageMin: campaignData.ageMin || 25,
+          ageMax: campaignData.ageMax || 65
+        })
+        .returning();
+      
+      res.json({ success: true, campaign });
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      res.status(500).json({ error: "Failed to create campaign" });
+    }
+  });
+
+  // Launch ad campaign (create on Meta)
+  app.post("/api/ad-campaigns/:tenantId/:campaignId/launch", async (req, res) => {
+    try {
+      const { tenantId, campaignId } = req.params;
+      
+      // Get campaign
+      const [campaign] = await db
+        .select()
+        .from(adCampaigns)
+        .where(eq(adCampaigns.id, campaignId))
+        .limit(1);
+      
+      if (!campaign) {
+        return res.status(404).json({ error: "Campaign not found" });
+      }
+      
+      // Get integration
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken) {
+        return res.status(400).json({ error: "Meta not connected" });
+      }
+      
+      const adAccountId = 'act_2640218316345629';
+      
+      // Create Campaign on Meta
+      const campaignResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${adAccountId}/campaigns`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: campaign.name,
+            objective: campaign.objective || 'OUTCOME_AWARENESS',
+            status: 'PAUSED',
+            special_ad_categories: [],
+            access_token: integration.facebookPageAccessToken
+          })
+        }
+      );
+      
+      const campaignResult: any = await campaignResponse.json();
+      
+      if (campaignResult.error) {
+        await db
+          .update(adCampaigns)
+          .set({ status: 'failed', errorMessage: campaignResult.error.message, updatedAt: new Date() })
+          .where(eq(adCampaigns.id, campaignId));
+        return res.status(400).json({ error: campaignResult.error.message });
+      }
+      
+      // Update campaign with Meta ID
+      await db
+        .update(adCampaigns)
+        .set({
+          metaCampaignId: campaignResult.id,
+          status: 'pending',
+          updatedAt: new Date()
+        })
+        .where(eq(adCampaigns.id, campaignId));
+      
+      res.json({ 
+        success: true, 
+        metaCampaignId: campaignResult.id,
+        message: "Campaign created on Meta. Next step: Create Ad Set with targeting."
+      });
+    } catch (error) {
+      console.error("Error launching campaign:", error);
+      res.status(500).json({ error: "Failed to launch campaign" });
+    }
+  });
+
+  // Get campaign stats from Meta
+  app.post("/api/ad-campaigns/:tenantId/:campaignId/sync", async (req, res) => {
+    try {
+      const { tenantId, campaignId } = req.params;
+      
+      const [campaign] = await db
+        .select()
+        .from(adCampaigns)
+        .where(eq(adCampaigns.id, campaignId))
+        .limit(1);
+      
+      if (!campaign?.metaCampaignId) {
+        return res.status(400).json({ error: "Campaign not launched yet" });
+      }
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken) {
+        return res.status(400).json({ error: "Meta not connected" });
+      }
+      
+      // Fetch campaign insights
+      const insightsResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${campaign.metaCampaignId}/insights?fields=impressions,reach,clicks,spend,actions&access_token=${integration.facebookPageAccessToken}`
+      );
+      
+      const insightsData: any = await insightsResponse.json();
+      
+      if (insightsData.data && insightsData.data[0]) {
+        const stats = insightsData.data[0];
+        const leads = stats.actions?.find((a: any) => a.action_type === 'lead')?.value || 0;
+        
+        await db
+          .update(adCampaigns)
+          .set({
+            impressions: parseInt(stats.impressions) || 0,
+            reach: parseInt(stats.reach) || 0,
+            clicks: parseInt(stats.clicks) || 0,
+            spent: stats.spend || '0',
+            leads: parseInt(leads),
+            costPerClick: stats.clicks > 0 ? (parseFloat(stats.spend) / parseInt(stats.clicks)).toFixed(4) : null,
+            costPerLead: leads > 0 ? (parseFloat(stats.spend) / leads).toFixed(2) : null,
+            lastSyncAt: new Date(),
+            updatedAt: new Date()
+          })
+          .where(eq(adCampaigns.id, campaignId));
+      }
+      
+      res.json({ success: true, insights: insightsData.data?.[0] || {} });
+    } catch (error) {
+      console.error("Error syncing campaign:", error);
+      res.status(500).json({ error: "Failed to sync campaign" });
     }
   });
 
