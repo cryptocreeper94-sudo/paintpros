@@ -80,11 +80,21 @@ Let's keep transforming Nashville homes!`;
 export default function EmailTemplate() {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(emailContent);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+  const handleCopy = () => {
+    const textarea = document.getElementById('email-content') as HTMLTextAreaElement;
+    if (textarea) {
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      });
+    }
   };
+
+  const fullEmail = `Subject: NPP Marketing Hub is LIVE - Automated Posting to Facebook & Instagram
+
+${emailContent}`;
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -97,35 +107,41 @@ export default function EmailTemplate() {
         </Link>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Marketing Hub Announcement Email</CardTitle>
+          <CardHeader>
+            <CardTitle className="text-center">Marketing Hub Announcement Email</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <Button 
               onClick={handleCopy} 
               size="lg"
-              className="gap-2"
+              className="w-full gap-2 text-lg py-6"
               data-testid="button-copy-email"
             >
               {copied ? (
                 <>
-                  <Check className="w-5 h-5" />
-                  Copied!
+                  <Check className="w-6 h-6" />
+                  Copied! Now paste in your email
                 </>
               ) : (
                 <>
-                  <Copy className="w-5 h-5" />
-                  Copy to Clipboard
+                  <Copy className="w-6 h-6" />
+                  Click Here to Copy Email
                 </>
               )}
             </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-muted p-4 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-2">Subject: NPP Marketing Hub is LIVE - Automated Posting to Facebook & Instagram</p>
-              <hr className="my-3 border-border" />
-              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                {emailContent}
-              </pre>
-            </div>
+            
+            <textarea
+              id="email-content"
+              readOnly
+              value={fullEmail}
+              className="w-full h-96 p-4 text-sm font-mono bg-muted border rounded-lg resize-none"
+              onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+              data-testid="textarea-email-content"
+            />
+            
+            <p className="text-center text-muted-foreground text-sm">
+              Click the button above or click inside the box and press Ctrl+A then Ctrl+C
+            </p>
           </CardContent>
         </Card>
       </div>
