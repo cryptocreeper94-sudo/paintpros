@@ -41,9 +41,24 @@ WHAT'S WORKING NOW:
 - Real-time status of all 10 connected services
 - Green/yellow/red indicators for quick health checks
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 WHERE TO ACCESS EVERYTHING:
 
-Marketing Hub: Go to the main dashboard → Marketing Hub tab
+MARKETING HUB (Desktop):
+https://nashpaintpros.io/owner
+→ Click "Marketing Hub" tab in the dashboard
+
+MARKETING HUB (Mobile App):
+https://nashpaintpros.io/app
+→ Marketing section available in the app
+
+DIRECT LINKS:
+• Marketing Hub: https://nashpaintpros.io/owner (Marketing Hub tab)
+• System Health: https://nashpaintpros.io/developer (System Health section)
+• Trade Toolkit: https://nashpaintpros.io/trade-toolkit
+
+MARKETING HUB TABS:
 - Compose Tab - Create new posts
 - Content Tab - Manage your image/message library
 - Ads Tab - Manage ad campaigns
@@ -51,11 +66,12 @@ Marketing Hub: Go to the main dashboard → Marketing Hub tab
 - Calendar Tab - See what's scheduled
 - Analytics Tab - View performance metrics
 
-System Health: Developer Portal → System Health section
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 WHAT CREWS CAN DO:
 - Submit Before & After photos through the Trade Toolkit camera
 - Photos go directly into the Content Studio for social posting
+- Access Trade Toolkit at: https://nashpaintpros.io/trade-toolkit
 
 Questions? Reach out and I'll walk you through the system.
 
