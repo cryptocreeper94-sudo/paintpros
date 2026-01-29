@@ -531,14 +531,23 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
                 </SelectContent>
               </Select>
               <Select value={newContent.contentCategory || ''} onValueChange={(v) => setNewContent({ ...newContent, contentCategory: v })}>
-                <SelectTrigger className="w-36" data-testid="select-category">
+                <SelectTrigger className="w-40" data-testid="select-category">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="interior">Interior</SelectItem>
-                  <SelectItem value="exterior">Exterior</SelectItem>
+                  <SelectItem value="interior_walls">Interior Walls</SelectItem>
+                  <SelectItem value="ceilings">Ceilings</SelectItem>
                   <SelectItem value="cabinets">Cabinets</SelectItem>
-                  <SelectItem value="deck">Deck/Porch</SelectItem>
+                  <SelectItem value="doors">Doors</SelectItem>
+                  <SelectItem value="trim">Trim & Molding</SelectItem>
+                  <SelectItem value="exterior_siding">Exterior Siding</SelectItem>
+                  <SelectItem value="shutters">Shutters</SelectItem>
+                  <SelectItem value="deck">Deck & Porch</SelectItem>
+                  <SelectItem value="fence">Fence</SelectItem>
+                  <SelectItem value="garage_door">Garage Door</SelectItem>
+                  <SelectItem value="whole_house">Whole House</SelectItem>
+                  <SelectItem value="accent_wall">Accent Wall</SelectItem>
+                  <SelectItem value="staining">Staining</SelectItem>
                   <SelectItem value="commercial">Commercial</SelectItem>
                 </SelectContent>
               </Select>
