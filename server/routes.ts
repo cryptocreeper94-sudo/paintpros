@@ -8299,6 +8299,154 @@ Do not include any text before or after the JSON.`
       });
     }
 
+    // 6. Meta/Social Posting health check
+    const metaStart = Date.now();
+    try {
+      const integrations = await db.select().from(metaIntegrations).limit(5);
+      const connectedCount = integrations.filter(i => i.facebookConnected || i.instagramConnected).length;
+      
+      if (connectedCount > 0) {
+        // Check if tokens are still valid by checking expiry
+        const validIntegrations = integrations.filter(i => {
+          if (!i.tokenExpiresAt) return true;
+          return new Date(i.tokenExpiresAt) > new Date();
+        });
+        
+        checks.push({
+          name: "posting",
+          status: validIntegrations.length > 0 ? "healthy" : "degraded",
+          message: `${connectedCount} tenant(s) connected to Meta`,
+          responseTime: Date.now() - metaStart
+        });
+      } else {
+        checks.push({
+          name: "posting",
+          status: "degraded",
+          message: "No Meta integrations configured",
+          responseTime: Date.now() - metaStart
+        });
+      }
+    } catch (error: any) {
+      checks.push({
+        name: "posting",
+        status: "error",
+        message: "Posting system error",
+        responseTime: Date.now() - metaStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
+    // 7. Ad Campaigns health check
+    const adsStart = Date.now();
+    try {
+      const campaigns = await db.select().from(adCampaigns).where(eq(adCampaigns.status, 'active')).limit(10);
+      const activeCount = campaigns.length;
+      
+      checks.push({
+        name: "ads",
+        status: activeCount > 0 ? "healthy" : "degraded",
+        message: activeCount > 0 ? `${activeCount} active campaign(s)` : "No active campaigns",
+        responseTime: Date.now() - adsStart
+      });
+    } catch (error: any) {
+      checks.push({
+        name: "ads",
+        status: "error",
+        message: "Ad campaigns error",
+        responseTime: Date.now() - adsStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
+    // 8. Budget Tracker health check
+    const budgetStart = Date.now();
+    try {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      const expenses = await db.select().from(marketingExpenses)
+        .where(gte(marketingExpenses.expenseDate, monthStart))
+        .limit(50);
+      
+      const totalSpent = expenses.reduce((sum, e) => sum + parseFloat(String(e.amount) || '0'), 0);
+      const monthlyBudget = 2000; // $2000/month budget
+      const percentUsed = (totalSpent / monthlyBudget) * 100;
+      
+      checks.push({
+        name: "budget",
+        status: percentUsed <= 100 ? "healthy" : "degraded",
+        message: `$${totalSpent.toFixed(0)}/${monthlyBudget} (${percentUsed.toFixed(0)}%)`,
+        responseTime: Date.now() - budgetStart
+      });
+    } catch (error: any) {
+      checks.push({
+        name: "budget",
+        status: "error",
+        message: "Budget tracker error",
+        responseTime: Date.now() - budgetStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
+    // 9. Content Library health check
+    const contentStart = Date.now();
+    try {
+      const contentItems = await db.select().from(contentLibrary)
+        .where(eq(contentLibrary.status, 'active'))
+        .limit(100);
+      
+      const withImages = contentItems.filter(c => c.imageUrl).length;
+      const total = contentItems.length;
+      
+      checks.push({
+        name: "content",
+        status: total > 0 ? (withImages > 0 ? "healthy" : "degraded") : "degraded",
+        message: total > 0 ? `${total} items (${withImages} with images)` : "No content available",
+        responseTime: Date.now() - contentStart
+      });
+    } catch (error: any) {
+      checks.push({
+        name: "content",
+        status: "error",
+        message: "Content library error",
+        responseTime: Date.now() - contentStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
+    // 10. Auto-Posting Schedule health check
+    const scheduleStart = Date.now();
+    try {
+      const schedules = await db.select().from(autoPostingSchedule)
+        .where(eq(autoPostingSchedule.isActive, true))
+        .limit(50);
+      
+      const activeSchedules = schedules.length;
+      
+      // Check if any posted today
+      const today = new Date();
+      const recentPosts = schedules.filter(s => {
+        if (!s.lastExecutedAt) return false;
+        const lastExec = new Date(s.lastExecutedAt);
+        return lastExec.toDateString() === today.toDateString();
+      });
+      
+      checks.push({
+        name: "scheduler",
+        status: activeSchedules > 0 ? "healthy" : "degraded",
+        message: `${activeSchedules} schedules (${recentPosts.length} ran today)`,
+        responseTime: Date.now() - scheduleStart
+      });
+    } catch (error: any) {
+      checks.push({
+        name: "scheduler",
+        status: "error",
+        message: "Scheduler error",
+        responseTime: Date.now() - scheduleStart,
+        lastError: error.message?.substring(0, 100)
+      });
+    }
+
     // Determine overall status
     const hasError = checks.some(c => c.status === "error");
     const hasDegraded = checks.some(c => c.status === "degraded");
@@ -12858,6 +13006,112 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error executing daily ads:", error);
       res.status(500).json({ error: "Failed to execute daily ads" });
+    }
+  });
+
+  // ============ POST & SCHEDULE MANAGEMENT ============
+
+  // Pause/Resume auto-posting schedule for a tenant
+  app.post("/api/auto-posting/pause/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { pause } = req.body; // true = pause, false = resume
+      
+      await db
+        .update(autoPostingSchedule)
+        .set({ isActive: !pause })
+        .where(eq(autoPostingSchedule.tenantId, tenantId));
+      
+      res.json({ success: true, paused: pause, message: pause ? 'All schedules paused' : 'All schedules resumed' });
+    } catch (error) {
+      console.error("Error pausing schedule:", error);
+      res.status(500).json({ error: "Failed to update schedule" });
+    }
+  });
+
+  // Pause/Resume a specific schedule slot
+  app.post("/api/auto-posting/schedule/:scheduleId/toggle", async (req, res) => {
+    try {
+      const { scheduleId } = req.params;
+      
+      const [schedule] = await db
+        .select()
+        .from(autoPostingSchedule)
+        .where(eq(autoPostingSchedule.id, scheduleId))
+        .limit(1);
+      
+      if (!schedule) {
+        return res.status(404).json({ error: "Schedule not found" });
+      }
+      
+      await db
+        .update(autoPostingSchedule)
+        .set({ isActive: !schedule.isActive })
+        .where(eq(autoPostingSchedule.id, scheduleId));
+      
+      res.json({ success: true, isActive: !schedule.isActive });
+    } catch (error) {
+      console.error("Error toggling schedule:", error);
+      res.status(500).json({ error: "Failed to toggle schedule" });
+    }
+  });
+
+  // Update a scheduled post
+  app.patch("/api/scheduled-posts/:postId", async (req, res) => {
+    try {
+      const { postId } = req.params;
+      const { message, imageUrl, scheduledAt, status } = req.body;
+      
+      const updateData: any = { updatedAt: new Date() };
+      if (message !== undefined) updateData.message = message;
+      if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+      if (scheduledAt !== undefined) updateData.scheduledAt = new Date(scheduledAt);
+      if (status !== undefined) updateData.status = status;
+      
+      await db
+        .update(scheduledPosts)
+        .set(updateData)
+        .where(eq(scheduledPosts.id, postId));
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating post:", error);
+      res.status(500).json({ error: "Failed to update post" });
+    }
+  });
+
+  // Cancel a scheduled post
+  app.delete("/api/scheduled-posts/:postId", async (req, res) => {
+    try {
+      const { postId } = req.params;
+      
+      await db
+        .update(scheduledPosts)
+        .set({ status: 'cancelled' })
+        .where(eq(scheduledPosts.id, postId));
+      
+      res.json({ success: true, message: 'Post cancelled' });
+    } catch (error) {
+      console.error("Error cancelling post:", error);
+      res.status(500).json({ error: "Failed to cancel post" });
+    }
+  });
+
+  // Update ad campaign status (pause/resume/cancel)
+  app.patch("/api/ad-campaigns/:tenantId/:campaignId/status", async (req, res) => {
+    try {
+      const { campaignId } = req.params;
+      const { status } = req.body; // 'active', 'paused', 'cancelled'
+      
+      await db
+        .update(adCampaigns)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(adCampaigns.id, campaignId));
+      
+      res.json({ success: true, status });
+    } catch (error) {
+      console.error("Error updating campaign status:", error);
+      res.status(500).json({ error: "Failed to update campaign" });
     }
   });
 

@@ -12,7 +12,12 @@ import {
   Sparkles, 
   ChevronDown,
   RefreshCw,
-  Clock
+  Clock,
+  Send,
+  Target,
+  DollarSign,
+  Image,
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -37,7 +42,12 @@ const serviceIcons: Record<string, typeof Activity> = {
   payments: CreditCard,
   email: Mail,
   blockchain: Link2,
-  ai: Sparkles
+  ai: Sparkles,
+  posting: Send,
+  ads: Target,
+  budget: DollarSign,
+  content: Image,
+  scheduler: Calendar
 };
 
 const statusColors: Record<string, string> = {
@@ -115,7 +125,7 @@ export function SystemHealthCard() {
         </div>
       ) : health ? (
         <>
-          <div className="grid grid-cols-5 gap-1 mb-3">
+          <div className="grid grid-cols-5 sm:grid-cols-10 gap-1 mb-3">
             {health.checks.map((check) => {
               const Icon = serviceIcons[check.name] || Activity;
               return (
