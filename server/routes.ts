@@ -11500,10 +11500,49 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         }
       );
       
-      const containerResult = await containerResponse.json();
-      if (!containerResponse.ok) {
-        return res.status(400).json({ error: containerResult.error?.message || "Failed to create media container" });
+      const containerResult: any = await containerResponse.json();
+      console.log(`[Instagram] Container response for ${tenantId}:`, JSON.stringify(containerResult));
+      
+      if (!containerResponse.ok || containerResult.error) {
+        return res.status(400).json({ 
+          error: containerResult.error?.message || "Failed to create media container",
+          details: containerResult.error
+        });
       }
+      
+      if (!containerResult.id) {
+        return res.status(400).json({ error: "Media ID is not available", details: containerResult });
+      }
+      
+      // Wait for media container to be ready (Instagram needs processing time)
+      console.log(`[Instagram] Waiting for container ${containerResult.id} to be ready...`);
+      
+      let isReady = false;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      while (!isReady && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds between checks
+        
+        const statusResponse = await fetch(
+          `https://graph.facebook.com/v21.0/${containerResult.id}?fields=status_code&access_token=${integration.facebookPageAccessToken}`
+        );
+        const statusResult: any = await statusResponse.json();
+        console.log(`[Instagram] Container status (attempt ${attempts + 1}):`, statusResult.status_code);
+        
+        if (statusResult.status_code === 'FINISHED') {
+          isReady = true;
+        } else if (statusResult.status_code === 'ERROR') {
+          return res.status(400).json({ error: "Media processing failed", details: statusResult });
+        }
+        attempts++;
+      }
+      
+      if (!isReady) {
+        return res.status(408).json({ error: "Media processing timed out. Please try again." });
+      }
+      
+      console.log(`[Instagram] Publishing container ${containerResult.id} for ${tenantId}...`);
       
       const publishResponse = await fetch(
         `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
@@ -11517,9 +11556,15 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
         }
       );
       
-      const publishResult = await publishResponse.json();
-      if (!publishResponse.ok) {
-        return res.status(400).json({ error: publishResult.error?.message || "Failed to publish media" });
+      const publishResult: any = await publishResponse.json();
+      console.log(`[Instagram] Publish response for ${tenantId}:`, JSON.stringify(publishResult));
+      
+      if (!publishResponse.ok || publishResult.error) {
+        return res.status(400).json({ 
+          error: publishResult.error?.message || "Failed to publish media",
+          details: publishResult.error,
+          code: publishResult.error?.code
+        });
       }
       
       res.json({ success: true, mediaId: publishResult.id, message: "Posted successfully to Instagram" });
@@ -12545,24 +12590,42 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           if (containerData.error) {
             errors.push(`Instagram container: ${containerData.error.message}`);
           } else if (containerData.id) {
-            // Step 2: Publish
-            const publishResponse = await fetch(
-              `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  creation_id: containerData.id,
-                  access_token: integration.facebookPageAccessToken
-                })
-              }
-            );
+            // Step 2: Wait for container to be ready
+            let isReady = false;
+            let attempts = 0;
+            while (!isReady && attempts < 10) {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              const statusResponse = await fetch(
+                `https://graph.facebook.com/v21.0/${containerData.id}?fields=status_code&access_token=${integration.facebookPageAccessToken}`
+              );
+              const statusResult: any = await statusResponse.json();
+              if (statusResult.status_code === 'FINISHED') isReady = true;
+              else if (statusResult.status_code === 'ERROR') break;
+              attempts++;
+            }
             
-            const publishResult: any = await publishResponse.json();
-            if (publishResult.error) {
-              errors.push(`Instagram publish: ${publishResult.error.message}`);
+            if (isReady) {
+              // Step 3: Publish
+              const publishResponse = await fetch(
+                `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    creation_id: containerData.id,
+                    access_token: integration.facebookPageAccessToken
+                  })
+                }
+              );
+              
+              const publishResult: any = await publishResponse.json();
+              if (publishResult.error) {
+                errors.push(`Instagram publish: ${publishResult.error.message}`);
+              } else {
+                igPostId = publishResult.id;
+              }
             } else {
-              igPostId = publishResult.id;
+              errors.push("Instagram media processing timed out");
             }
           }
         } catch (igError) {
@@ -12923,21 +12986,37 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
               const containerData: any = await containerResponse.json();
               
               if (containerData.id) {
-                // Step 2: Publish
-                const publishResponse = await fetch(
-                  `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
-                  {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      creation_id: containerData.id,
-                      access_token: integration.facebookPageAccessToken
-                    })
-                  }
-                );
+                // Step 2: Wait for container to be ready
+                let isReady = false;
+                let attempts = 0;
+                while (!isReady && attempts < 10) {
+                  await new Promise(resolve => setTimeout(resolve, 2000));
+                  const statusResponse = await fetch(
+                    `https://graph.facebook.com/v21.0/${containerData.id}?fields=status_code&access_token=${integration.facebookPageAccessToken}`
+                  );
+                  const statusResult: any = await statusResponse.json();
+                  if (statusResult.status_code === 'FINISHED') isReady = true;
+                  else if (statusResult.status_code === 'ERROR') break;
+                  attempts++;
+                }
                 
-                const publishResult: any = await publishResponse.json();
-                igPostId = publishResult.id;
+                if (isReady) {
+                  // Step 3: Publish
+                  const publishResponse = await fetch(
+                    `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        creation_id: containerData.id,
+                        access_token: integration.facebookPageAccessToken
+                      })
+                    }
+                  );
+                  
+                  const publishResult: any = await publishResponse.json();
+                  igPostId = publishResult.id;
+                }
               }
             } catch (igError) {
               console.error(`Instagram ad post error:`, igError);
