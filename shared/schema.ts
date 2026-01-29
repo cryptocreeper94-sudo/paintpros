@@ -5791,6 +5791,9 @@ export const scheduledPosts = pgTable("scheduled_posts", {
   // Link to content library for performance tracking
   contentLibraryId: varchar("content_library_id"),
   
+  // Link to ad campaign if this was an ad post
+  adCampaignId: varchar("ad_campaign_id"),
+  
   // Analytics (populated after publishing)
   impressions: integer("impressions"),
   reach: integer("reach"),
@@ -5907,6 +5910,9 @@ export const contentLibrary = pgTable("content_library", {
   
   // Status
   status: text("status").default("active"), // 'active', 'paused', 'archived'
+  
+  // Paid ads flag
+  isForPaidAds: boolean("is_for_paid_ads").default(false),
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

@@ -12292,6 +12292,179 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // Test endpoint - Force an immediate post to both Facebook and Instagram for testing
+  app.post("/api/auto-posting/test/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const now = new Date();
+      
+      // Get integration
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken) {
+        return res.status(400).json({ error: "Meta not connected for this tenant" });
+      }
+      
+      // Get least recently used content
+      const availableContent = await db
+        .select()
+        .from(contentLibrary)
+        .where(
+          and(
+            eq(contentLibrary.tenantId, tenantId),
+            eq(contentLibrary.status, 'active')
+          )
+        )
+        .orderBy(contentLibrary.lastUsedAt)
+        .limit(1);
+      
+      if (availableContent.length === 0) {
+        return res.status(400).json({ error: "No content available" });
+      }
+      
+      const content = availableContent[0];
+      let fbPostId = null;
+      let igPostId = null;
+      const errors: string[] = [];
+      
+      // Post to Facebook
+      try {
+        if (content.imageUrl) {
+          const response = await fetch(
+            `https://graph.facebook.com/v21.0/${integration.facebookPageId}/photos`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({
+                url: content.imageUrl,
+                message: content.message,
+                access_token: integration.facebookPageAccessToken
+              })
+            }
+          );
+          const result: any = await response.json();
+          if (result.error) {
+            errors.push(`Facebook: ${result.error.message}`);
+          } else {
+            fbPostId = result.id || result.post_id;
+          }
+        } else {
+          const response = await fetch(
+            `https://graph.facebook.com/v21.0/${integration.facebookPageId}/feed`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: content.message,
+                access_token: integration.facebookPageAccessToken
+              })
+            }
+          );
+          const result: any = await response.json();
+          if (result.error) {
+            errors.push(`Facebook: ${result.error.message}`);
+          } else {
+            fbPostId = result.id || result.post_id;
+          }
+        }
+      } catch (fbError) {
+        errors.push(`Facebook error: ${String(fbError)}`);
+      }
+      
+      // Post to Instagram
+      if (integration.instagramAccountId && content.imageUrl) {
+        try {
+          // Step 1: Create media container
+          const containerResponse = await fetch(
+            `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image_url: content.imageUrl,
+                caption: content.message,
+                access_token: integration.facebookPageAccessToken
+              })
+            }
+          );
+          
+          const containerData: any = await containerResponse.json();
+          
+          if (containerData.error) {
+            errors.push(`Instagram container: ${containerData.error.message}`);
+          } else if (containerData.id) {
+            // Step 2: Publish
+            const publishResponse = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  creation_id: containerData.id,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            
+            const publishResult: any = await publishResponse.json();
+            if (publishResult.error) {
+              errors.push(`Instagram publish: ${publishResult.error.message}`);
+            } else {
+              igPostId = publishResult.id;
+            }
+          }
+        } catch (igError) {
+          errors.push(`Instagram error: ${String(igError)}`);
+        }
+      } else if (!content.imageUrl) {
+        errors.push("Instagram requires an image - this content has no image");
+      }
+      
+      // Update content usage
+      if (fbPostId || igPostId) {
+        await db
+          .update(contentLibrary)
+          .set({
+            timesUsed: (content.timesUsed || 0) + 1,
+            lastUsedAt: new Date(),
+            updatedAt: new Date()
+          })
+          .where(eq(contentLibrary.id, content.id));
+        
+        // Log the post
+        await db.insert(scheduledPosts).values({
+          tenantId,
+          message: content.message,
+          imageUrl: content.imageUrl,
+          platform: igPostId && fbPostId ? 'both' : (igPostId ? 'instagram' : 'facebook'),
+          scheduledAt: now,
+          publishedAt: now,
+          status: 'published',
+          facebookPostId: fbPostId,
+          instagramMediaId: igPostId,
+          contentType: content.contentType,
+          contentCategory: content.contentCategory,
+          contentLibraryId: content.id
+        });
+      }
+      
+      res.json({
+        success: !!(fbPostId || igPostId),
+        content: { id: content.id, title: content.title },
+        facebook: { success: !!fbPostId, postId: fbPostId },
+        instagram: { success: !!igPostId, mediaId: igPostId },
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      console.error("Error in test posting:", error);
+      res.status(500).json({ error: "Failed to post", details: String(error) });
+    }
+  });
+
   // ============ AD CAMPAIGNS ============
 
   // Get all campaigns for a tenant
@@ -12470,6 +12643,221 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error syncing campaign:", error);
       res.status(500).json({ error: "Failed to sync campaign" });
+    }
+  });
+
+  // Execute daily ad posting (run once per day, typically at 10 AM)
+  // Posts 1 ad per day to both Facebook and Instagram with $50 daily budget
+  app.post("/api/ad-campaigns/execute-daily", async (req, res) => {
+    try {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      
+      // Get all active ad campaigns
+      const activeCampaigns = await db
+        .select()
+        .from(adCampaigns)
+        .where(eq(adCampaigns.status, 'active'));
+      
+      let postedCount = 0;
+      const results: any[] = [];
+      
+      for (const campaign of activeCampaigns) {
+        // Check if already posted today for this campaign
+        const existingExpense = await db
+          .select()
+          .from(marketingExpenses)
+          .where(
+            and(
+              eq(marketingExpenses.tenantId, campaign.tenantId),
+              eq(marketingExpenses.campaignId, campaign.id),
+              eq(marketingExpenses.expenseDate, today)
+            )
+          )
+          .limit(1);
+        
+        if (existingExpense.length > 0) {
+          results.push({ campaign: campaign.name, status: 'skipped', reason: 'Already posted today' });
+          continue;
+        }
+        
+        // Check daily budget ($50 max)
+        const dailyBudget = parseFloat(campaign.dailyBudget || '50');
+        
+        // Get Meta integration
+        const [integration] = await db
+          .select()
+          .from(metaIntegrations)
+          .where(eq(metaIntegrations.tenantId, campaign.tenantId))
+          .limit(1);
+        
+        if (!integration?.facebookPageAccessToken) {
+          results.push({ campaign: campaign.name, status: 'failed', reason: 'Meta not connected' });
+          continue;
+        }
+        
+        // Get ad content from content library (prefer ad-specific content)
+        const adContent = await db
+          .select()
+          .from(contentLibrary)
+          .where(
+            and(
+              eq(contentLibrary.tenantId, campaign.tenantId),
+              eq(contentLibrary.status, 'active'),
+              eq(contentLibrary.isForPaidAds, true)
+            )
+          )
+          .orderBy(contentLibrary.lastUsedAt)
+          .limit(1);
+        
+        let content = adContent[0];
+        
+        // Fallback to any active content if no ad-specific content
+        if (!content) {
+          const fallbackContent = await db
+            .select()
+            .from(contentLibrary)
+            .where(
+              and(
+                eq(contentLibrary.tenantId, campaign.tenantId),
+                eq(contentLibrary.status, 'active')
+              )
+            )
+            .orderBy(contentLibrary.lastUsedAt)
+            .limit(1);
+          content = fallbackContent[0];
+        }
+        
+        if (!content) {
+          results.push({ campaign: campaign.name, status: 'failed', reason: 'No content available' });
+          continue;
+        }
+        
+        try {
+          let fbPostId = null;
+          let igPostId = null;
+          
+          // Post to Facebook
+          if (content.imageUrl) {
+            const fbResponse = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.facebookPageId}/photos`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  url: content.imageUrl,
+                  message: content.message,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            const fbResult: any = await fbResponse.json();
+            fbPostId = fbResult.id || fbResult.post_id;
+          }
+          
+          // Post to Instagram
+          if (integration.instagramAccountId && content.imageUrl) {
+            try {
+              // Step 1: Create media container
+              const containerResponse = await fetch(
+                `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media`,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    image_url: content.imageUrl,
+                    caption: content.message,
+                    access_token: integration.facebookPageAccessToken
+                  })
+                }
+              );
+              
+              const containerData: any = await containerResponse.json();
+              
+              if (containerData.id) {
+                // Step 2: Publish
+                const publishResponse = await fetch(
+                  `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+                  {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      creation_id: containerData.id,
+                      access_token: integration.facebookPageAccessToken
+                    })
+                  }
+                );
+                
+                const publishResult: any = await publishResponse.json();
+                igPostId = publishResult.id;
+              }
+            } catch (igError) {
+              console.error(`Instagram ad post error:`, igError);
+            }
+          }
+          
+          if (fbPostId || igPostId) {
+            // Update content usage
+            await db
+              .update(contentLibrary)
+              .set({
+                timesUsed: (content.timesUsed || 0) + 1,
+                lastUsedAt: new Date(),
+                updatedAt: new Date()
+              })
+              .where(eq(contentLibrary.id, content.id));
+            
+            // Log the ad post to scheduled posts
+            await db.insert(scheduledPosts).values({
+              tenantId: campaign.tenantId,
+              message: content.message,
+              imageUrl: content.imageUrl,
+              platform: igPostId && fbPostId ? 'both' : (igPostId ? 'instagram' : 'facebook'),
+              scheduledAt: now,
+              publishedAt: now,
+              status: 'published',
+              facebookPostId: fbPostId,
+              instagramMediaId: igPostId,
+              contentType: 'paid_ad',
+              contentCategory: content.contentCategory,
+              contentLibraryId: content.id,
+              adCampaignId: campaign.id
+            });
+            
+            // Record expense ($50 daily budget)
+            await db.insert(marketingExpenses).values({
+              tenantId: campaign.tenantId,
+              platform: igPostId && fbPostId ? 'both' : 'facebook',
+              category: 'social_ads',
+              amount: dailyBudget.toString(),
+              description: `Daily ad: ${campaign.name}`,
+              expenseDate: today,
+              campaignId: campaign.id
+            });
+            
+            postedCount++;
+            results.push({ 
+              campaign: campaign.name, 
+              status: 'success', 
+              platforms: { facebook: !!fbPostId, instagram: !!igPostId },
+              spent: dailyBudget
+            });
+          }
+        } catch (postError) {
+          console.error(`Error posting ad for ${campaign.name}:`, postError);
+          results.push({ campaign: campaign.name, status: 'failed', reason: String(postError) });
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        activeCampaigns: activeCampaigns.length,
+        posted: postedCount,
+        results 
+      });
+    } catch (error) {
+      console.error("Error executing daily ads:", error);
+      res.status(500).json({ error: "Failed to execute daily ads" });
     }
   });
 
