@@ -53,7 +53,8 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **ORBIT Weather System:** Real-time weather and animated radar modal.
 - **Crew Management System:** Dashboard for time tracking, notes, and incident reporting.
 - **Internal Messaging System:** Real-time chat widget with Socket.IO, speech-to-text, and role-based badges.
-- **Marketing Hub:** Redesigned with 5 tabs: Content Studio, Analytics Center, Calendar, Playbook, and Budget. Features photo-realistic hero images, educational content, and marketing psychology strategies.
+- **Marketing Hub:** Redesigned with 6 tabs: Compose, Content, Ads, Budget, Calendar, and Analytics. Features photo-realistic hero images, educational content, and marketing psychology strategies.
+- **Marketing Budget:** $2,000/month total - $1,400 for Facebook/Instagram ads (~1 ad/day @ $50), $600 reserved for Nextdoor & X expansion.
 - **Content Studio Features:** Image Library with category filters, Message Templates with platform-specific character limits (X: 280, Instagram: 2200, Facebook: 63K, Nextdoor: 2000), Content Bundles (image + message pairs), download/copy buttons for social media distribution, status tracking (Suggested/Circulating/Posted/Removed), Organic Posts vs Paid Ads distinction.
 - **Content Types:** Messages organized by purpose - educational, gamified, sales, seasonal, evergreen, testimonial, behind-scenes.
 - **Today's Suggested Post:** Smart content rotation with MWF (Rotation A: project showcases) and TThSat (Rotation B: engagement/tips) schedule. Sunday is planning/review day.

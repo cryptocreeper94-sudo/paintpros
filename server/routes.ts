@@ -4,7 +4,7 @@ import { Server as SocketServer } from "socket.io";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { storage } from "./storage";
 import { db } from "./db";
-import { eq, desc, and, isNotNull, lte } from "drizzle-orm";
+import { eq, desc, and, isNotNull, lte, gte } from "drizzle-orm";
 import { 
   insertEstimateRequestSchema, insertLeadSchema, insertEstimateSchema, insertSeoTagSchema,
   insertCrmDealSchema, insertCrmActivitySchema, insertCrmNoteSchema, insertUserPinSchema,
@@ -45,7 +45,7 @@ import {
   fieldCaptures, jobs,
   metaIntegrations, insertMetaIntegrationSchema,
   scheduledPosts, insertScheduledPostSchema,
-  contentLibrary, autoPostingSchedule, adCampaigns
+  contentLibrary, autoPostingSchedule, adCampaigns, marketingExpenses
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -12470,6 +12470,73 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error syncing campaign:", error);
       res.status(500).json({ error: "Failed to sync campaign" });
+    }
+  });
+
+  // Marketing Expenses API - Get expenses for budget tracking
+  app.get("/api/marketing-expenses/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { year, month } = req.query;
+      
+      // Filter by year and month if provided
+      if (year && month) {
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+        const endDate = new Date(parseInt(year as string), parseInt(month as string), 0);
+        const endDateStr = `${year}-${String(month).padStart(2, '0')}-${endDate.getDate()}`;
+        
+        const expenses = await db
+          .select()
+          .from(marketingExpenses)
+          .where(
+            and(
+              eq(marketingExpenses.tenantId, tenantId),
+              gte(marketingExpenses.expenseDate, startDate),
+              lte(marketingExpenses.expenseDate, endDateStr)
+            )
+          )
+          .orderBy(desc(marketingExpenses.expenseDate));
+        
+        return res.json(expenses);
+      }
+      
+      const expenses = await db
+        .select()
+        .from(marketingExpenses)
+        .where(eq(marketingExpenses.tenantId, tenantId))
+        .orderBy(desc(marketingExpenses.expenseDate))
+        .limit(50);
+      
+      res.json(expenses);
+    } catch (error) {
+      console.error("Error fetching marketing expenses:", error);
+      res.status(500).json({ error: "Failed to fetch expenses" });
+    }
+  });
+
+  // Add marketing expense
+  app.post("/api/marketing-expenses/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { platform, category, amount, description, expenseDate, campaignId } = req.body;
+      
+      const [expense] = await db
+        .insert(marketingExpenses)
+        .values({
+          tenantId,
+          platform: platform || 'facebook',
+          category: category || 'social_ads',
+          amount: amount.toString(),
+          description,
+          expenseDate: expenseDate || new Date().toISOString().split('T')[0],
+          campaignId: campaignId || null
+        })
+        .returning();
+      
+      res.json(expense);
+    } catch (error) {
+      console.error("Error adding marketing expense:", error);
+      res.status(500).json({ error: "Failed to add expense" });
     }
   });
 
