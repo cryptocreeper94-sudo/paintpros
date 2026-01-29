@@ -377,6 +377,8 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
     message: '',
     imageUrl: '',
     contentType: 'project_showcase',
+    contentCategory: '',
+    location: '',
     rotationType: 'A'
   });
 
@@ -408,7 +410,7 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
     onSuccess: () => {
       refetch();
       setShowAddForm(false);
-      setNewContent({ title: '', message: '', imageUrl: '', contentType: 'project_showcase', rotationType: 'A' });
+      setNewContent({ title: '', message: '', imageUrl: '', contentType: 'project_showcase', contentCategory: '', location: '', rotationType: 'A' });
     }
   });
 
@@ -434,12 +436,38 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
 
   return (
     <div className="space-y-4">
+      {/* Images Needed Alert */}
+      {contentItems.filter((i: any) => i.imageUrl).length < 5 && (
+        <div className="mb-4 p-4 border-2 border-dashed border-orange-500/50 bg-orange-500/10 rounded-lg">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-orange-500 shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-orange-600 dark:text-orange-400">Real Photos Needed!</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Your content library has <span className="font-bold text-orange-500">{contentItems.filter((i: any) => i.imageUrl).length} images</span> out of {contentItems.length} posts. 
+                Instagram requires images to post, and real Before & After photos from your crew perform 3x better than stock images.
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <Badge variant="outline" className="border-orange-500/30">Brentwood</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Franklin</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Belle Meade</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Williamson County</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Southern Charm Homes</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Crews should submit photos from every job. Traditional Nashville homes with character outperform modern glass architecture.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <GlassCard className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold">Content Library</h3>
             <p className="text-sm text-muted-foreground">
-              {contentItems.length} items | Auto-posts 3-4x daily (MWF: Showcases, TThSat: Tips)
+              {contentItems.length} posts ({contentItems.filter((i: any) => i.imageUrl).length} with images) | Auto-posts 3-4x daily
             </p>
           </div>
           <div className="flex gap-2">
@@ -475,15 +503,24 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
               rows={3}
               data-testid="input-content-message"
             />
-            <Input
-              placeholder="Image URL (optional)"
-              value={newContent.imageUrl}
-              onChange={(e) => setNewContent({ ...newContent, imageUrl: e.target.value })}
-              data-testid="input-content-image"
-            />
             <div className="flex gap-3">
+              <Input
+                placeholder="Image URL (crew photos strongly preferred!)"
+                value={newContent.imageUrl}
+                onChange={(e) => setNewContent({ ...newContent, imageUrl: e.target.value })}
+                className="flex-1"
+                data-testid="input-content-image"
+              />
+              {!newContent.imageUrl && (
+                <Badge variant="outline" className="border-orange-500/50 text-orange-500 shrink-0">
+                  <ImageIcon className="w-3 h-3 mr-1" />
+                  No Image
+                </Badge>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-3">
               <Select value={newContent.contentType} onValueChange={(v) => setNewContent({ ...newContent, contentType: v })}>
-                <SelectTrigger className="w-48" data-testid="select-content-type">
+                <SelectTrigger className="w-44" data-testid="select-content-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -492,8 +529,36 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
                   ))}
                 </SelectContent>
               </Select>
+              <Select value={newContent.contentCategory || ''} onValueChange={(v) => setNewContent({ ...newContent, contentCategory: v })}>
+                <SelectTrigger className="w-36" data-testid="select-category">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="interior">Interior</SelectItem>
+                  <SelectItem value="exterior">Exterior</SelectItem>
+                  <SelectItem value="cabinets">Cabinets</SelectItem>
+                  <SelectItem value="deck">Deck/Porch</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={newContent.location || ''} onValueChange={(v) => setNewContent({ ...newContent, location: v })}>
+                <SelectTrigger className="w-40" data-testid="select-location">
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="brentwood">Brentwood</SelectItem>
+                  <SelectItem value="franklin">Franklin</SelectItem>
+                  <SelectItem value="belle_meade">Belle Meade</SelectItem>
+                  <SelectItem value="green_hills">Green Hills</SelectItem>
+                  <SelectItem value="forest_hills">Forest Hills</SelectItem>
+                  <SelectItem value="thompson_station">Thompson's Station</SelectItem>
+                  <SelectItem value="spring_hill">Spring Hill</SelectItem>
+                  <SelectItem value="williamson_county">Williamson County</SelectItem>
+                  <SelectItem value="nashville">Nashville</SelectItem>
+                </SelectContent>
+              </Select>
               <Select value={newContent.rotationType} onValueChange={(v) => setNewContent({ ...newContent, rotationType: v })}>
-                <SelectTrigger className="w-32" data-testid="select-rotation">
+                <SelectTrigger className="w-36" data-testid="select-rotation">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -531,10 +596,10 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
             </div>
           ) : (
             contentItems.map((item: any) => (
-              <div key={item.id} className="p-3 border border-border rounded-lg hover-elevate">
+              <div key={item.id} className={`p-3 border rounded-lg hover-elevate ${item.imageUrl ? 'border-border' : 'border-orange-500/30 bg-orange-500/5'}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center flex-wrap gap-2 mb-1">
                       <span className="font-medium">{item.title}</span>
                       <Badge variant="outline" className="text-xs">
                         {contentTypes.find(t => t.value === item.contentType)?.label || item.contentType}
@@ -542,19 +607,32 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
                       <Badge variant="secondary" className="text-xs">
                         Rotation {item.rotationType}
                       </Badge>
-                      {item.status === 'active' && (
-                        <Badge className="text-xs bg-green-500/20 text-green-600">Active</Badge>
+                      {item.contentCategory && (
+                        <Badge variant="outline" className="text-xs capitalize">{item.contentCategory}</Badge>
+                      )}
+                      {!item.imageUrl && (
+                        <Badge variant="outline" className="text-xs border-orange-500/50 text-orange-500">
+                          <ImageIcon className="w-3 h-3 mr-1" />
+                          Needs Photo
+                        </Badge>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground line-clamp-2">{item.message}</p>
-                    {item.timesUsed > 0 && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Used {item.timesUsed}x | Last: {item.lastUsedAt ? new Date(item.lastUsedAt).toLocaleDateString() : 'Never'}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                      {item.timesUsed > 0 && (
+                        <span>Used {item.timesUsed}x</span>
+                      )}
+                      {item.performanceScore && (
+                        <span className="text-green-500">Score: {item.performanceScore.toFixed(0)}</span>
+                      )}
+                    </div>
                   </div>
-                  {item.imageUrl && (
-                    <img src={item.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover ml-3" />
+                  {item.imageUrl ? (
+                    <img src={item.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover ml-3 border-2 border-green-500/30" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg bg-orange-500/10 border-2 border-dashed border-orange-500/30 flex items-center justify-center ml-3">
+                      <ImageIcon className="w-6 h-6 text-orange-500/50" />
+                    </div>
                   )}
                 </div>
               </div>
