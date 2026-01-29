@@ -913,6 +913,207 @@ function AdCampaignsTab({ tenantId }: { tenantId: string }) {
   );
 }
 
+// Budget Tracker Tab - $2000/month marketing budget
+function BudgetTrackerTab({ tenantId }: { tenantId: string }) {
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+  const currentDay = now.getDate();
+  const daysRemaining = daysInMonth - currentDay;
+
+  // Fetch expenses for current month
+  const { data: expenses = [] } = useQuery({
+    queryKey: ['/api/marketing-expenses', tenantId, currentYear, currentMonth],
+    queryFn: async () => {
+      const res = await fetch(`/api/marketing-expenses/${tenantId}?year=${currentYear}&month=${currentMonth}`);
+      if (!res.ok) return [];
+      return res.json();
+    }
+  });
+
+  // Budget configuration
+  const MONTHLY_BUDGET = 2000;
+  const AD_BUDGET = 1400; // Facebook/Instagram ads
+  const RESERVED_BUDGET = 600; // For Nextdoor & X later
+  const DAILY_AD_BUDGET = 50;
+  const ADS_PER_DAY = 1;
+
+  // Calculate spending
+  const totalSpent = expenses.reduce((sum: number, exp: any) => sum + parseFloat(exp.amount || 0), 0);
+  const adSpent = expenses
+    .filter((exp: any) => exp.category === 'social_ads')
+    .reduce((sum: number, exp: any) => sum + parseFloat(exp.amount || 0), 0);
+  const otherSpent = totalSpent - adSpent;
+  
+  const budgetRemaining = MONTHLY_BUDGET - totalSpent;
+  const adBudgetRemaining = AD_BUDGET - adSpent;
+  const dailyRemainingBudget = daysRemaining > 0 ? adBudgetRemaining / daysRemaining : 0;
+
+  // Progress percentages
+  const totalProgress = Math.min((totalSpent / MONTHLY_BUDGET) * 100, 100);
+  const adProgress = Math.min((adSpent / AD_BUDGET) * 100, 100);
+  const monthProgress = (currentDay / daysInMonth) * 100;
+
+  // Status indicators
+  const isOnTrack = adSpent <= (AD_BUDGET * (currentDay / daysInMonth) * 1.1); // Within 10% of pacing
+  const isOverBudget = totalSpent > MONTHLY_BUDGET;
+
+  const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+
+  return (
+    <div className="space-y-4">
+      {/* Budget Overview */}
+      <GlassCard className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-green-600" />
+            <h3 className="font-semibold">Marketing Budget - {now.toLocaleString('default', { month: 'long' })} {currentYear}</h3>
+          </div>
+          <Badge variant={isOnTrack ? "default" : "destructive"} className={isOnTrack ? "bg-green-600" : ""}>
+            {isOnTrack ? "On Track" : isOverBudget ? "Over Budget" : "Off Pace"}
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {/* Total Budget */}
+          <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20">
+            <div className="text-xs text-muted-foreground mb-1">Monthly Budget</div>
+            <div className="text-2xl font-bold text-blue-600">{formatCurrency(MONTHLY_BUDGET)}</div>
+            <div className="text-xs mt-1">
+              <span className="text-green-600">{formatCurrency(budgetRemaining)}</span> remaining
+            </div>
+            <div className="mt-2 h-2 bg-blue-500/20 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-600 transition-all" style={{ width: `${totalProgress}%` }} />
+            </div>
+          </div>
+
+          {/* Ad Budget */}
+          <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20">
+            <div className="text-xs text-muted-foreground mb-1">Facebook & Instagram Ads</div>
+            <div className="text-2xl font-bold text-purple-600">{formatCurrency(AD_BUDGET)}</div>
+            <div className="text-xs mt-1">
+              <span className="text-green-600">{formatCurrency(adBudgetRemaining)}</span> remaining
+            </div>
+            <div className="mt-2 h-2 bg-purple-500/20 rounded-full overflow-hidden">
+              <div className="h-full bg-purple-600 transition-all" style={{ width: `${adProgress}%` }} />
+            </div>
+          </div>
+
+          {/* Reserved for Future Platforms */}
+          <div className="p-3 rounded-lg bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/20">
+            <div className="text-xs text-muted-foreground mb-1">Reserved (Nextdoor & X)</div>
+            <div className="text-2xl font-bold text-amber-600">{formatCurrency(RESERVED_BUDGET)}</div>
+            <div className="text-xs mt-1 text-muted-foreground">
+              Allocated for expansion
+            </div>
+            <div className="mt-2 flex gap-1">
+              <Badge variant="outline" className="text-xs border-amber-500/30">Nextdoor</Badge>
+              <Badge variant="outline" className="text-xs border-amber-500/30">X</Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Tracking */}
+        <div className="p-3 rounded-lg bg-muted/30 border">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium">Daily Ad Schedule</span>
+            <span className="text-xs text-muted-foreground">Day {currentDay} of {daysInMonth}</span>
+          </div>
+          <div className="grid grid-cols-4 gap-3 text-center">
+            <div>
+              <div className="text-lg font-bold">{ADS_PER_DAY}</div>
+              <div className="text-xs text-muted-foreground">Ads/Day</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold">{formatCurrency(DAILY_AD_BUDGET)}</div>
+              <div className="text-xs text-muted-foreground">Daily Budget</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold">{daysRemaining}</div>
+              <div className="text-xs text-muted-foreground">Days Left</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-green-600">{formatCurrency(dailyRemainingBudget)}</div>
+              <div className="text-xs text-muted-foreground">Available/Day</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Month Progress Bar */}
+        <div className="mt-4">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Month Progress</span>
+            <span>{Math.round(monthProgress)}% complete</span>
+          </div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all" style={{ width: `${monthProgress}%` }} />
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* Spending Strategy */}
+      <GlassCard className="p-4">
+        <h3 className="font-semibold mb-3 flex items-center gap-2">
+          <Target className="w-5 h-5 text-blue-600" />
+          Posting & Ad Strategy
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+            <div className="font-medium text-green-700 dark:text-green-400 mb-2">Organic Posts (Free)</div>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• 3-4 posts per day (Mon-Sat)</li>
+              <li>• 8 AM, 12 PM, 5 PM, 8 PM</li>
+              <li>• Rotation A (MWF): Project showcases</li>
+              <li>• Rotation B (TThSat): Tips & engagement</li>
+              <li>• Sunday: Planning & review day</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+            <div className="font-medium text-purple-700 dark:text-purple-400 mb-2">Paid Ads ({formatCurrency(AD_BUDGET)}/mo)</div>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• 1 ad per day @ {formatCurrency(DAILY_AD_BUDGET)}/ad</li>
+              <li>• ~28 ads per month</li>
+              <li>• Weekly campaign rotation</li>
+              <li>• Alternate with organic posts</li>
+              <li>• Nashville + 25mi targeting</li>
+            </ul>
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* Recent Expenses */}
+      <GlassCard className="p-4">
+        <h3 className="font-semibold mb-3 flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-purple-600" />
+          Recent Expenses
+        </h3>
+        {expenses.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <DollarSign className="w-10 h-10 mx-auto mb-2 opacity-50" />
+            <p>No expenses recorded this month</p>
+            <p className="text-xs mt-1">Ad spend will be tracked automatically when campaigns run</p>
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {expenses.map((exp: any) => (
+              <div key={exp.id} className="flex justify-between items-center p-2 rounded bg-muted/30">
+                <div>
+                  <div className="font-medium text-sm">{exp.description || exp.category}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {exp.platform} • {new Date(exp.expenseDate).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="font-bold">{formatCurrency(parseFloat(exp.amount))}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </GlassCard>
+    </div>
+  );
+}
+
 export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
   const { t } = useI18n();
   const [selectedTenant, setSelectedTenant] = useState(TENANTS[0].id);
@@ -1177,7 +1378,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="compose" data-testid="tab-compose">
             <Send className="w-4 h-4 mr-2" />
             Compose
@@ -1189,6 +1390,10 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
           <TabsTrigger value="ads" data-testid="tab-ads">
             <Megaphone className="w-4 h-4 mr-2" />
             Ads
+          </TabsTrigger>
+          <TabsTrigger value="budget" data-testid="tab-budget">
+            <DollarSign className="w-4 h-4 mr-2" />
+            Budget
           </TabsTrigger>
           <TabsTrigger value="calendar" data-testid="tab-calendar">
             <CalendarIcon className="w-4 h-4 mr-2" />
@@ -1403,6 +1608,11 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
               )}
             </div>
           </GlassCard>
+        </TabsContent>
+
+        {/* Budget Tab */}
+        <TabsContent value="budget" className="mt-4">
+          <BudgetTrackerTab tenantId={tenantId} />
         </TabsContent>
 
         {/* Analytics Tab */}
