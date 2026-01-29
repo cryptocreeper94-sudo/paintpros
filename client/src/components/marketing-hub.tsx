@@ -378,7 +378,7 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
     imageUrl: '',
     contentType: 'project_showcase',
     contentCategory: '',
-    location: '',
+    propertyType: '',
     rotationType: 'A'
   });
 
@@ -410,7 +410,7 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
     onSuccess: () => {
       refetch();
       setShowAddForm(false);
-      setNewContent({ title: '', message: '', imageUrl: '', contentType: 'project_showcase', contentCategory: '', location: '', rotationType: 'A' });
+      setNewContent({ title: '', message: '', imageUrl: '', contentType: 'project_showcase', contentCategory: '', propertyType: '', rotationType: 'A' });
     }
   });
 
@@ -437,25 +437,26 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
   return (
     <div className="space-y-4">
       {/* Images Needed Alert */}
-      {contentItems.filter((i: any) => i.imageUrl).length < 5 && (
+      {contentItems.filter((i: any) => i.imageUrl).length < 10 && (
         <div className="mb-4 p-4 border-2 border-dashed border-orange-500/50 bg-orange-500/10 rounded-lg">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-6 h-6 text-orange-500 shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-orange-600 dark:text-orange-400">Real Photos Needed!</h4>
+              <h4 className="font-semibold text-orange-600 dark:text-orange-400">Before & After Photos Needed!</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Your content library has <span className="font-bold text-orange-500">{contentItems.filter((i: any) => i.imageUrl).length} images</span> out of {contentItems.length} posts. 
-                Instagram requires images to post, and real Before & After photos from your crew perform 3x better than stock images.
+                <span className="font-bold text-orange-500">{contentItems.filter((i: any) => i.imageUrl).length} images</span> in library. 
+                Need at least 10+ for ads to run weekly rotations. Instagram requires images. Real crew photos outperform stock 3x.
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                <Badge variant="outline" className="border-orange-500/30">Brentwood</Badge>
-                <Badge variant="outline" className="border-orange-500/30">Franklin</Badge>
-                <Badge variant="outline" className="border-orange-500/30">Belle Meade</Badge>
-                <Badge variant="outline" className="border-orange-500/30">Williamson County</Badge>
-                <Badge variant="outline" className="border-orange-500/30">Southern Charm Homes</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Before & After</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Residential</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Commercial</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Interior</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Exterior</Badge>
+                <Badge variant="outline" className="border-orange-500/30">Cabinets</Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Crews should submit photos from every job. Traditional Nashville homes with character outperform modern glass architecture.
+                <span className="font-medium">Schedule:</span> Organic posts 3-4x daily + Paid ads 5x weekly (rotating campaigns)
               </p>
             </div>
           </div>
@@ -541,20 +542,13 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
                   <SelectItem value="commercial">Commercial</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={newContent.location || ''} onValueChange={(v) => setNewContent({ ...newContent, location: v })}>
-                <SelectTrigger className="w-40" data-testid="select-location">
-                  <SelectValue placeholder="Location" />
+              <Select value={newContent.propertyType || ''} onValueChange={(v) => setNewContent({ ...newContent, propertyType: v })}>
+                <SelectTrigger className="w-36" data-testid="select-property-type">
+                  <SelectValue placeholder="Property" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="brentwood">Brentwood</SelectItem>
-                  <SelectItem value="franklin">Franklin</SelectItem>
-                  <SelectItem value="belle_meade">Belle Meade</SelectItem>
-                  <SelectItem value="green_hills">Green Hills</SelectItem>
-                  <SelectItem value="forest_hills">Forest Hills</SelectItem>
-                  <SelectItem value="thompson_station">Thompson's Station</SelectItem>
-                  <SelectItem value="spring_hill">Spring Hill</SelectItem>
-                  <SelectItem value="williamson_county">Williamson County</SelectItem>
-                  <SelectItem value="nashville">Nashville</SelectItem>
+                  <SelectItem value="residential">Residential</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={newContent.rotationType} onValueChange={(v) => setNewContent({ ...newContent, rotationType: v })}>
