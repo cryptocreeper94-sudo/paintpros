@@ -1054,13 +1054,35 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
             {instagramConnected ? (
               <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
                 <CheckCircle className="w-3 h-3 mr-1" />
-                {t('marketing.connected') || 'Connected'}
+                {metaStatus?.instagram?.username ? `@${metaStatus.instagram.username}` : (t('marketing.connected') || 'Connected')}
               </Badge>
-            ) : (
-              <Button size="sm" variant="outline" onClick={() => setInstagramConnected(true)} data-testid="button-connect-instagram">
+            ) : facebookConnected ? (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/meta/${selectedTenant}/connect-instagram`, { method: 'POST' });
+                    const data = await res.json();
+                    if (data.success) {
+                      setInstagramConnected(true);
+                      refetchMetaStatus();
+                    } else {
+                      alert(data.error || 'Failed to connect Instagram');
+                    }
+                  } catch (err) {
+                    alert('Error connecting Instagram. Make sure your Instagram is linked to your Facebook Page in Meta Business Suite.');
+                  }
+                }}
+                data-testid="button-connect-instagram"
+              >
                 <LinkIcon className="w-3 h-3 mr-1" />
-                {t('marketing.connect') || 'Connect'}
+                Auto-Connect
               </Button>
+            ) : (
+              <Badge variant="outline" className="text-muted-foreground">
+                Connect Facebook First
+              </Badge>
             )}
           </div>
           {instagramConnected && (

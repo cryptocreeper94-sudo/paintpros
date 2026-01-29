@@ -11100,6 +11100,182 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // Connect Instagram (auto-detect from Facebook Page)
+  app.post("/api/meta/:tenantId/connect-instagram", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken || !integration?.facebookPageId) {
+        return res.status(400).json({ error: "Facebook Page must be connected first" });
+      }
+      
+      // Get Instagram Business Account linked to this Facebook Page
+      const igResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${integration.facebookPageId}?fields=instagram_business_account&access_token=${integration.facebookPageAccessToken}`
+      );
+      
+      const igData: any = await igResponse.json();
+      
+      if (igData.error) {
+        return res.status(400).json({ error: igData.error.message });
+      }
+      
+      if (!igData.instagram_business_account?.id) {
+        return res.status(400).json({ 
+          error: "No Instagram Business Account found. Make sure your Instagram is connected to your Facebook Page as a Business or Creator account in Meta Business Suite."
+        });
+      }
+      
+      const instagramAccountId = igData.instagram_business_account.id;
+      
+      // Get Instagram account details
+      const igDetailsResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${instagramAccountId}?fields=username,followers_count,media_count&access_token=${integration.facebookPageAccessToken}`
+      );
+      
+      const igDetails: any = await igDetailsResponse.json();
+      
+      // Update integration with Instagram details
+      await db
+        .update(metaIntegrations)
+        .set({
+          instagramAccountId,
+          instagramUsername: igDetails.username,
+          instagramConnected: true,
+          instagramFollowers: igDetails.followers_count,
+          lastSyncAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(metaIntegrations.tenantId, tenantId));
+      
+      res.json({ 
+        success: true, 
+        instagram: {
+          accountId: instagramAccountId,
+          username: igDetails.username,
+          followers: igDetails.followers_count
+        },
+        message: `Instagram @${igDetails.username} connected successfully!`
+      });
+    } catch (error) {
+      console.error("Error connecting Instagram:", error);
+      res.status(500).json({ error: "Failed to connect Instagram" });
+    }
+  });
+
+  // Post to both Facebook and Instagram (cross-posting)
+  app.post("/api/meta/:tenantId/post/both", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { message, imageUrl } = req.body;
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration?.facebookPageAccessToken) {
+        return res.status(400).json({ error: "Meta not connected" });
+      }
+      
+      const results: any = { facebook: null, instagram: null };
+      
+      // Post to Facebook
+      if (integration.facebookPageId) {
+        try {
+          if (imageUrl) {
+            const fbResponse = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.facebookPageId}/photos`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  url: imageUrl,
+                  message: message || '',
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            results.facebook = await fbResponse.json();
+          } else {
+            const fbResponse = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.facebookPageId}/feed`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            results.facebook = await fbResponse.json();
+          }
+        } catch (fbError) {
+          console.error("Facebook post error:", fbError);
+          results.facebook = { error: "Failed to post to Facebook" };
+        }
+      }
+      
+      // Post to Instagram (requires image)
+      if (integration.instagramAccountId && imageUrl) {
+        try {
+          // Step 1: Create media container
+          const containerResponse = await fetch(
+            `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image_url: imageUrl,
+                caption: message,
+                access_token: integration.facebookPageAccessToken
+              })
+            }
+          );
+          
+          const containerData: any = await containerResponse.json();
+          
+          if (containerData.id) {
+            // Step 2: Publish the container
+            const publishResponse = await fetch(
+              `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  creation_id: containerData.id,
+                  access_token: integration.facebookPageAccessToken
+                })
+              }
+            );
+            
+            results.instagram = await publishResponse.json();
+          } else {
+            results.instagram = containerData;
+          }
+        } catch (igError) {
+          console.error("Instagram post error:", igError);
+          results.instagram = { error: "Failed to post to Instagram" };
+        }
+      } else if (integration.instagramAccountId && !imageUrl) {
+        results.instagram = { skipped: true, reason: "Instagram requires an image to post" };
+      }
+      
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error("Error cross-posting:", error);
+      res.status(500).json({ error: "Failed to cross-post" });
+    }
+  });
+
   // Post to Facebook
   app.post("/api/meta/:tenantId/post/facebook", async (req, res) => {
     try {
@@ -12024,6 +12200,51 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           }
           
           if (postResult.id || postResult.post_id) {
+            let instagramMediaId = null;
+            
+            // Also post to Instagram if connected and has image
+            if (integration.instagramAccountId && content.imageUrl) {
+              try {
+                // Step 1: Create media container
+                const containerResponse = await fetch(
+                  `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media`,
+                  {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      image_url: content.imageUrl,
+                      caption: content.message,
+                      access_token: integration.facebookPageAccessToken
+                    })
+                  }
+                );
+                
+                const containerData: any = await containerResponse.json();
+                
+                if (containerData.id) {
+                  // Step 2: Publish the container
+                  const publishResponse = await fetch(
+                    `https://graph.facebook.com/v21.0/${integration.instagramAccountId}/media_publish`,
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        creation_id: containerData.id,
+                        access_token: integration.facebookPageAccessToken
+                      })
+                    }
+                  );
+                  
+                  const publishResult: any = await publishResponse.json();
+                  if (publishResult.id) {
+                    instagramMediaId = publishResult.id;
+                  }
+                }
+              } catch (igError) {
+                console.error(`Instagram post error for ${schedule.tenantId}:`, igError);
+              }
+            }
+            
             // Update content usage
             await db
               .update(contentLibrary)
@@ -12045,11 +12266,12 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
               tenantId: schedule.tenantId,
               message: content.message,
               imageUrl: content.imageUrl,
-              platform: 'facebook',
+              platform: instagramMediaId ? 'both' : 'facebook',
               scheduledAt: now,
               publishedAt: now,
               status: 'published',
               facebookPostId: postResult.post_id || postResult.id,
+              instagramMediaId: instagramMediaId,
               contentType: content.contentType,
               contentCategory: content.contentCategory,
               rotationType: content.rotationType,
