@@ -48,6 +48,7 @@ import TrialSignup from "@/pages/trial-signup";
 import TrialPortal from "@/pages/trial-portal";
 import TrialUpgrade from "@/pages/trial-upgrade";
 import TrialUpgradeSuccess from "@/pages/trial-upgrade-success";
+import EmailTemplate from "@/pages/email-template";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -210,6 +211,7 @@ function Router() {
       <Route path="/credits" component={CreditsDashboard} />
       <Route path="/credits/success" component={CreditsSuccess} />
       <Route path="/credits/cancel" component={CreditsCancel} />
+      <Route path="/email-template" component={EmailTemplate} />
       <Route path="/subscriber-dashboard" component={SubscriberDashboard} />
       <Route path="/partners" component={Partners} />
       <Route path="/privacy" component={PrivacyPolicy} />
