@@ -27,7 +27,8 @@ import {
   Layers,
   Star,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Clock
 } from "lucide-react";
 
 export default function TrustLayerHome() {
@@ -174,6 +175,34 @@ export default function TrustLayerHome() {
           </div>
         </div>
       </motion.header>
+
+      {/* Meta Proof Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border-y border-white/10"
+      >
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 text-center">
+            <div className="flex items-center gap-2">
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-2 h-2 rounded-full bg-emerald-400"
+              />
+              <span className="text-emerald-400 font-medium text-sm">LIVE PROOF</span>
+            </div>
+            <p className="text-slate-300 text-sm">
+              This advertisement was created and distributed by TrustLayer. 
+              <span className="text-white font-medium"> This is exactly what you get.</span>
+            </p>
+            <span className="text-slate-500 text-xs hidden md:inline">
+              Set your template. We handle the rest.
+            </span>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Hero */}
       <div className="relative">
@@ -584,6 +613,222 @@ export default function TrustLayerHome() {
             </Button>
           </motion.div>
         </div>
+      </div>
+
+      {/* Pain Points Section */}
+      <div className="relative max-w-7xl mx-auto px-6 py-24 border-t border-white/5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold text-white mb-4">Sound Familiar?</h2>
+          <p className="text-slate-400 max-w-2xl mx-auto">
+            If you're a small business owner, you know this struggle all too well.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {[
+            {
+              problem: "Spending 2-3 hours a day on social media",
+              solution: "TrustLayer posts automatically while you work",
+              icon: Clock
+            },
+            {
+              problem: "Posts that get zero traction or engagement",
+              solution: "Smart analytics optimize what actually works",
+              icon: TrendingUp
+            },
+            {
+              problem: "No variety - same content getting stale",
+              solution: "Content rotation keeps your feed fresh",
+              icon: Sparkles
+            }
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <GlassCard className="h-full" hoverEffect="subtle">
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4">
+                    <item.icon className="w-6 h-6 text-red-400" />
+                  </div>
+                  <p className="text-red-400 text-sm font-medium mb-2">THE PROBLEM</p>
+                  <p className="text-white font-semibold mb-4">{item.problem}</p>
+                  <div className="border-t border-white/10 pt-4">
+                    <p className="text-emerald-400 text-sm font-medium mb-2">THE SOLUTION</p>
+                    <p className="text-slate-300">{item.solution}</p>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <GlassCard glow="blue" className="inline-block">
+            <div className="p-8">
+              <p className="text-3xl font-bold text-white mb-2">
+                "Set it up once. It runs forever."
+              </p>
+              <p className="text-slate-400">
+                No more posting. No more scheduling. No more guessing. Just results.
+              </p>
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
+
+      {/* Proof Section - Real Businesses */}
+      <div className="relative max-w-7xl mx-auto px-6 py-24 border-t border-white/5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <Badge className="mb-4 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-4 py-2">
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Real Businesses, Real Results
+          </Badge>
+          <h2 className="text-4xl font-bold text-white mb-4">Already Powering Growth</h2>
+          <p className="text-slate-400 max-w-2xl mx-auto">
+            See how businesses are using TrustLayer to automate their marketing.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {[
+            {
+              name: 'Nashville Painting Professionals',
+              industry: 'Residential & Commercial Painting',
+              result: 'Automated daily posts across Facebook & Instagram',
+              color: 'from-blue-500 to-purple-500'
+            },
+            {
+              name: 'Lume Paint Co',
+              industry: 'Premium Painting Services',
+              result: 'Complete marketing automation with smart ad boosting',
+              color: 'from-amber-500 to-orange-500'
+            }
+          ].map((business, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: i === 0 ? -20 : 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <GlassCard hoverEffect="glow" glow={i === 0 ? 'blue' : 'gold'}>
+                <div className="p-8">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${business.color} flex items-center justify-center mb-6 shadow-lg`}>
+                    <Building2 className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">{business.name}</h3>
+                  <p className="text-slate-500 mb-4">{business.industry}</p>
+                  <div className="flex items-center gap-2 text-emerald-400">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>{business.result}</span>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Two Paths Section */}
+      <div className="relative max-w-7xl mx-auto px-6 py-24 border-t border-white/5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <Badge className="mb-4 bg-purple-500/10 text-purple-400 border-purple-500/20 px-4 py-2">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Your Content, Your Way
+          </Badge>
+          <h2 className="text-4xl font-bold text-white mb-4">Two Ways to Create</h2>
+          <p className="text-slate-400 max-w-2xl mx-auto">
+            Bring your own content, or let our AI create it for you. Either way, it runs automatically.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <GlassCard hoverEffect="glow" glow="blue" className="h-full">
+              <div className="p-8">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-6 shadow-lg">
+                  <FileCheck className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Use Your Templates</h3>
+                <p className="text-slate-400 mb-6">
+                  Upload your own images and write your own messages. Set your brand voice, 
+                  your style, your content. We'll post it automatically on your schedule.
+                </p>
+                <ul className="space-y-3">
+                  {['Upload your own images', 'Write custom messages', 'Set posting schedule', 'Full brand control'].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-slate-300">
+                      <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <GlassCard hoverEffect="glow" glow="green" className="h-full">
+              <div className="p-8">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-6 shadow-lg">
+                  <Zap className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">AI-Generated Content</h3>
+                <p className="text-slate-400 mb-6">
+                  Tell us your industry and niche. Our AI creates engaging posts, suggests images, 
+                  and writes copy that resonates with your target audience.
+                </p>
+                <ul className="space-y-3">
+                  {['AI writes your posts', 'Industry-specific content', 'Optimized for engagement', 'Fresh ideas daily'].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-slate-300">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center text-slate-500 mt-8"
+        >
+          Mix and match both approaches. It's completely up to you.
+        </motion.p>
       </div>
 
       {/* Bundle Offer */}
