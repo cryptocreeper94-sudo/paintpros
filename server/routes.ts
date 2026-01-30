@@ -646,7 +646,7 @@ export async function registerRoutes(
   app.post("/api/marketing-autopilot/:id/start", async (req, res) => {
     try {
       const { id } = req.params;
-      const { selectedImages, selectedCaptions, customImages, customCaptions, preferences } = req.body;
+      const { config, dailyBudget, postsPerDay, includeAds, adSpendPercent, contentMix } = req.body;
       
       // Save preferences and activate
       await db.update(autopilotSubscriptions)
@@ -654,22 +654,44 @@ export async function registerRoutes(
           status: 'active',
           activatedAt: new Date(),
           postingSchedule: JSON.stringify({
-            selectedImages,
-            selectedCaptions,
-            customImages,
-            customCaptions,
-            preferences,
+            config,
+            dailyBudget,
+            postsPerDay,
+            includeAds,
+            adSpendPercent,
+            contentMix,
             startedAt: new Date().toISOString()
           }),
           updatedAt: new Date()
         })
         .where(eq(autopilotSubscriptions.id, id));
       
-      // In production, this would also schedule the first posts
-      // For now, we just mark it as active
-      
       res.json({ success: true, message: "Autopilot activated" });
     } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/:id/test-post - Test posting for a subscriber
+  app.post("/api/marketing-autopilot/:id/test-post", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { content, imageUrl, platform } = req.body;
+      
+      const { autopilotEngine } = await import("./autopilot-engine");
+      
+      let result;
+      if (platform === 'facebook') {
+        result = await autopilotEngine.postToFacebook(id, content, imageUrl);
+      } else if (platform === 'instagram') {
+        result = await autopilotEngine.postToInstagram(id, content, imageUrl);
+      } else {
+        result = await autopilotEngine.postToBoth(id, content, imageUrl);
+      }
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("[Marketing Autopilot] Test post error:", error);
       res.status(500).json({ error: error.message });
     }
   });
