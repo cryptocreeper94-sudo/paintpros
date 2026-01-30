@@ -568,6 +568,111 @@ export async function registerRoutes(
       res.status(500).json({ error: error.message });
     }
   });
+  
+  // GET /api/marketing-autopilot/subscriber/:id - Get single subscriber
+  app.get("/api/marketing-autopilot/subscriber/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const [subscriber] = await db.select().from(autopilotSubscriptions).where(eq(autopilotSubscriptions.id, id));
+      if (!subscriber) {
+        return res.status(404).json({ error: "Subscriber not found" });
+      }
+      res.json(subscriber);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/generate-captions - Generate captions using OpenAI
+  app.post("/api/marketing-autopilot/generate-captions", async (req, res) => {
+    try {
+      const { businessType, count = 5 } = req.body;
+      
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI();
+      
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a social media marketing expert for ${businessType || 'home services'} businesses. Generate engaging, professional captions for Facebook and Instagram posts. Each caption should be 1-3 sentences, include a call to action when appropriate, and feel authentic (not too salesy). Mix between promotional, educational, and behind-the-scenes styles.`
+          },
+          {
+            role: "user",
+            content: `Generate ${count} unique social media captions for a ${businessType || 'painting'} business. Return only the captions, one per line, no numbering.`
+          }
+        ],
+        max_tokens: 500
+      });
+      
+      const text = response.choices[0]?.message?.content || "";
+      const captions = text.split("\n").filter(line => line.trim().length > 10);
+      
+      res.json({ captions });
+    } catch (error: any) {
+      console.error("[Marketing Autopilot] Caption generation error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/:id/preferences - Save subscriber preferences
+  app.post("/api/marketing-autopilot/:id/preferences", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { selectedImages, selectedCaptions, customImages, customCaptions, preferences } = req.body;
+      
+      // Store preferences in subscriber record
+      await db.update(autopilotSubscriptions)
+        .set({
+          postingSchedule: JSON.stringify({
+            selectedImages,
+            selectedCaptions,
+            customImages,
+            customCaptions,
+            preferences
+          }),
+          updatedAt: new Date()
+        })
+        .where(eq(autopilotSubscriptions.id, id));
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/:id/start - Start autopilot for subscriber
+  app.post("/api/marketing-autopilot/:id/start", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { selectedImages, selectedCaptions, customImages, customCaptions, preferences } = req.body;
+      
+      // Save preferences and activate
+      await db.update(autopilotSubscriptions)
+        .set({
+          status: 'active',
+          activatedAt: new Date(),
+          postingSchedule: JSON.stringify({
+            selectedImages,
+            selectedCaptions,
+            customImages,
+            customCaptions,
+            preferences,
+            startedAt: new Date().toISOString()
+          }),
+          updatedAt: new Date()
+        })
+        .where(eq(autopilotSubscriptions.id, id));
+      
+      // In production, this would also schedule the first posts
+      // For now, we just mark it as active
+      
+      res.json({ success: true, message: "Autopilot activated" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   // ============ TENANT ONBOARDING & PROVISIONING ============
   

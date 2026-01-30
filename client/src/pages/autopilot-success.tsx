@@ -5,25 +5,42 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   CheckCircle,
-  Facebook,
-  Instagram,
   ArrowRight,
   Loader2,
-  ExternalLink
+  Sparkles,
+  Image,
+  MessageSquare,
+  Calendar
 } from "lucide-react";
-import { Link, useSearch } from "wouter";
+import { useSearch, useLocation } from "wouter";
 
 export default function AutopilotSuccess() {
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
-  const tenantId = params.get('tenant');
-  const [connecting, setConnecting] = useState(false);
+  const subscriberId = params.get('subscriber') || params.get('id');
+  const [, navigate] = useLocation();
+  const [countdown, setCountdown] = useState(5);
 
-  const handleConnectMeta = () => {
-    setConnecting(true);
-    // In production, this would redirect to Meta OAuth
-    // For now, show instructions
-    setTimeout(() => setConnecting(false), 1000);
+  useEffect(() => {
+    if (subscriberId) {
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            navigate(`/autopilot/portal?id=${subscriberId}`);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [subscriberId, navigate]);
+
+  const goToPortal = () => {
+    if (subscriberId) {
+      navigate(`/autopilot/portal?id=${subscriberId}`);
+    }
   };
 
   return (
@@ -36,7 +53,7 @@ export default function AutopilotSuccess() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 w-full max-w-md"
+        className="relative z-10 w-full max-w-lg"
       >
         <Card className="bg-slate-800/90 backdrop-blur-xl border-slate-700 overflow-hidden">
           <CardContent className="p-8 text-center">
@@ -59,80 +76,64 @@ export default function AutopilotSuccess() {
             </h1>
             
             <p className="text-slate-400 mb-8">
-              Your subscription is now active. Just one more step to get your automated posting started.
+              Your subscription is active. Let's set up your automated posting in just a few minutes.
             </p>
 
-            {/* Connect Meta Section */}
+            {/* What You'll Do */}
             <div className="bg-slate-900/50 rounded-xl p-6 mb-6">
-              <h2 className="text-lg font-semibold text-white mb-4">
-                Connect Your Social Accounts
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center justify-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                Quick Setup (5 minutes)
               </h2>
               
-              <p className="text-sm text-slate-400 mb-6">
-                Click below to connect your Facebook Page and Instagram. This takes about 30 seconds.
+              <div className="space-y-4 text-left">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <Image className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">Choose Your Images</p>
+                    <p className="text-slate-500 text-xs">Upload yours or pick from our library</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <MessageSquare className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">Write or Select Captions</p>
+                    <p className="text-slate-500 text-xs">Use pre-written or create your own</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">Set Your Schedule</p>
+                    <p className="text-slate-500 text-xs">Choose how often to post</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={goToPortal}
+              size="lg"
+              className="w-full h-14 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-lg"
+              data-testid="button-go-to-portal"
+            >
+              Set Up Your Autopilot
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+
+            {subscriberId && countdown > 0 && (
+              <p className="text-slate-500 text-sm mt-4">
+                Redirecting in {countdown} seconds...
               </p>
-
-              <div className="space-y-3">
-                <Button
-                  onClick={handleConnectMeta}
-                  disabled={connecting}
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700"
-                  data-testid="button-connect-facebook"
-                >
-                  {connecting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Facebook className="w-5 h-5 mr-2" />
-                      Connect Facebook & Instagram
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-center gap-4 mt-4 text-slate-500 text-sm">
-                <div className="flex items-center gap-1">
-                  <Facebook className="w-4 h-4" />
-                  <span>Facebook</span>
-                </div>
-                <span>+</span>
-                <div className="flex items-center gap-1">
-                  <Instagram className="w-4 h-4" />
-                  <span>Instagram</span>
-                </div>
-              </div>
-            </div>
-
-            {/* What Happens Next */}
-            <div className="text-left space-y-3 mb-6">
-              <h3 className="text-sm font-medium text-slate-300">What happens next:</h3>
-              <div className="space-y-2 text-sm text-slate-400">
-                <div className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs text-blue-400">1</span>
-                  </div>
-                  <span>Connect your Facebook Page & Instagram above</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs text-blue-400">2</span>
-                  </div>
-                  <span>We'll configure your posting schedule (24-48 hours)</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs text-blue-400">3</span>
-                  </div>
-                  <span>Automated posts start flowing to your accounts</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact */}
-            <p className="text-xs text-slate-500">
-              Questions? We'll reach out via email within 24 hours to make sure everything is set up correctly.
-            </p>
+            )}
           </CardContent>
         </Card>
 
