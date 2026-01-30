@@ -233,7 +233,7 @@ export default function AutopilotDashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white">Marketing Autopilot Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">TrustLayer Marketing Dashboard</h1>
               <p className="text-slate-400 text-sm">Your automated social media command center</p>
             </div>
             <div className="flex items-center gap-4">

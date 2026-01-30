@@ -126,7 +126,7 @@ export default function AutopilotSetupGuide() {
             Connect Your Meta Business Account
           </h1>
           <p className="text-slate-400">
-            Follow these steps to connect your Facebook Page and Instagram to Marketing Autopilot. 
+            Follow these steps to connect your Facebook Page and Instagram to TrustLayer Marketing. 
             This one-time setup takes about 10-15 minutes.
           </p>
         </div>
@@ -527,7 +527,7 @@ export default function AutopilotSetupGuide() {
                 <h2 className="text-2xl font-bold text-white mb-2">Setup Complete!</h2>
                 <p className="text-slate-300 mb-6">
                   Your Meta Business account is now connected. You can proceed to configure your 
-                  posting preferences and activate your Marketing Autopilot.
+                  posting preferences and activate TrustLayer Marketing.
                 </p>
                 <Button 
                   size="lg"
@@ -553,7 +553,7 @@ export default function AutopilotSetupGuide() {
                 <h4 className="text-white font-medium mb-1">Need Help?</h4>
                 <p className="text-slate-400 text-sm">
                   If you're having trouble with any step, contact our support team at{" "}
-                  <span className="text-blue-400">support@paintpros.io</span> and we'll walk you through it.
+                  <span className="text-blue-400">support@tlid.io</span> and we'll walk you through it.
                   You can also schedule a screen-share session where we guide you through the setup.
                 </p>
               </div>

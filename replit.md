@@ -13,6 +13,7 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 ## Key URLs & Tenant Structure
 
 ### Primary Domains
+- **tlid.io** - TrustLayer platform hub (TrustLayer Marketing, Guardian Shield, TrustLayer Staffing)
 - **tradeworksai.io** - Main demo URL for the full TradeWorks AI Field Tool (complete 8-trade toolkit)
 - **paintpros.io** - Home for trade vertical tenant spacing, demos, and lead generation system
 
@@ -23,9 +24,15 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 - **NPP/Lume Toggle** - Built-in toggle in Field Tool header to switch between NPP and Lume, changing all branding/data
 
 ### Marketing Hub Tenants
-- **TrustLayer Marketing Suite** - TrustLayer-branded marketing hub
+- **TrustLayer Marketing Suite** - TrustLayer-branded marketing hub at tlid.io
 - **NPP Marketing Hub** - NPP-branded marketing hub  
 - **Lume Marketing Hub** - Lume-branded marketing hub
+
+### TrustLayer Ecosystem (tlid.io)
+- **TrustLayer Marketing** - Automated social media posting & ad management ($59/mo)
+- **Guardian Shield** - Business verification & security badges ($49/mo)
+- **TrustLayer Staffing** - Connected to DoorButStaffing for workforce management ($79/mo)
+- **Complete Bundle** - All three products ($149/mo)
 
 ### Key Routes
 - `/field-tool` - Full Field Tool with 85+ calculators, biometric login, crew management

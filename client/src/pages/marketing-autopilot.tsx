@@ -307,7 +307,7 @@ export default function MarketingAutopilot() {
                 data-testid="button-subscribe"
               >
                 <Zap className="w-5 h-5 mr-2" />
-                Start Marketing Autopilot
+                Start TrustLayer Marketing
               </Button>
               
               <p className="text-center text-slate-500 text-sm mt-4">
