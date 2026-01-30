@@ -285,20 +285,20 @@ export default function TrustLayerHome() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.45 }}
-            className="flex items-center justify-center gap-6 mb-10"
+            className="flex items-center justify-center gap-3 sm:gap-6 mb-10 flex-wrap"
           >
-            <div className="flex items-center gap-2 text-slate-400">
-              <Facebook className="w-5 h-5 text-blue-500" />
-              <span>Facebook</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <Facebook className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+              <span className="text-sm sm:text-base">Facebook</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-400">
-              <Instagram className="w-5 h-5 text-pink-500" />
-              <span>Instagram</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500" />
+              <span className="text-sm sm:text-base">Instagram</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-400">
-              <Globe className="w-5 h-5 text-green-500" />
-              <span>Nextdoor</span>
-              <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 text-xs">Soon</Badge>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+              <span className="text-sm sm:text-base">Nextdoor</span>
+              <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 text-[10px] sm:text-xs px-1.5 py-0">Soon</Badge>
             </div>
           </motion.div>
 
@@ -378,16 +378,46 @@ export default function TrustLayerHome() {
         </div>
       </div>
 
-      {/* Connected Ecosystem */}
+      {/* Connected Ecosystem - Horizontal Carousel on Mobile */}
       <div className="relative border-y border-white/5 bg-slate-900/30 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <p className="text-slate-500 text-sm text-center mb-6 tracking-wider uppercase">Part of the Connected Ecosystem</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <p className="text-slate-500 text-xs sm:text-sm text-center mb-4 tracking-wider uppercase">Connected Ecosystem</p>
+          
+          {/* Mobile: Horizontal scroll carousel */}
+          <div className="md:hidden overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-3 w-max">
+              {connectedSystems.map((system, i) => (
+                <motion.div
+                  key={i}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => (system as any).url && window.open((system as any).url, '_blank')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm cursor-pointer flex-shrink-0 ${
+                    (system as any).primary 
+                      ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30' 
+                      : 'bg-slate-800/30 border border-white/5'
+                  }`}
+                >
+                  <system.icon className={`w-4 h-4 ${(system as any).primary ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  <div>
+                    <p className={`text-xs font-medium ${(system as any).primary ? 'text-emerald-300' : 'text-white'}`}>{system.name}</p>
+                  </div>
+                  {(system as any).primary && (
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px] px-1.5 py-0">
+                      Core
+                    </Badge>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Desktop: Flex wrap */}
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex flex-wrap items-center justify-center gap-8"
+            className="hidden md:flex flex-wrap items-center justify-center gap-6"
           >
             {connectedSystems.map((system, i) => (
               <motion.div
