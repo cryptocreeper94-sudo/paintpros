@@ -5792,6 +5792,9 @@ export const metaIntegrations = pgTable("meta_integrations", {
   nextdoorTokenExpiresAt: timestamp("nextdoor_token_expires_at"),
   nextdoorConnected: boolean("nextdoor_connected").default(false),
   
+  // Meta Ads Account (required for running ad campaigns)
+  adAccountId: text("ad_account_id"), // Format: act_XXXXX
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
