@@ -59,6 +59,8 @@ import TrustLayerHome from "@/pages/trustlayer-home";
 import TrustLayerMarketing from "@/pages/trustlayer-marketing";
 import GuardianShield from "@/pages/guardian-shield";
 import ClaimSubdomain from "@/pages/claim-subdomain";
+import TrustLayerPrivacy from "@/pages/trustlayer-privacy";
+import TrustLayerTerms from "@/pages/trustlayer-terms";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -246,6 +248,8 @@ function Router() {
       <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
       <Route path="/trustlayer/guardian" component={GuardianShield} />
       <Route path="/trustlayer/claim" component={ClaimSubdomain} />
+      <Route path="/trustlayer/privacy" component={TrustLayerPrivacy} />
+      <Route path="/trustlayer/terms" component={TrustLayerTerms} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -631,12 +631,27 @@ export default function TrustLayerHome() {
                 <p className="text-slate-500 text-sm">TLId.io</p>
               </div>
             </div>
-            <div className="flex items-center gap-8 text-slate-400 text-sm">
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 md:gap-8 text-slate-400 text-sm">
               <span className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-emerald-400" />
-                Powered by DWTL.io Blockchain
+                Powered by DWTL.io
               </span>
-              <span className="text-slate-600">|</span>
+              <span className="text-slate-600 hidden md:inline">|</span>
+              <button 
+                onClick={() => window.location.href = '/trustlayer/privacy'}
+                className="hover:text-white transition-colors"
+                data-testid="link-privacy"
+              >
+                Privacy Policy
+              </button>
+              <button 
+                onClick={() => window.location.href = '/trustlayer/terms'}
+                className="hover:text-white transition-colors"
+                data-testid="link-terms"
+              >
+                Terms of Service
+              </button>
+              <span className="text-slate-600 hidden md:inline">|</span>
               <span>support@tlid.io</span>
             </div>
           </div>
