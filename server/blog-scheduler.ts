@@ -102,11 +102,14 @@ Format the response as JSON with these fields:
   "suggestedTags": ["tag1", "tag2", "tag3"]
 }`;
 
-    const response = await fetch("https://modelfarm.replit.app/v1beta2/chat/completions", {
+    const baseUrl = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || "https://api.openai.com/v1";
+    const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || "";
+    
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.REPLIT_AI_API_KEY || ""}`,
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: "gpt-4o",
