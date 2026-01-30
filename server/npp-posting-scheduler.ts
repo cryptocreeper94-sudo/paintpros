@@ -1,5 +1,5 @@
 import { db } from './db';
-import { metaIntegrations, contentLibrary, autoPostingSchedule, scheduledPosts } from '@shared/schema';
+import { metaIntegrations, autoPostingSchedule, scheduledPosts, marketingImages, marketingPosts } from '@shared/schema';
 import { eq, and, asc, sql } from 'drizzle-orm';
 
 let postingInterval: ReturnType<typeof setInterval> | null = null;
@@ -35,18 +35,29 @@ async function validateToken(token: string): Promise<boolean> {
   }
 }
 
-async function getNextContent(tenantId: string) {
-  const content = await db
+async function getNextImage(tenantId: string) {
+  const images = await db
     .select()
-    .from(contentLibrary)
+    .from(marketingImages)
     .where(and(
-      eq(contentLibrary.tenantId, tenantId),
-      eq(contentLibrary.status, 'active')
+      eq(marketingImages.tenantId, tenantId),
+      eq(marketingImages.isActive, true)
     ))
-    .orderBy(asc(contentLibrary.timesUsed), asc(contentLibrary.lastUsedAt))
+    .orderBy(asc(marketingImages.usageCount), asc(marketingImages.lastUsedAt))
     .limit(1);
   
-  return content[0] || null;
+  return images[0] || null;
+}
+
+async function getNextMessage() {
+  const messages = await db
+    .select()
+    .from(marketingPosts)
+    .where(eq(marketingPosts.isActive, true))
+    .orderBy(asc(marketingPosts.usageCount), asc(marketingPosts.lastUsedAt))
+    .limit(1);
+  
+  return messages[0] || null;
 }
 
 async function postToFacebook(
@@ -187,14 +198,22 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
         continue;
       }
 
-      const content = await getNextContent(schedule.tenantId);
-      if (!content) {
+      const image = await getNextImage(schedule.tenantId);
+      const messageContent = await getNextMessage();
+      
+      if (!image && !messageContent) {
         console.log(`[NPP Posting] No content available for ${schedule.tenantId}`);
         continue;
       }
 
-      const message = content.message || content.title || 'Quality painting services from Nashville Painting Professionals!';
-      const imageUrl = content.imageUrl || undefined;
+      const message = messageContent?.content || 'Quality painting services from Nashville Painting Professionals! Call 615-555-PAINT for your free estimate.';
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+        : 'https://paintpros.io';
+      const imageUrl = image ? `${baseUrl}${image.filePath}` : undefined;
+      
+      console.log(`[NPP Posting] Using image: ${image?.filename || 'none'}, message: ${messageContent?.id || 'default'}`);
+      console.log(`[NPP Posting] Image URL: ${imageUrl}`);
 
       let fbResult: { success: boolean; postId?: string; error?: string } = { success: false };
       let igResult: { success: boolean; mediaId?: string; error?: string } = { success: false };
@@ -232,7 +251,7 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
       if (fbResult.success || igResult.success) {
         await db.insert(scheduledPosts).values({
           tenantId: schedule.tenantId,
-          contentLibraryId: content.id,
+          contentLibraryId: image?.id || messageContent?.id || null,
           message: message,
           imageUrl: imageUrl,
           platform: schedule.platform === 'both' ? 'facebook' : (schedule.platform || 'facebook'),
@@ -243,13 +262,27 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
           publishedAt: new Date(),
         });
 
-        await db
-          .update(contentLibrary)
-          .set({
-            timesUsed: sql`COALESCE(${contentLibrary.timesUsed}, 0) + 1`,
-            lastUsedAt: new Date(),
-          })
-          .where(eq(contentLibrary.id, content.id));
+        // Update image usage tracking
+        if (image) {
+          await db
+            .update(marketingImages)
+            .set({
+              usageCount: sql`COALESCE(${marketingImages.usageCount}, 0) + 1`,
+              lastUsedAt: new Date(),
+            })
+            .where(eq(marketingImages.id, image.id));
+        }
+        
+        // Update message usage tracking
+        if (messageContent) {
+          await db
+            .update(marketingPosts)
+            .set({
+              usageCount: sql`COALESCE(${marketingPosts.usageCount}, 0) + 1`,
+              lastUsedAt: new Date(),
+            })
+            .where(eq(marketingPosts.id, messageContent.id));
+        }
 
         await db
           .update(autoPostingSchedule)
@@ -292,14 +325,19 @@ export async function triggerManualPost(tenantId: string): Promise<{ facebook?: 
     throw new Error('No Meta integration configured');
   }
 
-  const content = await getNextContent(tenantId);
-  if (!content) {
+  const image = await getNextImage(tenantId);
+  const messageContent = await getNextMessage();
+  
+  if (!image && !messageContent) {
     throw new Error('No content available');
   }
 
   const results: { facebook?: any; instagram?: any } = {};
-  const message = content.message || content.title || 'Quality painting services!';
-  const imageUrl = content.imageUrl || undefined;
+  const message = messageContent?.content || 'Quality painting services from Nashville Painting Professionals!';
+  const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+    ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+    : 'https://paintpros.io';
+  const imageUrl = image ? `${baseUrl}${image.filePath}` : undefined;
 
   if (integration.facebookPageId) {
     results.facebook = await postToFacebook(
