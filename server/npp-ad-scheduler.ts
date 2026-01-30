@@ -5,9 +5,8 @@ import { eq, and, sql, desc } from 'drizzle-orm';
 let adSchedulerInterval: ReturnType<typeof setInterval> | null = null;
 let isRunning = false;
 
-// DISABLED: Meta App needs to be in Live Mode to create ads
-// To enable: Set app to Live at developers.facebook.com, then set this to true
-const ADS_ENABLED = false;
+// Meta App is now LIVE - ads enabled
+const ADS_ENABLED = true;
 
 const AD_CHECK_INTERVAL_MS = 30 * 60 * 1000; // Check every 30 minutes
 
