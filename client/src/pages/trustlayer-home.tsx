@@ -664,7 +664,7 @@ export default function TrustLayerHome() {
               </Button>
             </motion.div>
 
-            {/* Trust Badge Preview */}
+            {/* Trust Badge Preview - Ultra Premium */}
             <motion.div
               initial={{ x: 50, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
@@ -672,35 +672,38 @@ export default function TrustLayerHome() {
               className="flex justify-center"
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 blur-[80px]" />
-                <GlassCard
-                  hoverEffect="glow"
-                  glow="green"
-                  depth="deep"
-                  className="w-80"
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-[100px]" />
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  className="relative w-80 rounded-2xl overflow-hidden"
                 >
-                  <div className="p-8 text-center">
+                  {/* Premium dark glass background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800/95 via-slate-900/98 to-slate-950/95 backdrop-blur-xl" />
+                  <div className="absolute inset-0 border border-emerald-500/20 rounded-2xl" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent" />
+                  
+                  <div className="relative p-8 text-center">
                     <motion.div
                       animate={{ y: [0, -5, 0] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-emerald-500/40"
+                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-emerald-500/50"
                     >
-                      <Shield className="w-12 h-12 text-white" />
+                      <Shield className="w-10 h-10 text-white" />
                     </motion.div>
-                    <Badge className="mb-3 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                    <Badge className="mb-4 bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-medium">
                       <CheckCircle className="w-3 h-3 mr-1" />
                       Verified Business
                     </Badge>
-                    <h4 className="text-xl font-bold text-white mb-1">Your Business Name</h4>
-                    <p className="text-slate-400 text-sm mb-4">TrustLayer Certified</p>
-                    <div className="flex items-center justify-center gap-1 mb-4">
+                    <h4 className="text-2xl font-bold text-white mb-2">Your Business Name</h4>
+                    <p className="text-slate-300 text-sm mb-5">TrustLayer Certified</p>
+                    <div className="flex items-center justify-center gap-1.5 mb-4">
                       {[1,2,3,4,5].map(i => (
-                        <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                        <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400 drop-shadow-lg" />
                       ))}
                     </div>
-                    <p className="text-slate-500 text-xs">Member since 2024</p>
+                    <p className="text-slate-400 text-sm font-medium">Member since 2024</p>
                   </div>
-                </GlassCard>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -710,49 +713,61 @@ export default function TrustLayerHome() {
       {/* Marketing Preview */}
       <div className="relative max-w-7xl mx-auto px-6 py-12">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
-          {/* Dashboard Preview */}
+          {/* Dashboard Preview - Ultra Premium */}
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true }}
             className="order-2 lg:order-1"
           >
-            <GlassCard hoverEffect="subtle" depth="deep">
-              <div className="bg-slate-900/80 p-4 border-b border-white/5 flex items-center gap-2 rounded-t-xl">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-slate-500 text-xs ml-3">TrustLayer Marketing Dashboard</span>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                    <Eye className="w-5 h-5 text-blue-400 mb-2" />
-                    <p className="text-2xl font-bold text-white">12,450</p>
-                    <p className="text-slate-500 text-sm">Reach</p>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-[60px]" />
+              <motion.div 
+                whileHover={{ scale: 1.01 }}
+                className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+              >
+                {/* Window chrome */}
+                <div className="bg-slate-900 p-4 border-b border-white/10 flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/50" />
+                  <span className="text-slate-300 text-sm ml-4 font-medium">TrustLayer Marketing Dashboard</span>
+                </div>
+                {/* Dashboard content */}
+                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-xl p-5 border border-blue-500/20">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center mb-3">
+                        <Eye className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <p className="text-3xl font-bold text-white mb-1">12,450</p>
+                      <p className="text-blue-300 text-sm font-medium">Reach</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-xl p-5 border border-emerald-500/20">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-3">
+                        <TrendingUp className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <p className="text-3xl font-bold text-white mb-1">847</p>
+                      <p className="text-emerald-300 text-sm font-medium">Engagement</p>
+                    </div>
                   </div>
-                  <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                    <TrendingUp className="w-5 h-5 text-green-400 mb-2" />
-                    <p className="text-2xl font-bold text-white">847</p>
-                    <p className="text-slate-500 text-sm">Engagement</p>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-full">
+                      <Facebook className="w-4 h-4 text-blue-400" />
+                      <span className="text-white font-medium">Connected</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-full">
+                      <Instagram className="w-4 h-4 text-pink-400" />
+                      <span className="text-white font-medium">Connected</span>
+                    </div>
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-medium">
+                      <Zap className="w-3 h-3 mr-1" />
+                      Active
+                    </Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <Facebook className="w-4 h-4 text-blue-500" />
-                    <span>Connected</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Instagram className="w-4 h-4 text-pink-500" />
-                    <span>Connected</span>
-                  </div>
-                  <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs">
-                    <Zap className="w-3 h-3 mr-1" />
-                    Active
-                  </Badge>
-                </div>
-              </div>
-            </GlassCard>
+              </motion.div>
+            </div>
           </motion.div>
 
           <motion.div
