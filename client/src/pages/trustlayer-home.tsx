@@ -41,7 +41,89 @@ import {
 } from "lucide-react";
 
 export default function TrustLayerHome() {
+  // SEO Meta Tags
   useEffect(() => {
+    // Page title
+    document.title = "TrustLayer - Automated Social Media Marketing | Set It & Forget It";
+    
+    // Meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    const descContent = "Connect your Meta Business Suite and let TrustLayer handle your Facebook & Instagram posts, ad campaigns, and analytics automatically. From $99/mo.";
+    if (metaDescription) {
+      metaDescription.setAttribute('content', descContent);
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = descContent;
+      document.head.appendChild(meta);
+    }
+    
+    // Keywords
+    const metaKeywords = document.querySelector('meta[name="keywords"]');
+    const keywords = "automated marketing, social media automation, Facebook marketing, Instagram marketing, small business marketing, digital marketing platform, Meta Business Suite, automated posting";
+    if (metaKeywords) {
+      metaKeywords.setAttribute('content', keywords);
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'keywords';
+      meta.content = keywords;
+      document.head.appendChild(meta);
+    }
+    
+    // Open Graph tags
+    const ogTags = [
+      { property: 'og:title', content: 'TrustLayer - Automated Social Media Marketing' },
+      { property: 'og:description', content: 'Set it once, run forever. Automated Facebook & Instagram posting, smart ad boosting, and real-time analytics. From $99/mo.' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://tlid.io' },
+      { property: 'og:site_name', content: 'TrustLayer' },
+      { property: 'og:image', content: 'https://tlid.io/og-trustlayer.png' }
+    ];
+    
+    ogTags.forEach(tag => {
+      let meta = document.querySelector(`meta[property="${tag.property}"]`);
+      if (meta) {
+        meta.setAttribute('content', tag.content);
+      } else {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', tag.property);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      }
+    });
+    
+    // Twitter Card tags
+    const twitterTags = [
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'TrustLayer - Automated Social Media Marketing' },
+      { name: 'twitter:description', content: 'Set it once, run forever. Automated Facebook & Instagram posting from $99/mo.' },
+      { name: 'twitter:image', content: 'https://tlid.io/og-trustlayer.png' }
+    ];
+    
+    twitterTags.forEach(tag => {
+      let meta = document.querySelector(`meta[name="${tag.name}"]`);
+      if (meta) {
+        meta.setAttribute('content', tag.content);
+      } else {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', tag.name);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      }
+    });
+    
+    // Canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      canonical.setAttribute('href', 'https://tlid.io');
+    } else {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      canonical.setAttribute('href', 'https://tlid.io');
+      document.head.appendChild(canonical);
+    }
+    
+    // Google Analytics
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'page_view', {
         page_title: 'TrustLayer Home',
