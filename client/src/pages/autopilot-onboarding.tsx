@@ -47,7 +47,11 @@ import {
   DollarSign,
   CreditCard,
   Clock,
-  X
+  X,
+  BadgeCheck,
+  Award,
+  ShieldCheck,
+  Crown
 } from "lucide-react";
 
 const NICHES = [
@@ -112,6 +116,7 @@ export default function AutopilotOnboarding() {
   });
 
   const [selectedPlan, setSelectedPlan] = useState<'starter' | 'professional' | 'enterprise'>('professional');
+  const [selectedVerification, setSelectedVerification] = useState<'none' | 'identity' | 'business' | 'elite'>('none');
   const [isOwnerApp, setIsOwnerApp] = useState(false);
 
   const updateField = (field: string, value: string) => {
@@ -883,6 +888,131 @@ export default function AutopilotOnboarding() {
                       7-day trial includes organic posting only. Paid ad features activate after trial converts.
                     </p>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Guardian Shield Verification */}
+              <Card className="bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border-amber-500/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-white flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <span>Guardian Shield Verification</span>
+                      <p className="text-sm font-normal text-slate-400 mt-1">Optional - Build trust with verified business credentials</p>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-4 gap-3">
+                    {/* No Verification */}
+                    <div 
+                      onClick={() => setSelectedVerification('none')}
+                      className={`p-4 rounded-xl cursor-pointer transition-all ${
+                        selectedVerification === 'none'
+                          ? 'bg-slate-700/50 ring-2 ring-slate-500'
+                          : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
+                      }`}
+                      data-testid="verification-none"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <X className="w-5 h-5 text-slate-400" />
+                        {selectedVerification === 'none' && <CheckCircle className="w-4 h-4 text-slate-400" />}
+                      </div>
+                      <p className="text-white font-semibold text-sm">Skip</p>
+                      <p className="text-slate-500 text-xs">Maybe later</p>
+                    </div>
+
+                    {/* Identity Verified */}
+                    <div 
+                      onClick={() => setSelectedVerification('identity')}
+                      className={`p-4 rounded-xl cursor-pointer transition-all ${
+                        selectedVerification === 'identity'
+                          ? 'bg-blue-500/20 ring-2 ring-blue-500'
+                          : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
+                      }`}
+                      data-testid="verification-identity"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <BadgeCheck className="w-5 h-5 text-blue-400" />
+                        {selectedVerification === 'identity' && <CheckCircle className="w-4 h-4 text-blue-400" />}
+                      </div>
+                      <p className="text-white font-semibold text-sm">Identity</p>
+                      <p className="text-blue-400 text-xs font-bold">$10 one-time</p>
+                      <ul className="mt-2 space-y-1 text-xs text-slate-400">
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Email verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Phone verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Business name</li>
+                      </ul>
+                    </div>
+
+                    {/* Business Verified */}
+                    <div 
+                      onClick={() => setSelectedVerification('business')}
+                      className={`p-4 rounded-xl cursor-pointer transition-all relative ${
+                        selectedVerification === 'business'
+                          ? 'bg-purple-500/20 ring-2 ring-purple-500'
+                          : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
+                      }`}
+                      data-testid="verification-business"
+                    >
+                      <Badge className="absolute -top-2 right-2 bg-purple-500 text-white border-0 text-[10px]">
+                        Recommended
+                      </Badge>
+                      <div className="flex items-center justify-between mb-2">
+                        <Award className="w-5 h-5 text-purple-400" />
+                        {selectedVerification === 'business' && <CheckCircle className="w-4 h-4 text-purple-400" />}
+                      </div>
+                      <p className="text-white font-semibold text-sm">Business</p>
+                      <p className="text-purple-400 text-xs font-bold">$49/year</p>
+                      <ul className="mt-2 space-y-1 text-xs text-slate-400">
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> License verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Insurance docs</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Background check</li>
+                      </ul>
+                    </div>
+
+                    {/* Elite Verified */}
+                    <div 
+                      onClick={() => setSelectedVerification('elite')}
+                      className={`p-4 rounded-xl cursor-pointer transition-all ${
+                        selectedVerification === 'elite'
+                          ? 'bg-amber-500/20 ring-2 ring-amber-500'
+                          : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
+                      }`}
+                      data-testid="verification-elite"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <Crown className="w-5 h-5 text-amber-400" />
+                        {selectedVerification === 'elite' && <CheckCircle className="w-4 h-4 text-amber-400" />}
+                      </div>
+                      <p className="text-white font-semibold text-sm">Elite</p>
+                      <p className="text-amber-400 text-xs font-bold">$149/year</p>
+                      <ul className="mt-2 space-y-1 text-xs text-slate-400">
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Full KYC</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Video verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Bonded & insured</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {selectedVerification !== 'none' && (
+                    <div className="mt-4 p-3 bg-slate-900/50 rounded-lg border border-amber-500/30">
+                      <div className="flex items-start gap-3">
+                        <ShieldCheck className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                        <div>
+                          <p className="text-white text-sm font-medium">What you get with verification:</p>
+                          <ul className="mt-2 text-xs text-slate-400 space-y-1">
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Verified badge on all marketing content</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Embeddable trust widget for your website</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Listed in TrustLayer verified directory</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Priority placement in search results</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
