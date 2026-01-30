@@ -28,7 +28,9 @@ import {
   Star,
   Sparkles,
   ExternalLink,
-  Clock
+  Clock,
+  Link2,
+  Settings
 } from "lucide-react";
 
 export default function TrustLayerHome() {
@@ -286,27 +288,60 @@ export default function TrustLayerHome() {
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
             <Button
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-lg px-8 py-6 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-shadow"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-lg px-10 py-7 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-shadow"
               onClick={() => window.location.href = '/autopilot/setup'}
               data-testid="button-connect-now"
             >
-              <Zap className="w-5 h-5 mr-2" />
-              Connect Your Business
+              <Zap className="w-6 h-6 mr-2" />
+              Get Started - Connect Meta
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-6 border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10"
-              onClick={() => window.location.href = '/trustlayer/marketing'}
-              data-testid="button-learn-more"
-            >
-              Learn More
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
+          </motion.div>
+
+          {/* How It Works - 3 Steps */}
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <p className="text-slate-500 text-sm text-center mb-6 uppercase tracking-wider">How It Works</p>
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { step: '1', title: 'Connect Meta', desc: 'Link your Facebook Page & Instagram in 5 minutes', icon: Link2 },
+                { step: '2', title: 'Set Preferences', desc: 'Choose your content style, schedule & budget', icon: Settings },
+                { step: '3', title: 'Subscribe & Go', desc: '$59/mo - We handle everything automatically', icon: Zap }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.7 + i * 0.1 }}
+                  className="relative bg-slate-800/30 backdrop-blur-sm border border-white/5 rounded-xl p-6 text-center"
+                >
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                    {item.step}
+                  </div>
+                  <item.icon className="w-8 h-8 text-blue-400 mx-auto mb-3 mt-2" />
+                  <h4 className="text-white font-semibold mb-2">{item.title}</h4>
+                  <p className="text-slate-400 text-sm">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Button
+                variant="outline"
+                className="border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10"
+                onClick={() => window.location.href = '/trustlayer/marketing'}
+                data-testid="button-learn-more"
+              >
+                Learn More About Features
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
