@@ -160,8 +160,8 @@ export default function Terms() {
                   <h2 className="text-xl font-bold mb-3">Contact Information</h2>
                   <p className="text-muted-foreground">
                     If you have any questions about these Terms of Service, please contact us at{" "}
-                    <a href="mailto:legal@paintpros.io" className="text-accent hover:underline">
-                      legal@paintpros.io
+                    <a href={`mailto:${tenant.email}`} className="text-accent hover:underline">
+                      {tenant.email}
                     </a>
                   </p>
                 </div>

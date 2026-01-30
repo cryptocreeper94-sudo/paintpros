@@ -66,7 +66,7 @@ export default function DataDeletion() {
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-400 mt-1 flex-shrink-0" />
-                      <span>Email: <a href="mailto:privacy@paintpros.io" className="text-accent hover:underline">privacy@paintpros.io</a></span>
+                      <span>Email: <a href={`mailto:${tenant.email}`} className="text-accent hover:underline">{tenant.email}</a></span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-400 mt-1 flex-shrink-0" />
@@ -141,7 +141,7 @@ export default function DataDeletion() {
 
             <div className="text-center pt-4">
               <Button asChild variant="outline" size="lg">
-                <a href="mailto:privacy@paintpros.io?subject=Data%20Deletion%20Request" data-testid="button-request-deletion">
+                <a href={`mailto:${tenant.email}?subject=Data%20Deletion%20Request`} data-testid="button-request-deletion">
                   <Mail className="w-4 h-4 mr-2" />
                   Request Data Deletion
                 </a>
