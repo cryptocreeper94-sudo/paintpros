@@ -56,6 +56,22 @@ const NICHES = [
   { id: 'electrical', name: 'Electrical', icon: Plug, color: 'from-yellow-500 to-orange-500', description: 'Electrical Services' },
   { id: 'remodeling', name: 'Remodeling', icon: Hammer, color: 'from-amber-500 to-yellow-500', description: 'Home Renovations' },
   { id: 'general', name: 'General Contractor', icon: Wrench, color: 'from-slate-500 to-gray-500', description: 'General Construction' },
+  { id: 'other', name: 'Other Business', icon: Building2, color: 'from-gray-500 to-slate-600', description: 'Enter your business type' },
+];
+
+const PROHIBITED_CONTENT = [
+  'Adult content, pornography, or sexually explicit material',
+  'Drugs, controlled substances, or drug paraphernalia',
+  'Weapons, firearms, or explosives',
+  'Gambling or online betting services',
+  'Tobacco, vaping, or smoking products',
+  'Multi-level marketing or pyramid schemes',
+  'Counterfeit goods or intellectual property violations',
+  'Hate speech, discrimination, or harassment',
+  'Violence, gore, or graphic content',
+  'Fraudulent, deceptive, or misleading claims',
+  'Illegal services or activities',
+  'Content targeting minors inappropriately'
 ];
 
 const STEPS = [
@@ -73,6 +89,7 @@ export default function AutopilotOnboarding() {
   
   const [formData, setFormData] = useState({
     niche: '',
+    customNiche: '',
     businessName: '',
     ownerName: '',
     email: '',
@@ -86,7 +103,9 @@ export default function AutopilotOnboarding() {
     pageAccessToken: '',
     facebookPageId: '',
     instagramAccountId: '',
-    ownerPin: ''
+    ownerPin: '',
+    acceptedTerms: false,
+    acceptedContentPolicy: false
   });
 
   const [selectedPlan, setSelectedPlan] = useState<'standard' | 'premium'>('standard');
@@ -139,13 +158,21 @@ export default function AutopilotOnboarding() {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1: return !!formData.niche;
+      case 1: 
+        if (formData.niche === 'other') {
+          return !!(formData.customNiche && formData.acceptedContentPolicy);
+        }
+        return !!(formData.niche && formData.acceptedContentPolicy);
       case 2: return !!(formData.businessName && formData.city && formData.state && formData.email);
       case 3: return true;
       case 4: return !!(formData.appId && formData.appSecret && formData.pageAccessToken);
-      case 5: return true;
+      case 5: return formData.acceptedTerms;
       default: return false;
     }
+  };
+
+  const getEffectiveNiche = () => {
+    return formData.niche === 'other' ? formData.customNiche : formData.niche;
   };
 
   const selectedNiche = NICHES.find(n => n.id === formData.niche);
@@ -223,8 +250,8 @@ export default function AutopilotOnboarding() {
                     We'll customize your marketing content based on your trade
                   </p>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {NICHES.map(niche => (
                       <div
                         key={niche.id}
@@ -248,6 +275,80 @@ export default function AutopilotOnboarding() {
                       </div>
                     ))}
                   </div>
+
+                  {formData.niche === 'other' && (
+                    <div className="bg-slate-900 rounded-lg p-4">
+                      <Label className="text-slate-300">Describe your business type *</Label>
+                      <Input
+                        value={formData.customNiche}
+                        onChange={(e) => updateField('customNiche', e.target.value)}
+                        placeholder="e.g., Pool cleaning, Window washing, Pet grooming..."
+                        className="bg-slate-800 border-slate-700 mt-2"
+                        data-testid="input-custom-niche"
+                      />
+                      <p className="text-slate-500 text-xs mt-2">
+                        Enter your specific business type so we can customize your marketing content
+                      </p>
+                    </div>
+                  )}
+
+                  {formData.niche && (
+                    <Card className="bg-red-500/10 border-red-500/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="text-red-400 font-semibold mb-2">Prohibited Content Policy</h4>
+                            <p className="text-slate-300 text-sm mb-3">
+                              By using TrustLayer Marketing, you agree NOT to upload or promote any of the following:
+                            </p>
+                            <ul className="text-slate-400 text-xs space-y-1 mb-4">
+                              {PROHIBITED_CONTENT.map((item, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                  <span className="text-red-400">-</span>
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                            <div 
+                              className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+                                formData.acceptedContentPolicy 
+                                  ? 'bg-green-500/20 border border-green-500/50' 
+                                  : 'bg-slate-800 border border-slate-700 hover:border-slate-600'
+                              }`}
+                              onClick={() => setFormData(prev => ({ ...prev, acceptedContentPolicy: !prev.acceptedContentPolicy }))}
+                              data-testid="checkbox-content-policy"
+                            >
+                              <div className={`w-5 h-5 rounded flex items-center justify-center ${
+                                formData.acceptedContentPolicy ? 'bg-green-500' : 'bg-slate-700 border border-slate-600'
+                              }`}>
+                                {formData.acceptedContentPolicy && <Check className="w-3 h-3 text-white" />}
+                              </div>
+                              <span className="text-white text-sm">
+                                I understand and agree that my content will be reviewed and any violations will result in immediate account termination without refund
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  <Card className="bg-blue-500/10 border-blue-500/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <Shield className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                        <div>
+                          <p className="text-blue-400 font-medium text-sm">Content Moderation</p>
+                          <p className="text-slate-400 text-xs mt-1">
+                            All uploaded images and content are automatically scanned using AI moderation to ensure compliance 
+                            with Facebook and Instagram community standards. Content that violates these standards will be 
+                            rejected and may result in account suspension.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </CardContent>
               </Card>
             </motion.div>
@@ -751,6 +852,47 @@ export default function AutopilotOnboarding() {
                       <Check className="w-3 h-3 mr-1" /> Owner PIN verified - billing bypassed
                     </Badge>
                   )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-6">
+                  <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-blue-400" />
+                    Terms of Service Agreement
+                  </h3>
+                  <div className="bg-slate-900 rounded-lg p-4 mb-4 max-h-48 overflow-y-auto text-xs text-slate-400 space-y-2">
+                    <p className="font-medium text-slate-300">TrustLayer Marketing - Terms of Service</p>
+                    <p>By using TrustLayer Marketing ("Service"), you agree to the following terms:</p>
+                    <p><strong className="text-slate-300">1. Service Description:</strong> TrustLayer provides automated social media marketing services for legitimate businesses. We post content and manage ads on your behalf using your connected Meta Business Suite accounts.</p>
+                    <p><strong className="text-slate-300">2. Content Responsibility:</strong> You are solely responsible for all content you upload or provide. TrustLayer reserves the right to reject, remove, or refuse to post any content at our sole discretion.</p>
+                    <p><strong className="text-slate-300">3. Prohibited Content:</strong> You agree not to upload content that violates our Prohibited Content Policy, Facebook/Instagram Community Standards, or any applicable laws. Violations may result in immediate account termination without refund.</p>
+                    <p><strong className="text-slate-300">4. Content Moderation:</strong> All content is subject to AI-powered moderation. We may reject content that appears to violate platform guidelines, even if not explicitly listed in our prohibited content policy.</p>
+                    <p><strong className="text-slate-300">5. Liability Disclaimer:</strong> TrustLayer is not liable for: (a) content you provide or approve, (b) actions taken by Facebook/Instagram against your accounts, (c) performance of ad campaigns, (d) any business losses resulting from use of the Service.</p>
+                    <p><strong className="text-slate-300">6. Account Suspension:</strong> We reserve the right to suspend or terminate accounts that violate these terms, abuse the platform, or engage in fraudulent activity.</p>
+                    <p><strong className="text-slate-300">7. Refund Policy:</strong> Subscriptions are billed monthly. No refunds for accounts terminated due to policy violations.</p>
+                    <p><strong className="text-slate-300">8. Indemnification:</strong> You agree to indemnify and hold harmless TrustLayer, its officers, and employees from any claims arising from your use of the Service or content you provide.</p>
+                    <p><strong className="text-slate-300">9. Changes to Terms:</strong> We may update these terms at any time. Continued use constitutes acceptance.</p>
+                    <p className="text-slate-500 pt-2">Last updated: January 2026</p>
+                  </div>
+                  <div 
+                    className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all ${
+                      formData.acceptedTerms 
+                        ? 'bg-green-500/20 border border-green-500/50' 
+                        : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, acceptedTerms: !prev.acceptedTerms }))}
+                    data-testid="checkbox-terms"
+                  >
+                    <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                      formData.acceptedTerms ? 'bg-green-500' : 'bg-slate-700 border border-slate-600'
+                    }`}>
+                      {formData.acceptedTerms && <Check className="w-3 h-3 text-white" />}
+                    </div>
+                    <span className="text-white text-sm">
+                      I have read and agree to the Terms of Service, Privacy Policy, and understand that I am responsible for all content I upload
+                    </span>
+                  </div>
                 </CardContent>
               </Card>
 
