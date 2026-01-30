@@ -67,23 +67,24 @@ export default function TrustLayerHome() {
     },
     {
       id: 'staffing',
-      name: 'TrustLayer Staffing',
-      tagline: 'Workforce Management',
-      description: 'Connected to DoorButStaffing. Complete crew management, time tracking, and payroll integration.',
+      name: 'Orbit Staffing Connect',
+      tagline: 'Workforce & Financials',
+      description: 'Seamlessly connected to Orbit Staffing. Complete crew management, payroll, time tracking, and financial hub integration.',
       icon: Users,
       color: 'from-orange-500 to-amber-500',
       glowColor: 'gold' as const,
-      features: ['Crew Management', 'Time Tracking', 'Payroll Sync', 'Skills Matching'],
+      features: ['Crew Management', 'Payroll Integration', 'Financial Hub', 'Time Tracking'],
       price: '$79/mo',
-      link: '/trustlayer/staffing'
+      link: 'https://orbitstaffing.io',
+      external: true
     }
   ];
 
   const connectedSystems = [
-    { name: 'DarkWave Studios', desc: 'Architecture & Development', icon: Building2 },
-    { name: 'DoorButStaffing', desc: 'Workforce Solutions', icon: Users },
-    { name: 'PaintPros.io', desc: 'Trade Verticals', icon: Briefcase },
-    { name: 'Orbit Ecosystem', desc: 'Central Hub', icon: Network }
+    { name: 'Orbit Staffing', desc: 'Workforce & Financials', icon: Users, url: 'https://orbitstaffing.io' },
+    { name: 'PaintPros.io', desc: 'Trade Verticals & Field Tools', icon: Briefcase, url: 'https://paintpros.io' },
+    { name: 'DarkWave Studios', desc: 'Architecture & Development', icon: Building2, url: 'https://darkwavestudios.io' },
+    { name: 'TradeWorks AI', desc: 'Field Tool Platform', icon: Zap, url: 'https://tradeworksai.io' }
   ];
 
   const trustFeatures = [
@@ -322,7 +323,7 @@ export default function TrustLayerHome() {
                 animatedBorder
                 depth="deep"
                 className="cursor-pointer h-full"
-                onClick={() => window.location.href = product.link}
+                onClick={() => (product as any).external ? window.open(product.link, '_blank') : window.location.href = product.link}
               >
                 <div className="p-8 flex flex-col h-full">
                   <motion.div 
@@ -565,7 +566,7 @@ export default function TrustLayerHome() {
                   Best Value
                 </Badge>
                 <h3 className="text-3xl font-bold text-white mb-2">TrustLayer Complete Bundle</h3>
-                <p className="text-slate-400">Marketing + Guardian Shield + Staffing - All in one</p>
+                <p className="text-slate-400">Marketing + Guardian Shield + Orbit Staffing Connect - All in one</p>
               </div>
               <div className="text-center">
                 <p className="text-slate-500 text-sm line-through mb-1">$187/mo</p>
