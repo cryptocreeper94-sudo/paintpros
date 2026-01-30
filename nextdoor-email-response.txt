@@ -1,0 +1,34 @@
+Hi Ben,
+
+Thank you for reaching out and for considering our request.
+
+I'm Jason Andrews, Marketing Director at Nashville Painting Professionals. We're working with TrustLayer Marketing, a B2B marketing automation platform for home service businesses. You can learn more about the platform at TLId.io.
+
+Our use case focuses on the Ads API to help local service businesses:
+
+1. Automated Local Ad Campaigns - Programmatically create and manage hyperlocal ad campaigns targeting homeowners within specific service areas (typically 15-25 mile radius)
+
+2. Budget-Optimized Scheduling - Automate ad spend during business hours with daily budget caps, similar to how we currently integrate with Meta Business Suite
+
+3. Multi-Location Management - Serve franchise and multi-location businesses that need centralized campaign management across different neighborhoods
+
+We have production experience integrating with multiple social media APIs, including Meta's Marketing API, X (Twitter), Discord, and Telegram, as well as building and maintaining our own internal API systems for campaign management and analytics. Our platform currently manages automated multi-channel campaigns for painting companies in markets like Nashville.
+
+We're specifically interested in:
+- Ads API for campaign creation and management
+- Conversion API if available for lead tracking
+
+We're not seeking content/display APIs. Our focus is purely on paid advertising automation for verified local businesses.
+
+Happy to provide additional documentation, demo access, or schedule a call to discuss further.
+
+Best regards,
+
+Jason Andrews
+Marketing Director
+Nashville Painting Professionals
+nashvillepaintingprofessionals.com
+marketing@nashvillepaintingprofessionals.com
+615-796-0430
+
+TrustLayer Ecosystem | TLId.io
