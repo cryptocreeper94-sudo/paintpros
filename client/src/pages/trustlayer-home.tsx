@@ -840,6 +840,7 @@ export default function TrustLayerHome() {
               { name: 'TLId.io', url: 'https://tlid.io', active: true },
               { name: 'DWTL.io', url: 'https://dwtl.io' },
               { name: 'DWSC.io', url: 'https://dwsc.io' },
+              { name: 'OrbitStaffing.io', url: 'https://orbitstaffing.io' },
               { name: 'VedaSolus.io', url: 'https://vedasolus.io' },
               { name: 'GetOrbit.io', url: 'https://getorbit.io' },
               { name: 'LotosPro.io', url: 'https://lotospro.io' },
