@@ -12104,6 +12104,147 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // Update X/Twitter credentials for tenant
+  app.post("/api/social/:tenantId/twitter", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { apiKey, apiSecret, accessToken, accessTokenSecret, username } = req.body;
+      
+      if (!apiKey || !apiSecret || !accessToken || !accessTokenSecret) {
+        return res.status(400).json({ error: "All Twitter API credentials are required" });
+      }
+      
+      // Verify credentials work by calling Twitter API
+      const { TwitterConnector } = await import('./social-connectors');
+      const testConnector = new TwitterConnector({
+        apiKey, apiSecret, accessToken, accessTokenSecret
+      });
+      
+      if (!testConnector.isConfigured()) {
+        return res.status(400).json({ error: "Invalid credentials" });
+      }
+      
+      // Update the integration record
+      const [existing] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!existing) {
+        // Create new integration record
+        await db.insert(metaIntegrations).values({
+          tenantId,
+          twitterApiKey: apiKey,
+          twitterApiSecret: apiSecret,
+          twitterAccessToken: accessToken,
+          twitterAccessTokenSecret: accessTokenSecret,
+          twitterUsername: username || null,
+          twitterConnected: true,
+        });
+      } else {
+        await db
+          .update(metaIntegrations)
+          .set({
+            twitterApiKey: apiKey,
+            twitterApiSecret: apiSecret,
+            twitterAccessToken: accessToken,
+            twitterAccessTokenSecret: accessTokenSecret,
+            twitterUsername: username || null,
+            twitterConnected: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(metaIntegrations.tenantId, tenantId));
+      }
+      
+      console.log(`[Social] X/Twitter connected for ${tenantId}${username ? ` (@${username})` : ''}`);
+      res.json({ success: true, message: "X/Twitter connected successfully", username });
+    } catch (error) {
+      console.error("Error connecting Twitter:", error);
+      res.status(500).json({ error: "Failed to connect X/Twitter" });
+    }
+  });
+
+  // Update Nextdoor credentials for tenant
+  app.post("/api/social/:tenantId/nextdoor", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { agencyId, accessToken, refreshToken } = req.body;
+      
+      if (!agencyId || !accessToken) {
+        return res.status(400).json({ error: "Agency ID and Access Token are required" });
+      }
+      
+      // Update the integration record
+      const [existing] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!existing) {
+        await db.insert(metaIntegrations).values({
+          tenantId,
+          nextdoorAgencyId: agencyId,
+          nextdoorAccessToken: accessToken,
+          nextdoorRefreshToken: refreshToken || null,
+          nextdoorConnected: true,
+        });
+      } else {
+        await db
+          .update(metaIntegrations)
+          .set({
+            nextdoorAgencyId: agencyId,
+            nextdoorAccessToken: accessToken,
+            nextdoorRefreshToken: refreshToken || null,
+            nextdoorConnected: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(metaIntegrations.tenantId, tenantId));
+      }
+      
+      console.log(`[Social] Nextdoor connected for ${tenantId}`);
+      res.json({ success: true, message: "Nextdoor connected successfully" });
+    } catch (error) {
+      console.error("Error connecting Nextdoor:", error);
+      res.status(500).json({ error: "Failed to connect Nextdoor" });
+    }
+  });
+
+  // Get social integration status for tenant
+  app.get("/api/social/:tenantId/status", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      res.json({
+        facebook: {
+          connected: integration?.facebookConnected || false,
+          pageName: integration?.facebookPageName || null,
+        },
+        instagram: {
+          connected: integration?.instagramConnected || false,
+          username: integration?.instagramUsername || null,
+        },
+        twitter: {
+          connected: integration?.twitterConnected || false,
+          username: integration?.twitterUsername || null,
+        },
+        nextdoor: {
+          connected: integration?.nextdoorConnected || false,
+        },
+      });
+    } catch (error) {
+      console.error("Error getting social status:", error);
+      res.status(500).json({ error: "Failed to get social status" });
+    }
+  });
+
   // Post to both Facebook and Instagram (cross-posting)
   app.post("/api/meta/:tenantId/post/both", async (req, res) => {
     try {

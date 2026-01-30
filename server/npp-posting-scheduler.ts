@@ -1,6 +1,7 @@
 import { db } from './db';
 import { metaIntegrations, autoPostingSchedule, scheduledPosts, marketingImages, marketingPosts } from '@shared/schema';
 import { eq, and, asc, sql } from 'drizzle-orm';
+import { TwitterConnector, NextdoorConnector } from './social-connectors';
 
 let postingInterval: ReturnType<typeof setInterval> | null = null;
 let isRunning = false;
@@ -248,7 +249,35 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
         }
       }
 
-      if (fbResult.success || igResult.success) {
+      // Post to X/Twitter if configured
+      let xResult: { success: boolean; tweetId?: string; error?: string } = { success: false };
+      const twitterConnector = TwitterConnector.forTenant(integration);
+      if (twitterConnector) {
+        console.log(`[NPP Posting] Posting to X/Twitter...`);
+        const tweetResult = await twitterConnector.post(message, imageUrl);
+        xResult = { success: tweetResult.success, tweetId: tweetResult.externalId, error: tweetResult.error };
+        if (xResult.success) {
+          console.log(`[NPP Posting] X/Twitter post successful: ${xResult.tweetId}`);
+        } else {
+          console.log(`[NPP Posting] X/Twitter post failed: ${xResult.error}`);
+        }
+      }
+
+      // Post to Nextdoor if configured
+      let nextdoorResult: { success: boolean; postId?: string; error?: string } = { success: false };
+      const nextdoorConnector = NextdoorConnector.forTenant(integration);
+      if (nextdoorConnector) {
+        console.log(`[NPP Posting] Posting to Nextdoor...`);
+        const ndResult = await nextdoorConnector.post(message, imageUrl);
+        nextdoorResult = { success: ndResult.success, postId: ndResult.externalId, error: ndResult.error };
+        if (nextdoorResult.success) {
+          console.log(`[NPP Posting] Nextdoor post successful: ${nextdoorResult.postId}`);
+        } else {
+          console.log(`[NPP Posting] Nextdoor post failed: ${nextdoorResult.error}`);
+        }
+      }
+
+      if (fbResult.success || igResult.success || xResult.success || nextdoorResult.success) {
         await db.insert(scheduledPosts).values({
           tenantId: schedule.tenantId,
           contentLibraryId: image?.id || messageContent?.id || null,
@@ -360,7 +389,7 @@ export async function triggerManualPost(tenantId: string): Promise<{ facebook?: 
   if (results.facebook?.success || results.instagram?.success) {
     await db.insert(scheduledPosts).values({
       tenantId,
-      contentLibraryId: content.id,
+      contentLibraryId: image?.id || messageContent?.id || null,
       message: message,
       imageUrl: imageUrl,
       platform: 'facebook',
@@ -371,13 +400,27 @@ export async function triggerManualPost(tenantId: string): Promise<{ facebook?: 
       publishedAt: new Date(),
     });
 
-    await db
-      .update(contentLibrary)
-      .set({
-        timesUsed: sql`COALESCE(${contentLibrary.timesUsed}, 0) + 1`,
-        lastUsedAt: new Date(),
-      })
-      .where(eq(contentLibrary.id, content.id));
+    // Update image usage tracking
+    if (image) {
+      await db
+        .update(marketingImages)
+        .set({
+          usageCount: sql`COALESCE(${marketingImages.usageCount}, 0) + 1`,
+          lastUsedAt: new Date(),
+        })
+        .where(eq(marketingImages.id, image.id));
+    }
+    
+    // Update message usage tracking
+    if (messageContent) {
+      await db
+        .update(marketingPosts)
+        .set({
+          usageCount: sql`COALESCE(${marketingPosts.usageCount}, 0) + 1`,
+          lastUsedAt: new Date(),
+        })
+        .where(eq(marketingPosts.id, messageContent.id));
+    }
   }
 
   return results;

@@ -37,21 +37,42 @@ function generateOAuthSignature(
   return crypto.createHmac('sha1', signingKey).update(baseString).digest('base64');
 }
 
+export interface TwitterCredentials {
+  apiKey: string;
+  apiSecret: string;
+  accessToken: string;
+  accessTokenSecret: string;
+}
+
 export class TwitterConnector {
   private apiKey: string;
   private apiSecret: string;
   private accessToken: string;
   private accessTokenSecret: string;
 
-  constructor() {
-    this.apiKey = process.env.TWITTER_API_KEY || '';
-    this.apiSecret = process.env.TWITTER_API_SECRET || '';
-    this.accessToken = process.env.TWITTER_ACCESS_TOKEN || '';
-    this.accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET || '';
+  constructor(credentials?: TwitterCredentials) {
+    // Use provided credentials or fall back to env vars (platform-level)
+    this.apiKey = credentials?.apiKey || process.env.TWITTER_API_KEY || '';
+    this.apiSecret = credentials?.apiSecret || process.env.TWITTER_API_SECRET || '';
+    this.accessToken = credentials?.accessToken || process.env.TWITTER_ACCESS_TOKEN || '';
+    this.accessTokenSecret = credentials?.accessTokenSecret || process.env.TWITTER_ACCESS_TOKEN_SECRET || '';
   }
 
   isConfigured(): boolean {
     return !!(this.apiKey && this.apiSecret && this.accessToken && this.accessTokenSecret);
+  }
+  
+  static forTenant(integration: { twitterApiKey?: string | null; twitterApiSecret?: string | null; twitterAccessToken?: string | null; twitterAccessTokenSecret?: string | null }): TwitterConnector | null {
+    if (!integration.twitterApiKey || !integration.twitterApiSecret || 
+        !integration.twitterAccessToken || !integration.twitterAccessTokenSecret) {
+      return null;
+    }
+    return new TwitterConnector({
+      apiKey: integration.twitterApiKey,
+      apiSecret: integration.twitterApiSecret,
+      accessToken: integration.twitterAccessToken,
+      accessTokenSecret: integration.twitterAccessTokenSecret,
+    });
   }
 
   private getOAuthHeader(method: string, url: string, additionalParams: Record<string, string> = {}): string {
@@ -307,13 +328,82 @@ export class FacebookConnector {
   }
 }
 
-export type Platform = 'twitter' | 'discord' | 'telegram' | 'facebook';
+export interface NextdoorCredentials {
+  agencyId: string;
+  accessToken: string;
+}
+
+export class NextdoorConnector {
+  private agencyId: string;
+  private accessToken: string;
+
+  constructor(credentials?: NextdoorCredentials) {
+    this.agencyId = credentials?.agencyId || '';
+    this.accessToken = credentials?.accessToken || '';
+  }
+
+  isConfigured(): boolean {
+    return !!(this.agencyId && this.accessToken);
+  }
+
+  static forTenant(integration: { nextdoorAgencyId?: string | null; nextdoorAccessToken?: string | null }): NextdoorConnector | null {
+    if (!integration.nextdoorAgencyId || !integration.nextdoorAccessToken) {
+      return null;
+    }
+    return new NextdoorConnector({
+      agencyId: integration.nextdoorAgencyId,
+      accessToken: integration.nextdoorAccessToken,
+    });
+  }
+
+  async post(content: string, imageUrl?: string): Promise<DeployResult> {
+    if (!this.isConfigured()) {
+      return { success: false, error: 'Nextdoor not configured' };
+    }
+
+    try {
+      // Nextdoor Agency API - Post to business page
+      // Documentation: https://developer.nextdoor.com/agency-api
+      const url = `https://nextdoor.com/api/agency/v1/post/`;
+      
+      const body: { body: string; image_url?: string } = { body: content };
+      if (imageUrl) {
+        body.image_url = imageUrl;
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`,
+          'Content-Type': 'application/json',
+          'X-Nextdoor-Agency-ID': this.agencyId,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[Nextdoor] Post failed:', errorText);
+        return { success: false, error: errorText };
+      }
+
+      const data = await response.json() as { id: string };
+      return { success: true, externalId: data.id };
+    } catch (error) {
+      console.error('[Nextdoor] Post error:', error);
+      return { success: false, error: String(error) };
+    }
+  }
+}
+
+export type Platform = 'twitter' | 'discord' | 'telegram' | 'facebook' | 'nextdoor';
 
 export const connectors = {
   twitter: new TwitterConnector(),
   discord: new DiscordConnector(),
   telegram: new TelegramConnector(),
   facebook: new FacebookConnector(),
+  nextdoor: new NextdoorConnector(),
 };
 
 export function getConnector(platform: Platform) {
@@ -326,5 +416,6 @@ export function getConfiguredPlatforms(): Platform[] {
   if (connectors.discord.isConfigured()) platforms.push('discord');
   if (connectors.telegram.isConfigured()) platforms.push('telegram');
   if (connectors.facebook.isConfigured()) platforms.push('facebook');
+  if (connectors.nextdoor.isConfigured()) platforms.push('nextdoor');
   return platforms;
 }

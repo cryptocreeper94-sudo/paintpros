@@ -5777,6 +5777,21 @@ export const metaIntegrations = pgTable("meta_integrations", {
   instagramFollowers: integer("instagram_followers"),
   instagramReach: integer("instagram_reach"),
   
+  // X/Twitter integration (tenant-specific)
+  twitterApiKey: text("twitter_api_key"),
+  twitterApiSecret: text("twitter_api_secret"),
+  twitterAccessToken: text("twitter_access_token"),
+  twitterAccessTokenSecret: text("twitter_access_token_secret"),
+  twitterUsername: text("twitter_username"),
+  twitterConnected: boolean("twitter_connected").default(false),
+  
+  // Nextdoor integration (tenant-specific)
+  nextdoorAgencyId: text("nextdoor_agency_id"),
+  nextdoorAccessToken: text("nextdoor_access_token"),
+  nextdoorRefreshToken: text("nextdoor_refresh_token"),
+  nextdoorTokenExpiresAt: timestamp("nextdoor_token_expires_at"),
+  nextdoorConnected: boolean("nextdoor_connected").default(false),
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
