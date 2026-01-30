@@ -46,7 +46,8 @@ import {
   metaIntegrations, insertMetaIntegrationSchema,
   scheduledPosts, insertScheduledPostSchema,
   contentLibrary, autoPostingSchedule, adCampaigns, marketingExpenses,
-  autopilotSubscriptions
+  autopilotSubscriptions,
+  trustlayerDomains, trustlayerMemberships, insertTrustlayerDomainSchema, insertTrustlayerMembershipSchema
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -13665,6 +13666,391 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     } catch (error) {
       console.error("Error adding marketing expense:", error);
       res.status(500).json({ error: "Failed to add expense" });
+    }
+  });
+
+  // ============================================================================
+  // TrustLayer Domain System - tlid.io subdomains
+  // ============================================================================
+
+  // Check if subdomain is available
+  app.get("/api/domains/check/:name", async (req, res) => {
+    try {
+      const { name } = req.params;
+      const subdomain = name.toLowerCase().trim();
+      
+      // Validate subdomain format (alphanumeric, hyphens, 3-63 chars)
+      if (!/^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/.test(subdomain)) {
+        return res.json({ 
+          available: false, 
+          reason: "Invalid format. Use 3-63 characters: letters, numbers, and hyphens only."
+        });
+      }
+      
+      // Reserved subdomains
+      const reserved = ['www', 'api', 'app', 'admin', 'mail', 'support', 'help', 'blog', 'docs', 'status'];
+      if (reserved.includes(subdomain)) {
+        return res.json({ available: false, reason: "This subdomain is reserved." });
+      }
+      
+      // Check database
+      const [existing] = await db
+        .select()
+        .from(trustlayerDomains)
+        .where(eq(trustlayerDomains.subdomain, subdomain))
+        .limit(1);
+      
+      res.json({ 
+        available: !existing,
+        subdomain,
+        fullDomain: `${subdomain}.tlid.io`
+      });
+    } catch (error) {
+      console.error("Error checking domain:", error);
+      res.status(500).json({ error: "Failed to check domain availability" });
+    }
+  });
+
+  // Resolve subdomain to target (for gateway)
+  app.get("/api/domains/resolve/:subdomain", async (req, res) => {
+    try {
+      const { subdomain } = req.params;
+      
+      const [domain] = await db
+        .select()
+        .from(trustlayerDomains)
+        .where(and(
+          eq(trustlayerDomains.subdomain, subdomain.toLowerCase()),
+          eq(trustlayerDomains.status, 'active')
+        ))
+        .limit(1);
+      
+      if (!domain) {
+        return res.status(404).json({ error: "Domain not found" });
+      }
+      
+      // If it's a redirect type, return target URL
+      if (domain.targetType === 'redirect' && domain.targetUrl) {
+        return res.json({ target: domain.targetUrl });
+      }
+      
+      // Otherwise, it's a profile - route to profile page
+      res.json({ 
+        target: `/tlid/${subdomain}`,
+        type: domain.targetType,
+        profile: {
+          businessName: domain.businessName,
+          isVerified: domain.isVerified,
+          verificationLevel: domain.verificationLevel,
+          guardianShieldActive: domain.guardianShieldActive
+        }
+      });
+    } catch (error) {
+      console.error("Error resolving domain:", error);
+      res.status(500).json({ error: "Failed to resolve domain" });
+    }
+  });
+
+  // Claim a subdomain - requires authentication
+  app.post("/api/domains/claim", isAuthenticated, async (req: any, res) => {
+    try {
+      // Get userId from authenticated session
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      // Validate request body
+      const claimSchema = z.object({
+        subdomain: z.string().min(3).max(63).regex(/^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/),
+        businessName: z.string().optional(),
+        targetType: z.enum(['profile', 'redirect', 'website']).optional(),
+        targetUrl: z.string().url().optional()
+      });
+      
+      const parsed = claimSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid request data", details: parsed.error.issues });
+      }
+      
+      const { subdomain, businessName, targetType, targetUrl } = parsed.data;
+      const cleanSubdomain = subdomain.toLowerCase().trim();
+      
+      // Reserved subdomains
+      const reserved = ['www', 'api', 'app', 'admin', 'mail', 'support', 'help', 'blog', 'docs', 'status'];
+      if (reserved.includes(cleanSubdomain)) {
+        return res.status(400).json({ error: "This subdomain is reserved" });
+      }
+      
+      // Check availability first
+      const [existing] = await db
+        .select()
+        .from(trustlayerDomains)
+        .where(eq(trustlayerDomains.subdomain, cleanSubdomain))
+        .limit(1);
+      
+      if (existing) {
+        return res.status(409).json({ error: "Subdomain already taken" });
+      }
+      
+      // Check if user already has a domain
+      const [userDomain] = await db
+        .select()
+        .from(trustlayerDomains)
+        .where(eq(trustlayerDomains.userId, userId))
+        .limit(1);
+      
+      if (userDomain) {
+        return res.status(409).json({ 
+          error: "You already have a subdomain", 
+          existing: userDomain.subdomain 
+        });
+      }
+      
+      // Create the domain
+      const [domain] = await db
+        .insert(trustlayerDomains)
+        .values({
+          userId,
+          subdomain: cleanSubdomain,
+          businessName: businessName || null,
+          targetType: targetType || 'profile',
+          targetUrl: targetUrl || null,
+          status: 'active'
+        })
+        .returning();
+      
+      res.json({ 
+        success: true, 
+        domain,
+        fullDomain: `${cleanSubdomain}.tlid.io`
+      });
+    } catch (error) {
+      console.error("Error claiming domain:", error);
+      res.status(500).json({ error: "Failed to claim domain" });
+    }
+  });
+
+  // Get current user's domain - requires authentication
+  app.get("/api/domains/me", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      const [domain] = await db
+        .select()
+        .from(trustlayerDomains)
+        .where(eq(trustlayerDomains.userId, userId))
+        .limit(1);
+      
+      if (!domain) {
+        return res.json({ hasDomain: false });
+      }
+      
+      res.json({ 
+        hasDomain: true, 
+        domain,
+        fullDomain: `${domain.subdomain}.tlid.io`
+      });
+    } catch (error) {
+      console.error("Error fetching user domain:", error);
+      res.status(500).json({ error: "Failed to fetch domain" });
+    }
+  });
+
+  // Update domain settings - requires authentication and ownership
+  app.patch("/api/domains/:domainId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      const { domainId } = req.params;
+      
+      // Verify ownership
+      const [existingDomain] = await db
+        .select()
+        .from(trustlayerDomains)
+        .where(eq(trustlayerDomains.id, domainId))
+        .limit(1);
+      
+      if (!existingDomain) {
+        return res.status(404).json({ error: "Domain not found" });
+      }
+      
+      if (existingDomain.userId !== userId) {
+        return res.status(403).json({ error: "You do not own this domain" });
+      }
+      
+      // Validate and whitelist allowed updates
+      const updateSchema = z.object({
+        businessName: z.string().optional(),
+        businessDescription: z.string().optional(),
+        businessPhone: z.string().optional(),
+        businessEmail: z.string().email().optional(),
+        businessWebsite: z.string().url().optional(),
+        businessLogo: z.string().url().optional(),
+        businessAddress: z.string().optional(),
+        targetUrl: z.string().url().optional(),
+        targetType: z.enum(['profile', 'redirect', 'website']).optional()
+      });
+      
+      const parsed = updateSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid update data", details: parsed.error.issues });
+      }
+      
+      const [domain] = await db
+        .update(trustlayerDomains)
+        .set({
+          ...parsed.data,
+          updatedAt: new Date()
+        })
+        .where(eq(trustlayerDomains.id, domainId))
+        .returning();
+      
+      res.json({ success: true, domain });
+    } catch (error) {
+      console.error("Error updating domain:", error);
+      res.status(500).json({ error: "Failed to update domain" });
+    }
+  });
+
+  // Get user's TLID membership - requires authentication
+  app.get("/api/user/membership", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      const [membership] = await db
+        .select()
+        .from(trustlayerMemberships)
+        .where(eq(trustlayerMemberships.userId, userId))
+        .limit(1);
+      
+      if (!membership) {
+        return res.json({ hasMembership: false });
+      }
+      
+      res.json({ 
+        hasMembership: true,
+        membership
+      });
+    } catch (error) {
+      console.error("Error fetching membership:", error);
+      res.status(500).json({ error: "Failed to fetch membership" });
+    }
+  });
+
+  // Create TLID membership - requires authentication
+  app.post("/api/user/membership", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      // Check if already has membership
+      const [existing] = await db
+        .select()
+        .from(trustlayerMemberships)
+        .where(eq(trustlayerMemberships.userId, userId))
+        .limit(1);
+      
+      if (existing) {
+        return res.json({ membership: existing });
+      }
+      
+      // Generate unique TLID
+      const randomNum = Math.floor(100000 + Math.random() * 900000);
+      const tlid = `TL-${randomNum}`;
+      
+      const [membership] = await db
+        .insert(trustlayerMemberships)
+        .values({
+          userId,
+          tlid,
+          plan: 'free',
+          status: 'active'
+        })
+        .returning();
+      
+      res.json({ success: true, membership });
+    } catch (error) {
+      console.error("Error creating membership:", error);
+      res.status(500).json({ error: "Failed to create membership" });
+    }
+  });
+
+  // Firebase sync endpoint for gateway
+  app.post("/api/auth/firebase-sync", async (req, res) => {
+    try {
+      const { firebaseUid, email, displayName, photoURL } = req.body;
+      
+      if (!firebaseUid || !email) {
+        return res.status(400).json({ error: "Firebase UID and email required" });
+      }
+      
+      // Find or create user
+      let [user] = await db
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.email, email))
+        .limit(1);
+      
+      if (!user) {
+        // Create new user
+        const [names] = (displayName || '').split(' ');
+        [user] = await db
+          .insert(usersTable)
+          .values({
+            email,
+            firstName: names || null,
+            lastName: displayName?.split(' ').slice(1).join(' ') || null,
+            profileImageUrl: photoURL || null,
+            authProvider: 'firebase'
+          })
+          .returning();
+      }
+      
+      // Ensure they have a TLID membership
+      let [membership] = await db
+        .select()
+        .from(trustlayerMemberships)
+        .where(eq(trustlayerMemberships.userId, user.id))
+        .limit(1);
+      
+      if (!membership) {
+        const randomNum = Math.floor(100000 + Math.random() * 900000);
+        [membership] = await db
+          .insert(trustlayerMemberships)
+          .values({
+            userId: user.id,
+            tlid: `TL-${randomNum}`,
+            plan: 'free',
+            status: 'active'
+          })
+          .returning();
+      }
+      
+      res.json({ 
+        success: true, 
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName
+        },
+        membership
+      });
+    } catch (error) {
+      console.error("Error syncing Firebase user:", error);
+      res.status(500).json({ error: "Failed to sync user" });
     }
   });
 

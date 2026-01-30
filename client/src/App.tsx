@@ -58,6 +58,7 @@ import AutopilotSetupGuide from "@/pages/autopilot-setup-guide";
 import TrustLayerHome from "@/pages/trustlayer-home";
 import TrustLayerMarketing from "@/pages/trustlayer-marketing";
 import GuardianShield from "@/pages/guardian-shield";
+import ClaimSubdomain from "@/pages/claim-subdomain";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -244,6 +245,7 @@ function Router() {
       <Route path="/trustlayer" component={TrustLayerHome} />
       <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
       <Route path="/trustlayer/guardian" component={GuardianShield} />
+      <Route path="/trustlayer/claim" component={ClaimSubdomain} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -6039,3 +6039,94 @@ export const adCampaigns = pgTable("ad_campaigns", {
   index("idx_ad_campaigns_status").on(table.status),
 ]);
 
+// ============================================================================
+// TrustLayer Domain System - tlid.io subdomains
+// ============================================================================
+
+export const trustlayerDomains = pgTable("trustlayer_domains", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  
+  // Subdomain info (e.g., "jason" for jason.tlid.io)
+  subdomain: varchar("subdomain", { length: 63 }).unique().notNull(),
+  
+  // Where this subdomain redirects to
+  targetUrl: text("target_url"), // External URL redirect
+  targetType: text("target_type").default("profile"), // 'profile', 'redirect', 'website'
+  
+  // Business profile info (if targetType is 'profile')
+  businessName: text("business_name"),
+  businessDescription: text("business_description"),
+  businessPhone: text("business_phone"),
+  businessEmail: text("business_email"),
+  businessWebsite: text("business_website"),
+  businessLogo: text("business_logo"),
+  businessAddress: text("business_address"),
+  
+  // TrustLayer verification status
+  isVerified: boolean("is_verified").default(false),
+  verificationLevel: text("verification_level").default("basic"), // 'basic', 'verified', 'premium'
+  guardianShieldActive: boolean("guardian_shield_active").default(false),
+  
+  // Subscription links
+  marketingSubscriptionId: varchar("marketing_subscription_id"),
+  guardianSubscriptionId: varchar("guardian_subscription_id"),
+  staffingSubscriptionId: varchar("staffing_subscription_id"),
+  bundleSubscriptionId: varchar("bundle_subscription_id"),
+  
+  // Status
+  status: text("status").default("active"), // 'active', 'suspended', 'pending'
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_trustlayer_domains_user").on(table.userId),
+  index("idx_trustlayer_domains_subdomain").on(table.subdomain),
+  index("idx_trustlayer_domains_status").on(table.status),
+]);
+
+export const insertTrustlayerDomainSchema = createInsertSchema(trustlayerDomains).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertTrustlayerDomain = z.infer<typeof insertTrustlayerDomainSchema>;
+export type TrustlayerDomain = typeof trustlayerDomains.$inferSelect;
+
+// TrustLayer memberships - Trust Layer ID (TLID) for users
+export const trustlayerMemberships = pgTable("trustlayer_memberships", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull().unique(),
+  
+  // TLID - unique identifier like "TL-123456"
+  tlid: varchar("tlid", { length: 20 }).unique().notNull(),
+  
+  // Subscription status
+  plan: text("plan").default("free"), // 'free', 'marketing', 'guardian', 'staffing', 'bundle'
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  
+  // Member since
+  memberSince: timestamp("member_since").defaultNow().notNull(),
+  
+  // Status
+  status: text("status").default("active"), // 'active', 'suspended', 'cancelled'
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_trustlayer_memberships_user").on(table.userId),
+  index("idx_trustlayer_memberships_tlid").on(table.tlid),
+]);
+
+export const insertTrustlayerMembershipSchema = createInsertSchema(trustlayerMemberships).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  memberSince: true,
+});
+
+export type InsertTrustlayerMembership = z.infer<typeof insertTrustlayerMembershipSchema>;
+export type TrustlayerMembership = typeof trustlayerMemberships.$inferSelect;
+

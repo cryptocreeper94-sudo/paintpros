@@ -163,8 +163,10 @@ export default function TrustLayerHome() {
                 size="sm"
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg shadow-emerald-500/25"
                 data-testid="button-get-started"
+                onClick={() => window.location.href = '/trustlayer/claim'}
               >
-                Get Started
+                <Globe className="w-4 h-4 mr-1" />
+                Claim .tlid.io
               </Button>
             </div>
           </div>
