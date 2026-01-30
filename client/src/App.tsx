@@ -54,6 +54,7 @@ import AutopilotSuccess from "@/pages/autopilot-success";
 import AutopilotAdmin from "@/pages/autopilot-admin";
 import AutopilotPortal from "@/pages/autopilot-portal";
 import AutopilotDashboard from "@/pages/autopilot-dashboard";
+import AutopilotSetupGuide from "@/pages/autopilot-setup-guide";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -235,6 +236,7 @@ function Router() {
       <Route path="/autopilot/admin" component={AutopilotAdmin} />
       <Route path="/autopilot/portal" component={AutopilotPortal} />
       <Route path="/autopilot/dashboard" component={AutopilotDashboard} />
+      <Route path="/autopilot/setup" component={AutopilotSetupGuide} />
       <Route path="/marketing-autopilot" component={MarketingAutopilot} />
       <Route component={NotFound} />
     </Switch>
