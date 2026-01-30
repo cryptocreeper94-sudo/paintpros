@@ -384,6 +384,79 @@ export async function registerRoutes(
     });
   });
 
+  // ============ TRUSTLAYER ECOSYSTEM API ============
+  
+  // GET /api/ecosystem/connection - Returns integration specs for connecting to TrustLayer
+  app.get("/api/ecosystem/connection", (req, res) => {
+    res.json({
+      app: {
+        id: "3028c7ad-9521-407d-a54d-7f47f5b7b4fc",
+        name: "Trust Layer Gateway",
+        slug: "trustlayer",
+        hubUrl: "https://tlid.io"
+      },
+      endpoints: {
+        status: {
+          method: "GET",
+          url: "https://tlid.io/api/ecosystem/status",
+          description: "Check connection status"
+        },
+        subscribe: {
+          method: "POST", 
+          url: "https://tlid.io/api/marketing-autopilot/subscribe",
+          description: "Create new marketing autopilot subscription"
+        },
+        domains: {
+          method: "GET",
+          url: "https://tlid.io/api/trustlayer/domains",
+          description: "List verified TrustLayer domains"
+        }
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "X-App-Name": "Trust Layer Gateway"
+      },
+      ecosystem: {
+        name: "TrustLayer Ecosystem",
+        sites: [
+          { name: "TLId.io", url: "https://tlid.io", description: "TrustLayer ID - Digital Marketing Platform" },
+          { name: "DWTL.io", url: "https://dwtl.io", description: "DarkWave Trust Layer - Blockchain Verification" },
+          { name: "DWSC.io", url: "https://dwsc.io", description: "DarkWave Studios Central" },
+          { name: "OrbitStaffing.io", url: "https://orbitstaffing.io", description: "ORBIT Financial Hub" },
+          { name: "VedaSolus.io", url: "https://vedasolus.io", description: "VedaSolus Platform" },
+          { name: "GetOrbit.io", url: "https://getorbit.io", description: "Orbit Platform" },
+          { name: "LotosPro.io", url: "https://lotospro.io", description: "LotosPro Services" },
+          { name: "StrikeAgent.io", url: "https://strikeagent.io", description: "StrikeAgent Platform" },
+          { name: "DarkWavePulse.com", url: "https://darkwavepulse.com", description: "DarkWave Pulse" },
+          { name: "BrewAndBoard.coffee", url: "https://brewandboard.coffee", description: "Brew & Board" },
+          { name: "Driver Connect", url: "https://driver-connect-hub.replit.app", description: "TrustLayer Driver Connect" }
+        ]
+      },
+      codeExample: {
+        javascript: `// Connect to TrustLayer Ecosystem
+const response = await fetch('https://tlid.io/api/ecosystem/status', {
+  headers: {
+    'Content-Type': 'application/json',
+    'X-App-Name': 'Your App Name'
+  }
+});
+const data = await response.json();
+console.log(data);`
+      }
+    });
+  });
+
+  // GET /api/ecosystem/status - Return ecosystem status
+  app.get("/api/ecosystem/status", (req, res) => {
+    const appName = req.headers['x-app-name'] || 'Unknown';
+    res.json({
+      connected: true,
+      hubName: "TrustLayer Ecosystem Hub",
+      appName,
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // ============ MARKETING AUTOPILOT SUBSCRIPTION SERVICE ============
   
   // POST /api/marketing-autopilot/subscribe - Create subscription for automated marketing service
