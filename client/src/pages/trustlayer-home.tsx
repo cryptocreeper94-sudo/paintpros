@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cardVariants, staggerContainer, fadeInUp, scaleIn } from "@/lib/theme-effects";
+
+import stepConnectImg from "@/assets/images/step-connect.png";
+import stepPreferencesImg from "@/assets/images/step-preferences.png";
+import stepSubscribeImg from "@/assets/images/step-subscribe.png";
+import productMarketingImg from "@/assets/images/product-marketing.png";
+import productShieldImg from "@/assets/images/product-shield.png";
+import productStaffingImg from "@/assets/images/product-staffing.png";
 import {
   Shield,
   Zap,
@@ -54,7 +61,8 @@ export default function TrustLayerHome() {
       glowColor: 'blue' as const,
       features: ['Automated Posting', 'Smart Ad Boosting', 'Full Analytics', 'Content Library'],
       price: '$59/mo',
-      link: '/trustlayer/marketing'
+      link: '/trustlayer/marketing',
+      image: productMarketingImg
     },
     {
       id: 'guardian',
@@ -66,7 +74,8 @@ export default function TrustLayerHome() {
       glowColor: 'green' as const,
       features: ['Business Verification', 'Trust Badges', 'Security Monitoring', 'Credential Management'],
       price: '$49/mo',
-      link: '/trustlayer/guardian'
+      link: '/trustlayer/guardian',
+      image: productShieldImg
     },
     {
       id: 'staffing',
@@ -79,7 +88,8 @@ export default function TrustLayerHome() {
       features: ['Crew Management', 'Payroll Integration', 'Financial Hub', 'Time Tracking'],
       price: '$79/mo',
       link: 'https://orbitstaffing.io',
-      external: true
+      external: true,
+      image: productStaffingImg
     }
   ];
 
@@ -308,26 +318,40 @@ export default function TrustLayerHome() {
             transition={{ delay: 0.6 }}
             className="max-w-4xl mx-auto"
           >
-            <p className="text-slate-500 text-sm text-center mb-6 uppercase tracking-wider">How It Works</p>
+            <p className="text-slate-500 text-sm text-center mb-8 uppercase tracking-wider">How It Works</p>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { step: '1', title: 'Connect Meta', desc: 'Link your Facebook Page & Instagram in 5 minutes', icon: Link2 },
-                { step: '2', title: 'Set Preferences', desc: 'Choose your content style, schedule & budget', icon: Settings },
-                { step: '3', title: 'Subscribe & Go', desc: '$59/mo - We handle everything automatically', icon: Zap }
+                { step: '1', title: 'Connect Meta', desc: 'Link your Facebook Page & Instagram in 5 minutes', icon: Link2, image: stepConnectImg },
+                { step: '2', title: 'Set Preferences', desc: 'Choose your content style, schedule & budget', icon: Settings, image: stepPreferencesImg },
+                { step: '3', title: 'Subscribe & Go', desc: '$59/mo - We handle everything automatically', icon: Zap, image: stepSubscribeImg }
               ].map((item, i) => (
                 <motion.div
                   key={i}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.7 + i * 0.1 }}
-                  className="relative bg-slate-800/30 backdrop-blur-sm border border-white/5 rounded-xl p-6 text-center"
+                  className="relative rounded-xl overflow-hidden group"
                 >
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                    {item.step}
+                  {/* Background Image */}
+                  <div className="absolute inset-0">
+                    <img 
+                      src={item.image} 
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/40" />
                   </div>
-                  <item.icon className="w-8 h-8 text-blue-400 mx-auto mb-3 mt-2" />
-                  <h4 className="text-white font-semibold mb-2">{item.title}</h4>
-                  <p className="text-slate-400 text-sm">{item.desc}</p>
+                  
+                  {/* Content */}
+                  <div className="relative p-6 pt-8 text-center min-h-[200px] flex flex-col justify-end">
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                      {item.step}
+                    </div>
+                    <item.icon className="w-8 h-8 text-blue-400 mx-auto mb-3" />
+                    <h4 className="text-white font-semibold text-lg mb-2">{item.title}</h4>
+                    <p className="text-slate-300 text-sm">{item.desc}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -413,45 +437,53 @@ export default function TrustLayerHome() {
         >
           {products.map((product, i) => (
             <motion.div key={product.id} variants={cardVariants} custom={i}>
-              <GlassCard
-                hoverEffect="3d"
-                glow={product.glowColor}
-                animatedBorder
-                depth="deep"
-                className="cursor-pointer h-full"
+              <div 
+                className="relative rounded-2xl overflow-hidden cursor-pointer h-full group border border-white/10 hover:border-white/20 transition-colors"
                 onClick={() => (product as any).external ? window.open(product.link, '_blank') : window.location.href = product.link}
               >
-                <div className="p-8 flex flex-col h-full">
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {/* Dark gradient overlay for readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/90 to-slate-900/60" />
+                </div>
+                
+                {/* Content */}
+                <div className="relative p-8 flex flex-col h-full">
                   <motion.div 
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${product.color} flex items-center justify-center mb-6 shadow-lg`}
+                    className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${product.color} flex items-center justify-center mb-6 shadow-lg backdrop-blur-sm`}
                     style={{ boxShadow: `0 10px 40px -10px ${product.glowColor === 'blue' ? 'rgba(59, 130, 246, 0.5)' : product.glowColor === 'green' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(245, 158, 11, 0.5)'}` }}
                   >
                     <product.icon className="w-8 h-8 text-white" />
                   </motion.div>
 
                   <h3 className="text-2xl font-bold text-white mb-1">{product.name}</h3>
-                  <p className="text-slate-500 text-sm mb-3">{product.tagline}</p>
-                  <p className="text-slate-400 text-sm mb-6 flex-grow">{product.description}</p>
+                  <p className="text-slate-400 text-sm mb-3">{product.tagline}</p>
+                  <p className="text-slate-300 text-sm mb-6 flex-grow">{product.description}</p>
 
                   <div className="space-y-3 mb-6">
                     {product.features.map((feature, j) => (
                       <div key={j} className="flex items-center gap-3 text-sm">
                         <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                        <span className="text-slate-300">{feature}</span>
+                        <span className="text-slate-200">{feature}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                  <div className="flex items-center justify-between pt-6 border-t border-white/10">
                     <span className="text-3xl font-bold text-white">{product.price}</span>
-                    <Button size="sm" variant="ghost" className="text-slate-400 hover:text-white">
+                    <Button size="sm" className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white">
                       Learn More
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Button>
                   </div>
                 </div>
-              </GlassCard>
+              </div>
             </motion.div>
           ))}
         </motion.div>
