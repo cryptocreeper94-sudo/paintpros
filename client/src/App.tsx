@@ -89,6 +89,7 @@ import SubscriberDashboard from "@/pages/subscriber-dashboard";
 import InvestorDemo from "@/pages/investor-demo";
 import Partners from "@/pages/partners";
 import PrivacyPolicy from "@/pages/privacy-policy";
+import DataDeletion from "@/pages/data-deletion";
 import Contact from "@/pages/contact";
 import FAQ from "@/pages/faq";
 import Start from "@/pages/start";
@@ -231,6 +232,7 @@ function Router() {
       <Route path="/partners" component={Partners} />
       <Route path="/privacy" component={PrivacyPolicy} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/data-deletion" component={DataDeletion} />
       <Route path="/contact" component={Contact} />
       <Route path="/faq" component={FAQ} />
       <Route path="/start" component={Start} />
