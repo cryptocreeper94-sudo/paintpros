@@ -462,7 +462,7 @@ console.log(data);`
   // POST /api/marketing-autopilot/subscribe - Create subscription for automated marketing service
   app.post("/api/marketing-autopilot/subscribe", async (req, res) => {
     try {
-      const { businessName, ownerName, email, phone } = req.body;
+      const { businessName, ownerName, email, phone, isInternal } = req.body;
       
       if (!businessName || !ownerName || !email || !phone) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -475,9 +475,35 @@ console.log(data);`
         .replace(/^-|-$/g, '')
         .substring(0, 30) + '-' + Date.now().toString(36);
       
-      // Store pending subscription in database
+      const subscriptionId = crypto.randomUUID();
+      
+      // For internal (owner) apps, skip Stripe and activate immediately
+      if (isInternal) {
+        await db.insert(autopilotSubscriptions).values({
+          id: subscriptionId,
+          tenantId,
+          businessName,
+          ownerName,
+          email,
+          phone,
+          isInternal: true,
+          status: 'active', // Active immediately - no payment needed
+          monthlyPrice: '0.00',
+          activatedAt: new Date(),
+          createdAt: new Date()
+        });
+        
+        return res.json({ 
+          success: true, 
+          subscriptionId,
+          tenantId,
+          message: 'Internal app created - no billing required'
+        });
+      }
+      
+      // Store pending subscription in database for paying customers
       await db.insert(autopilotSubscriptions).values({
-        id: crypto.randomUUID(),
+        id: subscriptionId,
         tenantId,
         businessName,
         ownerName,

@@ -1806,6 +1806,7 @@ export const autopilotSubscriptions = pgTable("autopilot_subscriptions", {
   phone: text("phone").notNull(),
   website: text("website"),
   status: text("status").notNull().default("pending"), // 'pending', 'active', 'paused', 'cancelled'
+  isInternal: boolean("is_internal").default(false), // Platform owner's apps - no billing required
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   metaConnected: boolean("meta_connected").default(false),

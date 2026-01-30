@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import {
   Check,
@@ -37,7 +38,8 @@ export default function MarketingAutopilot() {
     businessName: "",
     ownerName: "",
     email: "",
-    phone: ""
+    phone: "",
+    isInternal: false // Platform owner's apps - no billing
   });
 
   const handleSubscribe = async () => {
@@ -54,6 +56,16 @@ export default function MarketingAutopilot() {
     try {
       const response = await apiRequest("POST", "/api/marketing-autopilot/subscribe", formData);
       const data = await response.json();
+      
+      // Internal apps are activated immediately - redirect to dashboard
+      if (data.success && formData.isInternal) {
+        toast({
+          title: "App Created",
+          description: "Internal app activated - redirecting to dashboard",
+        });
+        window.location.href = `/autopilot/dashboard?tenant=${data.tenantId}`;
+        return;
+      }
       
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -386,6 +398,22 @@ export default function MarketingAutopilot() {
                     />
                   </div>
 
+                  {/* Internal App Toggle - Platform Owner Only */}
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700">
+                    <Checkbox
+                      id="internal"
+                      checked={formData.isInternal}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isInternal: checked === true })}
+                      data-testid="checkbox-internal"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor="internal" className="text-slate-300 cursor-pointer">
+                        My Own App (No Billing)
+                      </Label>
+                      <p className="text-xs text-slate-500">Platform owner - skip payment</p>
+                    </div>
+                  </div>
+
                   <Button
                     onClick={handleSubscribe}
                     disabled={loading}
@@ -394,6 +422,11 @@ export default function MarketingAutopilot() {
                   >
                     {loading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : formData.isInternal ? (
+                      <>
+                        <Zap className="w-5 h-5 mr-2" />
+                        Create Internal App
+                      </>
                     ) : (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />
@@ -403,7 +436,9 @@ export default function MarketingAutopilot() {
                   </Button>
 
                   <p className="text-center text-slate-500 text-xs">
-                    You'll be redirected to our secure payment page
+                    {formData.isInternal 
+                      ? "Your app will be activated immediately" 
+                      : "You'll be redirected to our secure payment page"}
                   </p>
                 </div>
               </CardContent>
