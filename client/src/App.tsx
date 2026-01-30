@@ -151,7 +151,9 @@ function TenantHomeRedirect() {
     return <TradeVerticalPage tradeId={tradeMap[tenantId]} />;
   }
   
-  return <Home />;
+  // TLId.io - Default to TrustLayer digital marketing landing page
+  // Lume will eventually move to lumepaint.co
+  return <TrustLayerHome />;
 }
 
 function Router() {
