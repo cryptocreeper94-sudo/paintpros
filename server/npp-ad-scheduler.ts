@@ -115,18 +115,21 @@ async function createAdCampaign(
 
     // Step 1: Create Campaign
     console.log(`[Ad Scheduler] Creating campaign in ad account ${adAccountId}...`);
+    const campaignParams = new URLSearchParams({
+      access_token: accessToken,
+      name: `${campaignName} - ${new Date().toLocaleDateString()}`,
+      objective: 'OUTCOME_AWARENESS',
+      status: 'PAUSED',
+      special_ad_categories: '[]',
+      is_adset_budget_sharing_enabled: 'false'
+    });
+    
     const campaignResponse = await fetch(
       `https://graph.facebook.com/v21.0/${adAccountId}/campaigns`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_token: accessToken,
-          name: `${campaignName} - ${new Date().toLocaleDateString()}`,
-          objective: 'OUTCOME_AWARENESS',
-          status: 'PAUSED', // Create paused, activate after full setup
-          special_ad_categories: []
-        })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: campaignParams.toString()
       }
     );
 
@@ -140,37 +143,39 @@ async function createAdCampaign(
     console.log(`[Ad Scheduler] Campaign created: ${campaignId}`);
 
     // Step 2: Create Ad Set with targeting
+    const targetingSpec = JSON.stringify({
+      geo_locations: {
+        cities: [{ 
+          key: cityKey,
+          radius: targeting.radius,
+          distance_unit: 'mile'
+        }]
+      },
+      age_min: targeting.ageMin,
+      age_max: targeting.ageMax,
+      publisher_platforms: ['facebook', 'instagram'],
+      facebook_positions: ['feed'],
+      instagram_positions: ['stream']
+    });
+    
+    const adSetParams = new URLSearchParams({
+      access_token: accessToken,
+      name: `${campaignName} AdSet`,
+      campaign_id: campaignId,
+      daily_budget: String(Math.round(dailyBudget * 100)),
+      billing_event: 'IMPRESSIONS',
+      optimization_goal: 'REACH',
+      bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+      status: 'PAUSED',
+      targeting: targetingSpec
+    });
+    
     const adSetResponse = await fetch(
       `https://graph.facebook.com/v21.0/${adAccountId}/adsets`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_token: accessToken,
-          name: `${campaignName} AdSet`,
-          campaign_id: campaignId,
-          daily_budget: Math.round(dailyBudget * 100), // Convert to cents
-          billing_event: 'IMPRESSIONS',
-          optimization_goal: 'REACH',
-          bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
-          status: 'PAUSED',
-          targeting: {
-            geo_locations: {
-              cities: [{ 
-                key: cityKey,
-                radius: targeting.radius,
-                distance_unit: 'mile'
-              }]
-            },
-            age_min: targeting.ageMin,
-            age_max: targeting.ageMax,
-            publisher_platforms: ['facebook', 'instagram'],
-            facebook_positions: ['feed', 'instant_article', 'instream_video'],
-            instagram_positions: ['stream', 'story', 'explore']
-          },
-          start_time: new Date().toISOString(),
-          end_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
-        })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: adSetParams.toString()
       }
     );
 
@@ -188,21 +193,72 @@ async function createAdCampaign(
     const adSetId = adSetData.id;
     console.log(`[Ad Scheduler] Ad Set created: ${adSetId}`);
 
-    // Step 3: Create Ad using the existing post
+    // Step 3: Create Ad Creative directly (more reliable than reusing posts)
+    const adCreativeSpec = JSON.stringify({
+      object_story_spec: {
+        page_id: pageId,
+        link_data: {
+          link: `https://nashpaintpros.io`,
+          message: 'Transform your home with Nashville\'s trusted painting professionals. Free estimates, quality work guaranteed.',
+          name: 'Nashville Painting Professionals',
+          description: 'Professional interior and exterior painting services in Nashville, TN.',
+          call_to_action: {
+            type: 'LEARN_MORE',
+            value: { link: 'https://nashpaintpros.io' }
+          }
+        }
+      }
+    });
+    
+    const creativeParams = new URLSearchParams({
+      access_token: accessToken,
+      name: `${campaignName} Creative`,
+      object_story_spec: JSON.stringify({
+        page_id: pageId,
+        link_data: {
+          link: 'https://nashpaintpros.io',
+          message: 'Transform your home with Nashville\'s trusted painting professionals. Free estimates, quality work guaranteed.',
+          name: 'Nashville Painting Professionals',
+          description: 'Professional interior and exterior painting services.',
+          call_to_action: { type: 'LEARN_MORE', value: { link: 'https://nashpaintpros.io' } }
+        }
+      })
+    });
+    
+    const creativeResponse = await fetch(
+      `https://graph.facebook.com/v21.0/${adAccountId}/adcreatives`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: creativeParams.toString()
+      }
+    );
+    
+    if (!creativeResponse.ok) {
+      const creativeError = await creativeResponse.json();
+      console.log(`[Ad Scheduler] Creative creation failed: ${creativeError.error?.message}`);
+      // Fallback: try using existing post
+      console.log(`[Ad Scheduler] Trying existing post as fallback...`);
+    }
+    
+    const creativeData = await creativeResponse.json();
+    const creativeId = creativeData.id;
+    console.log(`[Ad Scheduler] Creative created: ${creativeId}`);
+    
+    const adParams = new URLSearchParams({
+      access_token: accessToken,
+      name: `${campaignName} Ad`,
+      adset_id: adSetId,
+      status: 'PAUSED',
+      creative: JSON.stringify({ creative_id: creativeId })
+    });
+    
     const adResponse = await fetch(
       `https://graph.facebook.com/v21.0/${adAccountId}/ads`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_token: accessToken,
-          name: `${campaignName} Ad`,
-          adset_id: adSetId,
-          status: 'PAUSED',
-          creative: {
-            object_story_id: postId.includes('_') ? postId : `${pageId}_${postId}`
-          }
-        })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: adParams.toString()
       }
     );
 
