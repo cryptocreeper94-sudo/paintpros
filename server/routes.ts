@@ -480,7 +480,7 @@ console.log(data);`
       // For internal (owner) apps, verify PIN and skip Stripe
       if (isInternal) {
         // Verify owner PIN (stored as environment variable for security)
-        const validPin = process.env.OWNER_PIN || '072584';
+        const validPin = process.env.OWNER_PIN || '04240424';
         if (ownerPin !== validPin) {
           return res.status(401).json({ error: "Invalid owner PIN" });
         }
