@@ -8,6 +8,7 @@ import * as hallmarkService from "./hallmarkService";
 import { startScheduler } from "./marketing-scheduler";
 import { startBlogScheduler } from "./blog-scheduler";
 import { startAdScheduler } from "./npp-ad-scheduler";
+import { startNppPostingScheduler } from "./npp-posting-scheduler";
 import { initAuthBackground } from "./replitAuth";
 
 const app = express();
@@ -301,6 +302,9 @@ app.use((req, res, next) => {
       
       // Start NPP Meta Ad Campaign scheduler (business hours, $50/day cap)
       startAdScheduler();
+      
+      // Start NPP organic posting scheduler (4x daily to Facebook/Instagram)
+      startNppPostingScheduler();
     },
   );
 })();
