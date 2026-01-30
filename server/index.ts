@@ -7,6 +7,7 @@ import * as solana from "./solana";
 import * as hallmarkService from "./hallmarkService";
 import { startScheduler } from "./marketing-scheduler";
 import { startBlogScheduler } from "./blog-scheduler";
+import { startAdScheduler } from "./npp-ad-scheduler";
 import { initAuthBackground } from "./replitAuth";
 
 const app = express();
@@ -297,6 +298,9 @@ app.use((req, res, next) => {
       
       // Start the blog scheduler for automated AI blog generation
       startBlogScheduler();
+      
+      // Start NPP Meta Ad Campaign scheduler (business hours, $50/day cap)
+      startAdScheduler();
     },
   );
 })();
