@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -28,7 +29,11 @@ import {
   ArrowRight,
   Sparkles,
   ExternalLink,
-  AlertCircle
+  AlertCircle,
+  AlertTriangle,
+  Clock,
+  MapPin,
+  Users
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -52,6 +57,19 @@ interface AutopilotConfig {
     behindScenes: number;
   };
   isActive: boolean;
+  // Ad Campaign Settings
+  adConfig: {
+    facebookPercent: number;
+    instagramPercent: number;
+    targetingCity: string;
+    targetingState: string;
+    targetingRadius: number;
+    ageMin: number;
+    ageMax: number;
+    businessHoursStart: number;
+    businessHoursEnd: number;
+    objective: 'AWARENESS' | 'ENGAGEMENT' | 'TRAFFIC' | 'LEADS';
+  };
 }
 
 export default function AutopilotPortal() {
@@ -65,7 +83,19 @@ export default function AutopilotPortal() {
     includeAds: true,
     adSpendPercent: 50,
     contentMix: { promotional: 30, educational: 40, behindScenes: 30 },
-    isActive: false
+    isActive: false,
+    adConfig: {
+      facebookPercent: 50,
+      instagramPercent: 50,
+      targetingCity: 'Nashville',
+      targetingState: 'Tennessee',
+      targetingRadius: 25,
+      ageMin: 25,
+      ageMax: 65,
+      businessHoursStart: 8,
+      businessHoursEnd: 18,
+      objective: 'ENGAGEMENT'
+    }
   });
 
   // Get params from URL
@@ -114,12 +144,16 @@ export default function AutopilotPortal() {
         postsPerDay: config.postsPerDay,
         includeAds: config.includeAds,
         adSpendPercent: config.adSpendPercent,
-        contentMix: config.contentMix
+        contentMix: config.contentMix,
+        // Ad campaign configuration
+        adConfig: config.adConfig
       });
     },
     onSuccess: () => {
       setConfig(prev => ({ ...prev, isActive: true }));
       toast({ title: "Your Marketing Autopilot is now active!" });
+      // Redirect to dashboard after activation
+      navigate(`/autopilot/dashboard?id=${subscriberId}`);
     }
   });
 
@@ -342,6 +376,25 @@ export default function AutopilotPortal() {
                         {metaStatus?.facebookPageName && `Facebook: ${metaStatus.facebookPageName}`}
                         {metaStatus?.instagramUsername && ` • Instagram: @${metaStatus.instagramUsername}`}
                       </p>
+                      {/* Token Expiration Info */}
+                      {metaStatus?.tokenExpiresAt && (
+                        <div className="mt-2 flex items-center gap-2 text-sm">
+                          {(() => {
+                            const expiresAt = new Date(metaStatus.tokenExpiresAt);
+                            const now = new Date();
+                            const daysUntilExpiry = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                            if (daysUntilExpiry <= 0) {
+                              return <span className="flex items-center gap-1 text-red-400"><AlertTriangle className="w-4 h-4" />Token expired - reconnect required</span>;
+                            } else if (daysUntilExpiry <= 7) {
+                              return <span className="flex items-center gap-1 text-red-400"><AlertTriangle className="w-4 h-4" />Token expires in {daysUntilExpiry} days</span>;
+                            } else if (daysUntilExpiry <= 14) {
+                              return <span className="flex items-center gap-1 text-yellow-400"><AlertCircle className="w-4 h-4" />Token expires in {daysUntilExpiry} days</span>;
+                            } else {
+                              return <span className="flex items-center gap-1 text-green-400"><Clock className="w-4 h-4" />Valid until {expiresAt.toLocaleDateString()}</span>;
+                            }
+                          })()}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -439,6 +492,246 @@ export default function AutopilotPortal() {
                       data-testid="switch-include-ads"
                     />
                   </div>
+
+                  {/* Detailed Ad Configuration - Only shown when ads enabled */}
+                  {config.includeAds && (
+                    <div className="space-y-6 bg-slate-900/50 rounded-lg p-6 border border-slate-700">
+                      <h3 className="text-white font-medium flex items-center gap-2">
+                        <Target className="w-4 h-4 text-orange-400" />
+                        Ad Campaign Configuration
+                      </h3>
+                      
+                      {/* Platform Budget Split */}
+                      <div>
+                        <Label className="text-slate-300 mb-3 block">Platform Budget Split</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-slate-800 rounded-lg p-4 text-center">
+                            <Facebook className="w-6 h-6 text-blue-500 mx-auto mb-2" />
+                            <p className="text-2xl font-bold text-white">{config.adConfig.facebookPercent}%</p>
+                            <p className="text-slate-400 text-sm">Facebook</p>
+                          </div>
+                          <div className="bg-slate-800 rounded-lg p-4 text-center">
+                            <Instagram className="w-6 h-6 text-pink-500 mx-auto mb-2" />
+                            <p className="text-2xl font-bold text-white">{config.adConfig.instagramPercent}%</p>
+                            <p className="text-slate-400 text-sm">Instagram</p>
+                          </div>
+                        </div>
+                        <Slider
+                          value={[config.adConfig.facebookPercent]}
+                          onValueChange={([value]) => setConfig({
+                            ...config,
+                            adConfig: { ...config.adConfig, facebookPercent: value, instagramPercent: 100 - value }
+                          })}
+                          min={0}
+                          max={100}
+                          step={10}
+                          className="mt-4"
+                        />
+                        <div className="flex justify-between text-xs text-slate-500 mt-1">
+                          <span>More Facebook</span>
+                          <span>More Instagram</span>
+                        </div>
+                      </div>
+
+                      {/* Targeting Location */}
+                      <div>
+                        <Label className="text-slate-300 mb-3 block flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-green-400" />
+                          Target Location
+                        </Label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-slate-400 text-sm">City</Label>
+                            <Input
+                              value={config.adConfig.targetingCity}
+                              onChange={(e) => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, targetingCity: e.target.value }
+                              })}
+                              placeholder="e.g., Nashville"
+                              className="bg-slate-800 border-slate-600 text-white mt-1"
+                              data-testid="input-targeting-city"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-slate-400 text-sm">State</Label>
+                            <Input
+                              value={config.adConfig.targetingState}
+                              onChange={(e) => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, targetingState: e.target.value }
+                              })}
+                              placeholder="e.g., Tennessee"
+                              className="bg-slate-800 border-slate-600 text-white mt-1"
+                              data-testid="input-targeting-state"
+                            />
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <div className="flex justify-between mb-2">
+                            <Label className="text-slate-400 text-sm">Radius (miles)</Label>
+                            <span className="text-white font-medium">{config.adConfig.targetingRadius} mi</span>
+                          </div>
+                          <Slider
+                            value={[config.adConfig.targetingRadius]}
+                            onValueChange={([value]) => setConfig({
+                              ...config,
+                              adConfig: { ...config.adConfig, targetingRadius: value }
+                            })}
+                            min={5}
+                            max={100}
+                            step={5}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Age Targeting */}
+                      <div>
+                        <Label className="text-slate-300 mb-3 block flex items-center gap-2">
+                          <Users className="w-4 h-4 text-blue-400" />
+                          Target Age Range
+                        </Label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-slate-400 text-sm">Min Age</Label>
+                            <Select
+                              value={config.adConfig.ageMin.toString()}
+                              onValueChange={(value) => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, ageMin: parseInt(value) }
+                              })}
+                            >
+                              <SelectTrigger className="bg-slate-800 border-slate-600 text-white mt-1" data-testid="select-age-min">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[18, 21, 25, 30, 35, 40, 45, 50].map(age => (
+                                  <SelectItem key={age} value={age.toString()}>{age} years</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-slate-400 text-sm">Max Age</Label>
+                            <Select
+                              value={config.adConfig.ageMax.toString()}
+                              onValueChange={(value) => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, ageMax: parseInt(value) }
+                              })}
+                            >
+                              <SelectTrigger className="bg-slate-800 border-slate-600 text-white mt-1" data-testid="select-age-max">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[35, 40, 45, 50, 55, 60, 65, 70, 75].map(age => (
+                                  <SelectItem key={age} value={age.toString()}>{age} years</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Ad Schedule */}
+                      <div>
+                        <Label className="text-slate-300 mb-3 block flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-yellow-400" />
+                          Ad Hours (When ads run)
+                        </Label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-slate-400 text-sm">Start Time</Label>
+                            <Select
+                              value={config.adConfig.businessHoursStart.toString()}
+                              onValueChange={(value) => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, businessHoursStart: parseInt(value) }
+                              })}
+                            >
+                              <SelectTrigger className="bg-slate-800 border-slate-600 text-white mt-1" data-testid="select-hours-start">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[6, 7, 8, 9, 10, 11, 12].map(hour => (
+                                  <SelectItem key={hour} value={hour.toString()}>{hour}:00 AM</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-slate-400 text-sm">End Time</Label>
+                            <Select
+                              value={config.adConfig.businessHoursEnd.toString()}
+                              onValueChange={(value) => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, businessHoursEnd: parseInt(value) }
+                              })}
+                            >
+                              <SelectTrigger className="bg-slate-800 border-slate-600 text-white mt-1" data-testid="select-hours-end">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[14, 15, 16, 17, 18, 19, 20, 21, 22].map(hour => (
+                                  <SelectItem key={hour} value={hour.toString()}>{hour > 12 ? hour - 12 : hour}:00 PM</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <p className="text-slate-500 text-xs mt-2">Ads will only run during these hours in your local timezone</p>
+                      </div>
+
+                      {/* Campaign Objective */}
+                      <div>
+                        <Label className="text-slate-300 mb-3 block">Campaign Objective</Label>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[
+                            { value: 'AWARENESS', label: 'Brand Awareness', desc: 'Reach new people' },
+                            { value: 'ENGAGEMENT', label: 'Engagement', desc: 'Likes & comments' },
+                            { value: 'TRAFFIC', label: 'Website Traffic', desc: 'Drive visitors' },
+                            { value: 'LEADS', label: 'Lead Generation', desc: 'Collect contacts' }
+                          ].map(obj => (
+                            <div
+                              key={obj.value}
+                              className={`p-3 rounded-lg cursor-pointer transition-all ${
+                                config.adConfig.objective === obj.value
+                                  ? 'bg-orange-500/20 border-2 border-orange-500'
+                                  : 'bg-slate-800 border-2 border-slate-700 hover:border-slate-600'
+                              }`}
+                              onClick={() => setConfig({
+                                ...config,
+                                adConfig: { ...config.adConfig, objective: obj.value as typeof config.adConfig.objective }
+                              })}
+                              data-testid={`objective-${obj.value.toLowerCase()}`}
+                            >
+                              <p className="text-white font-medium text-sm">{obj.label}</p>
+                              <p className="text-slate-500 text-xs">{obj.desc}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Estimated Results */}
+                      <div className="bg-gradient-to-r from-orange-500/10 to-pink-500/10 rounded-lg p-4 border border-orange-500/20">
+                        <h4 className="text-white font-medium mb-2">Estimated Monthly Results</h4>
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          <div>
+                            <p className="text-2xl font-bold text-orange-400">{Math.round(config.dailyBudget * 30 * 15).toLocaleString()}</p>
+                            <p className="text-slate-400 text-xs">People Reached</p>
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold text-pink-400">{Math.round(config.dailyBudget * 30 * 0.8)}</p>
+                            <p className="text-slate-400 text-xs">Website Clicks</p>
+                          </div>
+                          <div>
+                            <p className="text-2xl font-bold text-green-400">{Math.round(config.dailyBudget * 30 * 0.04)}</p>
+                            <p className="text-slate-400 text-xs">Potential Leads</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex gap-3">
                     <Button variant="outline" onClick={() => setCurrentStep(1)} className="flex-1">

@@ -7,10 +7,19 @@ let isRunning = false;
 
 const AD_CHECK_INTERVAL_MS = 30 * 60 * 1000; // Check every 30 minutes
 
-function isBusinessHours(): boolean {
+function getCurrentCSTHour(): number {
+  // Convert to Central Time (CST = UTC-6, CDT = UTC-5)
   const now = new Date();
-  const hour = now.getHours();
-  return hour >= 8 && hour < 18; // 8am to 6pm
+  // Use America/Chicago timezone for Central Time (handles DST automatically)
+  const cstTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+  const hour = cstTime.getHours();
+  console.log(`[Ad Scheduler] Current CST time: ${cstTime.toLocaleTimeString()}, hour: ${hour}`);
+  return hour;
+}
+
+function isBusinessHours(startHour: number = 8, endHour: number = 18): boolean {
+  const hour = getCurrentCSTHour();
+  return hour >= startHour && hour < endHour;
 }
 
 async function getMetaIntegration(tenantId: string) {
@@ -22,12 +31,33 @@ async function getMetaIntegration(tenantId: string) {
   return integrations[0] || null;
 }
 
+interface CampaignTargeting {
+  city: string;
+  state: string;
+  radius: number;
+  ageMin: number;
+  ageMax: number;
+}
+
 async function boostPost(
   integration: typeof metaIntegrations.$inferSelect,
   postId: string,
-  dailyBudget: number
+  dailyBudget: number,
+  targeting: CampaignTargeting
 ): Promise<{ success: boolean; adId?: string; error?: string }> {
   try {
+    // Build geo targeting based on campaign settings
+    const geoTargeting = {
+      cities: [{ 
+        key: '2514815', // Default Nashville key, would need a lookup API for other cities
+        name: targeting.city, 
+        region: targeting.state 
+      }],
+      location_types: ['home', 'recent'],
+      radius: targeting.radius,
+      distance_unit: 'mile'
+    };
+
     const response = await fetch(
       `https://graph.facebook.com/v18.0/${postId}/promotions`,
       {
@@ -38,12 +68,9 @@ async function boostPost(
           daily_budget: Math.round(dailyBudget * 100), // Convert to cents
           duration: 1, // 1 day
           targeting: {
-            geo_locations: {
-              cities: [{ key: '2514815', name: 'Nashville', region: 'Tennessee' }],
-              location_types: ['home', 'recent']
-            },
-            age_min: 25,
-            age_max: 65
+            geo_locations: geoTargeting,
+            age_min: targeting.ageMin,
+            age_max: targeting.ageMax
           }
         })
       }
@@ -62,20 +89,31 @@ async function boostPost(
 }
 
 async function checkAndRunAdCampaigns(): Promise<void> {
-  if (!isBusinessHours()) {
-    console.log('[Ad Scheduler] Outside business hours (8am-6pm), skipping ad check');
-    return;
-  }
-
+  const currentHour = getCurrentCSTHour();
+  
   try {
     const campaigns = await db
       .select()
       .from(adCampaigns)
       .where(eq(adCampaigns.status, 'active'));
 
+    if (campaigns.length === 0) {
+      console.log('[Ad Scheduler] No active campaigns found');
+      return;
+    }
+
     for (const campaign of campaigns) {
       const tenantId = campaign.tenantId;
       if (!tenantId) continue;
+
+      // Check campaign-specific business hours
+      const startHour = campaign.businessHoursStart || 8;
+      const endHour = campaign.businessHoursEnd || 18;
+      
+      if (currentHour < startHour || currentHour >= endHour) {
+        console.log(`[Ad Scheduler] ${campaign.name}: Outside campaign hours (${startHour}:00-${endHour}:00), skipping`);
+        continue;
+      }
 
       const integration = await getMetaIntegration(tenantId);
       if (!integration || !integration.facebookConnected) {
@@ -121,9 +159,19 @@ async function checkAndRunAdCampaigns(): Promise<void> {
       }
 
       const remainingBudget = dailyBudget - todaySpent;
-      console.log(`[Ad Scheduler] Boosting post for ${campaign.name}, budget: $${remainingBudget}`);
+      
+      // Build targeting from campaign settings
+      const targeting: CampaignTargeting = {
+        city: campaign.targetingCity || 'Nashville',
+        state: campaign.targetingState || 'Tennessee',
+        radius: campaign.targetingRadius || 25,
+        ageMin: campaign.ageMin || 25,
+        ageMax: campaign.ageMax || 65
+      };
+      
+      console.log(`[Ad Scheduler] Boosting post for ${campaign.name}, budget: $${remainingBudget}, targeting: ${targeting.city}, ${targeting.state}`);
 
-      const result = await boostPost(integration, postId, remainingBudget);
+      const result = await boostPost(integration, postId, remainingBudget, targeting);
 
       if (result.success) {
         console.log(`[Ad Scheduler] Successfully boosted post, Ad ID: ${result.adId}`);

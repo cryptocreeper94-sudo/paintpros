@@ -5987,6 +5987,7 @@ export const adCampaigns = pgTable("ad_campaigns", {
   
   // Campaign basics
   name: text("name").notNull(),
+  platform: text("platform").default("facebook"), // 'facebook', 'instagram', 'both'
   objective: text("objective").notNull(), // 'AWARENESS', 'TRAFFIC', 'ENGAGEMENT', 'LEADS', 'SALES'
   
   // Budget
@@ -5996,6 +5997,8 @@ export const adCampaigns = pgTable("ad_campaigns", {
   // Schedule
   startDate: timestamp("start_date"),
   endDate: timestamp("end_date"),
+  businessHoursStart: integer("business_hours_start").default(8), // 8am
+  businessHoursEnd: integer("business_hours_end").default(18), // 6pm
   
   // Targeting - Nashville/Middle Tennessee
   targetingRadius: integer("targeting_radius").default(25), // miles from Nashville

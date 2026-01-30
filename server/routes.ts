@@ -720,7 +720,11 @@ console.log(data);`
   app.post("/api/marketing-autopilot/:id/start", async (req, res) => {
     try {
       const { id } = req.params;
-      const { config, dailyBudget, postsPerDay, includeAds, adSpendPercent, contentMix } = req.body;
+      const { config, dailyBudget, postsPerDay, includeAds, adSpendPercent, contentMix, adConfig } = req.body;
+      
+      // Get subscriber's tenant ID
+      const subscriber = await db.select().from(autopilotSubscriptions).where(eq(autopilotSubscriptions.id, id)).limit(1);
+      const tenantId = subscriber[0]?.tenantId || id;
       
       // Save preferences and activate
       await db.update(autopilotSubscriptions)
@@ -734,14 +738,111 @@ console.log(data);`
             includeAds,
             adSpendPercent,
             contentMix,
+            adConfig,
             startedAt: new Date().toISOString()
           }),
           updatedAt: new Date()
         })
         .where(eq(autopilotSubscriptions.id, id));
       
-      res.json({ success: true, message: "Autopilot activated" });
+      // Create ad campaigns if ads are enabled
+      if (includeAds && adConfig) {
+        // Calculate platform-specific budgets
+        const fbBudget = (dailyBudget * (adConfig.facebookPercent || 50)) / 100;
+        const igBudget = (dailyBudget * (adConfig.instagramPercent || 50)) / 100;
+        
+        // Create or update Facebook campaign
+        if (fbBudget > 0) {
+          const existingFbCampaign = await db.select().from(adCampaigns)
+            .where(and(eq(adCampaigns.tenantId, tenantId), eq(adCampaigns.platform, 'facebook')))
+            .limit(1);
+          
+          if (existingFbCampaign.length > 0) {
+            await db.update(adCampaigns)
+              .set({
+                dailyBudget: fbBudget.toString(),
+                status: 'active',
+                targetingCity: adConfig.targetingCity || 'Nashville',
+                targetingState: adConfig.targetingState || 'Tennessee',
+                targetingRadius: adConfig.targetingRadius || 25,
+                ageMin: adConfig.ageMin || 25,
+                ageMax: adConfig.ageMax || 65,
+                businessHoursStart: adConfig.businessHoursStart || 8,
+                businessHoursEnd: adConfig.businessHoursEnd || 18,
+                objective: adConfig.objective || 'ENGAGEMENT',
+                updatedAt: new Date()
+              })
+              .where(eq(adCampaigns.id, existingFbCampaign[0].id));
+          } else {
+            await db.insert(adCampaigns).values({
+              tenantId,
+              name: `${subscriber[0]?.businessName || 'Business'} - Facebook Autopilot`,
+              platform: 'facebook',
+              objective: adConfig.objective || 'ENGAGEMENT',
+              dailyBudget: fbBudget.toString(),
+              status: 'active',
+              targetingCity: adConfig.targetingCity || 'Nashville',
+              targetingState: adConfig.targetingState || 'Tennessee',
+              targetingRadius: adConfig.targetingRadius || 25,
+              ageMin: adConfig.ageMin || 25,
+              ageMax: adConfig.ageMax || 65,
+              businessHoursStart: adConfig.businessHoursStart || 8,
+              businessHoursEnd: adConfig.businessHoursEnd || 18,
+              startDate: new Date(),
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+          }
+        }
+        
+        // Create or update Instagram campaign
+        if (igBudget > 0) {
+          const existingIgCampaign = await db.select().from(adCampaigns)
+            .where(and(eq(adCampaigns.tenantId, tenantId), eq(adCampaigns.platform, 'instagram')))
+            .limit(1);
+          
+          if (existingIgCampaign.length > 0) {
+            await db.update(adCampaigns)
+              .set({
+                dailyBudget: igBudget.toString(),
+                status: 'active',
+                targetingCity: adConfig.targetingCity || 'Nashville',
+                targetingState: adConfig.targetingState || 'Tennessee',
+                targetingRadius: adConfig.targetingRadius || 25,
+                ageMin: adConfig.ageMin || 25,
+                ageMax: adConfig.ageMax || 65,
+                businessHoursStart: adConfig.businessHoursStart || 8,
+                businessHoursEnd: adConfig.businessHoursEnd || 18,
+                objective: adConfig.objective || 'ENGAGEMENT',
+                updatedAt: new Date()
+              })
+              .where(eq(adCampaigns.id, existingIgCampaign[0].id));
+          } else {
+            await db.insert(adCampaigns).values({
+              tenantId,
+              name: `${subscriber[0]?.businessName || 'Business'} - Instagram Autopilot`,
+              platform: 'instagram',
+              objective: adConfig.objective || 'ENGAGEMENT',
+              dailyBudget: igBudget.toString(),
+              status: 'active',
+              targetingCity: adConfig.targetingCity || 'Nashville',
+              targetingState: adConfig.targetingState || 'Tennessee',
+              targetingRadius: adConfig.targetingRadius || 25,
+              ageMin: adConfig.ageMin || 25,
+              ageMax: adConfig.ageMax || 65,
+              businessHoursStart: adConfig.businessHoursStart || 8,
+              businessHoursEnd: adConfig.businessHoursEnd || 18,
+              startDate: new Date(),
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+          }
+        }
+      }
+      
+      res.json({ success: true, message: "Autopilot activated", tenantId });
     } catch (error: any) {
+      console.error("[Marketing Autopilot] Start error:", error);
       res.status(500).json({ error: error.message });
     }
   });

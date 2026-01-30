@@ -37,6 +37,7 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  AlertTriangle,
   RefreshCw,
   Users,
   Target,
@@ -55,6 +56,13 @@ interface ContentItem {
   content: string;
   category: string;
   isActive: boolean;
+}
+
+interface MetaStatus {
+  connected: boolean;
+  facebookPageName?: string;
+  instagramUsername?: string;
+  tokenExpiresAt?: string;
 }
 
 export default function AutopilotDashboard() {
@@ -96,6 +104,33 @@ export default function AutopilotDashboard() {
   // Get subscriber ID from URL
   const params = new URLSearchParams(window.location.search);
   const subscriberId = params.get('id');
+
+  // Fetch Meta connection status including token expiration
+  const { data: metaStatus } = useQuery<MetaStatus>({
+    queryKey: ["/api/meta/status", subscriberId],
+    enabled: !!subscriberId
+  });
+
+  // Calculate token expiration status
+  const getTokenExpirationStatus = () => {
+    if (!metaStatus?.tokenExpiresAt) return null;
+    const expiresAt = new Date(metaStatus.tokenExpiresAt);
+    const now = new Date();
+    const daysUntilExpiry = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysUntilExpiry <= 0) {
+      return { status: 'expired', daysUntilExpiry, message: 'Token expired! Reconnect required.' };
+    } else if (daysUntilExpiry <= 7) {
+      return { status: 'critical', daysUntilExpiry, message: `Token expires in ${daysUntilExpiry} day${daysUntilExpiry !== 1 ? 's' : ''}!` };
+    } else if (daysUntilExpiry <= 14) {
+      return { status: 'warning', daysUntilExpiry, message: `Token expires in ${daysUntilExpiry} days` };
+    } else if (daysUntilExpiry <= 30) {
+      return { status: 'info', daysUntilExpiry, message: `Token valid for ${daysUntilExpiry} days` };
+    }
+    return { status: 'ok', daysUntilExpiry, message: `Token valid until ${expiresAt.toLocaleDateString()}` };
+  };
+  
+  const tokenStatus = getTokenExpirationStatus();
 
   // Mock analytics data (would come from API in production)
   const analytics = {
@@ -282,22 +317,48 @@ export default function AutopilotDashboard() {
         {/* Connected Accounts */}
         <Card className="bg-slate-800/50 border-slate-700 mb-6">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-6 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Facebook className="w-5 h-5 text-blue-500" />
-                  <span className="text-white">Facebook Page</span>
+                  <span className="text-white">{metaStatus?.facebookPageName || 'Facebook Page'}</span>
                   <CheckCircle className="w-4 h-4 text-green-400" />
                 </div>
                 <div className="flex items-center gap-2">
                   <Instagram className="w-5 h-5 text-pink-500" />
-                  <span className="text-white">Instagram</span>
+                  <span className="text-white">{metaStatus?.instagramUsername ? `@${metaStatus.instagramUsername}` : 'Instagram'}</span>
                   <CheckCircle className="w-4 h-4 text-green-400" />
                 </div>
+                {/* Token Expiration Warning */}
+                {tokenStatus && (
+                  <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
+                    tokenStatus.status === 'expired' ? 'bg-red-500/20 text-red-400' :
+                    tokenStatus.status === 'critical' ? 'bg-red-500/20 text-red-400' :
+                    tokenStatus.status === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
+                    tokenStatus.status === 'info' ? 'bg-blue-500/20 text-blue-400' :
+                    'bg-green-500/20 text-green-400'
+                  }`}>
+                    {tokenStatus.status === 'expired' || tokenStatus.status === 'critical' ? (
+                      <AlertTriangle className="w-4 h-4" />
+                    ) : tokenStatus.status === 'warning' ? (
+                      <AlertCircle className="w-4 h-4" />
+                    ) : (
+                      <Clock className="w-4 h-4" />
+                    )}
+                    <span>{tokenStatus.message}</span>
+                  </div>
+                )}
               </div>
-              <Button variant="ghost" size="sm" onClick={() => window.location.href = '/autopilot/setup'}>
-                <Settings className="w-4 h-4 mr-2" />
-                Manage Connection
+              <Button 
+                variant={tokenStatus?.status === 'expired' || tokenStatus?.status === 'critical' ? 'destructive' : 'ghost'} 
+                size="sm" 
+                onClick={() => window.location.href = `/autopilot/portal?id=${subscriberId}`}
+                data-testid="button-manage-connection"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                {tokenStatus?.status === 'expired' ? 'Reconnect Now' : 
+                 tokenStatus?.status === 'critical' ? 'Renew Token' : 
+                 'Manage Connection'}
               </Button>
             </div>
           </CardContent>
