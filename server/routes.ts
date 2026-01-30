@@ -11920,6 +11920,79 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // Quick token fix endpoint - test and save new token
+  app.post("/api/meta/:tenantId/fix-token", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { token } = req.body;
+      
+      if (!token) {
+        return res.status(400).json({ error: "Token is required" });
+      }
+      
+      // Test the token with Meta's debug endpoint first
+      const debugResponse = await fetch(
+        `https://graph.facebook.com/debug_token?input_token=${token}&access_token=${token}`
+      );
+      const debugData = await debugResponse.json();
+      
+      if (debugData.error) {
+        return res.status(400).json({ 
+          error: "Token is invalid or expired", 
+          details: debugData.error.message 
+        });
+      }
+      
+      // Test that the token actually works for posting
+      const testResponse = await fetch(
+        `https://graph.facebook.com/v21.0/me?access_token=${token}`
+      );
+      const testData = await testResponse.json();
+      
+      if (testData.error) {
+        return res.status(400).json({ 
+          error: "Token failed API test", 
+          details: testData.error.message 
+        });
+      }
+      
+      // Token is valid - update the database
+      const [existing] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!existing) {
+        return res.status(404).json({ error: "No Meta integration found for this tenant" });
+      }
+      
+      await db
+        .update(metaIntegrations)
+        .set({ 
+          facebookPageAccessToken: token,
+          lastError: null,
+          updatedAt: new Date()
+        })
+        .where(eq(metaIntegrations.tenantId, tenantId));
+      
+      // Log success
+      console.log(`[Token Fix] Successfully updated token for ${tenantId}`);
+      console.log(`[Token Fix] Token info: type=${debugData.data?.type}, expires=${debugData.data?.expires_at ? new Date(debugData.data.expires_at * 1000).toISOString() : 'never'}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Token updated successfully",
+        tokenType: debugData.data?.type,
+        expiresAt: debugData.data?.expires_at ? new Date(debugData.data.expires_at * 1000).toISOString() : 'never',
+        pageName: testData.name
+      });
+    } catch (error) {
+      console.error("Error fixing token:", error);
+      res.status(500).json({ error: "Failed to update token" });
+    }
+  });
+
   // Test Meta API connection
   app.post("/api/meta/:tenantId/test", async (req, res) => {
     try {
