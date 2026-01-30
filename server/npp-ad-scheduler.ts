@@ -185,6 +185,24 @@ async function checkAndRunAdCampaigns(): Promise<void> {
         continue;
       }
 
+      // Validate token before attempting any API calls
+      if (integration.facebookPageAccessToken) {
+        try {
+          const tokenCheck = await fetch(
+            `https://graph.facebook.com/v21.0/me?access_token=${integration.facebookPageAccessToken}`
+          );
+          if (!tokenCheck.ok) {
+            const tokenError = await tokenCheck.json();
+            console.log(`[Ad Scheduler] Token expired for ${tenantId}: ${tokenError.error?.message || 'Invalid token'}`);
+            console.log(`[Ad Scheduler] PAUSED - Please reconnect Meta for ${tenantId} at /api/meta/${tenantId}/fix-token`);
+            continue;
+          }
+        } catch (tokenErr) {
+          console.log(`[Ad Scheduler] Token validation failed for ${tenantId}, skipping`);
+          continue;
+        }
+      }
+
       // Check daily spend cap
       const todaySpent = campaign.spent || 0;
       const dailyBudget = Number(campaign.dailyBudget) || 25;
