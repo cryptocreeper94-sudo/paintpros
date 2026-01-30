@@ -60,7 +60,7 @@ export default function TrustLayerHome() {
       color: 'from-blue-500 to-purple-500',
       glowColor: 'blue' as const,
       features: ['Automated Posting', 'Smart Ad Boosting', 'Full Analytics', 'Content Library'],
-      price: '$59/mo',
+      price: 'From $99/mo',
       link: '/trustlayer/marketing',
       image: productMarketingImg
     },
@@ -162,7 +162,7 @@ export default function TrustLayerHome() {
                 variant="ghost" 
                 size="sm" 
                 onClick={() => window.location.href = '/trustlayer/marketing'}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-white hidden md:inline-flex"
               >
                 Marketing
               </Button>
@@ -170,18 +170,26 @@ export default function TrustLayerHome() {
                 variant="ghost" 
                 size="sm"
                 onClick={() => window.location.href = '/trustlayer/guardian'}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-white hidden md:inline-flex"
               >
                 Guardian Shield
               </Button>
               <Button 
+                variant="outline"
+                size="sm"
+                className="border-slate-600 text-slate-300 hover:text-white hover:border-slate-500"
+                data-testid="button-login"
+                onClick={() => window.open('https://dwtl.io/login', '_blank')}
+              >
+                Sign In
+              </Button>
+              <Button 
                 size="sm"
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg shadow-emerald-500/25"
-                data-testid="button-get-started"
-                onClick={() => window.location.href = '/trustlayer/claim'}
+                data-testid="button-signup"
+                onClick={() => window.open('https://dwtl.io/signup', '_blank')}
               >
-                <Globe className="w-4 h-4 mr-1" />
-                Claim .tlid.io
+                Sign Up
               </Button>
             </div>
           </div>
@@ -323,7 +331,7 @@ export default function TrustLayerHome() {
               {[
                 { step: '1', title: 'Connect Meta', desc: 'Link your Facebook Page & Instagram in 5 minutes', icon: Link2, image: stepConnectImg },
                 { step: '2', title: 'Set Preferences', desc: 'Choose your content style, schedule & budget', icon: Settings, image: stepPreferencesImg },
-                { step: '3', title: 'Subscribe & Go', desc: '$59/mo - We handle everything automatically', icon: Zap, image: stepSubscribeImg }
+                { step: '3', title: 'Subscribe & Go', desc: 'From $99/mo - We handle everything automatically', icon: Zap, image: stepSubscribeImg }
               ].map((item, i) => (
                 <motion.div
                   key={i}

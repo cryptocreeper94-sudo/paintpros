@@ -2,7 +2,20 @@
 
 **Version:** 1.0  
 **Last Updated:** January 2026  
-**Author:** Orbit Ecosystem
+**Author:** TrustLayer Ecosystem
+
+---
+
+## Branding Hierarchy
+
+| Brand | Purpose |
+|-------|---------|
+| **TrustLayer** | The ecosystem brand - all customer-facing products |
+| **Orbit** | Internal HR/operations system (internal use only) |
+| **TrustLayer [Product]** | Individual products (TrustLayer TradeTrack, TrustLayer ElectricTrack, etc.) |
+| **TrustLayer Driver Connect** | Commercial/daily drivers platform |
+| **Guardian Shield** | Verification system (part of TrustLayer) |
+| **DWTL.io** | Blockchain trust layer (backend verification)
 
 ---
 
