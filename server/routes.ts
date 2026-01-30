@@ -462,7 +462,7 @@ console.log(data);`
   // POST /api/marketing-autopilot/subscribe - Create subscription for automated marketing service
   app.post("/api/marketing-autopilot/subscribe", async (req, res) => {
     try {
-      const { businessName, ownerName, email, phone, isInternal } = req.body;
+      const { businessName, ownerName, email, phone, isInternal, ownerPin } = req.body;
       
       if (!businessName || !ownerName || !email || !phone) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -477,8 +477,13 @@ console.log(data);`
       
       const subscriptionId = crypto.randomUUID();
       
-      // For internal (owner) apps, skip Stripe and activate immediately
+      // For internal (owner) apps, verify PIN and skip Stripe
       if (isInternal) {
+        // Verify owner PIN (stored as environment variable for security)
+        const validPin = process.env.OWNER_PIN || '072584';
+        if (ownerPin !== validPin) {
+          return res.status(401).json({ error: "Invalid owner PIN" });
+        }
         await db.insert(autopilotSubscriptions).values({
           id: subscriptionId,
           tenantId,

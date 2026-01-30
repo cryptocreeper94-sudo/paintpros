@@ -39,7 +39,8 @@ export default function MarketingAutopilot() {
     ownerName: "",
     email: "",
     phone: "",
-    isInternal: false // Platform owner's apps - no billing
+    isInternal: false, // Platform owner's apps - no billing
+    ownerPin: "" // PIN required for internal apps
   });
 
   const handleSubscribe = async () => {
@@ -47,6 +48,16 @@ export default function MarketingAutopilot() {
       toast({
         title: "Missing Information",
         description: "Please fill in all fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Require PIN for internal apps
+    if (formData.isInternal && !formData.ownerPin) {
+      toast({
+        title: "PIN Required",
+        description: "Please enter the owner PIN to create an internal app.",
         variant: "destructive"
       });
       return;
@@ -403,7 +414,7 @@ export default function MarketingAutopilot() {
                     <Checkbox
                       id="internal"
                       checked={formData.isInternal}
-                      onCheckedChange={(checked) => setFormData({ ...formData, isInternal: checked === true })}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isInternal: checked === true, ownerPin: "" })}
                       data-testid="checkbox-internal"
                     />
                     <div className="flex-1">
@@ -413,6 +424,23 @@ export default function MarketingAutopilot() {
                       <p className="text-xs text-slate-500">Platform owner - skip payment</p>
                     </div>
                   </div>
+
+                  {/* PIN field - only shows when internal is checked */}
+                  {formData.isInternal && (
+                    <div>
+                      <Label className="text-slate-300">Owner PIN</Label>
+                      <Input
+                        type="password"
+                        value={formData.ownerPin}
+                        onChange={(e) => setFormData({ ...formData, ownerPin: e.target.value })}
+                        placeholder="Enter owner PIN"
+                        className="bg-slate-900 border-slate-700"
+                        maxLength={6}
+                        data-testid="input-owner-pin"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Required to create internal apps</p>
+                    </div>
+                  )}
 
                   <Button
                     onClick={handleSubscribe}
