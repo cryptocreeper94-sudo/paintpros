@@ -51,6 +51,7 @@ import TrialUpgradeSuccess from "@/pages/trial-upgrade-success";
 import EmailTemplate from "@/pages/email-template";
 import MarketingAutopilot from "@/pages/marketing-autopilot";
 import AutopilotSuccess from "@/pages/autopilot-success";
+import AutopilotAdmin from "@/pages/autopilot-admin";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -229,6 +230,7 @@ function Router() {
       <Route path="/app" component={FieldTool} />
       <Route path="/autopilot" component={MarketingAutopilot} />
       <Route path="/autopilot/success" component={AutopilotSuccess} />
+      <Route path="/autopilot/admin" component={AutopilotAdmin} />
       <Route path="/marketing-autopilot" component={MarketingAutopilot} />
       <Route component={NotFound} />
     </Switch>

@@ -470,6 +470,104 @@ export async function registerRoutes(
       res.status(500).json({ error: error.message });
     }
   });
+  
+  // GET /api/marketing-autopilot/all - List all subscribers (admin)
+  app.get("/api/marketing-autopilot/all", async (req, res) => {
+    try {
+      const all = await db.select().from(autopilotSubscriptions).orderBy(desc(autopilotSubscriptions.createdAt));
+      res.json(all);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/:id/activate - Activate a subscriber
+  app.post("/api/marketing-autopilot/:id/activate", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await db.update(autopilotSubscriptions)
+        .set({ status: 'active', activatedAt: new Date(), updatedAt: new Date() })
+        .where(eq(autopilotSubscriptions.id, id));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/:id/pause - Pause a subscriber
+  app.post("/api/marketing-autopilot/:id/pause", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await db.update(autopilotSubscriptions)
+        .set({ status: 'paused', updatedAt: new Date() })
+        .where(eq(autopilotSubscriptions.id, id));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/marketing-autopilot/:id/connect-meta - Connect Meta accounts for subscriber
+  app.post("/api/marketing-autopilot/:id/connect-meta", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { facebookPageId, facebookPageName, instagramAccountId, instagramUsername, accessToken } = req.body;
+      
+      // Update subscriber with Meta details
+      await db.update(autopilotSubscriptions)
+        .set({
+          metaConnected: true,
+          facebookPageId,
+          facebookPageName,
+          instagramAccountId,
+          instagramUsername,
+          updatedAt: new Date()
+        })
+        .where(eq(autopilotSubscriptions.id, id));
+      
+      // Get subscriber details to create tenant integration
+      const [subscriber] = await db.select().from(autopilotSubscriptions).where(eq(autopilotSubscriptions.id, id));
+      
+      if (subscriber && accessToken) {
+        // Create meta integration for this tenant
+        await db.insert(metaIntegrations).values({
+          id: crypto.randomUUID(),
+          tenantId: subscriber.tenantId,
+          appId: process.env.META_APP_ID || '',
+          facebookPageId,
+          facebookPageName,
+          facebookPageAccessToken: accessToken,
+          facebookConnected: true,
+          instagramAccountId,
+          instagramUsername,
+          instagramConnected: !!instagramAccountId,
+          tokenType: 'long_lived',
+          tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }).onConflictDoUpdate({
+          target: metaIntegrations.tenantId,
+          set: {
+            facebookPageId,
+            facebookPageName,
+            facebookPageAccessToken: accessToken,
+            facebookConnected: true,
+            instagramAccountId,
+            instagramUsername,
+            instagramConnected: !!instagramAccountId,
+            tokenType: 'long_lived',
+            tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+            updatedAt: new Date()
+          }
+        });
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("[Marketing Autopilot] Connect Meta error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   // ============ TENANT ONBOARDING & PROVISIONING ============
   
