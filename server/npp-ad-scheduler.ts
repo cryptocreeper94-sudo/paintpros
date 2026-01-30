@@ -37,6 +37,60 @@ interface CampaignTargeting {
   radius: number;
   ageMin: number;
   ageMax: number;
+  cityKey?: string; // Meta's city key for targeting
+}
+
+// Cache for city key lookups to avoid repeated API calls
+const cityKeyCache: Map<string, string> = new Map();
+
+async function lookupMetaCityKey(
+  accessToken: string,
+  city: string,
+  state: string
+): Promise<string | null> {
+  const cacheKey = `${city.toLowerCase()},${state.toLowerCase()}`;
+  
+  // Check cache first
+  if (cityKeyCache.has(cacheKey)) {
+    return cityKeyCache.get(cacheKey)!;
+  }
+  
+  try {
+    // Use Meta's targeting search API to find city key
+    const searchQuery = encodeURIComponent(`${city}, ${state}`);
+    const response = await fetch(
+      `https://graph.facebook.com/v18.0/search?type=adgeolocation&q=${searchQuery}&location_types=city&access_token=${accessToken}`
+    );
+    
+    if (!response.ok) {
+      console.log(`[Geo Lookup] Failed to lookup city: ${city}, ${state}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    
+    if (data.data && data.data.length > 0) {
+      // Find best match - prioritize exact city/state match
+      const match = data.data.find((loc: any) => 
+        loc.name.toLowerCase() === city.toLowerCase() &&
+        (loc.region?.toLowerCase() === state.toLowerCase() || 
+         loc.region_id?.toLowerCase() === state.toLowerCase())
+      ) || data.data[0]; // Fall back to first result
+      
+      const cityKey = match.key;
+      console.log(`[Geo Lookup] Found city key for ${city}, ${state}: ${cityKey} (${match.name})`);
+      
+      // Cache the result
+      cityKeyCache.set(cacheKey, cityKey);
+      return cityKey;
+    }
+    
+    console.log(`[Geo Lookup] No results found for ${city}, ${state}`);
+    return null;
+  } catch (error) {
+    console.error(`[Geo Lookup] Error looking up city:`, error);
+    return null;
+  }
 }
 
 async function boostPost(
@@ -46,10 +100,20 @@ async function boostPost(
   targeting: CampaignTargeting
 ): Promise<{ success: boolean; adId?: string; error?: string }> {
   try {
+    // Look up city key if not provided
+    let cityKey = targeting.cityKey;
+    if (!cityKey && integration.facebookPageAccessToken) {
+      cityKey = await lookupMetaCityKey(
+        integration.facebookPageAccessToken,
+        targeting.city,
+        targeting.state
+      ) || '2514815'; // Fallback to Nashville if lookup fails
+    }
+    
     // Build geo targeting based on campaign settings
     const geoTargeting = {
       cities: [{ 
-        key: '2514815', // Default Nashville key, would need a lookup API for other cities
+        key: cityKey || '2514815',
         name: targeting.city, 
         region: targeting.state 
       }],
