@@ -10,6 +10,7 @@ import { startBlogScheduler } from "./blog-scheduler";
 import { startAdScheduler } from "./npp-ad-scheduler";
 import { startNppPostingScheduler } from "./npp-posting-scheduler";
 import { initAuthBackground } from "./replitAuth";
+import widgetRoutes from "./widgets/widget-routes";
 
 const app = express();
 const httpServer = createServer(app);
@@ -208,6 +209,9 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+// Register widget API routes
+app.use("/api/widgets", widgetRoutes);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
