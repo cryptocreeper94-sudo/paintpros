@@ -12621,6 +12621,97 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // Configure Ad Account ID for Meta Ads campaigns
+  app.post("/api/meta/:tenantId/ad-account", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { adAccountId } = req.body;
+      
+      if (!adAccountId) {
+        return res.status(400).json({ error: "Ad Account ID is required (format: act_XXXXX)" });
+      }
+      
+      // Validate format
+      if (!adAccountId.startsWith('act_')) {
+        return res.status(400).json({ error: "Ad Account ID must start with 'act_'" });
+      }
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration) {
+        return res.status(404).json({ error: "Meta integration not found for this tenant" });
+      }
+      
+      // Validate the ad account with Meta API
+      if (integration.facebookPageAccessToken) {
+        try {
+          const validateResponse = await fetch(
+            `https://graph.facebook.com/v21.0/${adAccountId}?fields=name,account_status&access_token=${integration.facebookPageAccessToken}`
+          );
+          
+          if (!validateResponse.ok) {
+            const error = await validateResponse.json();
+            return res.status(400).json({ 
+              error: `Invalid Ad Account: ${error.error?.message || 'Could not validate'}`,
+              details: "Make sure you have access to this Ad Account and the correct permissions."
+            });
+          }
+          
+          const adAccountData = await validateResponse.json();
+          console.log(`[Meta] Validated Ad Account: ${adAccountData.name} (${adAccountId})`);
+        } catch (validateError) {
+          console.error('[Meta] Ad Account validation error:', validateError);
+        }
+      }
+      
+      await db
+        .update(metaIntegrations)
+        .set({ 
+          adAccountId,
+          updatedAt: new Date()
+        })
+        .where(eq(metaIntegrations.tenantId, tenantId));
+      
+      res.json({ 
+        success: true, 
+        message: `Ad Account ${adAccountId} configured for ${tenantId}`,
+        adAccountId
+      });
+    } catch (error) {
+      console.error("Error configuring Ad Account:", error);
+      res.status(500).json({ error: "Failed to configure Ad Account" });
+    }
+  });
+
+  // Get Ad Account configuration
+  app.get("/api/meta/:tenantId/ad-account", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const [integration] = await db
+        .select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, tenantId))
+        .limit(1);
+      
+      if (!integration) {
+        return res.status(404).json({ error: "Meta integration not found" });
+      }
+      
+      res.json({ 
+        adAccountId: integration.adAccountId,
+        configured: !!integration.adAccountId
+      });
+    } catch (error) {
+      console.error("Error getting Ad Account:", error);
+      res.status(500).json({ error: "Failed to get Ad Account" });
+    }
+  });
+
   // ============ POST INSIGHTS & ANALYTICS ============
   
   // Fetch detailed insights for a specific Facebook post

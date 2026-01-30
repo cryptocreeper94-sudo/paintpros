@@ -370,7 +370,7 @@ async function checkAndRunAdCampaigns(): Promise<void> {
       }
 
       // Check daily spend cap
-      const todaySpent = campaign.spent || 0;
+      const todaySpent = Number(campaign.spent) || 0;
       const dailyBudget = Number(campaign.dailyBudget) || 25;
       
       if (todaySpent >= dailyBudget) {
