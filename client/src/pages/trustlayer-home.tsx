@@ -303,7 +303,7 @@ export default function TrustLayerHome() {
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-lg px-10 py-7 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-shadow"
-              onClick={() => window.location.href = '/autopilot/setup'}
+              onClick={() => window.location.href = '/autopilot/onboarding'}
               data-testid="button-connect-now"
             >
               <Zap className="w-6 h-6 mr-2" />

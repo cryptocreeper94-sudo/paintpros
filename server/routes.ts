@@ -459,6 +459,107 @@ console.log(data);`
 
   // ============ MARKETING AUTOPILOT SUBSCRIPTION SERVICE ============
   
+  // POST /api/autopilot/onboard - Self-service onboarding for new businesses
+  app.post("/api/autopilot/onboard", async (req, res) => {
+    try {
+      const { 
+        niche, businessName, ownerName, email, phone, city, state, website, tagline,
+        appId, appSecret, pageAccessToken, facebookPageId, instagramAccountId,
+        plan, isOwnerApp, ownerPin
+      } = req.body;
+      
+      if (!businessName || !email || !city || !state) {
+        return res.status(400).json({ error: "Missing required fields: businessName, email, city, state" });
+      }
+      
+      if (!appId || !appSecret || !pageAccessToken) {
+        return res.status(400).json({ error: "Missing Meta credentials: appId, appSecret, pageAccessToken" });
+      }
+      
+      // Generate tenant ID from business name
+      const tenantId = businessName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 30) + '-' + Date.now().toString(36);
+      
+      const subscriptionId = crypto.randomUUID();
+      
+      // Verify owner PIN if internal app
+      const validPin = process.env.OWNER_PIN || '04240424';
+      const isInternal = isOwnerApp && ownerPin === validPin;
+      
+      // Determine pricing
+      const monthlyPrice = isInternal ? '0.00' : (plan === 'premium' ? '99.00' : '59.00');
+      
+      // Create subscription record
+      await db.insert(autopilotSubscriptions).values({
+        id: subscriptionId,
+        tenantId,
+        businessName,
+        ownerName: ownerName || '',
+        email,
+        phone: phone || '',
+        isInternal,
+        status: isInternal ? 'active' : 'pending',
+        monthlyPrice,
+        activatedAt: isInternal ? new Date() : null,
+        createdAt: new Date()
+      });
+      
+      // Store Meta credentials securely
+      await db.insert(tenantMetaCredentials).values({
+        id: crypto.randomUUID(),
+        tenantId,
+        appId,
+        appSecret,
+        pageAccessToken,
+        facebookPageId: facebookPageId || null,
+        instagramAccountId: instagramAccountId || null,
+        tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days default
+        createdAt: new Date()
+      }).onConflictDoUpdate({
+        target: tenantMetaCredentials.tenantId,
+        set: {
+          appId,
+          appSecret,
+          pageAccessToken,
+          facebookPageId: facebookPageId || null,
+          instagramAccountId: instagramAccountId || null,
+          tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+        }
+      });
+      
+      // Store business info for content generation
+      const businessMetadata = {
+        niche: niche || 'general',
+        city,
+        state,
+        website: website || '',
+        tagline: tagline || '',
+        plan: plan || 'standard'
+      };
+      
+      // Generate initial content based on niche (async - don't wait)
+      if (niche) {
+        // This will be handled by background job later
+        console.log(`[Autopilot] New ${niche} business onboarded: ${businessName} in ${city}, ${state}`);
+      }
+      
+      res.json({ 
+        success: true, 
+        subscriberId: subscriptionId,
+        tenantId,
+        isInternal,
+        message: isInternal ? 'Internal app activated - no billing required' : 'Account created - proceed to payment'
+      });
+      
+    } catch (error: any) {
+      console.error('Autopilot onboarding error:', error);
+      res.status(500).json({ error: error.message || "Failed to create account" });
+    }
+  });
+
   // POST /api/marketing-autopilot/subscribe - Create subscription for automated marketing service
   app.post("/api/marketing-autopilot/subscribe", async (req, res) => {
     try {

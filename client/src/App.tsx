@@ -55,6 +55,7 @@ import AutopilotAdmin from "@/pages/autopilot-admin";
 import AutopilotPortal from "@/pages/autopilot-portal";
 import AutopilotDashboard from "@/pages/autopilot-dashboard";
 import AutopilotSetupGuide from "@/pages/autopilot-setup-guide";
+import AutopilotOnboarding from "@/pages/autopilot-onboarding";
 import TrustLayerHome from "@/pages/trustlayer-home";
 import TrustLayerMarketing from "@/pages/trustlayer-marketing";
 import GuardianShield from "@/pages/guardian-shield";
@@ -245,6 +246,7 @@ function Router() {
       <Route path="/autopilot/portal" component={AutopilotPortal} />
       <Route path="/autopilot/dashboard" component={AutopilotDashboard} />
       <Route path="/autopilot/setup" component={AutopilotSetupGuide} />
+      <Route path="/autopilot/onboarding" component={AutopilotOnboarding} />
       <Route path="/marketing-autopilot" component={MarketingAutopilot} />
       <Route path="/trustlayer" component={TrustLayerHome} />
       <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
