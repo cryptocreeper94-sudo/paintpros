@@ -81,10 +81,11 @@ export default function TrustLayerHome() {
   ];
 
   const connectedSystems = [
+    { name: 'DWTL.io', desc: 'Blockchain Trust Layer', icon: Layers, url: 'https://dwtl.io', primary: true },
     { name: 'Orbit Staffing', desc: 'Workforce & Financials', icon: Users, url: 'https://orbitstaffing.io' },
-    { name: 'PaintPros.io', desc: 'Trade Verticals & Field Tools', icon: Briefcase, url: 'https://paintpros.io' },
-    { name: 'DarkWave Studios', desc: 'Architecture & Development', icon: Building2, url: 'https://darkwavestudios.io' },
-    { name: 'TradeWorks AI', desc: 'Field Tool Platform', icon: Zap, url: 'https://tradeworksai.io' }
+    { name: 'PaintPros.io', desc: 'Trade Verticals', icon: Briefcase, url: 'https://paintpros.io' },
+    { name: 'TradeWorks AI', desc: 'Field Tool Platform', icon: Zap, url: 'https://tradeworksai.io' },
+    { name: 'DarkWave Studios', desc: 'Architecture & Dev', icon: Building2, url: 'https://darkwavestudios.io' }
   ];
 
   const trustFeatures = [
@@ -277,13 +278,23 @@ export default function TrustLayerHome() {
                 variants={fadeInUp}
                 custom={i}
                 whileHover={{ scale: 1.05, y: -2 }}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg bg-slate-800/30 border border-white/5 backdrop-blur-sm"
+                onClick={() => (system as any).url && window.open((system as any).url, '_blank')}
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg backdrop-blur-sm cursor-pointer ${
+                  (system as any).primary 
+                    ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 shadow-lg shadow-emerald-500/10' 
+                    : 'bg-slate-800/30 border border-white/5'
+                }`}
               >
-                <system.icon className="w-5 h-5 text-slate-400" />
+                <system.icon className={`w-5 h-5 ${(system as any).primary ? 'text-emerald-400' : 'text-slate-400'}`} />
                 <div>
-                  <p className="text-white text-sm font-medium">{system.name}</p>
+                  <p className={`text-sm font-medium ${(system as any).primary ? 'text-emerald-300' : 'text-white'}`}>{system.name}</p>
                   <p className="text-slate-500 text-xs">{system.desc}</p>
                 </div>
+                {(system as any).primary && (
+                  <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs px-2 py-0">
+                    Core
+                  </Badge>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -600,7 +611,10 @@ export default function TrustLayerHome() {
               </div>
             </div>
             <div className="flex items-center gap-8 text-slate-400 text-sm">
-              <span>Part of the Orbit Ecosystem</span>
+              <span className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-emerald-400" />
+                Powered by DWTL.io Blockchain
+              </span>
               <span className="text-slate-600">|</span>
               <span>support@tlid.io</span>
             </div>
