@@ -672,6 +672,99 @@ export async function registerRoutes(
     }
   });
   
+  // ============ META OAUTH FOR AUTOPILOT ============
+  
+  // GET /api/meta/connect/:subscriberId - Start OAuth flow
+  app.get("/api/meta/connect/:subscriberId", async (req, res) => {
+    try {
+      const { metaOAuth } = await import("./meta-oauth");
+      const { subscriberId } = req.params;
+      const returnUrl = req.query.return as string || '/autopilot/portal';
+      
+      if (!metaOAuth.isConfigured()) {
+        return res.status(500).json({ 
+          error: 'Meta OAuth not configured. Please set META_APP_ID and META_APP_SECRET.' 
+        });
+      }
+      
+      const authUrl = metaOAuth.getAuthorizationUrl(subscriberId, returnUrl);
+      res.redirect(authUrl);
+    } catch (error: any) {
+      console.error('[Meta OAuth] Connect error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // GET /api/meta/callback - OAuth callback
+  app.get("/api/meta/callback", async (req, res) => {
+    try {
+      const { metaOAuth } = await import("./meta-oauth");
+      const { code, state, error, error_description } = req.query;
+      
+      if (error) {
+        console.error('[Meta OAuth] Auth error:', error, error_description);
+        return res.redirect(`/autopilot/portal?error=${encodeURIComponent(String(error_description || error))}`);
+      }
+      
+      if (!code || !state) {
+        return res.redirect('/autopilot/portal?error=Missing+authorization+code');
+      }
+      
+      // Decode state
+      let stateData: { subscriberId: string; returnUrl: string };
+      try {
+        stateData = JSON.parse(Buffer.from(String(state), 'base64').toString());
+      } catch {
+        return res.redirect('/autopilot/portal?error=Invalid+state');
+      }
+      
+      // Complete OAuth flow
+      const result = await metaOAuth.completeOAuthFlow(stateData.subscriberId, String(code));
+      
+      if (result.success) {
+        res.redirect(`${stateData.returnUrl}?id=${stateData.subscriberId}&connected=true`);
+      } else {
+        res.redirect(`${stateData.returnUrl}?id=${stateData.subscriberId}&error=${encodeURIComponent(result.error || 'Connection failed')}`);
+      }
+    } catch (error: any) {
+      console.error('[Meta OAuth] Callback error:', error);
+      res.redirect(`/autopilot/portal?error=${encodeURIComponent(error.message)}`);
+    }
+  });
+  
+  // GET /api/meta/status/:subscriberId - Check OAuth configuration status
+  app.get("/api/meta/status/:subscriberId", async (req, res) => {
+    try {
+      const { metaOAuth } = await import("./meta-oauth");
+      const { subscriberId } = req.params;
+      
+      // Get subscriber
+      const [subscriber] = await db.select()
+        .from(autopilotSubscriptions)
+        .where(eq(autopilotSubscriptions.id, subscriberId));
+      
+      if (!subscriber) {
+        return res.status(404).json({ error: 'Subscriber not found' });
+      }
+      
+      // Get Meta integration
+      const [integration] = await db.select()
+        .from(metaIntegrations)
+        .where(eq(metaIntegrations.tenantId, subscriber.tenantId));
+      
+      res.json({
+        oauthConfigured: metaOAuth.isConfigured(),
+        connected: subscriber.metaConnected,
+        facebookPageName: integration?.facebookPageName || subscriber.facebookPageName,
+        instagramUsername: integration?.instagramUsername || subscriber.instagramUsername,
+        tokenExpiresAt: integration?.tokenExpiresAt,
+        lastSyncAt: integration?.lastSyncAt
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // POST /api/marketing-autopilot/:id/test-post - Test posting for a subscriber
   app.post("/api/marketing-autopilot/:id/test-post", async (req, res) => {
     try {

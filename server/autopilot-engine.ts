@@ -320,5 +320,129 @@ export class AutopilotEngine {
   }
 }
 
+/**
+ * Token Management
+ * Handles refreshing Meta access tokens before they expire
+ */
+export class TokenManager {
+  
+  /**
+   * Exchange a short-lived token for a long-lived token
+   * Long-lived tokens last ~60 days
+   */
+  async exchangeForLongLivedToken(
+    shortLivedToken: string,
+    appId: string,
+    appSecret: string
+  ): Promise<{ accessToken: string; expiresIn: number } | null> {
+    try {
+      const url = `https://graph.facebook.com/v18.0/oauth/access_token?` +
+        `grant_type=fb_exchange_token&` +
+        `client_id=${appId}&` +
+        `client_secret=${appSecret}&` +
+        `fb_exchange_token=${shortLivedToken}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('[TokenManager] Failed to exchange token:', await response.text());
+        return null;
+      }
+
+      const data = await response.json() as { access_token: string; expires_in: number };
+      console.log('[TokenManager] Token exchanged, expires in:', data.expires_in, 'seconds');
+      
+      return {
+        accessToken: data.access_token,
+        expiresIn: data.expires_in
+      };
+    } catch (error) {
+      console.error('[TokenManager] Token exchange error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get Page Access Token from User Access Token
+   * Page tokens don't expire if derived from a long-lived user token
+   */
+  async getPageAccessToken(
+    userAccessToken: string,
+    pageId: string
+  ): Promise<string | null> {
+    try {
+      const url = `https://graph.facebook.com/v18.0/${pageId}?` +
+        `fields=access_token&` +
+        `access_token=${userAccessToken}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('[TokenManager] Failed to get page token:', await response.text());
+        return null;
+      }
+
+      const data = await response.json() as { access_token: string };
+      return data.access_token;
+    } catch (error) {
+      console.error('[TokenManager] Get page token error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Check if a token is expiring soon (within 7 days)
+   */
+  isExpiringSoon(expiresAt: Date | null): boolean {
+    if (!expiresAt) return true; // If no expiry set, assume it needs refresh
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+    return expiresAt < sevenDaysFromNow;
+  }
+
+  /**
+   * Check all subscribers for expiring tokens
+   */
+  async checkExpiringTokens(): Promise<{ subscriberId: string; businessName: string; expiresAt: Date }[]> {
+    const expiring: { subscriberId: string; businessName: string; expiresAt: Date }[] = [];
+    
+    const integrations = await db.select().from(metaIntegrations);
+    const subscribers = await db.select().from(autopilotSubscriptions);
+    
+    for (const integration of integrations) {
+      if (integration.tokenExpiresAt && this.isExpiringSoon(integration.tokenExpiresAt)) {
+        const subscriber = subscribers.find(s => s.tenantId === integration.tenantId);
+        if (subscriber) {
+          expiring.push({
+            subscriberId: subscriber.id,
+            businessName: subscriber.businessName,
+            expiresAt: integration.tokenExpiresAt
+          });
+        }
+      }
+    }
+    
+    return expiring;
+  }
+
+  /**
+   * Update token in database
+   */
+  async updateToken(
+    tenantId: string,
+    newToken: string,
+    expiresAt: Date
+  ): Promise<void> {
+    await db.update(metaIntegrations)
+      .set({
+        facebookPageAccessToken: newToken,
+        tokenExpiresAt: expiresAt,
+        tokenType: 'long_lived',
+        updatedAt: new Date()
+      })
+      .where(eq(metaIntegrations.tenantId, tenantId));
+  }
+}
+
+export const tokenManager = new TokenManager();
+
 // Export singleton instance
 export const autopilotEngine = new AutopilotEngine();

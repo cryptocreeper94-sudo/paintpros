@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,49 +14,43 @@ import {
   Key,
   DollarSign,
   Play,
-  Pause,
   Check,
   Facebook,
   Instagram,
-  Clock,
-  TrendingUp,
   Target,
   Loader2,
   ChevronRight,
   Shield,
   Zap,
   BarChart3,
-  Settings2,
   Link2,
   CheckCircle,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  ExternalLink,
+  AlertCircle
 } from "lucide-react";
 import { useLocation } from "wouter";
 
+interface MetaStatus {
+  oauthConfigured: boolean;
+  connected: boolean;
+  facebookPageName?: string;
+  instagramUsername?: string;
+  tokenExpiresAt?: string;
+  lastSyncAt?: string;
+}
+
 interface AutopilotConfig {
-  // Meta Connection
-  facebookConnected: boolean;
-  instagramConnected: boolean;
-  facebookPageName: string;
-  instagramUsername: string;
-  
-  // Daily Budget
   dailyBudget: number;
-  
-  // Posting Preferences
   postsPerDay: number;
   includeAds: boolean;
-  adSpendPercent: number; // What % of daily budget goes to ads
-  
-  // Content Mix
+  adSpendPercent: number;
   contentMix: {
     promotional: number;
     educational: number;
     behindScenes: number;
   };
-  
-  // Status
   isActive: boolean;
 }
 
@@ -65,13 +58,8 @@ export default function AutopilotPortal() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isActivating, setIsActivating] = useState(false);
   
   const [config, setConfig] = useState<AutopilotConfig>({
-    facebookConnected: false,
-    instagramConnected: false,
-    facebookPageName: "",
-    instagramUsername: "",
     dailyBudget: 20,
     postsPerDay: 3,
     includeAds: true,
@@ -80,43 +68,42 @@ export default function AutopilotPortal() {
     isActive: false
   });
 
-  // Meta connection credentials
-  const [metaCredentials, setMetaCredentials] = useState({
-    facebookPageId: "",
-    facebookPageName: "",
-    facebookAccessToken: "",
-    instagramAccountId: "",
-    instagramUsername: ""
-  });
+  // Get params from URL
+  const params = new URLSearchParams(window.location.search);
+  const subscriberId = params.get('id');
+  const justConnected = params.get('connected') === 'true';
+  const error = params.get('error');
 
-  const subscriberId = new URLSearchParams(window.location.search).get('id');
+  // Show toast for OAuth result
+  useEffect(() => {
+    if (justConnected) {
+      toast({ title: "Facebook & Instagram connected successfully!" });
+      setCurrentStep(2);
+    }
+    if (error) {
+      toast({ title: decodeURIComponent(error), variant: "destructive" });
+    }
+  }, [justConnected, error]);
 
-  // Fetch subscriber data
-  const { data: subscriber, isLoading } = useQuery({
-    queryKey: ["/api/marketing-autopilot/subscriber", subscriberId],
+  // Fetch Meta connection status
+  const { data: metaStatus, isLoading: statusLoading, refetch: refetchStatus } = useQuery<MetaStatus>({
+    queryKey: ["/api/meta/status", subscriberId],
     enabled: !!subscriberId
   });
 
-  // Connect Meta mutation
-  const connectMetaMutation = useMutation({
-    mutationFn: async () => {
-      return apiRequest("POST", `/api/marketing-autopilot/${subscriberId}/connect-meta`, metaCredentials);
-    },
-    onSuccess: () => {
-      setConfig(prev => ({
-        ...prev,
-        facebookConnected: true,
-        instagramConnected: !!metaCredentials.instagramAccountId,
-        facebookPageName: metaCredentials.facebookPageName,
-        instagramUsername: metaCredentials.instagramUsername
-      }));
+  // Auto-advance if already connected
+  useEffect(() => {
+    if (metaStatus?.connected && currentStep === 1) {
       setCurrentStep(2);
-      toast({ title: "Accounts connected successfully!" });
-    },
-    onError: () => {
-      toast({ title: "Connection failed. Please check your credentials.", variant: "destructive" });
     }
-  });
+  }, [metaStatus, currentStep]);
+
+  // Start OAuth flow
+  const connectWithFacebook = () => {
+    if (subscriberId) {
+      window.location.href = `/api/meta/connect/${subscriberId}?return=/autopilot/portal`;
+    }
+  };
 
   // Activate autopilot mutation
   const activateMutation = useMutation({
@@ -139,6 +126,26 @@ export default function AutopilotPortal() {
   const monthlyAdSpend = config.dailyBudget * 30;
   const monthlySubscription = 59;
   const totalMonthly = monthlyAdSpend + monthlySubscription;
+
+  // If no subscriber ID, show error
+  if (!subscriberId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
+        <Card className="bg-slate-800/50 border-slate-700 max-w-md">
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">No Subscription Found</h2>
+            <p className="text-slate-400 mb-6">
+              Please subscribe to Marketing Autopilot first to access your portal.
+            </p>
+            <Button onClick={() => navigate('/autopilot')} data-testid="button-go-subscribe">
+              Go to Subscription Page
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -219,102 +226,97 @@ export default function AutopilotPortal() {
                     <div className="flex items-start gap-3">
                       <Shield className="w-5 h-5 text-green-400 mt-0.5" />
                       <div>
-                        <p className="text-white font-medium">Your credentials are encrypted & secure</p>
-                        <p className="text-slate-400 text-sm">We only use these to post on your behalf. You can revoke access anytime.</p>
+                        <p className="text-white font-medium">Secure Connection</p>
+                        <p className="text-slate-400 text-sm">
+                          Click the button below to securely connect your Facebook Page and Instagram. 
+                          You'll authorize us through Facebook's official login - we never see your password.
+                        </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="bg-slate-900/50 rounded-lg p-4">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Facebook className="w-6 h-6 text-blue-500" />
-                        <span className="text-white font-medium">Facebook Page</span>
-                        <Badge className="ml-auto bg-blue-500/20 text-blue-400 border-0">Required</Badge>
+                  {/* Already Connected State */}
+                  {metaStatus?.connected ? (
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <CheckCircle className="w-8 h-8 text-green-400" />
+                        <div>
+                          <p className="text-white font-semibold text-lg">Accounts Connected!</p>
+                          <p className="text-slate-400 text-sm">Your social accounts are ready</p>
+                        </div>
                       </div>
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-slate-400 text-sm">Page Name</Label>
-                          <Input
-                            placeholder="Your Business Name"
-                            value={metaCredentials.facebookPageName}
-                            onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageName: e.target.value })}
-                            className="bg-slate-800 border-slate-600 text-white mt-1"
-                            data-testid="input-fb-page-name"
-                          />
+                      <div className="space-y-2">
+                        {metaStatus.facebookPageName && (
+                          <div className="flex items-center gap-2 text-white">
+                            <Facebook className="w-4 h-4 text-blue-500" />
+                            <span>{metaStatus.facebookPageName}</span>
+                          </div>
+                        )}
+                        {metaStatus.instagramUsername && (
+                          <div className="flex items-center gap-2 text-white">
+                            <Instagram className="w-4 h-4 text-pink-500" />
+                            <span>@{metaStatus.instagramUsername}</span>
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        onClick={() => setCurrentStep(2)}
+                        className="w-full mt-4 bg-green-600 hover:bg-green-700"
+                        data-testid="button-continue-connected"
+                      >
+                        Continue to Budget Setup
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  ) : (
+                    /* Not Connected - Show OAuth Button */
+                    <div className="space-y-4">
+                      <div className="bg-slate-900/50 rounded-lg p-6 text-center">
+                        <div className="flex justify-center gap-4 mb-6">
+                          <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <Facebook className="w-8 h-8 text-blue-500" />
+                          </div>
+                          <div className="w-16 h-16 rounded-full bg-pink-500/20 flex items-center justify-center">
+                            <Instagram className="w-8 h-8 text-pink-500" />
+                          </div>
                         </div>
-                        <div>
-                          <Label className="text-slate-400 text-sm">Page ID</Label>
-                          <Input
-                            placeholder="e.g., 1234567890123456"
-                            value={metaCredentials.facebookPageId}
-                            onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageId: e.target.value })}
-                            className="bg-slate-800 border-slate-600 text-white mt-1"
-                            data-testid="input-fb-page-id"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-slate-400 text-sm">Page Access Token</Label>
-                          <Input
-                            type="password"
-                            placeholder="Your page access token"
-                            value={metaCredentials.facebookAccessToken}
-                            onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookAccessToken: e.target.value })}
-                            className="bg-slate-800 border-slate-600 text-white mt-1"
-                            data-testid="input-fb-token"
-                          />
-                          <p className="text-xs text-slate-500 mt-1">Get this from Meta Business Suite or Graph API Explorer</p>
-                        </div>
+                        
+                        <p className="text-slate-400 mb-6">
+                          Connect both your Facebook Page and Instagram in one click.
+                          We'll automatically link your Instagram if it's connected to your Facebook Page.
+                        </p>
+
+                        <Button
+                          onClick={connectWithFacebook}
+                          size="lg"
+                          className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-lg"
+                          disabled={statusLoading}
+                          data-testid="button-connect-facebook"
+                        >
+                          {statusLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <>
+                              <Facebook className="w-5 h-5 mr-2" />
+                              Connect with Facebook
+                              <ExternalLink className="w-4 h-4 ml-2" />
+                            </>
+                          )}
+                        </Button>
+
+                        {!metaStatus?.oauthConfigured && (
+                          <p className="text-yellow-400 text-sm mt-4">
+                            Note: OAuth is being configured. Contact support if you need help connecting.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="text-center text-slate-500 text-sm">
+                        <p>We request the following permissions:</p>
+                        <p className="text-slate-400">Post to your Page • Read insights • Post to Instagram</p>
                       </div>
                     </div>
-
-                    <div className="bg-slate-900/50 rounded-lg p-4">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Instagram className="w-6 h-6 text-pink-500" />
-                        <span className="text-white font-medium">Instagram Business</span>
-                        <Badge className="ml-auto bg-slate-700 text-slate-300 border-0">Optional</Badge>
-                      </div>
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-slate-400 text-sm">Instagram Username</Label>
-                          <Input
-                            placeholder="@yourbusiness"
-                            value={metaCredentials.instagramUsername}
-                            onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramUsername: e.target.value })}
-                            className="bg-slate-800 border-slate-600 text-white mt-1"
-                            data-testid="input-ig-username"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-slate-400 text-sm">Instagram Business Account ID</Label>
-                          <Input
-                            placeholder="e.g., 17841400000000000"
-                            value={metaCredentials.instagramAccountId}
-                            onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramAccountId: e.target.value })}
-                            className="bg-slate-800 border-slate-600 text-white mt-1"
-                            data-testid="input-ig-id"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => connectMetaMutation.mutate()}
-                    disabled={!metaCredentials.facebookPageId || !metaCredentials.facebookAccessToken || connectMetaMutation.isPending}
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700"
-                    data-testid="button-connect-accounts"
-                  >
-                    {connectMetaMutation.isPending ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <>
-                        <Link2 className="w-5 h-5 mr-2" />
-                        Connect Accounts
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </>
-                    )}
-                  </Button>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -337,8 +339,8 @@ export default function AutopilotPortal() {
                     <div className="flex-1">
                       <p className="text-white font-medium">Accounts Connected</p>
                       <p className="text-slate-400 text-sm">
-                        {config.facebookPageName && `Facebook: ${config.facebookPageName}`}
-                        {config.instagramUsername && ` • Instagram: @${config.instagramUsername}`}
+                        {metaStatus?.facebookPageName && `Facebook: ${metaStatus.facebookPageName}`}
+                        {metaStatus?.instagramUsername && ` • Instagram: @${metaStatus.instagramUsername}`}
                       </p>
                     </div>
                   </div>
@@ -481,12 +483,12 @@ export default function AutopilotPortal() {
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Facebook className="w-4 h-4 text-blue-500" />
-                          <span className="text-white">{config.facebookPageName || "Facebook Page"}</span>
+                          <span className="text-white">{metaStatus?.facebookPageName || "Facebook Page"}</span>
                         </div>
-                        {config.instagramUsername && (
+                        {metaStatus?.instagramUsername && (
                           <div className="flex items-center gap-2">
                             <Instagram className="w-4 h-4 text-pink-500" />
-                            <span className="text-white">@{config.instagramUsername}</span>
+                            <span className="text-white">@{metaStatus.instagramUsername}</span>
                           </div>
                         )}
                       </div>
