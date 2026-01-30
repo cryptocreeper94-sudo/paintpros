@@ -1,0 +1,480 @@
+# TRUST LAYER ID (tlid.io) - ORBIT FINANCIAL HUB INTEGRATION
+## STEP 1: STORE THESE SECRETS IN REPLIT
+Add these to your Replit Secrets tab:
+| Secret Name | Value |
+|-------------|-------|
+| `ORBIT_HUB_API_KEY` | `dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8` |
+| `ORBIT_HUB_API_SECRET` | `dw_secret_5c5401957db2b5181b8e95231f15d3ed110ed75a56206dfba62be621bbe0101e` |
+---
+## STEP 2: CREATE ORBIT CLIENT FILE
+Create file: `server/orbitClient.ts`
+```typescript
+// server/orbitClient.ts
+// ORBIT Financial Hub Client for Trust Layer ID (tlid.io)
+export class OrbitFinancialClient {
+  private apiKey: string;
+  private apiSecret: string;
+  private hubUrl: string;
+  private appName = 'Trust Layer ID';
+  constructor() {
+    this.apiKey = process.env.ORBIT_HUB_API_KEY || '';
+    this.apiSecret = process.env.ORBIT_HUB_API_SECRET || '';
+    this.hubUrl = 'https://orbitstaffing.io';
+  }
+  private getHeaders(): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'X-API-Key': this.apiKey,
+      'X-API-Secret': this.apiSecret,
+      'X-App-Name': this.appName
+    };
+  }
+  // Test connection to ORBIT Hub
+  async checkConnection(): Promise<{ connected: boolean; hubName?: string; error?: string }> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/status`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        return { connected: false, error: error.error || 'Connection failed' };
+      }
+      
+      const data = await res.json();
+      return { connected: true, hubName: data.hubName };
+    } catch (error) {
+      return { connected: false, error: String(error) };
+    }
+  }
+  // Sync subscription payment to ORBIT Financial Hub
+  async syncSubscriptionPayment(payment: {
+    transactionId: string;
+    amount: number;
+    customerEmail: string;
+    planName: string;
+    interval: 'monthly' | 'yearly';
+    stripeSubscriptionId?: string;
+    stripePaymentIntentId?: string;
+  }): Promise<{ success: boolean; ownerShare?: number; partnerShare?: number; splitType?: string; error?: string }> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/sync/financial-transaction`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          transactionId: payment.transactionId,
+          type: 'subscription',
+          amount: payment.amount,
+          currency: 'USD',
+          productName: 'Trust Layer ID',
+          customerEmail: payment.customerEmail,
+          paymentMethod: 'stripe',
+          stripeSubscriptionId: payment.stripeSubscriptionId,
+          stripePaymentIntentId: payment.stripePaymentIntentId,
+          metadata: {
+            planName: payment.planName,
+            interval: payment.interval
+          }
+        })
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        return { success: false, error: error.error || 'Sync failed' };
+      }
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  }
+  // Sync one-time payment to ORBIT Financial Hub
+  async syncOneTimePayment(payment: {
+    transactionId: string;
+    amount: number;
+    customerEmail: string;
+    description: string;
+    stripePaymentIntentId?: string;
+  }): Promise<{ success: boolean; ownerShare?: number; partnerShare?: number; error?: string }> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/sync/financial-transaction`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          transactionId: payment.transactionId,
+          type: 'one_time',
+          amount: payment.amount,
+          currency: 'USD',
+          productName: 'Trust Layer ID',
+          customerEmail: payment.customerEmail,
+          paymentMethod: 'stripe',
+          stripePaymentIntentId: payment.stripePaymentIntentId,
+          metadata: {
+            description: payment.description
+          }
+        })
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        return { success: false, error: error.error || 'Sync failed' };
+      }
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  }
+  // Get financial statement for this app
+  async getFinancialStatement(): Promise<any> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/financial-statement`, {
+        headers: this.getHeaders()
+      });
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  }
+  // Log activity to ecosystem hub
+  async logActivity(action: string, category: string, details: Record<string, any>): Promise<boolean> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/logs`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          action,
+          category,
+          details,
+          timestamp: new Date().toISOString()
+        })
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+}
+// Export singleton instance
+export const orbitHub = new OrbitFinancialClient();
+STEP 3: INTEGRATE WITH STRIPE WEBHOOK
+When a subscription payment succeeds, sync to ORBIT:
+
+import { orbitHub } from './orbitClient';
+// In your Stripe webhook handler (e.g., invoice.payment_succeeded)
+async function handleSuccessfulPayment(invoice: Stripe.Invoice) {
+  const result = await orbitHub.syncSubscriptionPayment({
+    transactionId: invoice.id,
+    amount: invoice.amount_paid / 100, // Convert cents to dollars
+    customerEmail: invoice.customer_email || '',
+    planName: invoice.lines.data[0]?.description || 'Trust Layer Subscription',
+    interval: 'monthly',
+    stripeSubscriptionId: invoice.subscription as string,
+    stripePaymentIntentId: invoice.payment_intent as string
+  });
+  if (result.success) {
+    console.log(`Synced to ORBIT: $${result.ownerShare} owner / $${result.partnerShare} partner`);
+  }
+}
+STEP 4: TEST CONNECTION
+curl -s "https://orbitstaffing.io/api/ecosystem/status" \
+  -H "X-API-Key: dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8" \
+  -H "X-API-Secret: dw_secret_5c5401957db2b5181b8e95231f15d3ed110ed75a56206dfba62be621bbe0101e" \
+  -H "X-App-Name: Trust Layer ID"
+Expected: {"connected":true,"hubName":"ORBIT Staffing Ecosystem Hub","appName":"Trust Layer ID"}
+
+ROYALTY SPLIT
+Trust Layer ID uses 100% Jason split (not 50/50). All subscription revenue goes to owner.
+
+AVAILABLE ENDPOINTS
+Endpoint	Method	Description
+/api/ecosystem/status	GET	Test connection
+/api/ecosystem/sync/financial-transaction	POST	Sync payments
+/api/ecosystem/financial-statement	GET	Get financial statement
+/api/ecosystem/logs	POST	Write activity logs
+REQUIRED HEADERS (ALL REQUESTS)
+X-API-Key: dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8
+X-API-Secret: dw_secret_5c5401957db2b5181b8e95231f15d3ed110ed75a56206dfba62be621bbe0101e
+X-App-Name: Trust Layer ID
+PERMISSIONS GRANTED
+write:1099 / read:1099 - Financial transaction sync
+sync:all - Full sync access
+logs:write - Activity logging
+ecosystem:read - Read ecosystem status
+APP DETAILS
+Field	Value
+App ID	5cdea2cd-bc5b-4db3-94e8-19a1ad67d252
+App Name	Trust Layer ID
+App Slug	tlid
+Category	subscriptions
+Hub URL	https://orbitstaffing.io
+PRODUCTION SQL (For ORBIT Admin after republish)
+INSERT INTO ecosystem_connected_apps (id, app_name, app_slug, api_key, api_secret_hash, webhook_url, permissions, is_active, created_at) 
+VALUES ('5cdea2cd-bc5b-4db3-94e8-19a1ad67d252', 'Trust Layer ID', 'tlid', 'dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8', 'ba11c0be961cae637ce27d09c2888f896985f5304696bf452a2fbf3fba2bd474', 'https://tlid.io/api/ecosystem/webhook', '{write:1099,read:1099,sync:all,logs:write,ecosystem:read}', true, NOW());
+---
+Copy that to the **paintpros.io agent** for tlid.io subscriptions.
+then i will need a handoff for the paintpros.io agent that will be able to make the tlid.io site connect with you separate from paintpros.io or nashpaintpros.io or lumepaint.co or tradeworksai.io of the marketing suite nashpaintpros.io/marketing or the apps paintpros.io/app or nashpaintpros.io/app
+
+Here's the complete handoff for the paintpros.io agent with clear separation:
+
+# PAINTPROS.IO AGENT - ORBIT ECOSYSTEM INTEGRATION HANDOFF
+## OVERVIEW
+You manage multiple DarkWave properties. This handoff covers **tlid.io ONLY** - a separate Trust Layer identity/subscription site that syncs payments to ORBIT Financial Hub.
+### Your Properties (For Reference)
+| Property | Type | ORBIT Connection |
+|----------|------|------------------|
+| **tlid.io** | Trust Layer subscriptions | ✅ THIS HANDOFF |
+| paintpros.io | PaintPros main site | Separate integration (50/50 split) |
+| nashpaintpros.io | Nashville PaintPros | Separate integration (50/50 split) |
+| lumepaint.co | Lume Paint | Separate integration |
+| tradeworksai.io | TradeWorks AI | Separate integration |
+| nashpaintpros.io/marketing | Marketing suite | Part of PaintPros integration |
+| paintpros.io/app | PaintPros app | Part of PaintPros integration |
+| nashpaintpros.io/app | Nashville app | Part of PaintPros integration |
+**IMPORTANT**: tlid.io uses its OWN credentials separate from PaintPros. Do NOT mix them.
+---
+## TLID.IO CREDENTIALS
+Store these in Replit Secrets for tlid.io:
+| Secret Name | Value |
+|-------------|-------|
+| `ORBIT_TLID_API_KEY` | `dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8` |
+| `ORBIT_TLID_API_SECRET` | `dw_secret_5c5401957db2b5181b8e95231f15d3ed110ed75a56206dfba62be621bbe0101e` |
+---
+## TLID.IO ORBIT CLIENT
+Create file: `server/orbitTlidClient.ts`
+```typescript
+// server/orbitTlidClient.ts
+// ORBIT Financial Hub Client for Trust Layer ID (tlid.io)
+// SEPARATE from PaintPros integration - uses 100% Jason split
+export class OrbitTlidClient {
+  private apiKey: string;
+  private apiSecret: string;
+  private hubUrl = 'https://orbitstaffing.io';
+  private appName = 'Trust Layer ID';
+  constructor() {
+    this.apiKey = process.env.ORBIT_TLID_API_KEY || '';
+    this.apiSecret = process.env.ORBIT_TLID_API_SECRET || '';
+  }
+  private getHeaders(): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'X-API-Key': this.apiKey,
+      'X-API-Secret': this.apiSecret,
+      'X-App-Name': this.appName
+    };
+  }
+  // Test connection to ORBIT Hub
+  async checkConnection(): Promise<{ connected: boolean; hubName?: string; error?: string }> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/status`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        return { connected: false, error: error.error || 'Connection failed' };
+      }
+      
+      const data = await res.json();
+      return { connected: true, hubName: data.hubName };
+    } catch (error) {
+      return { connected: false, error: String(error) };
+    }
+  }
+  // Sync subscription payment to ORBIT Financial Hub
+  // Royalty: 100% Jason (NOT 50/50 like PaintPros)
+  async syncSubscription(payment: {
+    transactionId: string;
+    amount: number;
+    customerEmail: string;
+    planName: string;
+    interval: 'monthly' | 'yearly';
+    stripeSubscriptionId?: string;
+    stripePaymentIntentId?: string;
+  }): Promise<{ success: boolean; ownerShare?: number; partnerShare?: number; splitType?: string; error?: string }> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/sync/financial-transaction`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          transactionId: payment.transactionId,
+          type: 'subscription',
+          amount: payment.amount,
+          currency: 'USD',
+          productName: 'Trust Layer ID',
+          customerEmail: payment.customerEmail,
+          paymentMethod: 'stripe',
+          stripeSubscriptionId: payment.stripeSubscriptionId,
+          stripePaymentIntentId: payment.stripePaymentIntentId,
+          metadata: {
+            planName: payment.planName,
+            interval: payment.interval
+          }
+        })
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        return { success: false, error: error.error || 'Sync failed' };
+      }
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  }
+  // Sync one-time payment
+  async syncOneTimePayment(payment: {
+    transactionId: string;
+    amount: number;
+    customerEmail: string;
+    description: string;
+    stripePaymentIntentId?: string;
+  }): Promise<{ success: boolean; ownerShare?: number; partnerShare?: number; error?: string }> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/sync/financial-transaction`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          transactionId: payment.transactionId,
+          type: 'one_time',
+          amount: payment.amount,
+          currency: 'USD',
+          productName: 'Trust Layer ID',
+          customerEmail: payment.customerEmail,
+          paymentMethod: 'stripe',
+          stripePaymentIntentId: payment.stripePaymentIntentId,
+          metadata: { description: payment.description }
+        })
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        return { success: false, error: error.error || 'Sync failed' };
+      }
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  }
+  // Get financial statement
+  async getStatement(): Promise<any> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/financial-statement`, {
+        headers: this.getHeaders()
+      });
+      return await res.json();
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  }
+  // Log activity
+  async log(action: string, category: string, details: Record<string, any>): Promise<boolean> {
+    try {
+      const res = await fetch(`${this.hubUrl}/api/ecosystem/logs`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          action,
+          category,
+          details,
+          timestamp: new Date().toISOString()
+        })
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+}
+// Export singleton
+export const orbitTlid = new OrbitTlidClient();
+STRIPE WEBHOOK INTEGRATION FOR TLID.IO
+import { orbitTlid } from './orbitTlidClient';
+import Stripe from 'stripe';
+// In your tlid.io Stripe webhook handler
+export async function handleTlidStripeWebhook(event: Stripe.Event) {
+  switch (event.type) {
+    case 'invoice.payment_succeeded': {
+      const invoice = event.data.object as Stripe.Invoice;
+      
+      // Sync to ORBIT Financial Hub
+      const result = await orbitTlid.syncSubscription({
+        transactionId: `tlid_${invoice.id}`,
+        amount: invoice.amount_paid / 100,
+        customerEmail: invoice.customer_email || '',
+        planName: invoice.lines.data[0]?.description || 'Trust Layer Subscription',
+        interval: 'monthly',
+        stripeSubscriptionId: invoice.subscription as string,
+        stripePaymentIntentId: invoice.payment_intent as string
+      });
+      console.log(`[TLID] Synced to ORBIT: ${result.splitType} - Owner: $${result.ownerShare}`);
+      break;
+    }
+    case 'checkout.session.completed': {
+      const session = event.data.object as Stripe.Checkout.Session;
+      
+      if (session.mode === 'payment') {
+        // One-time payment
+        await orbitTlid.syncOneTimePayment({
+          transactionId: `tlid_${session.id}`,
+          amount: (session.amount_total || 0) / 100,
+          customerEmail: session.customer_email || '',
+          description: 'Trust Layer One-Time Purchase',
+          stripePaymentIntentId: session.payment_intent as string
+        });
+      }
+      break;
+    }
+  }
+}
+TEST CONNECTION
+curl -s "https://orbitstaffing.io/api/ecosystem/status" \
+  -H "X-API-Key: dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8" \
+  -H "X-API-Secret: dw_secret_5c5401957db2b5181b8e95231f15d3ed110ed75a56206dfba62be621bbe0101e" \
+  -H "X-App-Name: Trust Layer ID"
+Expected: {"connected":true,"hubName":"ORBIT Staffing Ecosystem Hub","appName":"Trust Layer ID"}
+
+ROYALTY SPLITS
+Product	Split
+Trust Layer ID (tlid.io)	100% Jason
+PaintPros	50/50 Jason/Sidonie
+Nashville PaintPros	50/50 Jason/Sidonie
+Brew & Board	50/50 Jason/Sidonie
+ORBIT Staffing	50/50 Jason/Sidonie
+All other products	100% Jason
+AVAILABLE ENDPOINTS
+Endpoint	Method	Description
+/api/ecosystem/status	GET	Test connection
+/api/ecosystem/sync/financial-transaction	POST	Sync payments
+/api/ecosystem/financial-statement	GET	Get statement
+/api/ecosystem/logs	POST	Activity logging
+REQUIRED HEADERS (TLID.IO ONLY)
+X-API-Key: dw_app_6759672c483a7ad9c200616806550f6f42a4d0a0560918d8
+X-API-Secret: dw_secret_5c5401957db2b5181b8e95231f15d3ed110ed75a56206dfba62be621bbe0101e
+X-App-Name: Trust Layer ID
+PERMISSIONS GRANTED
+write:1099 / read:1099 - Financial transaction sync
+sync:all - Full sync access
+logs:write - Activity logging
+ecosystem:read - Read ecosystem status
+APP DETAILS
+Field	Value
+App ID	5cdea2cd-bc5b-4db3-94e8-19a1ad67d252
+App Name	Trust Layer ID
+App Slug	tlid
+Category	subscriptions
+Hub URL	https://orbitstaffing.io
+IMPORTANT NOTES
+Keep tlid.io credentials SEPARATE from PaintPros credentials
+Use ORBIT_TLID_API_KEY / ORBIT_TLID_API_SECRET for tlid.io
+Use different secret names for PaintPros integration (e.g., ORBIT_PAINTPROS_API_KEY)
+Transaction IDs should be prefixed (tlid_, paintpros_, etc.) to avoid conflicts
+tlid.io = 100% Jason split, PaintPros = 50/50 split
+Duplicate transaction IDs return 409 error (idempotency protection)
+IF YOU NEED PAINTPROS INTEGRATION LATER
+Request a separate registration from ORBIT for PaintPros with:
+
+App Name: PaintPros
+App Slug: paintpros
+Category: subscriptions
+Permissions: write:1099, read:1099, sync:all
+This will give you separate credentials with 50/50 royalty split.
+
+---
+Copy that to the **paintpros.io agent**. It clearly separates tlid.io from the PaintPros suite.

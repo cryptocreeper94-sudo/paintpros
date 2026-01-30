@@ -138,7 +138,7 @@ export default function AutopilotSuccess() {
         </Card>
 
         <p className="text-center text-slate-600 text-xs mt-4">
-          Powered by Orbit Ecosystem
+          Powered by TrustLayer Ecosystem
         </p>
       </motion.div>
     </div>

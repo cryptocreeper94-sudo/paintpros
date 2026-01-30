@@ -476,7 +476,7 @@ export default function GuardianShield() {
             <Shield className="w-5 h-5" />
             <span>Guardian Shield by TrustLayer</span>
           </div>
-          <p>TLId.io | Part of the Orbit Ecosystem</p>
+          <p>TLId.io | Part of the TrustLayer Ecosystem</p>
         </div>
       </div>
     </div>

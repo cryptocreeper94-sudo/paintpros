@@ -828,40 +828,73 @@ export default function TrustLayerHome() {
         </GlassCard>
       </div>
 
-      {/* Footer */}
-      <footer className="relative border-t border-white/5 py-8 mt-8">
+      {/* TrustLayer Ecosystem */}
+      <div className="relative border-t border-white/5 py-8">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-                <Layers className="w-6 h-6 text-white" />
+          <h3 className="text-white font-semibold text-center mb-4 flex items-center justify-center gap-2">
+            <Layers className="w-4 h-4 text-emerald-400" />
+            TrustLayer Ecosystem
+          </h3>
+          <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide justify-start md:justify-center md:flex-wrap">
+            {[
+              { name: 'TLId.io', url: 'https://tlid.io', active: true },
+              { name: 'DWTL.io', url: 'https://dwtl.io' },
+              { name: 'DWSC.io', url: 'https://dwsc.io' },
+              { name: 'VedaSolus.io', url: 'https://vedasolus.io' },
+              { name: 'GetOrbit.io', url: 'https://getorbit.io' },
+              { name: 'LotosPro.io', url: 'https://lotospro.io' },
+              { name: 'StrikeAgent.io', url: 'https://strikeagent.io' },
+              { name: 'DarkWavePulse.com', url: 'https://darkwavepulse.com' },
+              { name: 'Brew & Board', url: 'https://brewandboard.coffee' },
+              { name: 'Driver Connect', url: 'https://driver-connect-hub.replit.app' },
+            ].map((site, i) => (
+              <a
+                key={i}
+                href={site.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex-shrink-0 snap-center px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  site.active 
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                    : 'bg-slate-800/50 text-slate-400 border border-white/5 hover:text-white hover:border-white/20'
+                }`}
+                data-testid={`link-ecosystem-${site.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+              >
+                {site.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="relative border-t border-white/5 py-6">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-white font-bold text-lg">TrustLayer</p>
-                <p className="text-slate-500 text-sm">TLId.io</p>
+                <p className="text-white font-bold">TrustLayer</p>
+                <p className="text-slate-500 text-xs">TLId.io</p>
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 md:gap-8 text-slate-400 text-sm">
-              <span className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-emerald-400" />
-                Powered by DWTL.io
-              </span>
-              <span className="text-slate-600 hidden md:inline">|</span>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400 text-xs">
               <button 
                 onClick={() => window.location.href = '/trustlayer/privacy'}
                 className="hover:text-white transition-colors"
                 data-testid="link-privacy"
               >
-                Privacy Policy
+                Privacy
               </button>
               <button 
                 onClick={() => window.location.href = '/trustlayer/terms'}
                 className="hover:text-white transition-colors"
                 data-testid="link-terms"
               >
-                Terms of Service
+                Terms
               </button>
-              <span className="text-slate-600 hidden md:inline">|</span>
               <span>support@tlid.io</span>
             </div>
           </div>

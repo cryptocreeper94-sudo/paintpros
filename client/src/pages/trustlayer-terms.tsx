@@ -228,7 +228,7 @@ export default function TrustLayerTerms() {
 
           <div className="mt-12 pt-8 border-t border-white/10 text-center">
             <p className="text-slate-500 text-sm">
-              Part of the Orbit Ecosystem | Powered by DWTL.io Blockchain
+              Part of the TrustLayer Ecosystem | Powered by DWTL.io Blockchain
             </p>
           </div>
         </motion.div>
