@@ -44,7 +44,10 @@ import {
   Loader2,
   Copy,
   Info,
-  DollarSign
+  DollarSign,
+  CreditCard,
+  Clock,
+  X
 } from "lucide-react";
 
 const NICHES = [
@@ -108,7 +111,7 @@ export default function AutopilotOnboarding() {
     acceptedContentPolicy: false
   });
 
-  const [selectedPlan, setSelectedPlan] = useState<'standard' | 'premium'>('standard');
+  const [selectedPlan, setSelectedPlan] = useState<'starter' | 'professional' | 'enterprise'>('professional');
   const [isOwnerApp, setIsOwnerApp] = useState(false);
 
   const updateField = (field: string, value: string) => {
@@ -768,59 +771,117 @@ export default function AutopilotOnboarding() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
+              <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30 mb-4">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold">Start with $1 for 7 Days</p>
+                      <p className="text-slate-400 text-sm">See the automation work with organic posts. Auto-converts to your chosen plan.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-3">
-                    <DollarSign className="w-6 h-6 text-green-400" />
+                    <CreditCard className="w-6 h-6 text-blue-400" />
                     Choose Your Plan
                   </CardTitle>
+                  <p className="text-slate-400 text-sm">Select the plan that fits your business. Your $1 trial will auto-convert after 7 days.</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {/* Starter Plan */}
                     <div 
-                      onClick={() => setSelectedPlan('standard')}
-                      className={`p-6 rounded-xl cursor-pointer transition-all ${
-                        selectedPlan === 'standard'
+                      onClick={() => setSelectedPlan('starter')}
+                      className={`p-5 rounded-xl cursor-pointer transition-all ${
+                        selectedPlan === 'starter'
                           ? 'bg-blue-500/20 ring-2 ring-blue-500'
                           : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
                       }`}
+                      data-testid="plan-starter"
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold text-white">Standard</h3>
-                        {selectedPlan === 'standard' && <CheckCircle className="w-6 h-6 text-blue-400" />}
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-bold text-white">Starter</h3>
+                        {selectedPlan === 'starter' && <CheckCircle className="w-5 h-5 text-blue-400" />}
                       </div>
-                      <p className="text-3xl font-bold text-white mb-2">$59<span className="text-lg text-slate-400">/mo</span></p>
+                      <p className="text-3xl font-bold text-white mb-1">$99<span className="text-base text-slate-400">/mo</span></p>
+                      <p className="text-slate-500 text-xs mb-4">After $1 trial</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Automated posting</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Facebook & Instagram</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Content library</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Basic analytics</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Automated posting</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Facebook & Instagram</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Content library</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Basic analytics</li>
+                        <li className="flex items-center gap-2 text-slate-500"><X className="w-4 h-4 flex-shrink-0" /> Paid ad campaigns</li>
+                        <li className="flex items-center gap-2 text-slate-500"><X className="w-4 h-4 flex-shrink-0" /> AI content generation</li>
                       </ul>
                     </div>
 
+                    {/* Professional Plan */}
                     <div 
-                      onClick={() => setSelectedPlan('premium')}
-                      className={`p-6 rounded-xl cursor-pointer transition-all ${
-                        selectedPlan === 'premium'
+                      onClick={() => setSelectedPlan('professional')}
+                      className={`p-5 rounded-xl cursor-pointer transition-all relative ${
+                        selectedPlan === 'professional'
                           ? 'bg-purple-500/20 ring-2 ring-purple-500'
                           : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
                       }`}
+                      data-testid="plan-professional"
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-xl font-bold text-white">Premium</h3>
-                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">Popular</Badge>
-                        </div>
-                        {selectedPlan === 'premium' && <CheckCircle className="w-6 h-6 text-purple-400" />}
+                      <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-purple-500 text-white border-0">
+                        Most Popular
+                      </Badge>
+                      <div className="flex items-center justify-between mb-3 mt-2">
+                        <h3 className="text-lg font-bold text-white">Professional</h3>
+                        {selectedPlan === 'professional' && <CheckCircle className="w-5 h-5 text-purple-400" />}
                       </div>
-                      <p className="text-3xl font-bold text-white mb-2">$99<span className="text-lg text-slate-400">/mo</span></p>
+                      <p className="text-3xl font-bold text-white mb-1">$199<span className="text-base text-slate-400">/mo</span></p>
+                      <p className="text-slate-500 text-xs mb-4">After $1 trial</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Everything in Standard</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Paid ad campaigns</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Advanced targeting</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Priority support</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Everything in Starter</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> All 4 platforms</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-purple-400 flex-shrink-0" /> Paid ad campaigns</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-purple-400 flex-shrink-0" /> AI content generation</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Geo-targeted ads</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Advanced analytics</li>
                       </ul>
                     </div>
+
+                    {/* Enterprise Plan */}
+                    <div 
+                      onClick={() => setSelectedPlan('enterprise')}
+                      className={`p-5 rounded-xl cursor-pointer transition-all ${
+                        selectedPlan === 'enterprise'
+                          ? 'bg-amber-500/20 ring-2 ring-amber-500'
+                          : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
+                      }`}
+                      data-testid="plan-enterprise"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-bold text-white">Enterprise</h3>
+                        {selectedPlan === 'enterprise' && <CheckCircle className="w-5 h-5 text-amber-400" />}
+                      </div>
+                      <p className="text-3xl font-bold text-white mb-1">$349<span className="text-base text-slate-400">/mo</span></p>
+                      <p className="text-slate-500 text-xs mb-4">After $1 trial</p>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Everything in Professional</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> Priority support</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> Custom branding</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> Dedicated manager</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Unlimited content</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> White-label reports</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                    <p className="text-slate-400 text-xs text-center">
+                      <Clock className="w-3 h-3 inline mr-1" />
+                      7-day trial includes organic posting only. Paid ad features activate after trial converts.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -962,7 +1023,7 @@ export default function AutopilotOnboarding() {
               ) : (
                 <Zap className="w-4 h-4 mr-2" />
               )}
-              {isOwnerApp ? 'Activate (No Billing)' : 'Subscribe & Activate'}
+              {isOwnerApp ? 'Activate (No Billing)' : 'Start $1 Trial'}
             </Button>
           )}
         </div>
