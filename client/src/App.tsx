@@ -55,6 +55,9 @@ import AutopilotAdmin from "@/pages/autopilot-admin";
 import AutopilotPortal from "@/pages/autopilot-portal";
 import AutopilotDashboard from "@/pages/autopilot-dashboard";
 import AutopilotSetupGuide from "@/pages/autopilot-setup-guide";
+import TrustLayerHome from "@/pages/trustlayer-home";
+import TrustLayerMarketing from "@/pages/trustlayer-marketing";
+import GuardianShield from "@/pages/guardian-shield";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -238,6 +241,9 @@ function Router() {
       <Route path="/autopilot/dashboard" component={AutopilotDashboard} />
       <Route path="/autopilot/setup" component={AutopilotSetupGuide} />
       <Route path="/marketing-autopilot" component={MarketingAutopilot} />
+      <Route path="/trustlayer" component={TrustLayerHome} />
+      <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
+      <Route path="/trustlayer/guardian" component={GuardianShield} />
       <Route component={NotFound} />
     </Switch>
   );
