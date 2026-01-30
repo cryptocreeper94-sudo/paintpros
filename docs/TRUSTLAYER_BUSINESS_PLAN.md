@@ -71,7 +71,39 @@ Business verification and trust badges - unique differentiator.
 - Priority placement in search/recommendations
 - Customer-facing "Verified by TrustLayer" seal
 
-### 3. TradeWorks AI Field Tool (Separate Product - Connected)
+### 3. TrustLayer Analytics ($9-$199/month) - WHITE-LABEL READY
+Privacy-first website analytics - no cookies, no Google dependency.
+
+| Tier | Price | Pageviews | Features |
+|------|-------|-----------|----------|
+| **Starter** | $9/mo | 10K/mo | Basic dashboard, real-time visitors |
+| **Growth** | $29/mo | 100K/mo | + Geo breakdown, device stats, SEO scoring |
+| **Business** | $79/mo | 1M/mo | + API access, multiple domains, white-label |
+| **Enterprise** | $199/mo | Unlimited | + Custom integrations, dedicated support |
+
+**Key Features:**
+- Real-time live visitor count
+- No cookies required (GDPR compliant)
+- Device/browser breakdown
+- Geographic data (countries, cities)
+- Top pages and referrers
+- SEO performance scoring
+- Embeddable tracking snippet (single line)
+- Multi-domain support
+- White-label dashboard option
+
+**Competitive Advantage:**
+- Simpler than Google Analytics
+- Cheaper than Plausible/Fathom for high-volume
+- Privacy-first approach
+- Built-in SEO analysis (competitors don't have this)
+
+**White-Label Package:** $499 setup + $99/mo minimum
+- Custom branding/colors
+- Customer's domain for dashboard
+- Reseller pricing available
+
+### 4. TradeWorks AI Field Tool (Separate Product - Connected)
 The complete business-in-your-pocket toolkit with 85+ calculators.
 
 **Connection to TrustLayer:**
