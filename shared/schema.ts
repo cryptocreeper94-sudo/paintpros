@@ -1796,6 +1796,35 @@ export const insertCustomerColorSelectionSchema = createInsertSchema(customerCol
 export type InsertCustomerColorSelection = z.infer<typeof insertCustomerColorSelectionSchema>;
 export type CustomerColorSelection = typeof customerColorSelections.$inferSelect;
 
+// Marketing Autopilot Subscriptions - B2B marketing service subscribers
+export const autopilotSubscriptions = pgTable("autopilot_subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").notNull(),
+  businessName: text("business_name").notNull(),
+  ownerName: text("owner_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  website: text("website"),
+  status: text("status").notNull().default("pending"), // 'pending', 'active', 'paused', 'cancelled'
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  metaConnected: boolean("meta_connected").default(false),
+  facebookPageId: text("facebook_page_id"),
+  facebookPageName: text("facebook_page_name"),
+  instagramAccountId: text("instagram_account_id"),
+  instagramUsername: text("instagram_username"),
+  postingSchedule: text("posting_schedule").default("4x-daily"), // '4x-daily', '3x-daily', '2x-daily'
+  monthlyPrice: decimal("monthly_price", { precision: 10, scale: 2 }).default("59.00"),
+  activatedAt: timestamp("activated_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
+});
+
+export const insertAutopilotSubscriptionSchema = createInsertSchema(autopilotSubscriptions).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertAutopilotSubscription = z.infer<typeof insertAutopilotSubscriptionSchema>;
+export type AutopilotSubscription = typeof autopilotSubscriptions.$inferSelect;
+
 // Production Tenants - Paid customer configurations (auto-provisioned from trial conversions)
 export const tenants = pgTable("tenants", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

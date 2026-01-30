@@ -49,6 +49,8 @@ import TrialPortal from "@/pages/trial-portal";
 import TrialUpgrade from "@/pages/trial-upgrade";
 import TrialUpgradeSuccess from "@/pages/trial-upgrade-success";
 import EmailTemplate from "@/pages/email-template";
+import MarketingAutopilot from "@/pages/marketing-autopilot";
+import AutopilotSuccess from "@/pages/autopilot-success";
 import PartnershipProposal from "@/pages/proposal";
 import IPAgreement from "@/pages/ip-agreement";
 import RoyaltyDashboard from "@/pages/royalty-dashboard";
@@ -225,6 +227,9 @@ function Router() {
       <Route path="/onboarding/success" component={OnboardingSuccess} />
       <Route path="/onboarding/cancel">{() => <Onboarding />}</Route>
       <Route path="/app" component={FieldTool} />
+      <Route path="/autopilot" component={MarketingAutopilot} />
+      <Route path="/autopilot/success" component={AutopilotSuccess} />
+      <Route path="/marketing-autopilot" component={MarketingAutopilot} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -45,7 +45,8 @@ import {
   fieldCaptures, jobs,
   metaIntegrations, insertMetaIntegrationSchema,
   scheduledPosts, insertScheduledPostSchema,
-  contentLibrary, autoPostingSchedule, adCampaigns, marketingExpenses
+  contentLibrary, autoPostingSchedule, adCampaigns, marketingExpenses,
+  autopilotSubscriptions
 } from "@shared/schema";
 import * as crypto from "crypto";
 import OpenAI from "openai";
@@ -380,6 +381,94 @@ export async function registerRoutes(
       tenantId,
       hostname: req.hostname
     });
+  });
+
+  // ============ MARKETING AUTOPILOT SUBSCRIPTION SERVICE ============
+  
+  // POST /api/marketing-autopilot/subscribe - Create subscription for automated marketing service
+  app.post("/api/marketing-autopilot/subscribe", async (req, res) => {
+    try {
+      const { businessName, ownerName, email, phone } = req.body;
+      
+      if (!businessName || !ownerName || !email || !phone) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      // Generate tenant ID from business name
+      const tenantId = businessName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 30) + '-' + Date.now().toString(36);
+      
+      // Store pending subscription in database
+      await db.insert(autopilotSubscriptions).values({
+        id: crypto.randomUUID(),
+        tenantId,
+        businessName,
+        ownerName,
+        email,
+        phone,
+        status: 'pending',
+        createdAt: new Date()
+      });
+      
+      // Create Stripe checkout session for $59/month subscription
+      const { getUncachableStripeClient } = await import("./stripeClient");
+      const stripe = await getUncachableStripeClient();
+      
+      const session = await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Marketing Autopilot',
+              description: 'Automated Facebook & Instagram posting for ' + businessName
+            },
+            unit_amount: 5900, // $59.00
+            recurring: { interval: 'month' }
+          },
+          quantity: 1
+        }],
+        customer_email: email,
+        metadata: {
+          tenantId,
+          businessName,
+          ownerName,
+          phone,
+          service: 'marketing-autopilot'
+        },
+        success_url: `${req.protocol}://${req.get('host')}/autopilot/success?tenant=${tenantId}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/autopilot`
+      });
+      
+      res.json({ checkoutUrl: session.url });
+    } catch (error: any) {
+      console.error("[Marketing Autopilot] Subscription error:", error);
+      res.status(500).json({ error: error.message || "Failed to create subscription" });
+    }
+  });
+  
+  // GET /api/marketing-autopilot/pending - List pending subscriptions (admin)
+  app.get("/api/marketing-autopilot/pending", async (req, res) => {
+    try {
+      const pending = await db.select().from(autopilotSubscriptions).where(eq(autopilotSubscriptions.status, 'pending'));
+      res.json(pending);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // GET /api/marketing-autopilot/subscribers - List active subscribers (admin)
+  app.get("/api/marketing-autopilot/subscribers", async (req, res) => {
+    try {
+      const active = await db.select().from(autopilotSubscriptions).where(eq(autopilotSubscriptions.status, 'active'));
+      res.json(active);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   });
 
   // ============ TENANT ONBOARDING & PROVISIONING ============
