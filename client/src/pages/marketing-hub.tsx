@@ -98,7 +98,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download, Share2, ExternalLink, Info } from "lucide-react";
+import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download, Share2, ExternalLink, Info, Settings } from "lucide-react";
 import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -2193,105 +2193,315 @@ export default function MarketingHub() {
 
             {/* CONTENT STUDIO TAB - Images, Messages, Social Posts */}
             <TabsContent value="content" className="space-y-6" data-testid="content-tab">
-              {/* Content Studio Hero */}
+              
+              {/* ═══════════════════════════════════════════════════════════════════
+                  COMMAND CENTER - Visual Marketing Dashboard
+                  Touch any thumbnail to configure, view stats, or manage
+              ═══════════════════════════════════════════════════════════════════ */}
+              
+              {/* Command Center Header */}
               <div className="relative rounded-xl overflow-hidden">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${interiorLivingRoom})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f]/90 to-[#1e3a5f]/60" />
-                <div className="relative z-10 p-6 md:p-8">
-                  <h2 className="text-xl md:text-2xl font-display font-bold text-white mb-2">Content Studio</h2>
-                  <p className="text-white/80 text-sm max-w-xl">
-                    Build your marketing library with professional images, compelling messages, and ready-to-post content bundles.
-                  </p>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f] via-[#2d5a8a] to-[#1e3a5f]" />
+                <div className="relative z-10 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                          <LayoutGrid className="w-5 h-5 text-white" />
+                        </div>
+                        <h2 className="text-xl md:text-2xl font-display font-bold text-white">Command Center</h2>
+                      </div>
+                      <p className="text-white/70 text-sm">Touch any thumbnail to view stats, edit, or remove from rotation</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right hidden md:block">
+                        <p className="text-white/60 text-xs">Automation Status</p>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                          <span className="text-white font-medium text-sm">Running</span>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="secondary" onClick={() => setShowQuickPostModal(true)} data-testid="button-quick-post-header">
+                        <Plus className="w-4 h-4 mr-1" />
+                        Quick Post
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Stats Bar */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                    <div className="bg-white/10 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <Megaphone className="w-4 h-4 text-green-400" />
+                        <span className="text-white/70 text-xs">Live Posts</span>
+                      </div>
+                      <p className="text-white text-xl font-bold mt-1">{livePosts?.filter(p => p.status === 'published').length || 0}</p>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-blue-400" />
+                        <span className="text-white/70 text-xs">In Queue</span>
+                      </div>
+                      <p className="text-white text-xl font-bold mt-1">{scheduledQueue?.filter(p => p.status === 'scheduled').length || 0}</p>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <Target className="w-4 h-4 text-orange-400" />
+                        <span className="text-white/70 text-xs">Active Ads</span>
+                      </div>
+                      <p className="text-white text-xl font-bold mt-1">{adCampaigns?.filter(c => c.status === 'active').length || 0}</p>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-purple-400" />
+                        <span className="text-white/70 text-xs">Library Size</span>
+                      </div>
+                      <p className="text-white text-xl font-bold mt-1">{allImages.filter(i => i.brand === selectedTenant).length}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* LIVE CONTENT DASHBOARD - What's circulating now */}
+              {/* ═══════════ ZONE 1: LIVE NOW - What's Currently Posted ═══════════ */}
               <GlassCard className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Currently Circulating</h3>
-                    <Badge variant="secondary">{livePosts?.filter(p => p.status === 'published').length || 0} Live</Badge>
+                    <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Live Now</h3>
+                    <Badge variant="default" className="bg-green-500">{livePosts?.filter(p => p.status === 'published').length || 0} Active</Badge>
                   </div>
-                  <Button size="sm" onClick={() => setShowQuickPostModal(true)} data-testid="button-quick-post">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Quick Post
-                  </Button>
+                  <p className="text-xs text-muted-foreground">Touch to view analytics or remove</p>
                 </div>
                 
-                {/* Thumbnail Grid of Live Posts */}
                 {livePosts && livePosts.filter(p => p.status === 'published').length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {livePosts.filter(p => p.status === 'published').slice(0, 8).map((post) => (
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                    {livePosts.filter(p => p.status === 'published').slice(0, 12).map((post) => (
                       <button
                         key={post.id}
                         onClick={() => setSelectedPost(post)}
-                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-primary transition-all"
-                        data-testid={`post-thumbnail-${post.id}`}
+                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-green-500 transition-all shadow-sm hover:shadow-lg"
+                        data-testid={`live-post-${post.id}`}
                       >
                         {post.imageUrl ? (
-                          <img 
-                            src={post.imageUrl} 
-                            alt="Post" 
-                            className="absolute inset-0 w-full h-full object-cover"
-                          />
+                          <img src={post.imageUrl} alt="Post" className="absolute inset-0 w-full h-full object-cover" />
                         ) : (
                           <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-center">
-                            <MessageSquare className="w-8 h-8 text-white/50" />
+                            <MessageSquare className="w-6 h-6 text-white/50" />
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         
                         {/* Platform Badge */}
-                        <div className="absolute top-2 left-2">
+                        <div className="absolute top-1 left-1">
                           {post.platform === 'facebook' ? (
-                            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                              <Facebook className="w-3.5 h-3.5 text-white" />
+                            <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                              <Facebook className="w-3 h-3 text-white" />
                             </div>
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-500 flex items-center justify-center">
-                              <Instagram className="w-3.5 h-3.5 text-white" />
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-500 flex items-center justify-center">
+                              <Instagram className="w-3 h-3 text-white" />
                             </div>
                           )}
                         </div>
                         
-                        {/* Performance Indicator */}
-                        {(post as any).percentile !== null && (post as any).percentile !== undefined && (
-                          <div className="absolute top-2 right-2">
-                            <Badge 
-                              variant={(post as any).percentile >= 75 ? "default" : (post as any).percentile >= 50 ? "secondary" : "outline"}
-                              className={`text-xs ${(post as any).percentile >= 75 ? 'bg-green-500' : ''}`}
-                            >
-                              Top {100 - (post as any).percentile}%
-                            </Badge>
+                        {/* Live indicator */}
+                        <div className="absolute top-1 right-1">
+                          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                        </div>
+                        
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <BarChart3 className="w-6 h-6 text-white" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <Megaphone className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No posts live yet</p>
+                    <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowQuickPostModal(true)}>
+                      Create First Post
+                    </Button>
+                  </div>
+                )}
+              </GlassCard>
+
+              {/* ═══════════ ZONE 2: IN QUEUE - Scheduled & Ready ═══════════ */}
+              <GlassCard className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-blue-500" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">In Queue</h3>
+                    <Badge variant="secondary">{scheduledQueue?.filter(p => p.status === 'scheduled').length || 0} Waiting</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Touch to edit or reorder</p>
+                </div>
+                
+                {scheduledQueue && scheduledQueue.filter(p => p.status === 'scheduled').length > 0 ? (
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                    {scheduledQueue.filter(p => p.status === 'scheduled').slice(0, 12).map((post, idx) => (
+                      <button
+                        key={post.id}
+                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-blue-500 transition-all shadow-sm"
+                        data-testid={`queued-post-${post.id}`}
+                      >
+                        {post.imageUrl ? (
+                          <img src={post.imageUrl} alt="Queued" className="absolute inset-0 w-full h-full object-cover" />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center">
+                            <MessageSquare className="w-6 h-6 text-white/50" />
                           </div>
                         )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         
-                        {/* Message Preview */}
-                        <div className="absolute bottom-0 left-0 right-0 p-2">
-                          <p className="text-white text-xs line-clamp-2 drop-shadow-lg">
-                            {post.message?.substring(0, 60)}...
+                        {/* Queue position */}
+                        <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                          {idx + 1}
+                        </div>
+                        
+                        {/* Platform */}
+                        <div className="absolute top-1 right-1">
+                          {post.platform === 'facebook' ? (
+                            <Facebook className="w-3.5 h-3.5 text-white drop-shadow" />
+                          ) : (
+                            <Instagram className="w-3.5 h-3.5 text-white drop-shadow" />
+                          )}
+                        </div>
+                        
+                        {/* Scheduled time */}
+                        <div className="absolute bottom-0 left-0 right-0 p-1 text-center">
+                          <p className="text-white text-[10px] font-medium drop-shadow">
+                            {format(new Date(post.scheduledAt), 'MMM d, h:mma')}
                           </p>
                         </div>
                         
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-blue-500/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Settings className="w-5 h-5 text-white" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <Clock className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">Queue is empty - automation will pull from your library</p>
+                  </div>
+                )}
+              </GlassCard>
+
+              {/* ═══════════ ZONE 3: PAID ADS - Active Campaigns ═══════════ */}
+              <GlassCard className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-orange-500" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Paid Ads Running</h3>
+                    <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300">
+                      {adCampaigns?.filter(c => c.status === 'active').length || 0} Active
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Touch to view performance or pause</p>
+                </div>
+                
+                {adCampaigns && adCampaigns.filter(c => c.status === 'active').length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {adCampaigns.filter(c => c.status === 'active').slice(0, 8).map((campaign) => (
+                      <button
+                        key={campaign.id}
+                        className="relative rounded-lg overflow-hidden group border-2 border-transparent hover:border-orange-500 transition-all shadow-sm bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950 p-3"
+                        data-testid={`ad-campaign-${campaign.id}`}
+                      >
+                        {campaign.adImageUrl ? (
+                          <div className="aspect-video rounded overflow-hidden mb-2">
+                            <img src={campaign.adImageUrl} alt={campaign.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="aspect-video rounded bg-orange-200 dark:bg-orange-800 flex items-center justify-center mb-2">
+                            <Target className="w-8 h-8 text-orange-500" />
+                          </div>
+                        )}
+                        
+                        <div className="text-left">
+                          <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{campaign.name}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-[10px] text-muted-foreground">${campaign.dailyBudget}/day</span>
+                            <div className="flex items-center gap-1">
+                              {campaign.platform === 'facebook' || campaign.platform === 'both' ? (
+                                <Facebook className="w-3 h-3 text-blue-500" />
+                              ) : null}
+                              {campaign.platform === 'instagram' || campaign.platform === 'both' ? (
+                                <Instagram className="w-3 h-3 text-pink-500" />
+                              ) : null}
+                            </div>
+                          </div>
+                          {campaign.endDate && (
+                            <p className="text-[10px] text-orange-600 dark:text-orange-400 mt-1">
+                              Ends {format(new Date(campaign.endDate), 'MMM d')}
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
                           <div className="bg-white dark:bg-gray-900 rounded-full p-2 shadow-lg">
-                            <BarChart3 className="w-5 h-5 text-primary" />
+                            <BarChart3 className="w-4 h-4 text-orange-500" />
                           </div>
                         </div>
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Megaphone className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>No posts in circulation yet</p>
-                    <Button variant="outline" size="sm" className="mt-3" onClick={() => setShowQuickPostModal(true)}>
-                      Create Your First Post
+                  <div className="text-center py-6 text-muted-foreground">
+                    <Target className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No paid ads running</p>
+                    <p className="text-xs mt-1">Ads run automatically during business hours (8am-6pm)</p>
+                  </div>
+                )}
+              </GlassCard>
+
+              {/* ═══════════ ZONE 4: YOUR LIBRARY - Quick Add to Queue ═══════════ */}
+              <GlassCard className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-purple-500" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Your Library</h3>
+                    <Badge variant="secondary">{allImages.filter(i => i.brand === selectedTenant).length} Images</Badge>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => setShowAddImageModal(true)} data-testid="button-add-to-library">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Image
+                  </Button>
+                </div>
+                
+                {allImages.filter(i => i.brand === selectedTenant).length > 0 ? (
+                  <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                    {allImages.filter(i => i.brand === selectedTenant).slice(0, 16).map((image) => (
+                      <button
+                        key={image.id}
+                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-purple-500 transition-all"
+                        data-testid={`library-image-${image.id}`}
+                      >
+                        <img src={image.url} alt={image.category} className="absolute inset-0 w-full h-full object-cover" />
+                        
+                        {/* Category badge */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-0.5">
+                          <p className="text-white text-[8px] text-center truncate">{image.category}</p>
+                        </div>
+                        
+                        {/* Hover - Add to queue */}
+                        <div className="absolute inset-0 bg-purple-500/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Plus className="w-6 h-6 text-white" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <ImageIcon className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No images in library yet</p>
+                    <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowAddImageModal(true)}>
+                      Upload First Image
                     </Button>
                   </div>
                 )}
@@ -2303,24 +2513,6 @@ export default function MarketingHub() {
                 allImages={allImages.filter(i => i.brand === selectedTenant)}
                 messageTemplates={messageTemplates.filter(m => m.brand === selectedTenant)}
               />
-
-              {/* How This Works - Educational */}
-              <GlassCard className="p-4 border-l-4 border-l-[#1e3a5f]">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center flex-shrink-0">
-                    <Lightbulb className="w-5 h-5 text-[#1e3a5f]" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">How Content Studio Works</h4>
-                    <p className="text-sm text-muted-foreground">
-                      <strong>Step 1:</strong> Upload professional images from your jobs. 
-                      <strong> Step 2:</strong> Create message templates for different platforms. 
-                      <strong> Step 3:</strong> Bundle them together for easy scheduling. 
-                      The system will suggest smart combinations based on matching topics.
-                    </p>
-                  </div>
-                </div>
-              </GlassCard>
 
               {/* Sub-Tabs for Content Types */}
               <Tabs defaultValue="images" className="w-full">
