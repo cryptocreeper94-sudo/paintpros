@@ -89,13 +89,16 @@ async function postToFacebook(
     let body: URLSearchParams;
 
     if (imageUrl) {
+      // Use /photos endpoint for image posts - this requires pages_manage_posts permission
       url = `https://graph.facebook.com/v21.0/${pageId}/photos`;
       body = new URLSearchParams({
         url: imageUrl,
         caption: message,
         access_token: accessToken,
+        published: 'true', // Explicitly publish to page timeline
       });
     } else {
+      // Use /feed endpoint for text-only posts
       url = `https://graph.facebook.com/v21.0/${pageId}/feed`;
       body = new URLSearchParams({
         message: message,
@@ -103,19 +106,24 @@ async function postToFacebook(
       });
     }
 
+    console.log(`[FB Post] Calling ${url.split('?')[0]}`);
+
     const response = await fetch(url, {
       method: 'POST',
       body: body,
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      return { success: false, error: error.error?.message || 'Post failed' };
+      console.log(`[FB Post] Error response:`, JSON.stringify(data));
+      return { success: false, error: data.error?.message || 'Post failed' };
     }
 
-    const data = await response.json();
+    console.log(`[FB Post] Success! Post ID: ${data.id || data.post_id}`);
     return { success: true, postId: data.id || data.post_id };
   } catch (error) {
+    console.log(`[FB Post] Exception:`, String(error));
     return { success: false, error: String(error) };
   }
 }
@@ -177,30 +185,41 @@ async function postToInstagram(
 async function checkAndExecuteScheduledPosts(): Promise<void> {
   const { hour, minute, dayOfWeek } = getCurrentCSTTime();
   
-  if (minute > 5) return;
-
   try {
-    const dueSchedules = await db
+    // Get ALL schedules for today that haven't been executed yet
+    // This allows catching up on missed posts from earlier in the day
+    const allTodaySchedules = await db
       .select()
       .from(autoPostingSchedule)
       .where(and(
         eq(autoPostingSchedule.tenantId, 'npp'),
         eq(autoPostingSchedule.isActive, true),
-        eq(autoPostingSchedule.dayOfWeek, dayOfWeek),
-        eq(autoPostingSchedule.hourOfDay, hour)
+        eq(autoPostingSchedule.dayOfWeek, dayOfWeek)
       ));
 
-    if (dueSchedules.length === 0) return;
-
-    for (const schedule of dueSchedules) {
+    // Filter to schedules that are due (hour has passed) and not yet executed today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const dueSchedules = allTodaySchedules.filter(schedule => {
+      // Only consider schedules where the hour has passed
+      if (schedule.hourOfDay > hour) return false;
+      
+      // Check if already executed today
       if (schedule.lastExecutedAt) {
         const lastExec = new Date(schedule.lastExecutedAt);
-        const now = new Date();
-        const hoursSinceLastExec = (now.getTime() - lastExec.getTime()) / (1000 * 60 * 60);
-        if (hoursSinceLastExec < 1) {
-          continue;
+        if (lastExec >= today) {
+          return false; // Already executed today
         }
       }
+      return true;
+    });
+
+    if (dueSchedules.length === 0) return;
+    
+    console.log(`[NPP Posting] Found ${dueSchedules.length} due/missed posts to execute`);
+
+    for (const schedule of dueSchedules) {
 
       console.log(`[NPP Posting] Executing scheduled post for ${schedule.tenantId} - Day ${dayOfWeek}, Hour ${hour}`);
 
@@ -384,7 +403,7 @@ export function startNppPostingScheduler(): void {
   }
 
   console.log('[NPP Posting Scheduler] Starting...');
-  console.log('[NPP Posting Scheduler] Schedule: 5x daily (6am, 10am, 2pm, 6pm, 10pm CST)');
+  console.log('[NPP Posting Scheduler] Schedule: 9x daily every 2 hours (6am-10pm CST) to Facebook + Instagram');
   isRunning = true;
   
   checkAndExecuteScheduledPosts();
