@@ -11,7 +11,7 @@ import stepSubscribeImg from "@/assets/images/step-subscribe.png";
 import productMarketingImg from "@/assets/images/product-marketing.png";
 import productShieldImg from "@/assets/images/product-shield.png";
 import productStaffingImg from "@/assets/images/product-staffing.png";
-// Ecosystem app images - using consistent premium placeholders
+// Ecosystem app images - 17 apps with premium placeholders
 import ecosystemDriverConnect from "@assets/franchise_hero_facebook.png";
 import ecosystemHappyEats from "@assets/17698344491552583768895781273262_1769834987195.png";
 import ecosystemVedaSolus from "@/assets/images/ecosystem-vedasolus.png";
@@ -22,6 +22,13 @@ import ecosystemPaintPros from "@/assets/images/ecosystem-paintpros.png";
 import ecosystemNPP from "@/assets/images/ecosystem-npp.png";
 import ecosystemLume from "@/assets/images/ecosystem-lume.png";
 import ecosystemTrustLayerMarketing from "@/assets/images/ecosystem-trustlayer-marketing.png";
+import ecosystemYourLegacy from "@/assets/images/ecosystem-yourlegacy.png";
+import ecosystemDarkWaveGames from "@/assets/images/ecosystem-darkwavegames.png";
+import ecosystemDWTL from "@/assets/images/ecosystem-dwtl.png";
+import ecosystemDarkWaveStudios from "@/assets/images/ecosystem-darkwavestudios.png";
+import ecosystemGetOrby from "@/assets/images/ecosystem-getorby.png";
+import ecosystemStrikeAgent from "@/assets/images/ecosystem-strikeagent.png";
+import ecosystemDarkWavePulse from "@/assets/images/ecosystem-darkwavepulse.png";
 import {
   Shield,
   Zap,
@@ -186,9 +193,11 @@ export default function TrustLayerHome() {
     }
   ];
 
-  // 10 Connected Ecosystem Apps - 7 priority catalog apps + TrustLayer + NPP + Lume
+  // 17 Connected Ecosystem Apps
   const connectedSystems = [
+    // TrustLayer Hub
     { name: 'TrustLayer Marketing', desc: 'Automated Social Media', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true },
+    // 7 Priority Ad Catalog Apps
     { name: 'TL Driver Connect', desc: 'Franchise Opportunity', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
     { name: 'Happy Eats', desc: 'Driver Lifestyle Platform', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
     { name: 'Garage Bot', desc: 'Auto Repair Shops', url: 'https://garagebot.io', image: ecosystemGarageBot },
@@ -196,8 +205,20 @@ export default function TrustLayerHome() {
     { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros },
     { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
     { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing },
-    { name: 'Nashville Painting Pros', desc: 'NPP Auto Marketing', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
-    { name: 'Lume Paint Co', desc: 'Luxury Auto Marketing', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true }
+    // Auto Ads Tenants
+    { name: 'Nashville Painting Pros', desc: 'Working Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
+    { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true },
+    // Gaming & Entertainment
+    { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy },
+    { name: 'DarkWave Games', desc: 'Game Studio', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames },
+    // Core Infrastructure
+    { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL },
+    { name: 'DarkWave Studios', desc: 'Architecture & Dev', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios },
+    // Events & Operations
+    { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby },
+    // Crypto & Trading
+    { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent },
+    { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse }
   ];
 
   const trustFeatures = [
