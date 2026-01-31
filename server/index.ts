@@ -1,4 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
+import fs from "fs";
+import path from "path";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -260,6 +262,16 @@ app.use((req, res, next) => {
     res.status(status).json({ message });
     throw err;
   });
+
+  // Serve attached_assets for external access (Meta, etc.) - both dev and prod
+  const attachedAssetsPath = path.resolve(process.cwd(), "attached_assets");
+  if (fs.existsSync(attachedAssetsPath)) {
+    app.use("/attached_assets", express.static(attachedAssetsPath, {
+      maxAge: "1d",
+      etag: true,
+      lastModified: true,
+    }));
+  }
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route

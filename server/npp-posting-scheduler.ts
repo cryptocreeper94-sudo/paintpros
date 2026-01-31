@@ -78,31 +78,55 @@ async function getNextMessage() {
   return messages[0] || null;
 }
 
+// Get the PAGE access token from a system user token
+async function getPageAccessToken(pageId: string, systemToken: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/v21.0/${pageId}?fields=access_token&access_token=${systemToken}`
+    );
+    if (!response.ok) {
+      console.log(`[FB Token] Failed to get page token`);
+      return null;
+    }
+    const data = await response.json();
+    return data.access_token || null;
+  } catch (error) {
+    console.log(`[FB Token] Error:`, String(error));
+    return null;
+  }
+}
+
 async function postToFacebook(
   pageId: string,
-  accessToken: string,
+  systemUserToken: string,
   message: string,
   imageUrl?: string
 ): Promise<{ success: boolean; postId?: string; error?: string }> {
   try {
+    // Get the PAGE token from the system user token - this is required for posting
+    const pageToken = await getPageAccessToken(pageId, systemUserToken);
+    if (!pageToken) {
+      return { success: false, error: 'Could not get page access token' };
+    }
+
     let url: string;
     let body: URLSearchParams;
 
     if (imageUrl) {
-      // Use /photos endpoint for image posts - this requires pages_manage_posts permission
+      // Use /photos endpoint for image posts
       url = `https://graph.facebook.com/v21.0/${pageId}/photos`;
       body = new URLSearchParams({
         url: imageUrl,
         caption: message,
-        access_token: accessToken,
-        published: 'true', // Explicitly publish to page timeline
+        access_token: pageToken,
+        published: 'true',
       });
     } else {
       // Use /feed endpoint for text-only posts
       url = `https://graph.facebook.com/v21.0/${pageId}/feed`;
       body = new URLSearchParams({
         message: message,
-        access_token: accessToken,
+        access_token: pageToken,
       });
     }
 
@@ -130,20 +154,33 @@ async function postToFacebook(
 
 async function postToInstagram(
   instagramAccountId: string,
-  accessToken: string,
+  facebookPageId: string,
+  systemUserToken: string,
   caption: string,
   imageUrl: string
 ): Promise<{ success: boolean; mediaId?: string; error?: string }> {
   try {
+    // Get the PAGE token from the system user token
+    const pageToken = await getPageAccessToken(facebookPageId, systemUserToken);
+    if (!pageToken) {
+      return { success: false, error: 'Could not get page access token for Instagram' };
+    }
+
+    // Instagram requires JPEG format - convert PNG URL if needed
+    let finalImageUrl = imageUrl;
+    if (imageUrl.toLowerCase().endsWith('.png')) {
+      console.log(`[IG Post] Warning: PNG image may not work. Trying anyway: ${imageUrl}`);
+    }
+
     const containerResponse = await fetch(
       `https://graph.facebook.com/v21.0/${instagramAccountId}/media`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          image_url: imageUrl,
+          image_url: finalImageUrl,
           caption: caption,
-          access_token: accessToken,
+          access_token: pageToken,
         }),
       }
     );
@@ -165,7 +202,7 @@ async function postToInstagram(
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           creation_id: containerId,
-          access_token: accessToken,
+          access_token: pageToken,
         }),
       }
     );
@@ -310,6 +347,7 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
         console.log(`[NPP Posting] Posting to Instagram...`);
         igResult = await postToInstagram(
           integration.instagramAccountId,
+          integration.facebookPageId,
           integration.facebookPageAccessToken,
           message,
           imageUrl
@@ -484,6 +522,7 @@ export async function triggerManualPost(tenantId: string): Promise<{ facebook?: 
   if (integration.instagramAccountId && imageUrl) {
     results.instagram = await postToInstagram(
       integration.instagramAccountId,
+      integration.facebookPageId,
       integration.facebookPageAccessToken,
       message,
       imageUrl

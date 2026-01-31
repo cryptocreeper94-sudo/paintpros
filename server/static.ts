@@ -10,6 +10,16 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Serve attached_assets directory for Meta/external access to images
+  const attachedAssetsPath = path.resolve(process.cwd(), "attached_assets");
+  if (fs.existsSync(attachedAssetsPath)) {
+    app.use("/attached_assets", express.static(attachedAssetsPath, {
+      maxAge: "1d",
+      etag: true,
+      lastModified: true,
+    }));
+  }
+
   // Serve hashed assets (JS, CSS, images) with long cache time
   // These files have content hashes in their names, so they're safe to cache forever
   app.use("/assets", express.static(path.join(distPath, "assets"), {
