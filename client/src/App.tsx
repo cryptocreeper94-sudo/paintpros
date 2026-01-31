@@ -99,6 +99,7 @@ import AdminGuide from "@/pages/admin-guide";
 import TradeVerticalPage from "@/pages/trade-vertical";
 import Onboarding from "@/pages/onboarding";
 import OnboardingSuccess from "@/pages/onboarding-success";
+import PlatformPresentation from "@/pages/platform-presentation";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
 import { getTenantById } from "@/config/tenant";
 import { TenantProvider as TenantProviderBase } from "@/context/TenantContext";
@@ -265,6 +266,8 @@ function Router() {
       <Route path="/autopilot/setup" component={AutopilotSetupGuide} />
       <Route path="/autopilot/onboarding" component={AutopilotOnboarding} />
       <Route path="/marketing-autopilot" component={MarketingAutopilot} />
+      <Route path="/presentation" component={PlatformPresentation} />
+      <Route path="/demo" component={PlatformPresentation} />
       <Route path="/trustlayer" component={TrustLayerHome} />
       <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
       <Route path="/trustlayer/guardian" component={GuardianShield} />
