@@ -88,7 +88,7 @@ import general02Swatches from "@/assets/marketing/general-02-swatches.jpg";
 import nppLogo from "@/assets/branding/logo-npp-vertical.jpg";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Megaphone, Instagram, Facebook, Home, Calendar, 
+  Megaphone, Instagram, Facebook, Home, Calendar, Camera,
   TrendingUp, Clock, CheckCircle, AlertTriangle, Edit, 
   Trash2, Plus, Copy, Lock, User, Mic, X,
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
@@ -144,6 +144,7 @@ interface LibraryImage {
   description: string;
   tags: string[];
   createdAt: string;
+  isUserUploaded?: boolean;
 }
 
 type MessageTone = "professional" | "friendly" | "promotional" | "educational" | "urgent";
@@ -920,6 +921,7 @@ export default function MarketingHub() {
   const [imageSubjectFilter, setImageSubjectFilter] = useState<string>("all");
   const [messageSubjectFilter, setMessageSubjectFilter] = useState<string>("all");
   const [isGeneratingMatch, setIsGeneratingMatch] = useState(false);
+  const [imageLibraryTab, setImageLibraryTab] = useState<"live" | "ai">("live");
   
   // Combine library images with database photos from crew uploads
   const allImages = useMemo(() => {
@@ -944,6 +946,7 @@ export default function MarketingHub() {
       description: img.altText || img.filename,
       tags: img.tags || [],
       createdAt: img.createdAt || new Date().toISOString(),
+      isUserUploaded: img.isUserUploaded ?? img.is_user_uploaded ?? false,
     }));
     
     return [...convertedDbImages, ...libraryImages];
@@ -4034,6 +4037,51 @@ export default function MarketingHub() {
                   </Button>
                 </div>
                 
+                {/* Live vs AI Library Toggle */}
+                <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg w-fit">
+                  <button
+                    onClick={() => setImageLibraryTab("live")}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                      imageLibraryTab === "live" 
+                        ? "bg-green-500 text-white shadow-sm" 
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }`}
+                    data-testid="button-live-images-tab"
+                  >
+                    <Camera className="w-4 h-4" />
+                    Live Images ({allImages.filter(img => img.brand === selectedTenant && img.isUserUploaded).length})
+                  </button>
+                  <button
+                    onClick={() => setImageLibraryTab("ai")}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                      imageLibraryTab === "ai" 
+                        ? "bg-purple-500 text-white shadow-sm" 
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }`}
+                    data-testid="button-ai-library-tab"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    AI Library ({allImages.filter(img => img.brand === selectedTenant && !img.isUserUploaded).length})
+                  </button>
+                </div>
+
+                {/* Description based on selected tab */}
+                {imageLibraryTab === "live" ? (
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                    <p className="text-sm text-green-800 dark:text-green-200 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Real photos from your jobs - these are used FIRST for marketing posts
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                    <p className="text-sm text-purple-800 dark:text-purple-200 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      AI-generated placeholder images - replace these with real job photos
+                    </p>
+                  </div>
+                )}
+                
                 {/* Subject Filter Carousel */}
                 <div className="overflow-x-auto pb-2 -mx-2 px-2">
                   <div className="flex gap-3" style={{ minWidth: "max-content" }}>
@@ -4074,24 +4122,39 @@ export default function MarketingHub() {
                 </div>
               </GlassCard>
 
-              {allImages.filter(img => img.brand === selectedTenant).length === 0 ? (
-                <GlassCard className="p-8 text-center">
-                  <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Images Yet</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    Take photos from the Field Tool or add images manually. They'll appear here ready for social posts.
-                  </p>
-                  <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-first-image">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Your First Image
-                  </Button>
-                </GlassCard>
-              ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {allImages
-                    .filter(img => img.brand === selectedTenant)
-                    .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter)
-                    .map(img => (
+              {/* Display images based on selected tab */}
+              {(() => {
+                const filteredImages = allImages
+                  .filter(img => img.brand === selectedTenant)
+                  .filter(img => imageLibraryTab === "live" ? img.isUserUploaded : !img.isUserUploaded)
+                  .filter(img => imageSubjectFilter === "all" || img.subject === imageSubjectFilter);
+                
+                if (filteredImages.length === 0) {
+                  return (
+                    <GlassCard className="p-8 text-center">
+                      <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        {imageLibraryTab === "live" ? "No Live Images Yet" : "No AI Images"}
+                      </h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        {imageLibraryTab === "live" 
+                          ? "Upload photos from completed jobs using the Field Tool or add them here manually."
+                          : "No AI-generated placeholder images in this category."
+                        }
+                      </p>
+                      {imageLibraryTab === "live" && (
+                        <Button onClick={() => setShowAddImageModal(true)} data-testid="button-add-first-image">
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add Your First Live Image
+                        </Button>
+                      )}
+                    </GlassCard>
+                  );
+                }
+                
+                return (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {filteredImages.map(img => (
                       <GlassCard key={img.id} className="p-2 overflow-hidden" data-testid={`card-library-image-${img.id}`}>
                         <img src={img.url} alt={img.description} className="w-full h-32 object-cover rounded-lg mb-2" />
                         <div className="space-y-1">
@@ -4099,8 +4162,8 @@ export default function MarketingHub() {
                           <div className="flex flex-wrap gap-1">
                             <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label || img.subject}</Badge>
                             <Badge variant="outline" className="text-xs">{img.style}</Badge>
-                            {img.id.startsWith('db-') && (
-                              <Badge className="text-xs bg-green-500/20 text-green-600 border-green-500/30">Field Photo</Badge>
+                            {img.isUserUploaded && (
+                              <Badge className="text-xs bg-green-500/20 text-green-600 border-green-500/30">Real Photo</Badge>
                             )}
                           </div>
                           <div className="flex items-center gap-1">
@@ -4111,8 +4174,9 @@ export default function MarketingHub() {
                         </div>
                       </GlassCard>
                     ))}
-                </div>
-              )}
+                  </div>
+                );
+              })()}
             </TabsContent>
 
             {/* MESSAGES TAB - Message Templates with Tags */}
@@ -7524,22 +7588,56 @@ export default function MarketingHub() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-purple-500" />
-              Add Image to Library
+              <Camera className="w-5 h-5 text-green-500" />
+              Add Live Image to Library
             </DialogTitle>
+            <DialogDescription>
+              Upload real photos from completed jobs. These go directly to your Live Images library.
+            </DialogDescription>
           </DialogHeader>
           <AddImageForm 
-            onSubmit={(image) => {
-              const newImage: LibraryImage = {
-                ...image,
-                id: `img-${Date.now()}`,
-                brand: selectedTenant,
-                createdAt: new Date().toISOString(),
-              };
-              const updated = [...libraryImages, newImage];
-              setLibraryImages(updated);
-              localStorage.setItem("marketing_images", JSON.stringify(updated));
-              setShowAddImageModal(false);
+            tenantId={selectedTenant}
+            onSubmit={async (image) => {
+              // Save to database with is_user_uploaded = true
+              try {
+                const categoryMap: Record<string, string> = {
+                  "interior-walls": "interior",
+                  "exterior-home": "exterior",
+                  "cabinet-work": "cabinets",
+                  "deck-staining": "decks",
+                  "trim-detail": "trim",
+                  "door-painting": "doors",
+                  "commercial-space": "commercial",
+                  "before-after": "before_after",
+                  "team-action": "crew_at_work",
+                  "general": "general",
+                };
+                
+                const res = await fetch("/api/marketing/images", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    tenantId: selectedTenant,
+                    filename: `live-${Date.now()}.jpg`,
+                    filePath: image.url,
+                    altText: image.description,
+                    category: categoryMap[image.subject] || "general",
+                    subcategory: image.style,
+                    tags: image.tags,
+                    isUserUploaded: true,
+                  }),
+                });
+                
+                if (res.ok) {
+                  queryClient.invalidateQueries({ queryKey: ["/api/marketing/images", selectedTenant] });
+                  toast({ title: "Image added", description: "Added to your Live Images library" });
+                  setShowAddImageModal(false);
+                } else {
+                  throw new Error("Failed to save");
+                }
+              } catch (err) {
+                toast({ title: "Error", description: "Failed to add image", variant: "destructive" });
+              }
             }}
             onCancel={() => setShowAddImageModal(false)}
           />
@@ -7765,7 +7863,8 @@ export default function MarketingHub() {
 }
 
 // Add Image Form Component
-function AddImageForm({ onSubmit, onCancel }: {
+function AddImageForm({ tenantId, onSubmit, onCancel }: {
+  tenantId?: string;
   onSubmit: (image: Omit<LibraryImage, "id" | "brand" | "createdAt">) => void;
   onCancel: () => void;
 }) {
