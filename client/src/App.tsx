@@ -100,6 +100,18 @@ import TradeVerticalPage from "@/pages/trade-vertical";
 import Onboarding from "@/pages/onboarding";
 import OnboardingSuccess from "@/pages/onboarding-success";
 import { PaintBuddy } from "@/components/ui/paint-buddy";
+import { getTenantById } from "@/config/tenant";
+import { TenantProvider as TenantProviderBase } from "@/context/TenantContext";
+
+// Wrapper component for tenant-prefixed routes (e.g., /lume/*)
+function TenantPrefixedRoute({ tenantId, Component }: { tenantId: string; Component: React.ComponentType }) {
+  const tenantConfig = getTenantById(tenantId);
+  return (
+    <TenantProviderBase tenant={tenantConfig}>
+      <Component />
+    </TenantProviderBase>
+  );
+}
 
 function ConditionalPaintBuddy() {
   const [location] = useLocation();
@@ -259,6 +271,43 @@ function Router() {
       <Route path="/trustlayer/claim" component={ClaimSubdomain} />
       <Route path="/trustlayer/privacy" component={TrustLayerPrivacy} />
       <Route path="/trustlayer/terms" component={TrustLayerTerms} />
+      
+      {/* Lume Paint Co routes - accessible via slug while lumepaint.co DNS is pending */}
+      <Route path="/lume">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Home} />}</Route>
+      <Route path="/lume/services">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Services} />}</Route>
+      <Route path="/lume/portfolio">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Portfolio} />}</Route>
+      <Route path="/lume/about">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={About} />}</Route>
+      <Route path="/lume/reviews">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Reviews} />}</Route>
+      <Route path="/lume/estimate">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Estimate} />}</Route>
+      <Route path="/lume/app">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={FieldTool} />}</Route>
+      <Route path="/lume/marketing-hub">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={MarketingHub} />}</Route>
+      <Route path="/lume/blog">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Blog} />}</Route>
+      <Route path="/lume/contact">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Contact} />}</Route>
+      <Route path="/lume/book">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Book} />}</Route>
+      <Route path="/lume/pricing">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Pricing} />}</Route>
+      <Route path="/lume/colors">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={ColorLibrary} />}</Route>
+      <Route path="/lume/faq">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={FAQ} />}</Route>
+      <Route path="/lume/terms">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={TermsWarranty} />}</Route>
+      <Route path="/lume/warranty">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={TermsWarranty} />}</Route>
+      
+      {/* NPP routes - explicit prefix for when accessed from other domains */}
+      <Route path="/npp">{() => <TenantPrefixedRoute tenantId="npp" Component={Home} />}</Route>
+      <Route path="/npp/services">{() => <TenantPrefixedRoute tenantId="npp" Component={Services} />}</Route>
+      <Route path="/npp/portfolio">{() => <TenantPrefixedRoute tenantId="npp" Component={Portfolio} />}</Route>
+      <Route path="/npp/about">{() => <TenantPrefixedRoute tenantId="npp" Component={About} />}</Route>
+      <Route path="/npp/reviews">{() => <TenantPrefixedRoute tenantId="npp" Component={Reviews} />}</Route>
+      <Route path="/npp/estimate">{() => <TenantPrefixedRoute tenantId="npp" Component={Estimate} />}</Route>
+      <Route path="/npp/app">{() => <TenantPrefixedRoute tenantId="npp" Component={FieldTool} />}</Route>
+      <Route path="/npp/marketing-hub">{() => <TenantPrefixedRoute tenantId="npp" Component={MarketingHub} />}</Route>
+      <Route path="/npp/blog">{() => <TenantPrefixedRoute tenantId="npp" Component={Blog} />}</Route>
+      <Route path="/npp/contact">{() => <TenantPrefixedRoute tenantId="npp" Component={Contact} />}</Route>
+      <Route path="/npp/book">{() => <TenantPrefixedRoute tenantId="npp" Component={Book} />}</Route>
+      <Route path="/npp/pricing">{() => <TenantPrefixedRoute tenantId="npp" Component={Pricing} />}</Route>
+      <Route path="/npp/colors">{() => <TenantPrefixedRoute tenantId="npp" Component={ColorLibrary} />}</Route>
+      <Route path="/npp/faq">{() => <TenantPrefixedRoute tenantId="npp" Component={FAQ} />}</Route>
+      <Route path="/npp/terms">{() => <TenantPrefixedRoute tenantId="npp" Component={TermsWarranty} />}</Route>
+      <Route path="/npp/warranty">{() => <TenantPrefixedRoute tenantId="npp" Component={TermsWarranty} />}</Route>
+      
       <Route component={NotFound} />
     </Switch>
   );
