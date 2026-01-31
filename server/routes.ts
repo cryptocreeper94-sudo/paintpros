@@ -12757,6 +12757,99 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // ============ MARKETING DASHBOARD STATS ============
+  
+  // Get real marketing stats from database (posts, ads, engagement)
+  app.get("/api/marketing/:tenantId/stats", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      // Get all scheduled posts for this tenant
+      const posts = await db
+        .select()
+        .from(scheduledPosts)
+        .where(eq(scheduledPosts.tenantId, tenantId));
+      
+      // Get ad campaigns
+      const campaigns = await db
+        .select()
+        .from(adCampaigns)
+        .where(eq(adCampaigns.tenantId, tenantId));
+      
+      // Calculate stats
+      const publishedPosts = posts.filter(p => p.status === 'published');
+      const scheduledPostsCount = posts.filter(p => p.status === 'scheduled');
+      const draftPosts = posts.filter(p => p.status === 'draft');
+      const failedPosts = posts.filter(p => p.status === 'failed');
+      
+      // Calculate engagement totals from published posts
+      const totalImpressions = publishedPosts.reduce((sum, p) => sum + (p.impressions || 0), 0);
+      const totalReach = publishedPosts.reduce((sum, p) => sum + (p.reach || 0), 0);
+      const totalEngagement = publishedPosts.reduce((sum, p) => sum + (p.engagement || 0), 0);
+      const totalClicks = publishedPosts.reduce((sum, p) => sum + (p.clicks || 0), 0);
+      const totalLikes = publishedPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+      const totalComments = publishedPosts.reduce((sum, p) => sum + (p.comments || 0), 0);
+      const totalShares = publishedPosts.reduce((sum, p) => sum + (p.shares || 0), 0);
+      const totalLeads = publishedPosts.reduce((sum, p) => sum + (p.leadsGenerated || 0), 0);
+      
+      // Platform breakdown
+      const facebookPosts = publishedPosts.filter(p => p.platform === 'facebook').length;
+      const instagramPosts = publishedPosts.filter(p => p.platform === 'instagram').length;
+      
+      // Ad campaign stats
+      const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
+      const totalAdSpend = campaigns.reduce((sum, c) => sum + parseFloat(c.spent || '0'), 0);
+      const totalDailyBudget = campaigns.reduce((sum, c) => sum + parseFloat(c.dailyBudget || '0'), 0);
+      
+      // Get recent posts for activity feed
+      const recentPosts = publishedPosts
+        .sort((a, b) => new Date(b.publishedAt || b.createdAt || 0).getTime() - new Date(a.publishedAt || a.createdAt || 0).getTime())
+        .slice(0, 5)
+        .map(p => ({
+          id: p.id,
+          platform: p.platform,
+          message: p.message?.substring(0, 100) + (p.message && p.message.length > 100 ? '...' : ''),
+          publishedAt: p.publishedAt || p.createdAt,
+          impressions: p.impressions || 0,
+          reach: p.reach || 0,
+          engagement: p.engagement || 0
+        }));
+      
+      res.json({
+        posts: {
+          total: posts.length,
+          published: publishedPosts.length,
+          scheduled: scheduledPostsCount.length,
+          drafts: draftPosts.length,
+          failed: failedPosts.length
+        },
+        platforms: {
+          facebook: facebookPosts,
+          instagram: instagramPosts
+        },
+        engagement: {
+          impressions: totalImpressions,
+          reach: totalReach,
+          engagement: totalEngagement,
+          clicks: totalClicks,
+          likes: totalLikes,
+          comments: totalComments,
+          shares: totalShares,
+          leads: totalLeads
+        },
+        ads: {
+          activeCampaigns,
+          totalSpend: totalAdSpend,
+          dailyBudget: totalDailyBudget
+        },
+        recentPosts
+      });
+    } catch (error) {
+      console.error("Error fetching marketing stats:", error);
+      res.status(500).json({ error: "Failed to fetch marketing stats" });
+    }
+  });
+
   // ============ POST INSIGHTS & ANALYTICS ============
   
   // Fetch detailed insights for a specific Facebook post

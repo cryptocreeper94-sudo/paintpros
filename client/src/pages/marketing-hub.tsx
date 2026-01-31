@@ -774,6 +774,19 @@ export default function MarketingHub() {
   const { data: dbImages } = useQuery<any[]>({
     queryKey: ["/api/marketing/images", selectedTenant],
   });
+  
+  // Fetch REAL marketing stats from database
+  const { data: marketingStats, isLoading: statsLoading } = useQuery<{
+    posts: { total: number; published: number; scheduled: number; drafts: number; failed: number };
+    platforms: { facebook: number; instagram: number };
+    engagement: { impressions: number; reach: number; engagement: number; clicks: number; likes: number; comments: number; shares: number; leads: number };
+    ads: { activeCampaigns: number; totalSpend: number; dailyBudget: number };
+    recentPosts: Array<{ id: string; platform: string; message: string; publishedAt: string; impressions: number; reach: number; engagement: number }>;
+  }>({
+    queryKey: ["/api/marketing", selectedTenant, "stats"],
+    enabled: !!selectedTenant,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
   const [contentBundles, setContentBundles] = useState<ContentBundle[]>([]);
   const [contentTypeFilter, setContentTypeFilter] = useState<ContentTypeFilter>("all");
   const [showAddImageModal, setShowAddImageModal] = useState(false);
@@ -1534,7 +1547,28 @@ export default function MarketingHub() {
     refetchInterval: 60000,
   });
 
+  // Use real database stats when available, fallback to localStorage stats
   const stats = useMemo(() => {
+    // If we have real data from the database, use it
+    if (marketingStats?.posts) {
+      return {
+        total: marketingStats.posts.total,
+        evergreen: 0, // Not tracked in DB yet
+        seasonal: 0, // Not tracked in DB yet
+        scheduled: marketingStats.posts.scheduled,
+        posted: marketingStats.posts.published,
+        drafts: marketingStats.posts.drafts,
+        // Add real engagement data
+        impressions: marketingStats.engagement?.impressions || 0,
+        reach: marketingStats.engagement?.reach || 0,
+        clicks: marketingStats.engagement?.clicks || 0,
+        activeCampaigns: marketingStats.ads?.activeCampaigns || 0,
+        adSpend: marketingStats.ads?.totalSpend || 0,
+        facebook: marketingStats.platforms?.facebook || 0,
+        instagram: marketingStats.platforms?.instagram || 0,
+      };
+    }
+    // Fallback to localStorage data
     const brandPosts = posts.filter(p => p.brand === selectedTenant);
     return {
       total: brandPosts.length,
@@ -1543,8 +1577,15 @@ export default function MarketingHub() {
       scheduled: brandPosts.filter(p => p.status === "scheduled").length,
       posted: brandPosts.filter(p => p.status === "posted").length,
       drafts: brandPosts.filter(p => p.status === "draft").length,
+      impressions: 0,
+      reach: 0,
+      clicks: 0,
+      activeCampaigns: 0,
+      adSpend: 0,
+      facebook: 0,
+      instagram: 0,
     };
-  }, [posts, selectedTenant]);
+  }, [posts, selectedTenant, marketingStats]);
 
   if (!isAuthenticated) {
     return (
@@ -1890,44 +1931,70 @@ export default function MarketingHub() {
             </motion.div>
           )}
 
-          <BentoGrid className="gap-3">
-            <BentoItem colSpan={2} mobileColSpan={2}>
-              <GlassCard className="p-4 text-center h-full flex flex-col justify-center">
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
-                <p className="text-xs text-gray-500">Total Posts</p>
-              </GlassCard>
-            </BentoItem>
-            <BentoItem colSpan={2} mobileColSpan={2}>
-              <GlassCard className="p-4 text-center h-full flex flex-col justify-center bg-green-50 dark:bg-green-900/20">
-                <p className="text-2xl font-bold text-green-600">{stats.evergreen}</p>
-                <p className="text-xs text-gray-500">Evergreen</p>
-              </GlassCard>
-            </BentoItem>
-            <BentoItem colSpan={2} mobileColSpan={2}>
-              <GlassCard className="p-4 text-center h-full flex flex-col justify-center bg-orange-50 dark:bg-orange-900/20">
-                <p className="text-2xl font-bold text-orange-600">{stats.seasonal}</p>
-                <p className="text-xs text-gray-500">Seasonal</p>
-              </GlassCard>
-            </BentoItem>
-            <BentoItem colSpan={2} mobileColSpan={2}>
-              <GlassCard className="p-4 text-center h-full flex flex-col justify-center bg-blue-50 dark:bg-blue-900/20">
-                <p className="text-2xl font-bold text-blue-600">{stats.scheduled}</p>
-                <p className="text-xs text-gray-500">Scheduled</p>
-              </GlassCard>
-            </BentoItem>
-            <BentoItem colSpan={2} mobileColSpan={2}>
-              <GlassCard className="p-4 text-center h-full flex flex-col justify-center bg-purple-50 dark:bg-purple-900/20">
-                <p className="text-2xl font-bold text-purple-600">{stats.posted}</p>
-                <p className="text-xs text-gray-500">Posted</p>
-              </GlassCard>
-            </BentoItem>
-            <BentoItem colSpan={2} mobileColSpan={2}>
-              <GlassCard className="p-4 text-center h-full flex flex-col justify-center bg-gray-50 dark:bg-gray-800">
-                <p className="text-2xl font-bold text-gray-600">{stats.drafts}</p>
-                <p className="text-xs text-gray-500">Drafts</p>
-              </GlassCard>
-            </BentoItem>
-          </BentoGrid>
+          {/* Live Stats Banner - Real Database Data */}
+          <GlassCard className="p-4 mb-4 border-l-4 border-green-500 bg-green-500/5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-sm font-medium text-green-600">Live Data from Database</span>
+              {statsLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+            </div>
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+              <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                <p className="text-xl md:text-2xl font-bold text-purple-600">{stats.posted}</p>
+                <p className="text-xs text-muted-foreground">Published</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                <Facebook className="w-4 h-4 mx-auto mb-1 text-blue-600" />
+                <p className="text-xl font-bold text-blue-600">{stats.facebook || 0}</p>
+                <p className="text-xs text-muted-foreground">Facebook</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-pink-500/10 border border-pink-500/30">
+                <Instagram className="w-4 h-4 mx-auto mb-1 text-pink-600" />
+                <p className="text-xl font-bold text-pink-600">{stats.instagram || 0}</p>
+                <p className="text-xs text-muted-foreground">Instagram</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+                <Target className="w-4 h-4 mx-auto mb-1 text-green-600" />
+                <p className="text-xl font-bold text-green-600">{stats.activeCampaigns || 0}</p>
+                <p className="text-xs text-muted-foreground">Active Ads</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <DollarSign className="w-4 h-4 mx-auto mb-1 text-amber-600" />
+                <p className="text-xl font-bold text-amber-600">${(stats.adSpend || 0).toFixed(0)}</p>
+                <p className="text-xs text-muted-foreground">Ad Spend</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
+                <Eye className="w-4 h-4 mx-auto mb-1 text-cyan-600" />
+                <p className="text-xl font-bold text-cyan-600">{(stats.impressions || 0).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">Impressions</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* Recent Activity - Real Posts */}
+          {marketingStats?.recentPosts && marketingStats.recentPosts.length > 0 && (
+            <GlassCard className="p-4 mb-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                Recent Published Posts
+              </h3>
+              <div className="space-y-2">
+                {marketingStats.recentPosts.slice(0, 3).map((post) => (
+                  <div key={post.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
+                    {post.platform === 'facebook' ? (
+                      <Facebook className="w-4 h-4 text-blue-500 shrink-0" />
+                    ) : (
+                      <Instagram className="w-4 h-4 text-pink-500 shrink-0" />
+                    )}
+                    <p className="text-sm flex-1 truncate">{post.message || 'Published post'}</p>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {post.publishedAt ? format(new Date(post.publishedAt), 'MMM d') : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          )}
 
           {/* Hero Section with Photo */}
           <div className="relative rounded-xl overflow-hidden mb-6">
@@ -1985,8 +2052,33 @@ export default function MarketingHub() {
             </div>
           </div>
 
-          {/* Category Navigation Carousel */}
-          <div className="mb-6">
+          {/* Mobile-Friendly Tab Navigation */}
+          <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b mb-4 -mx-4 px-4 py-2 md:hidden">
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+              {[
+                { id: 'content', label: 'Content', icon: Layers },
+                { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+                { id: 'calendar', label: 'Calendar', icon: Calendar },
+                { id: 'playbook', label: 'Playbook', icon: BookOpen },
+                { id: 'budget', label: 'Budget', icon: DollarSign },
+              ].map((tab) => (
+                <Button
+                  key={tab.id}
+                  variant={activeTab === tab.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                  className="shrink-0 gap-1.5"
+                  data-testid={`mobile-tab-${tab.id}`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="text-xs">{tab.label}</span>
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Category Navigation Carousel - Desktop */}
+          <div className="mb-6 hidden md:block">
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
               {[
                 { id: 'content', label: 'Content Studio', icon: Layers, image: interiorLivingRoom },
