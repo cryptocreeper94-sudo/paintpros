@@ -5972,6 +5972,64 @@ export const contentLibrary = pgTable("content_library", {
 
 export type ContentLibraryItem = typeof contentLibrary.$inferSelect;
 
+// Project Images - Before/After photos from field crews
+export const projectImages = pgTable("project_images", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: text("tenant_id").notNull(),
+  
+  // Project/Job association
+  jobId: varchar("job_id"),
+  projectName: text("project_name"),
+  customerName: text("customer_name"),
+  address: text("address"),
+  
+  // Image details
+  imageUrl: text("image_url").notNull(),
+  objectPath: text("object_path"), // Path in object storage
+  imageType: text("image_type").notNull(), // 'before' or 'after'
+  description: text("description"),
+  
+  // Categorization
+  serviceType: text("service_type"), // 'interior', 'cabinets', 'trim', 'doors', 'ceilings', 'walls'
+  room: text("room"), // 'kitchen', 'bathroom', 'bedroom', 'living_room', etc.
+  tags: text("tags").array(),
+  
+  // Pairing - Links before/after together
+  pairedImageId: varchar("paired_image_id"),
+  combinedImageUrl: text("combined_image_url"), // Side-by-side combined image
+  
+  // Who uploaded
+  uploadedBy: varchar("uploaded_by"),
+  uploadedByName: text("uploaded_by_name"),
+  
+  // Content library connection
+  addedToContentLibrary: boolean("added_to_content_library").default(false),
+  contentLibraryId: varchar("content_library_id"),
+  
+  // Status
+  status: text("status").default("pending"), // 'pending', 'approved', 'rejected'
+  approvedBy: varchar("approved_by"),
+  approvedAt: timestamp("approved_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_project_images_tenant").on(table.tenantId),
+  index("idx_project_images_job").on(table.jobId),
+  index("idx_project_images_type").on(table.imageType),
+  index("idx_project_images_paired").on(table.pairedImageId),
+  index("idx_project_images_status").on(table.status),
+]);
+
+export const insertProjectImageSchema = createInsertSchema(projectImages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertProjectImage = z.infer<typeof insertProjectImageSchema>;
+export type ProjectImage = typeof projectImages.$inferSelect;
+
 // Auto-Posting Schedule - Define when posts should go out
 export const autoPostingSchedule = pgTable("auto_posting_schedule", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

@@ -47,8 +47,10 @@ import {
   scheduledPosts, insertScheduledPostSchema,
   contentLibrary, autoPostingSchedule, adCampaigns, marketingExpenses,
   autopilotSubscriptions,
-  trustlayerDomains, trustlayerMemberships, insertTrustlayerDomainSchema, insertTrustlayerMembershipSchema
+  trustlayerDomains, trustlayerMemberships, insertTrustlayerDomainSchema, insertTrustlayerMembershipSchema,
+  projectImages, insertProjectImageSchema
 } from "@shared/schema";
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import * as crypto from "crypto";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -326,6 +328,171 @@ export async function registerRoutes(
       }
       console.log("[Socket.IO] User disconnected:", socket.id);
     });
+  });
+
+  // ============ OBJECT STORAGE ROUTES ============
+  registerObjectStorageRoutes(app);
+
+  // ============ PROJECT IMAGES API ============
+  
+  // Upload project image (before/after)
+  app.post("/api/project-images/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const parsed = insertProjectImageSchema.safeParse({
+        ...req.body,
+        tenantId
+      });
+      
+      if (!parsed.success) {
+        return res.status(400).json({ error: parsed.error.message });
+      }
+      
+      const [image] = await db.insert(projectImages).values(parsed.data).returning();
+      
+      // If this is an 'after' image and we have a jobId, try to find and pair with 'before'
+      if (image.imageType === 'after' && image.jobId) {
+        const [beforeImage] = await db
+          .select()
+          .from(projectImages)
+          .where(and(
+            eq(projectImages.tenantId, tenantId),
+            eq(projectImages.jobId, image.jobId),
+            eq(projectImages.imageType, 'before'),
+            eq(projectImages.status, 'approved')
+          ))
+          .limit(1);
+        
+        if (beforeImage) {
+          // Update both images to be paired
+          await db.update(projectImages).set({ pairedImageId: beforeImage.id }).where(eq(projectImages.id, image.id));
+          await db.update(projectImages).set({ pairedImageId: image.id }).where(eq(projectImages.id, beforeImage.id));
+        }
+      }
+      
+      res.status(201).json(image);
+    } catch (error) {
+      console.error("Error creating project image:", error);
+      res.status(500).json({ error: "Failed to create project image" });
+    }
+  });
+  
+  // Get all project images for a tenant
+  app.get("/api/project-images/:tenantId", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { status, imageType, jobId } = req.query;
+      
+      let query = db.select().from(projectImages).where(eq(projectImages.tenantId, tenantId));
+      
+      const images = await db
+        .select()
+        .from(projectImages)
+        .where(eq(projectImages.tenantId, tenantId))
+        .orderBy(desc(projectImages.createdAt));
+      
+      // Filter in memory for flexibility
+      let filtered = images;
+      if (status) filtered = filtered.filter(i => i.status === status);
+      if (imageType) filtered = filtered.filter(i => i.imageType === imageType);
+      if (jobId) filtered = filtered.filter(i => i.jobId === jobId);
+      
+      res.json(filtered);
+    } catch (error) {
+      console.error("Error fetching project images:", error);
+      res.status(500).json({ error: "Failed to fetch project images" });
+    }
+  });
+  
+  // Get paired before/after sets
+  app.get("/api/project-images/:tenantId/pairs", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const images = await db
+        .select()
+        .from(projectImages)
+        .where(and(
+          eq(projectImages.tenantId, tenantId),
+          isNotNull(projectImages.pairedImageId)
+        ))
+        .orderBy(desc(projectImages.createdAt));
+      
+      // Group into pairs
+      const pairs: { before: typeof images[0], after: typeof images[0], combinedUrl?: string }[] = [];
+      const processed = new Set<string>();
+      
+      for (const img of images) {
+        if (processed.has(img.id)) continue;
+        
+        const paired = images.find(i => i.id === img.pairedImageId);
+        if (paired && !processed.has(paired.id)) {
+          const before = img.imageType === 'before' ? img : paired;
+          const after = img.imageType === 'after' ? img : paired;
+          pairs.push({ 
+            before, 
+            after, 
+            combinedUrl: before.combinedImageUrl || after.combinedImageUrl 
+          });
+          processed.add(img.id);
+          processed.add(paired.id);
+        }
+      }
+      
+      res.json(pairs);
+    } catch (error) {
+      console.error("Error fetching image pairs:", error);
+      res.status(500).json({ error: "Failed to fetch image pairs" });
+    }
+  });
+  
+  // Approve project image and optionally add to content library
+  app.post("/api/project-images/:tenantId/:imageId/approve", async (req, res) => {
+    try {
+      const { tenantId, imageId } = req.params;
+      const { addToContentLibrary, approvedBy } = req.body;
+      
+      const [updated] = await db
+        .update(projectImages)
+        .set({ 
+          status: 'approved',
+          approvedBy,
+          approvedAt: new Date()
+        })
+        .where(and(
+          eq(projectImages.id, imageId),
+          eq(projectImages.tenantId, tenantId)
+        ))
+        .returning();
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Image not found" });
+      }
+      
+      // If adding to content library, create entry
+      if (addToContentLibrary) {
+        const [contentItem] = await db.insert(contentLibrary).values({
+          tenantId,
+          title: `${updated.imageType === 'before' ? 'Before' : 'After'}: ${updated.projectName || updated.room || 'Project Photo'}`,
+          message: updated.description || `Professional ${updated.serviceType || 'painting'} work by NPP`,
+          imageUrl: updated.imageUrl,
+          contentType: updated.imageType === 'after' && updated.pairedImageId ? 'before_after' : 'project_showcase',
+          contentCategory: updated.serviceType || 'interior',
+          tags: updated.tags || [],
+          status: 'active'
+        }).returning();
+        
+        await db.update(projectImages).set({
+          addedToContentLibrary: true,
+          contentLibraryId: contentItem.id
+        }).where(eq(projectImages.id, imageId));
+      }
+      
+      res.json({ success: true, image: updated });
+    } catch (error) {
+      console.error("Error approving image:", error);
+      res.status(500).json({ error: "Failed to approve image" });
+    }
   });
 
   // GET /api/messages/online-users - Get currently online users
