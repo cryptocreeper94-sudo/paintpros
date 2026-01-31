@@ -67,6 +67,9 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **Today's Suggested Post:** Smart content rotation with MWF (Rotation A: project showcases) and TThSat (Rotation B: engagement/tips) schedule. Sunday is planning/review day.
 - **Performance Analytics:** Track content performance by image category, platform, and content type. Metrics include impressions, reach, clicks, likes, comments, shares, saves, leads generated, and conversions. Performance insights help identify what content works best.
 - **Meta Business Suite Integration (Pending):** UI placeholder ready for Facebook/Instagram auto-posting. Requires Meta Developer credentials: App ID, App Secret, Page Access Token, Instagram Business Account ID. When connected, enables scheduled posts and engagement tracking.
+- **Ad Campaign Management:** 7-day campaign duration with automatic rotation. Campaigns auto-expire and rotate to fresh content for optimal Meta algorithm learning. Underperforming ad detection flags campaigns with <100 avg daily impressions or <0.5% CTR after 3+ days running.
+- **Queue Management:** Visual touch-to-configure queue with reordering (move up/down), removal, and position editing. Click any queued post thumbnail to manage its position in the publishing schedule.
+- **Admin Onboarding Wizard:** Simplified "Add TrustLayer as Admin" guided onboarding. Clients add trustlayer.marketing@gmail.com as Admin on their Facebook Page instead of generating tokens manually. Tabbed interface with step-by-step instructions vs manual token entry.
 
 ### Content Analytics Roadmap (Future)
 When crews start submitting their own Before & After photos:
