@@ -385,6 +385,19 @@ async function checkAndRunAdCampaigns(): Promise<void> {
   const currentHour = getCurrentCSTHour();
   
   try {
+    // First, sync real spend data from Meta for all tenants with active campaigns
+    const activeTenants = await db
+      .selectDistinct({ tenantId: adCampaigns.tenantId })
+      .from(adCampaigns)
+      .where(eq(adCampaigns.status, 'active'));
+    
+    for (const { tenantId } of activeTenants) {
+      if (tenantId) {
+        await syncMetaSpendData(tenantId);
+      }
+    }
+
+    // Now get campaigns with updated spend data
     const campaigns = await db
       .select()
       .from(adCampaigns)
@@ -429,7 +442,7 @@ async function checkAndRunAdCampaigns(): Promise<void> {
         }
       }
 
-      // Check daily spend cap
+      // Check daily spend cap (now using real synced data from Meta)
       const todaySpent = Number(campaign.spent) || 0;
       const dailyBudget = Number(campaign.dailyBudget) || 25;
       
@@ -528,6 +541,16 @@ async function checkAndRunAdCampaigns(): Promise<void> {
 
 async function resetDailySpend(): Promise<void> {
   try {
+    // Only reset if it's actually midnight CST (not on every startup)
+    const now = new Date();
+    const cstTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+    const hour = cstTime.getHours();
+    
+    if (hour !== 0) {
+      console.log('[Ad Scheduler] Skipping spend reset - not midnight CST');
+      return;
+    }
+    
     await db
       .update(adCampaigns)
       .set({ spent: '0', updatedAt: new Date() })
@@ -535,6 +558,103 @@ async function resetDailySpend(): Promise<void> {
     console.log('[Ad Scheduler] Daily spend reset for all active campaigns');
   } catch (error) {
     console.error('[Ad Scheduler] Error resetting daily spend:', error);
+  }
+}
+
+// Sync real spend data from Meta API and update campaigns table
+async function syncMetaSpendData(tenantId: string): Promise<void> {
+  try {
+    const integration = await getMetaIntegration(tenantId);
+    if (!integration || !integration.adAccountId || !integration.facebookPageAccessToken) {
+      return;
+    }
+
+    const accessToken = integration.facebookPageAccessToken;
+    
+    // Fetch today's insights from Meta
+    const response = await fetch(
+      `https://graph.facebook.com/v21.0/${integration.adAccountId}/insights?` +
+      `fields=campaign_id,campaign_name,spend,impressions,reach,clicks&` +
+      `date_preset=today&level=campaign&` +
+      `access_token=${accessToken}`
+    );
+
+    if (!response.ok) {
+      console.log('[Meta Sync] Failed to fetch today\'s insights');
+      return;
+    }
+
+    const data = await response.json();
+    
+    if (!data.data || data.data.length === 0) {
+      console.log('[Meta Sync] No campaign insights for today (no active campaigns or no spend yet)');
+      return;
+    }
+
+    // Aggregate spend by platform (Facebook vs Instagram) for today
+    let facebookSpend = 0, instagramSpend = 0;
+    let facebookImpressions = 0, instagramImpressions = 0;
+    let facebookClicks = 0, instagramClicks = 0;
+    
+    for (const insight of data.data) {
+      const campaignName = insight.campaign_name?.toLowerCase() || '';
+      const spend = parseFloat(insight.spend || '0');
+      const impressions = parseInt(insight.impressions || '0');
+      const clicks = parseInt(insight.clicks || '0');
+
+      console.log(`[Meta Sync] Campaign ${insight.campaign_name}: $${spend.toFixed(2)} spent, ${impressions} impressions, ${clicks} clicks`);
+
+      // Aggregate by platform
+      if (campaignName.includes('facebook')) {
+        facebookSpend += spend;
+        facebookImpressions += impressions;
+        facebookClicks += clicks;
+      } else if (campaignName.includes('instagram')) {
+        instagramSpend += spend;
+        instagramImpressions += impressions;
+        instagramClicks += clicks;
+      }
+    }
+
+    // Update our local Facebook campaign with aggregated real data
+    if (facebookSpend > 0 || facebookImpressions > 0) {
+      await db
+        .update(adCampaigns)
+        .set({
+          spent: facebookSpend.toFixed(2),
+          impressions: facebookImpressions,
+          clicks: facebookClicks,
+          lastSyncAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(adCampaigns.tenantId, tenantId),
+          sql`LOWER(${adCampaigns.name}) LIKE '%facebook%'`
+        ));
+      console.log(`[Meta Sync] Updated Facebook campaign: $${facebookSpend.toFixed(2)}, ${facebookImpressions} impressions`);
+    }
+
+    // Update our local Instagram campaign with aggregated real data
+    if (instagramSpend > 0 || instagramImpressions > 0) {
+      await db
+        .update(adCampaigns)
+        .set({
+          spent: instagramSpend.toFixed(2),
+          impressions: instagramImpressions,
+          clicks: instagramClicks,
+          lastSyncAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(adCampaigns.tenantId, tenantId),
+          sql`LOWER(${adCampaigns.name}) LIKE '%instagram%'`
+        ));
+      console.log(`[Meta Sync] Updated Instagram campaign: $${instagramSpend.toFixed(2)}, ${instagramImpressions} impressions`);
+    }
+
+    console.log(`[Meta Sync] Synced ${data.data.length} Meta campaigns -> FB: $${facebookSpend.toFixed(2)}, IG: $${instagramSpend.toFixed(2)}`);
+  } catch (error) {
+    console.error('[Meta Sync] Error syncing spend data:', error);
   }
 }
 

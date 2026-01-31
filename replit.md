@@ -26,7 +26,7 @@ The design adheres to an "Ultra Premium Design System" with a "Sparkle and Shine
 - **Communication:** Internal Messaging System with real-time chat, speech-to-text, and Socket.IO.
 - **Marketing Hub:** Features for content composition, ad management, budget tracking, and analytics, with content types (educational, gamified, sales, seasonal, evergreen, testimonial, behind-scenes) and a "Today's Suggested Post" system for content rotation.
 - **Organic Posting Schedule:** 5x daily at 6am, 10am, 2pm, 6pm, 10pm CST (every 4 hours from 6am to 10pm).
-- **Ad Campaign Management:** 7-day campaign duration with automatic rotation, $50/day budget ($25 Facebook + $25 Instagram), and underperforming ad detection.
+- **Ad Campaign Management:** 7-day campaign duration with automatic rotation, $50/day budget ($25 Facebook + $25 Instagram), underperforming ad detection, and real-time Meta API spend sync (syncs before checking budgets, resets only at midnight CST).
 - **Admin Onboarding:** Simplified "Add TrustLayer as Admin" wizard for Facebook Page integration.
 - **AI Agent Integration:** Floating AI assistants with tenant-specific designs and ElevenLabs voice responses.
 - **Toolkit Credits System:** Prepaid credit model for metered features like Measure Tool, Color Match, Room Visualizer, and Complete Estimate, with subscription tiers and credit packs integrated with Stripe.
