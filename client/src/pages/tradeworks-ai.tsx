@@ -54,16 +54,16 @@ function GlassPanel({ children, className = '', glow = false, onClick }: {
   );
 }
 
-// Trade configuration
+// Trade configuration - painting is live, others are special order
 const TRADES = [
-  { id: 'painting', name: 'Painting', icon: Palette, color: 'from-purple-500 to-pink-500', accent: 'purple' },
-  { id: 'electrical', name: 'Electrical', icon: Zap, color: 'from-yellow-500 to-amber-500', accent: 'yellow' },
-  { id: 'plumbing', name: 'Plumbing', icon: Droplet, color: 'from-blue-500 to-cyan-500', accent: 'blue' },
-  { id: 'hvac', name: 'HVAC', icon: Fan, color: 'from-cyan-500 to-teal-500', accent: 'cyan' },
-  { id: 'roofing', name: 'Roofing', icon: Home, color: 'from-orange-500 to-red-500', accent: 'orange' },
-  { id: 'carpentry', name: 'Carpentry', icon: Hammer, color: 'from-amber-600 to-yellow-600', accent: 'amber' },
-  { id: 'concrete', name: 'Concrete', icon: Building, color: 'from-slate-500 to-zinc-500', accent: 'slate' },
-  { id: 'landscaping', name: 'Landscaping', icon: Trees, color: 'from-green-500 to-emerald-500', accent: 'green' },
+  { id: 'painting', name: 'Painting', icon: Palette, color: 'from-purple-500 to-pink-500', accent: 'purple', live: true },
+  { id: 'electrical', name: 'Electrical', icon: Zap, color: 'from-yellow-500 to-amber-500', accent: 'yellow', specialOrder: true },
+  { id: 'plumbing', name: 'Plumbing', icon: Droplet, color: 'from-blue-500 to-cyan-500', accent: 'blue', specialOrder: true },
+  { id: 'hvac', name: 'HVAC', icon: Fan, color: 'from-cyan-500 to-teal-500', accent: 'cyan', specialOrder: true },
+  { id: 'roofing', name: 'Roofing', icon: Home, color: 'from-orange-500 to-red-500', accent: 'orange', specialOrder: true },
+  { id: 'carpentry', name: 'Carpentry', icon: Hammer, color: 'from-amber-600 to-yellow-600', accent: 'amber', specialOrder: true },
+  { id: 'concrete', name: 'Concrete', icon: Building, color: 'from-slate-500 to-zinc-500', accent: 'slate', specialOrder: true },
+  { id: 'landscaping', name: 'Landscaping', icon: Trees, color: 'from-green-500 to-emerald-500', accent: 'green', specialOrder: true },
 ];
 
 // Calculator definitions by trade - COMPREHENSIVE
@@ -1401,26 +1401,35 @@ export default function TradeWorksAI() {
             </Button>
           </div>
           <div className="grid grid-cols-4 gap-2">
-            {TRADES.map((trade) => (
+            {TRADES.map((trade: any) => (
               <motion.button
                 key={trade.id}
                 onClick={() => {
-                  setSelectedTrade(trade.id);
-                  setSelectedCalculator(null);
+                  if (!trade.specialOrder) {
+                    setSelectedTrade(trade.id);
+                    setSelectedCalculator(null);
+                  }
                 }}
-                whileTap={{ scale: 0.95 }}
+                whileTap={trade.specialOrder ? {} : { scale: 0.95 }}
                 className={`relative p-3 rounded-xl border transition-all ${
-                  selectedTrade === trade.id 
-                    ? 'bg-white/10 border-white/20' 
-                    : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05]'
+                  trade.specialOrder 
+                    ? 'bg-white/[0.02] border-white/[0.03] opacity-50 cursor-not-allowed'
+                    : selectedTrade === trade.id 
+                      ? 'bg-white/10 border-white/20' 
+                      : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05]'
                 }`}
                 data-testid={`button-trade-${trade.id}`}
               >
-                <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${trade.color} flex items-center justify-center shadow-lg mb-2`}>
+                {trade.specialOrder && (
+                  <div className="absolute -top-1 -right-1 bg-amber-500/90 text-[6px] font-bold text-black px-1 py-0.5 rounded-md uppercase">
+                    Soon
+                  </div>
+                )}
+                <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${trade.color} flex items-center justify-center shadow-lg mb-2 ${trade.specialOrder ? 'grayscale' : ''}`}>
                   <trade.icon className="w-5 h-5 text-white" />
                 </div>
                 <p className="text-[10px] text-slate-300 text-center font-medium truncate">{trade.name}</p>
-                {selectedTrade === trade.id && (
+                {selectedTrade === trade.id && !trade.specialOrder && (
                   <motion.div
                     layoutId="trade-indicator"
                     className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 rounded-full bg-white/50"
