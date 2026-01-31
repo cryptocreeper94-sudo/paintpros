@@ -832,6 +832,43 @@ export default function MarketingHub() {
     refetchInterval: 60000,
   });
 
+  // Scheduled Posts Queue
+  interface ScheduledPost {
+    id: string;
+    platform: string;
+    status: string;
+    message: string;
+    imageUrl: string | null;
+    scheduledAt: string;
+  }
+  
+  const { data: scheduledQueue, refetch: refetchQueue } = useQuery<ScheduledPost[]>({
+    queryKey: ["/api/meta", selectedTenant, "scheduled"],
+    enabled: !!selectedTenant,
+    refetchInterval: 60000,
+  });
+
+  // Ad Campaigns
+  interface AdCampaign {
+    id: string;
+    name: string;
+    platform: string;
+    status: string;
+    dailyBudget: string;
+    startDate: string | null;
+    endDate: string | null;
+    adImageUrl: string | null;
+    totalSpent: string;
+    impressions: number;
+    clicks: number;
+  }
+  
+  const { data: adCampaigns, refetch: refetchCampaigns } = useQuery<AdCampaign[]>({
+    queryKey: ["/api/ad-campaigns", selectedTenant],
+    enabled: !!selectedTenant,
+    refetchInterval: 60000,
+  });
+
   // Selected post for analytics view
   const [selectedPost, setSelectedPost] = useState<LivePost | null>(null);
   const [showQuickPostModal, setShowQuickPostModal] = useState(false);
