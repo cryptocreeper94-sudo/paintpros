@@ -98,7 +98,7 @@ import {
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download, Share2, ExternalLink } from "lucide-react";
+import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download, Share2, ExternalLink, Info } from "lucide-react";
 import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -6306,6 +6306,25 @@ export default function MarketingHub() {
 
               {/* META ADS SPEND - Live Data */}
               <MetaAdSpendSection tenantId={selectedTenant} />
+
+              {/* META BILLING THRESHOLD TIP */}
+              <GlassCard className="p-4 border-l-4 border-l-blue-500 bg-blue-500/5">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Info className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Reduce Email Receipts from Meta</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Getting charged every $2? Increase your billing threshold to get fewer charges and emails.
+                    </p>
+                    <div className="text-sm space-y-1">
+                      <p><strong>How:</strong> Meta Ads Manager &rarr; Billing & Payments &rarr; Payment Settings &rarr; Click 3-dot menu next to threshold &rarr; Select $50 or $100</p>
+                      <p className="text-muted-foreground text-xs mt-2">This controls when Meta bills your card. Higher threshold = fewer charges, same total spend.</p>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
 
               {/* CURRENT STATUS - The Reality */}
               <GlassCard className="p-6 border-l-4 border-amber-500 bg-amber-500/5">
