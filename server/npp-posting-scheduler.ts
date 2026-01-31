@@ -36,7 +36,24 @@ async function validateToken(token: string): Promise<boolean> {
   }
 }
 
-async function getNextImage(tenantId: string) {
+async function getNextImage(tenantId: string, category?: string) {
+  // If category specified, filter by it (especially important for before-after)
+  if (category) {
+    const categoryImages = await db
+      .select()
+      .from(marketingImages)
+      .where(and(
+        eq(marketingImages.tenantId, tenantId),
+        eq(marketingImages.isActive, true),
+        eq(marketingImages.category, category)
+      ))
+      .orderBy(asc(marketingImages.usageCount), asc(marketingImages.lastUsedAt))
+      .limit(1);
+    
+    if (categoryImages[0]) return categoryImages[0];
+  }
+  
+  // Fallback to any active image (but NOT before-after unless specifically requested)
   const images = await db
     .select()
     .from(marketingImages)
@@ -199,11 +216,41 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
         continue;
       }
 
-      const image = await getNextImage(schedule.tenantId);
       const messageContent = await getNextMessage();
+      
+      // CRITICAL: Match image category to message category
+      // Especially important for "Before & After" posts - must show actual before/after images
+      let imageCategory: string | undefined;
+      if (messageContent?.content) {
+        const content = messageContent.content.toLowerCase();
+        if (content.includes('before') && content.includes('after')) {
+          imageCategory = 'before-after';
+          console.log(`[NPP Posting] Before/After message detected - requiring before-after image`);
+        } else if (content.includes('exterior') || content.includes('curb appeal')) {
+          imageCategory = 'exterior';
+        } else if (content.includes('interior') || content.includes('living') || content.includes('bedroom')) {
+          imageCategory = 'interior';
+        } else if (content.includes('cabinet') || content.includes('kitchen')) {
+          imageCategory = 'cabinet';
+        } else if (content.includes('deck') || content.includes('fence')) {
+          imageCategory = 'deck';
+        } else if (content.includes('commercial') || content.includes('office') || content.includes('business')) {
+          imageCategory = 'commercial';
+        }
+      }
+      
+      const image = await getNextImage(schedule.tenantId, imageCategory);
       
       if (!image && !messageContent) {
         console.log(`[NPP Posting] No content available for ${schedule.tenantId}`);
+        continue;
+      }
+      
+      // VALIDATION: If message mentions before/after but no before-after image available, skip this post
+      if (messageContent?.content?.toLowerCase().includes('before') && 
+          messageContent?.content?.toLowerCase().includes('after') &&
+          image?.category !== 'before-after') {
+        console.log(`[NPP Posting] SKIPPING: Before/After message but no before-after image available. This prevents misleading posts.`);
         continue;
       }
 
@@ -354,11 +401,38 @@ export async function triggerManualPost(tenantId: string): Promise<{ facebook?: 
     throw new Error('No Meta integration configured');
   }
 
-  const image = await getNextImage(tenantId);
   const messageContent = await getNextMessage();
+  
+  // CRITICAL: Match image category to message category
+  let imageCategory: string | undefined;
+  if (messageContent?.content) {
+    const content = messageContent.content.toLowerCase();
+    if (content.includes('before') && content.includes('after')) {
+      imageCategory = 'before-after';
+    } else if (content.includes('exterior') || content.includes('curb appeal')) {
+      imageCategory = 'exterior';
+    } else if (content.includes('interior') || content.includes('living') || content.includes('bedroom')) {
+      imageCategory = 'interior';
+    } else if (content.includes('cabinet') || content.includes('kitchen')) {
+      imageCategory = 'cabinet';
+    } else if (content.includes('deck') || content.includes('fence')) {
+      imageCategory = 'deck';
+    } else if (content.includes('commercial') || content.includes('office') || content.includes('business')) {
+      imageCategory = 'commercial';
+    }
+  }
+  
+  const image = await getNextImage(tenantId, imageCategory);
   
   if (!image && !messageContent) {
     throw new Error('No content available');
+  }
+  
+  // VALIDATION: If message mentions before/after but no before-after image available, throw error
+  if (messageContent?.content?.toLowerCase().includes('before') && 
+      messageContent?.content?.toLowerCase().includes('after') &&
+      image?.category !== 'before-after') {
+    throw new Error('Before/After message requires a before-after image. Please upload proper before/after comparison images first.');
   }
 
   const results: { facebook?: any; instagram?: any } = {};
