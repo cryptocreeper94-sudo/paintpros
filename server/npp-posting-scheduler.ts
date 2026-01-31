@@ -441,7 +441,7 @@ export function startNppPostingScheduler(): void {
   }
 
   console.log('[NPP Posting Scheduler] Starting...');
-  console.log('[NPP Posting Scheduler] Weekdays (Mon-Fri): 9 posts at 6am,8am,10am,12pm,2pm,4pm,6pm,8pm,10pm CST');
+  console.log('[NPP Posting Scheduler] Weekdays (Mon-Fri): 5 posts at 6am,10am,2pm,6pm,10pm CST');
   console.log('[NPP Posting Scheduler] Weekends (Sat-Sun): 3 posts at 8am,2pm,8pm CST');
   isRunning = true;
   
