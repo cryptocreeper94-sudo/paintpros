@@ -278,34 +278,6 @@ export default function TrustLayerHome() {
         </div>
       </motion.header>
 
-      {/* Meta Proof Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border-y border-white/10"
-      >
-        <div className="max-w-7xl mx-auto px-6 py-3">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-3 text-center">
-            <div className="flex items-center gap-2">
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-2 h-2 rounded-full bg-emerald-400"
-              />
-              <span className="text-emerald-400 font-medium text-sm">LIVE PROOF</span>
-            </div>
-            <p className="text-slate-300 text-sm">
-              This advertisement was created and distributed by TrustLayer. 
-              <span className="text-white font-medium"> This is exactly what you get.</span>
-            </p>
-            <span className="text-slate-500 text-xs hidden md:inline">
-              Set your template. We handle the rest.
-            </span>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Hero */}
       <div className="relative">
         <div className="max-w-7xl mx-auto px-6 py-24 text-center">
