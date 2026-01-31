@@ -91,13 +91,14 @@ import {
   TrendingUp, Clock, CheckCircle, AlertTriangle, Edit, 
   Trash2, Plus, Copy, Lock, User, Mic, X,
   Sparkles, PenTool, Palette, Building2, TreePine, DoorOpen,
-  LayoutGrid, Search, ChevronLeft, ChevronRight,
+  LayoutGrid, Search, ChevronLeft, ChevronRight, ChevronUp, ChevronDown,
   FileText, Users, BarChart3, Target, Lightbulb, Volume2, VolumeX, Loader2,
   ImageIcon, MessageSquare, Layers, Wand2, Star, LogOut, BookOpen, ArrowRight, Play, Link,
   DollarSign, Receipt, PieChart as PieChartIcon, Wallet
 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Eye, Zap, Globe, Smartphone, Monitor, Tablet, RefreshCw, MapPin, ArrowLeft, Download, Share2, ExternalLink, Info, Settings } from "lucide-react";
 import { AreaChart, Area } from "recharts";
 import { format, subWeeks, subDays, isAfter, startOfWeek, addDays, eachDayOfInterval, isSameDay } from "date-fns";
@@ -871,6 +872,11 @@ export default function MarketingHub() {
 
   // Selected post for analytics view
   const [selectedPost, setSelectedPost] = useState<LivePost | null>(null);
+  
+  // Queue management state
+  const [selectedQueuePost, setSelectedQueuePost] = useState<ScheduledPost | null>(null);
+  const [queuePostIndex, setQueuePostIndex] = useState<number>(0);
+  
   const [showQuickPostModal, setShowQuickPostModal] = useState(false);
   const [quickPostForm, setQuickPostForm] = useState({
     message: "",
@@ -2345,6 +2351,10 @@ export default function MarketingHub() {
                         key={post.id}
                         className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-blue-500 transition-all shadow-sm"
                         data-testid={`queued-post-${post.id}`}
+                        onClick={() => {
+                          setSelectedQueuePost(post);
+                          setQueuePostIndex(idx);
+                        }}
                       >
                         {post.imageUrl ? (
                           <img src={post.imageUrl} alt="Queued" className="absolute inset-0 w-full h-full object-cover" />
@@ -7232,6 +7242,145 @@ export default function MarketingHub() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Queue Management Modal */}
+      <Dialog open={!!selectedQueuePost} onOpenChange={(open) => !open && setSelectedQueuePost(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-500" />
+              Queue Position #{queuePostIndex + 1}
+            </DialogTitle>
+            <DialogDescription>
+              Manage this scheduled post - reorder, edit, or remove from queue
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedQueuePost && (
+            <div className="space-y-4">
+              {/* Preview */}
+              <div className="flex gap-4">
+                {selectedQueuePost.imageUrl ? (
+                  <img src={selectedQueuePost.imageUrl} alt="Scheduled" className="w-24 h-24 object-cover rounded-lg" />
+                ) : (
+                  <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-lg flex items-center justify-center">
+                    <MessageSquare className="w-8 h-8 text-blue-500" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    {selectedQueuePost.platform === 'facebook' ? (
+                      <Facebook className="w-4 h-4 text-blue-600" />
+                    ) : (
+                      <Instagram className="w-4 h-4 text-pink-500" />
+                    )}
+                    <span className="text-sm font-medium capitalize">{selectedQueuePost.platform}</span>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                      Scheduled
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-3">{selectedQueuePost.message}</p>
+                </div>
+              </div>
+              
+              {/* Scheduled Time */}
+              <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3">
+                <p className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Scheduled for: {format(new Date(selectedQueuePost.scheduledAt), 'EEEE, MMM d, yyyy h:mm a')}
+                </p>
+              </div>
+              
+              {/* Queue Position Controls */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Reorder in Queue</Label>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={queuePostIndex === 0}
+                    onClick={async () => {
+                      const queue = scheduledQueue?.filter(p => p.status === 'scheduled') || [];
+                      if (queuePostIndex > 0) {
+                        const prevPost = queue[queuePostIndex - 1];
+                        // Swap scheduled times
+                        await apiRequest('PATCH', `/api/scheduled-posts/${selectedQueuePost.id}`, {
+                          scheduledAt: prevPost.scheduledAt
+                        });
+                        await apiRequest('PATCH', `/api/scheduled-posts/${prevPost.id}`, {
+                          scheduledAt: selectedQueuePost.scheduledAt
+                        });
+                        refetchQueue();
+                        toast({ title: "Moved up", description: "Post moved to an earlier slot" });
+                        setSelectedQueuePost(null);
+                      }
+                    }}
+                    className="flex-1"
+                    data-testid="button-queue-move-up"
+                  >
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    Move Up
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={queuePostIndex >= ((scheduledQueue?.filter(p => p.status === 'scheduled').length || 1) - 1)}
+                    onClick={async () => {
+                      const queue = scheduledQueue?.filter(p => p.status === 'scheduled') || [];
+                      if (queuePostIndex < queue.length - 1) {
+                        const nextPost = queue[queuePostIndex + 1];
+                        // Swap scheduled times
+                        await apiRequest('PATCH', `/api/scheduled-posts/${selectedQueuePost.id}`, {
+                          scheduledAt: nextPost.scheduledAt
+                        });
+                        await apiRequest('PATCH', `/api/scheduled-posts/${nextPost.id}`, {
+                          scheduledAt: selectedQueuePost.scheduledAt
+                        });
+                        refetchQueue();
+                        toast({ title: "Moved down", description: "Post moved to a later slot" });
+                        setSelectedQueuePost(null);
+                      }
+                    }}
+                    className="flex-1"
+                    data-testid="button-queue-move-down"
+                  >
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    Move Down
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex gap-2 pt-2 border-t">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={async () => {
+                    await apiRequest('DELETE', `/api/scheduled-posts/${selectedQueuePost.id}`);
+                    refetchQueue();
+                    toast({ title: "Removed", description: "Post removed from queue" });
+                    setSelectedQueuePost(null);
+                  }}
+                  className="flex-1"
+                  data-testid="button-queue-remove"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Remove from Queue
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedQueuePost(null)}
+                  data-testid="button-queue-close"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
