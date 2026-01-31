@@ -583,3 +583,97 @@ export function stopAdScheduler(): void {
 export function getAdSchedulerStatus(): { isRunning: boolean; isBusinessHours: boolean } {
   return { isRunning, isBusinessHours: isBusinessHours() };
 }
+
+// Fetch real spend data from Meta Insights API
+export async function fetchMetaAdInsights(tenantId: string): Promise<{
+  success: boolean;
+  insights?: {
+    campaignId: string;
+    campaignName: string;
+    spend: string;
+    impressions: string;
+    reach: string;
+    clicks: string;
+    dateStart: string;
+    dateStop: string;
+  }[];
+  totalSpend?: number;
+  accountSpend?: string;
+  error?: string;
+}> {
+  try {
+    const integration = await getMetaIntegration(tenantId);
+    if (!integration || !integration.adAccountId) {
+      return { success: false, error: 'No ad account configured' };
+    }
+
+    const accessToken = integration.facebookPageAccessToken;
+    if (!accessToken) {
+      return { success: false, error: 'No access token available' };
+    }
+
+    // Try multiple date presets to capture recent spend
+    const datePresets = ['today', 'last_3d', 'last_7d'];
+    let insights: any[] = [];
+    let totalSpend = 0;
+    let accountSpend = '0';
+
+    // First, try to get account-level spend info
+    try {
+      const accountResponse = await fetch(
+        `https://graph.facebook.com/v21.0/${integration.adAccountId}?` +
+        `fields=amount_spent,balance,spend_cap&` +
+        `access_token=${accessToken}`
+      );
+      if (accountResponse.ok) {
+        const accountData = await accountResponse.json();
+        // amount_spent is in cents
+        accountSpend = (parseFloat(accountData.amount_spent || '0') / 100).toFixed(2);
+        console.log(`[Meta Insights] Account total spend: $${accountSpend}`);
+      }
+    } catch (e) {
+      console.log('[Meta Insights] Could not fetch account spend');
+    }
+
+    // Try fetching insights with different date ranges
+    for (const preset of datePresets) {
+      const response = await fetch(
+        `https://graph.facebook.com/v21.0/${integration.adAccountId}/insights?` +
+        `fields=campaign_id,campaign_name,spend,impressions,reach,clicks&` +
+        `date_preset=${preset}&level=campaign&` +
+        `access_token=${accessToken}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data && data.data.length > 0) {
+          insights = data.data.map((item: any) => ({
+            campaignId: item.campaign_id,
+            campaignName: item.campaign_name,
+            spend: item.spend || '0',
+            impressions: item.impressions || '0',
+            reach: item.reach || '0',
+            clicks: item.clicks || '0',
+            dateStart: item.date_start,
+            dateStop: item.date_stop,
+          }));
+          totalSpend = insights.reduce((sum: number, i: any) => sum + parseFloat(i.spend || '0'), 0);
+          console.log(`[Meta Insights] Found ${insights.length} campaigns with ${preset}, spend: $${totalSpend.toFixed(2)}`);
+          break;
+        }
+      }
+    }
+
+    // If no campaign insights but we have account spend, use that
+    if (insights.length === 0 && parseFloat(accountSpend) > 0) {
+      totalSpend = parseFloat(accountSpend);
+    }
+
+    console.log(`[Meta Insights] Final: ${insights.length} campaigns, total spend: $${totalSpend.toFixed(2)}`);
+
+    return { success: true, insights, totalSpend, accountSpend };
+  } catch (error) {
+    console.error('[Meta Insights] Error fetching insights:', error);
+    return { success: false, error: 'Failed to fetch Meta insights' };
+  }
+}

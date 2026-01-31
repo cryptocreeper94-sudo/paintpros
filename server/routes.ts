@@ -12712,6 +12712,51 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // ============ AD CAMPAIGN INSIGHTS ============
+  
+  // Fetch real spend data from Meta Ads API
+  app.get("/api/meta/:tenantId/ad-insights", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      // Import the function dynamically to avoid circular deps
+      const { fetchMetaAdInsights } = await import('./npp-ad-scheduler');
+      const result = await fetchMetaAdInsights(tenantId);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+      
+      res.json({
+        success: true,
+        insights: result.insights,
+        totalSpend: result.totalSpend,
+        accountSpend: result.accountSpend,
+        currency: 'USD'
+      });
+    } catch (error) {
+      console.error("Error fetching ad insights:", error);
+      res.status(500).json({ error: "Failed to fetch ad insights" });
+    }
+  });
+
+  // Get ad campaigns with spend data
+  app.get("/api/meta/:tenantId/ad-campaigns", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const campaigns = await db
+        .select()
+        .from(adCampaigns)
+        .where(eq(adCampaigns.tenantId, tenantId));
+      
+      res.json({ campaigns });
+    } catch (error) {
+      console.error("Error fetching ad campaigns:", error);
+      res.status(500).json({ error: "Failed to fetch ad campaigns" });
+    }
+  });
+
   // ============ POST INSIGHTS & ANALYTICS ============
   
   // Fetch detailed insights for a specific Facebook post

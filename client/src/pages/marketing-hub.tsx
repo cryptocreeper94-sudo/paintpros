@@ -641,6 +641,95 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
   );
 }
 
+// Meta Ads Spend Section - Fetches real billing data from Meta
+function MetaAdSpendSection({ tenantId }: { tenantId: string }) {
+  const { data: adInsights, isLoading } = useQuery<{
+    success: boolean;
+    insights: Array<{
+      campaignId: string;
+      campaignName: string;
+      spend: string;
+      impressions: string;
+      reach: string;
+      clicks: string;
+      dateStart: string;
+      dateStop: string;
+    }>;
+    totalSpend: number;
+    accountSpend?: string;
+    currency: string;
+  }>({
+    queryKey: ["/api/meta", tenantId, "ad-insights"],
+    enabled: !!tenantId,
+  });
+
+  if (isLoading) {
+    return (
+      <GlassCard className="p-6 border-l-4 border-blue-500">
+        <div className="animate-pulse flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-500/20 rounded-lg" />
+          <div className="flex-1">
+            <div className="h-4 bg-muted rounded w-1/3 mb-2" />
+            <div className="h-3 bg-muted rounded w-1/2" />
+          </div>
+        </div>
+      </GlassCard>
+    );
+  }
+
+  if (!adInsights?.success || !adInsights.insights?.length) {
+    return null;
+  }
+
+  const totalSpend = adInsights.totalSpend || 0;
+  const totalImpressions = adInsights.insights.reduce((sum, i) => sum + parseInt(i.impressions || '0'), 0);
+  const totalReach = adInsights.insights.reduce((sum, i) => sum + parseInt(i.reach || '0'), 0);
+  const totalClicks = adInsights.insights.reduce((sum, i) => sum + parseInt(i.clicks || '0'), 0);
+
+  return (
+    <GlassCard className="p-6 border-l-4 border-green-500 bg-green-500/5">
+      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+        <DollarSign className="w-5 h-5 text-green-500" />
+        Meta Ads Spend - Live Data
+        <Badge variant="outline" className="ml-2 text-green-600 border-green-500">Live</Badge>
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+          <p className="text-2xl font-bold text-green-600">${totalSpend.toFixed(2)}</p>
+          <p className="text-xs text-muted-foreground">Total Spend</p>
+        </div>
+        <div className="text-center p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+          <p className="text-2xl font-bold text-blue-600">{totalImpressions.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground">Impressions</p>
+        </div>
+        <div className="text-center p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+          <p className="text-2xl font-bold text-purple-600">{totalReach.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground">Reach</p>
+        </div>
+        <div className="text-center p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
+          <p className="text-2xl font-bold text-orange-600">{totalClicks}</p>
+          <p className="text-xs text-muted-foreground">Clicks</p>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-muted-foreground mb-2">Campaign Breakdown:</p>
+        {adInsights.insights.map((insight) => (
+          <div key={insight.campaignId} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border">
+            <div className="flex-1">
+              <p className="text-sm font-medium truncate">{insight.campaignName}</p>
+              <p className="text-xs text-muted-foreground">{insight.dateStart}</p>
+            </div>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-muted-foreground">{parseInt(insight.impressions).toLocaleString()} imp</span>
+              <span className="font-semibold text-green-600">${parseFloat(insight.spend).toFixed(2)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </GlassCard>
+  );
+}
+
 export default function MarketingHub() {
   const tenant = useTenant();
   const { toast } = useToast();
@@ -5996,6 +6085,9 @@ export default function MarketingHub() {
                   </div>
                 </div>
               </div>
+
+              {/* META ADS SPEND - Live Data */}
+              <MetaAdSpendSection tenantId={selectedTenant} />
 
               {/* CURRENT STATUS - The Reality */}
               <GlassCard className="p-6 border-l-4 border-amber-500 bg-amber-500/5">
