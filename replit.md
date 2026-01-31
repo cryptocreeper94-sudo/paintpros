@@ -99,8 +99,52 @@ When crews start submitting their own Before & After photos:
 - **DarkWave Studios:** Central ecosystem hub for code sharing.
 - **TrustLayer Hub:** Connected for payroll sync, staffing, and health checks.
 
+### Multi-App Ad Catalog System (January 2026)
+Centralized content library for managing social media marketing across multiple TrustLayer ecosystem apps.
+
+**Priority Apps (7 in catalog):**
+1. **TL Driver Connect** (tldriverconnect.com) - Franchise sales demo, LIVE NOW
+2. **Happy Eats** (happyeats.app) - Driver delivery platform, Pre-launch Spring 2026
+3. **Garage Bot** (garagebot.io) - Auto repair shops
+4. **Veda Solus** (vedasolus.io) - Healthcare/telemedicine
+5. **PaintPros** (paintpros.io) - Painting contractors
+6. **TradeWorks AI** (tradeworksai.io) - 8-trade contractor toolkit
+7. **Orbit Staffing** (orbitstaffing.io) - Workforce solutions
+
+**Platforms Supported:**
+- Facebook (63,206 chars organic)
+- Instagram (2,200 chars)
+- X Premium+ (4,000 chars)
+- Nextdoor (2,000 chars)
+
+**Content Types (6):**
+- Educational, Feature Spotlight, Gamified/Challenge, Social Proof, Sales Pitch, Behind-the-Scenes
+
+**Database Tables:**
+- `ad_catalog_apps` - App definitions with descriptions, logos, target audiences
+- `ad_catalog_content` - Marketing content with platform-specific formatting
+- `ad_catalog_queue` - Scheduled posting queue
+
+**API Endpoints:**
+- GET/POST `/api/ad-catalog/apps` - Manage apps
+- POST `/api/ad-catalog/apps/seed` - Seed priority apps
+- GET/POST `/api/ad-catalog/content` - Manage content
+- GET `/api/ad-catalog/platforms` - Platform specs
+- GET `/api/ad-catalog/content-types` - Content type definitions
+
+**Happy Eats Assets (Complete):**
+- 12 screenshots (Commercial Drivers, Everyday Drivers, Vendors)
+- Full business description stored
+- Pre-launch messaging ready ("Coming Spring 2026")
+
+**TL Driver Connect Assets:**
+- 5 landing page screenshots
+- 4 generated premium franchise marketing images
+- Full franchise opportunity description stored
+- Franchise sales messaging ready (LIVE)
+
 ### Database Schema
-Key tables cover leads, estimates, SEO, bookings, availability, blockchain stamps, page views, document assets, hallmarks, crew management, internal messaging, AI credits, Google Calendar, Google LSA, and blog posts.
+Key tables cover leads, estimates, SEO, bookings, availability, blockchain stamps, page views, document assets, hallmarks, crew management, internal messaging, AI credits, Google Calendar, Google LSA, blog posts, and ad catalog (apps, content, queue).
 
 ## External Dependencies
 
