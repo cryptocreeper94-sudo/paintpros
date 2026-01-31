@@ -186,17 +186,18 @@ export default function TrustLayerHome() {
     }
   ];
 
+  // 10 Connected Ecosystem Apps - 7 priority catalog apps + TrustLayer + NPP + Lume
   const connectedSystems = [
-    { name: 'TrustLayer Marketing', desc: 'Social Automation', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true },
-    { name: 'TL Driver Connect', desc: 'Franchise Platform', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
-    { name: 'Happy Eats', desc: 'Driver Delivery', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
-    { name: 'Garage Bot', desc: 'Auto Repair', url: 'https://garagebot.io', image: ecosystemGarageBot },
-    { name: 'Veda Solus', desc: 'Healthcare', url: 'https://vedasolus.io', image: ecosystemVedaSolus },
-    { name: 'PaintPros.io', desc: 'Trade Verticals', url: 'https://paintpros.io', image: ecosystemPaintPros },
-    { name: 'TradeWorks AI', desc: '8-Trade Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
+    { name: 'TrustLayer Marketing', desc: 'Automated Social Media', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true },
+    { name: 'TL Driver Connect', desc: 'Franchise Opportunity', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
+    { name: 'Happy Eats', desc: 'Driver Lifestyle Platform', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
+    { name: 'Garage Bot', desc: 'Auto Repair Shops', url: 'https://garagebot.io', image: ecosystemGarageBot },
+    { name: 'Veda Solus', desc: 'Telemedicine Platform', url: 'https://vedasolus.io', image: ecosystemVedaSolus },
+    { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros },
+    { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
     { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing },
-    { name: 'Nashville Painting Pros', desc: 'NPP Marketing', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
-    { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true }
+    { name: 'Nashville Painting Pros', desc: 'NPP Auto Marketing', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
+    { name: 'Lume Paint Co', desc: 'Luxury Auto Marketing', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true }
   ];
 
   const trustFeatures = [
