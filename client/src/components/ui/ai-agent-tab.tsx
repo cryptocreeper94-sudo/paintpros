@@ -2,12 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, Loader2, Mic, MicOff, Shield, Trash2 } from "lucide-react";
 import { useTenant } from "@/context/TenantContext";
-import rollieMascot from "@assets/generated_images/rollie_bowtie_transparent.png";
+import rollieBowtieMascot from "@assets/generated_images/rollie_bowtie_transparent.png";
+import rollieBlueHandle from "@assets/generated_images/rollie_transparent.png";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
+
+type AgentStyle = "bowtie" | "roller" | "shield" | "none";
 
 export function AIAgentTab() {
   const tenant = useTenant();
@@ -22,10 +25,29 @@ export function AIAgentTab() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
 
-  const isLume = tenant?.id === "lumepaint" || tenant?.id === "lume";
+  const tenantId = tenant?.id?.toLowerCase() || "";
   
-  const greeting = isLume 
-    ? "Hello! I'm your Lume Paint Co assistant. How can I help elevate your space today?"
+  // Determine agent style based on tenant
+  const getAgentStyle = (): AgentStyle => {
+    // Lume gets black bowtie
+    if (tenantId === "lumepaint" || tenantId === "lume") return "bowtie";
+    // NPP and PaintPros get blue-handled Rollie
+    if (tenantId === "npp" || tenantId === "paintpros" || tenantId === "paintpros-demo") return "roller";
+    // TradeWorks already has AI agent, don't show
+    if (tenantId === "tradeworks" || tenantId === "tradeworksai") return "none";
+    // All others get purple shield on side
+    return "shield";
+  };
+  
+  const agentStyle = getAgentStyle();
+  const isRollie = agentStyle === "bowtie" || agentStyle === "roller";
+  const rollieMascot = agentStyle === "bowtie" ? rollieBowtieMascot : rollieBlueHandle;
+  
+  // Don't render if tenant already has AI
+  if (agentStyle === "none") return null;
+  
+  const greeting = isRollie 
+    ? "Hey there! I'm Rollie, your painting assistant! How can I help you today?"
     : "Hello! I'm your TrustLayer AI assistant. How can I help you with your marketing today?";
 
   useEffect(() => {
@@ -145,11 +167,11 @@ export function AIAgentTab() {
 
   return (
     <>
-      {/* Lume: Black Bowtie at bottom-right | Others: Side Tab */}
+      {/* AI Agent Button - Different styles per tenant */}
       <AnimatePresence>
         {!isOpen && (
-          isLume ? (
-            // Lume Paint Co - Black Bowtie at bottom-right corner
+          agentStyle === "bowtie" ? (
+            // Lume Paint Co - Black Bowtie at bottom-right corner → opens Rollie with bowtie
             <motion.button
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -184,6 +206,33 @@ export function AIAgentTab() {
                   {/* Center knot - rectangle */}
                   <rect x="42" y="12" width="16" height="16" rx="2" className="text-gray-900 dark:text-gray-800" />
                 </svg>
+              </motion.div>
+              <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Ask Rollie!
+              </span>
+            </motion.button>
+          ) : agentStyle === "roller" ? (
+            // NPP / PaintPros - Blue-handled Rollie at bottom-right corner
+            <motion.button
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsOpen(true)}
+              className="fixed bottom-4 right-4 z-50 group"
+              data-testid="ai-agent-roller"
+            >
+              <motion.div
+                className="w-14 h-14 flex items-center justify-center"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <img 
+                  src={rollieBlueHandle} 
+                  alt="Rollie" 
+                  className="w-12 h-12 object-contain drop-shadow-lg"
+                />
               </motion.div>
               <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                 Ask Rollie!
@@ -250,9 +299,9 @@ export function AIAgentTab() {
             className="fixed bottom-4 right-4 w-80 md:w-96 h-[500px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className={`${isLume ? 'bg-gradient-to-r from-gray-800 to-gray-900' : 'bg-gradient-to-r from-purple-600 to-purple-800'} p-4 flex items-center justify-between`}>
+            <div className={`${isRollie ? 'bg-gradient-to-r from-gray-800 to-gray-900' : 'bg-gradient-to-r from-purple-600 to-purple-800'} p-4 flex items-center justify-between`}>
               <div className="flex items-center gap-3">
-                {isLume ? (
+                {isRollie ? (
                   <img src={rollieMascot} alt="Rollie" className="w-12 h-12 object-contain" />
                 ) : (
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -260,8 +309,8 @@ export function AIAgentTab() {
                   </div>
                 )}
                 <div>
-                  <h3 className="text-white font-semibold text-sm">{isLume ? 'Rollie' : 'TrustLayer AI'}</h3>
-                  <p className={`${isLume ? 'text-gray-300' : 'text-purple-200'} text-xs`}>{isLume ? 'Your Painting Buddy' : 'Marketing Assistant'}</p>
+                  <h3 className="text-white font-semibold text-sm">{isRollie ? 'Rollie' : 'TrustLayer AI'}</h3>
+                  <p className={`${isRollie ? 'text-gray-300' : 'text-purple-200'} text-xs`}>{isRollie ? 'Your Painting Buddy' : 'Marketing Assistant'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
