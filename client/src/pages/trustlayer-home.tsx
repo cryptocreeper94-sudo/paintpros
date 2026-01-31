@@ -483,6 +483,11 @@ export default function TrustLayerHome() {
                   
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-4">
+                    {system.current && (
+                      <Badge className="mb-2 bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs">
+                        You Are Here
+                      </Badge>
+                    )}
                     {system.primary && (
                       <Badge className="mb-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
                         Live Now
