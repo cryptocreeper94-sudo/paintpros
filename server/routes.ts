@@ -12850,6 +12850,114 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
     }
   });
 
+  // Get all live/published posts with full details for dashboard
+  app.get("/api/marketing/:tenantId/live-posts", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const posts = await db
+        .select()
+        .from(scheduledPosts)
+        .where(eq(scheduledPosts.tenantId, tenantId))
+        .orderBy(desc(scheduledPosts.publishedAt));
+      
+      // Calculate performance percentile for each post
+      const postsWithPercentile = posts.map(post => {
+        // Simple scoring based on engagement
+        const totalEngagement = (post.impressions || 0) + (post.reach || 0) + (post.clicks || 0) + (post.likes || 0) + (post.comments || 0) * 2 + (post.shares || 0) * 3;
+        return {
+          id: post.id,
+          platform: post.platform,
+          status: post.status,
+          message: post.message,
+          imageUrl: post.imageUrl,
+          scheduledAt: post.scheduledAt,
+          publishedAt: post.publishedAt,
+          impressions: post.impressions || 0,
+          reach: post.reach || 0,
+          engagement: post.engagement || 0,
+          clicks: post.clicks || 0,
+          likes: post.likes || 0,
+          comments: post.comments || 0,
+          shares: post.shares || 0,
+          performanceScore: post.performanceScore || totalEngagement,
+          facebookPostId: post.facebookPostId,
+          instagramMediaId: post.instagramMediaId
+        };
+      });
+      
+      // Calculate percentiles
+      const scores = postsWithPercentile.map(p => p.performanceScore).filter(s => s > 0);
+      if (scores.length > 0) {
+        scores.sort((a, b) => a - b);
+        postsWithPercentile.forEach(post => {
+          if (post.performanceScore > 0) {
+            const rank = scores.findIndex(s => s >= post.performanceScore);
+            (post as any).percentile = Math.round((rank / scores.length) * 100);
+          } else {
+            (post as any).percentile = null;
+          }
+        });
+      }
+      
+      res.json(postsWithPercentile);
+    } catch (error) {
+      console.error("Error fetching live posts:", error);
+      res.status(500).json({ error: "Failed to fetch live posts" });
+    }
+  });
+
+  // Quick post - immediately create and publish a post
+  app.post("/api/marketing/:tenantId/quick-post", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { message, imageUrl, platform } = req.body;
+      
+      if (!message || !platform) {
+        return res.status(400).json({ error: "Message and platform required" });
+      }
+      
+      // Create the post in scheduled_posts
+      const postId = crypto.randomUUID();
+      const now = new Date();
+      
+      await db.insert(scheduledPosts).values({
+        id: postId,
+        tenantId,
+        message,
+        imageUrl: imageUrl || null,
+        platform,
+        status: 'scheduled',
+        scheduledAt: now,
+        createdAt: now,
+        updatedAt: now
+      });
+      
+      res.json({ success: true, postId, message: "Post created and queued for publishing" });
+    } catch (error) {
+      console.error("Error creating quick post:", error);
+      res.status(500).json({ error: "Failed to create post" });
+    }
+  });
+
+  // Get content library items for a tenant
+  app.get("/api/marketing/:tenantId/content-library", async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+      
+      const content = await db
+        .select()
+        .from(contentLibrary)
+        .where(eq(contentLibrary.tenantId, tenantId))
+        .orderBy(desc(contentLibrary.createdAt));
+      
+      res.json(content);
+    } catch (error) {
+      console.error("Error fetching content library:", error);
+      res.status(500).json({ error: "Failed to fetch content library" });
+    }
+  });
+
   // ============ POST INSIGHTS & ANALYTICS ============
   
   // Fetch detailed insights for a specific Facebook post

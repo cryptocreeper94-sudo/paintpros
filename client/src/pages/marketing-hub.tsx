@@ -806,6 +806,43 @@ export default function MarketingHub() {
     spend: 0,
     revenue: 0
   });
+
+  // Live Posts from Database
+  interface LivePost {
+    id: string;
+    platform: string;
+    status: string;
+    message: string;
+    imageUrl: string | null;
+    scheduledAt: string;
+    publishedAt: string | null;
+    impressions: number;
+    reach: number;
+    engagement: number;
+    clicks: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    performanceScore: number | null;
+  }
+  
+  const { data: livePosts, refetch: refetchLivePosts } = useQuery<LivePost[]>({
+    queryKey: ["/api/marketing", selectedTenant, "live-posts"],
+    enabled: !!selectedTenant,
+    refetchInterval: 60000,
+  });
+
+  // Selected post for analytics view
+  const [selectedPost, setSelectedPost] = useState<LivePost | null>(null);
+  const [showQuickPostModal, setShowQuickPostModal] = useState(false);
+  const [quickPostForm, setQuickPostForm] = useState({
+    message: "",
+    imageUrl: "",
+    platform: "facebook" as "facebook" | "instagram",
+    generateWithAI: false,
+    aiPrompt: ""
+  });
+  const [isGeneratingPost, setIsGeneratingPost] = useState(false);
   
   // Notes/Notepad state
   interface TeamNote {
@@ -2133,6 +2170,95 @@ export default function MarketingHub() {
                   </p>
                 </div>
               </div>
+
+              {/* LIVE CONTENT DASHBOARD - What's circulating now */}
+              <GlassCard className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Currently Circulating</h3>
+                    <Badge variant="secondary">{livePosts?.filter(p => p.status === 'published').length || 0} Live</Badge>
+                  </div>
+                  <Button size="sm" onClick={() => setShowQuickPostModal(true)} data-testid="button-quick-post">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Quick Post
+                  </Button>
+                </div>
+                
+                {/* Thumbnail Grid of Live Posts */}
+                {livePosts && livePosts.filter(p => p.status === 'published').length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {livePosts.filter(p => p.status === 'published').slice(0, 8).map((post) => (
+                      <button
+                        key={post.id}
+                        onClick={() => setSelectedPost(post)}
+                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-primary transition-all"
+                        data-testid={`post-thumbnail-${post.id}`}
+                      >
+                        {post.imageUrl ? (
+                          <img 
+                            src={post.imageUrl} 
+                            alt="Post" 
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-center">
+                            <MessageSquare className="w-8 h-8 text-white/50" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        
+                        {/* Platform Badge */}
+                        <div className="absolute top-2 left-2">
+                          {post.platform === 'facebook' ? (
+                            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+                              <Facebook className="w-3.5 h-3.5 text-white" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-500 flex items-center justify-center">
+                              <Instagram className="w-3.5 h-3.5 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Performance Indicator */}
+                        {(post as any).percentile !== null && (post as any).percentile !== undefined && (
+                          <div className="absolute top-2 right-2">
+                            <Badge 
+                              variant={(post as any).percentile >= 75 ? "default" : (post as any).percentile >= 50 ? "secondary" : "outline"}
+                              className={`text-xs ${(post as any).percentile >= 75 ? 'bg-green-500' : ''}`}
+                            >
+                              Top {100 - (post as any).percentile}%
+                            </Badge>
+                          </div>
+                        )}
+                        
+                        {/* Message Preview */}
+                        <div className="absolute bottom-0 left-0 right-0 p-2">
+                          <p className="text-white text-xs line-clamp-2 drop-shadow-lg">
+                            {post.message?.substring(0, 60)}...
+                          </p>
+                        </div>
+                        
+                        {/* Hover Overlay */}
+                        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="bg-white dark:bg-gray-900 rounded-full p-2 shadow-lg">
+                            <BarChart3 className="w-5 h-5 text-primary" />
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Megaphone className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No posts in circulation yet</p>
+                    <Button variant="outline" size="sm" className="mt-3" onClick={() => setShowQuickPostModal(true)}>
+                      Create Your First Post
+                    </Button>
+                  </div>
+                )}
+              </GlassCard>
 
               {/* AI Suggested Post Today */}
               <TodaysSuggestedPost 
@@ -6696,6 +6822,244 @@ export default function MarketingHub() {
               onClick={() => duplicatePost && confirmSchedule(duplicatePost, new Date().toISOString())}
             >
               Schedule Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Post Analytics Modal */}
+      <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              Post Analytics
+            </DialogTitle>
+            <DialogDescription>
+              Performance details for this post
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPost && (
+            <div className="space-y-4">
+              {/* Post Preview */}
+              <div className="flex gap-4">
+                {selectedPost.imageUrl ? (
+                  <img src={selectedPost.imageUrl} alt="Post" className="w-24 h-24 object-cover rounded-lg" />
+                ) : (
+                  <div className="w-24 h-24 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] rounded-lg flex items-center justify-center">
+                    <MessageSquare className="w-8 h-8 text-white/50" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    {selectedPost.platform === 'facebook' ? (
+                      <Facebook className="w-4 h-4 text-blue-500" />
+                    ) : (
+                      <Instagram className="w-4 h-4 text-pink-500" />
+                    )}
+                    <span className="text-sm font-medium capitalize">{selectedPost.platform}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {selectedPost.status}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-3">{selectedPost.message}</p>
+                  {selectedPost.publishedAt && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Published: {format(new Date(selectedPost.publishedAt), 'MMM d, yyyy h:mm a')}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Performance Metrics */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                  <Eye className="w-5 h-5 mx-auto mb-1 text-blue-500" />
+                  <p className="text-xl font-bold text-blue-600">{selectedPost.impressions.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">Impressions</p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                  <Users className="w-5 h-5 mx-auto mb-1 text-purple-500" />
+                  <p className="text-xl font-bold text-purple-600">{selectedPost.reach.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">Reach</p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-orange-500/10 border border-orange-500/30">
+                  <Zap className="w-5 h-5 mx-auto mb-1 text-orange-500" />
+                  <p className="text-xl font-bold text-orange-600">{selectedPost.clicks}</p>
+                  <p className="text-xs text-muted-foreground">Clicks</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-4 gap-2">
+                <div className="text-center p-2 rounded bg-muted/50">
+                  <p className="text-lg font-semibold">{selectedPost.likes}</p>
+                  <p className="text-xs text-muted-foreground">Likes</p>
+                </div>
+                <div className="text-center p-2 rounded bg-muted/50">
+                  <p className="text-lg font-semibold">{selectedPost.comments}</p>
+                  <p className="text-xs text-muted-foreground">Comments</p>
+                </div>
+                <div className="text-center p-2 rounded bg-muted/50">
+                  <p className="text-lg font-semibold">{selectedPost.shares}</p>
+                  <p className="text-xs text-muted-foreground">Shares</p>
+                </div>
+                <div className="text-center p-2 rounded bg-muted/50">
+                  <p className="text-lg font-semibold">{selectedPost.engagement}</p>
+                  <p className="text-xs text-muted-foreground">Engaged</p>
+                </div>
+              </div>
+              
+              {/* Performance Percentile */}
+              {(selectedPost as any).percentile !== null && (
+                <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-green-600">Top {100 - ((selectedPost as any).percentile || 0)}% Performer</p>
+                      <p className="text-sm text-muted-foreground">This post outperforms {(selectedPost as any).percentile}% of your other posts</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedPost(null)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Quick Post Modal */}
+      <Dialog open={showQuickPostModal} onOpenChange={setShowQuickPostModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-green-500" />
+              Quick Post
+            </DialogTitle>
+            <DialogDescription>
+              Create and send a post immediately or schedule it
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Platform Selection */}
+            <div>
+              <Label>Platform</Label>
+              <div className="flex gap-2 mt-1">
+                <Button
+                  type="button"
+                  variant={quickPostForm.platform === 'facebook' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setQuickPostForm(p => ({ ...p, platform: 'facebook' }))}
+                  className="flex-1"
+                >
+                  <Facebook className="w-4 h-4 mr-2" />
+                  Facebook
+                </Button>
+                <Button
+                  type="button"
+                  variant={quickPostForm.platform === 'instagram' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setQuickPostForm(p => ({ ...p, platform: 'instagram' }))}
+                  className="flex-1"
+                >
+                  <Instagram className="w-4 h-4 mr-2" />
+                  Instagram
+                </Button>
+              </div>
+            </div>
+            
+            {/* Image URL */}
+            <div>
+              <Label>Image URL (optional)</Label>
+              <Input
+                value={quickPostForm.imageUrl}
+                onChange={(e) => setQuickPostForm(p => ({ ...p, imageUrl: e.target.value }))}
+                placeholder="https://example.com/image.jpg"
+              />
+              {quickPostForm.imageUrl && (
+                <img src={quickPostForm.imageUrl} alt="Preview" className="mt-2 w-full h-32 object-cover rounded-lg" />
+              )}
+            </div>
+            
+            {/* Message */}
+            <div>
+              <Label>Message</Label>
+              <Textarea
+                value={quickPostForm.message}
+                onChange={(e) => setQuickPostForm(p => ({ ...p, message: e.target.value }))}
+                placeholder="What do you want to share?"
+                rows={4}
+              />
+              <p className="text-xs text-muted-foreground mt-1">{quickPostForm.message.length} characters</p>
+            </div>
+            
+            {/* AI Generation Toggle */}
+            <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={quickPostForm.generateWithAI}
+                  onChange={(e) => setQuickPostForm(p => ({ ...p, generateWithAI: e.target.checked }))}
+                  className="rounded"
+                />
+                <Sparkles className="w-4 h-4 text-purple-500" />
+                <span className="font-medium">Generate with AI</span>
+              </label>
+              {quickPostForm.generateWithAI && (
+                <div className="mt-3">
+                  <Label>Describe what you want</Label>
+                  <Textarea
+                    value={quickPostForm.aiPrompt}
+                    onChange={(e) => setQuickPostForm(p => ({ ...p, aiPrompt: e.target.value }))}
+                    placeholder="e.g., A post about our recent kitchen cabinet project in Brentwood..."
+                    rows={2}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowQuickPostModal(false)}>Cancel</Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const response = await fetch(`/api/marketing/${selectedTenant}/quick-post`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      message: quickPostForm.message,
+                      imageUrl: quickPostForm.imageUrl || null,
+                      platform: quickPostForm.platform
+                    })
+                  });
+                  if (response.ok) {
+                    toast({ title: "Post created!", description: "Your post has been queued for publishing." });
+                    setShowQuickPostModal(false);
+                    setQuickPostForm({ message: "", imageUrl: "", platform: "facebook", generateWithAI: false, aiPrompt: "" });
+                    refetchLivePosts();
+                  } else {
+                    toast({ title: "Error", description: "Failed to create post", variant: "destructive" });
+                  }
+                } catch (error) {
+                  toast({ title: "Error", description: "Failed to create post", variant: "destructive" });
+                }
+              }}
+              disabled={!quickPostForm.message.trim() || isGeneratingPost}
+            >
+              {isGeneratingPost ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Post
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
