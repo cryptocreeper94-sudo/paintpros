@@ -11,16 +11,17 @@ import stepSubscribeImg from "@/assets/images/step-subscribe.png";
 import productMarketingImg from "@/assets/images/product-marketing.png";
 import productShieldImg from "@/assets/images/product-shield.png";
 import productStaffingImg from "@/assets/images/product-staffing.png";
-// Ecosystem app images - using actual created assets
+// Ecosystem app images - using consistent premium placeholders
 import ecosystemDriverConnect from "@assets/franchise_hero_facebook.png";
 import ecosystemHappyEats from "@assets/17698344491552583768895781273262_1769834987195.png";
 import ecosystemVedaSolus from "@/assets/images/ecosystem-vedasolus.png";
 import ecosystemGarageBot from "@/assets/images/ecosystem-garagebot.png";
 import ecosystemOrbitStaffing from "@/assets/images/ecosystem-orbitstaffing.png";
-import ecosystemTradeWorks from "@assets/generated_images/tradeworks_splash_background.png";
-import ecosystemPaintPros from "@assets/generated_images/paintpros_splash_screen.png";
-import ecosystemNPP from "@assets/npp_emblem_full.png";
-import ecosystemLume from "@assets/generated_images/lume_paint_co_luxury_logo.png";
+import ecosystemTradeWorks from "@/assets/images/ecosystem-tradeworks.png";
+import ecosystemPaintPros from "@/assets/images/ecosystem-paintpros.png";
+import ecosystemNPP from "@/assets/images/ecosystem-npp.png";
+import ecosystemLume from "@/assets/images/ecosystem-lume.png";
+import ecosystemTrustLayerMarketing from "@/assets/images/ecosystem-trustlayer-marketing.png";
 import {
   Shield,
   Zap,
@@ -186,6 +187,7 @@ export default function TrustLayerHome() {
   ];
 
   const connectedSystems = [
+    { name: 'TrustLayer Marketing', desc: 'Social Automation', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true },
     { name: 'TL Driver Connect', desc: 'Franchise Platform', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
     { name: 'Happy Eats', desc: 'Driver Delivery', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
     { name: 'Garage Bot', desc: 'Auto Repair', url: 'https://garagebot.io', image: ecosystemGarageBot },
