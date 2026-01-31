@@ -49,7 +49,8 @@ import {
   autopilotSubscriptions,
   trustlayerDomains, trustlayerMemberships, insertTrustlayerDomainSchema, insertTrustlayerMembershipSchema,
   adCatalogApps, adCatalogContent, insertAdCatalogAppSchema, insertAdCatalogContentSchema,
-  projectImages, insertProjectImageSchema
+  projectImages, insertProjectImageSchema,
+  insertMarketingImageSchema, insertMarketingPostSchema
 } from "@shared/schema";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import * as crypto from "crypto";
@@ -8445,7 +8446,6 @@ Do not include any text before or after the JSON.`
       const { id } = req.params;
       const image = await storage.updateMarketingImage(id, {
         isActive: true,
-        updatedAt: new Date(),
       });
       if (!image) return res.status(404).json({ error: "Image not found" });
       console.log(`[Marketing Upload] Confirmed upload for image ${id}`);
@@ -8459,9 +8459,15 @@ Do not include any text before or after the JSON.`
   // Marketing Images - Create from metadata (legacy, for URL-based images)
   app.post("/api/marketing/images", async (req, res) => {
     try {
-      const image = await storage.createMarketingImage(req.body);
+      const validated = insertMarketingImageSchema.parse(req.body);
+      const image = await storage.createMarketingImage(validated);
       res.status(201).json(image);
     } catch (error: any) {
+      if (error.name === "ZodError") {
+        console.error("Validation error creating marketing image:", error.errors);
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
       console.error("Error creating marketing image:", error);
       res.status(500).json({ error: "Failed to create marketing image" });
     }
@@ -8521,9 +8527,15 @@ Do not include any text before or after the JSON.`
   // Marketing Posts
   app.post("/api/marketing/posts", async (req, res) => {
     try {
-      const post = await storage.createMarketingPost(req.body);
+      const validated = insertMarketingPostSchema.parse(req.body);
+      const post = await storage.createMarketingPost(validated);
       res.status(201).json(post);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        console.error("Validation error creating marketing post:", error.errors);
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+        return;
+      }
       res.status(500).json({ error: "Failed to create marketing post" });
     }
   });
