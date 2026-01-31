@@ -1648,8 +1648,8 @@ export default function TradeWorksAI() {
 
       {/* Color Scanner Modal */}
       <ColorScanner 
-        open={showScanner}
-        onOpenChange={setShowScanner}
+        isOpen={showScanner}
+        onClose={() => setShowScanner(false)}
       />
 
       {/* Store Finder Dialog */}
