@@ -922,9 +922,9 @@ const domainTenantMap: Record<string, string> = {
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
   "www.nashvillepaintingprofessionals.com": "npp",
-  // DISABLED - Lume not ready for public yet (uncomment to enable)
-  // "lumepaint.co": "lumepaint",
-  // "www.lumepaint.co": "lumepaint",
+  // Lume Paint Co - ready for DNS connection
+  "lumepaint.co": "lumepaint",
+  "www.lumepaint.co": "lumepaint",
   "tradeworksai.io": "tradeworks",
   "www.tradeworksai.io": "tradeworks",
   "roofpros.io": "roofpros",
