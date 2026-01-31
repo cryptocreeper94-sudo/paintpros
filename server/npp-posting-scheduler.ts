@@ -384,7 +384,7 @@ export function startNppPostingScheduler(): void {
   }
 
   console.log('[NPP Posting Scheduler] Starting...');
-  console.log('[NPP Posting Scheduler] Schedule: 4x daily (8am, 12pm, 5pm, 8pm CST)');
+  console.log('[NPP Posting Scheduler] Schedule: 5x daily (6am, 10am, 2pm, 6pm, 10pm CST)');
   isRunning = true;
   
   checkAndExecuteScheduledPosts();
