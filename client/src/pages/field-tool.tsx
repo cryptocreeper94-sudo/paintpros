@@ -98,6 +98,7 @@ import {
 } from "lucide-react";
 import { PersonalizedGreeting, useTimeGreeting } from "@/components/personalized-greeting";
 import { MessagingWidget } from "@/components/messaging-widget";
+import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { useI18n } from "@/lib/i18n";
 import { ColorScanner } from "@/components/color-scanner";
 import { ColorVisualizer } from "@/components/color-visualizer";
@@ -5318,6 +5319,9 @@ export default function FieldTool() {
           </div>
         </SheetContent>
       </Sheet>
+      
+      {/* AI Agent - tenant-specific (Lume: bowtie, NPP: Rollie, others: shield) */}
+      <AIAgentTab />
     </div>
   );
 }
