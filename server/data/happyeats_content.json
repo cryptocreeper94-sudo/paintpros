@@ -1,0 +1,134 @@
+[
+  {
+    "appId": "happyeats",
+    "platform": "facebook",
+    "contentType": "educational",
+    "headline": "Did You Know? Truck Drivers Deserve Better",
+    "primaryText": "Commercial truck drivers are required by federal law to take mandatory 10-hour rest breaks. During these breaks, they're stuck at truck stops with limited, overpriced food options - and they can't leave their truck.\n\nThat's 3.5 million drivers across America who need a better solution.\n\nHappy Eats is building the first complete driver lifestyle platform:\n\n🚛 Food & parts delivered directly to your truck stop\n⏱️ HOS-compliant break timer\n📍 GPS finder: gas, showers, scales, hotels, gyms\n💬 Trucker Talk - connect with other drivers\n📊 Mileage & expense tracking for tax season\n🎮 Games & entertainment during rest periods\n\nComing Spring 2026. Join the waitlist at happyeats.app",
+    "callToAction": "Sign Up",
+    "targetAudience": "commercial_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "facebook",
+    "contentType": "educational",
+    "headline": "Gig Workers: Stop Losing Money on Taxes",
+    "primaryText": "If you drive for work - Uber, DoorDash, Instacart, or just commuting - you're leaving money on the table.\n\nThe IRS allows $0.70 per mile deduction in 2026. Most drivers forget to track their miles and miss out on thousands in deductions.\n\nHappy Eats isn't just food delivery. It's your complete driver business suite:\n\n📱 Automatic GPS mileage tracking\n💰 IRS deduction calculator\n🧾 Receipt OCR scanning\n📁 Expense categorization (fuel, parking, tolls, meals)\n📤 CSV export for TurboTax & H&R Block\n\nTrack miles. Save on taxes. All in one app.\n\nComing Spring 2026. Get early access at happyeats.app",
+    "callToAction": "Learn More",
+    "targetAudience": "everyday_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "facebook",
+    "contentType": "feature",
+    "headline": "Your Complete Break Hub - All In One App",
+    "primaryText": "Happy Eats is more than food delivery. It's everything a driver needs during mandatory rest breaks:\n\n🍔 ORDER FOOD & PARTS\nLocal restaurants and food trucks deliver to your exact truck stop location. Need auto parts? We deliver those too.\n\n⏱️ BREAK TIMER\nHOS-compliant timer ensures you stay legal. Never guess again.\n\n📍 FIND NEARBY\nShowers, laundry, WiFi, fuel, scales, hotels, gyms, movies, grocery - all mapped to your location.\n\n💬 TRUCKER TALK\nReal-time chat with other drivers. Share road conditions, find loads, connect with the community.\n\n📊 BUSINESS SUITE\nMileage tracking, expense logs, tax deductions - all organized for tax season.\n\n🎮 BREAK ROOM\nNews, podcasts, games, weather - entertainment during your downtime.\n\nComing Spring 2026 to happyeats.app",
+    "callToAction": "Sign Up",
+    "targetAudience": "commercial_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "facebook",
+    "contentType": "sales",
+    "headline": "Food Trucks & Restaurants: Reach 3.5 Million Hungry Drivers",
+    "primaryText": "Partner applications are OPEN NOW.\n\nHungry truck drivers on mandatory 10-hour breaks can't leave their truck. They NEED food delivered to them. That's your captive audience.\n\nWhy partner with Happy Eats?\n\n✅ Zero marketing cost - we bring you the customers\n✅ We handle all delivery logistics\n✅ You cook, we deliver\n✅ Keep 85% of every order (only 15% platform fee)\n✅ Weekly direct deposit payouts\n✅ Flexible hours - work your schedule\n\nNashville, Lebanon, Mt. Juliet vendors - be first in your market.\n\nApply now at happyeats.app/vendor-portal",
+    "callToAction": "Apply Now",
+    "targetAudience": "vendors",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "instagram",
+    "contentType": "feature",
+    "headline": "Everything Drivers Need",
+    "primaryText": "Happy Eats - Coming Spring 2026 🚛\n\nNot just food. A complete driver platform:\n\n• Food & parts delivered to your truck\n• Automatic mileage tracking\n• Tax deduction calculator\n• HOS break timer\n• Find nearby: showers, fuel, scales\n• Trucker Talk community\n• Games & entertainment\n\nJoin the waitlist: happyeats.app\n\n#TruckDriver #GigWorker #DeliveryDriver #TaxDeductions #MileageTracking #TruckStop #HappyEats #Spring2026",
+    "callToAction": "Sign Up",
+    "targetAudience": "commercial_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "instagram",
+    "contentType": "educational",
+    "headline": "Track Miles. Save Thousands.",
+    "primaryText": "Gig workers, commuters, delivery drivers 📱\n\nAre you tracking your mileage? The IRS gives $0.70 per mile in 2026.\n\nHappy Eats does it automatically:\n• GPS mileage tracking\n• Expense categorization\n• Receipt scanning\n• TurboTax export\n\nStop leaving money on the table.\n\nComing Spring 2026: happyeats.app\n\n#GigEconomy #TaxTips #MileageDeduction #UberDriver #DoorDash #DeliveryLife #TaxSeason",
+    "callToAction": "Learn More",
+    "targetAudience": "everyday_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "instagram",
+    "contentType": "sales",
+    "headline": "Food Vendors Wanted",
+    "primaryText": "Nashville food trucks & restaurants 🍔\n\nReach hungry truck drivers at rest stops. They can't leave their truck - they need YOU.\n\n• Zero marketing cost\n• We deliver for you\n• Keep 85%\n• Weekly payouts\n\nPartner applications open NOW.\n\nApply: happyeats.app/vendor-portal\n\n#FoodTruck #NashvilleFood #RestaurantOwner #FoodBusiness #Nashville #MtJuliet #Lebanon",
+    "callToAction": "Apply Now",
+    "targetAudience": "vendors",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "x",
+    "contentType": "educational",
+    "headline": null,
+    "primaryText": "3.5 million truck drivers take mandatory 10-hour breaks every day.\n\nThey can't leave their truck. They need food delivered TO them.\n\nHappy Eats: Food, parts, mileage tracking, tax tools, games - all in one app.\n\nComing Spring 2026. happyeats.app",
+    "callToAction": "Sign Up",
+    "targetAudience": "commercial_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "x",
+    "contentType": "feature",
+    "headline": null,
+    "primaryText": "Happy Eats isn't just food delivery.\n\n• Automatic mileage tracking\n• IRS deduction calculator ($0.70/mile)\n• Receipt OCR scanning\n• TurboTax/H&R Block export\n\nGig workers, stop losing money on taxes.\n\nSpring 2026: happyeats.app",
+    "callToAction": "Learn More",
+    "targetAudience": "everyday_drivers",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "x",
+    "contentType": "sales",
+    "headline": null,
+    "primaryText": "Nashville food trucks:\n\nWant to reach hungry truck drivers who can't leave their parking spot?\n\nWe deliver for you. You keep 85%. Weekly payouts.\n\nApply now: happyeats.app/vendor-portal",
+    "callToAction": "Apply Now",
+    "targetAudience": "vendors",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "nextdoor",
+    "contentType": "sales",
+    "headline": "Local Food Vendors: New Revenue Stream",
+    "primaryText": "Attention Nashville, Lebanon, and Mt. Juliet food businesses!\n\nHappy Eats is launching Spring 2026, and we're looking for local partners.\n\nHungry truck drivers at rest stops along I-40 need food delivered. They can't leave their trucks during mandatory breaks.\n\nWhy partner with us?\n• We handle delivery - you just cook\n• Zero marketing cost\n• Keep 85% of every order\n• Weekly direct deposit\n\nFood trucks, restaurants, ghost kitchens - all welcome.\n\nApply now at happyeats.app/vendor-portal\n\nBe first in your neighborhood!",
+    "callToAction": "Apply Now",
+    "targetAudience": "vendors",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  },
+  {
+    "appId": "happyeats",
+    "platform": "nextdoor",
+    "contentType": "educational",
+    "headline": "Coming to Our Community: Happy Eats",
+    "primaryText": "Neighbors - exciting news for our local economy!\n\nHappy Eats is launching Spring 2026 in the Nashville area, including Lebanon and Mt. Juliet.\n\nWhat is it? A platform connecting local food vendors with truck drivers at nearby rest stops.\n\nWhy it matters:\n• Supports local restaurants and food trucks\n• Creates delivery driver jobs\n• Brings new customers to our community\n• Keeps food dollars local\n\nKnow a food truck owner? Share this with them!\n\nhappyeats.app",
+    "callToAction": "Learn More",
+    "targetAudience": "local_community",
+    "launchPhase": "pre-launch",
+    "status": "ready"
+  }
+]
