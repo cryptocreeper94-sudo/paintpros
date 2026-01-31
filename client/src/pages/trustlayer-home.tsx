@@ -210,7 +210,7 @@ export default function TrustLayerHome() {
     { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true },
     // Gaming & Entertainment
     { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy },
-    { name: 'DarkWave Games', desc: 'Game Studio', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames },
+    { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames },
     // Core Infrastructure
     { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL },
     { name: 'DarkWave Studios', desc: 'Architecture & Dev', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios },
