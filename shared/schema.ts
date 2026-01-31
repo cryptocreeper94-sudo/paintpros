@@ -6210,3 +6210,136 @@ export const insertTrustlayerMembershipSchema = createInsertSchema(trustlayerMem
 export type InsertTrustlayerMembership = z.infer<typeof insertTrustlayerMembershipSchema>;
 export type TrustlayerMembership = typeof trustlayerMemberships.$inferSelect;
 
+// ============================================================================
+// Ad Catalog System - Multi-tenant, Multi-platform Content Library
+// ============================================================================
+
+export const adCatalogApps = pgTable("ad_catalog_apps", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // App identification
+  appId: varchar("app_id", { length: 50 }).unique().notNull(), // e.g., 'driverconnect', 'garagebot'
+  appName: text("app_name").notNull(), // Display name
+  appDomain: text("app_domain"), // e.g., 'tldriverconnect.com'
+  appDescription: text("app_description"),
+  appLogo: text("app_logo"),
+  
+  // Target audience info
+  targetAudience: text("target_audience"),
+  industry: text("industry"), // 'automotive', 'healthcare', 'painting', etc.
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_ad_catalog_apps_app_id").on(table.appId),
+]);
+
+export const insertAdCatalogAppSchema = createInsertSchema(adCatalogApps).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertAdCatalogApp = z.infer<typeof insertAdCatalogAppSchema>;
+export type AdCatalogApp = typeof adCatalogApps.$inferSelect;
+
+// Main ad catalog content table
+export const adCatalogContent = pgTable("ad_catalog_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // Which app this content is for
+  appId: varchar("app_id").references(() => adCatalogApps.id).notNull(),
+  
+  // Platform: 'facebook', 'instagram', 'x', 'nextdoor'
+  platform: text("platform").notNull(),
+  
+  // Content type: 'educational', 'feature', 'gamified', 'social_proof', 'sales', 'behind_scenes'
+  contentType: text("content_type").notNull(),
+  
+  // Content
+  headline: text("headline"), // Short attention grabber
+  bodyText: text("body_text").notNull(), // Main content
+  ctaText: text("cta_text"), // Call to action button text
+  ctaUrl: text("cta_url"), // Where CTA links to
+  
+  // Media
+  imageUrl: text("image_url"), // Screenshot or generated image
+  videoUrl: text("video_url"),
+  
+  // Ad vs Organic
+  isPaidAd: boolean("is_paid_ad").default(false),
+  adBudgetDaily: decimal("ad_budget_daily", { precision: 10, scale: 2 }),
+  
+  // Status tracking
+  status: text("status").default("draft"), // 'draft', 'approved', 'circulating', 'paused', 'retired'
+  
+  // Rotation scheduling
+  dayOfWeek: integer("day_of_week"), // 0=Sunday, 1=Monday, etc. (null = any day)
+  lastPostedAt: timestamp("last_posted_at"),
+  timesPosted: integer("times_posted").default(0),
+  
+  // Performance metrics (updated after posting)
+  impressions: integer("impressions").default(0),
+  reach: integer("reach").default(0),
+  clicks: integer("clicks").default(0),
+  likes: integer("likes").default(0),
+  comments: integer("comments").default(0),
+  shares: integer("shares").default(0),
+  saves: integer("saves").default(0),
+  leadsGenerated: integer("leads_generated").default(0),
+  conversions: integer("conversions").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_ad_catalog_content_app").on(table.appId),
+  index("idx_ad_catalog_content_platform").on(table.platform),
+  index("idx_ad_catalog_content_type").on(table.contentType),
+  index("idx_ad_catalog_content_status").on(table.status),
+]);
+
+export const insertAdCatalogContentSchema = createInsertSchema(adCatalogContent).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastPostedAt: true,
+  timesPosted: true,
+  impressions: true,
+  reach: true,
+  clicks: true,
+  likes: true,
+  comments: true,
+  shares: true,
+  saves: true,
+  leadsGenerated: true,
+  conversions: true,
+});
+
+export type InsertAdCatalogContent = z.infer<typeof insertAdCatalogContentSchema>;
+export type AdCatalogContent = typeof adCatalogContent.$inferSelect;
+
+// Scheduled posts queue
+export const adCatalogQueue = pgTable("ad_catalog_queue", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  contentId: varchar("content_id").references(() => adCatalogContent.id).notNull(),
+  
+  // Schedule
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  platform: text("platform").notNull(),
+  
+  // Status
+  status: text("status").default("queued"), // 'queued', 'posted', 'failed', 'cancelled'
+  postedAt: timestamp("posted_at"),
+  postId: text("post_id"), // ID returned from platform after posting
+  errorMessage: text("error_message"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_ad_catalog_queue_scheduled").on(table.scheduledFor),
+  index("idx_ad_catalog_queue_status").on(table.status),
+]);
+

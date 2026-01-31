@@ -48,6 +48,7 @@ import {
   contentLibrary, autoPostingSchedule, adCampaigns, marketingExpenses,
   autopilotSubscriptions,
   trustlayerDomains, trustlayerMemberships, insertTrustlayerDomainSchema, insertTrustlayerMembershipSchema,
+  adCatalogApps, adCatalogContent, insertAdCatalogAppSchema, insertAdCatalogContentSchema,
   projectImages, insertProjectImageSchema
 } from "@shared/schema";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -1330,6 +1331,138 @@ console.log(data);`
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
+  });
+
+  // ============ AD CATALOG API (Multi-App Content Library) ============
+  
+  // Seed the 7 priority apps
+  const priorityApps = [
+    { appId: 'driverconnect', appName: 'TL Driver Connect', appDomain: 'tldriverconnect.com', industry: 'automotive', targetAudience: 'Fleet managers, drivers' },
+    { appId: 'happyeats', appName: 'Happy Eats', appDomain: 'happyeats.app', industry: 'food-service', targetAudience: 'Restaurant owners, food delivery' },
+    { appId: 'garagebot', appName: 'Garage Bot', appDomain: 'garagebot.io', industry: 'automotive', targetAudience: 'Auto repair shops' },
+    { appId: 'vedasolus', appName: 'Veda Solus', appDomain: 'vedasolus.io', industry: 'healthcare', targetAudience: 'Medical practitioners, telemedicine' },
+    { appId: 'paintpros', appName: 'PaintPros', appDomain: 'paintpros.io', industry: 'painting', targetAudience: 'Painting contractors, home services' },
+    { appId: 'tradeworksai', appName: 'TradeWorks AI', appDomain: 'tradeworksai.io', industry: 'trades', targetAudience: 'Contractors, tradespeople (8 verticals)' },
+    { appId: 'orbitstaffing', appName: 'Orbit Staffing', appDomain: 'orbitstaffing.io', industry: 'staffing', targetAudience: 'Companies needing workforce solutions' },
+  ];
+  
+  // GET /api/ad-catalog/apps - List all apps
+  app.get("/api/ad-catalog/apps", async (req, res) => {
+    try {
+      const apps = await db.select().from(adCatalogApps).orderBy(adCatalogApps.appName);
+      res.json(apps);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/ad-catalog/apps/seed - Seed priority apps
+  app.post("/api/ad-catalog/apps/seed", async (req, res) => {
+    try {
+      const seeded = [];
+      for (const app of priorityApps) {
+        const existing = await db.select().from(adCatalogApps).where(eq(adCatalogApps.appId, app.appId)).limit(1);
+        if (existing.length === 0) {
+          const result = await db.insert(adCatalogApps).values(app).returning();
+          seeded.push(result[0]);
+        }
+      }
+      res.json({ message: `Seeded ${seeded.length} apps`, apps: seeded });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/ad-catalog/apps - Create a new app
+  app.post("/api/ad-catalog/apps", async (req, res) => {
+    try {
+      const result = await db.insert(adCatalogApps).values(req.body).returning();
+      res.status(201).json(result[0]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // PUT /api/ad-catalog/apps/:id - Update app (add description, logo, etc.)
+  app.put("/api/ad-catalog/apps/:id", async (req, res) => {
+    try {
+      const result = await db.update(adCatalogApps)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(eq(adCatalogApps.id, req.params.id))
+        .returning();
+      res.json(result[0]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // GET /api/ad-catalog/content - List content (with filters)
+  app.get("/api/ad-catalog/content", async (req, res) => {
+    try {
+      const { appId, platform, contentType, status } = req.query;
+      let query = db.select().from(adCatalogContent);
+      
+      // Simple query for now - filters can be added
+      const content = await query.orderBy(adCatalogContent.createdAt);
+      res.json(content);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // POST /api/ad-catalog/content - Create content
+  app.post("/api/ad-catalog/content", async (req, res) => {
+    try {
+      const result = await db.insert(adCatalogContent).values(req.body).returning();
+      res.status(201).json(result[0]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // PUT /api/ad-catalog/content/:id - Update content
+  app.put("/api/ad-catalog/content/:id", async (req, res) => {
+    try {
+      const result = await db.update(adCatalogContent)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(eq(adCatalogContent.id, req.params.id))
+        .returning();
+      res.json(result[0]);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // DELETE /api/ad-catalog/content/:id - Delete content
+  app.delete("/api/ad-catalog/content/:id", async (req, res) => {
+    try {
+      await db.delete(adCatalogContent).where(eq(adCatalogContent.id, req.params.id));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  // GET /api/ad-catalog/platforms - Platform specs
+  app.get("/api/ad-catalog/platforms", (req, res) => {
+    res.json({
+      facebook: { name: 'Facebook', organicLimit: 63206, adPrimaryLimit: 125, imageSpecs: '1200x628 or 1080x1080' },
+      instagram: { name: 'Instagram', organicLimit: 2200, adPrimaryLimit: 125, imageSpecs: '1080x1080 or 1080x1350' },
+      x: { name: 'X (Premium+)', organicLimit: 4000, adPrimaryLimit: 280, imageSpecs: '1200x675' },
+      nextdoor: { name: 'Nextdoor', organicLimit: 2000, adHeadlineLimit: 90, imageSpecs: '1200x628' }
+    });
+  });
+  
+  // GET /api/ad-catalog/content-types - Content type definitions
+  app.get("/api/ad-catalog/content-types", (req, res) => {
+    res.json([
+      { id: 'educational', name: 'Educational', description: 'Tips, insights, how-tos', dayOfWeek: 1 },
+      { id: 'feature', name: 'Feature Spotlight', description: 'Highlight specific features', dayOfWeek: 2 },
+      { id: 'gamified', name: 'Gamified/Challenge', description: 'Polls, quizzes, challenges', dayOfWeek: 3 },
+      { id: 'social_proof', name: 'Social Proof', description: 'Testimonials, success stories', dayOfWeek: 4 },
+      { id: 'sales', name: 'Sales Pitch', description: 'Direct CTA, pricing, offers', dayOfWeek: 5 },
+      { id: 'behind_scenes', name: 'Behind-the-Scenes', description: 'Real usage, team content', dayOfWeek: 6 }
+    ]);
   });
 
   // ============ PWA ROUTES (Dynamic per tenant) ============
