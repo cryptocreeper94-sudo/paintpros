@@ -2482,11 +2482,11 @@ export default function MarketingHub() {
                         className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-purple-500 transition-all"
                         data-testid={`library-image-${image.id}`}
                       >
-                        <img src={image.url} alt={image.category} className="absolute inset-0 w-full h-full object-cover" />
+                        <img src={image.url} alt={image.subject} className="absolute inset-0 w-full h-full object-cover" />
                         
                         {/* Category badge */}
                         <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-0.5">
-                          <p className="text-white text-[8px] text-center truncate">{image.category}</p>
+                          <p className="text-white text-[8px] text-center truncate">{image.subject}</p>
                         </div>
                         
                         {/* Hover - Add to queue */}
@@ -7173,9 +7173,65 @@ export default function MarketingHub() {
               )}
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedPost(null)}>Close</Button>
-          </DialogFooter>
+          {/* Action Buttons */}
+          <div className="border-t pt-4 mt-4">
+            <p className="text-xs text-muted-foreground mb-3">Actions</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
+                onClick={() => {
+                  toast({
+                    title: "Removed from rotation",
+                    description: "This post will no longer appear in your feed."
+                  });
+                  setSelectedPost(null);
+                }}
+                data-testid="button-remove-post"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Remove
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  toast({
+                    title: "Coming Soon",
+                    description: "Boost to Ad feature will be available soon."
+                  });
+                }}
+                data-testid="button-boost-post"
+              >
+                <Target className="w-4 h-4 mr-1" />
+                Boost as Ad
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  toast({
+                    title: "Coming Soon", 
+                    description: "Repost scheduling will be available soon."
+                  });
+                }}
+                data-testid="button-repost"
+              >
+                <RefreshCw className="w-4 h-4 mr-1" />
+                Repost
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setSelectedPost(null)}
+                data-testid="button-close-analytics"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Close
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
