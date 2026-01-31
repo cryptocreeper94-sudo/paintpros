@@ -11,6 +11,15 @@ import stepSubscribeImg from "@/assets/images/step-subscribe.png";
 import productMarketingImg from "@/assets/images/product-marketing.png";
 import productShieldImg from "@/assets/images/product-shield.png";
 import productStaffingImg from "@/assets/images/product-staffing.png";
+import ecosystemDriverConnect from "@/assets/images/ecosystem-driverconnect.png";
+import ecosystemHappyEats from "@assets/17698344491552583768895781273262_1769834987195.png";
+import ecosystemVedaSolus from "@/assets/images/ecosystem-vedasolus.png";
+import ecosystemGarageBot from "@/assets/images/ecosystem-garagebot.png";
+import ecosystemOrbitStaffing from "@/assets/images/ecosystem-orbitstaffing.png";
+import ecosystemTradeWorks from "@/assets/images/ecosystem-tradeworks.png";
+import ecosystemPaintPros from "@/assets/images/ecosystem-paintpros.png";
+import ecosystemNPP from "@/assets/images/ecosystem-npp.png";
+import ecosystemLume from "@/assets/images/ecosystem-lume.png";
 import {
   Shield,
   Zap,
@@ -176,11 +185,15 @@ export default function TrustLayerHome() {
   ];
 
   const connectedSystems = [
-    { name: 'DWTL.io', desc: 'Blockchain Trust Layer', icon: Layers, url: 'https://dwtl.io', primary: true },
-    { name: 'Orbit Staffing', desc: 'Workforce & Financials', icon: Users, url: 'https://orbitstaffing.io' },
-    { name: 'PaintPros.io', desc: 'Trade Verticals', icon: Briefcase, url: 'https://paintpros.io' },
-    { name: 'TradeWorks AI', desc: 'Field Tool Platform', icon: Zap, url: 'https://tradeworksai.io' },
-    { name: 'DarkWave Studios', desc: 'Architecture & Dev', icon: Building2, url: 'https://darkwavestudios.io' }
+    { name: 'TL Driver Connect', desc: 'Franchise Platform', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
+    { name: 'Happy Eats', desc: 'Driver Delivery', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
+    { name: 'Garage Bot', desc: 'Auto Repair', url: 'https://garagebot.io', image: ecosystemGarageBot },
+    { name: 'Veda Solus', desc: 'Healthcare', url: 'https://vedasolus.io', image: ecosystemVedaSolus },
+    { name: 'PaintPros.io', desc: 'Trade Verticals', url: 'https://paintpros.io', image: ecosystemPaintPros },
+    { name: 'TradeWorks AI', desc: '8-Trade Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
+    { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing },
+    { name: 'Nashville Painting Pros', desc: 'NPP Marketing', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
+    { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true }
   ];
 
   const trustFeatures = [
@@ -364,7 +377,7 @@ export default function TrustLayerHome() {
           >
             <Button
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-lg px-10 py-7 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-shadow"
+              className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-lg font-semibold px-10 py-7 shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-shadow border border-white/20"
               onClick={() => window.location.href = '/autopilot/onboarding'}
               data-testid="button-connect-now"
             >
@@ -432,73 +445,66 @@ export default function TrustLayerHome() {
         </div>
       </div>
 
-      {/* Connected Ecosystem - Horizontal Carousel on Mobile */}
-      <div className="relative border-y border-white/5 bg-slate-900/30 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <p className="text-slate-500 text-xs sm:text-sm text-center mb-4 tracking-wider uppercase">Connected Ecosystem</p>
+      {/* Connected Ecosystem - Premium Cards Carousel */}
+      <div className="relative border-y border-white/5 bg-slate-900/30 backdrop-blur-sm py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <p className="text-slate-500 text-xs sm:text-sm text-center mb-2 tracking-wider uppercase">Connected Ecosystem</p>
+          <h3 className="text-2xl font-bold text-center text-white mb-8">One Platform, Everything You Need</h3>
+          <p className="text-slate-400 text-center mb-8 max-w-2xl mx-auto">Build and grow your business with our fully connected ecosystem of tools and automation.</p>
           
-          {/* Mobile: Horizontal scroll carousel */}
-          <div className="md:hidden overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-            <div className="flex gap-3 w-max">
-              {connectedSystems.map((system, i) => (
+          {/* Horizontal scroll carousel - works on all screen sizes */}
+          <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-4 w-max mx-auto">
+              {connectedSystems.map((system: any, i) => (
                 <motion.div
                   key={i}
+                  whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => (system as any).url && window.open((system as any).url, '_blank')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm cursor-pointer flex-shrink-0 ${
-                    (system as any).primary 
-                      ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30' 
-                      : 'bg-slate-800/30 border border-white/5'
+                  onClick={() => system.url && window.open(system.url, '_blank')}
+                  className={`relative w-[200px] h-[260px] rounded-xl overflow-hidden cursor-pointer flex-shrink-0 group ${
+                    system.primary 
+                      ? 'ring-2 ring-emerald-500/50' 
+                      : 'ring-1 ring-white/10'
                   }`}
                 >
-                  <system.icon className={`w-4 h-4 ${(system as any).primary ? 'text-emerald-400' : 'text-slate-400'}`} />
-                  <div>
-                    <p className={`text-xs font-medium ${(system as any).primary ? 'text-emerald-300' : 'text-white'}`}>{system.name}</p>
+                  {/* Background Image */}
+                  <div className="absolute inset-0">
+                    <img 
+                      src={system.image} 
+                      alt={system.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent" />
                   </div>
-                  {(system as any).primary && (
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px] px-1.5 py-0">
-                      Core
-                    </Badge>
-                  )}
+                  
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    {system.primary && (
+                      <Badge className="mb-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+                        Live Now
+                      </Badge>
+                    )}
+                    {system.comingSoon && (
+                      <Badge className="mb-2 bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">
+                        Spring 2026
+                      </Badge>
+                    )}
+                    {system.autoAds && (
+                      <Badge className="mb-2 bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">
+                        Auto Ads
+                      </Badge>
+                    )}
+                    <h4 className="text-white font-semibold text-sm">{system.name}</h4>
+                    <p className="text-slate-400 text-xs">{system.desc}</p>
+                  </div>
+                  
+                  {/* Hover Glow Effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-purple-500/10 via-transparent to-cyan-500/10" />
                 </motion.div>
               ))}
             </div>
           </div>
-          
-          {/* Desktop: Flex wrap */}
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="hidden md:flex flex-wrap items-center justify-center gap-6"
-          >
-            {connectedSystems.map((system, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                custom={i}
-                whileHover={{ scale: 1.05, y: -2 }}
-                onClick={() => (system as any).url && window.open((system as any).url, '_blank')}
-                className={`flex items-center gap-3 px-4 py-2 rounded-lg backdrop-blur-sm cursor-pointer ${
-                  (system as any).primary 
-                    ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 shadow-lg shadow-emerald-500/10' 
-                    : 'bg-slate-800/30 border border-white/5'
-                }`}
-              >
-                <system.icon className={`w-5 h-5 ${(system as any).primary ? 'text-emerald-400' : 'text-slate-400'}`} />
-                <div>
-                  <p className={`text-sm font-medium ${(system as any).primary ? 'text-emerald-300' : 'text-white'}`}>{system.name}</p>
-                  <p className="text-slate-500 text-xs">{system.desc}</p>
-                </div>
-                {(system as any).primary && (
-                  <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs px-2 py-0">
-                    Core
-                  </Badge>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </div>
 
