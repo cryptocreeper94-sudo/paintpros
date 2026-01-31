@@ -1073,6 +1073,10 @@ console.log(data);`
               })
               .where(eq(adCampaigns.id, existingFbCampaign[0].id));
           } else {
+            // Default 7-day campaign duration for optimal algorithm learning
+            const campaignStart = new Date();
+            const campaignEnd = new Date(campaignStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
             await db.insert(adCampaigns).values({
               tenantId,
               name: `${subscriber[0]?.businessName || 'Business'} - Facebook Autopilot`,
@@ -1087,7 +1091,8 @@ console.log(data);`
               ageMax: adConfig.ageMax || 65,
               businessHoursStart: adConfig.businessHoursStart || 8,
               businessHoursEnd: adConfig.businessHoursEnd || 18,
-              startDate: new Date(),
+              startDate: campaignStart,
+              endDate: campaignEnd,
               createdAt: new Date(),
               updatedAt: new Date()
             });
@@ -1117,6 +1122,10 @@ console.log(data);`
               })
               .where(eq(adCampaigns.id, existingIgCampaign[0].id));
           } else {
+            // Default 7-day campaign duration for optimal algorithm learning
+            const igCampaignStart = new Date();
+            const igCampaignEnd = new Date(igCampaignStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
             await db.insert(adCampaigns).values({
               tenantId,
               name: `${subscriber[0]?.businessName || 'Business'} - Instagram Autopilot`,
@@ -1131,7 +1140,8 @@ console.log(data);`
               ageMax: adConfig.ageMax || 65,
               businessHoursStart: adConfig.businessHoursStart || 8,
               businessHoursEnd: adConfig.businessHoursEnd || 18,
-              startDate: new Date(),
+              startDate: igCampaignStart,
+              endDate: igCampaignEnd,
               createdAt: new Date(),
               updatedAt: new Date()
             });

@@ -1,6 +1,7 @@
 import { db } from './db';
 import { adCampaigns, scheduledPosts, contentLibrary, metaIntegrations } from '@shared/schema';
 import { eq, and, sql, desc } from 'drizzle-orm';
+import { format } from 'date-fns';
 
 let adSchedulerInterval: ReturnType<typeof setInterval> | null = null;
 let isRunning = false;
@@ -537,6 +538,97 @@ async function resetDailySpend(): Promise<void> {
   }
 }
 
+// Check for expired campaigns (7-day rotation) and underperforming ads
+async function checkCampaignRotation(): Promise<void> {
+  try {
+    const now = new Date();
+    
+    // Find expired campaigns (endDate has passed)
+    const expiredCampaigns = await db
+      .select()
+      .from(adCampaigns)
+      .where(and(
+        eq(adCampaigns.status, 'active'),
+        sql`${adCampaigns.endDate} IS NOT NULL AND ${adCampaigns.endDate} < ${now}`
+      ));
+    
+    for (const campaign of expiredCampaigns) {
+      console.log(`[Ad Rotation] Campaign "${campaign.name}" has expired (7-day cycle complete)`);
+      
+      // Mark as completed
+      await db
+        .update(adCampaigns)
+        .set({ 
+          status: 'completed',
+          updatedAt: new Date()
+        })
+        .where(eq(adCampaigns.id, campaign.id));
+      
+      // Create new campaign with fresh content (rotation)
+      const newStart = new Date();
+      const newEnd = new Date(newStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+      
+      await db.insert(adCampaigns).values({
+        tenantId: campaign.tenantId,
+        name: `${campaign.name.split(' - ')[0]} - ${campaign.platform === 'facebook' ? 'Facebook' : 'Instagram'} Rotation ${format(newStart, 'MMM d')}`,
+        platform: campaign.platform,
+        objective: campaign.objective || 'OUTCOME_AWARENESS',
+        dailyBudget: campaign.dailyBudget,
+        status: 'active',
+        targetingCity: campaign.targetingCity,
+        targetingState: campaign.targetingState,
+        targetingRadius: campaign.targetingRadius,
+        ageMin: campaign.ageMin,
+        ageMax: campaign.ageMax,
+        businessHoursStart: campaign.businessHoursStart,
+        businessHoursEnd: campaign.businessHoursEnd,
+        startDate: newStart,
+        endDate: newEnd,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      console.log(`[Ad Rotation] New ${campaign.platform} campaign created for 7-day cycle`);
+    }
+    
+    // Check for underperforming ads (low engagement after 3+ days)
+    const underperformingThreshold = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+    const activeCampaigns = await db
+      .select()
+      .from(adCampaigns)
+      .where(and(
+        eq(adCampaigns.status, 'active'),
+        sql`${adCampaigns.startDate} IS NOT NULL AND ${adCampaigns.startDate} < ${underperformingThreshold}`
+      ));
+    
+    for (const campaign of activeCampaigns) {
+      // Check if impressions are very low (underperforming indicator)
+      const impressions = campaign.impressions || 0;
+      const clicks = campaign.clicks || 0;
+      const daysRunning = Math.floor((now.getTime() - new Date(campaign.startDate!).getTime()) / (24 * 60 * 60 * 1000));
+      
+      // If running 3+ days with less than 100 impressions per day, flag as underperforming
+      const avgDailyImpressions = daysRunning > 0 ? impressions / daysRunning : 0;
+      const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
+      
+      if (avgDailyImpressions < 100 || ctr < 0.5) {
+        console.log(`[Ad Rotation] Campaign "${campaign.name}" underperforming: ${avgDailyImpressions.toFixed(0)} avg daily impressions, ${ctr.toFixed(2)}% CTR`);
+        
+        // Mark for review but don't auto-replace yet (notify in UI)
+        await db
+          .update(adCampaigns)
+          .set({ 
+            errorMessage: `Underperforming: ${avgDailyImpressions.toFixed(0)} avg impressions/day, ${ctr.toFixed(2)}% CTR. Consider replacing content.`,
+            updatedAt: new Date()
+          })
+          .where(eq(adCampaigns.id, campaign.id));
+      }
+    }
+  } catch (error) {
+    console.error('[Ad Rotation] Error checking campaign rotation:', error);
+  }
+}
+
 export function startAdScheduler(): void {
   if (!ADS_ENABLED) {
     console.log('[Ad Scheduler] DISABLED - Meta App needs Live Mode to run ads');
@@ -551,13 +643,18 @@ export function startAdScheduler(): void {
 
   console.log('[Ad Scheduler] Starting NPP Meta Ad Scheduler...');
   console.log('[Ad Scheduler] Business hours: 8am-6pm, $50/day cap ($25 FB + $25 IG)');
+  console.log('[Ad Scheduler] Campaign duration: 7 days with auto-rotation');
   isRunning = true;
 
   // Run immediately
   checkAndRunAdCampaigns();
+  checkCampaignRotation(); // Check for expired/underperforming campaigns
 
   // Check every 30 minutes
-  adSchedulerInterval = setInterval(checkAndRunAdCampaigns, AD_CHECK_INTERVAL_MS);
+  adSchedulerInterval = setInterval(() => {
+    checkAndRunAdCampaigns();
+    checkCampaignRotation();
+  }, AD_CHECK_INTERVAL_MS);
 
   // Reset daily spend at midnight
   const now = new Date();
