@@ -5477,6 +5477,7 @@ export const marketingImages = pgTable("marketing_images", {
   // Status
   isActive: boolean("is_active").default(true),
   isFavorite: boolean("is_favorite").default(false),
+  isUserUploaded: boolean("is_user_uploaded").default(false), // true = real photo, false = AI/seeded
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

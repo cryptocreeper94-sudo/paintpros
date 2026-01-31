@@ -8397,7 +8397,66 @@ Do not include any text before or after the JSON.`
 
   // ============ MARKETING DAM (Digital Asset Management) ============
   
-  // Marketing Images
+  // Marketing Image Upload - Request presigned URL for direct upload to object storage
+  app.post("/api/marketing/images/upload-url", async (req, res) => {
+    try {
+      const { filename, contentType, tenantId, category } = req.body;
+      
+      if (!filename || !tenantId || !category) {
+        return res.status(400).json({ error: "Missing required fields: filename, tenantId, category" });
+      }
+      
+      // Import object storage service
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage/objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      // Get presigned upload URL
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      
+      // Create marketing image record with pending status
+      const image = await storage.createMarketingImage({
+        tenantId,
+        filename,
+        filePath: objectPath,
+        category,
+        altText: filename.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+        isActive: true,
+        usageCount: 0,
+      });
+      
+      console.log(`[Marketing Upload] Created upload URL for ${filename} -> ${objectPath}`);
+      
+      res.json({
+        uploadURL,
+        objectPath,
+        imageId: image.id,
+        servingPath: `/objects${objectPath}`,
+      });
+    } catch (error: any) {
+      console.error("Error generating marketing upload URL:", error);
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+  
+  // Confirm marketing image upload completed
+  app.post("/api/marketing/images/:id/confirm", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const image = await storage.updateMarketingImage(id, {
+        isActive: true,
+        updatedAt: new Date(),
+      });
+      if (!image) return res.status(404).json({ error: "Image not found" });
+      console.log(`[Marketing Upload] Confirmed upload for image ${id}`);
+      res.json(image);
+    } catch (error) {
+      console.error("Error confirming marketing image:", error);
+      res.status(500).json({ error: "Failed to confirm image upload" });
+    }
+  });
+  
+  // Marketing Images - Create from metadata (legacy, for URL-based images)
   app.post("/api/marketing/images", async (req, res) => {
     try {
       const image = await storage.createMarketingImage(req.body);

@@ -4321,31 +4321,65 @@ export default function FieldTool() {
                 if (!photoPreview) return;
                 setIsUploadingPhoto(true);
                 try {
-                  const res = await fetch("/api/marketing/images", {
+                  const filename = `${photoType}-${Date.now()}.jpg`;
+                  
+                  // Step 1: Get presigned upload URL from server
+                  const urlRes = await fetch("/api/marketing/images/upload-url", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                      filename,
+                      contentType: "image/jpeg",
                       tenantId: tenant.id,
-                      filename: `${photoType}-${Date.now()}.jpg`,
-                      filePath: photoPreview,
-                      altText: photoCaption || `${photoType} photo`,
                       category: photoCategory,
+                    }),
+                  });
+                  
+                  if (!urlRes.ok) {
+                    throw new Error("Failed to get upload URL");
+                  }
+                  
+                  const { uploadURL, imageId, servingPath } = await urlRes.json();
+                  
+                  // Step 2: Convert base64 to blob and upload to object storage
+                  const base64Data = photoPreview.split(',')[1];
+                  const binaryData = atob(base64Data);
+                  const bytes = new Uint8Array(binaryData.length);
+                  for (let i = 0; i < binaryData.length; i++) {
+                    bytes[i] = binaryData.charCodeAt(i);
+                  }
+                  const blob = new Blob([bytes], { type: 'image/jpeg' });
+                  
+                  const uploadRes = await fetch(uploadURL, {
+                    method: "PUT",
+                    body: blob,
+                    headers: { "Content-Type": "image/jpeg" },
+                  });
+                  
+                  if (!uploadRes.ok) {
+                    throw new Error("Failed to upload to storage");
+                  }
+                  
+                  // Step 3: Confirm upload and update image metadata
+                  await fetch(`/api/marketing/images/${imageId}/confirm`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      altText: photoCaption || `${photoType} photo`,
                       subcategory: photoType,
                       tags: [photoType, photoCategory, userName || "crew"],
                     }),
                   });
-                  if (res.ok) {
-                    toast({
-                      title: t('photo.saved'),
-                      description: t('photo.savedDesc'),
-                    });
-                    setPhotoPreview(null);
-                    setPhotoCaption("");
-                    setShowPhotoAI(false);
-                  } else {
-                    throw new Error("Upload failed");
-                  }
+                  
+                  toast({
+                    title: t('photo.saved'),
+                    description: t('photo.savedDesc'),
+                  });
+                  setPhotoPreview(null);
+                  setPhotoCaption("");
+                  setShowPhotoAI(false);
                 } catch (err) {
+                  console.error("Photo upload error:", err);
                   toast({
                     title: t('photo.failed'),
                     description: t('photo.failedDesc'),
