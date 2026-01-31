@@ -55,11 +55,12 @@ const PIN_CODES: Record<string, { name: string; role: string }> = {
 
 export default function TradeWorksApp() {
   const [, setLocation] = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Demo mode: bypass authentication for tradeworksai.io visitors
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
-  const [userName, setUserName] = useState("");
-  const [userRole, setUserRole] = useState("");
+  const [userName, setUserName] = useState("Demo User");
+  const [userRole, setUserRole] = useState("Demo");
   const [activeSection, setActiveSection] = useState<AppSection>("home");
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
