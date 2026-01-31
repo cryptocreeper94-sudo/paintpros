@@ -454,109 +454,256 @@ export default function AutopilotAdmin() {
           </TabsContent>
         </Tabs>
 
-        {/* Connect Meta Dialog */}
+        {/* Connect Meta Dialog - Enhanced with Add Admin Option */}
         <Dialog open={connectDialogOpen} onOpenChange={setConnectDialogOpen}>
-          <DialogContent className="bg-slate-800 border-slate-700">
+          <DialogContent className="bg-slate-800 border-slate-700 max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Connect Meta for {selectedSubscriber?.businessName}</DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-4 pt-4">
-              <p className="text-sm text-slate-400">
-                Enter the Facebook and Instagram details for this business. You'll need to get these from their Meta Business Suite.
-              </p>
+            <Tabs defaultValue="add-admin" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-slate-700">
+                <TabsTrigger value="add-admin" className="data-[state=active]:bg-blue-600">
+                  Add TrustLayer as Admin
+                </TabsTrigger>
+                <TabsTrigger value="manual" className="data-[state=active]:bg-slate-600">
+                  Manual Setup
+                </TabsTrigger>
+              </TabsList>
               
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-slate-300">Facebook Page ID</Label>
-                  <Input
-                    placeholder="e.g., 1234567890"
-                    value={metaCredentials.facebookPageId}
-                    onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageId: e.target.value })}
-                    className="bg-slate-900 border-slate-600 text-white mt-1"
-                    data-testid="input-facebook-page-id"
-                  />
+              {/* ===== SIMPLER: Add TrustLayer as Admin ===== */}
+              <TabsContent value="add-admin" className="space-y-4 pt-4">
+                <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-lg p-4 border border-blue-700">
+                  <h3 className="text-lg font-semibold text-white mb-2">Easiest Method - 3 Simple Steps</h3>
+                  <p className="text-sm text-slate-300">
+                    Have the client add TrustLayer as an admin on their Facebook Page. No tokens or technical setup needed!
+                  </p>
                 </div>
                 
-                <div>
-                  <Label className="text-slate-300">Facebook Page Name</Label>
-                  <Input
-                    placeholder="e.g., Johnson's Painting LLC"
-                    value={metaCredentials.facebookPageName}
-                    onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageName: e.target.value })}
-                    className="bg-slate-900 border-slate-600 text-white mt-1"
-                    data-testid="input-facebook-page-name"
-                  />
+                {/* Step 1 */}
+                <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                    <div>
+                      <h4 className="font-semibold text-white">Client opens Facebook Page Settings</h4>
+                      <p className="text-sm text-slate-400 mt-1">
+                        Go to their Facebook Page, click Settings, then Page access or Page roles
+                      </p>
+                      <a 
+                        href="https://www.facebook.com/pages" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-blue-400 text-sm mt-2 hover:underline"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        Open Facebook Pages
+                      </a>
+                    </div>
+                  </div>
                 </div>
                 
-                <div>
-                  <Label className="text-slate-300">Instagram Account ID</Label>
-                  <Input
-                    placeholder="e.g., 17841400000000000"
-                    value={metaCredentials.instagramAccountId}
-                    onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramAccountId: e.target.value })}
-                    className="bg-slate-900 border-slate-600 text-white mt-1"
-                    data-testid="input-instagram-account-id"
-                  />
+                {/* Step 2 */}
+                <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                    <div>
+                      <h4 className="font-semibold text-white">Add TrustLayer Marketing</h4>
+                      <p className="text-sm text-slate-400 mt-1">
+                        Click "Add New" and invite as Admin:
+                      </p>
+                      <div className="bg-slate-800 rounded p-3 mt-2 font-mono text-sm text-blue-300 flex items-center justify-between">
+                        <span>trustlayer.marketing@gmail.com</span>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="text-blue-400 hover:text-blue-300"
+                          onClick={() => {
+                            navigator.clipboard.writeText("trustlayer.marketing@gmail.com");
+                            toast({ title: "Email copied!" });
+                          }}
+                          data-testid="button-copy-email"
+                        >
+                          Copy
+                        </Button>
+                      </div>
+                      <p className="text-xs text-amber-400 mt-2">
+                        Must be added as Admin (not Moderator or Editor)
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 
-                <div>
-                  <Label className="text-slate-300">Instagram Username</Label>
-                  <Input
-                    placeholder="e.g., johnsonspainting"
-                    value={metaCredentials.instagramUsername}
-                    onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramUsername: e.target.value })}
-                    className="bg-slate-900 border-slate-600 text-white mt-1"
-                    data-testid="input-instagram-username"
-                  />
+                {/* Step 3 */}
+                <div className="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shrink-0">3</div>
+                    <div>
+                      <h4 className="font-semibold text-white">Let us know when done</h4>
+                      <p className="text-sm text-slate-400 mt-1">
+                        Once the invite is accepted, enter the Page Name below and we'll complete the connection.
+                      </p>
+                      <div className="mt-3 space-y-3">
+                        <div>
+                          <Label className="text-slate-300">Facebook Page Name</Label>
+                          <Input
+                            placeholder="e.g., Nashville Painting Professionals"
+                            value={metaCredentials.facebookPageName}
+                            onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageName: e.target.value })}
+                            className="bg-slate-800 border-slate-600 text-white mt-1"
+                            data-testid="input-admin-page-name"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-slate-300">Instagram Username (if linked)</Label>
+                          <Input
+                            placeholder="e.g., @nashvillepainters"
+                            value={metaCredentials.instagramUsername}
+                            onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramUsername: e.target.value })}
+                            className="bg-slate-800 border-slate-600 text-white mt-1"
+                            data-testid="input-admin-instagram"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
-                <div>
-                  <Label className="text-slate-300">Page Access Token</Label>
-                  <Input
-                    placeholder="Long-lived page access token"
-                    value={metaCredentials.accessToken}
-                    onChange={(e) => setMetaCredentials({ ...metaCredentials, accessToken: e.target.value })}
-                    className="bg-slate-900 border-slate-600 text-white mt-1"
-                    data-testid="input-access-token"
-                  />
-                  <p className="text-xs text-slate-500 mt-1">Get this from Meta Graph API Explorer or their Business Suite</p>
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setConnectDialogOpen(false)}
+                    className="flex-1"
+                    data-testid="button-cancel-admin"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (selectedSubscriber && metaCredentials.facebookPageName) {
+                        connectMetaMutation.mutate({
+                          subscriberId: selectedSubscriber.id,
+                          credentials: {
+                            ...metaCredentials,
+                            accessToken: "ADMIN_PENDING", // Flag for admin-based connection
+                            facebookPageId: "ADMIN_PENDING"
+                          }
+                        });
+                      }
+                    }}
+                    disabled={connectMetaMutation.isPending || !metaCredentials.facebookPageName}
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    data-testid="button-mark-admin-added"
+                  >
+                    {connectMetaMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Mark as Admin Added
+                      </>
+                    )}
+                  </Button>
                 </div>
-              </div>
+              </TabsContent>
               
-              <div className="flex gap-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setConnectDialogOpen(false)}
-                  className="flex-1"
-                  data-testid="button-cancel-connect"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (selectedSubscriber) {
-                      connectMetaMutation.mutate({
-                        subscriberId: selectedSubscriber.id,
-                        credentials: metaCredentials
-                      });
-                    }
-                  }}
-                  disabled={connectMetaMutation.isPending || !metaCredentials.facebookPageId}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  data-testid="button-save-meta"
-                >
-                  {connectMetaMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Link2 className="w-4 h-4 mr-2" />
-                      Connect
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
+              {/* ===== MANUAL: Technical Setup ===== */}
+              <TabsContent value="manual" className="space-y-4 pt-4">
+                <p className="text-sm text-slate-400">
+                  Advanced: Enter the Facebook and Instagram details manually. You'll need to get these from their Meta Business Suite.
+                </p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-slate-300">Facebook Page ID</Label>
+                    <Input
+                      placeholder="e.g., 1234567890"
+                      value={metaCredentials.facebookPageId}
+                      onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageId: e.target.value })}
+                      className="bg-slate-900 border-slate-600 text-white mt-1"
+                      data-testid="input-facebook-page-id"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-slate-300">Facebook Page Name</Label>
+                    <Input
+                      placeholder="e.g., Johnson's Painting LLC"
+                      value={metaCredentials.facebookPageName}
+                      onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageName: e.target.value })}
+                      className="bg-slate-900 border-slate-600 text-white mt-1"
+                      data-testid="input-facebook-page-name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-slate-300">Instagram Account ID</Label>
+                    <Input
+                      placeholder="e.g., 17841400000000000"
+                      value={metaCredentials.instagramAccountId}
+                      onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramAccountId: e.target.value })}
+                      className="bg-slate-900 border-slate-600 text-white mt-1"
+                      data-testid="input-instagram-account-id"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-slate-300">Instagram Username</Label>
+                    <Input
+                      placeholder="e.g., johnsonspainting"
+                      value={metaCredentials.instagramUsername}
+                      onChange={(e) => setMetaCredentials({ ...metaCredentials, instagramUsername: e.target.value })}
+                      className="bg-slate-900 border-slate-600 text-white mt-1"
+                      data-testid="input-instagram-username"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-slate-300">Page Access Token</Label>
+                    <Input
+                      placeholder="Long-lived page access token"
+                      value={metaCredentials.accessToken}
+                      onChange={(e) => setMetaCredentials({ ...metaCredentials, accessToken: e.target.value })}
+                      className="bg-slate-900 border-slate-600 text-white mt-1"
+                      data-testid="input-access-token"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Get this from Meta Graph API Explorer or their Business Suite</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setConnectDialogOpen(false)}
+                    className="flex-1"
+                    data-testid="button-cancel-connect"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (selectedSubscriber) {
+                        connectMetaMutation.mutate({
+                          subscriberId: selectedSubscriber.id,
+                          credentials: metaCredentials
+                        });
+                      }
+                    }}
+                    disabled={connectMetaMutation.isPending || !metaCredentials.facebookPageId}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    data-testid="button-save-meta"
+                  >
+                    {connectMetaMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Link2 className="w-4 h-4 mr-2" />
+                        Connect
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </div>
