@@ -70,6 +70,7 @@ The design emphasizes a "Sparkle and Shine" aesthetic with a Bento Grid layout, 
 - **Ad Campaign Management:** 7-day campaign duration with automatic rotation. Campaigns auto-expire and rotate to fresh content for optimal Meta algorithm learning. Underperforming ad detection flags campaigns with <100 avg daily impressions or <0.5% CTR after 3+ days running.
 - **Queue Management:** Visual touch-to-configure queue with reordering (move up/down), removal, and position editing. Click any queued post thumbnail to manage its position in the publishing schedule.
 - **Admin Onboarding Wizard:** Simplified "Add TrustLayer as Admin" guided onboarding. Clients add trustlayer.marketing@gmail.com as Admin on their Facebook Page instead of generating tokens manually. Tabbed interface with step-by-step instructions vs manual token entry.
+- **AI Agent Tab:** Floating AI assistant accessible via side tab. Lume Paint Co gets bowtie design, all other tenants get purple shield button. Connected to ElevenLabs for voice responses. Tab collapses to "AI" label on right edge, expands to full chat on tap.
 
 ### Content Analytics Roadmap (Future)
 When crews start submitting their own Before & After photos:

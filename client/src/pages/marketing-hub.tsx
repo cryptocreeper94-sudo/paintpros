@@ -1,6 +1,7 @@
 import { PageLayout } from "@/components/layout/page-layout";
 import { BentoGrid, BentoItem } from "@/components/layout/bento-grid";
 import { GlassCard } from "@/components/ui/glass-card";
+import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -7756,6 +7757,9 @@ export default function MarketingHub() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* AI Agent Tab - Side tab that expands to full agent */}
+      <AIAgentTab />
     </PageLayout>
   );
 }
