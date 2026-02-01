@@ -218,30 +218,30 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   },
 };
 
-// PaintPros.io Platform Demo (for sales presentations)
+// TLId.io / TrustLayer Marketing Platform
 export const paintProsDemo: TenantConfig = {
   id: "demo",
-  slug: "paintpros-demo",
+  slug: "tlid",
   subscriptionTier: "full_suite",
   
-  name: "PaintPros.io",
-  tagline: "White Glove Business System for All Trades",
-  description: "PaintPros.io is a complete white-label SaaS platform designed specifically for the painting and home services industry. Anti-fraud protection, document recall, and blockchain verification built-in.",
-  logo: "/icons/paintpros-mascot.png",
+  name: "TrustLayer",
+  tagline: "Complete Business Trust Platform",
+  description: "TrustLayer is a complete self-service automated digital marketing platform with Meta Business Suite integration. Anti-fraud protection, document verification, and blockchain stamping built-in.",
+  logo: "/icons/trustlayer-shield.png",
   
-  phone: "(888) PAINT-PRO",
-  email: "demo@paintpros.io",
+  phone: "(888) TRUST-01",
+  email: "hello@tlid.io",
   
   theme: {
-    primaryColor: "hsl(220, 70%, 50%)",
-    accentColor: "hsl(45, 90%, 55%)",
+    primaryColor: "hsl(160, 84%, 39%)",
+    accentColor: "hsl(160, 70%, 45%)",
     darkMode: {
-      background: "hsl(220, 25%, 8%)",
-      foreground: "hsl(45, 30%, 95%)",
+      background: "hsl(222, 47%, 11%)",
+      foreground: "hsl(160, 30%, 95%)",
     },
     lightMode: {
       background: "hsl(220, 20%, 97%)",
-      foreground: "hsl(220, 25%, 15%)",
+      foreground: "hsl(222, 47%, 11%)",
     },
   },
   
