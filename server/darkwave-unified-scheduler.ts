@@ -9,6 +9,7 @@ const CHECK_INTERVAL_MS = 60 * 1000;
 
 const ECOSYSTEM_TENANTS = [
   'darkwave',
+  'dwtl',
   'tlid', 
   'tradeworksai',
   'paintpros',
