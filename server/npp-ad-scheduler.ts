@@ -433,12 +433,13 @@ async function checkAndRunAdCampaigns(): Promise<void> {
             `https://graph.facebook.com/v21.0/me?access_token=${integration.facebookPageAccessToken}`
           );
           if (!tokenCheck.ok) {
-            console.log(`[Ad Scheduler] Token expired for ${tenantId}, please reconnect Meta`);
-            continue;
+            const tokenError = await tokenCheck.json().catch(() => ({}));
+            console.log(`[Ad Scheduler] Token issue for ${tenantId}: ${tokenError?.error?.message || 'Unknown'}, attempting anyway...`);
+            // Don't skip - attempt the ad and let Facebook tell us the real error
           }
         } catch (tokenErr) {
-          console.log(`[Ad Scheduler] Token validation failed for ${tenantId}, skipping`);
-          continue;
+          console.log(`[Ad Scheduler] Token validation failed for ${tenantId}, attempting anyway...`);
+          // Don't skip - attempt the ad
         }
       }
 

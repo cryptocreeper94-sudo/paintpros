@@ -268,8 +268,8 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
 
       const tokenValid = await validateToken(integration.facebookPageAccessToken);
       if (!tokenValid) {
-        console.log(`[NPP Posting] Token invalid for ${schedule.tenantId}, skipping`);
-        continue;
+        console.log(`[NPP Posting] Token validation failed for ${schedule.tenantId}, attempting post anyway...`);
+        // Don't skip - attempt the post and let Facebook tell us the real error
       }
 
       const messageContent = await getNextMessage();
