@@ -29,6 +29,8 @@ export function AIAgentTab() {
   
   // Determine agent style based on tenant
   const getAgentStyle = (): AgentStyle => {
+    // TLId.io / Demo always gets purple shield on side
+    if (tenantId === "demo" || tenantId === "tlid" || tenantId === "trustlayer") return "shield";
     // Lume gets black bowtie
     if (tenantId === "lumepaint" || tenantId === "lume") return "bowtie";
     // NPP and PaintPros get blue-handled Rollie
