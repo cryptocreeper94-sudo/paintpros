@@ -218,7 +218,9 @@ export default function TrustLayerHome() {
     { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby },
     // Crypto & Trading
     { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent },
-    { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse }
+    { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse },
+    // AI Security & Certification
+    { name: 'Guardian AI', desc: 'AI Agent Certification', url: 'https://dwsc.io/guardian-ai', image: ecosystemDWTL, featured: true }
   ];
 
   const trustFeatures = [
@@ -293,6 +295,16 @@ export default function TrustLayerHome() {
                 className="text-slate-400 hover:text-white hidden md:inline-flex"
               >
                 Guardian Shield
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => window.open('https://dwsc.io/guardian-ai', '_blank')}
+                className="text-slate-400 hover:text-white hidden md:inline-flex"
+                data-testid="button-guardian-ai"
+              >
+                <Shield className="w-3.5 h-3.5 mr-1.5" />
+                Guardian AI
               </Button>
               <Button 
                 variant="outline"
@@ -710,6 +722,169 @@ export default function TrustLayerHome() {
                       ))}
                     </div>
                     <p className="text-slate-400 text-sm font-medium">Member since 2024</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Guardian AI Section - Ultra Premium */}
+      <div className="relative py-24 overflow-hidden">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-transparent to-violet-900/20" />
+        <motion.div 
+          animate={{ 
+            opacity: [0.3, 0.6, 0.3],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/10 rounded-full blur-[150px]" 
+        />
+        
+        <div className="relative max-w-7xl mx-auto px-6">
+          <motion.div 
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <Badge className="mb-4 bg-purple-500/10 text-purple-400 border-purple-500/20 shadow-lg shadow-purple-500/10">
+              <Sparkles className="w-3 h-3 mr-1" />
+              New Service
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Guardian AI Certification
+            </h2>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              Certify your AI agents with enterprise-grade security validation. Build trust with your users through verified AI compliance.
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left - Features */}
+            <motion.div
+              initial={{ x: -50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <div className="grid grid-cols-2 gap-6">
+                {[
+                  { icon: Shield, title: 'Security Audit', desc: 'Complete vulnerability assessment' },
+                  { icon: CheckCircle, title: 'Compliance Verified', desc: 'SOC 2 & GDPR ready' },
+                  { icon: Fingerprint, title: 'Identity Validation', desc: 'Agent behavior verification' },
+                  { icon: Award, title: 'Trust Certification', desc: 'Displayable trust badges' }
+                ].map((feature, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ y: 20, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="group"
+                  >
+                    <div className="p-5 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10">
+                      <feature.icon className="w-8 h-8 text-purple-400 mb-3 group-hover:scale-110 transition-transform" />
+                      <h4 className="text-white font-semibold mb-1">{feature.title}</h4>
+                      <p className="text-slate-400 text-sm">{feature.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <Button 
+                  className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white shadow-lg shadow-purple-500/30"
+                  onClick={() => window.open('https://dwsc.io/guardian-ai', '_blank')}
+                  data-testid="button-guardian-ai-cta"
+                >
+                  Certify Your AI Agent
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:text-purple-200"
+                  onClick={() => window.open('https://dwsc.io/guardian-ai', '_blank')}
+                  data-testid="button-guardian-ai-learn"
+                >
+                  Learn More
+                  <ExternalLink className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </motion.div>
+
+            {/* Right - Premium Visual */}
+            <motion.div
+              initial={{ x: 50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="flex justify-center"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-violet-500/30 blur-[100px]" />
+                <motion.div 
+                  whileHover={{ scale: 1.02, rotateY: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="relative w-80 rounded-2xl overflow-hidden"
+                  style={{ perspective: "1000px" }}
+                >
+                  {/* Premium dark glass background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800/95 via-slate-900/98 to-slate-950/95 backdrop-blur-xl" />
+                  <div className="absolute inset-0 border border-purple-500/30 rounded-2xl" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-purple-500/10 to-transparent" />
+                  
+                  {/* Animated glow ring */}
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-4 border border-dashed border-purple-500/20 rounded-xl"
+                  />
+                  
+                  <div className="relative p-8 text-center">
+                    <motion.div
+                      animate={{ 
+                        y: [0, -8, 0],
+                        boxShadow: [
+                          "0 25px 50px -12px rgba(147, 51, 234, 0.5)",
+                          "0 35px 60px -15px rgba(147, 51, 234, 0.7)",
+                          "0 25px 50px -12px rgba(147, 51, 234, 0.5)"
+                        ]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500 via-violet-500 to-purple-600 flex items-center justify-center"
+                    >
+                      <Shield className="w-12 h-12 text-white" />
+                    </motion.div>
+                    
+                    <Badge className="mb-4 bg-purple-500/20 text-purple-300 border-purple-400/30 font-medium shadow-lg shadow-purple-500/20">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      AI Agent Certified
+                    </Badge>
+                    
+                    <h4 className="text-2xl font-bold text-white mb-2">Your AI Agent</h4>
+                    <p className="text-slate-300 text-sm mb-5">Guardian AI Verified</p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-2 text-sm">
+                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
+                        <span className="text-slate-300">Security: <span className="text-green-400 font-medium">Passed</span></span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-sm">
+                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
+                        <span className="text-slate-300">Compliance: <span className="text-green-400 font-medium">Verified</span></span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-sm">
+                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
+                        <span className="text-slate-300">Trust Score: <span className="text-green-400 font-medium">98/100</span></span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 pt-4 border-t border-purple-500/20">
+                      <p className="text-slate-400 text-xs font-medium">Certified by DarkWave Studios</p>
+                    </div>
                   </div>
                 </motion.div>
               </div>
