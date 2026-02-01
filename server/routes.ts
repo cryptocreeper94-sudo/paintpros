@@ -116,10 +116,14 @@ const hasRole = (allowedRoles: string[]): RequestHandler => {
 const domainTenantMap: Record<string, string> = {
   "paintpros.io": "demo",
   "www.paintpros.io": "demo",
+  "tlid.io": "demo",
+  "www.tlid.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
   "www.nashvillepaintingprofessionals.com": "npp",
+  "lumepaint.co": "lumepaint",
+  "www.lumepaint.co": "lumepaint",
   "tradeworksai.io": "tradeworks",
   "www.tradeworksai.io": "tradeworks",
   "localhost": "npp",
@@ -234,14 +238,23 @@ function getTenantFromHostname(hostname: string): string {
     }
   }
   
+  // Replit dev preview URLs default to "demo" (TLId.io / platform mode with purple shield)
+  if (host.includes('replit.dev') || host.includes('picard.') || host.includes('repl.co')) {
+    const envTenant = process.env.DEFAULT_TENANT || process.env.VITE_TENANT_ID;
+    if (envTenant && ['npp', 'lume', 'lumepaint', 'demo', 'orbit', 'tradeworks'].includes(envTenant.toLowerCase())) {
+      return envTenant.toLowerCase();
+    }
+    return "demo";
+  }
+  
   // Check environment variable override for development
   const envTenant = process.env.DEFAULT_TENANT || process.env.VITE_TENANT_ID;
   if (envTenant && ['npp', 'lume', 'lumepaint', 'demo', 'orbit', 'tradeworks'].includes(envTenant.toLowerCase())) {
     return envTenant.toLowerCase();
   }
   
-  // Default fallback - Lume Paint Co
-  return "lume";
+  // Default fallback - demo (TLId.io / platform mode with purple shield)
+  return "demo";
 }
 
 // Track online users: Map<socketId, { userId, role, displayName }>
