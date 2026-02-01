@@ -216,7 +216,7 @@ export default function TrustLayerHome() {
     { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames, status: 'Live - In Development' },
     // Core Infrastructure
     { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL, status: 'Presale' },
-    { name: 'DarkWave Studios', desc: 'Architecture & Dev', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios, status: 'Live - In Development' },
+    { name: 'DarkWave Studios', desc: 'Full-Stack Dev & AI Integration', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios, status: 'Live - In Development' },
     // Events & Operations
     { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
     // Crypto & Trading
