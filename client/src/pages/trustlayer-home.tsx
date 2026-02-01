@@ -30,6 +30,7 @@ import ecosystemGetOrby from "@/assets/images/ecosystem-getorby.png";
 import ecosystemStrikeAgent from "@/assets/images/ecosystem-strikeagent.png";
 import ecosystemDarkWavePulse from "@/assets/images/ecosystem-darkwavepulse.png";
 import ecosystemPulse from "@/assets/images/ecosystem-pulse.png";
+import ecosystemLotOpsPro from "@/assets/images/ecosystem-lotopspro.png";
 import {
   Shield,
   Zap,
@@ -206,6 +207,7 @@ export default function TrustLayerHome() {
     { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros },
     { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
     { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing },
+    { name: 'Lot Ops Pro', desc: 'Driver Performance & Lot Management', url: 'https://lotopspro.io', image: ecosystemLotOpsPro },
     // Auto Ads Tenants
     { name: 'Nashville Painting Pros', desc: 'Working Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
     { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true },
