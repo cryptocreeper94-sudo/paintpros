@@ -27,21 +27,12 @@ export function TenantProvider({ children, tenant }: TenantProviderProps) {
     if (tenantOverride) {
       const tenantConfig = getTenantById(tenantOverride);
       setCurrentTenant(tenantConfig);
-      // Persist tenant selection in sessionStorage so it survives navigation
       sessionStorage.setItem('paintpros_tenant', tenantOverride);
       setIsLoading(false);
       return;
     }
 
-    // Check for previously stored tenant in session
-    const storedTenant = sessionStorage.getItem('paintpros_tenant');
-    if (storedTenant) {
-      const tenantConfig = getTenantById(storedTenant);
-      setCurrentTenant(tenantConfig);
-      setIsLoading(false);
-      return;
-    }
-
+    // Always fetch from server for accurate tenant detection (don't use stale cache)
     async function fetchTenant() {
       try {
         const response = await fetch('/api/tenant');
