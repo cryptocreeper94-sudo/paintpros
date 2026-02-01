@@ -15,7 +15,6 @@ const ECOSYSTEM_TENANTS = [
   'tradeworksai',
   'paintpros',
   'tldriverconnect',
-  'happyeats',
   'garagebot',
   'trustshield',
   'lotopspro'
