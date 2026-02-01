@@ -201,7 +201,7 @@ export default function TrustLayerHome() {
     { name: 'TrustLayer Marketing', desc: 'Automated Social Media', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true },
     // 7 Priority Ad Catalog Apps
     { name: 'TL Driver Connect', desc: 'Food, Parts & Services to Truck Stops', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
-    { name: 'Happy Eats', desc: 'Driver Lifestyle Platform', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
+    { name: 'Happy Eats', desc: 'Food Delivery to Truck Stops', url: 'https://happyeats.app', image: ecosystemHappyEats },
     { name: 'GarageBot', desc: 'Auto Parts Aggregator - 40+ Retailers', url: 'https://garagebot.io', image: ecosystemGarageBot },
     { name: 'Veda Solus', desc: 'Telemedicine Platform', url: 'https://vedasolus.io', image: ecosystemVedaSolus },
     { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros },
