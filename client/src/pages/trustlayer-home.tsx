@@ -195,36 +195,36 @@ export default function TrustLayerHome() {
     }
   ];
 
-  // 17 Connected Ecosystem Apps
+  // DarkWave Trust Layer Ecosystem Apps
   const connectedSystems = [
     // TrustLayer Hub
-    { name: 'TrustLayer Marketing', desc: 'Automated Social Media', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true },
-    // 7 Priority Ad Catalog Apps
-    { name: 'TL Driver Connect', desc: 'Food, Parts & Services to Truck Stops', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
-    { name: 'Happy Eats', desc: 'Food Delivery to Truck Stops', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
-    { name: 'GarageBot', desc: 'Auto Parts Aggregator - 40+ Retailers', url: 'https://garagebot.io', image: ecosystemGarageBot },
-    { name: 'Veda Solus', desc: 'Telemedicine Platform', url: 'https://vedasolus.io', image: ecosystemVedaSolus },
-    { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros },
-    { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
-    { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing },
-    { name: 'Lot Ops Pro', desc: 'Driver Performance & Lot Management', url: 'https://lotopspro.io', image: ecosystemLotOpsPro },
-    // Auto Ads Tenants
-    { name: 'Nashville Painting Pros', desc: 'Working Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, autoAds: true },
-    { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, autoAds: true },
+    { name: 'TrustLayer Marketing', desc: 'Automated Social Media', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true, status: 'Live - In Development' },
+    // Priority Apps
+    { name: 'TL Driver Connect', desc: 'Food, Parts & Services to Truck Stops', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, status: 'Live - In Development' },
+    { name: 'Happy Eats', desc: 'Food Delivery to Truck Stops', url: 'https://happyeats.app', image: ecosystemHappyEats, status: 'Coming Soon' },
+    { name: 'GarageBot', desc: 'Auto Parts Aggregator - 40+ Retailers', url: 'https://garagebot.io', image: ecosystemGarageBot, status: 'Live - In Development' },
+    { name: 'Veda Solus', desc: 'Telemedicine Platform', url: 'https://vedasolus.io', image: ecosystemVedaSolus, status: 'Live - In Development' },
+    { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros, status: 'Live - In Development' },
+    { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks, status: 'Live - In Development' },
+    { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing, status: 'Live - In Development' },
+    { name: 'Lot Ops Pro', desc: 'Driver Performance & Lot Management', url: 'https://lotopspro.io', image: ecosystemLotOpsPro, status: 'Live - In Development' },
+    // Tenant Demos
+    { name: 'Nashville Painting Pros', desc: 'Working Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
+    { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, status: 'Live' },
     // Gaming & Entertainment
-    { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy },
-    { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames },
+    { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy, status: 'Live - In Development' },
+    { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames, status: 'Live - In Development' },
     // Core Infrastructure
-    { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL },
-    { name: 'DarkWave Studios', desc: 'Architecture & Dev', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios },
+    { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL, status: 'Presale' },
+    { name: 'DarkWave Studios', desc: 'Architecture & Dev', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios, status: 'Live - In Development' },
     // Events & Operations
-    { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby },
+    { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
     // Crypto & Trading
-    { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent },
-    { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse },
-    { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse },
+    { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent, status: 'Live - In Development' },
+    { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse, status: 'Live - In Development' },
+    { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse, status: 'Live - In Development' },
     // AI Security & Certification
-    { name: 'Guardian AI', desc: 'AI Agent Certification', url: 'https://dwsc.io/guardian-ai', image: ecosystemDWTL, featured: true }
+    { name: 'TrustShield', desc: 'AI Agent Certification', url: 'https://trustshield.tech', image: ecosystemDWTL, status: 'Live - In Development' }
   ];
 
   const trustFeatures = [
@@ -545,19 +545,16 @@ export default function TrustLayerHome() {
                         You Are Here
                       </Badge>
                     )}
-                    {system.primary && (
-                      <Badge className="mb-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
-                        Live Now
-                      </Badge>
-                    )}
-                    {system.comingSoon && (
-                      <Badge className="mb-2 bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">
-                        Spring 2026
-                      </Badge>
-                    )}
-                    {system.autoAds && (
-                      <Badge className="mb-2 bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">
-                        Auto Ads
+                    {system.status && (
+                      <Badge className={`mb-2 text-xs ${
+                        system.status === 'Live' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                        system.status === 'Live - In Development' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
+                        system.status === 'Beta' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' :
+                        system.status === 'Coming Soon' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
+                        system.status === 'Presale' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                        'bg-slate-500/20 text-slate-400 border-slate-500/30'
+                      }`}>
+                        {system.status}
                       </Badge>
                     )}
                     <h4 className="text-white font-semibold text-sm">{system.name}</h4>
