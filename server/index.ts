@@ -11,6 +11,7 @@ import { startScheduler } from "./marketing-scheduler";
 import { startBlogScheduler } from "./blog-scheduler";
 import { startAdScheduler } from "./npp-ad-scheduler";
 import { startNppPostingScheduler } from "./npp-posting-scheduler";
+import { startDarkWaveUnifiedScheduler } from "./darkwave-unified-scheduler";
 import { initAuthBackground } from "./replitAuth";
 import widgetRoutes from "./widgets/widget-routes";
 
@@ -321,6 +322,9 @@ app.use((req, res, next) => {
       
       // Start NPP organic posting scheduler (4x daily to Facebook/Instagram)
       startNppPostingScheduler();
+      
+      // Start DarkWave Unified Ecosystem Scheduler (all businesses through DarkWave)
+      startDarkWaveUnifiedScheduler();
     },
   );
 })();
