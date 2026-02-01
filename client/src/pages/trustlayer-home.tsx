@@ -203,7 +203,7 @@ export default function TrustLayerHome() {
     { name: 'TL Driver Connect', desc: 'Food, Parts & Services to Truck Stops', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, status: 'Live - In Development' },
     { name: 'Happy Eats', desc: 'Food Delivery to Truck Stops', url: 'https://happyeats.app', image: ecosystemHappyEats, status: 'Coming Soon' },
     { name: 'GarageBot', desc: 'Auto Parts Aggregator - 40+ Retailers', url: 'https://garagebot.io', image: ecosystemGarageBot, status: 'Live - In Development' },
-    { name: 'Veda Solus', desc: 'Telemedicine Platform', url: 'https://vedasolus.io', image: ecosystemVedaSolus, status: 'Live - In Development' },
+    { name: 'VedaSolus', desc: 'Holistic Wellness & Ayurveda', url: 'https://vedasolus.io', image: ecosystemVedaSolus, status: 'Live - In Development' },
     { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros, status: 'Live - In Development' },
     { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks, status: 'Live - In Development' },
     { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing, status: 'Live - In Development' },

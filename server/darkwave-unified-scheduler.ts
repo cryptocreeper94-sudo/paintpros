@@ -17,7 +17,8 @@ const ECOSYSTEM_TENANTS = [
   'tldriverconnect',
   'garagebot',
   'trustshield',
-  'lotopspro'
+  'lotopspro',
+  'vedasolus'
 ];
 
 // Hourly posting 6am-10pm CST = 17 slots per day
