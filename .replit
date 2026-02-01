@@ -51,5 +51,6 @@ expertMode = true
 [userenv]
 
 [userenv.shared]
-CONTACT_EMAIL = "Cryptocreeper94@gmail.com"
+CONTACT_EMAIL = "cryptocreeper94@gmail.com"
 ORBIT_ECOSYSTEM_DEV_URL = "https://606bb700-1745-49b9-8ff5-b83937d394a3-00-1b1vrn19wm7h.spock.replit.dev/api/ecosystem"
+CONTRACTOR_EMAIL = "cryptocreeper94@gmail.com"

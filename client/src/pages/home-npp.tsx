@@ -104,6 +104,21 @@ export default function HomeNPP() {
     <PageLayout>
       <main className="min-h-screen">
         
+        {/* Legacy Site Redirect Banner */}
+        <div className="bg-gradient-to-r from-[#800000] to-[#600000] text-white py-3 px-4 text-center">
+          <p className="text-sm md:text-base">
+            Please visit our legacy site at{' '}
+            <a 
+              href="https://nashvillepaintingprofessionals.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline font-semibold hover:text-yellow-200 transition-colors"
+            >
+              nashvillepaintingprofessionals.com
+            </a>
+          </p>
+        </div>
+        
         {/* HERO SECTION - Mobile-First Centered Layout */}
         <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50/70 to-white/70 px-4 pt-4 pb-[100px] md:pt-20 md:pb-20">
           {/* Desktop painters image - z-0 to stay behind text */}

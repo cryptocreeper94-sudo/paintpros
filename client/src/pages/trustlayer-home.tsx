@@ -209,7 +209,7 @@ export default function TrustLayerHome() {
     { name: 'Orbit Staffing', desc: 'Workforce Solutions', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing, status: 'Live - In Development' },
     { name: 'Lot Ops Pro', desc: 'Driver Performance & Lot Management', url: 'https://lotopspro.io', image: ecosystemLotOpsPro, status: 'Live - In Development' },
     // Tenant Demos
-    { name: 'Nashville Painting Pros', desc: 'Working Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
+    { name: 'Nashville Painting Professionals', desc: 'Lead Generator Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
     { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, status: 'Live' },
     // Gaming & Entertainment
     { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy, status: 'Live - In Development' },
