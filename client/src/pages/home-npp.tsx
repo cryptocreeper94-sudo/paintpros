@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { PageLayout } from "@/components/layout/page-layout";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -60,6 +60,84 @@ interface PaintColor {
 export default function HomeNPP() {
   const tenant = useTenant();
   const [showEstimateModal, setShowEstimateModal] = useState(true);
+
+  // SEO Meta Tags
+  useEffect(() => {
+    document.title = "Nashville Painting Professionals | Interior & Exterior Painting Services";
+    
+    const metaTags = [
+      { name: 'description', content: 'Nashville Painting Professionals - Premier residential and commercial painting services in Nashville, TN. Interior, exterior, cabinet refinishing, and more. Get a free estimate today!' },
+      { name: 'keywords', content: 'Nashville painting, house painters Nashville, interior painting Nashville, exterior painting Nashville, commercial painting Tennessee, cabinet refinishing, painting contractors Nashville TN, professional painters' },
+      { name: 'author', content: 'Nashville Painting Professionals' },
+      { name: 'robots', content: 'index, follow' },
+      { name: 'geo.region', content: 'US-TN' },
+      { name: 'geo.placename', content: 'Nashville' }
+    ];
+    
+    metaTags.forEach(tag => {
+      let meta = document.querySelector(`meta[name="${tag.name}"]`);
+      if (meta) {
+        meta.setAttribute('content', tag.content);
+      } else {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', tag.name);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      }
+    });
+    
+    // Open Graph tags
+    const ogTags = [
+      { property: 'og:title', content: 'Nashville Painting Professionals | Quality Painting Services' },
+      { property: 'og:description', content: 'Transform your space with Nashville\'s trusted painting professionals. Residential & commercial. Free estimates. Licensed & insured.' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://nashpaintpros.io' },
+      { property: 'og:site_name', content: 'Nashville Painting Professionals' },
+      { property: 'og:locale', content: 'en_US' }
+    ];
+    
+    ogTags.forEach(tag => {
+      let meta = document.querySelector(`meta[property="${tag.property}"]`);
+      if (meta) {
+        meta.setAttribute('content', tag.content);
+      } else {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', tag.property);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      }
+    });
+    
+    // Twitter Card
+    const twitterTags = [
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Nashville Painting Professionals' },
+      { name: 'twitter:description', content: 'Premier residential and commercial painting services in Nashville, TN. Get a free estimate!' }
+    ];
+    
+    twitterTags.forEach(tag => {
+      let meta = document.querySelector(`meta[name="${tag.name}"]`);
+      if (meta) {
+        meta.setAttribute('content', tag.content);
+      } else {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', tag.name);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      }
+    });
+    
+    // Canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      canonical.setAttribute('href', 'https://nashpaintpros.io');
+    } else {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      canonical.setAttribute('href', 'https://nashpaintpros.io');
+      document.head.appendChild(canonical);
+    }
+  }, []);
 
   // Fetch colors for preview
   const { data: colors = [] } = useQuery<PaintColor[]>({
