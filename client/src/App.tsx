@@ -100,7 +100,7 @@ import TradeVerticalPage from "@/pages/trade-vertical";
 import Onboarding from "@/pages/onboarding";
 import OnboardingSuccess from "@/pages/onboarding-success";
 import PlatformPresentation from "@/pages/platform-presentation";
-import { PaintBuddy } from "@/components/ui/paint-buddy";
+import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { getTenantById } from "@/config/tenant";
 import { TenantProvider as TenantProviderBase } from "@/context/TenantContext";
 
@@ -114,15 +114,15 @@ function TenantPrefixedRoute({ tenantId, Component }: { tenantId: string; Compon
   );
 }
 
-function ConditionalPaintBuddy() {
+function ConditionalAIAgent() {
   const [location] = useLocation();
   
-  // Hide PaintBuddy on internal/admin routes
-  const hiddenRoutes = ['/app', '/admin', '/owner', '/crew-lead', '/marketing-hub', '/ops-ai', '/developer'];
+  // Hide AI Agent on routes that already have their own AI agent
+  const hiddenRoutes = ['/app', '/admin', '/owner', '/crew-lead', '/marketing-hub', '/ops-ai', '/developer', '/tradeworks'];
   const shouldHide = hiddenRoutes.some(route => location.startsWith(route));
   
   if (shouldHide) return null;
-  return <PaintBuddy />;
+  return <AIAgentTab />;
 }
 
 function AnalyticsTracker() {
@@ -330,7 +330,7 @@ function App() {
                   <AnalyticsTracker />
                   <Toaster />
                   <Router />
-                  <ConditionalPaintBuddy />
+                  <ConditionalAIAgent />
                 </TooltipProvider>
               </AccessProvider>
             </DemoProvider>
