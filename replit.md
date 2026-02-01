@@ -1,5 +1,8 @@
 # PaintPros.io by Orbit - Compressed Documentation
 
+## Project Stats & History
+See `PROJECT_STATS.md` for a living document tracking development progress, line counts, cost estimates, and historical snapshots.
+
 ## Overview
 PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting and home services industry. It provides white-label websites, interactive estimating tools, SEO management, and role-based dashboards. The platform supports franchisable and standalone licensing models, with a primary focus on Lume Paint Co as a template for future expansion. The project aims to enhance customer spaces and expand across various trade verticals.
 
