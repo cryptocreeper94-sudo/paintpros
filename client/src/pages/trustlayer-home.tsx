@@ -307,6 +307,25 @@ export default function TrustLayerHome() {
                 Guardian AI
               </Button>
               <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => window.open('https://trustshield.tech', '_blank')}
+                className="text-slate-400 hover:text-white hidden md:inline-flex"
+                data-testid="button-guardian-shield-nav"
+              >
+                <Shield className="w-3.5 h-3.5 mr-1.5" />
+                Guardian Shield
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => window.open('https://dwsc.io/ai-agents', '_blank')}
+                className="text-slate-400 hover:text-white hidden md:inline-flex"
+                data-testid="button-ai-agents"
+              >
+                AI Agents
+              </Button>
+              <Button 
                 variant="outline"
                 size="sm"
                 className="border-slate-600 text-slate-300 hover:text-white hover:border-slate-500"
@@ -1156,16 +1175,18 @@ export default function TrustLayerHome() {
           <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide justify-start md:justify-center md:flex-wrap">
             {[
               { name: 'TLId.io', url: 'https://tlid.io', active: true },
-              { name: 'DWTL.io', url: 'https://dwtl.io' },
               { name: 'DWSC.io', url: 'https://dwsc.io' },
+              { name: 'Guardian AI', url: 'https://dwsc.io/guardian-ai' },
+              { name: 'AI Agents', url: 'https://dwsc.io/ai-agents' },
+              { name: 'Guardian Shield', url: 'https://trustshield.tech' },
+              { name: 'DarkWave Studios', url: 'https://darkwavestudios.io' },
+              { name: 'DarkWave Games', url: 'https://darkwavegames.io' },
+              { name: 'YourLegacy.io', url: 'https://yourlegacy.io' },
+              { name: 'DWTL.io', url: 'https://dwtl.io' },
               { name: 'OrbitStaffing.io', url: 'https://orbitstaffing.io' },
               { name: 'VedaSolus.io', url: 'https://vedasolus.io' },
-              { name: 'GetOrbit.io', url: 'https://getorbit.io' },
-              { name: 'LotosPro.io', url: 'https://lotospro.io' },
               { name: 'StrikeAgent.io', url: 'https://strikeagent.io' },
               { name: 'DarkWavePulse.com', url: 'https://darkwavepulse.com' },
-              { name: 'Brew & Board', url: 'https://brewandboard.coffee' },
-              { name: 'Driver Connect', url: 'https://driver-connect-hub.replit.app' },
             ].map((site, i) => (
               <a
                 key={i}
