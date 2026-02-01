@@ -29,6 +29,7 @@ import ecosystemDarkWaveStudios from "@/assets/images/ecosystem-darkwavestudios.
 import ecosystemGetOrby from "@/assets/images/ecosystem-getorby.png";
 import ecosystemStrikeAgent from "@/assets/images/ecosystem-strikeagent.png";
 import ecosystemDarkWavePulse from "@/assets/images/ecosystem-darkwavepulse.png";
+import ecosystemPulse from "@/assets/images/ecosystem-pulse.png";
 import {
   Shield,
   Zap,
@@ -200,7 +201,7 @@ export default function TrustLayerHome() {
     // 7 Priority Ad Catalog Apps
     { name: 'TL Driver Connect', desc: 'Franchise Opportunity', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, primary: true },
     { name: 'Happy Eats', desc: 'Driver Lifestyle Platform', url: 'https://happyeats.app', image: ecosystemHappyEats, comingSoon: true },
-    { name: 'Garage Bot', desc: 'Auto Repair Shops', url: 'https://garagebot.io', image: ecosystemGarageBot },
+    { name: 'GarageBot', desc: 'Auto Parts Aggregator - 40+ Retailers', url: 'https://garagebot.io', image: ecosystemGarageBot },
     { name: 'Veda Solus', desc: 'Telemedicine Platform', url: 'https://vedasolus.io', image: ecosystemVedaSolus },
     { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros },
     { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks },
@@ -218,6 +219,7 @@ export default function TrustLayerHome() {
     { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby },
     // Crypto & Trading
     { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent },
+    { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse },
     { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse },
     // AI Security & Certification
     { name: 'Guardian AI', desc: 'AI Agent Certification', url: 'https://dwsc.io/guardian-ai', image: ecosystemDWTL, featured: true }
