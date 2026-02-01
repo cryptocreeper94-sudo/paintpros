@@ -317,11 +317,11 @@ app.use((req, res, next) => {
       // Start the blog scheduler for automated AI blog generation
       startBlogScheduler();
       
-      // Start NPP Meta Ad Campaign scheduler (business hours, $50/day cap)
-      startAdScheduler();
+      // NPP Meta Ad Campaign scheduler - DISABLED per owner request
+      // startAdScheduler();
       
-      // Start NPP organic posting scheduler (4x daily to Facebook/Instagram)
-      startNppPostingScheduler();
+      // NPP organic posting scheduler - DISABLED per owner request
+      // startNppPostingScheduler();
       
       // Start DarkWave Unified Ecosystem Scheduler (all businesses through DarkWave)
       startDarkWaveUnifiedScheduler();
