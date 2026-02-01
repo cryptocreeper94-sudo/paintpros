@@ -65,17 +65,13 @@ export function Footer() {
           
           {/* Copyright */}
           <div className="whitespace-nowrap text-[9px] md:text-[10px] text-black font-semibold">
-            {isDemo ? (
-              <>
-                <span className="hidden sm:inline">Powered by Darkwave Studios, LLC</span>
-                <span className="sm:hidden">Darkwave Studios</span>
-                <span className="ml-1">© 2025</span>
-              </>
-            ) : (
-              <>
-                © {new Date().getFullYear()} <span className="hidden sm:inline">{tenant.name}</span><span className="sm:hidden">{tenant.id === "lumepaint" ? "Lume" : "NPP"}</span>
-              </>
-            )}
+            <span className="hidden sm:inline">Powered by </span>
+            <a href="https://trustshield.tech" target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition-colors">TrustShield.tech</a>
+            <span className="mx-1">|</span>
+            <a href="https://dwtl.io" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-600 transition-colors hidden sm:inline">DWTL</a>
+            <span className="hidden sm:inline mx-1">|</span>
+            <a href="https://tlid.io" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 transition-colors hidden sm:inline">TLId</a>
+            <span className="ml-1">© 2026</span>
           </div>
           
           {/* Hallmark Badge */}
