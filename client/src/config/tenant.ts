@@ -918,6 +918,8 @@ export const tenants: Record<string, TenantConfig> = {
 const domainTenantMap: Record<string, string> = {
   "paintpros.io": "demo",
   "www.paintpros.io": "demo",
+  "tlid.io": "demo",
+  "www.tlid.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
@@ -979,8 +981,13 @@ export function getTenantIdFromHostname(hostname: string): string {
     }
   }
   
-  // Fallback to env variable - default to Lume
-  return import.meta.env.VITE_TENANT_ID || "lume";
+  // Replit dev preview and unknown domains use "demo" (TLId.io / platform mode)
+  if (host.includes('replit.dev') || host.includes('picard.') || host.includes('repl.co')) {
+    return import.meta.env.VITE_TENANT_ID || "demo";
+  }
+  
+  // Fallback to env variable - default to demo (platform mode with purple shield)
+  return import.meta.env.VITE_TENANT_ID || "demo";
 }
 
 // Get current tenant based on domain or environment
