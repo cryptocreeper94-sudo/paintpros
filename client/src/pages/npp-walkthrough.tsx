@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +35,9 @@ import {
   Palette,
   PenLine,
   LayoutGrid,
-  Ruler
+  Ruler,
+  Play,
+  Pause
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -49,9 +51,12 @@ interface TourStep {
   action?: { label: string; url: string };
 }
 
+const AUTOPLAY_INTERVAL = 12000; // 12 seconds per slide
+
 export default function NPPWalkthrough() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
 
   const tourSteps: TourStep[] = [
     {
@@ -189,7 +194,29 @@ export default function NPPWalkthrough() {
 
   const goToStep = (step: number) => {
     setCurrentStep(step);
+    setIsAutoPlaying(false); // Pause autoplay when manually navigating
   };
+
+  const toggleAutoPlay = () => {
+    setIsAutoPlaying(prev => !prev);
+  };
+
+  // Autoplay effect
+  useEffect(() => {
+    if (!isAutoPlaying || !isStarted) return;
+    
+    const timer = setInterval(() => {
+      setCurrentStep(prev => {
+        if (prev >= tourSteps.length - 1) {
+          setIsAutoPlaying(false); // Stop at the end
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, AUTOPLAY_INTERVAL);
+
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, isStarted, tourSteps.length]);
 
   const FloatingArrow = ({ direction }: { direction: string }) => {
     const arrowVariants = {
@@ -1110,12 +1137,26 @@ export default function NPPWalkthrough() {
             <p className="text-muted-foreground mb-8">
               I'll show you everything step by step.<br/>
               Each feature, where to find it, what it does.<br/>
-              Takes about 5 minutes.
+              Takes about 3 minutes.
             </p>
-            <Button size="lg" onClick={() => setIsStarted(true)} className="gap-2">
-              Let's Go
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button size="lg" onClick={() => setIsStarted(true)} className="gap-2">
+                Click Through
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => {
+                  setIsStarted(true);
+                  setIsAutoPlaying(true);
+                }} 
+                className="gap-2"
+              >
+                <Play className="w-5 h-5" />
+                Autoplay (~3 min)
+              </Button>
+            </div>
           </Card>
         </motion.div>
       </div>
@@ -1135,7 +1176,25 @@ export default function NPPWalkthrough() {
         />
       </div>
 
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <Button
+          size="sm"
+          variant={isAutoPlaying ? "default" : "outline"}
+          onClick={toggleAutoPlay}
+          className="gap-2"
+        >
+          {isAutoPlaying ? (
+            <>
+              <Pause className="w-4 h-4" />
+              Pause
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4" />
+              Play
+            </>
+          )}
+        </Button>
         <Card className="px-4 py-2 text-sm">
           Step {currentStep + 1} of {tourSteps.length}
         </Card>
