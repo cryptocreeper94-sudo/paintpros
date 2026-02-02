@@ -2,7 +2,7 @@
 
 ## Platform Overview
 
-TradeWorks AI is the multi-vertical expansion of PaintPros.io, extending the field service toolkit to 8 major trade industries. The platform provides AI-powered estimation, crew management, and business automation for contractors across painting, roofing, HVAC, plumbing, electrical, landscaping, flooring, and general contracting.
+TradeWorks AI is the comprehensive field toolkit demo showcasing all 8 trade verticals. This is the core SaaS product that provides AI-powered estimation, crew management, and business automation for contractors across painting, roofing, HVAC, plumbing, electrical, landscaping, flooring, and general contracting.
 
 ## Tagline
 
@@ -10,19 +10,22 @@ TradeWorks AI is the multi-vertical expansion of PaintPros.io, extending the fie
 
 ## Short Description (50 words)
 
-TradeWorks AI brings enterprise-grade field service management to skilled trades. AI-powered estimation, GPS crew tracking, automated scheduling, and instant invoicing across 8 industries. White-label ready for trade associations and franchise networks.
+TradeWorks AI is the complete field toolkit for 8 trade industries. AI-powered estimation, GPS crew tracking, automated scheduling, weather-aware planning, and instant invoicing. Demo all verticals at tradeworksai.io. Live demos: nashpaintpros.io (painting) and lumepaint.co (premium painting).
 
 ## Medium Description (150 words)
 
-TradeWorks AI represents the evolution of PaintPros.io into a comprehensive multi-trade platform. Recognizing that painting contractors often expand into related services or partner with other trades, TradeWorks provides unified business management across the entire home services ecosystem.
+TradeWorks AI is the flagship field service platform serving 8 major trade industries from a single unified system. Each vertical includes industry-specific estimation templates, material databases, compliance requirements, and workflow automations tailored to that trade.
 
-Each trade vertical includes industry-specific estimation templates, material databases, and compliance requirements. The AI estimation engine learns from completed projects to improve accuracy over time. Cross-trade project coordination allows general contractors to manage subcontractors within a single platform.
+The platform features AI-powered estimation that learns from completed projects, GPS-verified crew tracking, weather-aware scheduling that prevents conflicts, and automated invoicing with payment processing. Cross-trade project coordination allows general contractors to manage subcontractors seamlessly.
 
-The white-label architecture supports trade associations, franchise networks, and regional contractor groups who want branded versions for their members. Integration with the Trust Layer ecosystem provides verified contractor identity, blockchain-stamped project records, and cross-platform data sharing.
+TradeWorks AI is demonstrated through multiple live sites: tradeworksai.io showcases all 8 verticals, while nashpaintpros.io and lumepaint.co provide deep-dive demos of the painting vertical at standard and premium tiers respectively.
 
-## Supported Trades
+The white-label architecture supports trade associations, franchise networks, and regional contractor groups who want branded versions for their members.
+
+## Supported Trade Verticals
 
 1. **Painting** - Interior, exterior, commercial, residential
+   - Live Demos: nashpaintpros.io, lumepaint.co
 2. **Roofing** - Shingle, metal, flat, repairs
 3. **HVAC** - Installation, repair, maintenance
 4. **Plumbing** - Residential, commercial, emergency
@@ -35,22 +38,30 @@ The white-label architecture supports trade associations, franchise networks, an
 
 - AI-Powered Multi-Trade Estimation
 - Industry-Specific Material Databases
-- Cross-Trade Project Coordination
 - GPS Crew Tracking & Dispatch
-- Automated Scheduling with Weather Awareness
-- Instant Invoicing & Payment Processing
-- Subcontractor Management Portal
+- Weather-Aware Scheduling
+- Automated Invoicing & Payments
+- Subcontractor Management
+- Before/After Project Galleries
 - White-Label Franchise Architecture
 - Compliance & Licensing Verification
-- Before/After Project Galleries
+- Cross-Trade Project Coordination
+
+## Live Demo Sites
+
+| Vertical | Demo URL | Tier |
+|----------|----------|------|
+| All 8 Trades | tradeworksai.io | Full Demo |
+| Painting | nashpaintpros.io | Standard |
+| Painting | lumepaint.co | Premium |
 
 ## Target Market
 
 - Multi-service contractors
+- Single-trade specialists
 - Home service franchises
 - Trade associations
 - General contractors
-- Regional contractor networks
 
 ## Domain
 

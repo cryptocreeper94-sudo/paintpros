@@ -2,7 +2,7 @@
 
 ## Business Overview
 
-Lume Paint Co is the premium tenant demonstration for PaintPros.io, showcasing luxury interior painting services with elevated branding. The "Sparkle and Shine" design aesthetic features glassmorphism, glow effects, and ultra-premium visual presentation for high-end clientele.
+Lume Paint Co is the PREMIUM tier live demo for the TradeWorks AI painting vertical. It showcases how luxury painting contractors can position themselves at the high end of the market while using the same powerful TradeWorks platform with elevated branding and design.
 
 ## Tagline
 
@@ -10,51 +10,58 @@ Lume Paint Co is the premium tenant demonstration for PaintPros.io, showcasing l
 
 ## Short Description (50 words)
 
-Lume Paint Co delivers luxury interior painting for discerning Nashville homeowners. Premium finishes, designer color consultations, and white-glove service. Featuring the innovative Room Visualizer tool to preview colors before commitment. Experience painting reimagined.
+Lume Paint Co is the premium tier live demo for TradeWorks AI painting vertical. Luxury interior painting with elevated "Sparkle and Shine" design aesthetic, glassmorphism effects, and white-glove customer experience. See how TradeWorks serves high-end contractors.
 
 ## Medium Description (150 words)
 
-Lume Paint Co represents the pinnacle of what PaintPros.io can offer - a fully branded luxury painting experience that elevates the entire customer journey. From the moment visitors land on the site, they experience premium design aesthetics including bento grid layouts, 3D hover animations, and sophisticated glassmorphism effects.
+Lume Paint Co demonstrates the TradeWorks AI platform configured for luxury painting services. While nashpaintpros.io shows the standard tier, Lume represents how premium contractors can differentiate themselves with elevated branding while using the same powerful backend tools.
 
-The Lume experience includes complimentary color consultations, premium Benjamin Moore and Sherwin-Williams finishes, and the exclusive Room Visualizer tool that lets clients see paint colors in their actual space before work begins.
+The "Sparkle and Shine" design aesthetic features bento grid layouts, glassmorphism effects, 3D hover animations, and sophisticated premium typography. The customer experience is white-glove from start to finish, with complimentary color consultations and premium finish options.
 
-Designed for high-net-worth homeowners and luxury properties, Lume demonstrates how painting contractors can position themselves at the premium end of the market while using automated tools to maintain operational efficiency.
+The Room Visualizer tool lets high-net-worth clients preview Benjamin Moore and Sherwin-Williams colors in their actual space before work begins. This premium feature set demonstrates how TradeWorks AI scales from budget-conscious contractors to luxury service providers.
+
+Compare with nashpaintpros.io to see how the same platform serves different market positions.
 
 ## Key Features
 
-- Ultra-Premium Design System
+- Premium "Sparkle and Shine" Design
+- Glassmorphism UI Effects
+- 3D Hover Animations
 - Room Visualizer with AI Color Matching
 - Designer Color Consultations
-- Premium Finish Options
-- White-Glove Customer Service
+- Premium Finish Options (Benjamin Moore, Sherwin-Williams)
+- White-Glove Booking Experience
 - Luxury Portfolio Gallery
-- High-End Booking Experience
-- Glassmorphism UI Effects
+- High-End Customer Journey
 
-## Target Market
+## Demo Purpose
+
+Shows TradeWorks AI painting vertical at PREMIUM tier:
+- Luxury branding capabilities
+- High-end customer experience
+- Premium design customization
+- Market positioning flexibility
+
+## Target Market (Demo)
 
 - Luxury homeowners
 - High-net-worth individuals
 - Premium residential properties
-- Designer and architect referrals
+- Designer/architect referrals
 - Nashville's upscale neighborhoods
 
-## Design Aesthetic
+## Related Demos
 
-"Sparkle and Shine" featuring:
-- Bento Grid layouts
-- Glassmorphism effects
-- 3D hover animations
-- Premium typography
-- Warm amber/gold accent colors
+- **nashpaintpros.io** - Standard tier painting demo
+- **tradeworksai.io** - Full 8-trade platform demo
 
 ## Status
 
-Live Demo (Premium Tier Showcase)
+Live Demo - Painting Vertical (Premium Tier)
 
 ## Powered By
 
-PaintPros.io | Orbit | TrustShield.tech
+TradeWorks AI | Orbit | TrustShield.tech
 
 ---
 

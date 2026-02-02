@@ -2,7 +2,7 @@
 
 ## Business Overview
 
-Nashville Painting Professionals is a lead generation demo site showcasing the PaintPros.io platform capabilities. Positioned as Nashville's trusted painting contractor, the site demonstrates interactive estimation, customer booking, and automated lead capture - all forwarding to cryptocreeper94@gmail.com.
+Nashville Painting Professionals is a LIVE demo site showcasing the TradeWorks AI painting vertical in action. This is a fully functional business website demonstrating how painting contractors can present themselves professionally while leveraging the complete TradeWorks field toolkit.
 
 ## Tagline
 
@@ -10,42 +10,54 @@ Nashville Painting Professionals is a lead generation demo site showcasing the P
 
 ## Short Description (50 words)
 
-Nashville Painting Professionals delivers premium residential and commercial painting services across Middle Tennessee. Instant online estimates, transparent pricing, and professional crews. Powered by PaintPros.io platform with interactive room visualizer and AI-powered estimation tools.
+Nashville Painting Professionals is a live demo for the TradeWorks AI painting vertical. Fully functional business site with instant online estimates, interactive room visualizer, 5-step booking wizard, and professional portfolio. See the TradeWorks platform in action for the painting trade.
 
 ## Medium Description (150 words)
 
-Nashville Painting Professionals represents the ideal customer-facing experience for PaintPros.io platform tenants. The site showcases how painting contractors can present themselves professionally while capturing leads efficiently.
+Nashville Painting Professionals represents the TradeWorks AI platform deployed for a real painting contractor business. This is not a mockup - it's a live, fully functional demonstration of how the painting vertical works in production.
 
-Features include a legacy site banner acknowledging the transition to modern technology, comprehensive SEO optimization (meta tags, Open Graph, Twitter Cards), and a streamlined estimation flow. All leads are forwarded to the business owner via email with full project details.
+The site showcases the complete customer journey: instant online estimation with real-time pricing, interactive room visualizer for color selection, mobile-first responsive design, and the streamlined 5-step booking wizard. All leads are captured and forwarded to the business owner.
 
-The site demonstrates mobile-first design, real-time pricing calculators, and the complete 5-step booking wizard. It serves as both a live lead generator and a demo for prospective PaintPros.io franchisees.
+Features include a legacy site banner acknowledging technology upgrades, comprehensive SEO optimization (meta tags, Open Graph, Twitter Cards), and before/after portfolio galleries. The site serves as proof-of-concept for prospective TradeWorks AI customers considering the painting vertical.
+
+For the premium tier painting demo, see lumepaint.co.
 
 ## Key Features
 
-- Legacy Site Banner & Transition Messaging
+- Live Production Environment
 - Instant Online Estimation
-- Mobile-First Responsive Design
-- Lead Forwarding to Owner Email
-- Full SEO Optimization
 - Interactive Room Visualizer
 - 5-Step Booking Wizard
+- Mobile-First Design
+- Full SEO Optimization
 - Before/After Portfolio Gallery
+- Lead Capture & Forwarding
+- Legacy Site Transition Banner
 
-## Service Area
+## Demo Purpose
 
-Nashville, Franklin, Brentwood, Murfreesboro, Hendersonville, and surrounding Middle Tennessee communities.
+Shows TradeWorks AI painting vertical capabilities:
+- Customer-facing booking flow
+- Real-time pricing calculations
+- Professional presentation
+- Lead generation system
 
-## Lead Forwarding
+## Service Area (Demo)
 
-All leads forward to: cryptocreeper94@gmail.com
+Nashville, Franklin, Brentwood, Murfreesboro, Hendersonville, and Middle Tennessee.
+
+## Related Demos
+
+- **lumepaint.co** - Premium tier painting demo
+- **tradeworksai.io** - Full 8-trade platform demo
 
 ## Status
 
-Live Lead Generator (Not in organic posting rotation)
+Live Demo - Painting Vertical (Standard Tier)
 
 ## Powered By
 
-PaintPros.io | Orbit | TrustShield.tech
+TradeWorks AI | Orbit | TrustShield.tech
 
 ---
 
