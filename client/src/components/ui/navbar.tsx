@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { useTenant } from "@/context/TenantContext";
 import { useAuth } from "@/hooks/use-auth";
 import { LanguageToggle } from "@/components/language-toggle";
-import nppLogo from "@assets/Nashville_PP_Logo_RGB-03_1766064290994.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,31 +34,16 @@ export function Navbar() {
   return (
     <>
     <header className="relative z-50">
-      <div className={cn(
-        "flex items-center px-3 md:px-4 overflow-hidden",
-        tenant.id === "npp" ? "h-20 md:h-28 lg:h-36" : tenant.id === "lumepaint" ? "h-12 md:h-14" : "h-16 md:h-20"
-      )}>
-        {/* Left: Hamburger Menu - NPP logo for NPP, standard menu for demo */}
+      <div className="flex items-center px-3 md:px-4 overflow-hidden h-16 md:h-20">
+        {/* Left: Hamburger Menu */}
         <button 
-          className={cn(
-            "hover:opacity-80 transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50",
-            tenant.id === "npp" ? "p-1 ml-1" : tenant.id === "lumepaint" ? "p-2 ml-2" : "p-2 ml-2"
-          )}
+          className="hover:opacity-80 transition-all flex-shrink-0 flex items-center justify-center cursor-pointer relative z-50 p-2 ml-2"
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-hamburger-menu"
           aria-label="Toggle menu"
         >
           {isOpen ? (
             <X size={28} className="text-black" />
-          ) : tenant.id === "npp" ? (
-            <img 
-              src={nppLogo} 
-              alt="Menu"
-              className="h-[240px] md:h-56 lg:h-80 w-auto object-contain"
-              style={{ marginTop: '-40px', marginLeft: '-145px' }}
-            />
-          ) : tenant.id === "lumepaint" ? (
-            <Menu size={24} className="text-black" />
           ) : (
             <Menu size={28} className="text-black" />
           )}
