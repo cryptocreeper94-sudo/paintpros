@@ -122,6 +122,14 @@ export default function NPPWalkthrough() {
     },
     {
       id: 8,
+      title: "How It All Connects",
+      description: "FLYWHEEL_SPECIAL",
+      icon: <BarChart3 className="w-8 h-8" />,
+      arrowDirection: 'right',
+      highlight: "flywheel"
+    },
+    {
+      id: 9,
       title: "An Opportunity Worth Exploring",
       description: "HARDWARE_STORE_SPECIAL",
       icon: <Store className="w-8 h-8" />,
@@ -129,7 +137,7 @@ export default function NPPWalkthrough() {
       highlight: "hardware"
     },
     {
-      id: 9,
+      id: 10,
       title: "Quick Reference - Everything",
       description: "REFERENCE_SPECIAL",
       icon: <CheckCircle2 className="w-8 h-8" />,
@@ -540,6 +548,95 @@ export default function NPPWalkthrough() {
             <p className="text-sm text-muted-foreground italic">
               The system keeps you visible. You focus on painting.
             </p>
+          </div>
+        );
+
+      case "FLYWHEEL_SPECIAL":
+        return (
+          <div className="space-y-6">
+            <p className="text-lg text-muted-foreground">
+              Here's how all the pieces work together:
+            </p>
+            
+            {/* The Flywheel Visual */}
+            <div className="relative">
+              <div className="grid grid-cols-1 gap-3">
+                {/* Step 1 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0 border-2 border-blue-500">
+                    <span className="text-blue-500 font-bold">1</span>
+                  </div>
+                  <div className="flex-1 bg-blue-500/5 rounded-lg p-3 border border-blue-500/20">
+                    <span className="font-medium">Marketing posts go out</span>
+                    <span className="text-sm text-muted-foreground block">Facebook, Instagram - automatic</span>
+                  </div>
+                  <ArrowDown className="w-5 h-5 text-muted-foreground" />
+                </div>
+
+                {/* Step 2 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 border-2 border-green-500">
+                    <span className="text-green-500 font-bold">2</span>
+                  </div>
+                  <div className="flex-1 bg-green-500/5 rounded-lg p-3 border border-green-500/20">
+                    <span className="font-medium">Leads come in</span>
+                    <span className="text-sm text-muted-foreground block">Website, calls, online booking</span>
+                  </div>
+                  <ArrowDown className="w-5 h-5 text-muted-foreground" />
+                </div>
+
+                {/* Step 3 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0 border-2 border-amber-500">
+                    <span className="text-amber-500 font-bold">3</span>
+                  </div>
+                  <div className="flex-1 bg-amber-500/5 rounded-lg p-3 border border-amber-500/20">
+                    <span className="font-medium">You close the sale</span>
+                    <span className="text-sm text-muted-foreground block">Estimate, approval, scheduled</span>
+                  </div>
+                  <ArrowDown className="w-5 h-5 text-muted-foreground" />
+                </div>
+
+                {/* Step 4 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center shrink-0 border-2 border-purple-500">
+                    <span className="text-purple-500 font-bold">4</span>
+                  </div>
+                  <div className="flex-1 bg-purple-500/5 rounded-lg p-3 border border-purple-500/20">
+                    <span className="font-medium">Crew does the work</span>
+                    <span className="text-sm text-muted-foreground block">GPS check-in, photos, completion</span>
+                  </div>
+                  <ArrowDown className="w-5 h-5 text-muted-foreground" />
+                </div>
+
+                {/* Step 5 - loops back */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center shrink-0 border-2 border-pink-500">
+                    <span className="text-pink-500 font-bold">5</span>
+                  </div>
+                  <div className="flex-1 bg-pink-500/5 rounded-lg p-3 border border-pink-500/20">
+                    <span className="font-medium">Real photos feed back into marketing</span>
+                    <span className="text-sm text-muted-foreground block">Before/after shots become new posts</span>
+                  </div>
+                  <ArrowUp className="w-5 h-5 text-blue-500" />
+                </div>
+              </div>
+
+              {/* Loop indicator */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <div className="h-px flex-1 bg-border" />
+                <span className="px-3 italic">Then it repeats</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-4 mt-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>The system handles steps 1, 2, and 4.</strong><br/>
+                You handle step 3 (closing) and provide the real photos that make step 5 work.<br/>
+                The better the photos, the better the marketing. The better the marketing, the more leads.
+              </p>
+            </div>
           </div>
         );
 
