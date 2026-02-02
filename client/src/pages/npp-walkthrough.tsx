@@ -109,8 +109,8 @@ export default function NPPWalkthrough() {
     },
     {
       id: 8,
-      title: "One More Thing...",
-      description: "Local hardware stores. Not saying drop Sherwin-Williams. But those stores are where the referrals happen. The old-timers hang out there. Worth thinking about.",
+      title: "An Opportunity Worth Exploring",
+      description: "HARDWARE_STORE_SPECIAL",
       icon: <Store className="w-8 h-8" />,
       arrowDirection: 'up',
       highlight: "hardware"
@@ -236,10 +236,67 @@ export default function NPPWalkthrough() {
               {/* Title */}
               <h2 className="text-2xl md:text-3xl font-bold mb-4">{currentTourStep.title}</h2>
 
-              {/* Description */}
-              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                {currentTourStep.description}
-              </p>
+              {/* Special hardware store content */}
+              {currentTourStep.description === "HARDWARE_STORE_SPECIAL" ? (
+                <div className="space-y-6 mb-6">
+                  <p className="text-lg text-muted-foreground">
+                    Not saying drop Sherwin-Williams. They give you discounts, delivery, credit terms. That's useful.
+                    But there might be something we're missing.
+                  </p>
+                  
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <h4 className="font-semibold mb-3">The Local Hardware Store Difference:</h4>
+                    <ul className="space-y-2 text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                        <span>Community hub - the old-timers hang out, talk, know everybody</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                        <span>Warm referrals - "Who painted your house?" happens there naturally</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                        <span>Trust transfer - their recommendation carries real weight</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                    <h4 className="font-semibold mb-3">The Numbers (Rough Estimate):</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-muted-foreground">2 local stores</span>
+                        <span className="block font-bold text-lg">× 5 referrals/month each</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">= 10 referrals/month</span>
+                        <span className="block font-bold text-lg">× 40% close rate</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">= 4 new jobs/month</span>
+                        <span className="block font-bold text-lg">× $3,000-$6,000 avg</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">= </span>
+                        <span className="block font-bold text-lg text-green-600">$144k-$288k/year</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-3 italic">
+                      That's 7-14% of annual revenue. From just two stores.
+                    </p>
+                  </div>
+
+                  <p className="text-muted-foreground italic">
+                    Sherwin-Williams helps you operate. Local stores could help you grow.
+                    Just something to think about.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                  {currentTourStep.description}
+                </p>
+              )}
 
               {/* Action button (if any) */}
               {currentTourStep.action && (
