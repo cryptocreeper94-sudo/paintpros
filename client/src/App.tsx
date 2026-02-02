@@ -100,6 +100,7 @@ import TradeVerticalPage from "@/pages/trade-vertical";
 import Onboarding from "@/pages/onboarding";
 import OnboardingSuccess from "@/pages/onboarding-success";
 import PlatformPresentation from "@/pages/platform-presentation";
+import NPPPresentation from "@/pages/npp-presentation";
 import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { getTenantById } from "@/config/tenant";
 import { TenantProvider as TenantProviderBase } from "@/context/TenantContext";
@@ -268,6 +269,7 @@ function Router() {
       <Route path="/marketing-autopilot" component={MarketingAutopilot} />
       <Route path="/presentation" component={PlatformPresentation} />
       <Route path="/demo" component={PlatformPresentation} />
+      <Route path="/npp-demo" component={NPPPresentation} />
       <Route path="/trustlayer" component={TrustLayerHome} />
       <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
       <Route path="/trustlayer/guardian" component={GuardianShield} />
