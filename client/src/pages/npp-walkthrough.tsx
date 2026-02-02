@@ -64,6 +64,14 @@ export default function NPPWalkthrough() {
     },
     {
       id: 1,
+      title: "A Different Kind of Marketing Content",
+      description: "ORGANIC_GRAPHICS_SPECIAL",
+      icon: <Palette className="w-8 h-8" />,
+      arrowDirection: 'down',
+      highlight: "graphics"
+    },
+    {
+      id: 2,
       title: "Your Professional Website",
       description: "WEBSITE_SPECIAL",
       icon: <Home className="w-8 h-8" />,
@@ -235,6 +243,62 @@ export default function NPPWalkthrough() {
             </div>
             <p className="text-muted-foreground italic text-sm">
               Takes about 5 minutes. I timed it.
+            </p>
+          </div>
+        );
+
+      case "ORGANIC_GRAPHICS_SPECIAL":
+        return (
+          <div className="space-y-4">
+            <p className="text-lg text-muted-foreground">
+              I know that photorealistic images don't always come out right. Sometimes they mismatch with the message. 
+              So I tried something different.
+            </p>
+            
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h4 className="font-semibold mb-3">Hand-Drawn Style Graphics</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                These have an organic, artisanal feel. Less "stock photo" - more "local business you can trust."
+              </p>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="aspect-square rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 flex items-center justify-center p-3 border">
+                  <div className="text-center">
+                    <Palette className="w-8 h-8 mx-auto mb-2 text-amber-600" />
+                    <span className="text-xs font-medium">"Proud to be Nashville's Local Painters"</span>
+                  </div>
+                </div>
+                <div className="aspect-square rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-800/20 flex items-center justify-center p-3 border">
+                  <div className="text-center">
+                    <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                    <span className="text-xs font-medium">"Quality Over Quantity"</span>
+                  </div>
+                </div>
+                <div className="aspect-square rounded-lg bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-800/20 flex items-center justify-center p-3 border">
+                  <div className="text-center">
+                    <Home className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                    <span className="text-xs font-medium">"Your Home Deserves the Best"</span>
+                  </div>
+                </div>
+                <div className="aspect-square rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-800/20 flex items-center justify-center p-3 border">
+                  <div className="text-center">
+                    <Users className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                    <span className="text-xs font-medium">"Family Owned Since Day One"</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>The idea:</strong> These work alongside real job photos. 
+                The graphics carry the brand message. The photos show the work. 
+                Together, they keep the feed active and authentic.
+              </p>
+            </div>
+
+            <p className="text-sm text-muted-foreground italic">
+              If you like this direction, we can make more. Just need to know what messages resonate.
             </p>
           </div>
         );
