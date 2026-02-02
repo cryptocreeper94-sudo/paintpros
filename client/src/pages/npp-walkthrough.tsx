@@ -855,6 +855,24 @@ export default function NPPWalkthrough() {
             <p className="text-sm text-muted-foreground italic text-center pt-2">
               More visibility + less admin time = more time closing, more jobs.
             </p>
+
+            {/* The Honest Part */}
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mt-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-amber-600 dark:text-amber-400 mb-2">One Thing to Know</h4>
+                  <p className="text-sm text-muted-foreground">
+                    This isn't a "flip the switch and walk away" system. It needs tweaking. 
+                    It needs your feedback on what's working and what isn't. 
+                    Real photos from real jobs make it better. Your input makes it smarter.
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    The framework is built. Now we dial it in together.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         );
 
