@@ -278,55 +278,65 @@ export default function NPPWalkthrough() {
         return (
           <div className="space-y-4">
             <p className="text-lg text-muted-foreground">
-              I know that photorealistic images don't always come out right. Sometimes they mismatch with the message. 
-              So I tried something different.
+              We create two styles of visuals for your marketing - photorealistic images and artistic print-style graphics. 
+              Both are designed to make your brand stand out.
             </p>
             
             <div className="bg-muted/50 rounded-lg p-4">
-              <h4 className="font-semibold mb-3">Hand-Drawn Style Graphics</h4>
+              <h4 className="font-semibold mb-3">Photorealistic Images</h4>
               <p className="text-sm text-muted-foreground mb-4">
-                These have an organic, artisanal feel. Less "stock photo" - more "local business you can trust."
+                Professional-quality images that showcase beautiful painting work and inspire customers.
               </p>
               
               <div className="grid grid-cols-2 gap-3">
-                <div className="aspect-square rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 flex items-center justify-center p-3 border">
-                  <div className="text-center">
-                    <Palette className="w-8 h-8 mx-auto mb-2 text-amber-600" />
-                    <span className="text-xs font-medium">"Proud to be Your Local Painters"</span>
-                  </div>
+                <div className="aspect-square rounded-lg overflow-hidden border">
+                  <img 
+                    src="/walkthrough-images/photorealistic-living-room.png" 
+                    alt="Beautiful living room transformation" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="aspect-square rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-800/20 flex items-center justify-center p-3 border">
-                  <div className="text-center">
-                    <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                    <span className="text-xs font-medium">"Quality Over Quantity"</span>
-                  </div>
+                <div className="aspect-square rounded-lg overflow-hidden border">
+                  <img 
+                    src="/walkthrough-images/photorealistic-exterior.png" 
+                    alt="Stunning exterior paint job" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="aspect-square rounded-lg bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-800/20 flex items-center justify-center p-3 border">
-                  <div className="text-center">
-                    <Home className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                    <span className="text-xs font-medium">"Your Home Deserves the Best"</span>
-                  </div>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h4 className="font-semibold mb-3">Art Print Style Graphics</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                Artistic, stylized visuals with an organic, artisanal feel - perfect for brand messaging.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="aspect-square rounded-lg overflow-hidden border">
+                  <img 
+                    src="/walkthrough-images/artprint-paintpros-brush.png" 
+                    alt="Paint Pros Co artistic brush design" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="aspect-square rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-800/20 flex items-center justify-center p-3 border">
-                  <div className="text-center">
-                    <Users className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                    <span className="text-xs font-medium">"Family Owned Since Day One"</span>
-                  </div>
+                <div className="aspect-square rounded-lg overflow-hidden border">
+                  <img 
+                    src="/walkthrough-images/artprint-paintpros-colors.png" 
+                    alt="Paint Pros Co color palette art" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
 
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">
-                <strong>The idea:</strong> These work alongside real job photos. 
-                The graphics carry the brand message. The photos show the work. 
-                Together, they keep the feed active and authentic.
+                <strong>The strategy:</strong> Photorealistic images showcase the quality of work. 
+                Art prints carry your brand message. Together with real job photos, 
+                they keep your feed active, professional, and authentic.
               </p>
             </div>
-
-            <p className="text-sm text-muted-foreground italic">
-              If you like this direction, we can make more. Just need to know what messages resonate.
-            </p>
           </div>
         );
 
