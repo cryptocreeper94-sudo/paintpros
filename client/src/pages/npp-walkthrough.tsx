@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   ChevronRight, 
   Calendar,
@@ -30,7 +31,11 @@ import {
   BarChart3,
   Settings,
   Sun,
-  CloudRain
+  CloudRain,
+  Palette,
+  PenLine,
+  LayoutGrid,
+  Ruler
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -122,6 +127,14 @@ export default function NPPWalkthrough() {
     },
     {
       id: 8,
+      title: "Pro Tools - The Good Stuff",
+      description: "PROTOOLS_SPECIAL",
+      icon: <Sparkles className="w-8 h-8" />,
+      arrowDirection: 'down',
+      highlight: "protools"
+    },
+    {
+      id: 9,
       title: "How It All Connects",
       description: "FLYWHEEL_SPECIAL",
       icon: <BarChart3 className="w-8 h-8" />,
@@ -129,7 +142,7 @@ export default function NPPWalkthrough() {
       highlight: "flywheel"
     },
     {
-      id: 9,
+      id: 10,
       title: "An Opportunity Worth Exploring",
       description: "HARDWARE_STORE_SPECIAL",
       icon: <Store className="w-8 h-8" />,
@@ -137,7 +150,7 @@ export default function NPPWalkthrough() {
       highlight: "hardware"
     },
     {
-      id: 10,
+      id: 11,
       title: "Quick Reference - Everything",
       description: "REFERENCE_SPECIAL",
       icon: <CheckCircle2 className="w-8 h-8" />,
@@ -547,6 +560,129 @@ export default function NPPWalkthrough() {
             </div>
             <p className="text-sm text-muted-foreground italic">
               The system keeps you visible. You focus on painting.
+            </p>
+          </div>
+        );
+
+      case "PROTOOLS_SPECIAL":
+        return (
+          <div className="space-y-4">
+            <p className="text-lg text-muted-foreground">
+              These are the tools that set you apart. Built specifically for painting contractors.
+            </p>
+            
+            <div className="grid gap-4">
+              {/* Blueprint Upload */}
+              <Card className="p-4 border-blue-500/20 bg-blue-500/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                    <LayoutGrid className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-blue-600 dark:text-blue-400">Blueprint Upload</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Upload a floor plan or blueprint. The system reads it automatically - 
+                      extracts room names, dimensions, square footage, wall area. No measuring tape needed.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        <Ruler className="w-3 h-3 mr-1" />
+                        Auto-dimensions
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        <Calculator className="w-3 h-3 mr-1" />
+                        Wall area calc
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Proposal Generator */}
+              <Card className="p-4 border-amber-500/20 bg-amber-500/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                    <FileText className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-amber-600 dark:text-amber-400">Professional Proposals</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Pre-built templates for interior, exterior, commercial, residential. 
+                      Fill in the details, send it. Looks professional. Saves hours.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        <Home className="w-3 h-3 mr-1" />
+                        Interior
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        <Home className="w-3 h-3 mr-1" />
+                        Exterior
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        <DollarSign className="w-3 h-3 mr-1" />
+                        Pricing tables
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Room Visualizer */}
+              <Card className="p-4 border-purple-500/20 bg-purple-500/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                    <Palette className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-purple-600 dark:text-purple-400">Room Visualizer</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Customer can't picture the color? Take a photo of their room, 
+                      apply a color, show them what it'll look like. Closes deals.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        <Camera className="w-3 h-3 mr-1" />
+                        Photo upload
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        <Palette className="w-3 h-3 mr-1" />
+                        Color preview
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Blog / SEO */}
+              <Card className="p-4 border-green-500/20 bg-green-500/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                    <PenLine className="w-6 h-6 text-green-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-green-600 dark:text-green-400">Blog & SEO</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Built-in blog for your website. Helps with Google rankings. 
+                      Can even generate posts for you if you need content fast.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        <BarChart3 className="w-3 h-3 mr-1" />
+                        SEO optimized
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        Content assist
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <p className="text-sm text-muted-foreground italic text-center pt-2">
+              These aren't just nice-to-haves. They're competitive advantages.
             </p>
           </div>
         );
