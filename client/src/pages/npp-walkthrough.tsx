@@ -164,11 +164,11 @@ export default function NPPWalkthrough() {
     },
     {
       id: 11,
-      title: "An Opportunity Worth Exploring",
-      description: "HARDWARE_STORE_SPECIAL",
+      title: "Two Ways to Partner",
+      description: "PARTNERSHIP_SPECIAL",
       icon: <Store className="w-8 h-8" />,
       arrowDirection: 'up',
-      highlight: "hardware"
+      highlight: "partnership"
     },
     {
       id: 12,
@@ -967,60 +967,71 @@ export default function NPPWalkthrough() {
           </div>
         );
 
-      case "HARDWARE_STORE_SPECIAL":
+      case "PARTNERSHIP_SPECIAL":
         return (
           <div className="space-y-4">
             <p className="text-lg text-muted-foreground">
-              Not saying drop Sherwin-Williams. They give you discounts, delivery, credit terms. That's useful.
-              But there might be something we're missing.
+              Everything you've seen is ready to deploy. Two ways to get started:
             </p>
             
-            <div className="bg-muted/50 rounded-lg p-4">
-              <h4 className="font-semibold mb-3">The Local Hardware Store Difference:</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
-                  <span><strong>Community hub</strong> - the old-timers hang out, talk, know everybody</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
-                  <span><strong>Warm referrals</strong> - "Who painted your house?" happens there naturally</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
-                  <span><strong>Trust transfer</strong> - their recommendation carries real weight</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-              <h4 className="font-semibold mb-3">The Numbers (Rough Estimate):</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">2 local stores</span>
-                  <span className="block font-bold text-lg">× 5 referrals/month each</span>
+            <div className="grid gap-4">
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="font-bold text-primary">1</span>
+                  </div>
+                  <h4 className="font-semibold text-lg">PaintPros Franchise</h4>
                 </div>
-                <div>
-                  <span className="text-muted-foreground">= 10 referrals/month</span>
-                  <span className="block font-bold text-lg">× 40% close rate</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">= 4 new jobs/month</span>
-                  <span className="block font-bold text-lg">× $3,000-$6,000 avg</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">= </span>
-                  <span className="block font-bold text-lg text-green-600">$144k-$288k/year</span>
+                <ul className="space-y-2 text-muted-foreground text-sm mb-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>[City]PaintPros.io domain (nashpaintpros.io, boropaintpros.io, etc.)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Proven branding + marketing playbook included</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Exclusive territory protection</span>
+                  </li>
+                </ul>
+                <div className="flex items-center justify-between bg-muted/50 rounded px-3 py-2">
+                  <span className="text-sm">$499 setup + $299/month</span>
+                  <span className="text-xs text-muted-foreground">Fastest to launch</span>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-3 italic">
-                That's 7-14% of annual revenue. From just two stores.
-              </p>
+              
+              <div className="bg-muted/50 rounded-lg p-4 border">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border">
+                    <span className="font-bold">2</span>
+                  </div>
+                  <h4 className="font-semibold text-lg">Custom White-Label</h4>
+                </div>
+                <ul className="space-y-2 text-muted-foreground text-sm mb-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <span>Your brand, your domain, your colors</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <span>Full customization of messaging and features</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <span>Complete independence from PaintPros branding</span>
+                  </li>
+                </ul>
+                <div className="flex items-center justify-between bg-background rounded px-3 py-2 border">
+                  <span className="text-sm">$999 setup + $499/month</span>
+                  <span className="text-xs text-muted-foreground">Premium option</span>
+                </div>
+              </div>
             </div>
 
-            <p className="text-muted-foreground italic">
-              Sherwin-Williams helps you operate. Local stores could help you grow.
-              Just something to think about.
+            <p className="text-muted-foreground italic text-center text-sm">
+              Both include the full platform: CRM, scheduling, field tools, marketing automation, and all pro tools.
             </p>
           </div>
         );

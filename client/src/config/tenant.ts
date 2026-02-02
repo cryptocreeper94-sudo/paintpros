@@ -2,11 +2,33 @@ export type SubscriptionTier = "estimator_only" | "full_suite";
 
 export type TradeVertical = "painting" | "roofing" | "hvac" | "electrical" | "plumbing" | "landscaping" | "construction" | "multi_trade";
 
+export type BrandingModel = "franchise" | "custom";
+
+export interface FranchiseConfig {
+  cityPrefix: string;
+  parentBrand: string;
+  territory: string[];
+  monthlyFee: number;
+  setupFee: number;
+}
+
+export interface CustomBrandConfig {
+  domain: string;
+  monthlyFee: number;
+  setupFee: number;
+}
+
 export interface TenantConfig {
   // Trade vertical (determines service categories)
   tradeVertical?: TradeVertical;
   id: string;
   slug: string;
+  
+  // Branding model (franchise = [city]paintpros.io, custom = their own brand)
+  // Defaults to "custom" if not specified
+  brandingModel?: BrandingModel;
+  franchiseConfig?: FranchiseConfig;
+  customBrandConfig?: CustomBrandConfig;
   
   // Subscription tier (determines available features)
   subscriptionTier: SubscriptionTier;
@@ -117,13 +139,21 @@ export interface TenantConfig {
   };
 }
 
-// Nashville Painting Professionals - Beta Tenant
+// Nashville PaintPros - First Franchise Location
 export const nashvillePaintingProfessionals: TenantConfig = {
   id: "npp",
-  slug: "nashville-painting-professionals",
+  slug: "nashville-paintpros",
+  brandingModel: "franchise",
+  franchiseConfig: {
+    cityPrefix: "nash",
+    parentBrand: "PaintPros",
+    territory: ["Nashville", "Brentwood", "Belle Meade", "Green Hills", "Sylvan Park"],
+    monthlyFee: 299,
+    setupFee: 499,
+  },
   subscriptionTier: "full_suite",
   
-  name: "Nashville Painting Professionals",
+  name: "Nashville PaintPros",
   tagline: "Transforming familiar spaces into extraordinary places.",
   description: "Nashville's premier painting company offering professional interior and exterior painting services for residential and commercial properties.",
   logo: "/icons/npp-mascot.png",
@@ -175,18 +205,18 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   },
   
   seo: {
-    title: "Nashville Painting Professionals | Premium Interior & Exterior Painters",
-    description: "Nashville's premier painting company. Professional interior and exterior painting services with a 3-year warranty. Free estimates, 4.9 Google rating.",
+    title: "Nashville PaintPros | Professional Painters in Davidson County",
+    description: "Nashville's premier painting company. Professional interior and exterior painting services with a 3-year warranty. Part of the PaintPros network.",
     keywords: [
       "Nashville painters",
-      "painting company Nashville",
+      "PaintPros Nashville",
       "interior painting",
       "exterior painting",
       "house painters Nashville",
       "commercial painting",
       "residential painting",
     ],
-    serviceAreas: ["Nashville", "Franklin", "Brentwood", "Murfreesboro", "Hendersonville", "Lebanon", "Mount Juliet", "Madison", "Goodlettsville"],
+    serviceAreas: ["Nashville", "Brentwood", "Belle Meade", "Green Hills", "Sylvan Park", "12 South", "East Nashville"],
   },
   
   features: {
@@ -300,20 +330,28 @@ export const paintProsDemo: TenantConfig = {
   },
 };
 
-// Lume Paint Co - Sister site to NPP
+// Murfreesboro PaintPros - Second Franchise Location (formerly Lume)
 export const lumePaintCo: TenantConfig = {
-  id: "lumepaint",
-  slug: "lume-paint-co",
+  id: "boropaintpros",
+  slug: "murfreesboro-paintpros",
+  brandingModel: "franchise",
+  franchiseConfig: {
+    cityPrefix: "boro",
+    parentBrand: "PaintPros",
+    territory: ["Murfreesboro", "Smyrna", "La Vergne", "Christiana", "Eagleville", "Rockvale"],
+    monthlyFee: 299,
+    setupFee: 499,
+  },
   subscriptionTier: "full_suite",
   tradeVertical: "painting",
   
-  name: "Lume Paint Co",
-  tagline: "Elevating the backdrop of your life.",
-  description: "Premium painting services that illuminate your space. Professional interior and exterior painting with meticulous attention to detail.",
-  logo: "/icons/lume-logo.png",
+  name: "Murfreesboro PaintPros",
+  tagline: "Transforming familiar spaces into extraordinary places.",
+  description: "Professional painting services for Murfreesboro and Rutherford County. Interior and exterior painting with meticulous attention to detail.",
+  logo: "/icons/paintpros-logo.png",
   
-  phone: "(615) 555-LUME",
-  email: "hello@lumepaint.co",
+  phone: "(615) 555-BORO",
+  email: "boro@paintpros.io",
   address: {
     city: "Murfreesboro",
     state: "TN",
@@ -321,9 +359,9 @@ export const lumePaintCo: TenantConfig = {
   
   social: {
     googleReviews: "",
-    facebook: "https://facebook.com/lumepaintco",
-    twitter: "https://twitter.com/lumepaintco",
-    instagram: "https://instagram.com/lumepaintco",
+    facebook: "https://facebook.com/boropaintpros",
+    twitter: "https://twitter.com/boropaintpros",
+    instagram: "https://instagram.com/boropaintpros",
   },
   
   theme: {
@@ -362,11 +400,11 @@ export const lumePaintCo: TenantConfig = {
   },
   
   seo: {
-    title: "Lume Paint Co | We Elevate the Backdrop of Your Life",
-    description: "Premium painting services in Murfreesboro and Rutherford County. Professional interior and exterior painting that illuminates your space. Free estimates available.",
+    title: "Murfreesboro PaintPros | Professional Painters in Rutherford County",
+    description: "Professional painting services in Murfreesboro and Rutherford County. Interior and exterior painting with free estimates. Part of the PaintPros network.",
     keywords: [
       "Murfreesboro painters",
-      "Lume Paint",
+      "PaintPros Murfreesboro",
       "interior painting",
       "exterior painting",
       "house painters Murfreesboro",

@@ -102,6 +102,7 @@ import OnboardingSuccess from "@/pages/onboarding-success";
 import PlatformPresentation from "@/pages/platform-presentation";
 import NPPPresentation from "@/pages/npp-presentation";
 import NPPWalkthrough from "@/pages/npp-walkthrough";
+import GetStarted from "@/pages/get-started";
 import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { getTenantById } from "@/config/tenant";
 import { TenantProvider as TenantProviderBase } from "@/context/TenantContext";
@@ -273,6 +274,8 @@ function Router() {
       <Route path="/npp-demo" component={NPPPresentation} />
       <Route path="/walkthrough" component={NPPWalkthrough} />
       <Route path="/tour" component={NPPWalkthrough} />
+      <Route path="/get-started" component={GetStarted} />
+      <Route path="/start" component={GetStarted} />
       <Route path="/trustlayer" component={TrustLayerHome} />
       <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
       <Route path="/trustlayer/guardian" component={GuardianShield} />
