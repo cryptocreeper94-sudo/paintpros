@@ -220,7 +220,7 @@ export default function TrustLayerHome() {
     { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL, status: 'Presale' },
     { name: 'DarkWave Studios', desc: 'Full-Stack Dev & AI Integration', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios, status: 'Live - In Development' },
     // Events & Operations
-    { name: 'GetOrby.io', desc: 'Event Command Center', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
+    { name: 'Orby Commander', desc: 'Venue Operations Platform', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
     // Crypto & Trading
     { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent, status: 'Live - In Development' },
     { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse, status: 'Live - In Development' },
