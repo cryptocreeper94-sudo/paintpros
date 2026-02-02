@@ -222,7 +222,7 @@ export default function TrustLayerHome() {
     // Events & Operations
     { name: 'Orby Commander', desc: 'Venue Operations Platform', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
     // Crypto & Trading
-    { name: 'StrikeAgent.io', desc: 'Quant Trading Tool', url: 'https://strikeagent.io', image: ecosystemStrikeAgent, status: 'Live - In Development' },
+    { name: 'StrikeAgent.io', desc: 'AI Token Discovery & Safety Scanner', url: 'https://strikeagent.io', image: ecosystemStrikeAgent, status: 'Live - In Development' },
     { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse, status: 'Live - In Development' },
     { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse, status: 'Live - In Development' },
     // AI Security & Certification

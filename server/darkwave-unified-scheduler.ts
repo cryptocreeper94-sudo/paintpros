@@ -21,7 +21,8 @@ const ECOSYSTEM_TENANTS = [
   'vedasolus',
   'brewboard',
   'orbitstaffing',
-  'orbycommander'
+  'orbycommander',
+  'strikeagent'
 ];
 
 // Hourly posting 6am-10pm CST = 17 slots per day
