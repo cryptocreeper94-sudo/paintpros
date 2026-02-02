@@ -159,16 +159,16 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   logo: "/icons/npp-mascot.png",
   
   phone: "(615) 555-PAINT",
-  email: "nashville@paintpros.io",
+  email: "team@dwsc.io",
   address: {
     city: "Nashville",
     state: "TN",
   },
   
   social: {
-    googleReviews: "https://www.google.com/maps/place/Nashville+PaintPros",
-    facebook: "https://facebook.com/nashpaintpros",
-    instagram: "https://instagram.com/nashpaintpros",
+    googleReviews: "",
+    facebook: "",
+    instagram: "",
   },
   
   theme: {
