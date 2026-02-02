@@ -1,6 +1,7 @@
 import { db } from './db';
 import { metaIntegrations, marketingImages, marketingPosts, scheduledPosts } from '@shared/schema';
 import { eq, and, asc, sql } from 'drizzle-orm';
+import { TwitterConnector } from './social-connectors';
 
 let postingInterval: ReturnType<typeof setInterval> | null = null;
 let isRunning = false;
@@ -301,6 +302,17 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
       }
     }
 
+    // Post to X (Twitter) - uses DarkWave Trust Layer account
+    const twitter = new TwitterConnector();
+    if (twitter.isConfigured()) {
+      const xResult = await twitter.post(message, imageUrl);
+      if (xResult.success) {
+        console.log(`[DW X] Success! Tweet ID: ${xResult.tweetId}`);
+      } else {
+        console.log(`[DW X] Failed: ${xResult.error}`);
+      }
+    }
+
     todayExecuted.add(`${slotHour}`);
     
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -318,6 +330,14 @@ export function startDarkWaveUnifiedScheduler(): void {
   console.log('[DW Scheduler] Tenants:', ECOSYSTEM_TENANTS.join(', '));
   console.log('[DW Scheduler] Organic posts hourly 6am-10pm CST (17 posts/day)');
   console.log('[DW Scheduler] Each business gets ~3 posts per day (rotating)');
+  
+  // Check X/Twitter configuration
+  const twitter = new TwitterConnector();
+  if (twitter.isConfigured()) {
+    console.log('[DW Scheduler] X (Twitter) posting: ENABLED');
+  } else {
+    console.log('[DW Scheduler] X (Twitter) posting: DISABLED (missing credentials)');
+  }
 
   isRunning = true;
 
