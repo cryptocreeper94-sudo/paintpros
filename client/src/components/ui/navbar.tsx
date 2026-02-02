@@ -308,7 +308,7 @@ export function Navbar() {
                             <Paintbrush className="w-4 h-4 text-gray-400" />
                           </div>
                           <div className="flex-1">
-                            <span className="text-base font-medium text-foreground">Lume Paint Co</span>
+                            <span className="text-base font-medium text-foreground">Paint Pros Co</span>
                             <p className="text-xs text-muted-foreground">Premium painting services</p>
                           </div>
                           <ChevronRight className="w-5 h-5 opacity-50" />

@@ -330,38 +330,31 @@ export const paintProsDemo: TenantConfig = {
   },
 };
 
-// Murfreesboro PaintPros - Second Franchise Location (formerly Lume)
+// Paint Pros Co - Main brand at paintpros.io (formerly Lume)
 export const lumePaintCo: TenantConfig = {
-  id: "boropaintpros",
-  slug: "murfreesboro-paintpros",
-  brandingModel: "franchise",
-  franchiseConfig: {
-    cityPrefix: "boro",
-    parentBrand: "PaintPros",
-    territory: ["Murfreesboro", "Smyrna", "La Vergne", "Christiana", "Eagleville", "Rockvale"],
-    monthlyFee: 299,
-    setupFee: 499,
-  },
+  id: "paintprosco",
+  slug: "paint-pros-co",
+  brandingModel: "custom",
   subscriptionTier: "full_suite",
   tradeVertical: "painting",
   
-  name: "Murfreesboro PaintPros",
-  tagline: "Transforming familiar spaces into extraordinary places.",
-  description: "Professional painting services for Murfreesboro and Rutherford County. Interior and exterior painting with meticulous attention to detail.",
+  name: "Paint Pros Co",
+  tagline: "Elevating the backdrop of your life.",
+  description: "Premium painting services that elevate your space. Professional interior and exterior painting with meticulous attention to detail.",
   logo: "/icons/paintpros-logo.png",
   
-  phone: "(615) 555-BORO",
-  email: "boro@paintpros.io",
+  phone: "(888) PAINT-PRO",
+  email: "hello@paintpros.io",
   address: {
-    city: "Murfreesboro",
+    city: "Nashville",
     state: "TN",
   },
   
   social: {
     googleReviews: "",
-    facebook: "https://facebook.com/boropaintpros",
-    twitter: "https://twitter.com/boropaintpros",
-    instagram: "https://instagram.com/boropaintpros",
+    facebook: "https://facebook.com/paintprosco",
+    twitter: "https://twitter.com/paintprosco",
+    instagram: "https://instagram.com/paintprosco",
   },
   
   theme: {
@@ -400,18 +393,18 @@ export const lumePaintCo: TenantConfig = {
   },
   
   seo: {
-    title: "Murfreesboro PaintPros | Professional Painters in Rutherford County",
-    description: "Professional painting services in Murfreesboro and Rutherford County. Interior and exterior painting with free estimates. Part of the PaintPros network.",
+    title: "Paint Pros Co | Elevating the Backdrop of Your Life",
+    description: "Premium painting services that elevate your space. Professional interior and exterior painting with meticulous attention to detail. Free estimates available.",
     keywords: [
-      "Murfreesboro painters",
-      "PaintPros Murfreesboro",
+      "professional painters",
+      "Paint Pros Co",
       "interior painting",
       "exterior painting",
-      "house painters Murfreesboro",
-      "Rutherford County painters",
+      "house painters",
       "residential painting",
+      "commercial painting",
     ],
-    serviceAreas: ["Murfreesboro", "Smyrna", "La Vergne", "Christiana", "Eagleville", "Rockvale", "Lascassas", "Blackman", "Walterhill"],
+    serviceAreas: ["Nashville", "Middle Tennessee", "Nationwide"],
   },
   
   features: {
@@ -942,6 +935,7 @@ export const buildPros: TenantConfig = {
 export const tenants: Record<string, TenantConfig> = {
   "npp": nashvillePaintingProfessionals,
   "demo": paintProsDemo,
+  "paintprosco": lumePaintCo,
   "lumepaint": lumePaintCo,
   "tradeworks": tradeWorksAI,
   "roofpros": roofPros,
@@ -954,17 +948,17 @@ export const tenants: Record<string, TenantConfig> = {
 
 // Domain to tenant mapping (custom domains)
 const domainTenantMap: Record<string, string> = {
-  "paintpros.io": "demo",
-  "www.paintpros.io": "demo",
+  "paintpros.io": "paintprosco",
+  "www.paintpros.io": "paintprosco",
   "tlid.io": "demo",
   "www.tlid.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
   "nashvillepaintingprofessionals.com": "npp",
   "www.nashvillepaintingprofessionals.com": "npp",
-  // Lume Paint Co - ready for DNS connection
-  "lumepaint.co": "lumepaint",
-  "www.lumepaint.co": "lumepaint",
+  // Paint Pros Co - main brand
+  "lumepaint.co": "paintprosco",
+  "www.lumepaint.co": "paintprosco",
   "tradeworksai.io": "tradeworks",
   "www.tradeworksai.io": "tradeworks",
   "roofpros.io": "roofpros",

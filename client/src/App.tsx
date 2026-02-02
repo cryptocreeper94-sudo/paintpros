@@ -14,6 +14,7 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { getTenantIdFromHostname } from "@/config/tenant";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import HomeLume from "@/pages/home-lume";
 import Services from "@/pages/services";
 import Portfolio from "@/pages/portfolio";
 import About from "@/pages/about";
@@ -151,7 +152,12 @@ function TenantHomeRedirect() {
     return null;
   }
   
-  // Demo tenant (PaintPros.io) shows the TrustLayer hub as landing page
+  // Paint Pros Co (paintpros.io) shows the premium landing page
+  if (tenantId === 'paintprosco') {
+    return <HomeLume />;
+  }
+  
+  // Demo tenant shows the DemoViewer (lead gen hub)
   if (tenantId === 'demo') {
     return <DemoViewer />;
   }
@@ -170,8 +176,7 @@ function TenantHomeRedirect() {
     return <TradeVerticalPage tradeId={tradeMap[tenantId]} />;
   }
   
-  // TLId.io - Default to TrustLayer digital marketing landing page
-  // Lume will eventually move to lumepaint.co
+  // Default to TrustLayer home for tlid.io
   return <TrustLayerHome />;
 }
 
@@ -179,6 +184,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={TenantHomeRedirect} />
+      <Route path="/leads" component={DemoViewer} />
       <Route path="/roofpros">{() => <TradeVerticalPage tradeId="roofing" />}</Route>
       <Route path="/hvacpros">{() => <TradeVerticalPage tradeId="hvac" />}</Route>
       <Route path="/electricpros">{() => <TradeVerticalPage tradeId="electrical" />}</Route>

@@ -46,8 +46,8 @@ interface SeoPerformance {
 }
 
 const TENANT_CONFIG = {
-  npp: { name: "Nashville Painting Pros", color: "#D4AF37", icon: "🎨" },
-  lumepaint: { name: "Lume Paint Co", color: "#9CA3AF", icon: "✨" },
+  npp: { name: "Nashville PaintPros", color: "#D4AF37", icon: "🎨" },
+  paintprosco: { name: "Paint Pros Co", color: "#D4A017", icon: "✨" },
   demo: { name: "PaintPros.io", color: "#3B82F6", icon: "🏪" },
 };
 

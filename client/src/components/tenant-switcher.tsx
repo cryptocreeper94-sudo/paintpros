@@ -23,12 +23,12 @@ const TENANTS: Tenant[] = [
     borderColor: "border-[#4a5d23]/30",
   },
   {
-    id: "lumepaint",
-    name: "Lume Paint Co",
-    shortName: "Lume",
-    color: "text-purple-600",
-    bgColor: "bg-purple-600/10",
-    borderColor: "border-purple-600/30",
+    id: "paintprosco",
+    name: "Paint Pros Co",
+    shortName: "PaintPros",
+    color: "text-amber-600",
+    bgColor: "bg-amber-600/10",
+    borderColor: "border-amber-600/30",
   },
 ];
 

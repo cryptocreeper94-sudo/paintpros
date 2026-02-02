@@ -16,7 +16,7 @@ interface LeadCaptureModalProps {
   tenantName?: string;
 }
 
-export function LeadCaptureModal({ tenantId = "lumepaint", tenantName = "Lume Paint Co" }: LeadCaptureModalProps) {
+export function LeadCaptureModal({ tenantId = "paintprosco", tenantName = "Paint Pros Co" }: LeadCaptureModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);

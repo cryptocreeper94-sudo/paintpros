@@ -62,13 +62,13 @@ const TENANT_CONFIG = {
     bgColor: "from-amber-500/20",
     borderColor: "border-amber-500/30"
   },
-  lumepaint: {
-    name: "Lume Paint Co",
-    shortName: "Lume",
+  paintprosco: {
+    name: "Paint Pros Co",
+    shortName: "PaintPros",
     icon: Building2,
-    color: "text-gray-400",
-    bgColor: "from-gray-500/20",
-    borderColor: "border-gray-500/30"
+    color: "text-amber-400",
+    bgColor: "from-amber-500/20",
+    borderColor: "border-amber-500/30"
   },
   demo: {
     name: "Demo Marketplace",

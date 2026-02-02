@@ -212,7 +212,7 @@ export default function TrustLayerHome() {
     { name: 'Brew & Board', desc: 'B2B Coffee Concierge Nashville', url: 'https://brewandboardcoffee.com', image: ecosystemBrewBoard, status: 'Live - In Development' },
     // Tenant Demos
     { name: 'Nashville Painting Professionals', desc: 'Lead Generator Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
-    { name: 'Lume Paint Co', desc: 'Luxury Painting', url: 'https://lumepaint.co', image: ecosystemLume, status: 'Live' },
+    { name: 'Paint Pros Co', desc: 'Premium Painting', url: 'https://paintpros.io', image: ecosystemLume, status: 'Live' },
     // Gaming & Entertainment
     { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy, status: 'Live - In Development' },
     { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames, status: 'Live - In Development' },

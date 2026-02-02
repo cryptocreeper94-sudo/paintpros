@@ -55,8 +55,8 @@ interface MarketingHubProps {
 }
 
 const TENANTS = [
-  { id: "npp", name: "Nashville Painting Professionals", shortName: "NPP", color: "gold" },
-  { id: "lume", name: "Lume Paint Co", shortName: "Lume", color: "gray" },
+  { id: "npp", name: "Nashville PaintPros", shortName: "NPP", color: "gold" },
+  { id: "paintprosco", name: "Paint Pros Co", shortName: "PaintPros", color: "amber" },
   { id: "demo", name: "paintpros.io", shortName: "PaintPros", color: "blue" },
   { id: "roofpros", name: "RoofPros.io", shortName: "Roof", color: "red" },
   { id: "hvacpros", name: "HVACPros.io", shortName: "HVAC", color: "sky" },
