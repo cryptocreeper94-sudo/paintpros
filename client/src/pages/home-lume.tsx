@@ -131,7 +131,7 @@ export default function HomeLume() {
                 fontSize: 'clamp(3.5rem, 12vw, 20rem)'
               }}
             >
-              Lume<sup 
+              Paint Pros<sup 
                 className="align-super ml-1"
                 style={{ fontSize: 'clamp(1rem, 2vw, 4rem)' }}
               >™</sup>
@@ -144,7 +144,7 @@ export default function HomeLume() {
                 marginTop: 'clamp(0.25rem, 0.5vw, 1rem)'
               }}
             >
-              Paint.co
+              Co
             </p>
             <p 
               className="font-light whitespace-nowrap" 
