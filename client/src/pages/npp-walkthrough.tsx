@@ -82,7 +82,7 @@ export default function NPPWalkthrough() {
       icon: <Home className="w-8 h-8" />,
       arrowDirection: 'right',
       highlight: "website",
-      action: { label: "See Your Website", url: "https://nashpaintpros.io" }
+      action: { label: "See Demo Website", url: "https://paintpros.io" }
     },
     {
       id: 2,
@@ -91,7 +91,7 @@ export default function NPPWalkthrough() {
       icon: <ClipboardList className="w-8 h-8" />,
       arrowDirection: 'down',
       highlight: "crm",
-      action: { label: "See the Owner Dashboard", url: "https://nashpaintpros.io/owner" }
+      action: { label: "See the Owner Dashboard", url: "https://paintpros.io/owner" }
     },
     {
       id: 3,
@@ -100,7 +100,7 @@ export default function NPPWalkthrough() {
       icon: <Calendar className="w-8 h-8" />,
       arrowDirection: 'right',
       highlight: "calendar",
-      action: { label: "See the Calendar", url: "https://nashpaintpros.io/owner" }
+      action: { label: "See the Calendar", url: "https://paintpros.io/owner" }
     },
     {
       id: 4,
@@ -109,7 +109,7 @@ export default function NPPWalkthrough() {
       icon: <MousePointerClick className="w-8 h-8" />,
       arrowDirection: 'up',
       highlight: "scheduler",
-      action: { label: "Try the Scheduler", url: "https://nashpaintpros.io/book" }
+      action: { label: "Try the Scheduler", url: "https://paintpros.io/book" }
     },
     {
       id: 5,
@@ -118,7 +118,7 @@ export default function NPPWalkthrough() {
       icon: <Wrench className="w-8 h-8" />,
       arrowDirection: 'right',
       highlight: "tools",
-      action: { label: "Open the Field Tool", url: "https://nashpaintpros.io/app" }
+      action: { label: "Open the Field Tool", url: "https://paintpros.io/app" }
     },
     {
       id: 6,
@@ -127,7 +127,7 @@ export default function NPPWalkthrough() {
       icon: <Users className="w-8 h-8" />,
       arrowDirection: 'down',
       highlight: "crew",
-      action: { label: "See Crew View", url: "https://nashpaintpros.io/crew-lead" }
+      action: { label: "See Crew View", url: "https://paintpros.io/crew-lead" }
     },
     {
       id: 7,
@@ -136,7 +136,7 @@ export default function NPPWalkthrough() {
       icon: <Megaphone className="w-8 h-8" />,
       arrowDirection: 'right',
       highlight: "marketing",
-      action: { label: "See Marketing Hub", url: "https://nashpaintpros.io/marketing-hub" }
+      action: { label: "See Marketing Hub", url: "https://paintpros.io/marketing-hub" }
     },
     {
       id: 8,
@@ -292,7 +292,7 @@ export default function NPPWalkthrough() {
                 <div className="aspect-square rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 flex items-center justify-center p-3 border">
                   <div className="text-center">
                     <Palette className="w-8 h-8 mx-auto mb-2 text-amber-600" />
-                    <span className="text-xs font-medium">"Proud to be Nashville's Local Painters"</span>
+                    <span className="text-xs font-medium">"Proud to be Your Local Painters"</span>
                   </div>
                 </div>
                 <div className="aspect-square rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-800/20 flex items-center justify-center p-3 border">
@@ -1035,19 +1035,19 @@ export default function NPPWalkthrough() {
             <div className="grid gap-3">
               <Card 
                 className="p-4 hover-elevate cursor-pointer flex items-center gap-4"
-                onClick={() => window.open('https://nashpaintpros.io', '_blank')}
+                onClick={() => window.open('https://paintpros.io', '_blank')}
               >
                 <Home className="w-8 h-8 text-primary shrink-0" />
                 <div className="flex-1">
                   <span className="font-semibold">Your Website</span>
-                  <p className="text-xs text-muted-foreground">nashpaintpros.io - What customers see</p>
+                  <p className="text-xs text-muted-foreground">paintpros.io - Demo website</p>
                 </div>
                 <ExternalLink className="w-4 h-4 text-muted-foreground" />
               </Card>
               
               <Card 
                 className="p-4 hover-elevate cursor-pointer flex items-center gap-4"
-                onClick={() => window.open('https://nashpaintpros.io/owner', '_blank')}
+                onClick={() => window.open('https://paintpros.io/owner', '_blank')}
               >
                 <ClipboardList className="w-8 h-8 text-primary shrink-0" />
                 <div className="flex-1">
@@ -1059,7 +1059,7 @@ export default function NPPWalkthrough() {
               
               <Card 
                 className="p-4 hover-elevate cursor-pointer flex items-center gap-4"
-                onClick={() => window.open('https://nashpaintpros.io/book', '_blank')}
+                onClick={() => window.open('https://paintpros.io/book', '_blank')}
               >
                 <MousePointerClick className="w-8 h-8 text-primary shrink-0" />
                 <div className="flex-1">
@@ -1071,7 +1071,7 @@ export default function NPPWalkthrough() {
               
               <Card 
                 className="p-4 hover-elevate cursor-pointer flex items-center gap-4"
-                onClick={() => window.open('https://nashpaintpros.io/app', '_blank')}
+                onClick={() => window.open('https://paintpros.io/app', '_blank')}
               >
                 <Wrench className="w-8 h-8 text-primary shrink-0" />
                 <div className="flex-1">
@@ -1083,7 +1083,7 @@ export default function NPPWalkthrough() {
               
               <Card 
                 className="p-4 hover-elevate cursor-pointer flex items-center gap-4"
-                onClick={() => window.open('https://nashpaintpros.io/crew-lead', '_blank')}
+                onClick={() => window.open('https://paintpros.io/crew-lead', '_blank')}
               >
                 <Users className="w-8 h-8 text-primary shrink-0" />
                 <div className="flex-1">
@@ -1095,7 +1095,7 @@ export default function NPPWalkthrough() {
               
               <Card 
                 className="p-4 hover-elevate cursor-pointer flex items-center gap-4"
-                onClick={() => window.open('https://nashpaintpros.io/marketing-hub', '_blank')}
+                onClick={() => window.open('https://paintpros.io/marketing-hub', '_blank')}
               >
                 <Megaphone className="w-8 h-8 text-primary shrink-0" />
                 <div className="flex-1">
@@ -1107,7 +1107,7 @@ export default function NPPWalkthrough() {
             </div>
             
             <p className="text-sm text-muted-foreground italic text-center mt-4">
-              This walkthrough lives at nashpaintpros.io/walkthrough<br/>
+              This walkthrough lives at paintpros.io/walkthrough<br/>
               Come back anytime.
             </p>
           </div>
@@ -1132,8 +1132,8 @@ export default function NPPWalkthrough() {
         >
           <Card className="p-8 text-center">
             <Sparkles className="w-16 h-16 mx-auto mb-6 text-primary" />
-            <h1 className="text-3xl font-bold mb-4">Nashville Painting Professionals</h1>
-            <h2 className="text-xl text-muted-foreground mb-6">Your Complete System Walkthrough</h2>
+            <h1 className="text-3xl font-bold mb-4">PaintPros Platform Demo</h1>
+            <h2 className="text-xl text-muted-foreground mb-6">Complete System Walkthrough</h2>
             <p className="text-muted-foreground mb-8">
               I'll show you everything step by step.<br/>
               Each feature, where to find it, what it does.<br/>
