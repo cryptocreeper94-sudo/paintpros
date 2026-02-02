@@ -92,7 +92,7 @@ const mockScheduledPosts: ScheduledPost[] = [
   {
     id: "2",
     tenant: "lume",
-    content: "Minimalist design meets premium quality. Discover Lume Paint Co.",
+    content: "Minimalist design meets premium quality. Discover Paint Pros Co.",
     platform: "instagram",
     language: "en",
     scheduledDate: new Date(Date.now() + 172800000),

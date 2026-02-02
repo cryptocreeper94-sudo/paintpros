@@ -1053,7 +1053,7 @@ export default function TrustLayerHome() {
         <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 md:overflow-visible">
           {[
             { name: 'Nashville Painting Professionals', industry: 'Painting', result: 'Automated daily posts', color: 'from-blue-500 to-purple-500' },
-            { name: 'Lume Paint Co', industry: 'Premium Painting', result: 'Smart ad boosting', color: 'from-amber-500 to-orange-500' }
+            { name: 'Paint Pros Co', industry: 'Premium Painting', result: 'Smart ad boosting', color: 'from-amber-500 to-orange-500' }
           ].map((business, i) => (
             <div key={i} className="flex-shrink-0 w-72 md:w-auto snap-center">
               <div className="bg-slate-900/80 border border-white/10 rounded-xl p-5 h-full">

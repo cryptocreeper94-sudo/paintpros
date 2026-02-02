@@ -248,7 +248,7 @@ export default function AdminGuide() {
           <CardContent className="p-6 space-y-4">
             <p className="text-gray-700">
               The Admin, Owner, and Developer dashboards now have <strong>tenant tabs</strong> at the top. 
-              Switch between NPP and Lume with one click - no logging in and out!
+              Switch between NPP and Paint Pros with one click - no logging in and out!
             </p>
             <div className="grid md:grid-cols-2 gap-4 mt-4">
               <div className="flex items-center gap-3 p-4 bg-[#4a5d23]/10 rounded-lg">
@@ -261,8 +261,8 @@ export default function AdminGuide() {
               <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
                 <Building2 className="h-8 w-8 text-purple-600" />
                 <div>
-                  <p className="font-medium text-purple-800">Lume Tab</p>
-                  <p className="text-sm text-purple-600">Lume Paint Co</p>
+                  <p className="font-medium text-purple-800">Paint Pros Tab</p>
+                  <p className="text-sm text-purple-600">Paint Pros Co</p>
                 </div>
               </div>
             </div>

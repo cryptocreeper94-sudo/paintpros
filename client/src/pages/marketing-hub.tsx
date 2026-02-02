@@ -315,11 +315,11 @@ const SAMPLE_SEASONAL_NPP: Partial<SocialPost>[] = [
 ];
 
 const SAMPLE_SEASONAL_LUME: Partial<SocialPost>[] = [
-  { content: "Spring refresh season! Lume is booking exterior projects now. Beat the summer rush.", category: "exterior", platform: "instagram" },
-  { content: "New Year special: Transform your space with Lume. Complimentary color consultation in January.", category: "interior", platform: "facebook" },
-  { content: "Deck season approaches! Protect your outdoor investment with Lume's expert staining.", category: "decks", platform: "nextdoor" },
-  { content: "Fall interior special: Cozy up with new colors. Lume's autumn palette recommendations.", category: "interior", platform: "instagram" },
-  { content: "Holiday entertaining? Lume can refresh your space before the guests arrive.", category: "general", platform: "facebook" },
+  { content: "Spring refresh season! Paint Pros is booking exterior projects now. Beat the summer rush.", category: "exterior", platform: "instagram" },
+  { content: "New Year special: Transform your space with Paint Pros. Complimentary color consultation in January.", category: "interior", platform: "facebook" },
+  { content: "Deck season approaches! Protect your outdoor investment with Paint Pros' expert staining.", category: "decks", platform: "nextdoor" },
+  { content: "Fall interior special: Cozy up with new colors. Paint Pros' autumn palette recommendations.", category: "interior", platform: "instagram" },
+  { content: "Holiday entertaining? Paint Pros can refresh your space before the guests arrive.", category: "general", platform: "facebook" },
 ];
 
 // Weekly posting schedule: MWF = Rotation A, TThSat = Rotation B, Sunday = Planning
@@ -974,12 +974,12 @@ export default function MarketingHub() {
     // Developer view - Marketing Director with multi-tenant access
     if (isDeveloperRole) {
       return {
-        welcome: `Welcome back, ${userName}. Marketing Director view for ${tenantName}. Use the tenant switcher to manage NPP and Lume marketing operations. Full access to content, analytics, scheduling, and automation across all properties.`,
+        welcome: `Welcome back, ${userName}. Marketing Director view for ${tenantName}. Use the tenant switcher to manage NPP and Paint Pros marketing operations. Full access to content, analytics, scheduling, and automation across all properties.`,
         section1: `Content Library: Over 100 marketing images organized by category. AI-powered caption generation. Visual content catalog with scheduling calendar.`,
         section2: `Analytics: Real-time performance tracking, engagement metrics, and platform breakdowns. Monitor what's working across all tenants.`,
         section3: `Automation Status: Manual rotation active. Meta API integration in progress. Full automation coming soon.`,
         section4: `Roadmap: AI content suggestions, smart scheduling, performance alerts, and ad optimization.`,
-        section5: `Multi-Tenant Access: Switch between NPP and Lume using the tenant selector. All analytics are tenant-separated.`,
+        section5: `Multi-Tenant Access: Switch between NPP and Paint Pros using the tenant selector. All analytics are tenant-separated.`,
       };
     }
     // Owner and Admin view
@@ -989,7 +989,7 @@ export default function MarketingHub() {
       section2: `Analytics: Real-time performance tracking, engagement metrics, and platform breakdowns. Monitor what's working across all tenants.`,
       section3: `Automation Status: Manual rotation active. Meta API integration in progress. Full automation coming soon.`,
       section4: `Roadmap: AI content suggestions, smart scheduling, performance alerts, and ad optimization.`,
-      section5: `Multi-Tenant Access: Switch between NPP and Lume using the tenant selector. All analytics are tenant-separated.`,
+      section5: `Multi-Tenant Access: Switch between NPP and Paint Pros using the tenant selector. All analytics are tenant-separated.`,
     };
   };
 
@@ -1346,8 +1346,8 @@ export default function MarketingHub() {
       
       const lumeMessages: MessageTemplate[] = [
         // Lume Facebook (10)
-        { id: "lume-fb-1", brand: "lumepaint", platform: "facebook", content: "We elevate the backdrop of your life. Every wall tells a story - let us help you tell yours with the perfect colors. Schedule your complimentary color consultation today.", subject: "interior-walls", tone: "professional", cta: "call-us", hashtags: ["#LumePaintCo", "#ElevateYourSpace", "#ColorStory"], createdAt: new Date().toISOString() },
-        { id: "lume-fb-2", brand: "lumepaint", platform: "facebook", content: "Elevating the backdrop of your life means attention to every detail. Our artisan painters bring expertise and passion to every project. Experience the Lume difference.", subject: "general", tone: "professional", cta: "get-quote", hashtags: ["#ArtisanPainting", "#LumeQuality", "#ElevatedLiving"], createdAt: new Date().toISOString() },
+        { id: "lume-fb-1", brand: "lumepaint", platform: "facebook", content: "We elevate the backdrop of your life. Every wall tells a story - let us help you tell yours with the perfect colors. Schedule your complimentary color consultation today.", subject: "interior-walls", tone: "professional", cta: "call-us", hashtags: ["#PaintProsCo", "#ElevateYourSpace", "#ColorStory"], createdAt: new Date().toISOString() },
+        { id: "lume-fb-2", brand: "lumepaint", platform: "facebook", content: "Elevating the backdrop of your life means attention to every detail. Our artisan painters bring expertise and passion to every project. Experience the Paint Pros difference.", subject: "general", tone: "professional", cta: "get-quote", hashtags: ["#ArtisanPainting", "#PaintProsQuality", "#ElevatedLiving"], createdAt: new Date().toISOString() },
         { id: "lume-fb-3", brand: "lumepaint", platform: "facebook", content: "Your home's exterior is the first chapter of your story. We elevate curb appeal to an art form. Discover what's possible with Paint Pros Co.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#CurbAppeal", "#ExteriorDesign", "#FirstImpressions"], createdAt: new Date().toISOString() },
         { id: "lume-fb-4", brand: "lumepaint", platform: "facebook", content: "Kitchen dreams realized. We elevate the backdrop of your culinary life with stunning cabinet transformations. Luxury results, thoughtful process.", subject: "cabinet-work", tone: "friendly", cta: "call-us", hashtags: ["#LuxuryKitchen", "#CabinetDesign", "#KitchenGoals"], createdAt: new Date().toISOString() },
         { id: "lume-fb-5", brand: "lumepaint", platform: "facebook", content: "Spring awakening for your home. Elevate the backdrop of your life with fresh colors that inspire. Now booking spring consultations.", subject: "interior-walls", tone: "professional", cta: "get-quote", hashtags: ["#SpringDesign", "#FreshStart", "#ColorInspiration"], createdAt: new Date().toISOString() },
@@ -1357,13 +1357,13 @@ export default function MarketingHub() {
         { id: "lume-fb-9", brand: "lumepaint", platform: "facebook", content: "Another beautiful project complete! Thank you for letting us elevate the backdrop of your life. Your trust means everything to our team.", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#ClientLove", "#ProjectComplete", "#GratefulTeam"], createdAt: new Date().toISOString() },
         { id: "lume-fb-10", brand: "lumepaint", platform: "facebook", content: "Holiday entertaining deserves an elevated backdrop. Still time to refresh your spaces before guests arrive. Inquire about our priority scheduling.", subject: "interior-walls", tone: "professional", cta: "get-quote", hashtags: ["#HolidayReady", "#EntertainingSpaces", "#HomeForTheHolidays"], createdAt: new Date().toISOString() },
         // Lume Instagram (10)
-        { id: "lume-ig-1", brand: "lumepaint", platform: "instagram", content: "Elevating the backdrop of your life. One beautiful space at a time.", subject: "interior-walls", tone: "professional", cta: "call-us", hashtags: ["#LumePaintCo", "#ElevatedLiving", "#InteriorDesign", "#LuxuryHome", "#ColorPerfection"], createdAt: new Date().toISOString() },
-        { id: "lume-ig-2", brand: "lumepaint", platform: "instagram", content: "Before ➡️ After. Elevation complete. DM for your consultation.", subject: "before-after", tone: "friendly", cta: "get-quote", hashtags: ["#Transformation", "#BeforeAfter", "#ElevatedDesign", "#LumeResults"], createdAt: new Date().toISOString() },
+        { id: "lume-ig-1", brand: "lumepaint", platform: "instagram", content: "Elevating the backdrop of your life. One beautiful space at a time.", subject: "interior-walls", tone: "professional", cta: "call-us", hashtags: ["#PaintProsCo", "#ElevatedLiving", "#InteriorDesign", "#LuxuryHome", "#ColorPerfection"], createdAt: new Date().toISOString() },
+        { id: "lume-ig-2", brand: "lumepaint", platform: "instagram", content: "Before ➡️ After. Elevation complete. DM for your consultation.", subject: "before-after", tone: "friendly", cta: "get-quote", hashtags: ["#Transformation", "#BeforeAfter", "#ElevatedDesign", "#PaintProsResults"], createdAt: new Date().toISOString() },
         { id: "lume-ig-3", brand: "lumepaint", platform: "instagram", content: "Curb appeal, elevated. Your home deserves to make a statement.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#ExteriorGoals", "#CurbAppeal", "#HomeExterior", "#ElevatedCurb"], createdAt: new Date().toISOString() },
         { id: "lume-ig-4", brand: "lumepaint", platform: "instagram", content: "Cabinet dreams, realized. Elevating kitchens to art form status.", subject: "cabinet-work", tone: "friendly", cta: "call-us", hashtags: ["#KitchenDesign", "#CabinetGoals", "#LuxuryKitchen", "#ElevatedCooking"], createdAt: new Date().toISOString() },
         { id: "lume-ig-5", brand: "lumepaint", platform: "instagram", content: "Details define luxury. Trim work that elevates every room.", subject: "trim-detail", tone: "professional", cta: "get-quote", hashtags: ["#LuxuryDetails", "#TrimWork", "#Craftsmanship", "#ElevatedFinishes"], createdAt: new Date().toISOString() },
         { id: "lume-ig-6", brand: "lumepaint", platform: "instagram", content: "Your sanctuary awaits. We elevate bedrooms to retreat status.", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: ["#BedroomGoals", "#SanctuarySpace", "#RestfulDesign", "#ElevatedRest"], createdAt: new Date().toISOString() },
-        { id: "lume-ig-7", brand: "lumepaint", platform: "instagram", content: "The Lume team in action. Elevating spaces with passion and precision.", subject: "team-action", tone: "professional", cta: "call-us", hashtags: ["#TeamLume", "#ArtisansAtWork", "#Craftsmanship", "#PaintPros"], createdAt: new Date().toISOString() },
+        { id: "lume-ig-7", brand: "lumepaint", platform: "instagram", content: "The Paint Pros team in action. Elevating spaces with passion and precision.", subject: "team-action", tone: "professional", cta: "call-us", hashtags: ["#TeamPaintPros", "#ArtisansAtWork", "#Craftsmanship", "#PaintPros"], createdAt: new Date().toISOString() },
         { id: "lume-ig-8", brand: "lumepaint", platform: "instagram", content: "Color speaks. Let us help you find your voice. Elevate your expression.", subject: "general", tone: "friendly", cta: "get-quote", hashtags: ["#ColorStory", "#DesignVoice", "#ElevatedExpression", "#ColorConsulting"], createdAt: new Date().toISOString() },
         { id: "lume-ig-9", brand: "lumepaint", platform: "instagram", content: "Commercial spaces elevated. Where business meets beautiful design.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialDesign", "#ElevatedBusiness", "#LuxuryCommercial", "#DesignForward"], createdAt: new Date().toISOString() },
         { id: "lume-ig-10", brand: "lumepaint", platform: "instagram", content: "Weekend transformation complete. Another backdrop elevated. What's your vision?", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#WeekendProject", "#Transformation", "#ElevatedSpaces", "#DesignDreams"], createdAt: new Date().toISOString() },
@@ -1384,9 +1384,9 @@ export default function MarketingHub() {
         { id: "lume-nd-14", brand: "lumepaint", platform: "nextdoor", content: "Boutique businesses deserve elevated spaces. Paint Pros Co serves local shops, salons, and offices with the same care we bring to homes.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "lume-nd-15", brand: "lumepaint", platform: "nextdoor", content: "Complimentary color consultations for neighbors! Not sure what color to choose? Let our design-trained team help you envision the perfect elevated palette.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         // Lume Twitter/X (10)
-        { id: "lume-tw-1", brand: "lumepaint", platform: "x", content: "We elevate the backdrop of your life. That's the Lume promise. #LumePaintCo #ElevatedLiving", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#LumePaintCo", "#ElevatedLiving"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-2", brand: "lumepaint", platform: "x", content: "Before: ordinary. After: elevated. The Lume transformation. #BeforeAfter #Elevated", subject: "before-after", tone: "friendly", cta: "get-quote", hashtags: ["#BeforeAfter", "#Elevated"], createdAt: new Date().toISOString() },
-        { id: "lume-tw-3", brand: "lumepaint", platform: "x", content: "Curb appeal, elevated. First impressions that last. #ExteriorDesign #LumePaintCo", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#ExteriorDesign", "#CurbAppeal"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-1", brand: "lumepaint", platform: "x", content: "We elevate the backdrop of your life. That's the Paint Pros promise. #PaintProsCo #ElevatedLiving", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#PaintProsCo", "#ElevatedLiving"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-2", brand: "lumepaint", platform: "x", content: "Before: ordinary. After: elevated. The Paint Pros transformation. #BeforeAfter #Elevated", subject: "before-after", tone: "friendly", cta: "get-quote", hashtags: ["#BeforeAfter", "#Elevated"], createdAt: new Date().toISOString() },
+        { id: "lume-tw-3", brand: "lumepaint", platform: "x", content: "Curb appeal, elevated. First impressions that last. #ExteriorDesign #PaintProsCo", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#ExteriorDesign", "#CurbAppeal"], createdAt: new Date().toISOString() },
         { id: "lume-tw-4", brand: "lumepaint", platform: "x", content: "Kitchen cabinets = kitchen soul. Elevate yours. #KitchenDesign #CabinetGoals", subject: "cabinet-work", tone: "friendly", cta: "call-us", hashtags: ["#KitchenDesign", "#CabinetGoals"], createdAt: new Date().toISOString() },
         { id: "lume-tw-5", brand: "lumepaint", platform: "x", content: "In the details, we find excellence. Elevated trim work that defines spaces. #Craftsmanship", subject: "trim-detail", tone: "professional", cta: "get-quote", hashtags: ["#Craftsmanship", "#Details"], createdAt: new Date().toISOString() },
         { id: "lume-tw-6", brand: "lumepaint", platform: "x", content: "Spring = renewal. Time to elevate the backdrop of your life. #SpringDesign #FreshStart", subject: "general", tone: "friendly", cta: "get-quote", hashtags: ["#SpringDesign", "#FreshStart"], createdAt: new Date().toISOString() },
