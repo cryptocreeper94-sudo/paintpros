@@ -217,7 +217,7 @@ export default function TrustLayerHome() {
     { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy, status: 'Live - In Development' },
     { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames, status: 'Live - In Development' },
     // Core Infrastructure
-    { name: 'DWTL.io', desc: 'Blockchain Trust Layer', url: 'https://dwtl.io', image: ecosystemDWTL, status: 'Presale' },
+    { name: 'DWTL.io', desc: 'Trust Infrastructure for AI Economy', url: 'https://dwsc.io', image: ecosystemDWTL, status: 'Presale' },
     { name: 'DarkWave Studios', desc: 'Full-Stack Dev & AI Integration', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios, status: 'Live - In Development' },
     // Events & Operations
     { name: 'Orby Commander', desc: 'Venue Operations Platform', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
@@ -226,7 +226,7 @@ export default function TrustLayerHome() {
     { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse, status: 'Live - In Development' },
     { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse, status: 'Live - In Development' },
     // AI Security & Certification
-    { name: 'TrustShield', desc: 'AI Agent Certification', url: 'https://trustshield.tech', image: ecosystemDWTL, status: 'Live - In Development' }
+    { name: 'TrustShield', desc: 'Guardian Shield Security & AI Certification', url: 'https://trustshield.tech', image: ecosystemDWTL, status: 'Live - In Development' }
   ];
 
   const trustFeatures = [
