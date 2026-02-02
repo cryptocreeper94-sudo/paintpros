@@ -159,26 +159,28 @@ export const nashvillePaintingProfessionals: TenantConfig = {
   logo: "/icons/npp-mascot.png",
   
   phone: "(615) 555-PAINT",
-  email: "service@nashvillepaintingprofessionals.com",
+  email: "nashville@paintpros.io",
   address: {
     city: "Nashville",
     state: "TN",
   },
   
   social: {
-    googleReviews: "https://www.google.com/maps/place/Nashville+Painting+Professionals",
+    googleReviews: "https://www.google.com/maps/place/Nashville+PaintPros",
+    facebook: "https://facebook.com/nashpaintpros",
+    instagram: "https://instagram.com/nashpaintpros",
   },
   
   theme: {
-    primaryColor: "hsl(85, 20%, 35%)",
-    accentColor: "hsl(85, 25%, 45%)",
+    primaryColor: "hsl(42, 75%, 55%)", // Warm gold - matches Paint Pros Co
+    accentColor: "hsl(42, 60%, 65%)", // Soft gold
     darkMode: {
-      background: "hsl(85, 15%, 8%)",
-      foreground: "hsl(45, 30%, 95%)",
+      background: "hsl(35, 20%, 8%)", // Warm dark
+      foreground: "hsl(42, 30%, 95%)", // Cream white
     },
     lightMode: {
-      background: "hsl(45, 30%, 97%)",
-      foreground: "hsl(85, 20%, 15%)",
+      background: "hsl(42, 40%, 97%)", // Warm cream
+      foreground: "hsl(35, 25%, 15%)", // Warm dark text
     },
   },
   
