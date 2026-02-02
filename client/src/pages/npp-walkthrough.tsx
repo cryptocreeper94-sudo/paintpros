@@ -143,6 +143,14 @@ export default function NPPWalkthrough() {
     },
     {
       id: 10,
+      title: "The Bottom Line - Lead Generation",
+      description: "LEADGEN_SPECIAL",
+      icon: <Users className="w-8 h-8" />,
+      arrowDirection: 'down',
+      highlight: "leadgen"
+    },
+    {
+      id: 11,
       title: "An Opportunity Worth Exploring",
       description: "HARDWARE_STORE_SPECIAL",
       icon: <Store className="w-8 h-8" />,
@@ -150,7 +158,7 @@ export default function NPPWalkthrough() {
       highlight: "hardware"
     },
     {
-      id: 11,
+      id: 12,
       title: "Quick Reference - Everything",
       description: "REFERENCE_SPECIAL",
       icon: <CheckCircle2 className="w-8 h-8" />,
@@ -773,6 +781,80 @@ export default function NPPWalkthrough() {
                 The better the photos, the better the marketing. The better the marketing, the more leads.
               </p>
             </div>
+          </div>
+        );
+
+      case "LEADGEN_SPECIAL":
+        return (
+          <div className="space-y-5">
+            <p className="text-lg text-muted-foreground">
+              Everything we just talked about has one purpose: putting qualified leads in front of you.
+            </p>
+
+            {/* The Evidence */}
+            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-5">
+              <h4 className="font-bold text-green-600 dark:text-green-400 mb-3 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Real Numbers (Last 2 Days)
+              </h4>
+              <div className="text-center mb-4">
+                <span className="text-4xl font-bold text-green-600 dark:text-green-400">40,000+</span>
+                <span className="block text-sm text-muted-foreground mt-1">Facebook Impressions</span>
+              </div>
+              <p className="text-sm text-muted-foreground text-center italic">
+                That's from a system that was only partially running. Two days.
+              </p>
+            </div>
+
+            {/* The Path */}
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h4 className="font-semibold mb-3">The Path from Visibility to Revenue:</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">1</div>
+                  <span><strong>Impressions</strong> - People see your posts</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">2</div>
+                  <span><strong>Clicks</strong> - Some of them visit your website</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">3</div>
+                  <span><strong>Leads</strong> - Some of those book an estimate</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold shrink-0">4</div>
+                  <span><strong>Jobs</strong> - You close a percentage of those</span>
+                </div>
+              </div>
+            </div>
+
+            {/* The Efficiency Advantage */}
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <h4 className="font-semibold mb-3">Where This System Saves Time:</h4>
+              <div className="grid gap-2 text-sm text-muted-foreground">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <span><strong>Marketing runs itself</strong> - Posts go out without you touching anything</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <span><strong>Booking runs itself</strong> - Customers schedule their own estimates</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <span><strong>Crew tracking runs itself</strong> - GPS check-ins, photo uploads</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <span><strong>You focus on closing</strong> - The highest-value activity</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground italic text-center pt-2">
+              More visibility + less admin time = more time closing, more jobs.
+            </p>
           </div>
         );
 
