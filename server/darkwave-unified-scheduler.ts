@@ -27,16 +27,17 @@ const ECOSYSTEM_TENANTS = [
 ];
 
 // Website URLs for each tenant - appended to posts
+// Only dwsc.io and dwtl.io use /welcome landing page
 const TENANT_URLS: Record<string, string> = {
   'darkwave': 'https://dwsc.io/welcome',
   'dwtl': 'https://dwtl.io/welcome',
   'pulse': 'https://dwsc.io/welcome',
-  'tlid': 'https://tlid.io/welcome',
-  'tradeworksai': 'https://tradeworksai.com/welcome',
-  'paintpros': 'https://paintpros.io/welcome',
+  'tlid': 'https://tlid.io',
+  'tradeworksai': 'https://tradeworksai.com',
+  'paintpros': 'https://paintpros.io',
   'tldriverconnect': 'https://dwsc.io/welcome',
   'garagebot': 'https://dwsc.io/welcome',
-  'trustshield': 'https://trustshield.tech/welcome',
+  'trustshield': 'https://trustshield.tech',
   'lotopspro': 'https://dwsc.io/welcome',
   'vedasolus': 'https://dwsc.io/welcome',
   'brewboard': 'https://dwsc.io/welcome',
