@@ -50,9 +50,11 @@ const TENANT_URLS: Record<string, string> = {
 // With 6 businesses rotating, each gets ~3 posts per day
 const POSTING_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 
-// X/Twitter: Limited to 4 posts/day to stay within free tier (500/month)
-// Only post to X at these hours (spread throughout day)
-const X_POSTING_HOURS = [8, 12, 16, 20]; // 8am, 12pm, 4pm, 8pm CST
+// X/Twitter rate limit protection
+// Free tier: 500 posts/month, but strict per-minute limits
+// Only catch up 1 X post per restart to avoid burst rate limiting
+let xPostsThisSession = 0;
+const MAX_X_POSTS_PER_RESTART = 1; // Prevent burst catch-ups
 
 function getCurrentCSTTime(): { hour: number; dayOfWeek: number; minute: number } {
   const now = new Date();
@@ -329,18 +331,29 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
       }
     }
 
-    // Post to X (Twitter) - only at designated hours to stay within free tier limits
-    // 4 posts/day max (8am, 12pm, 4pm, 8pm CST)
+    // Post to X (Twitter) - limit catch-ups to prevent burst rate limiting
+    // Posts hourly but only catches up 1 missed slot per restart
     const twitter = new TwitterConnector();
-    if (twitter.isConfigured() && X_POSTING_HOURS.includes(slotHour)) {
-      const xResult = await twitter.post(message, imageUrl);
-      if (xResult.success) {
-        console.log(`[DW X] Success! Tweet ID: ${xResult.externalId}`);
+    if (twitter.isConfigured()) {
+      if (xPostsThisSession < MAX_X_POSTS_PER_RESTART || pendingSlots.length === 1) {
+        // Allow if: first catch-up post OR this is the only pending slot (real-time)
+        const xResult = await twitter.post(message, imageUrl);
+        xPostsThisSession++; // Increment regardless of success to prevent burst retries
+        if (xResult.success) {
+          console.log(`[DW X] Success! Tweet ID: ${xResult.externalId}`);
+        } else {
+          console.log(`[DW X] Failed: ${xResult.error}`);
+          // If rate limited, mark as hit limit to skip remaining catch-ups
+          if (xResult.error?.includes('429') || xResult.error?.includes('Too Many')) {
+            xPostsThisSession = MAX_X_POSTS_PER_RESTART + 10; // Stop all X posting this session
+            console.log(`[DW X] Rate limited - skipping X for remaining catch-ups`);
+          }
+        }
+        // Add delay between X posts to avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, 5000));
       } else {
-        console.log(`[DW X] Failed: ${xResult.error}`);
+        console.log(`[DW X] Skipped catch-up for slot ${slotHour} (FB posted, X limit reached)`);
       }
-    } else if (twitter.isConfigured() && !X_POSTING_HOURS.includes(slotHour)) {
-      console.log(`[DW X] Skipped - hour ${slotHour} not in X schedule (${X_POSTING_HOURS.join(', ')} CST)`);
     }
 
     todayExecuted.add(`${slotHour}`);
@@ -364,10 +377,13 @@ export function startDarkWaveUnifiedScheduler(): void {
   // Check X/Twitter configuration
   const twitter = new TwitterConnector();
   if (twitter.isConfigured()) {
-    console.log('[DW Scheduler] X (Twitter) posting: ENABLED (4x daily at 8am, 12pm, 4pm, 8pm CST)');
+    console.log('[DW Scheduler] X (Twitter) posting: ENABLED (hourly, burst-protected)');
   } else {
     console.log('[DW Scheduler] X (Twitter) posting: DISABLED (missing credentials)');
   }
+  
+  // Reset X post counter for this session
+  xPostsThisSession = 0;
 
   isRunning = true;
 
