@@ -50,6 +50,10 @@ const TENANT_URLS: Record<string, string> = {
 // With 6 businesses rotating, each gets ~3 posts per day
 const POSTING_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 
+// X/Twitter: Limited to 4 posts/day to stay within free tier (500/month)
+// Only post to X at these hours (spread throughout day)
+const X_POSTING_HOURS = [8, 12, 16, 20]; // 8am, 12pm, 4pm, 8pm CST
+
 function getCurrentCSTTime(): { hour: number; dayOfWeek: number; minute: number } {
   const now = new Date();
   const cstTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
@@ -325,15 +329,18 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
       }
     }
 
-    // Post to X (Twitter) - uses DarkWave Trust Layer account
+    // Post to X (Twitter) - only at designated hours to stay within free tier limits
+    // 4 posts/day max (8am, 12pm, 4pm, 8pm CST)
     const twitter = new TwitterConnector();
-    if (twitter.isConfigured()) {
+    if (twitter.isConfigured() && X_POSTING_HOURS.includes(slotHour)) {
       const xResult = await twitter.post(message, imageUrl);
       if (xResult.success) {
-        console.log(`[DW X] Success! Tweet ID: ${xResult.tweetId}`);
+        console.log(`[DW X] Success! Tweet ID: ${xResult.externalId}`);
       } else {
         console.log(`[DW X] Failed: ${xResult.error}`);
       }
+    } else if (twitter.isConfigured() && !X_POSTING_HOURS.includes(slotHour)) {
+      console.log(`[DW X] Skipped - hour ${slotHour} not in X schedule (${X_POSTING_HOURS.join(', ')} CST)`);
     }
 
     todayExecuted.add(`${slotHour}`);
@@ -357,7 +364,7 @@ export function startDarkWaveUnifiedScheduler(): void {
   // Check X/Twitter configuration
   const twitter = new TwitterConnector();
   if (twitter.isConfigured()) {
-    console.log('[DW Scheduler] X (Twitter) posting: ENABLED');
+    console.log('[DW Scheduler] X (Twitter) posting: ENABLED (4x daily at 8am, 12pm, 4pm, 8pm CST)');
   } else {
     console.log('[DW Scheduler] X (Twitter) posting: DISABLED (missing credentials)');
   }
