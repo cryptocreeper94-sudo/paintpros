@@ -26,6 +26,25 @@ const ECOSYSTEM_TENANTS = [
   'strikeagent'
 ];
 
+// Website URLs for each tenant - appended to posts
+const TENANT_URLS: Record<string, string> = {
+  'darkwave': 'https://dwsc.io/welcome',
+  'dwtl': 'https://dwtl.io/welcome',
+  'pulse': 'https://dwsc.io/welcome',
+  'tlid': 'https://tlid.io/welcome',
+  'tradeworksai': 'https://tradeworksai.com/welcome',
+  'paintpros': 'https://paintpros.io/welcome',
+  'tldriverconnect': 'https://dwsc.io/welcome',
+  'garagebot': 'https://dwsc.io/welcome',
+  'trustshield': 'https://trustshield.tech/welcome',
+  'lotopspro': 'https://dwsc.io/welcome',
+  'vedasolus': 'https://dwsc.io/welcome',
+  'brewboard': 'https://dwsc.io/welcome',
+  'orbitstaffing': 'https://dwsc.io/welcome',
+  'orbycommander': 'https://dwsc.io/welcome',
+  'strikeagent': 'https://dwsc.io/welcome'
+};
+
 // Hourly posting 6am-10pm CST = 17 slots per day
 // With 6 businesses rotating, each gets ~3 posts per day
 const POSTING_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
@@ -258,7 +277,10 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
       continue;
     }
 
-    const message = post?.content || `Discover more at ${tenant}.io`;
+    // Append tenant URL to message
+    const tenantUrl = TENANT_URLS[tenant] || 'https://dwsc.io/welcome';
+    const baseMessage = post?.content || `Discover more about what we do`;
+    const message = `${baseMessage}\n\n${tenantUrl}`;
     const baseUrl = process.env.REPLIT_DEV_DOMAIN 
       ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
       : 'https://darkwavestudios.io';
