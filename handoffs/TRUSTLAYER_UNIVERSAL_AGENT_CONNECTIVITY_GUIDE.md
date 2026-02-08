@@ -1,4 +1,4 @@
-# Orbit Ecosystem - Universal Agent Connectivity Guide
+# TrustLayer Ecosystem - Universal Agent Connectivity Guide
 ## How Any Agent Connects to PaintPros.io Backend Services
 
 **Version:** 1.0 | **Last Updated:** February 2026
@@ -20,7 +20,7 @@ Step 5: (Optional) Connect Socket.IO for live messaging
 
 ## STEP 1: TENANT PROVISIONING
 
-Every product in the Orbit ecosystem operates inside a "tenant space." A tenant isolates all data (leads, jobs, payments, marketing content, etc.) so nothing leaks between businesses.
+Every product in the TrustLayer ecosystem operates inside a "tenant space." A tenant isolates all data (leads, jobs, payments, marketing content, etc.) so nothing leaks between businesses.
 
 ### How to Create a New Tenant
 
@@ -835,6 +835,6 @@ If you're building a frontend that matches the PaintPros.io design language:
 
 ## QUESTIONS?
 
-This document is maintained by the Orbit development team. If a new endpoint is added to the PaintPros.io backend, it should be documented here and follows the same tenantId isolation pattern.
+This document is maintained by the TrustLayer development team. If a new endpoint is added to the PaintPros.io backend, it should be documented here and follows the same tenantId isolation pattern.
 
-**File location:** `handoffs/ORBIT_UNIVERSAL_AGENT_CONNECTIVITY_GUIDE.md`
+**File location:** `handoffs/TRUSTLAYER_UNIVERSAL_AGENT_CONNECTIVITY_GUIDE.md`
