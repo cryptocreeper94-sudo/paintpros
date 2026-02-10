@@ -6,7 +6,7 @@ import { Link } from "wouter";
 
 const emailContent = `Team,
 
-Excited to announce that our Nashville Painting Professionals Marketing Hub is now fully operational with automated social media posting!
+Excited to announce that our Nash PaintPros Marketing Hub is now fully operational with automated social media posting!
 
 WHAT'S WORKING NOW:
 

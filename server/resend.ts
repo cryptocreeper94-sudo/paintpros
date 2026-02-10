@@ -67,7 +67,7 @@ export async function sendContactEmail(data: ContactFormData): Promise<{ success
     const { client, fromEmail } = await getResendClient();
     
     // Use CONTACT_EMAIL env var, or fall back to NPP service email
-    const recipientEmail = process.env.CONTACT_EMAIL || 'service@nashvillepaintingprofessionals.com';
+    const recipientEmail = process.env.CONTACT_EMAIL || 'service@nashpaintpros.io';
     
     const result = await client.emails.send({
       from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
@@ -118,7 +118,7 @@ export async function sendContractorApplicationEmail(data: ContractorApplication
     const { client, fromEmail } = await getResendClient();
     
     // Contractor applications go to NPP service email
-    const recipientEmail = process.env.CONTRACTOR_EMAIL || 'Service@nashvillepaintingprofessionals.com';
+    const recipientEmail = process.env.CONTRACTOR_EMAIL || 'Service@nashpaintpros.io';
     
     const result = await client.emails.send({
       from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
@@ -247,7 +247,7 @@ export async function sendBookingNotification(data: BookingNotificationData): Pr
     const { client, fromEmail } = await getResendClient();
     
     // Bookings go to NPP service email
-    const recipientEmail = process.env.BOOKING_EMAIL || 'service@nashvillepaintingprofessionals.com';
+    const recipientEmail = process.env.BOOKING_EMAIL || 'service@nashpaintpros.io';
     const formattedDate = data.scheduledDate.toLocaleDateString('en-US', { 
       weekday: 'long', 
       year: 'numeric', 
@@ -264,7 +264,7 @@ export async function sendBookingNotification(data: BookingNotificationData): Pr
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #4a5d23 0%, #6b7c3f 100%); padding: 20px; border-radius: 8px 8px 0 0;">
             <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Booking Request</h1>
-            <p style="color: #e0e0e0; margin: 5px 0 0 0;">${data.tenantName || 'Nashville Painting Professionals'}</p>
+            <p style="color: #e0e0e0; margin: 5px 0 0 0;">${data.tenantName || 'Nash PaintPros'}</p>
             <p style="color: #ffd700; margin: 10px 0 0 0; font-size: 14px; font-weight: bold;">⚠️ ACTION REQUIRED: Please review and confirm this booking</p>
           </div>
           
@@ -344,7 +344,7 @@ export async function sendLeadNotification(data: LeadNotificationData): Promise<
     const { client, fromEmail } = await getResendClient();
     
     // Estimates and leads go to NPP service email
-    const recipientEmail = process.env.ESTIMATE_EMAIL || 'Service@nashvillepaintingprofessionals.com';
+    const recipientEmail = process.env.ESTIMATE_EMAIL || 'Service@nashpaintpros.io';
     const formattedTotal = data.estimatedTotal 
       ? `$${data.estimatedTotal.toLocaleString()}` 
       : 'Not calculated';

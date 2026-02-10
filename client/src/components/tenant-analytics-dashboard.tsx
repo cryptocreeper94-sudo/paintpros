@@ -11,7 +11,7 @@ import {
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 
 const TENANT_PREFIXES: Record<string, { prefix: string; name: string; color: string }> = {
-  npp: { prefix: 'NPP', name: 'Nashville Painting Professionals', color: '#5a7a4d' },
+  npp: { prefix: 'NPP', name: 'Nash PaintPros', color: '#5a7a4d' },
   demo: { prefix: 'PAINTPROS', name: 'PaintPros.io', color: '#d4a853' },
   orbit: { prefix: 'ORBIT', name: 'ORBIT Platform', color: '#9945FF' },
 };

@@ -546,7 +546,7 @@ export default function AutopilotAdmin() {
                         <div>
                           <Label className="text-slate-300">Facebook Page Name</Label>
                           <Input
-                            placeholder="e.g., Nashville Painting Professionals"
+                            placeholder="e.g., Nash PaintPros"
                             value={metaCredentials.facebookPageName}
                             onChange={(e) => setMetaCredentials({ ...metaCredentials, facebookPageName: e.target.value })}
                             className="bg-slate-800 border-slate-600 text-white mt-1"

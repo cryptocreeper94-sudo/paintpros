@@ -16,7 +16,7 @@ interface Tenant {
 const TENANTS: Tenant[] = [
   {
     id: "npp",
-    name: "Nashville Painting Professionals",
+    name: "Nash PaintPros",
     shortName: "NPP",
     color: "text-[#4a5d23]",
     bgColor: "bg-[#4a5d23]/10",

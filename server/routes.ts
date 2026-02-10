@@ -120,8 +120,6 @@ const domainTenantMap: Record<string, string> = {
   "www.tlid.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
-  "nashvillepaintingprofessionals.com": "npp",
-  "www.nashvillepaintingprofessionals.com": "npp",
   "lumepaint.co": "lumepaint",
   "www.lumepaint.co": "lumepaint",
   "tradeworksai.io": "tradeworks",
@@ -149,8 +147,8 @@ const pwaConfigs: Record<string, {
   categories?: string[];
 }> = {
   npp: {
-    name: "Nashville Painting Professionals",
-    shortName: "NPP Painters",
+    name: "Nash PaintPros",
+    shortName: "Nash PaintPros",
     description: "Professional interior & exterior painting services in Nashville, TN",
     backgroundColor: "#3a4f41",
     themeColor: "#3a4f41",
@@ -1673,7 +1671,7 @@ console.log(data);`
       // Send email via Resend
       const { getResendClient } = await import("./resend");
       const { client, fromEmail } = await getResendClient();
-      const recipientEmail = process.env.ESTIMATE_EMAIL || 'Service@nashvillepaintingprofessionals.com';
+      const recipientEmail = process.env.ESTIMATE_EMAIL || 'service@nashpaintpros.io';
 
       await client.emails.send({
         from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
@@ -2096,7 +2094,7 @@ console.log(data);`
             customerPhone: leadData.phone || undefined,
             projectType: validatedData.pricingTier || 'Painting',
             estimatedTotal: validatedData.totalEstimate ? Number(validatedData.totalEstimate) : undefined,
-            tenantName: validatedData.tenantId === 'npp' ? 'Nashville Painting Professionals' : 'PaintPros.io'
+            tenantName: validatedData.tenantId === 'npp' ? 'Nash PaintPros' : 'PaintPros.io'
           });
           notificationSent = result.success;
           if (!result.success) {
@@ -2873,7 +2871,7 @@ console.log(data);`
 
       const tenantContextMap: Record<string, string> = {
         "lumepaint": "Lume Paint Co - a premium painting company with the tagline 'We elevate the backdrop of your life'. Use a sophisticated, modern tone.",
-        "npp": "Nashville Painting Professionals - a trusted local painting company in Nashville, TN. Use a friendly, professional tone.",
+        "npp": "Nash PaintPros - Nashville's trusted painting franchise by PaintPros.io. Use a friendly, professional tone.",
         "demo": "PaintPros.io - a marketplace connecting homeowners with professional painters. Include tips for hiring contractors. Mention TradeWorks AI as a professional tool for contractors.",
         "tradeworks": "TradeWorks AI - a professional field toolkit with 85+ calculators for 8 trades (painting, electrical, plumbing, HVAC, roofing, carpentry, concrete, landscaping). Write helpful trade tips that showcase the value of having professional calculation tools."
       };
@@ -4678,7 +4676,7 @@ Format the response as JSON with these fields:
       // Get tenant name for hallmark
       const tenantNames: Record<string, string> = {
         'orbit': 'ORBIT Platform',
-        'npp': 'Nashville Painting Professionals',
+        'npp': 'Nash PaintPros',
         'demo': 'PaintPros.io Demo',
       };
       const recipientName = tenantNames[tenantId] || tenantId;
@@ -8605,7 +8603,7 @@ Do not include any text before or after the JSON.`
             tenantId,
             filename,
             filePath: `/marketing/${tenantId}/${cat.name}/${filename}`,
-            altText: `${cat.label} project ${i} by ${tenantId === 'npp' ? 'Nashville Painting Professionals' : 'Lume Paint Co'}`,
+            altText: `${cat.label} project ${i} by ${tenantId === 'npp' ? 'Nash PaintPros' : 'Lume Paint Co'}`,
             category: cat.name,
             subcategory: i % 3 === 0 ? 'before_after' : i % 3 === 1 ? 'full_room' : 'detail',
             tags: [cat.name, tenantId === 'npp' ? 'nashville' : 'lume', 'professional', 'quality'],
@@ -10007,7 +10005,7 @@ Do not include any text before or after the JSON.`
       
       // Header
       page1.drawText('PARTNERSHIP PROPOSAL', { x: 50, y: height - 60, size: 24, font: fontBold, color: rgb(0.1, 0.3, 0.2) });
-      page1.drawText('Nashville Painting Professionals - Murfreesboro Sector', { x: 50, y: height - 85, size: 14, font, color: rgb(0.3, 0.3, 0.3) });
+      page1.drawText('Nash PaintPros - Murfreesboro Sector', { x: 50, y: height - 85, size: 14, font, color: rgb(0.3, 0.3, 0.3) });
       
       // Investment Terms
       page1.drawText('Investment Structure:', { x: 50, y: height - 130, size: 16, font: fontBold });
@@ -10057,11 +10055,11 @@ Do not include any text before or after the JSON.`
           await client.emails.send({
             from: fromEmail || 'PaintPros.io <onboarding@resend.dev>',
             to: [signerEmail],
-            subject: 'Your Signed Proposal - Nashville Painting Professionals Partnership',
+            subject: 'Your Signed Proposal - Nash PaintPros Partnership',
             html: `
               <h2>Partnership Proposal Accepted</h2>
               <p>Dear ${signerName},</p>
-              <p>Thank you for accepting the partnership proposal for Nashville Painting Professionals - Murfreesboro Sector expansion.</p>
+              <p>Thank you for accepting the partnership proposal for Nash PaintPros - Murfreesboro Sector expansion.</p>
               <p>Your signed proposal is attached to this email for your records.</p>
               <p><strong>Investment Summary:</strong></p>
               <ul>
@@ -10968,7 +10966,7 @@ IMPORTANT: NEVER use emojis in your responses - text only.`;
           scheduledTime,
           address: customerAddress,
           notes: projectDescription || customerNotes,
-          tenantName: tenantId === 'lumepaint' ? 'Lume Paint Co' : 'Nashville Painting Professionals'
+          tenantName: tenantId === 'lumepaint' ? 'Lume Paint Co' : 'Nash PaintPros'
         });
       } catch (emailError) {
         console.error('[Booking] Failed to send notification email:', emailError);

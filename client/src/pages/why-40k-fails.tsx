@@ -375,7 +375,7 @@ export default function Why40kFails() {
               I look forward to getting the new site implemented as soon as possible.
             </p>
             <p className="text-sm mt-4 opacity-80" style={{ color: colors.greenLight }}>
-              Nashville Painting Professionals
+              Nash PaintPros
             </p>
           </motion.div>
         </div>

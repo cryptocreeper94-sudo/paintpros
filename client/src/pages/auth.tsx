@@ -227,7 +227,7 @@ export default function AuthPage() {
                 <p className="text-xs tracking-widest uppercase text-white/70">Paint Co</p>
               </div>
             ) : (
-              <img src={nppLogo} alt="Nashville Painting Professionals" className="h-14 w-auto rounded-md opacity-90" />
+              <img src={nppLogo} alt="Nash PaintPros" className="h-14 w-auto rounded-md opacity-90" />
             )}
           </motion.div>
           

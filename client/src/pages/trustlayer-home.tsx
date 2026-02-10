@@ -211,7 +211,7 @@ export default function TrustLayerHome() {
     { name: 'Lot Ops Pro', desc: 'Driver Performance & Lot Management', url: 'https://lotopspro.io', image: ecosystemLotOpsPro, status: 'Live - In Development' },
     { name: 'Brew & Board', desc: 'B2B Coffee Concierge Nashville', url: 'https://brewandboardcoffee.com', image: ecosystemBrewBoard, status: 'Live - In Development' },
     // Tenant Demos
-    { name: 'Nashville Painting Professionals', desc: 'Lead Generator Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
+    { name: 'Nash PaintPros', desc: 'Lead Generator Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
     { name: 'Paint Pros Co', desc: 'Premium Painting', url: 'https://paintpros.io', image: ecosystemLume, status: 'Live' },
     // Gaming & Entertainment
     { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy, status: 'Live - In Development' },
@@ -1052,7 +1052,7 @@ export default function TrustLayerHome() {
         
         <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 md:overflow-visible">
           {[
-            { name: 'Nashville Painting Professionals', industry: 'Painting', result: 'Automated daily posts', color: 'from-blue-500 to-purple-500' },
+            { name: 'Nash PaintPros', industry: 'Painting', result: 'Automated daily posts', color: 'from-blue-500 to-purple-500' },
             { name: 'Paint Pros Co', industry: 'Premium Painting', result: 'Smart ad boosting', color: 'from-amber-500 to-orange-500' }
           ].map((business, i) => (
             <div key={i} className="flex-shrink-0 w-72 md:w-auto snap-center">

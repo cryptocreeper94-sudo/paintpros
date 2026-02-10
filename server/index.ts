@@ -69,7 +69,7 @@ async function autoSeedDefaultPins(): Promise<void> {
 // Both NPP and Demo get AUTO versioning on every publish
 const DEPLOY_TENANTS = [
   { id: 'demo', name: 'PaintPros.io Platform' },
-  { id: 'npp', name: 'Nashville Painting Professionals' },
+  { id: 'npp', name: 'Nash PaintPros' },
 ];
 
 /**

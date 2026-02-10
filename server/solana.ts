@@ -65,7 +65,7 @@ export async function stampHashToBlockchain(
 ): Promise<{ signature: string; slot: number; blockTime: Date }> {
   const connection = getConnection(network);
   
-  // Use tenant prefix for memo data (NPP for Nashville Painting Professionals, PP for PaintPros.io demo, ORBIT for platform)
+  // Use tenant prefix for memo data (NPP for Nash PaintPros, PP for PaintPros.io demo, ORBIT for platform)
   const prefix = tenantId === 'npp' ? 'NPP' : tenantId === 'demo' ? 'PP' : 'ORBIT';
   
   const memoData = metadata 

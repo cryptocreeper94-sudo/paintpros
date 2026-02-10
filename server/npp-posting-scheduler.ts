@@ -316,7 +316,7 @@ async function checkAndExecuteScheduledPosts(): Promise<void> {
         continue;
       }
 
-      const message = messageContent?.content || 'Quality painting services from Nashville Painting Professionals! Call 615-555-PAINT for your free estimate.';
+      const message = messageContent?.content || 'Quality painting services from Nash PaintPros! Call 615-555-PAINT for your free estimate.';
       const baseUrl = process.env.REPLIT_DEV_DOMAIN 
         ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
         : 'https://paintpros.io';
@@ -505,7 +505,7 @@ export async function triggerManualPost(tenantId: string): Promise<{ facebook?: 
   }
 
   const results: { facebook?: any; instagram?: any } = {};
-  const message = messageContent?.content || 'Quality painting services from Nashville Painting Professionals!';
+  const message = messageContent?.content || 'Quality painting services from Nash PaintPros!';
   const baseUrl = process.env.REPLIT_DEV_DOMAIN 
     ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
     : 'https://paintpros.io';

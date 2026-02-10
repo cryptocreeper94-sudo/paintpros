@@ -37,7 +37,7 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
       prefix,
       master: 0,
       sub: 0,
-      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      edition: prefix === 'NPP' ? 'Nash PaintPros' : 'PaintPros.io',
       isFounder: false,
       isSpecial: true,
       raw: hallmarkNumber,
@@ -54,7 +54,7 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
       prefix,
       master,
       sub,
-      edition: prefix === 'NPP' ? 'Nashville Painting Professionals' : 'PaintPros.io',
+      edition: prefix === 'NPP' ? 'Nash PaintPros' : 'PaintPros.io',
       isFounder: master <= 3,
       isSpecial: true,
       raw: hallmarkNumber,
@@ -100,9 +100,9 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
     return { tier: 'Standard', color: '#6b7280', icon: '📄', glow: 'none' };
   }
 
-  // NPP (Nashville Painting Professionals) tenant badge
+  // NPP (Nash PaintPros) tenant badge
   if (parsed.prefix === 'NPP') {
-    return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nashville Painting Professionals' };
+    return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nash PaintPros' };
   }
 
   if (parsed.prefix === 'PT') {

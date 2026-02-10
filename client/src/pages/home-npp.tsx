@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   ArrowRight, 
-  Award, 
   Shield, 
   Clock, 
   CheckCircle2, 
@@ -34,9 +33,10 @@ import { motion } from "framer-motion";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { HeroSlideshow } from "@/components/ui/hero-slideshow";
 import { LeadCaptureModal } from "@/components/lead-generation/lead-capture-modal";
+import { CryptoPaymentModal } from "@/components/crypto-payment-modal";
+import { SiBitcoin, SiEthereum } from "react-icons/si";
 
 // Import images
-import awardImage from "@assets/Screenshot_20251216_195245_Replit_1765936399782.jpg";
 import interiorImage from "@assets/generated_images/interior_wall_painting.png";
 import exteriorImage from "@assets/generated_images/exterior_painting.png";
 import mapImage from "@assets/generated_images/stylized_map_of_nashville_and_surrounding_suburbs.png";
@@ -60,15 +60,16 @@ interface PaintColor {
 export default function HomeNPP() {
   const tenant = useTenant();
   const [showEstimateModal, setShowEstimateModal] = useState(true);
+  const [cryptoModalOpen, setCryptoModalOpen] = useState(false);
 
   // SEO Meta Tags
   useEffect(() => {
-    document.title = "Nashville Painting Professionals | Interior & Exterior Painting Services";
+    document.title = "Nash PaintPros | Interior & Exterior Painting Services";
     
     const metaTags = [
-      { name: 'description', content: 'Nashville Painting Professionals - Premier residential and commercial painting services in Nashville, TN. Interior, exterior, cabinet refinishing, and more. Get a free estimate today!' },
-      { name: 'keywords', content: 'Nashville painting, house painters Nashville, interior painting Nashville, exterior painting Nashville, commercial painting Tennessee, cabinet refinishing, painting contractors Nashville TN, professional painters' },
-      { name: 'author', content: 'Nashville Painting Professionals' },
+      { name: 'description', content: 'Nash PaintPros - Premier residential and commercial painting services in Nashville, TN. Interior, exterior, cabinet refinishing, and more. Get a free estimate today!' },
+      { name: 'keywords', content: 'Nashville painting, house painters Nashville, interior painting Nashville, exterior painting Nashville, commercial painting Tennessee, cabinet refinishing, painting contractors Nashville TN, professional painters, Nash PaintPros' },
+      { name: 'author', content: 'Nash PaintPros' },
       { name: 'robots', content: 'index, follow' },
       { name: 'geo.region', content: 'US-TN' },
       { name: 'geo.placename', content: 'Nashville' }
@@ -88,11 +89,11 @@ export default function HomeNPP() {
     
     // Open Graph tags
     const ogTags = [
-      { property: 'og:title', content: 'Nashville Painting Professionals | Quality Painting Services' },
+      { property: 'og:title', content: 'Nash PaintPros | Quality Painting Services' },
       { property: 'og:description', content: 'Transform your space with Nashville\'s trusted painting professionals. Residential & commercial. Free estimates. Licensed & insured.' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://nashpaintpros.io' },
-      { property: 'og:site_name', content: 'Nashville Painting Professionals' },
+      { property: 'og:site_name', content: 'Nash PaintPros' },
       { property: 'og:locale', content: 'en_US' }
     ];
     
@@ -111,7 +112,7 @@ export default function HomeNPP() {
     // Twitter Card
     const twitterTags = [
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: 'Nashville Painting Professionals' },
+      { name: 'twitter:title', content: 'Nash PaintPros' },
       { name: 'twitter:description', content: 'Premier residential and commercial painting services in Nashville, TN. Get a free estimate!' }
     ];
     
@@ -182,21 +183,6 @@ export default function HomeNPP() {
     <PageLayout>
       <main className="min-h-screen">
         
-        {/* Legacy Site Redirect Banner */}
-        <div className="bg-gradient-to-r from-[#800000] to-[#600000] text-white py-3 px-4 text-center">
-          <p className="text-sm md:text-base">
-            Please visit our legacy site at{' '}
-            <a 
-              href="https://nashvillepaintingprofessionals.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="underline font-semibold hover:text-yellow-200 transition-colors"
-            >
-              nashvillepaintingprofessionals.com
-            </a>
-          </p>
-        </div>
-        
         {/* HERO SECTION - Mobile-First Centered Layout */}
         <section className="relative min-h-[85vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50/70 to-white/70 px-4 pt-4 pb-[100px] md:pt-20 md:pb-20">
           {/* Desktop painters image - z-0 to stay behind text */}
@@ -224,8 +210,8 @@ export default function HomeNPP() {
                   marginBottom: 'clamp(1rem, 2vw, 2rem)'
                 }}
               >
-                Nashville Painting
-                <span className="block">Professionals</span>
+                Nash
+                <span className="block">PaintPros</span>
               </h1>
               <p 
                 className="text-[#800000] max-w-2xl mx-auto md:mx-0"
@@ -289,57 +275,69 @@ export default function HomeNPP() {
           </div>
         </section>
 
-        {/* TRUST & AWARDS SECTION - Bento Grid */}
+        {/* CRYPTO PAYMENTS SECTION - Bento Grid */}
         <section className="py-8 md:py-16 px-3 md:px-4 bg-gray-50/55">
           <div className="max-w-6xl mx-auto">
-            {/* Mobile: 2-column Bento Grid, Desktop: 2-column */}
             <div className="grid grid-cols-2 gap-3 md:gap-8">
-              {/* Award Card - spans full width on mobile for visual impact */}
-              <Link href="/awards" className="col-span-2 md:col-span-1">
-                <motion.div
-                  
-                  className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group bg-black"
-                  data-testid="link-award-section"
-                >
-                  <img 
-                    src={awardImage} 
-                    alt="Best Painter Award 2025" 
-                    className="w-full h-full object-contain mx-auto" 
-                  />
-                </motion.div>
-              </Link>
-
-              {/* Award Description Card */}
-              <motion.div
-                
-                className="col-span-2 md:col-span-1 relative h-auto md:h-80 rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-yellow-100 p-4 md:p-8 flex flex-col justify-between border border-amber-200"
-                data-testid="card-award-description"
+              {/* Crypto Visual Card */}
+              <button
+                onClick={() => setCryptoModalOpen(true)}
+                className="col-span-2 md:col-span-1 text-left"
+                data-testid="button-crypto-section"
               >
-                <div className="absolute right-3 top-3 md:right-4 md:top-4 w-12 h-12 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
-                  <Award className="w-6 h-6 md:w-10 md:h-10 text-white" />
+                <motion.div
+                  className="relative h-40 md:h-80 rounded-xl md:rounded-2xl overflow-hidden cursor-pointer group bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 md:p-10 flex flex-col justify-center items-center"
+                >
+                  <SiBitcoin className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 text-orange-400/15" />
+                  <div className="relative z-10 flex flex-col items-center gap-3 md:gap-5">
+                    <div className="flex -space-x-3">
+                      <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-orange-500/30 flex items-center justify-center border border-orange-500/30">
+                        <SiBitcoin className="w-5 h-5 md:w-8 md:h-8 text-orange-400" />
+                      </div>
+                      <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-purple-500/30 flex items-center justify-center border border-purple-500/30">
+                        <SiEthereum className="w-5 h-5 md:w-8 md:h-8 text-purple-400" />
+                      </div>
+                    </div>
+                    <span className="text-xs md:text-base px-3 py-1 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full text-white font-bold tracking-wide">
+                      CRYPTO ACCEPTED
+                    </span>
+                    <p className="text-gray-400 text-[10px] md:text-sm text-center">
+                      Powered by Coinbase Commerce
+                    </p>
+                  </div>
+                </motion.div>
+              </button>
+
+              {/* Crypto Description Card */}
+              <motion.div
+                className="col-span-2 md:col-span-1 relative h-auto md:h-80 rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-orange-50 to-purple-50 p-4 md:p-8 flex flex-col justify-between border border-orange-200/50"
+                data-testid="card-crypto-description"
+              >
+                <div className="absolute right-3 top-3 md:right-4 md:top-4 w-12 h-12 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-orange-400 to-purple-500 flex items-center justify-center shadow-lg">
+                  <Shield className="w-6 h-6 md:w-10 md:h-10 text-white" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2 md:mb-4">
-                    <div className="p-1 md:p-2 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-600">
-                      <Star className="w-3 h-3 md:w-5 md:h-5 text-white" />
+                    <div className="p-1 md:p-2 rounded-lg bg-gradient-to-br from-orange-500 to-purple-600">
+                      <Sparkles className="w-3 h-3 md:w-5 md:h-5 text-white" />
                     </div>
-                    <Badge className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white border-0 text-[10px] md:text-sm">
-                      2025 Winner
+                    <Badge className="bg-gradient-to-r from-orange-500 to-purple-500 text-white border-0 text-[10px] md:text-sm">
+                      Now Accepted
                     </Badge>
                   </div>
                   <h3 className="text-base md:text-2xl font-bold text-gray-900 mb-1 md:mb-2 pr-12 md:pr-0">
-                    Best Painter in Nashville
+                    Pay with Crypto
                   </h3>
                   <p className="text-xs md:text-base text-gray-700 line-clamp-3 md:line-clamp-none">
-                    Recognized for excellence in craftsmanship, customer service, and professional standards. Voted by Nashville homeowners as the most trusted painting company.
+                    We accept Bitcoin, Ethereum, USDC, and more through Coinbase Commerce. Secure, instant, and borderless payments for your painting project.
                   </p>
                 </div>
-                <Link href="/awards">
-                  <div className="flex items-center gap-2 text-amber-700 mt-2 md:mt-4 cursor-pointer hover:text-amber-800 transition-colors">
+                <button onClick={() => setCryptoModalOpen(true)}>
+                  <div className="flex items-center gap-2 text-orange-700 mt-2 md:mt-4 cursor-pointer hover:text-orange-800 transition-colors">
                     <span className="text-[10px] md:text-sm font-medium">Learn more</span>
                     <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                   </div>
-                </Link>
+                </button>
               </motion.div>
             </div>
           </div>
@@ -1136,7 +1134,8 @@ export default function HomeNPP() {
       </Dialog>
       
       {/* Lead Capture Popup Modal */}
-      <LeadCaptureModal tenantId="npp" tenantName="Nashville Painting Professionals" />
+      <LeadCaptureModal tenantId="npp" tenantName="Nash PaintPros" />
+      <CryptoPaymentModal isOpen={cryptoModalOpen} onClose={() => setCryptoModalOpen(false)} />
     </PageLayout>
   );
 }

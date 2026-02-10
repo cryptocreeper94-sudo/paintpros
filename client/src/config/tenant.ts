@@ -139,8 +139,8 @@ export interface TenantConfig {
   };
 }
 
-// Nashville PaintPros - First Franchise Location
-export const nashvillePaintingProfessionals: TenantConfig = {
+// Nash PaintPros - First Franchise Location
+export const nashPaintPros: TenantConfig = {
   id: "npp",
   slug: "nashville-paintpros",
   brandingModel: "franchise",
@@ -935,7 +935,7 @@ export const buildPros: TenantConfig = {
 
 // Tenant registry
 export const tenants: Record<string, TenantConfig> = {
-  "npp": nashvillePaintingProfessionals,
+  "npp": nashPaintPros,
   "demo": paintProsDemo,
   "paintprosco": lumePaintCo,
   "lumepaint": lumePaintCo,
@@ -956,8 +956,6 @@ const domainTenantMap: Record<string, string> = {
   "www.tlid.io": "demo",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
-  "nashvillepaintingprofessionals.com": "npp",
-  "www.nashvillepaintingprofessionals.com": "npp",
   // Paint Pros Co - main brand
   "lumepaint.co": "paintprosco",
   "www.lumepaint.co": "paintprosco",

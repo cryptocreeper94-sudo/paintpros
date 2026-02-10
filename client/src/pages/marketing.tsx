@@ -46,7 +46,7 @@ export default function Marketing() {
         >
           <img 
             src={nppLogo} 
-            alt="Nashville Painting Professionals" 
+            alt="Nash PaintPros" 
             className="w-64 md:w-80 mx-auto mb-12"
             data-testid="img-npp-logo"
           />
@@ -465,7 +465,7 @@ export default function Marketing() {
                     ))}
                   </div>
                   <p className="text-center text-xs mt-4" style={{ color: colors.textDark }}>
-                    Nashville Painting Professionals
+                    Nash PaintPros
                   </p>
                 </Card>
               </div>
@@ -1179,7 +1179,7 @@ export default function Marketing() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Badge className="text-lg px-6 py-3" style={{ backgroundColor: colors.gold, color: colors.textDark }}>
-                Nashville Painting Professionals
+                Nash PaintPros
               </Badge>
               <Badge className="text-lg px-6 py-3" style={{ backgroundColor: "white", color: colors.greenDark }}>
                 2026 Marketing Campaign
@@ -1194,11 +1194,11 @@ export default function Marketing() {
         <div className="max-w-5xl mx-auto text-center">
           <img 
             src={nppLogo} 
-            alt="Nashville Painting Professionals" 
+            alt="Nash PaintPros" 
             className="w-32 mx-auto mb-4"
           />
           <p className="text-sm" style={{ color: colors.textDark }}>
-            Nashville Painting Professionals | Marketing Campaign 2026
+            Nash PaintPros | Marketing Campaign 2026
           </p>
           <p className="text-sm italic mt-2" style={{ color: colors.greenDark }}>
             "We elevate the backdrop of your life."

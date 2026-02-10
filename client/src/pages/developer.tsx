@@ -2832,7 +2832,7 @@ export default function Developer() {
 
 3. Click "User or Page" → "Get Page Access Token"
 
-4. Select "Nashville Painting Professionals" page
+4. Select "Nash PaintPros" page
 
 5. Add permissions: pages_manage_posts, pages_read_engagement, instagram_basic, instagram_content_publish
 
@@ -2858,7 +2858,7 @@ export default function Developer() {
 
 3. Click "User or Page" → "Get Page Access Token"
 
-4. Select "Nashville Painting Professionals" page
+4. Select "Nash PaintPros" page
 
 5. Add permissions: pages_manage_posts, pages_read_engagement, instagram_basic, instagram_content_publish
 

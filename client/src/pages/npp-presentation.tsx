@@ -45,7 +45,7 @@ export default function NPPPresentation() {
   const slides: Slide[] = [
     {
       id: 0,
-      title: "Nashville Painting Professionals",
+      title: "Nash PaintPros",
       subtitle: "Your New System - The Simple Version",
       content: (
         <div className="flex flex-col items-center justify-center gap-6">

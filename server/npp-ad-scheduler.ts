@@ -204,7 +204,7 @@ async function createAdCampaign(
         link_data: {
           link: `https://nashpaintpros.io`,
           message: 'Transform your home with Nashville\'s trusted painting professionals. Free estimates, quality work guaranteed.',
-          name: 'Nashville Painting Professionals',
+          name: 'Nash PaintPros',
           description: 'Professional interior and exterior painting services in Nashville, TN.',
           call_to_action: {
             type: 'LEARN_MORE',
@@ -222,7 +222,7 @@ async function createAdCampaign(
         link_data: {
           link: 'https://nashpaintpros.io',
           message: 'Transform your home with Nashville\'s trusted painting professionals. Free estimates, quality work guaranteed.',
-          name: 'Nashville Painting Professionals',
+          name: 'Nash PaintPros',
           description: 'Professional interior and exterior painting services.',
           call_to_action: { type: 'LEARN_MORE', value: { link: 'https://nashpaintpros.io' } }
         }

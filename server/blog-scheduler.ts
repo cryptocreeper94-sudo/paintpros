@@ -65,7 +65,7 @@ const seoTopics: Record<string, string[]> = {
 };
 
 const tenantContexts: Record<string, string> = {
-  npp: "Nashville Painting Professionals - a trusted local painting company in Nashville, TN. Use a friendly, professional tone focused on the Nashville area.",
+  npp: "Nash PaintPros - a trusted local painting company in Nashville, TN. Use a friendly, professional tone focused on the Nashville area.",
   lumepaint: "Lume Paint Co - a premium painting company with the tagline 'We elevate the backdrop of your life'. Use a sophisticated, modern tone.",
   demo: "PaintPros.io - a marketplace connecting homeowners with professional painters. Include tips for hiring contractors. Mention TradeWorks AI as a professional tool for contractors.",
   tradeworks: "TradeWorks AI - a professional field toolkit with 85+ calculators for 8 trades. Write helpful trade tips that showcase the value of having professional calculation tools.",

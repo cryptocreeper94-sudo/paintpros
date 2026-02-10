@@ -39,7 +39,7 @@ export default function Awards() {
               <span className="text-accent font-medium text-sm">Recognition</span>
             </div>
             <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4" style={{ fontFamily: 'Orbitron, sans-serif' }}>
-              Nashville Painting Professionals Recognized as Best Painter in Nashville
+              Nash PaintPros Recognized as Best Painter in Nashville
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground">
               Looking Ahead to 2026 and Beyond
@@ -60,7 +60,7 @@ export default function Awards() {
               <div className="flex justify-center">
                 <img 
                   src={awardImage} 
-                  alt="Best of BusinessRate 2025 Award - Nashville Painting Professionals" 
+                  alt="Best of BusinessRate 2025 Award - Nash PaintPros" 
                   className="max-w-full md:max-w-md rounded-lg shadow-lg border border-accent/30"
                 />
               </div>
@@ -72,7 +72,7 @@ export default function Awards() {
 
           <motion.article variants={itemVariants} className="prose prose-invert max-w-none space-y-6">
             <p className="text-lg text-foreground leading-relaxed">
-              At <strong>Nashville Painting Professionals</strong>, we're honored to have been recognized as the <strong>Best Painter in Nashville for 2025</strong> by BusinessRate. This recognition is based entirely on <strong>verified Google Reviews</strong>, reflecting real experiences from homeowners and businesses across the Nashville area.
+              At <strong>Nash PaintPros</strong>, we're honored to have been recognized as the <strong>Best Painter in Nashville for 2025</strong> by BusinessRate. This recognition is based entirely on <strong>verified Google Reviews</strong>, reflecting real experiences from homeowners and businesses across the Nashville area.
             </p>
 
             <p className="text-foreground leading-relaxed">
@@ -163,7 +163,7 @@ export default function Awards() {
                 Looking Ahead to 2026 and Beyond
               </h2>
               <p className="text-foreground leading-relaxed mb-4">
-                Being named Best Painter in Nashville for 2025 is not a finish line — it's a benchmark. As we move into <strong>2026 and beyond</strong>, Nashville Painting Professionals is committed to:
+                Being named Best Painter in Nashville for 2025 is not a finish line — it's a benchmark. As we move into <strong>2026 and beyond</strong>, Nash PaintPros is committed to:
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">

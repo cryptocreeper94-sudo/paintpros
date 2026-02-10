@@ -126,7 +126,7 @@ export default function ProposalRyan() {
         
         <div className="text-center space-y-4">
           <Badge variant="outline" className="text-sm bg-background/80 backdrop-blur-sm">Strategic Partnership Proposal</Badge>
-          <h1 className="text-3xl md:text-4xl font-bold">Nashville Painting Professionals</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">Nash PaintPros</h1>
           <p className="text-lg text-muted-foreground">Murfreesboro Sector Expansion</p>
         </div>
 
@@ -137,7 +137,7 @@ export default function ProposalRyan() {
               Executive Summary
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              This proposal outlines a strategic partnership to expand Nashville Painting Professionals 
+              This proposal outlines a strategic partnership to expand Nash PaintPros 
               into Rutherford County (Murfreesboro) through the Dark Wave ecosystem - a fully integrated 
               suite of business tools already powering contractors across multiple industries.
             </p>

@@ -31,7 +31,7 @@ export default function AdminGuide() {
             NPP System Guide
           </h1>
           <p className="text-xl text-gray-200">
-            Complete Admin Guide for Nashville Painting Professionals
+            Complete Admin Guide for Nash PaintPros
           </p>
         </div>
 
@@ -225,7 +225,7 @@ export default function AdminGuide() {
             </p>
             <div className="bg-gray-100 p-4 rounded-lg text-center">
               <code className="text-lg font-mono text-blue-600">
-                service@nashvillepaintingprofessionals.com
+                service@nashpaintpros.io
               </code>
             </div>
             <p className="text-gray-700 mt-4">You'll receive emails for:</p>
@@ -255,7 +255,7 @@ export default function AdminGuide() {
                 <Building2 className="h-8 w-8 text-[#4a5d23]" />
                 <div>
                   <p className="font-medium text-[#4a5d23]">NPP Tab</p>
-                  <p className="text-sm text-gray-600">Nashville Painting Professionals</p>
+                  <p className="text-sm text-gray-600">Nash PaintPros</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
