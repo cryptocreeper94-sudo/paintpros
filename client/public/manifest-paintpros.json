@@ -1,6 +1,6 @@
 {
-  "name": "PaintPros\u2122",
-  "short_name": "PaintPros",
+  "name": "Paint Pros Co.\u2122",
+  "short_name": "Paint Pros Co.",
   "description": "Professional painting business management platform. White-label franchise solutions.",
   "start_url": "/",
   "display": "standalone",
@@ -32,6 +32,6 @@
   "categories": ["business", "productivity"],
   "lang": "en-US",
   "dir": "ltr",
-  "id": "paintpros-io",
+  "id": "paintpros-co",
   "prefer_related_applications": false
 }

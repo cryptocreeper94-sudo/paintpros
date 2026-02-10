@@ -31,10 +31,10 @@ export function AIAgentTab() {
   const getAgentStyle = (): AgentStyle => {
     // TLId.io / Demo always gets purple shield on side
     if (tenantId === "demo" || tenantId === "tlid" || tenantId === "trustlayer") return "shield";
-    // Lume gets black bowtie
-    if (tenantId === "lumepaint" || tenantId === "lume") return "bowtie";
-    // NPP and PaintPros get blue-handled Rollie
-    if (tenantId === "npp" || tenantId === "paintpros" || tenantId === "paintpros-demo") return "roller";
+    // PaintPros and Lume get black bowtie Rollie
+    if (tenantId === "paintpros" || tenantId === "paintpros-demo" || tenantId === "lumepaint" || tenantId === "lume") return "bowtie";
+    // NPP gets blue-handled Rollie
+    if (tenantId === "npp") return "roller";
     // TradeWorks already has AI agent, don't show
     if (tenantId === "tradeworks" || tenantId === "tradeworksai") return "none";
     // All others get purple shield on side

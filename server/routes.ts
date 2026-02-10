@@ -160,7 +160,8 @@ const pwaConfigs: Record<string, {
     description: "Professional painting business management platform. White-label franchise solutions.",
     backgroundColor: "#0f172a",
     themeColor: "#1e3a5f",
-    iconPath: "/pwa/paintpros"
+    iconPath: "/pwa/paintpros",
+    categories: ["business", "productivity"]
   },
   demo: {
     name: "Paint Pros Co.\u2122",
@@ -168,7 +169,8 @@ const pwaConfigs: Record<string, {
     description: "Professional painting business management platform. White-label franchise solutions.",
     backgroundColor: "#0f172a",
     themeColor: "#1e3a5f",
-    iconPath: "/pwa/paintpros"
+    iconPath: "/pwa/paintpros",
+    categories: ["business", "productivity"]
   },
   estimator: {
     name: "Paint Estimator",
@@ -181,7 +183,7 @@ const pwaConfigs: Record<string, {
   tradeworks: {
     name: "TradeWorks AI",
     shortName: "TradeWorks",
-    description: "Professional field toolkit with 85+ calculators for 8 trades. AI-powered voice assistant.",
+    description: "Professional field toolkit with 85+ calculators for 8 trades. AI-powered voice assistant, color matching, and more.",
     backgroundColor: "#0f172a",
     themeColor: "#f59e0b",
     iconPath: "/pwa/tradeworks",
