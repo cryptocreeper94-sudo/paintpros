@@ -1,11 +1,11 @@
 {
-  "name": "PaintPros.io",
+  "name": "PaintPros\u2122",
   "short_name": "PaintPros",
-  "description": "Professional painting business management platform by Orbit",
+  "description": "Professional painting business management platform. White-label franchise solutions.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
+  "theme_color": "#1e3a5f",
   "orientation": "portrait-primary",
   "icons": [
     {

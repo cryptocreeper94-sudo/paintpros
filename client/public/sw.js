@@ -1,5 +1,5 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = 'paintpros-v3';
+const CACHE_NAME = 'paintpros-v4';
 const urlsToCache = [
   '/manifest.json'
 ];

@@ -1,11 +1,11 @@
 {
   "name": "Nash PaintPros",
-  "short_name": "NPP",
-  "description": "Transforming familiar spaces into extraordinary places. Premium painting services in Nashville, TN.",
+  "short_name": "Nash PaintPros",
+  "description": "Transforming familiar spaces into extraordinary places. Premium painting in Nashville, TN.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1f1c",
-  "theme_color": "#d4a853",
+  "background_color": "#c8a455",
+  "theme_color": "#c8a455",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -32,6 +32,6 @@
   "categories": ["business", "lifestyle"],
   "lang": "en-US",
   "dir": "ltr",
-  "id": "npp-painters",
+  "id": "nash-paintpros",
   "prefer_related_applications": false
 }

@@ -149,25 +149,25 @@ const pwaConfigs: Record<string, {
   npp: {
     name: "Nash PaintPros",
     shortName: "Nash PaintPros",
-    description: "Professional interior & exterior painting services in Nashville, TN",
-    backgroundColor: "#3a4f41",
-    themeColor: "#3a4f41",
+    description: "Transforming familiar spaces into extraordinary places. Premium painting in Nashville, TN.",
+    backgroundColor: "#c8a455",
+    themeColor: "#c8a455",
     iconPath: "/pwa/npp"
   },
   paintpros: {
-    name: "PaintPros.io",
-    shortName: "PaintPros",
-    description: "White-label painting business platform by Orbit",
-    backgroundColor: "#b49050",
-    themeColor: "#d4a853",
+    name: "Paint Pros Co.\u2122",
+    shortName: "Paint Pros Co.",
+    description: "Professional painting business management platform. White-label franchise solutions.",
+    backgroundColor: "#0f172a",
+    themeColor: "#1e3a5f",
     iconPath: "/pwa/paintpros"
   },
   demo: {
-    name: "PaintPros.io",
-    shortName: "PaintPros",
-    description: "White-label painting business platform by Orbit",
-    backgroundColor: "#b49050",
-    themeColor: "#d4a853",
+    name: "Paint Pros Co.\u2122",
+    shortName: "Paint Pros Co.",
+    description: "Professional painting business management platform. White-label franchise solutions.",
+    backgroundColor: "#0f172a",
+    themeColor: "#1e3a5f",
     iconPath: "/pwa/paintpros"
   },
   estimator: {
