@@ -78,7 +78,7 @@ export const FOUNDING_ASSETS = {
   NPP_GENESIS: { 
     number: 'NPP-00000000-01', 
     special: 'NPP-FE-00000000-01',
-    name: 'Nashville Painting Professionals', 
+    name: 'Nash PaintPros', 
     type: 'tenant-genesis',
     badge: 'NPP Genesis',
   },
@@ -86,7 +86,7 @@ export const FOUNDING_ASSETS = {
 
 export const NPP_TENANT: TenantConfig = {
   id: 'npp',
-  name: 'Nashville Painting Professionals',
+  name: 'Nash PaintPros',
   tagline: 'Exceptional Painters. Extraordinary Service.',
   colors: {
     primary: 'hsl(85, 20%, 35%)',

@@ -272,14 +272,14 @@ const PLATFORMS = [
 ];
 
 const SAMPLE_EVERGREEN_NPP: Partial<SocialPost>[] = [
-  { content: "Transforming familiar spaces into extraordinary places. Nashville Painting Professionals - quality craftsmanship, exceptional results.", category: "general", platform: "instagram", status: "posted" },
+  { content: "Transforming familiar spaces into extraordinary places. Nash PaintPros - quality craftsmanship, exceptional results.", category: "general", platform: "instagram", status: "posted" },
   { content: "Interior painting that brings your vision to life. Transforming familiar spaces into extraordinary places.", category: "interior", platform: "instagram", status: "posted" },
   { content: "Protect your investment with professional exterior painting. Weather-resistant finishes that last.", category: "exterior", platform: "facebook", status: "scheduled" },
   { content: "Commercial painting solutions for businesses that demand excellence. Minimal disruption, maximum impact.", category: "commercial", platform: "facebook", status: "posted" },
   { content: "Cabinet refinishing that saves thousands over replacement. Fresh look, fraction of the cost.", category: "cabinets", platform: "nextdoor", status: "scheduled" },
   { content: "The details matter. Professional trim and door painting for a polished finish.", category: "trim", platform: "instagram", status: "draft" },
   { content: "Deck staining and fence refinishing. Extend the life of your outdoor spaces.", category: "decks", platform: "nextdoor", status: "posted" },
-  { content: "Why choose Nashville Painting Professionals? We're transforming familiar spaces into extraordinary places - one home at a time.", category: "general", platform: "facebook", status: "draft" },
+  { content: "Why choose Nash PaintPros? We're transforming familiar spaces into extraordinary places - one home at a time.", category: "general", platform: "facebook", status: "draft" },
   { content: "Before & After: See the difference professional painting makes. Free estimates available.", category: "general", platform: "instagram", status: "posted" },
   { content: "Your neighbors trust us. Join hundreds of satisfied Nashville homeowners.", category: "general", platform: "nextdoor", status: "posted" },
   { content: "Quality paint. Expert application. Transforming familiar spaces into extraordinary places.", category: "general", platform: "instagram", status: "scheduled" },
@@ -957,7 +957,7 @@ export default function MarketingHub() {
   const isDeveloperRole = userRole === "developer";
   const isOwnerRole = userRole === "owner";
   const isAdminRole = userRole === "admin" || userRole === "ops_manager";
-  const tenantName = selectedTenant === "npp" ? "Nashville Painting Professionals" : "Paint Pros Co";
+  const tenantName = selectedTenant === "npp" ? "Nash PaintPros" : "Paint Pros Co";
 
   // Section content for voice reading (stripped of emojis) - role-specific
   const getSectionContent = (): Record<string, string> => {
@@ -1299,20 +1299,20 @@ export default function MarketingHub() {
         { id: "npp-ig-9", brand: "npp", platform: "instagram", content: "Nashville businesses deserve extraordinary. Commercial painting done right.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialPainting", "#NashvilleBusiness", "#ProfessionalSpace", "#BusinessGoals"], createdAt: new Date().toISOString() },
         { id: "npp-ig-10", brand: "npp", platform: "instagram", content: "Weekend project complete! Another familiar space transformed. What's your next project?", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#WeekendProject", "#HomeImprovement", "#DIYInspiration", "#PaintPros"], createdAt: new Date().toISOString() },
         // NPP Nextdoor (15)
-        { id: "npp-nd-1", brand: "npp", platform: "nextdoor", content: "Hi neighbors! Nashville Painting Professionals here. We specialize in transforming familiar spaces into extraordinary places. Looking for a reliable painter in the area? We'd love to help with your next project. Free estimates for all neighbors!", subject: "general", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-nd-1", brand: "npp", platform: "nextdoor", content: "Hi neighbors! Nash PaintPros here. We specialize in transforming familiar spaces into extraordinary places. Looking for a reliable painter in the area? We'd love to help with your next project. Free estimates for all neighbors!", subject: "general", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-2", brand: "npp", platform: "nextdoor", content: "Spring painting season is here, neighbors! If you're thinking about refreshing your home's exterior, we're booking now. We transform familiar Nashville homes into extraordinary ones. Message us for a free estimate!", subject: "exterior-home", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-3", brand: "npp", platform: "nextdoor", content: "Just finished a beautiful interior project in the neighborhood! Love seeing familiar spaces become extraordinary. If you're considering painting, we offer free color consultations and estimates.", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-4", brand: "npp", platform: "nextdoor", content: "Neighbors - tired of those outdated kitchen cabinets? Cabinet painting is a budget-friendly way to transform your familiar kitchen into something extraordinary. Happy to provide a free quote!", subject: "cabinet-work", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-5", brand: "npp", platform: "nextdoor", content: "Thank you to all our neighbors who've trusted us with their homes! We love transforming familiar spaces into extraordinary places right here in our community.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
-        { id: "npp-nd-6", brand: "npp", platform: "nextdoor", content: "Looking for a painter recommendation? Nashville Painting Professionals has served this neighborhood for years. We transform familiar homes into extraordinary ones with quality work and fair prices.", subject: "general", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-nd-6", brand: "npp", platform: "nextdoor", content: "Looking for a painter recommendation? Nash PaintPros has served this neighborhood for years. We transform familiar homes into extraordinary ones with quality work and fair prices.", subject: "general", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-7", brand: "npp", platform: "nextdoor", content: "Neighbors! Before the summer heat hits, now is the perfect time for exterior painting. We can transform your familiar home's curb appeal into something extraordinary. Free estimates!", subject: "exterior-home", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-8", brand: "npp", platform: "nextdoor", content: "Holiday prep tip from your neighborhood painters: A fresh coat of paint transforms familiar spaces into extraordinary gathering spots. We still have openings before Thanksgiving!", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
-        { id: "npp-nd-9", brand: "npp", platform: "nextdoor", content: "Small business Saturday shoutout! Nashville Painting Professionals is proud to serve our neighbors. We transform familiar spaces into extraordinary places - one home at a time.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-nd-9", brand: "npp", platform: "nextdoor", content: "Small business Saturday shoutout! Nash PaintPros is proud to serve our neighbors. We transform familiar spaces into extraordinary places - one home at a time.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-10", brand: "npp", platform: "nextdoor", content: "Thinking about selling? Fresh paint is the #1 ROI improvement! Let us help transform your familiar home into an extraordinary listing. Free estimates for neighbors.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
-        { id: "npp-nd-11", brand: "npp", platform: "nextdoor", content: "New to the neighborhood? Welcome! Nashville Painting Professionals can help make your new house feel like home. We transform familiar spaces into extraordinary ones.", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-nd-11", brand: "npp", platform: "nextdoor", content: "New to the neighborhood? Welcome! Nash PaintPros can help make your new house feel like home. We transform familiar spaces into extraordinary ones.", subject: "interior-walls", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-12", brand: "npp", platform: "nextdoor", content: "Deck staining season is here! Protect your investment and transform that weathered deck into an extraordinary outdoor living space. Neighbor discounts available!", subject: "deck-staining", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-13", brand: "npp", platform: "nextdoor", content: "Interior painting during winter? Absolutely! We can transform your familiar indoor spaces into extraordinary rooms while it's too cold for exterior work.", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
-        { id: "npp-nd-14", brand: "npp", platform: "nextdoor", content: "Need a commercial painter? Nashville Painting Professionals handles businesses too. We transform familiar commercial spaces into extraordinary professional environments.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-nd-14", brand: "npp", platform: "nextdoor", content: "Need a commercial painter? Nash PaintPros handles businesses too. We transform familiar commercial spaces into extraordinary professional environments.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-nd-15", brand: "npp", platform: "nextdoor", content: "Neighbors, we're offering free color consultations this month! Not sure what color to choose? Let us help you envision your familiar space as something extraordinary.", subject: "general", tone: "friendly", cta: "call-us", hashtags: [], createdAt: new Date().toISOString() },
         // NPP Twitter/X (10)
         { id: "npp-tw-1", brand: "npp", platform: "x", content: "Transforming familiar spaces into extraordinary places. That's the NPP difference. #NashvillePainting", subject: "general", tone: "professional", cta: "get-quote", hashtags: ["#NashvillePainting", "#HomeImprovement"], createdAt: new Date().toISOString() },
@@ -1326,20 +1326,20 @@ export default function MarketingHub() {
         { id: "npp-tw-9", brand: "npp", platform: "x", content: "Another happy Nashville homeowner! We love transforming familiar spaces. Thanks for trusting NPP!", subject: "general", tone: "friendly", cta: "call-us", hashtags: ["#HappyCustomers", "#NashvilleLiving"], createdAt: new Date().toISOString() },
         { id: "npp-tw-10", brand: "npp", platform: "x", content: "Bold moves = extraordinary results. Don't fear the color! #StatementWalls #PaintPros", subject: "interior-walls", tone: "friendly", cta: "get-quote", hashtags: ["#StatementWalls", "#BoldColors"], createdAt: new Date().toISOString() },
         // NPP LinkedIn (10)
-        { id: "npp-li-1", brand: "npp", platform: "linkedin", content: "At Nashville Painting Professionals, we believe every space has extraordinary potential. Our mission is transforming familiar spaces into extraordinary places through expert craftsmanship, premium materials, and exceptional service. Connect with us to discuss your next project.", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#NashvilleBusiness", "#ProfessionalPainting", "#QualityCraftsmanship"], createdAt: new Date().toISOString() },
-        { id: "npp-li-2", brand: "npp", platform: "linkedin", content: "Commercial spaces reflect your brand. Nashville Painting Professionals transforms familiar office environments into extraordinary professional spaces. From lobbies to conference rooms, we deliver results that impress clients and motivate teams.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialPainting", "#OfficeDesign", "#BusinessImage"], createdAt: new Date().toISOString() },
+        { id: "npp-li-1", brand: "npp", platform: "linkedin", content: "At Nash PaintPros, we believe every space has extraordinary potential. Our mission is transforming familiar spaces into extraordinary places through expert craftsmanship, premium materials, and exceptional service. Connect with us to discuss your next project.", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#NashvilleBusiness", "#ProfessionalPainting", "#QualityCraftsmanship"], createdAt: new Date().toISOString() },
+        { id: "npp-li-2", brand: "npp", platform: "linkedin", content: "Commercial spaces reflect your brand. Nash PaintPros transforms familiar office environments into extraordinary professional spaces. From lobbies to conference rooms, we deliver results that impress clients and motivate teams.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#CommercialPainting", "#OfficeDesign", "#BusinessImage"], createdAt: new Date().toISOString() },
         { id: "npp-li-3", brand: "npp", platform: "linkedin", content: "Property managers: Maximize your ROI with professional painting services. We transform familiar rental properties into extraordinary spaces that command top dollar. Volume discounts available.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#PropertyManagement", "#RealEstateInvesting", "#ROI"], createdAt: new Date().toISOString() },
-        { id: "npp-li-4", brand: "npp", platform: "linkedin", content: "Our team is growing! Nashville Painting Professionals is hiring experienced painters who share our passion for transforming familiar spaces into extraordinary places. DM for details.", subject: "team-action", tone: "professional", cta: "call-us", hashtags: ["#NowHiring", "#NashvilleJobs", "#PaintingCareers"], createdAt: new Date().toISOString() },
+        { id: "npp-li-4", brand: "npp", platform: "linkedin", content: "Our team is growing! Nash PaintPros is hiring experienced painters who share our passion for transforming familiar spaces into extraordinary places. DM for details.", subject: "team-action", tone: "professional", cta: "call-us", hashtags: ["#NowHiring", "#NashvilleJobs", "#PaintingCareers"], createdAt: new Date().toISOString() },
         { id: "npp-li-5", brand: "npp", platform: "linkedin", content: "Case study: How we transformed a dated Nashville office building into an extraordinary modern workspace. Fresh paint, satisfied tenants, increased property value. That's the NPP difference.", subject: "commercial-space", tone: "professional", cta: "call-us", hashtags: ["#CaseStudy", "#CommercialRealEstate", "#PropertyValue"], createdAt: new Date().toISOString() },
         { id: "npp-li-6", brand: "npp", platform: "linkedin", content: "Attention Nashville realtors: Stage homes for success with professional painting. We transform familiar listings into extraordinary properties that sell faster. Realtor referral program available.", subject: "general", tone: "professional", cta: "get-quote", hashtags: ["#RealEstate", "#HomeSelling", "#StagingTips"], createdAt: new Date().toISOString() },
-        { id: "npp-li-7", brand: "npp", platform: "linkedin", content: "Quality, reliability, expertise. Nashville Painting Professionals has built our reputation on transforming familiar spaces into extraordinary places for over a decade. Partner with us for your next project.", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#QualityService", "#TrustedContractor", "#NashvillePros"], createdAt: new Date().toISOString() },
+        { id: "npp-li-7", brand: "npp", platform: "linkedin", content: "Quality, reliability, expertise. Nash PaintPros has built our reputation on transforming familiar spaces into extraordinary places for over a decade. Partner with us for your next project.", subject: "general", tone: "professional", cta: "call-us", hashtags: ["#QualityService", "#TrustedContractor", "#NashvillePros"], createdAt: new Date().toISOString() },
         { id: "npp-li-8", brand: "npp", platform: "linkedin", content: "Restaurant owners: First impressions matter. Our commercial painting services transform familiar dining spaces into extraordinary customer experiences. Health-code compliant, minimal downtime.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: ["#RestaurantDesign", "#HospitalityIndustry", "#CustomerExperience"], createdAt: new Date().toISOString() },
-        { id: "npp-li-9", brand: "npp", platform: "linkedin", content: "HOA managers: Maintain property values with professional exterior painting. Nashville Painting Professionals transforms familiar communities into extraordinary neighborhoods. Volume pricing available.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#HOAManagement", "#PropertyMaintenance", "#CommunityLiving"], createdAt: new Date().toISOString() },
+        { id: "npp-li-9", brand: "npp", platform: "linkedin", content: "HOA managers: Maintain property values with professional exterior painting. Nash PaintPros transforms familiar communities into extraordinary neighborhoods. Volume pricing available.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: ["#HOAManagement", "#PropertyMaintenance", "#CommunityLiving"], createdAt: new Date().toISOString() },
         { id: "npp-li-10", brand: "npp", platform: "linkedin", content: "Proud to serve Nashville's business community. Every project we complete represents our commitment to transforming familiar commercial spaces into extraordinary professional environments.", subject: "commercial-space", tone: "professional", cta: "call-us", hashtags: ["#NashvilleBusiness", "#CommercialServices", "#ProfessionalExcellence"], createdAt: new Date().toISOString() },
         // NPP Google Business (5)
-        { id: "npp-gb-1", brand: "npp", platform: "google", content: "Nashville Painting Professionals transforms familiar spaces into extraordinary places! Serving Nashville and surrounding areas with premium interior and exterior painting services. Call today for your free estimate.", subject: "general", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-gb-1", brand: "npp", platform: "google", content: "Nash PaintPros transforms familiar spaces into extraordinary places! Serving Nashville and surrounding areas with premium interior and exterior painting services. Call today for your free estimate.", subject: "general", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-gb-2", brand: "npp", platform: "google", content: "Spring special! Book your exterior painting project now and transform your familiar home into something extraordinary. Licensed, insured, and trusted by Nashville homeowners.", subject: "exterior-home", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
-        { id: "npp-gb-3", brand: "npp", platform: "google", content: "Cabinet painting transforms kitchens! Nashville Painting Professionals turns familiar, dated cabinets into extraordinary focal points. Free estimates available.", subject: "cabinet-work", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
+        { id: "npp-gb-3", brand: "npp", platform: "google", content: "Cabinet painting transforms kitchens! Nash PaintPros turns familiar, dated cabinets into extraordinary focal points. Free estimates available.", subject: "cabinet-work", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-gb-4", brand: "npp", platform: "google", content: "Commercial painting experts serving Nashville businesses. Transform your familiar workspace into an extraordinary professional environment. Contact us for a free consultation.", subject: "commercial-space", tone: "professional", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
         { id: "npp-gb-5", brand: "npp", platform: "google", content: "Thank you Nashville for trusting us with your homes! We love transforming familiar spaces into extraordinary places. See our 5-star reviews and call for your free estimate today.", subject: "general", tone: "friendly", cta: "get-quote", hashtags: [], createdAt: new Date().toISOString() },
       ];
@@ -1720,7 +1720,7 @@ export default function MarketingHub() {
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 inline-block mb-2">
                     <img 
                       src={nppLogo} 
-                      alt="Nashville Painting Professionals" 
+                      alt="Nash PaintPros" 
                       className="h-24 w-auto object-contain"
                     />
                   </div>
@@ -1907,7 +1907,7 @@ export default function MarketingHub() {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
                 {(selectedTenant === "npp" || selectedTenant === "lumepaint") 
-                  ? "Paint Pros Co & Nashville Painting Professionals" 
+                  ? "Paint Pros Co & Nash PaintPros" 
                   : selectedTenant === "demo" 
                     ? "TrustLayer Marketing" 
                     : "Marketing Dashboard"}
@@ -2008,7 +2008,7 @@ export default function MarketingHub() {
               <div className="flex flex-col items-center">
                 <img 
                   src={nppLogo} 
-                  alt="Nashville Painting Professionals" 
+                  alt="Nash PaintPros" 
                   className="h-12 md:h-16 w-auto object-contain"
                 />
               </div>
@@ -3549,7 +3549,7 @@ export default function MarketingHub() {
                           Hey Logan - Here's What I Built For Us
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm leading-relaxed">
-                          This is our Marketing Hub for {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Paint Pros Co"}. 
+                          This is our Marketing Hub for {selectedTenant === "npp" ? "Nash PaintPros" : "Paint Pros Co"}. 
                           I've been building this system so we can run a professional marketing operation together without 
                           either of us having to spend hours on it.
                         </p>
@@ -5776,7 +5776,7 @@ export default function MarketingHub() {
                     <div>
                       <h3 className="text-xl font-bold">Website Traffic</h3>
                       <p className={`text-sm font-medium ${selectedTenant === "npp" ? "text-blue-600" : "text-purple-600"}`}>
-                        {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Paint Pros Co"}
+                        {selectedTenant === "npp" ? "Nash PaintPros" : "Paint Pros Co"}
                       </p>
                     </div>
                   </div>
@@ -5982,7 +5982,7 @@ export default function MarketingHub() {
                       <Globe className={`w-8 h-8 ${selectedTenant === "npp" ? "text-blue-500" : "text-purple-500"}`} />
                     </div>
                     <p className="font-medium mb-1">
-                      {selectedTenant === "npp" ? "Nashville Painting Professionals" : "Paint Pros Co"}
+                      {selectedTenant === "npp" ? "Nash PaintPros" : "Paint Pros Co"}
                     </p>
                     <p className="text-sm text-muted-foreground">Website analytics will appear here once traffic is tracked</p>
                   </div>

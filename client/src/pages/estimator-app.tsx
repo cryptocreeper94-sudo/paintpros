@@ -128,7 +128,7 @@ export default function EstimatorApp() {
     }
     
     let themeColor = document.querySelector('meta[name="theme-color"]');
-    const originalThemeColor = themeColor?.getAttribute('content') || '#3a4f41';
+    const originalThemeColor = themeColor?.getAttribute('content') || '#0f172a';
     if (!themeColor) {
       themeColor = document.createElement('meta');
       themeColor.setAttribute('name', 'theme-color');
