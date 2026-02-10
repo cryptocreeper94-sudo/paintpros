@@ -1,11 +1,7 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = 'paintpros-v2';
+const CACHE_NAME = 'paintpros-v3';
 const urlsToCache = [
-  '/manifest.json',
-  '/manifest-marketing.json',
-  '/manifest-tradeworks.json',
-  '/manifest-paintpros.json',
-  '/manifest-npp.json'
+  '/manifest.json'
 ];
 
 // Install event - cache essential resources

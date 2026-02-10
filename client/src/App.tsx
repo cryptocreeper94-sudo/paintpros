@@ -176,7 +176,12 @@ function TenantHomeRedirect() {
     return <TradeVerticalPage tradeId={tradeMap[tenantId]} />;
   }
   
-  // Default to TrustLayer home for tlid.io
+  // NPP and other painting tenants use the standard Home component
+  if (tenantId === 'npp' || tenantId === 'lumepaint') {
+    return <Home />;
+  }
+  
+  // Default to TrustLayer home for tlid.io and unknown tenants
   return <TrustLayerHome />;
 }
 
