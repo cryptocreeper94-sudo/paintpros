@@ -87,7 +87,7 @@ export function Navbar() {
           {location !== "/" && (
             <button 
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg hover-elevate transition-colors"
               aria-label="Go back"
               data-testid="button-back-header"
             >
@@ -96,7 +96,7 @@ export function Navbar() {
           )}
           <Link href="/">
             <button 
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg hover-elevate transition-colors"
               aria-label="Go home"
               data-testid="button-home-header"
             >
