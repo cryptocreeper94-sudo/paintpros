@@ -76,7 +76,7 @@ export default function NPPEcosystemHome() {
     }
 
     const metaKeywords = document.querySelector('meta[name="keywords"]');
-    const keywords = "Nashville painters, find a contractor, contractor marketplace, painting leads, TradeWorks AI, DWLC.io, DWSC.io, TrustShield.tech, TLID.io, PaintPros, lead generation, affiliate marketing, home services, trade professionals, DarkWave ecosystem, Orbit Staffing, GarageBot, VedaSolus, StrikeAgent, automated marketing";
+    const keywords = "Nashville painters, find a contractor, contractor marketplace, painting leads, TradeWorks AI, DWSC.io, TrustShield.tech, TLID.io, PaintPros, lead generation, affiliate marketing, home services, trade professionals, DarkWave ecosystem, Orbit Staffing, GarageBot, VedaSolus, StrikeAgent, automated marketing";
     if (metaKeywords) {
       metaKeywords.setAttribute('content', keywords);
     } else {
@@ -158,7 +158,6 @@ export default function NPPEcosystemHome() {
   const categories = Object.entries(categoryLabels).filter(([key]) => key !== 'tenant') as [EcosystemCategory, string][];
 
   const affiliateBanners = [
-    { name: 'DWLC.io', url: 'https://dwlc.io', desc: 'DarkWave Loyalty Credits', color: 'from-purple-600 to-indigo-700' },
     { name: 'DWSC.io', url: 'https://dwsc.io', desc: 'DarkWave Smart Contracts', color: 'from-blue-600 to-cyan-700' },
     { name: 'TrustShield.tech', url: 'https://trustshield.tech', desc: 'Guardian Shield Security', color: 'from-sky-600 to-teal-700' },
     { name: 'TLID.io', url: 'https://tlid.io', desc: 'TrustLayer Automated Marketing', color: 'from-cyan-600 to-blue-700' },
@@ -671,7 +670,6 @@ export default function NPPEcosystemHome() {
               <div className="space-y-2">
                 <a href={trackUrl('https://tlid.io', 'footer')} target="_blank" rel="noopener noreferrer" className="block text-slate-400 text-sm hover:text-white transition-colors" data-testid="link-footer-tlid">TLID.io</a>
                 <a href={trackUrl('https://dwsc.io', 'footer')} target="_blank" rel="noopener noreferrer" className="block text-slate-400 text-sm hover:text-white transition-colors" data-testid="link-footer-dwsc">DWSC.io</a>
-                <a href={trackUrl('https://dwlc.io', 'footer')} target="_blank" rel="noopener noreferrer" className="block text-slate-400 text-sm hover:text-white transition-colors" data-testid="link-footer-dwlc">DWLC.io</a>
                 <a href={trackUrl('https://trustshield.tech', 'footer')} target="_blank" rel="noopener noreferrer" className="block text-slate-400 text-sm hover:text-white transition-colors" data-testid="link-footer-trustshield">TrustShield.tech</a>
               </div>
             </div>

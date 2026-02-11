@@ -33,7 +33,7 @@ export function Navbar() {
 
   return (
     <>
-    <header className="relative z-50">
+    <header className="relative z-50" style={{ backgroundColor: '#0f172a' }}>
       <div className="flex items-center px-3 md:px-4 overflow-hidden h-16 md:h-20">
         {/* Left: Hamburger Menu */}
         <button 
@@ -43,9 +43,9 @@ export function Navbar() {
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X size={28} className="text-black" />
+            <X size={28} style={{ color: '#e2e8f0' }} />
           ) : (
-            <Menu size={28} className="text-black" />
+            <Menu size={28} className="bg-clip-text" style={{ color: '#e2e8f0' }} />
           )}
         </button>
         
@@ -58,7 +58,7 @@ export function Navbar() {
                 fontFamily: 'Orbitron, Rajdhani, sans-serif', 
                 fontWeight: 500, 
                 letterSpacing: '0.05em',
-                backgroundImage: 'linear-gradient(to right, #A89070, #7A5C45, #3D4A3A, #7A5C45, #A89070)'
+                backgroundImage: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 30%, #ffffff 50%, #94a3b8 70%, #ffffff 100%)'
               }}
               data-testid="text-header-title"
             >
@@ -70,7 +70,7 @@ export function Navbar() {
                 fontFamily: 'Rajdhani, sans-serif', 
                 fontWeight: 400, 
                 letterSpacing: '0.02em',
-                backgroundImage: 'linear-gradient(to right, #A89070, #7A5C45, #3D4A3A, #7A5C45, #A89070)'
+                backgroundImage: 'linear-gradient(135deg, #e2e8f0 0%, #94a3b8 40%, #e2e8f0 60%, #cbd5e1 100%)'
               }}
               data-testid="text-header-tagline"
             >
@@ -82,25 +82,25 @@ export function Navbar() {
         {/* Spacer to push content to the right */}
         <div className="flex-1" />
         
-        {/* Right side buttons: Close (X) + Home - all black */}
+        {/* Right side buttons */}
         <div className="flex items-center gap-1 mr-2">
           {location !== "/" && (
             <button 
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
               aria-label="Go back"
               data-testid="button-back-header"
             >
-              <ArrowLeft className="w-5 h-5 text-black" />
+              <ArrowLeft className="w-5 h-5" style={{ color: '#e2e8f0' }} />
             </button>
           )}
           <Link href="/">
             <button 
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
               aria-label="Go home"
               data-testid="button-home-header"
             >
-              <Home className="w-5 h-5 text-black" />
+              <Home className="w-5 h-5" style={{ color: '#e2e8f0' }} />
             </button>
           </Link>
         </div>
