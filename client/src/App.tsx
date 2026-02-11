@@ -103,6 +103,7 @@ import OnboardingSuccess from "@/pages/onboarding-success";
 import PlatformPresentation from "@/pages/platform-presentation";
 import NPPPresentation from "@/pages/npp-presentation";
 import NPPWalkthrough from "@/pages/npp-walkthrough";
+import NPPEcosystemHome from "@/pages/npp-ecosystem-home";
 import GetStarted from "@/pages/get-started";
 import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { getTenantById } from "@/config/tenant";
@@ -176,8 +177,13 @@ function TenantHomeRedirect() {
     return <TradeVerticalPage tradeId={tradeMap[tenantId]} />;
   }
   
-  // NPP and other painting tenants use the standard Home component
-  if (tenantId === 'npp' || tenantId === 'lumepaint') {
+  // NPP uses the ecosystem advertising landing page
+  if (tenantId === 'npp') {
+    return <NPPEcosystemHome />;
+  }
+  
+  // Other painting tenants use the standard Home component
+  if (tenantId === 'lumepaint') {
     return <Home />;
   }
   
@@ -313,7 +319,7 @@ function Router() {
       <Route path="/lume/warranty">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={TermsWarranty} />}</Route>
       
       {/* NPP routes - explicit prefix for when accessed from other domains */}
-      <Route path="/npp">{() => <TenantPrefixedRoute tenantId="npp" Component={Home} />}</Route>
+      <Route path="/npp">{() => <TenantPrefixedRoute tenantId="npp" Component={NPPEcosystemHome} />}</Route>
       <Route path="/npp/services">{() => <TenantPrefixedRoute tenantId="npp" Component={Services} />}</Route>
       <Route path="/npp/portfolio">{() => <TenantPrefixedRoute tenantId="npp" Component={Portfolio} />}</Route>
       <Route path="/npp/about">{() => <TenantPrefixedRoute tenantId="npp" Component={About} />}</Route>

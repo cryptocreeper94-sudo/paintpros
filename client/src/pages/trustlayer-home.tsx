@@ -11,27 +11,7 @@ import stepSubscribeImg from "@/assets/images/step-subscribe.png";
 import productMarketingImg from "@/assets/images/product-marketing.png";
 import productShieldImg from "@/assets/images/product-shield.png";
 import productStaffingImg from "@/assets/images/product-staffing.png";
-// Ecosystem app images - 17 apps with premium placeholders
-import ecosystemDriverConnect from "@assets/franchise_hero_facebook.png";
-import ecosystemHappyEats from "@assets/17698344491552583768895781273262_1769834987195.png";
-import ecosystemVedaSolus from "@/assets/images/ecosystem-vedasolus.png";
-import ecosystemGarageBot from "@/assets/images/ecosystem-garagebot.png";
-import ecosystemOrbitStaffing from "@/assets/images/ecosystem-orbitstaffing.png";
-import ecosystemTradeWorks from "@/assets/images/ecosystem-tradeworks.png";
-import ecosystemPaintPros from "@/assets/images/ecosystem-paintpros.png";
-import ecosystemNPP from "@/assets/images/ecosystem-npp.png";
-import ecosystemLume from "@/assets/images/ecosystem-lume.png";
-import ecosystemTrustLayerMarketing from "@/assets/images/ecosystem-trustlayer-marketing.png";
-import ecosystemYourLegacy from "@/assets/images/ecosystem-yourlegacy.png";
-import ecosystemDarkWaveGames from "@/assets/images/ecosystem-darkwavegames.png";
-import ecosystemDWTL from "@/assets/images/ecosystem-dwtl.png";
-import ecosystemDarkWaveStudios from "@/assets/images/ecosystem-darkwavestudios.png";
-import ecosystemGetOrby from "@/assets/images/ecosystem-getorby.png";
-import ecosystemStrikeAgent from "@/assets/images/ecosystem-strikeagent.png";
-import ecosystemDarkWavePulse from "@/assets/images/ecosystem-darkwavepulse.png";
-import ecosystemPulse from "@/assets/images/ecosystem-pulse.png";
-import ecosystemLotOpsPro from "@/assets/images/ecosystem-lotopspro.png";
-import ecosystemBrewBoard from "@/assets/images/ecosystem-brewboard.png";
+import { ecosystemApps, type EcosystemApp } from "@/data/ecosystem";
 import {
   Shield,
   Zap,
@@ -196,38 +176,15 @@ export default function TrustLayerHome() {
     }
   ];
 
-  // DarkWave Trust Layer Ecosystem Apps
-  const connectedSystems = [
-    // TrustLayer Hub
-    { name: 'TrustLayer Marketing', desc: 'Automated Social Media', url: '/trustlayer', image: ecosystemTrustLayerMarketing, current: true, status: 'Live - In Development' },
-    // Priority Apps
-    { name: 'TL Driver Connect', desc: 'Food, Parts & Services to Truck Stops', url: 'https://tldriverconnect.com', image: ecosystemDriverConnect, status: 'Live - In Development' },
-    { name: 'Happy Eats', desc: 'Food Delivery to Truck Stops', url: 'https://happyeats.app', image: ecosystemHappyEats, status: 'Coming Soon' },
-    { name: 'GarageBot', desc: 'Auto Parts Aggregator - 40+ Retailers', url: 'https://garagebot.io', image: ecosystemGarageBot, status: 'Live - In Development' },
-    { name: 'VedaSolus', desc: 'Holistic Wellness & Ayurveda', url: 'https://vedasolus.io', image: ecosystemVedaSolus, status: 'Live - In Development' },
-    { name: 'PaintPros.io', desc: 'Painting Contractors', url: 'https://paintpros.io', image: ecosystemPaintPros, status: 'Live - In Development' },
-    { name: 'TradeWorks AI', desc: '8-Trade Field Toolkit', url: 'https://tradeworksai.io', image: ecosystemTradeWorks, status: 'Live - In Development' },
-    { name: 'ORBIT Staffing OS', desc: 'Automated Staffing & Payroll', url: 'https://orbitstaffing.io', image: ecosystemOrbitStaffing, status: 'Live - In Development' },
-    { name: 'Lot Ops Pro', desc: 'Driver Performance & Lot Management', url: 'https://lotopspro.io', image: ecosystemLotOpsPro, status: 'Live - In Development' },
-    { name: 'Brew & Board', desc: 'B2B Coffee Concierge Nashville', url: 'https://brewandboardcoffee.com', image: ecosystemBrewBoard, status: 'Live - In Development' },
-    // Tenant Demos
-    { name: 'Nash PaintPros', desc: 'Lead Generator Demo', url: 'https://nashpaintpros.io', image: ecosystemNPP, status: 'Live' },
-    { name: 'Paint Pros Co', desc: 'Premium Painting', url: 'https://paintpros.io', image: ecosystemLume, status: 'Live' },
-    // Gaming & Entertainment
-    { name: 'YourLegacy.io', desc: 'Chronicles Game', url: 'https://yourlegacy.io', image: ecosystemYourLegacy, status: 'Live - In Development' },
-    { name: 'DarkWave Games', desc: 'Arcade & Casino Games', url: 'https://darkwavegames.io', image: ecosystemDarkWaveGames, status: 'Live - In Development' },
-    // Core Infrastructure
-    { name: 'DWTL.io', desc: 'Trust Infrastructure for AI Economy', url: 'https://dwsc.io', image: ecosystemDWTL, status: 'Presale' },
-    { name: 'DarkWave Studios', desc: 'Full-Stack Dev & AI Integration', url: 'https://darkwavestudios.io', image: ecosystemDarkWaveStudios, status: 'Live - In Development' },
-    // Events & Operations
-    { name: 'Orby Commander', desc: 'Venue Operations Platform', url: 'https://getorby.io', image: ecosystemGetOrby, status: 'Live - In Development' },
-    // Crypto & Trading
-    { name: 'StrikeAgent.io', desc: 'AI Token Discovery & Safety Scanner', url: 'https://strikeagent.io', image: ecosystemStrikeAgent, status: 'Live - In Development' },
-    { name: 'Pulse', desc: 'AI Crypto Trading Signals', url: 'https://dwsc.io/pulse', image: ecosystemPulse, status: 'Live - In Development' },
-    { name: 'DarkWave Pulse', desc: 'Crypto Research Hub', url: 'https://darkwavepulse.com', image: ecosystemDarkWavePulse, status: 'Live - In Development' },
-    // AI Security & Certification
-    { name: 'TrustShield', desc: 'Guardian Shield Security & AI Certification', url: 'https://trustshield.tech', image: ecosystemDWTL, status: 'Live - In Development' }
-  ];
+  const connectedSystems = ecosystemApps.map(app => ({
+    name: app.name,
+    desc: app.desc,
+    url: app.url,
+    image: app.image,
+    status: app.status,
+    current: app.current,
+    primary: app.featured
+  }));
 
   const trustFeatures = [
     { icon: Fingerprint, title: 'Verified Identity', desc: 'Every business is verified' },
