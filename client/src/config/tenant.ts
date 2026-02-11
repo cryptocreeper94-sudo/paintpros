@@ -172,15 +172,15 @@ export const nashPaintPros: TenantConfig = {
   },
   
   theme: {
-    primaryColor: "hsl(42, 75%, 55%)", // Warm gold - matches Paint Pros Co
-    accentColor: "hsl(42, 60%, 65%)", // Soft gold
+    primaryColor: "hsl(215, 50%, 45%)", // Navy blue
+    accentColor: "hsl(215, 40%, 55%)", // Lighter navy
     darkMode: {
-      background: "hsl(35, 20%, 8%)", // Warm dark
-      foreground: "hsl(42, 30%, 95%)", // Cream white
+      background: "hsl(222, 47%, 11%)", // Deep navy
+      foreground: "hsl(210, 40%, 98%)", // Clean white
     },
     lightMode: {
-      background: "hsl(42, 40%, 97%)", // Warm cream
-      foreground: "hsl(35, 25%, 15%)", // Warm dark text
+      background: "hsl(210, 40%, 98%)", // Clean white
+      foreground: "hsl(222, 47%, 11%)", // Deep navy text
     },
   },
   
@@ -360,15 +360,15 @@ export const lumePaintCo: TenantConfig = {
   },
   
   theme: {
-    primaryColor: "hsl(42, 75%, 55%)", // Warm gold
-    accentColor: "hsl(42, 60%, 65%)", // Soft gold
+    primaryColor: "hsl(215, 50%, 45%)", // Navy blue
+    accentColor: "hsl(215, 40%, 55%)", // Lighter navy
     darkMode: {
-      background: "hsl(35, 20%, 8%)", // Warm dark
-      foreground: "hsl(42, 30%, 95%)", // Cream white
+      background: "hsl(222, 47%, 11%)", // Deep navy
+      foreground: "hsl(210, 40%, 98%)", // Clean white
     },
     lightMode: {
-      background: "hsl(42, 40%, 97%)", // Warm cream
-      foreground: "hsl(35, 25%, 15%)", // Warm dark text
+      background: "hsl(210, 40%, 98%)", // Clean white
+      foreground: "hsl(222, 47%, 11%)", // Deep navy text
     },
   },
   
