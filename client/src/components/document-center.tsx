@@ -41,7 +41,7 @@ const DOCUMENT_TYPES = [
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
   pending: "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400",
-  signed: "bg-green-500/20 text-green-600 dark:text-green-400",
+  signed: "bg-blue-500/20 text-blue-600 dark:text-blue-400",
   expired: "bg-red-500/20 text-red-600 dark:text-red-400",
   archived: "bg-gray-500/20 text-gray-600 dark:text-gray-400",
 };

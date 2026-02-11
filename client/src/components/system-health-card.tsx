@@ -51,7 +51,7 @@ const serviceIcons: Record<string, typeof Activity> = {
 };
 
 const statusColors: Record<string, string> = {
-  healthy: "bg-green-500/20 text-green-400 border-green-500/30",
+  healthy: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   degraded: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
   error: "bg-red-500/20 text-red-400 border-red-500/30"
 };
@@ -136,7 +136,7 @@ export function SystemHealthCard() {
                   data-testid={`health-indicator-${check.name}`}
                 >
                   <div className={`w-2 h-2 rounded-full ${
-                    check.status === "healthy" ? "bg-green-500" :
+                    check.status === "healthy" ? "bg-blue-500" :
                     check.status === "degraded" ? "bg-yellow-500" : "bg-red-500"
                   }`} />
                   <Icon className="w-3 h-3 text-muted-foreground" />

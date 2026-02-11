@@ -247,11 +247,11 @@ export default function ProposalSign() {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-500/30 to-green-400/20 flex items-center justify-center border border-green-500/30"
+                  className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500/30 to-blue-400/20 flex items-center justify-center border border-blue-500/30"
                 >
-                  <CheckCircle className="w-10 h-10 text-green-400" />
+                  <CheckCircle className="w-10 h-10 text-blue-400" />
                 </motion.div>
-                <h2 className="text-2xl font-display font-bold mb-2 text-green-400">
+                <h2 className="text-2xl font-display font-bold mb-2 text-blue-400">
                   Proposal Signed!
                 </h2>
                 <p className="text-muted-foreground mb-4">

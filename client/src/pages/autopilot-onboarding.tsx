@@ -56,7 +56,7 @@ import {
 
 const NICHES = [
   { id: 'painting', name: 'Painting', icon: Paintbrush, color: 'from-blue-500 to-indigo-500', description: 'Interior & Exterior Painting' },
-  { id: 'landscaping', name: 'Landscaping', icon: Leaf, color: 'from-green-500 to-emerald-500', description: 'Lawn Care & Garden Design' },
+  { id: 'landscaping', name: 'Landscaping', icon: Leaf, color: 'from-blue-500 to-sky-500', description: 'Lawn Care & Garden Design' },
   { id: 'roofing', name: 'Roofing', icon: Home, color: 'from-orange-500 to-red-500', description: 'Roof Repair & Installation' },
   { id: 'plumbing', name: 'Plumbing', icon: Droplets, color: 'from-cyan-500 to-blue-500', description: 'Plumbing Services' },
   { id: 'hvac', name: 'HVAC', icon: Wind, color: 'from-purple-500 to-pink-500', description: 'Heating & Cooling' },
@@ -215,13 +215,13 @@ export default function AutopilotOnboarding() {
                   currentStep === step.id 
                     ? 'bg-blue-500/20 border border-blue-500/50' 
                     : currentStep > step.id 
-                    ? 'bg-green-500/20 border border-green-500/50'
+                    ? 'bg-blue-500/20 border border-blue-500/50'
                     : 'bg-slate-800/50 border border-slate-700'
                 }`}
                 onClick={() => step.id < currentStep && setCurrentStep(step.id)}
               >
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  currentStep > step.id ? 'bg-green-500' : currentStep === step.id ? 'bg-blue-500' : 'bg-slate-700'
+                  currentStep > step.id ? 'bg-blue-500' : currentStep === step.id ? 'bg-blue-500' : 'bg-slate-700'
                 }`}>
                   {currentStep > step.id ? (
                     <Check className="w-4 h-4 text-white" />
@@ -234,7 +234,7 @@ export default function AutopilotOnboarding() {
                 }`}>{step.title}</span>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-8 h-0.5 mx-2 ${currentStep > step.id ? 'bg-green-500' : 'bg-slate-700'}`} />
+                <div className={`w-8 h-0.5 mx-2 ${currentStep > step.id ? 'bg-blue-500' : 'bg-slate-700'}`} />
               )}
             </div>
           ))}
@@ -321,14 +321,14 @@ export default function AutopilotOnboarding() {
                             <div 
                               className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
                                 formData.acceptedContentPolicy 
-                                  ? 'bg-green-500/20 border border-green-500/50' 
+                                  ? 'bg-blue-500/20 border border-blue-500/50' 
                                   : 'bg-slate-800 border border-slate-700 hover:border-slate-600'
                               }`}
                               onClick={() => setFormData(prev => ({ ...prev, acceptedContentPolicy: !prev.acceptedContentPolicy }))}
                               data-testid="checkbox-content-policy"
                             >
                               <div className={`w-5 h-5 rounded flex items-center justify-center ${
-                                formData.acceptedContentPolicy ? 'bg-green-500' : 'bg-slate-700 border border-slate-600'
+                                formData.acceptedContentPolicy ? 'bg-blue-500' : 'bg-slate-700 border border-slate-600'
                               }`}>
                                 {formData.acceptedContentPolicy && <Check className="w-3 h-3 text-white" />}
                               </div>
@@ -691,11 +691,11 @@ export default function AutopilotOnboarding() {
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <Shield className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <Shield className="w-5 h-5 text-blue-400 flex-shrink-0" />
                       <div>
-                        <p className="text-green-400 font-medium">Secure & Encrypted</p>
+                        <p className="text-blue-400 font-medium">Secure & Encrypted</p>
                         <p className="text-slate-300 text-sm">
                           Your credentials are encrypted and stored securely. We never share your data.
                         </p>
@@ -776,11 +776,11 @@ export default function AutopilotOnboarding() {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
-              <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30 mb-4">
+              <Card className="bg-gradient-to-r from-blue-500/10 to-sky-500/10 border-blue-500/30 mb-4">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <DollarSign className="w-6 h-6 text-green-400" />
+                    <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
                       <p className="text-white font-semibold">Start with $1 for 7 Days</p>
@@ -817,10 +817,10 @@ export default function AutopilotOnboarding() {
                       <p className="text-3xl font-bold text-white mb-1">$99<span className="text-base text-slate-400">/mo</span></p>
                       <p className="text-slate-500 text-xs mb-4">After $1 trial</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Automated posting</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Facebook & Instagram</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Content library</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Basic analytics</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Automated posting</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Facebook & Instagram</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Content library</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Basic analytics</li>
                         <li className="flex items-center gap-2 text-slate-500"><X className="w-4 h-4 flex-shrink-0" /> Paid ad campaigns</li>
                         <li className="flex items-center gap-2 text-slate-500"><X className="w-4 h-4 flex-shrink-0" /> AI content generation</li>
                       </ul>
@@ -846,12 +846,12 @@ export default function AutopilotOnboarding() {
                       <p className="text-3xl font-bold text-white mb-1">$199<span className="text-base text-slate-400">/mo</span></p>
                       <p className="text-slate-500 text-xs mb-4">After $1 trial</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Everything in Starter</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> All 4 platforms</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Everything in Starter</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> All 4 platforms</li>
                         <li className="flex items-center gap-2"><Check className="w-4 h-4 text-purple-400 flex-shrink-0" /> Paid ad campaigns</li>
                         <li className="flex items-center gap-2"><Check className="w-4 h-4 text-purple-400 flex-shrink-0" /> AI content generation</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Geo-targeted ads</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Advanced analytics</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Geo-targeted ads</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Advanced analytics</li>
                       </ul>
                     </div>
 
@@ -872,12 +872,12 @@ export default function AutopilotOnboarding() {
                       <p className="text-3xl font-bold text-white mb-1">$349<span className="text-base text-slate-400">/mo</span></p>
                       <p className="text-slate-500 text-xs mb-4">After $1 trial</p>
                       <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Everything in Professional</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Everything in Professional</li>
                         <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> Priority support</li>
                         <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> Custom branding</li>
                         <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> Dedicated manager</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> Unlimited content</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400 flex-shrink-0" /> White-label reports</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> Unlimited content</li>
+                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-blue-400 flex-shrink-0" /> White-label reports</li>
                       </ul>
                     </div>
                   </div>
@@ -941,9 +941,9 @@ export default function AutopilotOnboarding() {
                       <p className="text-white font-semibold text-sm">Identity</p>
                       <p className="text-blue-400 text-xs font-bold">$10 one-time</p>
                       <ul className="mt-2 space-y-1 text-xs text-slate-400">
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Email verified</li>
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Phone verified</li>
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Business name</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Email verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Phone verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Business name</li>
                       </ul>
                     </div>
 
@@ -967,9 +967,9 @@ export default function AutopilotOnboarding() {
                       <p className="text-white font-semibold text-sm">Business</p>
                       <p className="text-purple-400 text-xs font-bold">$49/year</p>
                       <ul className="mt-2 space-y-1 text-xs text-slate-400">
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> License verified</li>
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Insurance docs</li>
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Background check</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> License verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Insurance docs</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Background check</li>
                       </ul>
                     </div>
 
@@ -990,9 +990,9 @@ export default function AutopilotOnboarding() {
                       <p className="text-white font-semibold text-sm">Elite</p>
                       <p className="text-amber-400 text-xs font-bold">$149/year</p>
                       <ul className="mt-2 space-y-1 text-xs text-slate-400">
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Full KYC</li>
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Video verified</li>
-                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-green-400" /> Bonded & insured</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Full KYC</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Video verified</li>
+                        <li className="flex items-center gap-1"><Check className="w-3 h-3 text-blue-400" /> Bonded & insured</li>
                       </ul>
                     </div>
                   </div>
@@ -1004,10 +1004,10 @@ export default function AutopilotOnboarding() {
                         <div>
                           <p className="text-white text-sm font-medium">What you get with verification:</p>
                           <ul className="mt-2 text-xs text-slate-400 space-y-1">
-                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Verified badge on all marketing content</li>
-                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Embeddable trust widget for your website</li>
-                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Listed in TrustLayer verified directory</li>
-                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-green-400" /> Priority placement in search results</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-blue-400" /> Verified badge on all marketing content</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-blue-400" /> Embeddable trust widget for your website</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-blue-400" /> Listed in TrustLayer verified directory</li>
+                            <li className="flex items-center gap-2"><Check className="w-3 h-3 text-blue-400" /> Priority placement in search results</li>
                           </ul>
                         </div>
                       </div>
@@ -1039,7 +1039,7 @@ export default function AutopilotOnboarding() {
                     </Button>
                   </div>
                   {isOwnerApp && (
-                    <Badge className="mt-3 bg-green-500/20 text-green-400 border-green-500/30">
+                    <Badge className="mt-3 bg-blue-500/20 text-blue-400 border-blue-500/30">
                       <Check className="w-3 h-3 mr-1" /> Owner PIN verified - billing bypassed
                     </Badge>
                   )}
@@ -1069,14 +1069,14 @@ export default function AutopilotOnboarding() {
                   <div 
                     className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all ${
                       formData.acceptedTerms 
-                        ? 'bg-green-500/20 border border-green-500/50' 
+                        ? 'bg-blue-500/20 border border-blue-500/50' 
                         : 'bg-slate-900 border border-slate-700 hover:border-slate-600'
                     }`}
                     onClick={() => setFormData(prev => ({ ...prev, acceptedTerms: !prev.acceptedTerms }))}
                     data-testid="checkbox-terms"
                   >
                     <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
-                      formData.acceptedTerms ? 'bg-green-500' : 'bg-slate-700 border border-slate-600'
+                      formData.acceptedTerms ? 'bg-blue-500' : 'bg-slate-700 border border-slate-600'
                     }`}>
                       {formData.acceptedTerms && <Check className="w-3 h-3 text-white" />}
                     </div>
@@ -1095,19 +1095,19 @@ export default function AutopilotOnboarding() {
                       <h3 className="text-white font-semibold mb-2">What happens next?</h3>
                       <ul className="space-y-2 text-slate-300 text-sm">
                         <li className="flex items-center gap-2">
-                          <Check className="w-4 h-4 text-green-400" />
+                          <Check className="w-4 h-4 text-blue-400" />
                           We'll verify your Meta connection
                         </li>
                         <li className="flex items-center gap-2">
-                          <Check className="w-4 h-4 text-green-400" />
+                          <Check className="w-4 h-4 text-blue-400" />
                           Generate marketing content for your {selectedNiche?.name.toLowerCase()} business
                         </li>
                         <li className="flex items-center gap-2">
-                          <Check className="w-4 h-4 text-green-400" />
+                          <Check className="w-4 h-4 text-blue-400" />
                           Set up automated posting schedule
                         </li>
                         <li className="flex items-center gap-2">
-                          <Check className="w-4 h-4 text-green-400" />
+                          <Check className="w-4 h-4 text-blue-400" />
                           Start growing your online presence
                         </li>
                       </ul>
@@ -1145,7 +1145,7 @@ export default function AutopilotOnboarding() {
             <Button
               onClick={() => submitMutation.mutate()}
               disabled={submitMutation.isPending}
-              className="bg-gradient-to-r from-green-600 to-emerald-600"
+              className="bg-gradient-to-r from-blue-600 to-sky-600"
               data-testid="button-submit"
             >
               {submitMutation.isPending ? (

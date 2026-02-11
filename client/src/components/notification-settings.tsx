@@ -37,7 +37,7 @@ export function NotificationSettings({ userId }: NotificationSettingsProps) {
     }
     switch (permission) {
       case 'granted':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Enabled</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Enabled</Badge>;
       case 'denied':
         return <Badge variant="destructive">Blocked</Badge>;
       case 'default':

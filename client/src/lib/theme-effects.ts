@@ -109,7 +109,7 @@ export const slideInRight: Variants = {
 export const glowGradients = {
   gold: "from-gold-400/30 via-accent/20 to-orange-500/10",
   blue: "from-blue-500/30 via-purple-500/20 to-pink-500/10",
-  green: "from-green-500/30 via-teal-500/20 to-cyan-500/10",
+  green: "from-blue-500/30 via-teal-500/20 to-cyan-500/10",
   purple: "from-purple-500/30 via-pink-500/20 to-rose-500/10",
   accent: "from-accent/30 via-gold-400/20 to-amber-500/10",
   mixed: "from-accent/20 via-blue-500/15 to-purple-500/10",
@@ -118,7 +118,7 @@ export const glowGradients = {
 export const glowShadows = {
   gold: "0 0 40px rgba(212, 168, 83, 0.3), 0 0 80px rgba(212, 168, 83, 0.15)",
   blue: "0 0 40px rgba(59, 130, 246, 0.3), 0 0 80px rgba(59, 130, 246, 0.15)",
-  green: "0 0 40px rgba(34, 197, 94, 0.3), 0 0 80px rgba(34, 197, 94, 0.15)",
+  green: "0 0 40px rgba(59, 130, 246, 0.3), 0 0 80px rgba(59, 130, 246, 0.15)",
   purple: "0 0 40px rgba(168, 85, 247, 0.3), 0 0 80px rgba(168, 85, 247, 0.15)",
   accent: "0 0 40px rgba(90, 122, 77, 0.3), 0 0 80px rgba(90, 122, 77, 0.15)",
 };
@@ -145,7 +145,7 @@ export const iconContainerStyles = {
   gradients: {
     gold: "bg-gradient-to-br from-gold-400/30 to-accent/20 shadow-gold-400/20",
     blue: "bg-gradient-to-br from-blue-500/30 to-purple-500/20 shadow-blue-500/20",
-    green: "bg-gradient-to-br from-green-500/30 to-teal-500/20 shadow-green-500/20",
+    green: "bg-gradient-to-br from-blue-500/30 to-teal-500/20 shadow-blue-500/20",
     purple: "bg-gradient-to-br from-purple-500/30 to-pink-500/20 shadow-purple-500/20",
     accent: "bg-gradient-to-br from-accent/30 to-blue-500/20 shadow-accent/20",
     yellow: "bg-gradient-to-br from-yellow-500/30 to-orange-500/20 shadow-yellow-500/20",
@@ -155,7 +155,7 @@ export const iconContainerStyles = {
 export const cardBackgroundStyles = {
   gold: "bg-gradient-to-br from-gold-400/10 via-transparent to-accent/5",
   blue: "bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/5",
-  green: "bg-gradient-to-br from-green-500/10 via-transparent to-teal-500/5",
+  green: "bg-gradient-to-br from-blue-500/10 via-transparent to-teal-500/5",
   purple: "bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/5",
   accent: "bg-gradient-to-br from-accent/10 via-transparent to-blue-500/5",
   yellow: "bg-gradient-to-br from-yellow-500/10 via-transparent to-orange-500/5",

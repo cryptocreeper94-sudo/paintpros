@@ -127,8 +127,8 @@ export function GoogleCalendarConnect() {
               data-testid={`calendar-connection-${conn.id}`}
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="p-2 rounded-full bg-green-500/20">
-                  <CheckCircle2 className="w-4 h-4 text-green-400" />
+                <div className="p-2 rounded-full bg-blue-500/20">
+                  <CheckCircle2 className="w-4 h-4 text-blue-400" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-medium truncate">{conn.googleEmail}</p>

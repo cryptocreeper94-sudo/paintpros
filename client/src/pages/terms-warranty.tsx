@@ -9,8 +9,8 @@ const sections = [
     id: "warranty",
     title: "Warranty",
     icon: Shield,
-    color: "text-green-400",
-    bgColor: "bg-green-500/20",
+    color: "text-blue-400",
+    bgColor: "bg-blue-500/20",
   },
   {
     id: "payment",
@@ -75,7 +75,7 @@ export default function TermsWarranty() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/30 to-green-500/20 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-accent/20">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/30 to-blue-500/20 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-accent/20">
               <Scale className="w-8 h-8 text-accent" />
             </div>
             <h1 className="text-3xl md:text-5xl font-display font-bold mb-4 whitespace-nowrap">
@@ -108,8 +108,8 @@ export default function TermsWarranty() {
             >
               <GlassCard className="p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-green-400" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-blue-400" />
                   </div>
                   <div>
                     <h2 className="text-2xl font-display font-bold">Warranty</h2>
@@ -120,7 +120,7 @@ export default function TermsWarranty() {
                 <div className="space-y-4 text-sm leading-relaxed">
                   <p>
                     The Contractor warrants that all painting services will be free from defects in workmanship 
-                    for a period of <strong className="text-green-400">{warrantyYears} years</strong> from the project completion date.
+                    for a period of <strong className="text-blue-400">{warrantyYears} years</strong> from the project completion date.
                   </p>
 
                   <div className="grid md:grid-cols-2 gap-4 my-6">
@@ -135,8 +135,8 @@ export default function TermsWarranty() {
                         <li>Surfaces previously identified as unsuitable (e.g., damaged wood, moisture issues)</li>
                       </ul>
                     </div>
-                    <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-                      <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2">
+                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                      <h4 className="font-semibold text-blue-400 mb-2 flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4" />
                         Warranty Claim Process:
                       </h4>

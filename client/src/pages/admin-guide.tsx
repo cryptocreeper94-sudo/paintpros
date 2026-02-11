@@ -69,11 +69,11 @@ export default function AdminGuide() {
                   <p className="text-sm text-blue-600">Customers can upload room photos</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                <DollarSign className="h-8 w-8 text-green-600" />
+              <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                <DollarSign className="h-8 w-8 text-blue-600" />
                 <div>
-                  <p className="font-medium text-green-800">Instant Pricing</p>
-                  <p className="text-sm text-green-600">Shows total price (individual rates hidden)</p>
+                  <p className="font-medium text-blue-800">Instant Pricing</p>
+                  <p className="text-sm text-blue-600">Shows total price (individual rates hidden)</p>
                 </div>
               </div>
             </div>
@@ -106,11 +106,11 @@ export default function AdminGuide() {
               This page gives customers three quick options:
             </p>
             <div className="grid md:grid-cols-3 gap-4 mt-4">
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                <Phone className="h-6 w-6 text-green-600" />
+              <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                <Phone className="h-6 w-6 text-blue-600" />
                 <div>
-                  <p className="font-medium text-green-800">Call Now</p>
-                  <p className="text-xs text-green-600">Direct phone call</p>
+                  <p className="font-medium text-blue-800">Call Now</p>
+                  <p className="text-xs text-blue-600">Direct phone call</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
@@ -169,8 +169,8 @@ export default function AdminGuide() {
         </Card>
 
         <Card className="mb-8 border-0 shadow-xl">
-          <CardHeader className="bg-green-50 border-b">
-            <CardTitle className="flex items-center gap-2 text-green-800">
+          <CardHeader className="bg-blue-50 border-b">
+            <CardTitle className="flex items-center gap-2 text-blue-800">
               <Shield className="h-6 w-6" />
               Managing Bookings
             </CardTitle>
@@ -180,11 +180,11 @@ export default function AdminGuide() {
               All bookings require your approval before they're confirmed.
             </p>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                <CheckCircle className="h-8 w-8 text-green-600" />
+              <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                <CheckCircle className="h-8 w-8 text-blue-600" />
                 <div>
-                  <p className="font-medium text-green-800">Confirm</p>
-                  <p className="text-sm text-green-600">Approve the appointment</p>
+                  <p className="font-medium text-blue-800">Confirm</p>
+                  <p className="text-sm text-blue-600">Approve the appointment</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg">

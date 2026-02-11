@@ -153,7 +153,7 @@ function EstimatorToolPricing() {
             }`}
             data-testid="button-billing-annual"
           >
-            Annual <span className="text-green-400 ml-1">Save 20%</span>
+            Annual <span className="text-blue-400 ml-1">Save 20%</span>
           </button>
         </div>
       </motion.div>
@@ -201,7 +201,7 @@ function EstimatorToolPricing() {
                     <span className="text-muted-foreground">/mo</span>
                   </div>
                   {billingCycle === 'annual' && (
-                    <p className="text-xs text-green-400 mt-1">
+                    <p className="text-xs text-blue-400 mt-1">
                       Save ${tier.annualSavings}/year
                     </p>
                   )}
@@ -210,7 +210,7 @@ function EstimatorToolPricing() {
                 <ul className="flex-1 space-y-2 mb-6">
                   {tier.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
-                      <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -278,7 +278,7 @@ function EstimatorToolPricing() {
                   <td className="py-2 pr-4">CRM Access</td>
                   {PRICING_TIERS.map(tier => (
                     <td key={tier.id} className="text-center py-2">
-                      {tier.limits.crmAccess ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
+                      {tier.limits.crmAccess ? <Check className="w-4 h-4 text-blue-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
                     </td>
                   ))}
                 </tr>
@@ -286,7 +286,7 @@ function EstimatorToolPricing() {
                   <td className="py-2 pr-4">Online Booking</td>
                   {PRICING_TIERS.map(tier => (
                     <td key={tier.id} className="text-center py-2">
-                      {tier.limits.onlineBooking ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
+                      {tier.limits.onlineBooking ? <Check className="w-4 h-4 text-blue-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
                     </td>
                   ))}
                 </tr>
@@ -294,7 +294,7 @@ function EstimatorToolPricing() {
                   <td className="py-2 pr-4">Multi-Room Scanner</td>
                   {PRICING_TIERS.map(tier => (
                     <td key={tier.id} className="text-center py-2">
-                      {tier.limits.multiRoomScanner ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
+                      {tier.limits.multiRoomScanner ? <Check className="w-4 h-4 text-blue-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
                     </td>
                   ))}
                 </tr>
@@ -302,7 +302,7 @@ function EstimatorToolPricing() {
                   <td className="py-2 pr-4">White-Label</td>
                   {PRICING_TIERS.map(tier => (
                     <td key={tier.id} className="text-center py-2">
-                      {tier.limits.whiteLabel ? <Check className="w-4 h-4 text-green-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
+                      {tier.limits.whiteLabel ? <Check className="w-4 h-4 text-blue-400 mx-auto" /> : <X className="w-4 h-4 text-muted-foreground mx-auto" />}
                     </td>
                   ))}
                 </tr>
@@ -318,9 +318,9 @@ function EstimatorToolPricing() {
         transition={{ delay: 0.6 }}
         className="mt-6 text-center"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-sm">
-          <Shield className="w-4 h-4 text-green-500" />
-          <span className="text-green-600 dark:text-green-400 font-medium">7-Day Money-Back Guarantee</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-sm">
+          <Shield className="w-4 h-4 text-blue-500" />
+          <span className="text-blue-600 dark:text-blue-400 font-medium">7-Day Money-Back Guarantee</span>
           <span className="text-muted-foreground">on all new subscriptions</span>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
@@ -394,7 +394,7 @@ function LicensingPricing() {
                       <ul className="space-y-2 mb-4">
                         {tier.features.map((feature, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm">
-                            <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                            <Check className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                             <span>{feature}</span>
                           </li>
                         ))}
@@ -475,8 +475,8 @@ function LicensingPricing() {
               >
                 <GlassCard className="p-6 h-full">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                      <Check className="w-5 h-5 text-green-400" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                      <Check className="w-5 h-5 text-blue-400" />
                     </div>
                     <h3 className="font-bold">All Plans Include</h3>
                   </div>
@@ -548,11 +548,11 @@ function ServicePricing({ tenant }: { tenant: any }) {
   const isNPP = tenant.id === 'npp';
 
   const FullImplementationBadge = () => (
-    <GlassCard className="p-3 mb-6 bg-gradient-to-r from-green-500/10 via-accent/10 to-green-500/10 border-green-500/30">
+    <GlassCard className="p-3 mb-6 bg-gradient-to-r from-blue-500/10 via-accent/10 to-blue-500/10 border-blue-500/30">
       <div className="flex items-center justify-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <BadgeCheck className="w-5 h-5 text-green-400" />
-          <span className="font-bold text-green-400 text-sm">Full Implementation Active</span>
+          <BadgeCheck className="w-5 h-5 text-blue-400" />
+          <span className="font-bold text-blue-400 text-sm">Full Implementation Active</span>
         </div>
         <div className="flex gap-1 flex-wrap">
           <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 text-xs">AI Scanner</span>
@@ -565,7 +565,7 @@ function ServicePricing({ tenant }: { tenant: any }) {
 
   const pricingItems = pricing ? [
     { title: "Walls Only", icon: Grid3X3, price: `$${pricing.wallsPerSqFt?.toFixed(2) || '0.00'}`, unit: "/sqft", desc: "Interior walls, prep included", color: "text-blue-400", bg: "bg-blue-500/20" },
-    { title: "Full Job", icon: Home, price: `$${pricing.fullJobPerSqFt?.toFixed(2) || '0.00'}`, unit: "/sqft", desc: "Walls + Trim + Ceiling", color: "text-green-400", bg: "bg-green-500/20", popular: true },
+    { title: "Full Job", icon: Home, price: `$${pricing.fullJobPerSqFt?.toFixed(2) || '0.00'}`, unit: "/sqft", desc: "Walls + Trim + Ceiling", color: "text-blue-400", bg: "bg-blue-500/20", popular: true },
     { title: "Doors", icon: DoorOpen, price: `$${pricing.doorsPerUnit || '0'}`, unit: "/door", desc: "Both sides included", color: "text-purple-400", bg: "bg-purple-500/20" },
   ] : [];
 
@@ -654,7 +654,7 @@ function ServicePricing({ tenant }: { tenant: any }) {
           {/* What's Included - horizontal on mobile */}
           <GlassCard className="p-4 mb-4">
             <div className="flex items-center gap-2 mb-3">
-              <Check className="w-5 h-5 text-green-400" />
+              <Check className="w-5 h-5 text-blue-400" />
               <h2 className="font-bold">What's Included</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

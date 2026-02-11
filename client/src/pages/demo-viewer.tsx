@@ -56,7 +56,7 @@ const tradeVerticals = [
   { id: "hvac", name: "HVAC", icon: Flame, color: "bg-red-500/20", textColor: "text-red-600", path: "/trade-home?tenant=hvacpros", description: "Heating & cooling systems" },
   { id: "electric", name: "Electrical", icon: Zap, color: "bg-amber-500/20", textColor: "text-amber-600", path: "/trade-home?tenant=electricpros", description: "Wiring & electrical work" },
   { id: "plumb", name: "Plumbing", icon: Droplets, color: "bg-blue-500/20", textColor: "text-blue-600", path: "/trade-home?tenant=plumbpros", description: "Pipes, drains & fixtures" },
-  { id: "landscape", name: "Landscaping", icon: TreeDeciduous, color: "bg-emerald-500/20", textColor: "text-emerald-600", path: "/trade-home?tenant=landscapepros", description: "Lawn care & outdoor design" },
+  { id: "landscape", name: "Landscaping", icon: TreeDeciduous, color: "bg-sky-500/20", textColor: "text-sky-600", path: "/trade-home?tenant=landscapepros", description: "Lawn care & outdoor design" },
   { id: "construct", name: "Construction", icon: HardHat, color: "bg-slate-500/20", textColor: "text-slate-600", path: "/trade-home?tenant=buildpros", description: "Building & renovations" },
   { id: "general", name: "General", icon: Wrench, color: "bg-teal-500/20", textColor: "text-teal-600", path: "/tradeworks", description: "Handyman & repairs" },
 ];
@@ -232,8 +232,8 @@ export default function DemoViewer() {
                   onClick={() => setLocation("/tradeworks")}
                   data-testid="card-tradeworks"
                 >
-                  <div className="p-3 bg-emerald-500/20 rounded-xl w-fit mb-4">
-                    <Target className="w-6 h-6 text-emerald-600" />
+                  <div className="p-3 bg-sky-500/20 rounded-xl w-fit mb-4">
+                    <Target className="w-6 h-6 text-sky-600" />
                   </div>
                   <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
                     TradeWorks
@@ -421,15 +421,15 @@ export default function DemoViewer() {
               
               <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle className="w-4 h-4 text-sky-500" />
                   Free to join
                 </span>
                 <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle className="w-4 h-4 text-sky-500" />
                   No contracts
                 </span>
                 <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle className="w-4 h-4 text-sky-500" />
                   Instant access
                 </span>
               </div>

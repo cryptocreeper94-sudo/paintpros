@@ -4,7 +4,18 @@
 See `PROJECT_STATS.md` for a living document tracking development progress, line counts, cost estimates, and historical snapshots.
 
 ## Overview
-PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting and home services industry. It provides white-label websites, interactive estimating tools, SEO management, and role-based dashboards. The platform supports franchisable and standalone licensing models, with a primary focus on Lume Paint Co as a template for future expansion. The project aims to enhance customer spaces and expand across various trade verticals.
+PaintPros.io is a multi-tenant SaaS platform by Orbit for the painting and home services industry. White-label websites, estimating tools, SEO, CRM, and role-based dashboards. Expanding across trade verticals via TradeWorks AI.
+
+### Site Structure (as of Feb 2026)
+- **PaintPros.io** = Flagship SaaS demo site + white-label template for franchises. Navy and white branding.
+- **NashPaintPros.io** = Lead generation / affiliate marketing / contractor marketplace. "Find your contractor, find your customer." Also advertises TradeWorks AI field tools. Navy and white branding.
+- **TradeWorksAI.io** = Separate field tool platform for multi-trade expansion.
+- **TLID.io** = TrustLayer automated marketing system (Meta Business Suite integration, ad automation). Branding: cyan, lavender, holographic purple, dark blues.
+
+### Color Rules
+- **NO green or cream colors anywhere** in the platform. All removed Feb 2026.
+- PaintPros.io and NashPaintPros.io: Navy (#0f172a) and white (#f8fafc)
+- TLID.io: TrustLayer branding (cyan, lavender, purple, deep blue)
 
 ## User Preferences
 - I prefer simple language and detailed explanations
@@ -12,6 +23,7 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit designed for the painting 
 - Do not make changes to the `assets/branding/` folder
 - Never say "AI" or "app" - use "room visualizer tool", "estimator tool", "instant estimation" instead
 - Always use lucide-react icons, never emoji
+- **NO interactive query boxes** - user will respond only via chat (boxes disappear and lose responses)
 
 ## System Architecture
 

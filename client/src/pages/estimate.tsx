@@ -420,8 +420,8 @@ export default function Estimate() {
               animate={{ opacity: 1, scale: 1 }}
             >
               <GlassCard className="p-8 text-center" glow>
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle className="w-10 h-10 text-green-500" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <CheckCircle className="w-10 h-10 text-blue-500" />
                 </div>
                 <h1 className="text-3xl font-display font-bold mb-4">Estimate Submitted!</h1>
                 <p className="text-muted-foreground mb-6">
@@ -515,7 +515,7 @@ export default function Estimate() {
                   <div key={step} className="flex-1 flex flex-col items-center">
                     <motion.div
                       className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${
-                        isCompleted ? 'bg-green-500 text-white' :
+                        isCompleted ? 'bg-blue-500 text-white' :
                         isActive ? 'bg-accent text-white' :
                         'bg-muted text-muted-foreground'
                       }`}

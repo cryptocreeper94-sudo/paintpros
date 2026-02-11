@@ -92,7 +92,7 @@ export function CryptoPaymentModal({ isOpen, onClose }: CryptoPaymentModalProps)
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
                 <span className="text-[10px] md:text-xs font-medium">USDC</span>
               </div>
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
                 <span className="text-[10px] md:text-xs font-medium">+ More</span>
               </div>
             </div>

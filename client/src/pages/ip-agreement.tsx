@@ -266,41 +266,41 @@ Email: ${signerEmail}`;
                     <p className="text-xs text-blue-700 mt-2 font-medium">AI-estimated platform value: $20M+ based on comparable enterprise HR/staffing SaaS platforms</p>
                   </div>
 
-                  <div className="p-4 bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg print:bg-white">
-                    <h4 className="font-bold text-green-900 mb-2 flex items-center gap-2">
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-teal-50 border border-blue-200 rounded-lg print:bg-white">
+                    <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
                       4. Trade Vertical Expansion (Future Platforms)
-                      <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">$2.2T+ Combined TAM</span>
+                      <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">$2.2T+ Combined TAM</span>
                     </h4>
                     <p className="text-sm text-gray-700 mb-3">
                       The PaintPros.io platform is designed to expand into additional skilled trade verticals. Each vertical shares the same core infrastructure but features trade-specific branding, services, and estimators. <strong>As Co-Owner, your 50% ownership extends to all future trade verticals:</strong>
                     </p>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                      <div className="p-2 bg-white rounded border border-green-100">
-                        <p className="font-medium text-green-800">RoofPros</p>
+                      <div className="p-2 bg-white rounded border border-blue-100">
+                        <p className="font-medium text-blue-800">RoofPros</p>
                         <p className="text-gray-500">roofpros.io - $56B market</p>
                       </div>
-                      <div className="p-2 bg-white rounded border border-green-100">
-                        <p className="font-medium text-green-800">HVACPros</p>
+                      <div className="p-2 bg-white rounded border border-blue-100">
+                        <p className="font-medium text-blue-800">HVACPros</p>
                         <p className="text-gray-500">hvacpros.io - $130B market</p>
                       </div>
-                      <div className="p-2 bg-white rounded border border-green-100">
-                        <p className="font-medium text-green-800">ElectricPros</p>
+                      <div className="p-2 bg-white rounded border border-blue-100">
+                        <p className="font-medium text-blue-800">ElectricPros</p>
                         <p className="text-gray-500">electricpros.io - $200B market</p>
                       </div>
-                      <div className="p-2 bg-white rounded border border-green-100">
-                        <p className="font-medium text-green-800">PlumbPros</p>
+                      <div className="p-2 bg-white rounded border border-blue-100">
+                        <p className="font-medium text-blue-800">PlumbPros</p>
                         <p className="text-gray-500">plumbpros.io - $130B market</p>
                       </div>
-                      <div className="p-2 bg-white rounded border border-green-100">
-                        <p className="font-medium text-green-800">LandscapePros</p>
+                      <div className="p-2 bg-white rounded border border-blue-100">
+                        <p className="font-medium text-blue-800">LandscapePros</p>
                         <p className="text-gray-500">landscapepros.io - $130B market</p>
                       </div>
-                      <div className="p-2 bg-white rounded border border-green-100">
-                        <p className="font-medium text-green-800">BuildPros</p>
+                      <div className="p-2 bg-white rounded border border-blue-100">
+                        <p className="font-medium text-blue-800">BuildPros</p>
                         <p className="text-gray-500">buildpros.io - $1.5T market</p>
                       </div>
                     </div>
-                    <p className="text-xs text-green-700 mt-3 font-medium">Your 50% co-ownership applies to ALL trade verticals launched under this platform architecture.</p>
+                    <p className="text-xs text-blue-700 mt-3 font-medium">Your 50% co-ownership applies to ALL trade verticals launched under this platform architecture.</p>
                   </div>
                 </div>
                 
@@ -381,12 +381,12 @@ Email: ${signerEmail}`;
                       </div>
                       <span className="font-bold text-purple-700">$300,000+ /year</span>
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-gradient-to-r from-green-100 to-emerald-100 rounded border border-green-200 flex-wrap gap-2">
+                    <div className="flex items-center justify-between p-2 bg-gradient-to-r from-blue-100 to-sky-100 rounded border border-blue-200 flex-wrap gap-2">
                       <div className="flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-green-600" />
+                        <TrendingUp className="w-4 h-4 text-blue-600" />
                         <span className="text-sm text-gray-700 font-medium">Enterprise Orbit Staffing Only</span>
                       </div>
-                      <span className="font-bold text-green-700">$500,000+ /year</span>
+                      <span className="font-bold text-blue-700">$500,000+ /year</span>
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 mt-3">
@@ -424,7 +424,7 @@ Email: ${signerEmail}`;
               {/* PART B - Project Royalties */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <DollarSign className="w-5 h-5 text-green-600" />
+                  <DollarSign className="w-5 h-5 text-blue-600" />
                   <h2 className="text-xl font-bold text-gray-900">Part B: Nashville/Murfreesboro Project Royalties</h2>
                 </div>
                 
@@ -432,26 +432,26 @@ Email: ${signerEmail}`;
                   The estimation tools you conceived are being deployed in the Nashville/Murfreesboro painting project. When this project generates income, your intellectual property will be a core part of its value. These royalties represent your share:
                 </p>
 
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 print:bg-white">
-                  <h3 className="font-bold text-green-800 mb-3">Base Royalties (Annual)</h3>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 print:bg-white">
+                  <h3 className="font-bold text-blue-800 mb-3">Base Royalties (Annual)</h3>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-green-200 flex-wrap gap-2">
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200 flex-wrap gap-2">
                       <div>
                         <p className="font-medium text-gray-900">If Jason earns $125k+/year as W-2</p>
                         <p className="text-sm text-gray-500">Base salary + bonuses as employee</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xl font-bold text-green-700">$25,000/year</p>
+                        <p className="text-xl font-bold text-blue-700">$25,000/year</p>
                         <p className="text-xs text-gray-500">~$2,083/month</p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-green-200 flex-wrap gap-2">
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200 flex-wrap gap-2">
                       <div>
                         <p className="font-medium text-gray-900">If Jason earns $125k+/year as 1099</p>
                         <p className="text-sm text-gray-500">Independent contractor basis</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xl font-bold text-green-700">$20,000/year</p>
+                        <p className="text-xl font-bold text-blue-700">$20,000/year</p>
                         <p className="text-xs text-gray-500">~$1,667/month</p>
                       </div>
                     </div>
@@ -464,19 +464,19 @@ Email: ${signerEmail}`;
                   </p>
                 </div>
 
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4 print:bg-white">
-                  <h3 className="font-bold text-emerald-800 mb-3">Additional Royalties (Above $125k)</h3>
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-emerald-200 flex-wrap gap-2">
+                <div className="bg-sky-50 border border-sky-200 rounded-lg p-4 mb-4 print:bg-white">
+                  <h3 className="font-bold text-sky-800 mb-3">Additional Royalties (Above $125k)</h3>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-sky-200 flex-wrap gap-2">
                     <div>
                       <p className="font-medium text-gray-900">For any amount Jason earns above $125k/year</p>
                       <p className="text-sm text-gray-500">Calculated on total earnings exceeding the threshold</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold text-emerald-700">15%</p>
+                      <p className="text-xl font-bold text-sky-700">15%</p>
                       <p className="text-xs text-gray-500">of amount over $125k</p>
                     </div>
                   </div>
-                  <div className="mt-3 p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="mt-3 p-3 bg-white rounded-lg border border-sky-100">
                     <p className="text-xs text-gray-600 font-medium mb-2">Example:</p>
                     <p className="text-xs text-gray-500">If Jason earns $150,000/year as W-2:</p>
                     <p className="text-xs text-gray-500">• Base royalty: $25,000</p>
@@ -603,18 +603,18 @@ Email: ${signerEmail}`;
 
         {/* Future Vision Section */}
         <section className="mb-8 print:mb-4">
-          <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 print:bg-white print:border-gray-300">
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-sky-50 print:bg-white print:border-gray-300">
             <CardContent className="p-6 print:p-4">
-              <h2 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
+              <h2 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
                 Our Shared Future
               </h2>
               <p className="text-gray-700 mb-4">
                 Sidonie, I want you to know what this partnership represents: the beginning of something that could genuinely change our lives. The combined potential of these three platforms - especially Orbit Staffing with its $20M+ valuation - gives us a real path to:
               </p>
               <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div className="bg-white rounded-lg p-4 border border-green-200">
-                  <p className="font-medium text-green-800 mb-2">Financial Freedom</p>
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <p className="font-medium text-blue-800 mb-2">Financial Freedom</p>
                   <ul className="text-sm space-y-1 text-gray-600">
                     <li>• Passive income that grows over time</li>
                     <li>• Freedom from traditional employment constraints</li>
@@ -622,8 +622,8 @@ Email: ${signerEmail}`;
                     <li>• Inheritable income stream for our families</li>
                   </ul>
                 </div>
-                <div className="bg-white rounded-lg p-4 border border-green-200">
-                  <p className="font-medium text-green-800 mb-2">Creative Freedom</p>
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <p className="font-medium text-blue-800 mb-2">Creative Freedom</p>
                   <ul className="text-sm space-y-1 text-gray-600">
                     <li>• Work on projects we're passionate about</li>
                     <li>• Set our own schedules and priorities</li>
@@ -681,8 +681,8 @@ Email: ${signerEmail}`;
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-green-700 font-bold text-sm">4</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-700 font-bold text-sm">4</span>
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">You Get Your Statement + Payment</p>
@@ -702,8 +702,8 @@ Email: ${signerEmail}`;
                     <li>• Regular statements - know exactly what's coming</li>
                   </ul>
                 </div>
-                <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg p-4 border border-green-200">
-                  <p className="font-medium text-green-800 mb-2">Nashville/Murfreesboro Projects</p>
+                <div className="bg-gradient-to-br from-blue-100 to-sky-100 rounded-lg p-4 border border-blue-200">
+                  <p className="font-medium text-blue-800 mb-2">Nashville/Murfreesboro Projects</p>
                   <ul className="text-sm space-y-1 text-gray-600">
                     <li>• Projects starting within 1-2 weeks</li>
                     <li>• Pay stubs will be scanned and tracked</li>
@@ -826,8 +826,8 @@ Email: ${signerEmail}`;
               <div className="bg-white rounded-lg p-4 border border-blue-200 mb-4">
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-green-700 font-bold text-sm">1</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-700 font-bold text-sm">1</span>
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">A Sale Happens</p>
@@ -835,8 +835,8 @@ Email: ${signerEmail}`;
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-green-700 font-bold text-sm">2</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-700 font-bold text-sm">2</span>
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">Your 50% Is Calculated</p>
@@ -844,8 +844,8 @@ Email: ${signerEmail}`;
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-green-700 font-bold text-sm">3</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-700 font-bold text-sm">3</span>
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">Money Hits Your Bank</p>
@@ -992,15 +992,15 @@ Email: ${signerEmail}`;
                 )}
 
                 {paymentMethod === "stripe" && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                       <div>
-                        <p className="font-medium text-green-800">Stripe Selected - Automatic Payments</p>
-                        <p className="text-sm text-green-700 mt-1">
+                        <p className="font-medium text-blue-800">Stripe Selected - Automatic Payments</p>
+                        <p className="text-sm text-blue-700 mt-1">
                           Click the "Connect with Stripe" button above to set up your account. Once connected, your 50% royalty share will be automatically deposited to your bank account each month.
                         </p>
-                        <p className="text-xs text-green-600 mt-2">
+                        <p className="text-xs text-blue-600 mt-2">
                           No username or handle needed - Stripe connects directly to your bank.
                         </p>
                       </div>
@@ -1066,18 +1066,18 @@ Email: ${signerEmail}`;
         {stamped && stampData && (
           <section className="mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <CheckCircle2 className="w-5 h-5 text-blue-600" />
               Agreement Verified on Blockchain
             </h2>
-            <Card className="border-2 border-green-200 bg-green-50 print:bg-white print:border-gray-300">
+            <Card className="border-2 border-blue-200 bg-blue-50 print:bg-white print:border-gray-300">
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-center gap-2 text-green-700 font-semibold">
+                <div className="flex items-center gap-2 text-blue-700 font-semibold">
                   <Shield className="w-5 h-5" />
                   This agreement is permanently recorded and cannot be altered.
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <div className="bg-white rounded-lg p-4 border border-blue-200">
                     <p className="text-sm text-gray-500 mb-1">Solana Transaction</p>
                     <p className="font-mono text-xs break-all text-gray-700">
                       {stampData.solana || "Pending..."}
@@ -1094,7 +1094,7 @@ Email: ${signerEmail}`;
                       </a>
                     )}
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <div className="bg-white rounded-lg p-4 border border-blue-200">
                     <p className="text-sm text-gray-500 mb-1">Darkwave Hash</p>
                     <p className="font-mono text-xs break-all text-gray-700">
                       {stampData.darkwave || "Pending..."}
@@ -1113,7 +1113,7 @@ Email: ${signerEmail}`;
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg p-4 border border-green-200">
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
                   <p className="text-sm text-gray-500 mb-1">Document Hash (SHA-256)</p>
                   <p className="font-mono text-xs break-all text-gray-700">
                     {stampData.hash}

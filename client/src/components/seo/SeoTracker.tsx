@@ -169,14 +169,14 @@ export function SeoTracker() {
   
   const getScoreColor = (score: number | null) => {
     if (!score) return "bg-gray-500";
-    if (score >= 80) return "bg-green-500";
+    if (score >= 80) return "bg-blue-500";
     if (score >= 50) return "bg-yellow-500";
     return "bg-red-500";
   };
   
   const getScoreBadge = (score: number | null) => {
     if (!score) return <Badge variant="secondary">Not Set</Badge>;
-    if (score >= 80) return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Excellent</Badge>;
+    if (score >= 80) return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Excellent</Badge>;
     if (score >= 50) return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Needs Work</Badge>;
     return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Poor</Badge>;
   };
@@ -261,8 +261,8 @@ export function SeoTracker() {
             </div>
             <div className="text-sm text-muted-foreground">Average Score</div>
           </div>
-          <div className="p-4 rounded-lg bg-green-500/10">
-            <div className="text-2xl font-bold text-green-500">{summary?.pagesWithFullSeo || 0}</div>
+          <div className="p-4 rounded-lg bg-blue-500/10">
+            <div className="text-2xl font-bold text-blue-500">{summary?.pagesWithFullSeo || 0}</div>
             <div className="text-sm text-muted-foreground">Optimized</div>
           </div>
           <div className="p-4 rounded-lg bg-red-500/10">
@@ -331,7 +331,7 @@ export function SeoTracker() {
                         )}
                         
                         {(!page.missingFields || page.missingFields.length === 0) && (
-                          <div className="flex items-center gap-2 text-sm text-green-500">
+                          <div className="flex items-center gap-2 text-sm text-blue-500">
                             <CheckCircle className="w-4 h-4" />
                             All SEO fields are configured
                           </div>

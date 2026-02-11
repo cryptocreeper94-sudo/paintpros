@@ -81,7 +81,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
           {contactMutation.isSuccess ? (
             <div className="text-center py-8">
-              <CheckCircle2 className="w-16 h-16 text-green-400 mx-auto mb-4" />
+              <CheckCircle2 className="w-16 h-16 text-blue-400 mx-auto mb-4" />
               <h3 className="text-lg font-bold mb-2">Message Sent!</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 We'll get back to you as soon as possible.

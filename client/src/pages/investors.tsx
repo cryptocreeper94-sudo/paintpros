@@ -192,7 +192,7 @@ Ecosystem: https://darkwavestudios.io`;
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-sm mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 text-sm mb-6">
               <TrendingUp className="w-4 h-4" />
               Investment Opportunity
             </div>
@@ -211,10 +211,10 @@ Ecosystem: https://darkwavestudios.io`;
               transition={{ delay: 0.1 }}
             >
               <GlassCard className="p-6 h-full text-center">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-green-500/20 flex items-center justify-center">
-                  <DollarSign className="w-7 h-7 text-green-400" />
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-blue-500/20 flex items-center justify-center">
+                  <DollarSign className="w-7 h-7 text-blue-400" />
                 </div>
-                <p className="text-3xl font-bold text-green-400">$46.5B</p>
+                <p className="text-3xl font-bold text-blue-400">$46.5B</p>
                 <p className="text-muted-foreground">U.S. Painting Market</p>
               </GlassCard>
             </motion.div>
@@ -287,13 +287,13 @@ Ecosystem: https://darkwavestudios.io`;
                       <div className="text-xs text-accent font-medium mb-2">MOST POPULAR</div>
                     )}
                     <h3 className="font-bold text-lg mb-1">{tier.tier}</h3>
-                    <p className="text-2xl font-bold text-green-400 mb-1">{tier.price}</p>
+                    <p className="text-2xl font-bold text-blue-400 mb-1">{tier.price}</p>
                     <p className="text-xs text-muted-foreground mb-3">+ {tier.setup} setup</p>
                     <p className="text-sm text-muted-foreground mb-4">{tier.target}</p>
                     <ul className="space-y-2">
                       {tier.features.map((f, j) => (
                         <li key={j} className="text-xs text-muted-foreground flex items-start gap-2">
-                          <CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="w-3 h-3 text-blue-400 mt-0.5 flex-shrink-0" />
                           {f}
                         </li>
                       ))}
@@ -339,8 +339,8 @@ Ecosystem: https://darkwavestudios.io`;
                       ))}
                       <tr className="bg-accent/10 border border-accent/30">
                         <td className="py-3 px-4 font-bold text-accent">PaintPros.io</td>
-                        <td className="py-3 px-4 font-mono font-bold text-green-400">$349-$1,399/mo</td>
-                        <td className="py-3 px-4 text-green-400">$5,000-$15,000</td>
+                        <td className="py-3 px-4 font-mono font-bold text-blue-400">$349-$1,399/mo</td>
+                        <td className="py-3 px-4 text-blue-400">$5,000-$15,000</td>
                         <td className="py-3 px-4 text-xs font-medium text-accent">White-Label Platform</td>
                       </tr>
                     </tbody>
@@ -351,7 +351,7 @@ Ecosystem: https://darkwavestudios.io`;
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Check className="w-5 h-5 text-green-400" />
+                    <Check className="w-5 h-5 text-blue-400" />
                     Why We're Different
                   </h3>
                   <div className="space-y-3">
@@ -359,7 +359,7 @@ Ecosystem: https://darkwavestudios.io`;
                       <div key={f.feature} className="flex items-center gap-3 text-sm">
                         <div className="w-6 text-center">
                           {f.us === true ? (
-                            <Check className="w-4 h-4 text-green-400 mx-auto" />
+                            <Check className="w-4 h-4 text-blue-400 mx-auto" />
                           ) : (
                             <X className="w-4 h-4 text-red-400 mx-auto" />
                           )}
@@ -381,7 +381,7 @@ Ecosystem: https://darkwavestudios.io`;
 
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-green-400" />
+                    <DollarSign className="w-5 h-5 text-blue-400" />
                     True Cost Comparison
                   </h3>
                   <div className="bg-white/5 rounded-xl p-5 border border-border dark:border-white/10">
@@ -413,7 +413,7 @@ Ecosystem: https://darkwavestudios.io`;
                       </div>
                       <div className="flex justify-between items-center mt-2">
                         <span className="font-medium text-accent">PaintPros.io Starter</span>
-                        <span className="font-mono text-green-400 font-bold">$349/mo + $5,000 setup</span>
+                        <span className="font-mono text-blue-400 font-bold">$349/mo + $5,000 setup</span>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-4">
@@ -447,7 +447,7 @@ Ecosystem: https://darkwavestudios.io`;
                   >
                     <p className="text-sm text-muted-foreground mb-2">{p.year}</p>
                     <p className={`text-4xl font-bold mb-2 ${
-                      i === 0 ? "text-green-400" : i === 1 ? "text-blue-400" : "text-purple-400"
+                      i === 0 ? "text-blue-400" : i === 1 ? "text-blue-400" : "text-purple-400"
                     }`}>
                       {p.revenue}
                     </p>
@@ -459,7 +459,7 @@ Ecosystem: https://darkwavestudios.io`;
                       </div>
                       <div>
                         <p className="text-muted-foreground">Net Profit</p>
-                        <p className="font-mono font-bold text-green-400">{p.profit}</p>
+                        <p className="font-mono font-bold text-blue-400">{p.profit}</p>
                       </div>
                     </div>
                   </div>
@@ -481,7 +481,7 @@ Ecosystem: https://darkwavestudios.io`;
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { label: "Gross Margin", value: "85%", color: "text-green-400" },
+                    { label: "Gross Margin", value: "85%", color: "text-blue-400" },
                     { label: "LTV:CAC Ratio", value: "30:1", color: "text-blue-400" },
                     { label: "ARPU", value: "$249/mo + $3,500 setup", color: "text-accent" },
                     { label: "3-Year Customer LTV", value: "$12,464", color: "text-purple-400" },
@@ -536,8 +536,8 @@ Ecosystem: https://darkwavestudios.io`;
           >
             <GlassCard className="p-8" glow>
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/30 to-blue-500/30 flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-green-400" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-blue-500/30 flex items-center justify-center">
+                  <Building2 className="w-8 h-8 text-blue-400" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold">Trade Vertical Expansion</h2>
@@ -555,24 +555,24 @@ Ecosystem: https://darkwavestudios.io`;
                     key={vertical.name}
                     className={`rounded-xl p-3 text-center border ${
                       vertical.status === "Live" 
-                        ? "bg-green-500/10 border-green-500/30" 
+                        ? "bg-blue-500/10 border-blue-500/30" 
                         : "bg-white/5 border-border dark:border-white/10"
                     }`}
                     data-testid={`card-vertical-${vertical.name.toLowerCase()}`}
                   >
                     <p className="font-bold text-sm">{vertical.name}</p>
                     <p className="text-xs text-muted-foreground font-mono">{vertical.domain}</p>
-                    <p className={`text-xs mt-1 ${vertical.status === "Live" ? "text-green-400" : "text-muted-foreground"}`}>
+                    <p className={`text-xs mt-1 ${vertical.status === "Live" ? "text-blue-400" : "text-muted-foreground"}`}>
                       {vertical.status}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/20">
+              <div className="bg-gradient-to-r from-blue-500/10 to-blue-500/10 rounded-xl p-4 border border-blue-500/20">
                 <div className="grid md:grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-3xl font-bold text-green-400">$2.2T+</p>
+                    <p className="text-3xl font-bold text-blue-400">$2.2T+</p>
                     <p className="text-xs text-muted-foreground">Combined TAM</p>
                   </div>
                   <div>

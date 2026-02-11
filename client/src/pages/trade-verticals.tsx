@@ -68,7 +68,7 @@ export default function TradeVerticals() {
                             />
                           </div>
                           {isLive ? (
-                            <Badge className="bg-green-100 text-green-800 border-green-300">
+                            <Badge className="bg-blue-100 text-blue-800 border-blue-300">
                               Live
                             </Badge>
                           ) : (

@@ -8,7 +8,7 @@ import { useTenant } from "@/context/TenantContext";
 
 const STATUS_CONFIG = {
   pending: { color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", label: "Pending" },
-  confirmed: { color: "bg-green-500/20 text-green-400 border-green-500/30", label: "Confirmed" },
+  confirmed: { color: "bg-blue-500/20 text-blue-400 border-blue-500/30", label: "Confirmed" },
   completed: { color: "bg-blue-500/20 text-blue-400 border-blue-500/30", label: "Completed" },
   cancelled: { color: "bg-red-500/20 text-red-400 border-red-500/30", label: "Cancelled" },
   no_show: { color: "bg-gray-500/20 text-gray-400 border-gray-500/30", label: "No Show" },
@@ -143,7 +143,7 @@ export function BookingsCard() {
                         <motion.button
                           onClick={() => updateStatusMutation.mutate({ id: booking.id, status: "confirmed" })}
                           disabled={isPending}
-                          className="flex-1 px-2 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[10px] font-medium border border-green-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                          className="flex-1 px-2 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-[10px] font-medium border border-blue-500/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           data-testid={`button-confirm-${booking.id}`}

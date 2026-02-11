@@ -102,7 +102,7 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
 
   // NPP (Nash PaintPros) tenant badge
   if (parsed.prefix === 'NPP') {
-    return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nash PaintPros' };
+    return { tier: 'NPP Verified', color: '#1e3a5f', icon: '🎨', glow: '0 0 15px #1e3a5f', edition: 'Nash PaintPros' };
   }
 
   if (parsed.prefix === 'PT') {

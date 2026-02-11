@@ -242,13 +242,13 @@ export default function Verify() {
           {hallmark.blockchainTxSignature && (
             <GlassCard className="p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="w-5 h-5 text-green-500" />
+                <CheckCircle className="w-5 h-5 text-blue-500" />
                 <h3 className="font-semibold">Blockchain Verified</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
                 This hallmark has been permanently anchored to the Solana blockchain.
               </p>
-              <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+              <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
                 <code className="font-mono text-xs break-all">
                   {truncateHash(hallmark.blockchainTxSignature, 16)}
                 </code>
@@ -257,7 +257,7 @@ export default function Verify() {
                     href={hallmark.blockchainExplorerUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-green-500 hover:underline text-sm ml-2"
+                    className="flex items-center gap-1 text-blue-500 hover:underline text-sm ml-2"
                     data-testid="link-blockchain-explorer"
                   >
                     View

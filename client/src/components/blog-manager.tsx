@@ -242,7 +242,7 @@ export function BlogManager() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "published":
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Published</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Published</Badge>;
       case "scheduled":
         return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Scheduled</Badge>;
       default:

@@ -82,8 +82,8 @@ export default function Contact() {
               animate={{ scale: 1 }}
               transition={{ type: "spring", damping: 15 }}
             >
-              <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-10 h-10 text-green-500" />
+              <div className="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-10 h-10 text-blue-500" />
               </div>
             </motion.div>
             <h1 className="text-3xl font-bold mb-4">Thank You!</h1>
@@ -231,8 +231,8 @@ export default function Contact() {
               {tenant.phone && (
                 <GlassCard className="p-5">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-5 h-5 text-green-400" />
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Phone</h3>

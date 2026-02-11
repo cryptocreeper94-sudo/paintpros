@@ -143,7 +143,7 @@ export default function ProposalRyan() {
             </p>
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">&lt;5 weeks</p>
+                <p className="text-2xl font-bold text-blue-500">&lt;5 weeks</p>
                 <p className="text-sm text-muted-foreground">Payback Period</p>
               </div>
               <div className="text-center">
@@ -169,7 +169,7 @@ export default function ProposalRyan() {
                 { name: "Darkwave Commerce", desc: "Payments, invoicing, blockchain verification" },
               ].map((item) => (
                 <div key={item.name} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-medium">{item.name}</p>
                     <p className="text-sm text-muted-foreground">{item.desc}</p>
@@ -202,7 +202,7 @@ export default function ProposalRyan() {
                 <ul className="space-y-2">
                   {["Project Management", "Marketing & Outreach", "IT Support", "Web Development", "SEO Placement", "Coordination & Oversight", "Orbit Staffing Integration"].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <CheckCircle2 className="w-4 h-4 text-blue-500" />
                       {item}
                     </li>
                   ))}
@@ -213,7 +213,7 @@ export default function ProposalRyan() {
                 <ul className="space-y-2">
                   {["Custom AI Website", "AI Estimator + Rollie Voice", "Room Scanner & Color Visualizer", "CRM & Lead Management", "24/7 Online Booking", "Crew Management Tools", "Document Center", "SEO Management"].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <CheckCircle2 className="w-4 h-4 text-blue-500" />
                       {item}
                     </li>
                   ))}
@@ -267,7 +267,7 @@ export default function ProposalRyan() {
             <Separator />
 
             <div>
-              <p className="font-medium text-green-600 mb-3">What You Gain with Dark Wave Partnership:</p>
+              <p className="font-medium text-blue-500 mb-3">What You Gain with Dark Wave Partnership:</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -279,27 +279,27 @@ export default function ProposalRyan() {
                   <tbody>
                     <tr className="border-b">
                       <td className="py-2">AI Estimator - instant quotes, no more spreadsheets</td>
-                      <td className="text-right text-green-600">+$2,000 in time saved</td>
+                      <td className="text-right text-blue-500">+$2,000 in time saved</td>
                     </tr>
                     <tr className="border-b">
                       <td className="py-2">24/7 Online Booking - capture leads while you sleep</td>
-                      <td className="text-right text-green-600">+$24,000 in new jobs</td>
+                      <td className="text-right text-blue-500">+$24,000 in new jobs</td>
                     </tr>
                     <tr className="border-b">
                       <td className="py-2">Automated reminders - zero no-shows</td>
-                      <td className="text-right text-green-600">+$2,000 saved</td>
+                      <td className="text-right text-blue-500">+$2,000 saved</td>
                     </tr>
                     <tr className="border-b">
                       <td className="py-2">Crew management - real-time job tracking</td>
-                      <td className="text-right text-green-600">Operational efficiency</td>
+                      <td className="text-right text-blue-500">Operational efficiency</td>
                     </tr>
                     <tr className="border-b">
                       <td className="py-2">SEO placement - customers find YOU first</td>
-                      <td className="text-right text-green-600">Organic lead flow</td>
+                      <td className="text-right text-blue-500">Organic lead flow</td>
                     </tr>
-                    <tr className="font-bold bg-green-600/10">
+                    <tr className="font-bold bg-blue-600/10">
                       <td className="py-2">Potential Monthly Impact</td>
-                      <td className="text-right text-green-600">+$28,000+</td>
+                      <td className="text-right text-blue-500">+$28,000+</td>
                     </tr>
                   </tbody>
                 </table>
@@ -478,7 +478,7 @@ export default function ProposalRyan() {
         </Card>
 
         {accepted ? (
-          <Card className="bg-green-600/90 text-white backdrop-blur-sm">
+          <Card className="bg-blue-600/90 text-white backdrop-blur-sm">
             <CardContent className="p-6 text-center space-y-4">
               <CheckCircle2 className="w-16 h-16 mx-auto" />
               <h2 className="text-2xl font-bold">Proposal Accepted</h2>

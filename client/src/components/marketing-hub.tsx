@@ -62,7 +62,7 @@ const TENANTS = [
   { id: "hvacpros", name: "HVACPros.io", shortName: "HVAC", color: "sky" },
   { id: "electricpros", name: "ElectricPros.io", shortName: "Electric", color: "yellow" },
   { id: "plumbpros", name: "PlumbPros.io", shortName: "Plumb", color: "blue" },
-  { id: "landscapepros", name: "LandscapePros.io", shortName: "Landscape", color: "green" },
+  { id: "landscapepros", name: "LandscapePros.io", shortName: "Landscape", color: "blue" },
   { id: "buildpros", name: "BuildPros.io", shortName: "Build", color: "stone" },
 ];
 
@@ -166,8 +166,8 @@ const presentationSlides = [
     title: "Content Calendar",
     subtitle: "Tab 3: Never Miss a Posting Day",
     icon: CalendarIcon,
-    iconColor: "text-green-500",
-    bgGradient: "from-green-500/20 to-emerald-500/20",
+    iconColor: "text-blue-500",
+    bgGradient: "from-blue-500/20 to-sky-500/20",
     bullets: [
       "Smart posting schedule (MWF/TThSat)",
       "Seasonal content suggestions",
@@ -196,8 +196,8 @@ const presentationSlides = [
     title: "Budget Tracker",
     subtitle: "Tab 5: Track Every Marketing Dollar",
     icon: DollarSign,
-    iconColor: "text-emerald-500",
-    bgGradient: "from-emerald-500/20 to-green-500/20",
+    iconColor: "text-sky-500",
+    bgGradient: "from-sky-500/20 to-blue-500/20",
     bullets: [
       "Monthly budget allocation",
       "Spend tracking by channel",
@@ -580,8 +580,8 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
         )}
 
         {schedule.length > 0 && (
-          <div className="mb-4 p-3 border border-green-500/30 bg-green-500/10 rounded-lg">
-            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium">
+          <div className="mb-4 p-3 border border-blue-500/30 bg-blue-500/10 rounded-lg">
+            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium">
               <CheckCircle className="w-4 h-4" />
               Auto-posting active: {schedule.length} scheduled slots per week
             </div>
@@ -626,12 +626,12 @@ function ContentLibraryTab({ tenantId }: { tenantId: string }) {
                         <span>Used {item.timesUsed}x</span>
                       )}
                       {item.performanceScore && (
-                        <span className="text-green-500">Score: {item.performanceScore.toFixed(0)}</span>
+                        <span className="text-blue-500">Score: {item.performanceScore.toFixed(0)}</span>
                       )}
                     </div>
                   </div>
                   {item.imageUrl ? (
-                    <img src={item.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover ml-3 border-2 border-green-500/30" />
+                    <img src={item.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover ml-3 border-2 border-blue-500/30" />
                   ) : (
                     <div className="w-16 h-16 rounded-lg bg-orange-500/10 border-2 border-dashed border-orange-500/30 flex items-center justify-center ml-3">
                       <ImageIcon className="w-6 h-6 text-orange-500/50" />
@@ -714,7 +714,7 @@ function AdCampaignsTab({ tenantId }: { tenantId: string }) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500/20 text-green-600';
+      case 'active': return 'bg-blue-500/20 text-blue-600';
       case 'pending': return 'bg-yellow-500/20 text-yellow-600';
       case 'paused': return 'bg-gray-500/20 text-gray-600';
       case 'failed': return 'bg-red-500/20 text-red-600';
@@ -857,7 +857,7 @@ function AdCampaignsTab({ tenantId }: { tenantId: string }) {
                           <div className="text-muted-foreground">Impressions</div>
                         </div>
                         <div className="p-2 bg-background/50 rounded text-center">
-                          <div className="font-bold text-green-500">{campaign.reach?.toLocaleString() || 0}</div>
+                          <div className="font-bold text-blue-500">{campaign.reach?.toLocaleString() || 0}</div>
                           <div className="text-muted-foreground">Reach</div>
                         </div>
                         <div className="p-2 bg-background/50 rounded text-center">
@@ -967,10 +967,10 @@ function BudgetTrackerTab({ tenantId }: { tenantId: string }) {
       <GlassCard className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-green-600" />
+            <DollarSign className="w-5 h-5 text-blue-600" />
             <h3 className="font-semibold">Marketing Budget - {now.toLocaleString('default', { month: 'long' })} {currentYear}</h3>
           </div>
-          <Badge variant={isOnTrack ? "default" : "destructive"} className={isOnTrack ? "bg-green-600" : ""}>
+          <Badge variant={isOnTrack ? "default" : "destructive"} className={isOnTrack ? "bg-blue-600" : ""}>
             {isOnTrack ? "On Track" : isOverBudget ? "Over Budget" : "Off Pace"}
           </Badge>
         </div>
@@ -981,7 +981,7 @@ function BudgetTrackerTab({ tenantId }: { tenantId: string }) {
             <div className="text-xs text-muted-foreground mb-1">Monthly Budget</div>
             <div className="text-2xl font-bold text-blue-600">{formatCurrency(MONTHLY_BUDGET)}</div>
             <div className="text-xs mt-1">
-              <span className="text-green-600">{formatCurrency(budgetRemaining)}</span> remaining
+              <span className="text-blue-600">{formatCurrency(budgetRemaining)}</span> remaining
             </div>
             <div className="mt-2 h-2 bg-blue-500/20 rounded-full overflow-hidden">
               <div className="h-full bg-blue-600 transition-all" style={{ width: `${totalProgress}%` }} />
@@ -993,7 +993,7 @@ function BudgetTrackerTab({ tenantId }: { tenantId: string }) {
             <div className="text-xs text-muted-foreground mb-1">Facebook & Instagram Ads</div>
             <div className="text-2xl font-bold text-purple-600">{formatCurrency(AD_BUDGET)}</div>
             <div className="text-xs mt-1">
-              <span className="text-green-600">{formatCurrency(adBudgetRemaining)}</span> remaining
+              <span className="text-blue-600">{formatCurrency(adBudgetRemaining)}</span> remaining
             </div>
             <div className="mt-2 h-2 bg-purple-500/20 rounded-full overflow-hidden">
               <div className="h-full bg-purple-600 transition-all" style={{ width: `${adProgress}%` }} />
@@ -1034,7 +1034,7 @@ function BudgetTrackerTab({ tenantId }: { tenantId: string }) {
               <div className="text-xs text-muted-foreground">Days Left</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-green-600">{formatCurrency(dailyRemainingBudget)}</div>
+              <div className="text-lg font-bold text-blue-600">{formatCurrency(dailyRemainingBudget)}</div>
               <div className="text-xs text-muted-foreground">Available/Day</div>
             </div>
           </div>
@@ -1059,8 +1059,8 @@ function BudgetTrackerTab({ tenantId }: { tenantId: string }) {
           Posting & Ad Strategy
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-            <div className="font-medium text-green-700 dark:text-green-400 mb-2">Organic Posts (Free)</div>
+          <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <div className="font-medium text-blue-700 dark:text-blue-400 mb-2">Organic Posts (Free)</div>
             <ul className="text-sm space-y-1 text-muted-foreground">
               <li>• 3-4 posts per day (Mon-Sat)</li>
               <li>• 8 AM, 12 PM, 5 PM, 8 PM</li>
@@ -1308,7 +1308,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
               <span className="font-medium">Facebook</span>
             </div>
             {facebookConnected ? (
-              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
+              <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/30">
                 <CheckCircle className="w-3 h-3 mr-1" />
                 {t('marketing.connected') || 'Connected'}
               </Badge>
@@ -1334,7 +1334,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
               <span className="font-medium">Instagram</span>
             </div>
             {instagramConnected ? (
-              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
+              <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/30">
                 <CheckCircle className="w-3 h-3 mr-1" />
                 {metaStatus?.instagram?.username ? `@${metaStatus.instagram.username}` : (t('marketing.connected') || 'Connected')}
               </Badge>
@@ -1642,7 +1642,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
                 <Facebook className="w-5 h-5 text-blue-500" />
                 <h3 className="font-semibold">Facebook</h3>
                 {facebookConnected && (
-                  <Badge variant="outline" className="ml-auto bg-green-500/10 text-green-500 border-green-500/30 text-xs">
+                  <Badge variant="outline" className="ml-auto bg-blue-500/10 text-blue-500 border-blue-500/30 text-xs">
                     Live
                   </Badge>
                 )}
@@ -1685,7 +1685,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
                 <Instagram className="w-5 h-5 text-pink-500" />
                 <h3 className="font-semibold">Instagram</h3>
                 {instagramConnected && (
-                  <Badge variant="outline" className="ml-auto bg-green-500/10 text-green-500 border-green-500/30 text-xs">
+                  <Badge variant="outline" className="ml-auto bg-blue-500/10 text-blue-500 border-blue-500/30 text-xs">
                     Live
                   </Badge>
                 )}
@@ -1732,7 +1732,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
                 <div className="text-xs text-muted-foreground">{t('marketing.totalFollowers') || 'Total Followers'}</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-500">{(analytics.facebook.reach + analytics.instagram.reach).toLocaleString()}</div>
+                <div className="text-2xl font-bold text-blue-500">{(analytics.facebook.reach + analytics.instagram.reach).toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">{t('marketing.totalReach') || 'Total Reach'}</div>
               </div>
               <div>
@@ -1756,7 +1756,7 @@ export function MarketingHub({ showTenantSwitcher = true }: MarketingHubProps) {
               <div className="space-y-2">
                 {performanceSummary.recommendations.map((rec: string, idx: number) => (
                   <div key={idx} className="flex items-start gap-2 text-sm">
-                    <TrendingUp className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                    <TrendingUp className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                     <span>{rec}</span>
                   </div>
                 ))}

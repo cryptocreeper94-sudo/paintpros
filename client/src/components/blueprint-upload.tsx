@@ -276,26 +276,26 @@ export function BlueprintUpload({ tenantId, onExtracted, className = "" }: Bluep
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 rounded-lg bg-green-50 border border-green-200"
+                  className="p-4 rounded-lg bg-blue-50 border border-blue-200"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" />
-                    <span className="font-semibold text-green-800">Extraction Complete</span>
+                    <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                    <span className="font-semibold text-blue-800">Extraction Complete</span>
                   </div>
                   
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     <div className="text-center p-2 rounded bg-white">
-                      <LayoutGrid className="w-4 h-4 mx-auto mb-1 text-green-600" />
+                      <LayoutGrid className="w-4 h-4 mx-auto mb-1 text-blue-600" />
                       <p className="font-bold text-lg">{extractedData.roomCount}</p>
                       <p className="text-xs text-muted-foreground">Rooms</p>
                     </div>
                     <div className="text-center p-2 rounded bg-white">
-                      <Square className="w-4 h-4 mx-auto mb-1 text-green-600" />
+                      <Square className="w-4 h-4 mx-auto mb-1 text-blue-600" />
                       <p className="font-bold text-lg">{extractedData.totalSquareFootage.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">Sq Ft</p>
                     </div>
                     <div className="text-center p-2 rounded bg-white">
-                      <Ruler className="w-4 h-4 mx-auto mb-1 text-green-600" />
+                      <Ruler className="w-4 h-4 mx-auto mb-1 text-blue-600" />
                       <p className="font-bold text-lg">{extractedData.totalWallArea.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">Wall Area</p>
                     </div>

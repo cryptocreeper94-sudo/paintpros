@@ -204,8 +204,8 @@ export default function AuthPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <div className="w-10 h-10 rounded-md bg-emerald-500/30 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
-                <BarChart3 className="w-5 h-5 text-emerald-300" />
+              <div className="w-10 h-10 rounded-md bg-sky-500/30 border border-sky-400/30 flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="w-5 h-5 text-sky-300" />
               </div>
               <div>
                 <p className="font-semibold">ROI Analytics</p>
@@ -546,7 +546,7 @@ export default function AuthPage() {
           <div className="mt-4 pt-4 border-t border-border">
             <div className="text-center space-y-2">
               {isInstalled ? (
-                <p className="text-sm text-green-600 dark:text-green-400 flex items-center justify-center gap-2">
+                <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center justify-center gap-2">
                   <Smartphone className="w-4 h-4" />
                   Added to your device
                 </p>

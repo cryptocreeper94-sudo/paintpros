@@ -163,11 +163,11 @@ export function SmsMessenger() {
   const isSending = sendSmsMutation.isPending || sendBulkMutation.isPending;
 
   return (
-    <GlassCard className={`p-4 ${cardBackgroundStyles.green}`} glow="green">
+    <GlassCard className={`p-4 ${cardBackgroundStyles.blue}`} glow="blue">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.green} ${iconContainerStyles.base}`}>
-            <MessageSquare className="w-4 h-4 text-green-400" />
+          <div className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.gradients.blue} ${iconContainerStyles.base}`}>
+            <MessageSquare className="w-4 h-4 text-blue-400" />
           </div>
           <div>
             <h3 className="font-semibold">{t('sms.sendSms')}</h3>

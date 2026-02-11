@@ -46,7 +46,7 @@ export default function AutopilotSuccess() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-green-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl" />
       </div>
 
@@ -62,12 +62,12 @@ export default function AutopilotSuccess() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6"
+              className="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6"
             >
-              <CheckCircle className="w-10 h-10 text-green-400" />
+              <CheckCircle className="w-10 h-10 text-blue-400" />
             </motion.div>
 
-            <Badge className="mb-4 bg-green-500/20 text-green-400 border-green-500/30">
+            <Badge className="mb-4 bg-blue-500/20 text-blue-400 border-blue-500/30">
               Payment Successful
             </Badge>
             
@@ -108,8 +108,8 @@ export default function AutopilotSuccess() {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-5 h-5 text-green-400" />
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-5 h-5 text-blue-400" />
                   </div>
                   <div>
                     <p className="text-white text-sm font-medium">Set Your Schedule</p>
@@ -122,7 +122,7 @@ export default function AutopilotSuccess() {
             <Button
               onClick={goToPortal}
               size="lg"
-              className="w-full h-14 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-lg"
+              className="w-full h-14 bg-gradient-to-r from-blue-600 to-blue-600 text-lg"
               data-testid="button-go-to-portal"
             >
               Set Up Your Autopilot

@@ -55,7 +55,7 @@ const TAG_TYPES = [
   { value: "keyword", label: "Keyword", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
   { value: "meta_description", label: "Meta", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
   { value: "title", label: "Title", color: "bg-gold-400/20 text-gold-400 border-gold-400/30" },
-  { value: "geo", label: "Location", color: "bg-green-500/20 text-green-400 border-green-500/30" },
+  { value: "geo", label: "Location", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
 ];
 
 export default function Owner() {
@@ -424,10 +424,10 @@ export default function Owner() {
                     </div>
                     <div>
                       <div className="flex items-center gap-1 mb-1">
-                        <TrendingUp className="w-3 h-3 text-green-400" />
+                        <TrendingUp className="w-3 h-3 text-blue-400" />
                         <span className="text-xs font-medium">{t('owner.growth')}</span>
                       </div>
-                      <div className="text-xl font-bold text-green-400">--%</div>
+                      <div className="text-xl font-bold text-blue-400">--%</div>
                     </div>
                   </div>
                 </GlassCard>
@@ -559,7 +559,7 @@ export default function Owner() {
                           <motion.button
                             onClick={() => toggleTagMutation.mutate({ id: tag.id, isActive: !tag.isActive })}
                             className={`p-1.5 rounded transition-colors ${
-                              tag.isActive ? "text-green-400 hover:bg-green-500/20" : "text-muted-foreground hover:bg-black/5 dark:bg-white/10"
+                              tag.isActive ? "text-blue-400 hover:bg-blue-500/20" : "text-muted-foreground hover:bg-black/5 dark:bg-white/10"
                             }`}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -596,7 +596,7 @@ export default function Owner() {
                     <div className="text-[10px] text-muted-foreground">Titles</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-green-400">{seoTags.filter(t => t.tagType === "geo").length}</div>
+                    <div className="text-lg font-bold text-blue-400">{seoTags.filter(t => t.tagType === "geo").length}</div>
                     <div className="text-[10px] text-muted-foreground">Locations</div>
                   </div>
                 </div>

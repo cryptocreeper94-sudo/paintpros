@@ -38,7 +38,7 @@ export default function Start() {
             <a href={`tel:${cleanPhone}`} className="block">
               <Button 
                 size="lg" 
-                className="w-full h-14 text-lg gap-3 bg-green-600 hover:bg-green-700 shadow-lg"
+                className="w-full h-14 text-lg gap-3 bg-blue-600 shadow-lg"
                 data-testid="button-call-now"
               >
                 <Phone className="w-5 h-5" />

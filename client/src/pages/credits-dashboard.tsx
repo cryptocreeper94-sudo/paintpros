@@ -187,7 +187,7 @@ export default function CreditsDashboard() {
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <TrendingUp className="w-4 h-4 text-green-500" />
+                    <TrendingUp className="w-4 h-4 text-blue-500" />
                     Total Purchased
                   </div>
                   <div className="text-2xl font-bold" data-testid="text-total-purchased">
@@ -353,7 +353,7 @@ export default function CreditsDashboard() {
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="font-medium text-green-600 dark:text-green-400">
+                        <div className="font-medium text-blue-600 dark:text-blue-400">
                           +{purchase.credits.toLocaleString()}
                         </div>
                         <div className="text-xs text-muted-foreground">

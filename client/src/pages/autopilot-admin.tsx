@@ -132,7 +132,7 @@ export default function AutopilotAdmin() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30"><CheckCircle className="w-3 h-3 mr-1" />Active</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30"><CheckCircle className="w-3 h-3 mr-1" />Active</Badge>;
       case 'pending':
         return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case 'paused':
@@ -182,7 +182,7 @@ export default function AutopilotAdmin() {
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-slate-500 uppercase">Social Accounts</span>
             {subscriber.metaConnected ? (
-              <Badge className="bg-green-500/20 text-green-400 border-0 text-xs">
+              <Badge className="bg-blue-500/20 text-blue-400 border-0 text-xs">
                 <Link2 className="w-3 h-3 mr-1" />Connected
               </Badge>
             ) : (
@@ -232,7 +232,7 @@ export default function AutopilotAdmin() {
           {subscriber.status === 'pending' && subscriber.metaConnected && (
             <Button
               size="sm"
-              className="flex-1 bg-green-600 hover:bg-green-700"
+              className="flex-1 bg-blue-600"
               onClick={() => activateMutation.mutate(subscriber.id)}
               disabled={activateMutation.isPending}
               data-testid={`button-activate-${subscriber.id}`}
@@ -259,7 +259,7 @@ export default function AutopilotAdmin() {
           {subscriber.status === 'paused' && (
             <Button
               size="sm"
-              className="flex-1 bg-green-600 hover:bg-green-700"
+              className="flex-1 bg-blue-600"
               onClick={() => activateMutation.mutate(subscriber.id)}
               disabled={activateMutation.isPending}
               data-testid={`button-resume-${subscriber.id}`}
@@ -320,8 +320,8 @@ export default function AutopilotAdmin() {
           <Card className="bg-slate-800/50 border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-white">{activeSubscribers.length}</p>
@@ -348,8 +348,8 @@ export default function AutopilotAdmin() {
           <Card className="bg-slate-800/50 border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-green-400" />
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-white">${activeSubscribers.length * 59}</p>
@@ -366,7 +366,7 @@ export default function AutopilotAdmin() {
             <TabsTrigger value="pending" className="data-[state=active]:bg-yellow-500/20">
               Pending ({pendingSubscribers.length})
             </TabsTrigger>
-            <TabsTrigger value="active" className="data-[state=active]:bg-green-500/20">
+            <TabsTrigger value="active" className="data-[state=active]:bg-blue-500/20">
               Active ({activeSubscribers.length})
             </TabsTrigger>
             <TabsTrigger value="paused" className="data-[state=active]:bg-slate-500/20">
@@ -591,7 +591,7 @@ export default function AutopilotAdmin() {
                       }
                     }}
                     disabled={connectMetaMutation.isPending || !metaCredentials.facebookPageName}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 bg-blue-600"
                     data-testid="button-mark-admin-added"
                   >
                     {connectMetaMutation.isPending ? (

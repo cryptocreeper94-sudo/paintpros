@@ -274,13 +274,13 @@ export default function Admin() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 via-teal-500/10 to-green-500/20 border border-green-500/30 backdrop-blur-sm">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500/20 via-teal-500/10 to-blue-500/20 border border-blue-500/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-green-500/20">
-                  <Zap className="w-4 h-4 text-green-400" />
+                <div className="p-2 rounded-lg bg-blue-500/20">
+                  <Zap className="w-4 h-4 text-blue-400" />
                 </div>
                 <div>
-                  <p className="font-bold text-green-400 text-sm">Live Access - Welcome, {currentUser.userName}!</p>
+                  <p className="font-bold text-blue-400 text-sm">Live Access - Welcome, {currentUser.userName}!</p>
                   <p className="text-xs text-muted-foreground">Full database access enabled. All changes sync in real-time.</p>
                 </div>
               </div>
@@ -435,17 +435,17 @@ export default function Admin() {
                 whileHover={hover3D}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect={false}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="blue" hoverEffect={false}>
                   <div className="flex items-center gap-2 mb-2">
                     <motion.div 
                       className={`${iconContainerStyles.sizes.sm} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
                       whileHover={{ scale: 1.1, rotate: 5 }}
                     >
-                      <Bell className="w-4 h-4 text-green-400" />
+                      <Bell className="w-4 h-4 text-blue-400" />
                     </motion.div>
                     <span className="text-sm font-medium">Activity</span>
                   </div>
-                  <div className="text-lg font-bold text-green-400">
+                  <div className="text-lg font-bold text-blue-400">
                     {leads.length > 0 ? format(new Date(leads[0]?.createdAt || new Date()), "MMM d") : "--"}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">Last lead</p>
@@ -615,7 +615,7 @@ export default function Admin() {
                     <div className="text-center py-6 text-muted-foreground text-sm">Loading...</div>
                   ) : pendingFollowups.length === 0 ? (
                     <div className="text-center py-8">
-                      <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-500/50" />
+                      <CheckCircle className="w-8 h-8 mx-auto mb-2 text-blue-500/50" />
                       <p className="text-sm text-muted-foreground">All caught up!</p>
                     </div>
                   ) : (
@@ -657,7 +657,7 @@ export default function Admin() {
                                   <div className="flex gap-1.5 mb-2">
                                     <motion.button
                                       onClick={() => handleMarkSent(followup.id)}
-                                      className="flex-1 p-1.5 rounded-md bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors flex items-center justify-center gap-1 text-[10px]"
+                                      className="flex-1 p-1.5 rounded-md bg-blue-500/20 text-blue-400 transition-colors flex items-center justify-center gap-1 text-[10px]"
                                       whileHover={{ scale: 1.02 }}
                                       whileTap={{ scale: 0.98 }}
                                       data-testid={`button-mark-sent-${followup.id}`}

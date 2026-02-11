@@ -30,7 +30,7 @@ export default function CreditsSuccess() {
         <Card className="max-w-md w-full" data-testid="card-success">
           <CardContent className="pt-6 text-center space-y-4">
             <div className="flex justify-center">
-              <CheckCircle className="w-16 h-16 text-green-500" />
+              <CheckCircle className="w-16 h-16 text-blue-500" />
             </div>
             <h1 className="text-2xl font-bold" data-testid="text-success-heading">
               Payment Successful!

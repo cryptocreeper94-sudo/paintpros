@@ -247,7 +247,7 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     taglineEn: "Flow With Confidence",
     taglineEs: "Fluye con Confianza",
     primaryColor: "#2563eb",
-    accentColor: "#10b981",
+    accentColor: "#3b82f6",
     heroGradient: "from-blue-900 via-blue-800 to-cyan-900",
     services: [
       { id: "drain", nameEn: "Drain Cleaning", nameEs: "Limpieza de Drenajes", descEn: "Clog removal & jetting", descEs: "Eliminación de obstrucciones y chorro", icon: "zap", popular: true },
@@ -286,9 +286,9 @@ const TRADE_CONFIGS: Record<string, TradeConfig> = {
     nameEs: "LandscapePros.io",
     taglineEn: "Transform Your Outdoor Space",
     taglineEs: "Transforma Tu Espacio Exterior",
-    primaryColor: "#22c55e",
-    accentColor: "#84cc16",
-    heroGradient: "from-green-900 via-emerald-800 to-lime-900",
+    primaryColor: "#3b82f6",
+    accentColor: "#38bdf8",
+    heroGradient: "from-blue-900 via-sky-800 to-lime-900",
     services: [
       { id: "design", nameEn: "Landscape Design", nameEs: "Diseño de Jardines", descEn: "Custom outdoor plans", descEs: "Planes personalizados de exteriores", icon: "palette", popular: true },
       { id: "install", nameEn: "Landscape Installation", nameEs: "Instalación de Jardines", descEn: "Plants, trees & shrubs", descEs: "Plantas, árboles y arbustos", icon: "sparkles" },
@@ -949,23 +949,23 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                       {modalContent.type === 'service' && (
                         <>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Consulta y evaluación gratuita' : 'Free consultation and assessment'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Cotización detallada por escrito' : 'Detailed written estimate'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Profesionales certificados y asegurados' : 'Licensed and insured professionals'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Garantía de satisfacción' : 'Satisfaction guarantee'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Materiales de primera calidad' : 'Premium quality materials'}</span>
                           </li>
                         </>
@@ -973,19 +973,19 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                       {modalContent.type === 'feature' && (
                         <>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Acceso completo a esta funcionalidad' : 'Full access to this feature'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Soporte técnico incluido' : 'Technical support included'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Actualizaciones automáticas' : 'Automatic updates'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Integración con otras herramientas' : 'Integration with other tools'}</span>
                           </li>
                         </>
@@ -993,15 +993,15 @@ export function TradeVerticalLanding({ tradeId }: TradeVerticalLandingProps) {
                       {modalContent.type === 'toolkit' && (
                         <>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Calculadora profesional de campo' : 'Professional field calculator'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Compatible con asistente de voz' : 'Voice assistant compatible'}</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <span>{language === 'es' ? 'Resultados precisos al instante' : 'Instant accurate results'}</span>
                           </li>
                         </>

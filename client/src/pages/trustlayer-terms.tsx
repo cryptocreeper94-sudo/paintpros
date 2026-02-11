@@ -48,7 +48,7 @@ export default function TrustLayerTerms() {
 
             <section>
               <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-5 h-5 text-emerald-400" />
+                <Shield className="w-5 h-5 text-sky-400" />
                 <h2 className="text-xl font-semibold text-white">2. Description of Service</h2>
               </div>
               <p className="leading-relaxed mb-4">
@@ -166,7 +166,7 @@ export default function TrustLayerTerms() {
 
             <section>
               <div className="flex items-center gap-3 mb-4">
-                <Clock className="w-5 h-5 text-green-400" />
+                <Clock className="w-5 h-5 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">8. Service Availability</h2>
               </div>
               <p className="leading-relaxed">

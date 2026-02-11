@@ -76,13 +76,13 @@ function MissionControlChecklist({ trial, onStepClick }: { trial: TrialData; onS
   const completedSteps = trial.progress?.completedSteps || [];
 
   return (
-    <GlassCard hoverEffect={false} glow="green" depth="shallow" className="p-4 md:p-6">
+    <GlassCard hoverEffect={false} glow="blue" depth="shallow" className="p-4 md:p-6">
       <div className="flex items-center justify-between gap-2 flex-wrap mb-4">
         <div className="flex items-center gap-2">
-          <Rocket className="w-5 h-5 text-emerald-600" />
+          <Rocket className="w-5 h-5 text-sky-600" />
           <h3 className="text-lg font-bold text-slate-900">Trial Mission Control</h3>
         </div>
-        <Badge className="bg-emerald-100 text-emerald-700 border-0">
+        <Badge className="bg-sky-100 text-sky-700 border-0">
           {completedSteps.length}/{steps.length} Complete
         </Badge>
       </div>
@@ -103,12 +103,12 @@ function MissionControlChecklist({ trial, onStepClick }: { trial: TrialData; onS
                     onClick={() => onStepClick(step.id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
                       isComplete 
-                        ? 'bg-emerald-50/80 border border-emerald-200' 
+                        ? 'bg-sky-50/80 border border-sky-200' 
                         : 'bg-white/50 border border-slate-200 hover-elevate'
                     }`}
                     data-testid={`button-step-${step.id}`}
                   >
-                    <div className={`p-2 rounded-full shrink-0 ${isComplete ? 'bg-emerald-500' : 'bg-slate-200'}`}>
+                    <div className={`p-2 rounded-full shrink-0 ${isComplete ? 'bg-sky-500' : 'bg-slate-200'}`}>
                       {isComplete ? (
                         <CheckCircle2 className="w-4 h-4 text-white" />
                       ) : (
@@ -116,7 +116,7 @@ function MissionControlChecklist({ trial, onStepClick }: { trial: TrialData; onS
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className={`font-medium ${isComplete ? 'text-emerald-700' : 'text-slate-900'}`}>
+                      <h4 className={`font-medium ${isComplete ? 'text-sky-700' : 'text-slate-900'}`}>
                         {step.title}
                       </h4>
                       <p className="text-sm text-slate-500 truncate">{step.desc}</p>
@@ -148,7 +148,7 @@ function UsageItem({ title, used, limit, icon: Icon }: { title: string; used: nu
           {used}/{limit}
         </span>
       </div>
-      <Progress value={percentage} className={`h-2 bg-white/20 ${isAtLimit ? '[&>div]:bg-amber-400' : '[&>div]:bg-emerald-400'}`} />
+      <Progress value={percentage} className={`h-2 bg-white/20 ${isAtLimit ? '[&>div]:bg-amber-400' : '[&>div]:bg-sky-400'}`} />
       {isAtLimit && (
         <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" />
@@ -173,7 +173,7 @@ function TimeRemaining({ hours }: { hours: number }) {
   const remainingHours = hours % 24;
   
   return (
-    <Badge className="text-sm px-3 py-1 bg-emerald-100 text-emerald-700 border-0">
+    <Badge className="text-sm px-3 py-1 bg-sky-100 text-sky-700 border-0">
       <Clock className="w-3 h-3 mr-1" />
       {days > 0 ? `${days}d ${remainingHours}h` : `${hours}h`} remaining
     </Badge>
@@ -181,7 +181,7 @@ function TimeRemaining({ hours }: { hours: number }) {
 }
 
 const quickActions = [
-  { id: 'estimate', title: 'Create Estimate', desc: 'Generate a quote', icon: FileText, color: 'text-emerald-600', route: '/estimate' },
+  { id: 'estimate', title: 'Create Estimate', desc: 'Generate a quote', icon: FileText, color: 'text-sky-600', route: '/estimate' },
   { id: 'visualizer', title: 'Color Visualizer', desc: 'Preview on walls', icon: Palette, color: 'text-purple-600', route: '/colors' },
   { id: 'library', title: 'Color Library', desc: 'Browse colors', icon: Palette, color: 'text-blue-600', route: '/color-library' },
   { id: 'glossary', title: 'Paint Glossary', desc: 'Terms A-Z', icon: FileText, color: 'text-amber-600', route: '/glossary' },
@@ -239,9 +239,9 @@ export default function TrialPortal() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading your portal...</p>
         </div>
       </div>
@@ -250,7 +250,7 @@ export default function TrialPortal() {
 
   if (error || !trial) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30 flex items-center justify-center">
         <GlassCard hoverEffect="subtle" glow="accent" className="max-w-md mx-4 p-6">
           <div className="text-center">
             <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
@@ -268,7 +268,7 @@ export default function TrialPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30">
       <header 
         className="border-b border-slate-200/50 backdrop-blur-sm sticky top-0 z-50"
       >
@@ -336,7 +336,7 @@ export default function TrialPortal() {
             <BentoItem colSpan={4} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
               <GlassCard hoverEffect="3d" glow="purple" depth="deep" className="p-4 h-full bg-slate-900/95">
                 <div className="flex items-center gap-2 mb-3">
-                  <Shield className="w-5 h-5 text-emerald-400" />
+                  <Shield className="w-5 h-5 text-sky-400" />
                   <h3 className="font-bold text-white">Trial Usage</h3>
                 </div>
                 <div className="space-y-3">
@@ -366,7 +366,7 @@ export default function TrialPortal() {
           <div className="hidden md:block mb-6">
             <GlassCard hoverEffect={false} glow="none" depth="shallow" className="p-4">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-emerald-600" />
+                <Sparkles className="w-5 h-5 text-sky-600" />
                 <h3 className="font-bold text-slate-900">Quick Actions</h3>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -393,7 +393,7 @@ export default function TrialPortal() {
 
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-2 mb-3 px-1">
-              <Sparkles className="w-5 h-5 text-emerald-600" />
+              <Sparkles className="w-5 h-5 text-sky-600" />
               <h3 className="font-bold text-slate-900">Quick Actions</h3>
             </div>
             <Carousel opts={{ align: "start", loop: false }} className="w-full">
@@ -439,9 +439,9 @@ export default function TrialPortal() {
             </BentoItem>
 
             <BentoItem colSpan={6} rowSpan={1} mobileColSpan={4} mobileRowSpan={1}>
-              <GlassCard hoverEffect="3d" glow="green" depth="medium" className="p-4 h-full bg-gradient-to-br from-emerald-50 to-emerald-100/50">
-                <h4 className="font-semibold text-emerald-900 mb-2">Ready to Go Full Time?</h4>
-                <p className="text-sm text-emerald-700 mb-3">
+              <GlassCard hoverEffect="3d" glow="blue" depth="medium" className="p-4 h-full bg-gradient-to-br from-sky-50 to-sky-100/50">
+                <h4 className="font-semibold text-sky-900 mb-2">Ready to Go Full Time?</h4>
+                <p className="text-sm text-sky-700 mb-3">
                   Unlock unlimited estimates, leads, and blockchain stamps.
                 </p>
                 <Button 

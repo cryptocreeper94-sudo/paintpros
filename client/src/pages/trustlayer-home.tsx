@@ -173,7 +173,7 @@ export default function TrustLayerHome() {
       tagline: 'Business Security & Verification',
       description: 'Complete business verification and security infrastructure. Protect your reputation with certified trust badges.',
       icon: Shield,
-      color: 'from-emerald-500 to-teal-500',
+      color: 'from-sky-500 to-teal-500',
       glowColor: 'green' as const,
       features: ['Business Verification', 'Trust Badges', 'Security Monitoring', 'Credential Management'],
       price: '$49/mo',
@@ -246,7 +246,7 @@ export default function TrustLayerHome() {
             y: [0, 50, 0],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-20 left-10 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px]"
+          className="absolute top-20 left-10 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[120px]"
         />
         <motion.div
           animate={{
@@ -276,7 +276,7 @@ export default function TrustLayerHome() {
             <div className="flex items-center gap-3">
               <motion.div 
                 whileHover={{ scale: 1.05, rotate: 5 }}
-                className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25"
+                className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center shadow-lg shadow-sky-500/25"
               >
                 <Layers className="w-6 h-6 text-white" />
               </motion.div>
@@ -342,7 +342,7 @@ export default function TrustLayerHome() {
               </Button>
               <Button 
                 size="sm"
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg shadow-emerald-500/25"
+                className="bg-gradient-to-r from-sky-600 to-teal-600 shadow-lg shadow-sky-500/25"
                 data-testid="button-signup"
                 onClick={() => window.open('https://dwtl.io/signup', '_blank')}
               >
@@ -366,7 +366,7 @@ export default function TrustLayerHome() {
               <motion.div 
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30"
+                className="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center shadow-lg shadow-sky-500/30"
               >
                 <Layers className="w-8 h-8 text-white" />
               </motion.div>
@@ -425,7 +425,7 @@ export default function TrustLayerHome() {
               <span className="text-sm sm:text-base">Instagram</span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
-              <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+              <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
               <span className="text-sm sm:text-base">Nextdoor</span>
               <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20 text-[10px] sm:text-xs px-1.5 py-0">Soon</Badge>
             </div>
@@ -439,7 +439,7 @@ export default function TrustLayerHome() {
           >
             <Button
               size="lg"
-              className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-lg font-semibold px-10 py-7 shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-shadow border border-white/20"
+              className="bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-lg font-semibold px-10 py-7 shadow-xl shadow-sky-500/30 hover:shadow-sky-500/50 transition-shadow border border-white/20"
               onClick={() => window.location.href = '/autopilot/onboarding'}
               data-testid="button-connect-now"
             >
@@ -525,7 +525,7 @@ export default function TrustLayerHome() {
                   onClick={() => system.url && window.open(system.url, '_blank')}
                   className={`relative w-[200px] h-[260px] rounded-xl overflow-hidden cursor-pointer flex-shrink-0 group ${
                     system.primary 
-                      ? 'ring-2 ring-emerald-500/50' 
+                      ? 'ring-2 ring-sky-500/50' 
                       : 'ring-1 ring-white/10'
                   }`}
                 >
@@ -549,7 +549,7 @@ export default function TrustLayerHome() {
                     )}
                     {system.status && (
                       <Badge className={`mb-2 text-xs ${
-                        system.status === 'Live' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                        system.status === 'Live' ? 'bg-sky-500/20 text-sky-400 border-sky-500/30' :
                         system.status === 'Live - In Development' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
                         system.status === 'Beta' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' :
                         system.status === 'Coming Soon' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
@@ -631,7 +631,7 @@ export default function TrustLayerHome() {
                   <div className="space-y-3 mb-6">
                     {product.features.map((feature, j) => (
                       <div key={j} className="flex items-center gap-3 text-sm">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-sky-400 flex-shrink-0" />
                         <span className="text-slate-200">{feature}</span>
                       </div>
                     ))}
@@ -653,7 +653,7 @@ export default function TrustLayerHome() {
 
       {/* Guardian Shield Section */}
       <div className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-transparent to-teal-900/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-sky-900/20 via-transparent to-teal-900/20" />
         
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -662,7 +662,7 @@ export default function TrustLayerHome() {
               whileInView={{ x: 0, opacity: 1 }}
               viewport={{ once: true }}
             >
-              <Badge className="mb-4 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+              <Badge className="mb-4 bg-sky-500/10 text-sky-400 border-sky-500/20">
                 <Shield className="w-3 h-3 mr-1" />
                 Guardian Shield
               </Badge>
@@ -685,8 +685,8 @@ export default function TrustLayerHome() {
                     transition={{ delay: i * 0.1 }}
                     className="flex items-start gap-4"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-6 h-6 text-emerald-400" />
+                    <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-6 h-6 text-sky-400" />
                     </div>
                     <div>
                       <p className="text-white font-medium">{feature.title}</p>
@@ -697,7 +697,7 @@ export default function TrustLayerHome() {
               </div>
 
               <Button
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg shadow-emerald-500/25"
+                className="bg-gradient-to-r from-sky-600 to-teal-600 shadow-lg shadow-sky-500/25"
                 onClick={() => window.location.href = '/trustlayer/guardian'}
                 data-testid="button-guardian-shield"
               >
@@ -714,25 +714,25 @@ export default function TrustLayerHome() {
               className="flex justify-center"
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-[100px]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-sky-500/30 to-teal-500/30 blur-[100px]" />
                 <motion.div 
                   whileHover={{ scale: 1.02 }}
                   className="relative w-80 rounded-2xl overflow-hidden"
                 >
                   {/* Premium dark glass background */}
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-800/95 via-slate-900/98 to-slate-950/95 backdrop-blur-xl" />
-                  <div className="absolute inset-0 border border-emerald-500/20 rounded-2xl" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent" />
+                  <div className="absolute inset-0 border border-sky-500/20 rounded-2xl" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-sky-500/5 to-transparent" />
                   
                   <div className="relative p-8 text-center">
                     <motion.div
                       animate={{ y: [0, -5, 0] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-emerald-500/50"
+                      className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-sky-500/50"
                     >
                       <Shield className="w-10 h-10 text-white" />
                     </motion.div>
-                    <Badge className="mb-4 bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-medium">
+                    <Badge className="mb-4 bg-sky-500/20 text-sky-300 border-sky-400/30 font-medium">
                       <CheckCircle className="w-3 h-3 mr-1" />
                       Verified Business
                     </Badge>
@@ -891,16 +891,16 @@ export default function TrustLayerHome() {
                     
                     <div className="space-y-3">
                       <div className="flex items-center justify-center gap-2 text-sm">
-                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
-                        <span className="text-slate-300">Security: <span className="text-green-400 font-medium">Passed</span></span>
+                        <div className="w-2 h-2 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 animate-pulse" />
+                        <span className="text-slate-300">Security: <span className="text-blue-400 font-medium">Passed</span></span>
                       </div>
                       <div className="flex items-center justify-center gap-2 text-sm">
-                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
-                        <span className="text-slate-300">Compliance: <span className="text-green-400 font-medium">Verified</span></span>
+                        <div className="w-2 h-2 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 animate-pulse" />
+                        <span className="text-slate-300">Compliance: <span className="text-blue-400 font-medium">Verified</span></span>
                       </div>
                       <div className="flex items-center justify-center gap-2 text-sm">
-                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
-                        <span className="text-slate-300">Trust Score: <span className="text-green-400 font-medium">98/100</span></span>
+                        <div className="w-2 h-2 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 animate-pulse" />
+                        <span className="text-slate-300">Trust Score: <span className="text-blue-400 font-medium">98/100</span></span>
                       </div>
                     </div>
                     
@@ -935,7 +935,7 @@ export default function TrustLayerHome() {
                 <div className="bg-slate-900 p-4 border-b border-white/10 flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50" />
                   <span className="text-slate-300 text-sm ml-4 font-medium">TrustLayer Marketing Dashboard</span>
                 </div>
                 {/* Dashboard content */}
@@ -948,12 +948,12 @@ export default function TrustLayerHome() {
                       <p className="text-3xl font-bold text-white mb-1">12,450</p>
                       <p className="text-blue-300 text-sm font-medium">Reach</p>
                     </div>
-                    <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-xl p-5 border border-emerald-500/20">
-                      <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-3">
-                        <TrendingUp className="w-5 h-5 text-emerald-400" />
+                    <div className="bg-gradient-to-br from-sky-500/10 to-sky-600/5 rounded-xl p-5 border border-sky-500/20">
+                      <div className="w-10 h-10 rounded-lg bg-sky-500/20 flex items-center justify-center mb-3">
+                        <TrendingUp className="w-5 h-5 text-sky-400" />
                       </div>
                       <p className="text-3xl font-bold text-white mb-1">847</p>
-                      <p className="text-emerald-300 text-sm font-medium">Engagement</p>
+                      <p className="text-sky-300 text-sm font-medium">Engagement</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
@@ -965,7 +965,7 @@ export default function TrustLayerHome() {
                       <Instagram className="w-4 h-4 text-pink-400" />
                       <span className="text-white font-medium">Connected</span>
                     </div>
-                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-medium">
+                    <Badge className="bg-sky-500/20 text-sky-300 border-sky-400/30 font-medium">
                       <Zap className="w-3 h-3 mr-1" />
                       Active
                     </Badge>
@@ -1033,8 +1033,8 @@ export default function TrustLayerHome() {
                 </div>
                 <p className="text-white text-sm font-medium mb-3">{item.problem}</p>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
-                  <span className="text-emerald-300 text-sm">{item.solution}</span>
+                  <CheckCircle className="w-4 h-4 text-sky-400" />
+                  <span className="text-sky-300 text-sm">{item.solution}</span>
                 </div>
               </div>
             </div>
@@ -1066,7 +1066,7 @@ export default function TrustLayerHome() {
                     <p className="text-slate-400 text-xs">{business.industry}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-emerald-400 text-sm">
+                <div className="flex items-center gap-2 text-sky-400 text-sm">
                   <CheckCircle className="w-4 h-4" />
                   <span>{business.result}</span>
                 </div>
@@ -1116,7 +1116,7 @@ export default function TrustLayerHome() {
             className="relative rounded-xl overflow-hidden border border-white/10 bg-slate-900/80"
           >
             <div className="p-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-4 shadow-lg">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-teal-500 flex items-center justify-center mb-4 shadow-lg">
                 <Zap className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">AI-Generated Content</h3>
@@ -1126,7 +1126,7 @@ export default function TrustLayerHome() {
               <div className="grid grid-cols-2 gap-2">
                 {['AI writes posts', 'Industry-specific', 'Optimized', 'Fresh daily'].map((item, i) => (
                   <div key={i} className="flex items-center gap-2 text-sm text-white">
-                    <CheckCircle className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-sky-400 flex-shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -1139,7 +1139,7 @@ export default function TrustLayerHome() {
       {/* Bundle Offer */}
       <div className="relative max-w-4xl mx-auto px-6 py-12">
         <GlassCard hoverEffect="glow" glow="gold" animatedBorder depth="deep">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 via-blue-500 to-purple-500" />
           <div className="p-10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div>
@@ -1156,7 +1156,7 @@ export default function TrustLayerHome() {
                   $149<span className="text-lg text-slate-400">/mo</span>
                 </p>
                 <Button
-                  className="bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 shadow-xl"
+                  className="bg-gradient-to-r from-sky-600 via-blue-600 to-purple-600 shadow-xl"
                   data-testid="button-get-bundle"
                 >
                   Get the Bundle
@@ -1172,7 +1172,7 @@ export default function TrustLayerHome() {
       <div className="relative border-t border-white/5 py-8">
         <div className="max-w-7xl mx-auto px-6">
           <h3 className="text-white font-semibold text-center mb-4 flex items-center justify-center gap-2">
-            <Layers className="w-4 h-4 text-emerald-400" />
+            <Layers className="w-4 h-4 text-sky-400" />
             TrustLayer Ecosystem
           </h3>
           <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide justify-start md:justify-center md:flex-wrap">
@@ -1198,7 +1198,7 @@ export default function TrustLayerHome() {
                 rel="noopener noreferrer"
                 className={`flex-shrink-0 snap-center px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   site.active 
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                    ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' 
                     : 'bg-slate-800/50 text-slate-400 border border-white/5 hover:text-white hover:border-white/20'
                 }`}
                 data-testid={`link-ecosystem-${site.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
@@ -1215,7 +1215,7 @@ export default function TrustLayerHome() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center">
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>

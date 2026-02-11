@@ -210,7 +210,7 @@ export default function TradeHome() {
             <div className="flex flex-wrap justify-center gap-6 md:gap-12">
               {data.benefits.map((benefit, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm" data-testid={`text-benefit-${i}`}>
-                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <CheckCircle className="w-4 h-4 text-sky-500" />
                   <span className="text-muted-foreground">{benefit}</span>
                 </div>
               ))}

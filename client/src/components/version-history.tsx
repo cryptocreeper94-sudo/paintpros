@@ -86,7 +86,7 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20, compact 
               </div>
               <div className="flex items-center gap-2">
                 {release.solanaTxStatus === "confirmed" ? (
-                  <CheckCircle className="w-3 h-3 text-green-500" />
+                  <CheckCircle className="w-3 h-3 text-blue-500" />
                 ) : (
                   <Clock className="w-3 h-3 text-yellow-500" />
                 )}
@@ -160,7 +160,7 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20, compact 
                   </div>
                   <div className="flex items-center gap-2">
                     {release.solanaTxStatus === "confirmed" ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <CheckCircle className="w-4 h-4 text-blue-500" />
                     ) : (
                       <Clock className="w-4 h-4 text-yellow-500" />
                     )}
@@ -192,7 +192,7 @@ export function VersionHistory({ showAllTenants = false, maxItems = 20, compact 
                   </div>
                   {release.solanaTxSignature && (
                     <div className="flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-green-500" />
+                      <Shield className="w-4 h-4 text-blue-500" />
                       <span className="text-muted-foreground w-20">Solana TX:</span>
                       <a
                         href={`https://explorer.solana.com/tx/${release.solanaTxSignature}`}

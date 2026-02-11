@@ -222,7 +222,7 @@ export default function ContractorApplication() {
               className="text-center py-16"
             >
               <GlassCard className="p-8" glow="green">
-                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <CheckCircle className="w-16 h-16 text-blue-500 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold mb-4">{t.success}</h2>
                 <p className="text-muted-foreground">{t.successMessage}</p>
               </GlassCard>
@@ -333,7 +333,7 @@ export default function ContractorApplication() {
 
             <GlassCard className="p-6" glow="green">
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-5 h-5 text-green-400" />
+                <Calendar className="w-5 h-5 text-blue-400" />
                 <h2 className="text-lg font-bold">{t.availability}</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -360,7 +360,7 @@ export default function ContractorApplication() {
                         onClick={() => setSchedule(option.value)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                           schedule === option.value
-                            ? "bg-green-500 text-white"
+                            ? "bg-blue-500 text-white"
                             : "bg-muted text-muted-foreground hover:bg-muted/80"
                         }`}
                         data-testid={`button-schedule-${option.value}`}
@@ -410,7 +410,7 @@ export default function ContractorApplication() {
                       onClick={() => setHasEquipment(true)}
                       className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                         hasEquipment === true
-                          ? "bg-green-500 text-white"
+                          ? "bg-blue-500 text-white"
                           : "bg-muted text-muted-foreground hover:bg-muted/80"
                       }`}
                       data-testid="button-equipment-yes"

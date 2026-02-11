@@ -423,7 +423,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
       admin: "bg-red-500/20 text-red-400 border-red-500/30",
       owner: "bg-purple-500/20 text-purple-400 border-purple-500/30",
       "project-manager": "bg-blue-500/20 text-blue-400 border-blue-500/30",
-      "crew-lead": "bg-green-500/20 text-green-400 border-green-500/30",
+      "crew-lead": "bg-blue-500/20 text-blue-400 border-blue-500/30",
       developer: "bg-amber-500/20 text-amber-400 border-amber-500/30"
     };
     return colors[role] || "bg-gray-500/20 text-gray-400 border-gray-500/30";
@@ -522,8 +522,8 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30">
-                  <Bell className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
+                  <Bell className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <h4 className="text-sm font-medium text-gray-900 dark:text-white">Unread Notifications</h4>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
@@ -701,7 +701,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                                 {user.displayName[0].toUpperCase()}
                               </div>
                               {isOnline && (
-                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />
+                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-gray-900" />
                               )}
                             </div>
                             <div className="flex-1">
@@ -714,7 +714,7 @@ export function MessagingWidget({ currentUserId, currentUserRole, currentUserNam
                                 </Badge>
                               </div>
                               {isOnline && (
-                                <span className="text-xs text-green-500">Available</span>
+                                <span className="text-xs text-blue-500">Available</span>
                               )}
                             </div>
                           </motion.button>

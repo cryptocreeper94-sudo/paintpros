@@ -141,15 +141,15 @@ export default function TrialUpgrade() {
 
   if (trialLoading || plansLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
       </div>
     );
   }
 
   if (!trial) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30 flex items-center justify-center">
         <GlassCard className="max-w-md p-6" hoverEffect="subtle" glow="accent">
           <p className="text-center mb-4">Trial not found</p>
           <Button onClick={() => setLocation('/start-trial')} className="w-full">
@@ -161,7 +161,7 @@ export default function TrialUpgrade() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30">
       <div className="container mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
@@ -175,7 +175,7 @@ export default function TrialUpgrade() {
 
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
-            <Badge className="mb-4 bg-emerald-100 text-emerald-700 border-0">
+            <Badge className="mb-4 bg-sky-100 text-sky-700 border-0">
               <Sparkles className="w-3 h-3 mr-1" />
               Upgrade {trial.companyName}
             </Badge>
@@ -199,18 +199,18 @@ export default function TrialUpgrade() {
                   <BentoItem key={plan.id} colSpan={colSpan} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
                     <GlassCard 
                       hoverEffect="3d" 
-                      glow={popular ? "green" : "none"}
+                      glow={popular ? "blue" : "none"}
                       depth={popular ? "deep" : "shallow"}
-                      className={`p-6 h-full ${popular ? 'ring-2 ring-emerald-500' : ''}`}
+                      className={`p-6 h-full ${popular ? 'ring-2 ring-sky-500' : ''}`}
                     >
                       {popular && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                          <Badge className="bg-emerald-500 text-white border-0 shadow-lg">Most Popular</Badge>
+                          <Badge className="bg-sky-500 text-white border-0 shadow-lg">Most Popular</Badge>
                         </div>
                       )}
                       <div className="text-center mb-4 pt-2">
-                        <div className={`mx-auto p-3 rounded-full mb-3 w-fit ${popular ? 'bg-emerald-100' : 'bg-slate-100'}`}>
-                          <Icon className={`w-6 h-6 ${popular ? 'text-emerald-600' : 'text-slate-600'}`} />
+                        <div className={`mx-auto p-3 rounded-full mb-3 w-fit ${popular ? 'bg-sky-100' : 'bg-slate-100'}`}>
+                          <Icon className={`w-6 h-6 ${popular ? 'text-sky-600' : 'text-slate-600'}`} />
                         </div>
                         <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
                         <p className="text-xs text-slate-500 mt-1">{plan.target}</p>
@@ -237,7 +237,7 @@ export default function TrialUpgrade() {
                             <ul className="space-y-2">
                               {plan.features.map((feature, idx) => (
                                 <li key={idx} className="flex items-start gap-2">
-                                  <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                                  <Check className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
                                   <span className="text-sm text-slate-600">{feature}</span>
                                 </li>
                               ))}
@@ -274,16 +274,16 @@ export default function TrialUpgrade() {
                     <CarouselItem key={plan.id} className="pl-2 basis-[85%]">
                       <GlassCard 
                         hoverEffect="subtle" 
-                        glow={popular ? "green" : "none"}
+                        glow={popular ? "blue" : "none"}
                         depth={popular ? "deep" : "shallow"}
-                        className={`p-5 ${popular ? 'ring-2 ring-emerald-500' : ''}`}
+                        className={`p-5 ${popular ? 'ring-2 ring-sky-500' : ''}`}
                       >
                         {popular && (
-                          <Badge className="bg-emerald-500 text-white border-0 mb-3">Most Popular</Badge>
+                          <Badge className="bg-sky-500 text-white border-0 mb-3">Most Popular</Badge>
                         )}
                         <div className="flex items-center gap-3 mb-3">
-                          <div className={`p-2 rounded-full ${popular ? 'bg-emerald-100' : 'bg-slate-100'}`}>
-                            <Icon className={`w-5 h-5 ${popular ? 'text-emerald-600' : 'text-slate-600'}`} />
+                          <div className={`p-2 rounded-full ${popular ? 'bg-sky-100' : 'bg-slate-100'}`}>
+                            <Icon className={`w-5 h-5 ${popular ? 'text-sky-600' : 'text-slate-600'}`} />
                           </div>
                           <div>
                             <h3 className="font-bold text-slate-900">{plan.name}</h3>
@@ -296,7 +296,7 @@ export default function TrialUpgrade() {
                         <ul className="space-y-2 mb-4">
                           {plan.features.slice(0, 3).map((feature, idx) => (
                             <li key={idx} className="flex items-start gap-2">
-                              <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                              <Check className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
                               <span className="text-sm text-slate-600">{feature}</span>
                             </li>
                           ))}
@@ -392,7 +392,7 @@ export default function TrialUpgrade() {
           <GlassCard hoverEffect="subtle" glow="accent" depth="deep" className="p-6 bg-slate-900/95">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center">
               <div>
-                <FileText className="w-8 h-8 mx-auto mb-2 text-emerald-400" />
+                <FileText className="w-8 h-8 mx-auto mb-2 text-sky-400" />
                 <h4 className="font-semibold text-white">Your Branding</h4>
                 <p className="text-sm text-slate-400">Colors & logo preserved</p>
               </div>

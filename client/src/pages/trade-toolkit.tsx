@@ -222,7 +222,7 @@ function BestPracticesModal({
           <ul className="space-y-2">
             {practices.tips.map((tip, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
                 <span className="text-slate-300">{tip}</span>
               </li>
             ))}
@@ -299,8 +299,8 @@ function FeatureTile({
           )}
           {live && (
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-[10px] text-green-400">LIVE</span>
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+              <span className="text-[10px] text-blue-400">LIVE</span>
             </div>
           )}
         </div>
@@ -480,7 +480,7 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
             {onUpdateEstimate && (
               <Button 
                 onClick={handleAddToEstimate}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                className="w-full bg-gradient-to-r from-blue-500 to-sky-600"
                 data-testid="button-add-measure-to-estimate"
               >
                 <FileText className="w-4 h-4 mr-2" />
@@ -515,7 +515,7 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
 
         <GlassPanel className="p-4">
           <h3 className="text-white font-semibold mb-3 flex items-center gap-2 text-sm">
-            <Calculator className="w-4 h-4 text-green-400" />
+            <Calculator className="w-4 h-4 text-blue-400" />
             Waste Calc
           </h3>
           <div className="space-y-2">
@@ -535,8 +535,8 @@ function MeasurePanel({ onBack, estimateData, onUpdateEstimate }: {
             />
           </div>
           {materialWithWaste > 0 && (
-            <div className="bg-green-500/10 rounded-lg p-2 text-center border border-green-500/20 mt-2">
-              <p className="text-lg font-bold text-green-400">{materialWithWaste.toFixed(1)}</p>
+            <div className="bg-blue-500/10 rounded-lg p-2 text-center border border-blue-500/20 mt-2">
+              <p className="text-lg font-bold text-blue-400">{materialWithWaste.toFixed(1)}</p>
               <p className="text-[10px] text-slate-400">With Waste</p>
             </div>
           )}
@@ -756,7 +756,7 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
       </button>
 
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
           <DollarSign className="w-7 h-7 text-white" />
         </div>
         <div>
@@ -788,7 +788,7 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
                 {hasMeasurements ? `${estimateData?.wallSqFt} sq ft` : 'Get sq ft'}
               </p>
             </div>
-            {hasMeasurements && <CheckCircle className="w-4 h-4 text-green-400 absolute top-1 right-1" />}
+            {hasMeasurements && <CheckCircle className="w-4 h-4 text-blue-400 absolute top-1 right-1" />}
           </button>
           
           <button
@@ -855,7 +855,7 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
           <Ruler className="w-4 h-4 text-blue-400" />
           Square Footage
-          {hasMeasurements && <Badge variant="secondary" className="ml-2 text-xs bg-green-500/20 text-green-300">From Tool</Badge>}
+          {hasMeasurements && <Badge variant="secondary" className="ml-2 text-xs bg-blue-500/20 text-blue-300">From Tool</Badge>}
         </h3>
         <div>
           <Label className="text-slate-400 text-xs mb-1.5 block">Wall Square Feet {hasMeasurements ? '(auto-filled from Measure tool)' : '(enter manually or use Measure tool)'}</Label>
@@ -912,7 +912,7 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
 
       <GlassPanel className="p-5">
         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-          <Receipt className="w-4 h-4 text-green-400" />
+          <Receipt className="w-4 h-4 text-blue-400" />
           Job Totals
         </h3>
         <div className="space-y-3 mb-4">
@@ -953,7 +953,7 @@ function EstimatePanel({ onBack, estimateData, onGoToComplete, onGoToMeasure, on
             </div>
             <div className="flex justify-between pt-2 border-t border-white/10">
               <span className="text-white font-semibold">Total</span>
-              <span className="text-2xl font-bold text-green-400">${grandTotal.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-blue-400">${grandTotal.toFixed(2)}</span>
             </div>
           </div>
         )}
@@ -1160,7 +1160,7 @@ Total: $${total.toFixed(2)}`;
         <GlassPanel className="p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-green-400" />
+              <DollarSign className="w-4 h-4 text-blue-400" />
               Pricing Summary
             </h3>
             {canEditPricing && (
@@ -1240,7 +1240,7 @@ Total: $${total.toFixed(2)}`;
             </div>
             <div className="flex justify-between pt-3 border-t border-white/10">
               <span className="text-white font-semibold text-lg">Total</span>
-              <span className="text-3xl font-bold text-green-400">${total.toFixed(2)}</span>
+              <span className="text-3xl font-bold text-blue-400">${total.toFixed(2)}</span>
             </div>
           </div>
         </GlassPanel>
@@ -1251,7 +1251,7 @@ Total: $${total.toFixed(2)}`;
         <Button 
           onClick={handleSendToOffice}
           disabled={estimateData.wallSqFt === 0}
-          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 h-12"
+          className="w-full bg-gradient-to-r from-blue-500 to-sky-600 h-12"
           data-testid="button-send-to-office"
         >
           <FileText className="w-5 h-5 mr-2" />
@@ -1328,17 +1328,17 @@ function WeatherPanel({ onBack }: { onBack: () => void }) {
         </GlassPanel>
       ) : weather ? (
         <>
-          <GlassPanel className={`p-5 border-2 ${canPaintExterior ? 'border-green-500/30' : 'border-amber-500/30'}`}>
+          <GlassPanel className={`p-5 border-2 ${canPaintExterior ? 'border-blue-500/30' : 'border-amber-500/30'}`}>
             <div className="flex items-center gap-4 mb-4">
-              <div className={`w-16 h-16 rounded-2xl ${canPaintExterior ? 'bg-green-500/20' : 'bg-amber-500/20'} flex items-center justify-center`}>
+              <div className={`w-16 h-16 rounded-2xl ${canPaintExterior ? 'bg-blue-500/20' : 'bg-amber-500/20'} flex items-center justify-center`}>
                 {canPaintExterior ? (
-                  <Check className="w-8 h-8 text-green-400" />
+                  <Check className="w-8 h-8 text-blue-400" />
                 ) : (
                   <X className="w-8 h-8 text-amber-400" />
                 )}
               </div>
               <div>
-                <h3 className={`text-xl font-bold ${canPaintExterior ? 'text-green-400' : 'text-amber-400'}`}>
+                <h3 className={`text-xl font-bold ${canPaintExterior ? 'text-blue-400' : 'text-amber-400'}`}>
                   {canPaintExterior ? 'Good Conditions' : 'Caution'}
                 </h3>
                 <p className="text-sm text-slate-400">
@@ -1406,7 +1406,7 @@ function StoresPanel({ onBack }: { onBack: () => void }) {
     { name: "Lowe's", icon: Store, color: 'bg-blue-600', url: 'https://lowes.com' },
     { name: 'Sherwin-Williams', icon: Palette, color: 'bg-blue-500', url: 'https://sherwin-williams.com/store-locator' },
     { name: 'Benjamin Moore', icon: Palette, color: 'bg-red-500', url: 'https://benjaminmoore.com/en-us/store-locator' },
-    { name: 'PPG Paints', icon: Palette, color: 'bg-green-600', url: 'https://ppgpaints.com' },
+    { name: 'PPG Paints', icon: Palette, color: 'bg-blue-600', url: 'https://ppgpaints.com' },
     { name: 'United Rentals', icon: Wrench, color: 'bg-yellow-500', url: 'https://unitedrentals.com' },
     { name: 'Sunbelt Rentals', icon: Wrench, color: 'bg-amber-500', url: 'https://sunbeltrentals.com' },
   ];
@@ -1530,7 +1530,7 @@ function QuickToolsPanel({ onBack }: { onBack: () => void }) {
           whileTap={{ scale: 0.98 }}
         >
           <GlassPanel className="p-6 text-center">
-            <Fuel className="w-10 h-10 text-green-400 mx-auto mb-2" />
+            <Fuel className="w-10 h-10 text-blue-400 mx-auto mb-2" />
             <p className="text-sm font-medium text-white">Gas Prices</p>
             <p className="text-xs text-slate-400">Find cheap gas</p>
           </GlassPanel>
@@ -1539,7 +1539,7 @@ function QuickToolsPanel({ onBack }: { onBack: () => void }) {
 
       <GlassPanel className="p-5">
         <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-          <Receipt className="w-4 h-4 text-green-400" />
+          <Receipt className="w-4 h-4 text-blue-400" />
           Tip Calculator
         </h3>
         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -1566,8 +1566,8 @@ function QuickToolsPanel({ onBack }: { onBack: () => void }) {
         </div>
         {tipTotal > 0 && (
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-green-500/10 rounded-xl p-3 text-center border border-green-500/20">
-              <p className="text-xl font-bold text-green-400">${tipTotal.toFixed(2)}</p>
+            <div className="bg-blue-500/10 rounded-xl p-3 text-center border border-blue-500/20">
+              <p className="text-xl font-bold text-blue-400">${tipTotal.toFixed(2)}</p>
               <p className="text-xs text-slate-400">Tip Amount</p>
             </div>
             <div className="bg-blue-500/10 rounded-xl p-3 text-center border border-blue-500/20">
@@ -1703,7 +1703,7 @@ function Dashboard({ onNavigate, hasEstimateData }: { onNavigate: (panel: string
             icon={DollarSign}
             label={t('estimate.title')}
             sublabel={t('tradeworks.quickEstimate')}
-            color="bg-gradient-to-br from-green-500 to-emerald-600"
+            color="bg-gradient-to-br from-blue-500 to-sky-600"
             onClick={() => onNavigate('estimate')}
           />
           <FeatureTile
@@ -2114,7 +2114,7 @@ export default function TradeToolkit() {
                       {appUrl}
                     </div>
                     <Button onClick={handleCopyLink} size="icon" variant="outline" className="border-white/10" data-testid="button-copy">
-                      {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                      {copied ? <Check className="w-4 h-4 text-blue-400" /> : <Copy className="w-4 h-4" />}
                     </Button>
                   </div>
                 </div>

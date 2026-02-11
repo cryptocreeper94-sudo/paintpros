@@ -21,7 +21,7 @@ export default function TrustLayerPrivacy() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center shadow-lg">
               <Shield className="w-7 h-7 text-white" />
             </div>
             <div>
@@ -35,7 +35,7 @@ export default function TrustLayerPrivacy() {
           <div className="space-y-8 text-slate-300">
             <section>
               <div className="flex items-center gap-3 mb-4">
-                <FileText className="w-5 h-5 text-emerald-400" />
+                <FileText className="w-5 h-5 text-sky-400" />
                 <h2 className="text-xl font-semibold text-white">1. Introduction</h2>
               </div>
               <p className="leading-relaxed">
@@ -116,7 +116,7 @@ export default function TrustLayerPrivacy() {
 
             <section>
               <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-5 h-5 text-green-400" />
+                <Shield className="w-5 h-5 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">5. Data Security</h2>
               </div>
               <p className="leading-relaxed">

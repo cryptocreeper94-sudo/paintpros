@@ -11,7 +11,7 @@ import {
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 
 const TENANT_PREFIXES: Record<string, { prefix: string; name: string; color: string }> = {
-  npp: { prefix: 'NPP', name: 'Nash PaintPros', color: '#5a7a4d' },
+  npp: { prefix: 'NPP', name: 'Nash PaintPros', color: '#1e3a5f' },
   demo: { prefix: 'PAINTPROS', name: 'PaintPros.io', color: '#d4a853' },
   orbit: { prefix: 'ORBIT', name: 'ORBIT Platform', color: '#9945FF' },
 };
@@ -32,7 +32,7 @@ interface AnalyticsData {
 const DEVICE_COLORS = {
   desktop: "#f59e0b",
   mobile: "#3b82f6",
-  tablet: "#10b981"
+  tablet: "#0ea5e9"
 };
 
 function TenantDashboardContent({ tenantId, tenantInfo }: { tenantId: string; tenantInfo: { prefix: string; name: string; color: string } }) {
@@ -96,13 +96,13 @@ function TenantDashboardContent({ tenantId, tenantInfo }: { tenantId: string; te
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <GlassCard className="p-4 relative overflow-hidden" glow>
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
           <div className="relative">
-            <div className="flex items-center gap-2 text-xs text-green-400 mb-1">
+            <div className="flex items-center gap-2 text-xs text-blue-400 mb-1">
               <Zap className="w-3 h-3" />
               Live Now
             </div>
-            <div className="text-2xl font-bold text-green-400" data-testid={`text-live-visitors-${tenantId}`}>
+            <div className="text-2xl font-bold text-blue-400" data-testid={`text-live-visitors-${tenantId}`}>
               {data.liveVisitors}
             </div>
             <div className="text-xs text-muted-foreground mt-1">Active visitors</div>
@@ -254,10 +254,10 @@ function TenantDashboardContent({ tenantId, tenantInfo }: { tenantId: string; te
 
         <BentoItem colSpan={4} rowSpan={2}>
           <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
-            <GlassCard className="h-full p-4 bg-gradient-to-br from-green-500/10 via-transparent to-teal-500/5" glow>
+            <GlassCard className="h-full p-4 bg-gradient-to-br from-blue-500/10 via-transparent to-sky-500/5" glow>
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 flex items-center justify-center">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-green-400" />
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-sky-500/20 flex items-center justify-center">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-blue-400" />
                 </div>
                 <h3 className="text-sm font-display font-bold">Top Referrers</h3>
               </div>
@@ -265,7 +265,7 @@ function TenantDashboardContent({ tenantId, tenantInfo }: { tenantId: string; te
                 {data.topReferrers.slice(0, 5).map((ref, i) => (
                   <div key={i} className="flex items-center justify-between text-xs p-2 rounded-lg bg-white/5 border border-white/5">
                     <span className="text-muted-foreground truncate max-w-[100px]">{ref.referrer}</span>
-                    <span className="font-bold text-green-400">{ref.count}</span>
+                    <span className="font-bold text-blue-400">{ref.count}</span>
                   </div>
                 ))}
                 {data.topReferrers.length === 0 && (
@@ -323,10 +323,10 @@ function TenantDashboardContent({ tenantId, tenantInfo }: { tenantId: string; te
                     </div>
                     <div className="flex items-center justify-between gap-2 p-1.5 rounded bg-white/5">
                       <div className="flex items-center gap-2">
-                        <Tablet className="w-3 h-3 text-green-500" />
+                        <Tablet className="w-3 h-3 text-sky-500" />
                         <span>Tablet</span>
                       </div>
-                      <span className="font-bold text-green-500">{data.deviceBreakdown.tablet}</span>
+                      <span className="font-bold text-sky-500">{data.deviceBreakdown.tablet}</span>
                     </div>
                   </div>
                 </div>

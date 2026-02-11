@@ -239,8 +239,8 @@ export function LeadSubmissionForm() {
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200 }}
         >
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-green-500" />
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-blue-500" />
           </div>
           <h2 className="text-2xl font-display font-bold mb-2">You're All Set!</h2>
           <p className="text-muted-foreground mb-4">

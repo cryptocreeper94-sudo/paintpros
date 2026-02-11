@@ -47,13 +47,13 @@ function SetupStep({ number, title, description, isOpen, isComplete, onClick, ch
       >
         <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
           isComplete 
-            ? 'bg-green-500/20 border-2 border-green-500' 
+            ? 'bg-blue-500/20 border-2 border-blue-500' 
             : isOpen 
             ? 'bg-blue-500/20 border-2 border-blue-500'
             : 'bg-slate-700 border-2 border-slate-600'
         }`}>
           {isComplete ? (
-            <Check className="w-5 h-5 text-green-400" />
+            <Check className="w-5 h-5 text-blue-400" />
           ) : (
             <span className={`font-bold ${isOpen ? 'text-blue-400' : 'text-slate-400'}`}>{number}</span>
           )}
@@ -505,7 +505,7 @@ export default function AutopilotSetupGuide() {
 
             <Button 
               onClick={() => markComplete(5)} 
-              className="w-full bg-green-600 hover:bg-green-700"
+              className="w-full bg-blue-600"
               disabled={!credentials.pageAccessToken}
               data-testid="button-complete-setup"
             >
@@ -521,9 +521,9 @@ export default function AutopilotSetupGuide() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Card className="bg-green-500/10 border-green-500/30">
+            <Card className="bg-blue-500/10 border-blue-500/30">
               <CardContent className="p-8 text-center">
-                <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
+                <CheckCircle className="w-16 h-16 text-blue-400 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Setup Complete!</h2>
                 <p className="text-slate-300 mb-6">
                   Your Meta Business account is now connected. You can proceed to configure your 

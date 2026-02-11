@@ -251,7 +251,7 @@ export function WeatherRadarModal({ open, onOpenChange, weather, location, onLoc
           </div>
 
           <div className="absolute bottom-1.5 left-1.5 bg-black/70 backdrop-blur-sm rounded px-1.5 py-0.5 flex items-center gap-1">
-            <div className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`} />
+            <div className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-blue-400 animate-pulse' : 'bg-gray-400'}`} />
             <p className="text-[10px] font-mono text-white">
               {allFrames[currentFrame] 
                 ? new Date(allFrames[currentFrame].time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -276,7 +276,7 @@ export function WeatherRadarModal({ open, onOpenChange, weather, location, onLoc
             </Button>
           </div>
           <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden mx-2">
-            <div className="h-full bg-emerald-400 transition-all duration-200" style={{ width: `${allFrames.length > 0 ? ((currentFrame + 1) / allFrames.length) * 100 : 0}%` }} />
+            <div className="h-full bg-sky-400 transition-all duration-200" style={{ width: `${allFrames.length > 0 ? ((currentFrame + 1) / allFrames.length) * 100 : 0}%` }} />
           </div>
           <div className="flex items-center gap-0.5">
             <Button size="icon" variant="ghost" onClick={() => setZoom(Math.max(4, zoom - 1))} disabled={zoom <= 4} className="h-6 w-6 text-white hover:bg-white/10 disabled:opacity-30" data-testid="button-radar-zoom-out">

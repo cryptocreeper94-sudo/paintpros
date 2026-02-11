@@ -209,7 +209,7 @@ export function FranchiseManagement() {
 
   const getStatusColor = (status: string | null) => {
     switch (status) {
-      case "active": return "bg-green-500/20 text-green-400";
+      case "active": return "bg-blue-500/20 text-blue-400";
       case "pending": return "bg-yellow-500/20 text-yellow-400";
       case "suspended": return "bg-red-500/20 text-red-400";
       default: return "bg-gray-500/20 text-gray-400";
@@ -625,7 +625,7 @@ export function FranchiseManagement() {
                                 <span className="font-medium">{cred.name}</span>
                                 <Badge variant="outline" className="text-xs">{cred.environment}</Badge>
                                 {cred.isActive ? (
-                                  <Badge className="bg-green-500/20 text-green-400 text-xs">Active</Badge>
+                                  <Badge className="bg-blue-500/20 text-blue-400 text-xs">Active</Badge>
                                 ) : (
                                   <Badge className="bg-red-500/20 text-red-400 text-xs">Disabled</Badge>
                                 )}
@@ -685,7 +685,7 @@ export function FranchiseManagement() {
                               <span className="font-mono text-xs truncate max-w-[200px]">{log.endpoint}</span>
                             </div>
                             <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                              <Badge className={log.statusCode && log.statusCode < 400 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                              <Badge className={log.statusCode && log.statusCode < 400 ? "bg-blue-500/20 text-blue-400" : "bg-red-500/20 text-red-400"}>
                                 {log.statusCode}
                               </Badge>
                               <span>{log.responseTimeMs}ms</span>

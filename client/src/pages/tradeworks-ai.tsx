@@ -63,7 +63,7 @@ const TRADES = [
   { id: 'roofing', name: 'Roofing', icon: Home, color: 'from-orange-500 to-red-500', accent: 'orange', specialOrder: true },
   { id: 'carpentry', name: 'Carpentry', icon: Hammer, color: 'from-amber-600 to-yellow-600', accent: 'amber', specialOrder: true },
   { id: 'concrete', name: 'Concrete', icon: Building, color: 'from-slate-500 to-zinc-500', accent: 'slate', specialOrder: true },
-  { id: 'landscaping', name: 'Landscaping', icon: Trees, color: 'from-green-500 to-emerald-500', accent: 'green', specialOrder: true },
+  { id: 'landscaping', name: 'Landscaping', icon: Trees, color: 'from-blue-500 to-sky-500', accent: 'blue', specialOrder: true },
 ];
 
 // Calculator definitions by trade - COMPREHENSIVE
@@ -367,13 +367,13 @@ function VoltageDropCalculator() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className={`rounded-xl p-5 text-center border ${isAcceptable ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/10 border-green-500/30' : 'bg-gradient-to-br from-red-500/20 to-orange-500/10 border-red-500/30'}`}
+          className={`rounded-xl p-5 text-center border ${isAcceptable ? 'bg-gradient-to-br from-blue-500/20 to-sky-500/10 border-blue-500/30' : 'bg-gradient-to-br from-red-500/20 to-orange-500/10 border-red-500/30'}`}
         >
-          <p className={`text-5xl font-bold ${isAcceptable ? 'text-green-400' : 'text-red-400'}`}>{dropPercent.toFixed(2)}%</p>
+          <p className={`text-5xl font-bold ${isAcceptable ? 'text-blue-400' : 'text-red-400'}`}>{dropPercent.toFixed(2)}%</p>
           <p className="text-sm text-slate-400 mt-1">Voltage Drop</p>
           <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-center gap-2">
             {isAcceptable ? (
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">NEC Compliant (&lt;3%)</Badge>
+              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">NEC Compliant (&lt;3%)</Badge>
             ) : (
               <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Exceeds 3% - Use larger wire</Badge>
             )}
@@ -565,10 +565,10 @@ function LaborEstimator() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-green-500/20 to-emerald-500/10 rounded-xl p-5 border border-green-500/30"
+          className="bg-gradient-to-br from-blue-500/20 to-sky-500/10 rounded-xl p-5 border border-blue-500/30"
         >
           <div className="text-center mb-4">
-            <p className="text-5xl font-bold text-green-400">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p className="text-5xl font-bold text-blue-400">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             <p className="text-sm text-slate-400 mt-1">Total Quote</p>
           </div>
           <div className="space-y-2 text-sm border-t border-white/10 pt-3">
@@ -797,8 +797,8 @@ function MulchCalculator() {
         <Input type="number" value={depth} onChange={(e) => setDepth(e.target.value)} placeholder="3" className="bg-white/5 border-white/10 text-white" data-testid="input-mulch-depth" />
       </div>
       {cubicYards > 0 && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-gradient-to-br from-green-500/20 to-emerald-500/10 rounded-xl p-5 text-center border border-green-500/30">
-          <p className="text-5xl font-bold text-green-400">{cubicYards.toFixed(2)}</p>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-gradient-to-br from-blue-500/20 to-sky-500/10 rounded-xl p-5 text-center border border-blue-500/30">
+          <p className="text-5xl font-bold text-blue-400">{cubicYards.toFixed(2)}</p>
           <p className="text-sm text-slate-400 mt-1">Cubic Yards</p>
           <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2 text-xs text-slate-500">
             <div>{sqFt.toFixed(0)} sq ft coverage</div>
@@ -1207,7 +1207,7 @@ function VoiceAssistant({
           isListening 
             ? 'bg-gradient-to-br from-red-500 via-pink-500 to-purple-500' 
             : isSpeaking
-            ? 'bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500'
+            ? 'bg-gradient-to-br from-blue-500 via-sky-500 to-teal-500'
             : 'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500'
         } ${isProcessing ? 'opacity-50' : ''}`}
         data-testid="button-voice-mic"
@@ -1572,16 +1572,16 @@ export default function TradeWorksAI() {
 
               {/* PaintPros.io Integration */}
               <Link href="/">
-                <GlassPanel className="p-4 mb-6 border-green-500/20 bg-green-500/5">
+                <GlassPanel className="p-4 mb-6 border-blue-500/20 bg-blue-500/5">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center shadow-lg">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold text-white">Grow Your Business</h3>
                       <p className="text-xs text-slate-400">Get leads from PaintPros.io marketplace</p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-green-400" />
+                    <ArrowRight className="w-5 h-5 text-blue-400" />
                   </div>
                 </GlassPanel>
               </Link>
@@ -1704,7 +1704,7 @@ export default function TradeWorksAI() {
                 {appUrl}
               </div>
               <Button onClick={handleCopyLink} size="icon" variant="outline" className="border-white/10" data-testid="button-copy-link">
-                {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-4 h-4 text-blue-400" /> : <Copy className="w-4 h-4" />}
               </Button>
             </div>
           </div>

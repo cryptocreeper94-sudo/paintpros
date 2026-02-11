@@ -109,7 +109,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
       <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[85vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+            <div className="p-2 bg-gradient-to-br from-sky-500 to-teal-600 rounded-lg">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             Welcome to PaintPros.io
@@ -139,7 +139,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
                     className="p-4 rounded-lg border border-border bg-muted/30 space-y-2"
                   >
                     <div className="flex items-center gap-2">
-                      <feature.icon className="w-5 h-5 text-emerald-600" />
+                      <feature.icon className="w-5 h-5 text-sky-600" />
                       <span className="font-semibold text-foreground text-sm">{feature.title}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">{feature.description}</p>
@@ -214,7 +214,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
           {step === 2 && (
             <div className="space-y-5">
               <div className="text-center space-y-3">
-                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                <Badge className="bg-gradient-to-r from-blue-500 to-sky-500 text-white">
                   Trade Vertical Platform
                 </Badge>
                 <h3 className="text-2xl font-bold text-foreground">
@@ -232,7 +232,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
                     key={vertical.name}
                     className={`p-2 rounded-lg border text-center ${
                       vertical.status === "Live"
-                        ? "bg-green-500/10 border-green-500/30"
+                        ? "bg-blue-500/10 border-blue-500/30"
                         : "bg-muted/30 border-border"
                     }`}
                   >
@@ -243,9 +243,9 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
                 ))}
               </div>
 
-              <div className="grid grid-cols-3 gap-3 p-3 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20">
+              <div className="grid grid-cols-3 gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-blue-500/10 border border-blue-500/20">
                 <div className="text-center">
-                  <p className="text-lg font-bold text-green-600">$2.2T+</p>
+                  <p className="text-lg font-bold text-blue-600">$2.2T+</p>
                   <p className="text-xs text-muted-foreground">Combined TAM</p>
                 </div>
                 <div className="text-center">
@@ -312,7 +312,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
           {step === 3 && (
             <div className="space-y-6">
               <div className="text-center space-y-3">
-                <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white">
+                <Badge className="bg-gradient-to-r from-sky-500 to-teal-500 text-white">
                   Full Demo Access
                 </Badge>
                 <h3 className="text-2xl font-bold text-foreground">
@@ -368,7 +368,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
                 </Button>
                 <Button 
                   onClick={onClose} 
-                  className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600"
+                  className="gap-2 bg-gradient-to-r from-sky-600 to-teal-600"
                 >
                   <Zap className="w-4 h-4" />
                   Start Exploring
@@ -384,7 +384,7 @@ export function DemoWelcomeModal({ open, onClose }: DemoWelcomeModalProps) {
               key={i}
               onClick={() => setStep(i)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                step === i ? 'bg-emerald-600' : 'bg-muted-foreground/30'
+                step === i ? 'bg-sky-600' : 'bg-muted-foreground/30'
               }`}
               data-testid={`step-indicator-${i}`}
             />

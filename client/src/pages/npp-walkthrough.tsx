@@ -350,23 +350,23 @@ export default function NPPWalkthrough() {
               <h4 className="font-semibold">What's on your website:</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Home page</strong> - Your brand, services overview, trust signals</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Services pages</strong> - Interior, exterior, cabinet, commercial painting</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Gallery</strong> - Before/after photos of your work</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Book Online button</strong> - Customers schedule estimates themselves</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Contact info</strong> - Phone, email, service area</span>
                 </li>
               </ul>
@@ -405,8 +405,8 @@ export default function NPPWalkthrough() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center shrink-0">
-                    <Calendar className="w-4 h-4 text-green-500" />
+                  <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center shrink-0">
+                    <Calendar className="w-4 h-4 text-blue-500" />
                   </div>
                   <div>
                     <span className="font-medium">Jobs</span>
@@ -482,8 +482,8 @@ export default function NPPWalkthrough() {
                   <li>5. Maybe book. Maybe they called someone else.</li>
                 </ol>
               </Card>
-              <Card className="p-4 border-green-200 bg-green-50/50 dark:bg-green-950/20">
-                <h4 className="font-semibold text-green-600 dark:text-green-400 mb-2">The New Way</h4>
+              <Card className="p-4 border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+                <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2">The New Way</h4>
                 <ol className="text-sm text-muted-foreground space-y-1">
                   <li>1. Customer goes to your website</li>
                   <li>2. Clicks "Book Estimate"</li>
@@ -571,8 +571,8 @@ export default function NPPWalkthrough() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center shrink-0">
-                    <MapPin className="w-4 h-4 text-green-500" />
+                  <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-blue-500" />
                   </div>
                   <div>
                     <span className="font-medium">GPS clock in/out</span>
@@ -657,8 +657,8 @@ export default function NPPWalkthrough() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center shrink-0">
-                    <Settings className="w-4 h-4 text-green-500" />
+                  <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center shrink-0">
+                    <Settings className="w-4 h-4 text-blue-500" />
                   </div>
                   <div>
                     <span className="font-medium">Add your own</span>
@@ -764,13 +764,13 @@ export default function NPPWalkthrough() {
               </Card>
 
               {/* Blog / SEO */}
-              <Card className="p-4 border-green-500/20 bg-green-500/5">
+              <Card className="p-4 border-blue-500/20 bg-blue-500/5">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
-                    <PenLine className="w-6 h-6 text-green-500" />
+                  <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                    <PenLine className="w-6 h-6 text-blue-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-green-600 dark:text-green-400">Blog & SEO</h4>
+                    <h4 className="font-semibold text-blue-600 dark:text-blue-400">Blog & SEO</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Built-in blog for your website. Helps with Google rankings. 
                       Can even generate posts for you if you need content fast.
@@ -820,10 +820,10 @@ export default function NPPWalkthrough() {
 
                 {/* Step 2 */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 border-2 border-green-500">
-                    <span className="text-green-500 font-bold">2</span>
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0 border-2 border-blue-500">
+                    <span className="text-blue-500 font-bold">2</span>
                   </div>
-                  <div className="flex-1 bg-green-500/5 rounded-lg p-3 border border-green-500/20">
+                  <div className="flex-1 bg-blue-500/5 rounded-lg p-3 border border-blue-500/20">
                     <span className="font-medium">Leads come in</span>
                     <span className="text-sm text-muted-foreground block">Website, calls, online booking</span>
                   </div>
@@ -893,13 +893,13 @@ export default function NPPWalkthrough() {
             </p>
 
             {/* The Evidence */}
-            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-5">
-              <h4 className="font-bold text-green-600 dark:text-green-400 mb-3 flex items-center gap-2">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-5">
+              <h4 className="font-bold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5" />
                 Real Numbers (Last 2 Days)
               </h4>
               <div className="text-center mb-4">
-                <span className="text-4xl font-bold text-green-600 dark:text-green-400">40,000+</span>
+                <span className="text-4xl font-bold text-blue-600 dark:text-blue-400">40,000+</span>
                 <span className="block text-sm text-muted-foreground mt-1">Facebook Impressions</span>
               </div>
               <p className="text-sm text-muted-foreground text-center italic">
@@ -924,7 +924,7 @@ export default function NPPWalkthrough() {
                   <span><strong>Leads</strong> - Some of those book an estimate</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold shrink-0">4</div>
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">4</div>
                   <span><strong>Jobs</strong> - You close a percentage of those</span>
                 </div>
               </div>
@@ -935,19 +935,19 @@ export default function NPPWalkthrough() {
               <h4 className="font-semibold mb-3">Where This System Saves Time:</h4>
               <div className="grid gap-2 text-sm text-muted-foreground">
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Marketing runs itself</strong> - Posts go out without you touching anything</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Booking runs itself</strong> - Customers schedule their own estimates</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>Crew tracking runs itself</strong> - GPS check-ins, photo uploads</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <span><strong>You focus on closing</strong> - The highest-value activity</span>
                 </div>
               </div>

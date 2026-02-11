@@ -46,7 +46,7 @@ export function HallmarkStamp({
           {hallmarkNumber}
         </span>
         {blockchainTxSignature && (
-          <CheckCircle className="w-3 h-3 text-green-500" />
+          <CheckCircle className="w-3 h-3 text-blue-500" />
         )}
       </div>
     );
@@ -93,7 +93,7 @@ export function HallmarkStamp({
               {badge.tier}
             </span>
             {blockchainTxSignature && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-500 text-xs">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-500 text-xs">
                 <CheckCircle className="w-3 h-3" />
                 Verified
               </span>

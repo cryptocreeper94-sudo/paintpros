@@ -112,16 +112,16 @@ export default function PartnerDashboard() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-sky-50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-green-700">Your 50% Share</p>
-                <DollarSign className="w-5 h-5 text-green-600" />
+                <p className="text-sm font-medium text-blue-700">Your 50% Share</p>
+                <DollarSign className="w-5 h-5 text-blue-600" />
               </div>
-              <p className="text-2xl font-bold text-green-900" data-testid="text-partner-share">
+              <p className="text-2xl font-bold text-blue-900" data-testid="text-partner-share">
                 {formatCurrency(royaltySummary?.partnerShare || 0)}
               </p>
-              <p className="text-xs text-green-600 mt-1">Total earnings to date</p>
+              <p className="text-xs text-blue-600 mt-1">Total earnings to date</p>
             </CardContent>
           </Card>
 
@@ -236,7 +236,7 @@ export default function PartnerDashboard() {
                       <p className="text-xs text-blue-600">Direct bank deposit</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-green-600 border-green-300">Connected</Badge>
+                  <Badge variant="outline" className="text-blue-600 border-blue-300">Connected</Badge>
                 </div>
               </div>
 
@@ -287,10 +287,10 @@ export default function PartnerDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="mb-8 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
+        <Card className="mb-8 border-blue-200 bg-gradient-to-br from-blue-50 to-sky-50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-green-600" />
+              <TrendingUp className="w-5 h-5 text-blue-600" />
               Trade Vertical Expansion
             </CardTitle>
           </CardHeader>
@@ -307,17 +307,17 @@ export default function PartnerDashboard() {
                 { name: "LandscapePros", domain: "landscapepros.io", market: "$130B", status: "Coming Soon" },
                 { name: "BuildPros", domain: "buildpros.io", market: "$1.5T", status: "Coming Soon" },
               ].map((vertical) => (
-                <div key={vertical.name} className="p-3 bg-white rounded-lg border border-green-200 text-center" data-testid={`card-vertical-${vertical.name.toLowerCase()}`}>
-                  <p className="font-medium text-green-800 text-sm">{vertical.name}</p>
+                <div key={vertical.name} className="p-3 bg-white rounded-lg border border-blue-200 text-center" data-testid={`card-vertical-${vertical.name.toLowerCase()}`}>
+                  <p className="font-medium text-blue-800 text-sm">{vertical.name}</p>
                   <p className="text-xs text-gray-500 font-mono">{vertical.domain}</p>
                   <Badge variant="outline" className="mt-2 text-xs">{vertical.market}</Badge>
                 </div>
               ))}
             </div>
-            <div className="mt-4 p-3 bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg border border-green-200">
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-100 to-sky-100 rounded-lg border border-blue-200">
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <p className="text-sm text-green-800 font-medium">Combined Total Addressable Market:</p>
-                <p className="text-lg font-bold text-green-900">$2.2T+</p>
+                <p className="text-sm text-blue-800 font-medium">Combined Total Addressable Market:</p>
+                <p className="text-lg font-bold text-blue-900">$2.2T+</p>
               </div>
             </div>
           </CardContent>

@@ -38,7 +38,7 @@ const categoryIcons = {
 const categoryColors = {
   paint: "bg-blue-100 text-blue-700 border-blue-200",
   primer: "bg-purple-100 text-purple-700 border-purple-200",
-  supplies: "bg-green-100 text-green-700 border-green-200",
+  supplies: "bg-blue-100 text-blue-700 border-blue-200",
   equipment: "bg-amber-100 text-amber-700 border-amber-200",
 };
 
@@ -278,7 +278,7 @@ export function MaterialBreakdownCompact({
           <span>~{result.laborEstimate.estimatedDays} days</span>
         </div>
         <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-green-600" />
+          <Users className="w-4 h-4 text-blue-600" />
           <span>{result.laborEstimate.crewSize}-person crew</span>
         </div>
       </div>

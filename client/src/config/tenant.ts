@@ -139,7 +139,7 @@ export interface TenantConfig {
   };
 }
 
-// Nash PaintPros - First Franchise Location
+// Nash PaintPros - Lead Generation & Affiliate Marketing Site (nashpaintpros.io)
 export const nashPaintPros: TenantConfig = {
   id: "npp",
   slug: "nashville-paintpros",
@@ -153,9 +153,9 @@ export const nashPaintPros: TenantConfig = {
   },
   subscriptionTier: "full_suite",
   
-  name: "Nashville PaintPros",
-  tagline: "Transforming familiar spaces into extraordinary places.",
-  description: "Nashville's premier painting company offering professional interior and exterior painting services for residential and commercial properties.",
+  name: "Nash PaintPros",
+  tagline: "Find Your Contractor. Find Your Customer.",
+  description: "Nashville's lead generation and contractor marketplace. Find trusted painting professionals or grow your contracting business with Nash PaintPros. Powered by TradeWorks AI field tools.",
   logo: "/icons/npp-mascot.png",
   
   phone: "(615) 555-PAINT",
@@ -207,16 +207,16 @@ export const nashPaintPros: TenantConfig = {
   },
   
   seo: {
-    title: "Nashville PaintPros | Professional Painters in Davidson County",
-    description: "Nashville's premier painting company. Professional interior and exterior painting services with a 3-year warranty. Part of the PaintPros network.",
+    title: "Nash PaintPros | Find Painters & Contractors in Nashville",
+    description: "Nashville's contractor marketplace and lead generation platform. Find trusted painting professionals or grow your contracting business. Powered by TradeWorks AI.",
     keywords: [
       "Nashville painters",
-      "PaintPros Nashville",
-      "interior painting",
-      "exterior painting",
-      "house painters Nashville",
-      "commercial painting",
-      "residential painting",
+      "find a contractor Nashville",
+      "painting leads",
+      "contractor marketplace",
+      "TradeWorks AI",
+      "Nash PaintPros",
+      "home services Nashville",
     ],
     serviceAreas: ["Nashville", "Brentwood", "Belle Meade", "Green Hills", "Sylvan Park", "12 South", "East Nashville"],
   },
@@ -265,15 +265,15 @@ export const paintProsDemo: TenantConfig = {
   email: "hello@tlid.io",
   
   theme: {
-    primaryColor: "hsl(160, 84%, 39%)",
-    accentColor: "hsl(160, 70%, 45%)",
+    primaryColor: "hsl(190, 85%, 50%)", // Cyan
+    accentColor: "hsl(260, 65%, 60%)", // Lavender purple
     darkMode: {
-      background: "hsl(222, 47%, 11%)",
-      foreground: "hsl(160, 30%, 95%)",
+      background: "hsl(230, 45%, 10%)", // Deep dark blue
+      foreground: "hsl(210, 40%, 98%)", // Clean white
     },
     lightMode: {
-      background: "hsl(220, 20%, 97%)",
-      foreground: "hsl(222, 47%, 11%)",
+      background: "hsl(230, 25%, 97%)", // Cool light blue-white
+      foreground: "hsl(230, 45%, 15%)", // Dark blue text
     },
   },
   
@@ -746,7 +746,7 @@ export const plumbPros: TenantConfig = {
   
   theme: {
     primaryColor: "#2563eb",
-    accentColor: "#10b981",
+    accentColor: "#3b82f6",
     darkMode: {
       background: "#0f172a",
       foreground: "#dbeafe",
@@ -812,15 +812,15 @@ export const landscapePros: TenantConfig = {
   description: "Connecting you with trusted landscaping professionals. Design, installation, and maintenance for beautiful outdoor spaces.",
   
   theme: {
-    primaryColor: "#22c55e",
-    accentColor: "#84cc16",
+    primaryColor: "#3b82f6",
+    accentColor: "#38bdf8",
     darkMode: {
-      background: "#14532d",
+      background: "#0f172a",
       foreground: "#dcfce7",
     },
     lightMode: {
       background: "#dcfce7",
-      foreground: "#14532d",
+      foreground: "#0f172a",
     },
   },
   

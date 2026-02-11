@@ -18,7 +18,7 @@ const SALES_STAGES = [
   { id: "new_lead", label: "New Lead", color: "bg-blue-500", textColor: "text-blue-400", icon: Clock },
   { id: "quoted", label: "Quoted", color: "bg-purple-500", textColor: "text-purple-400", icon: TrendingUp },
   { id: "negotiating", label: "Negotiating", color: "bg-amber-500", textColor: "text-amber-400", icon: AlertCircle },
-  { id: "won", label: "Won", color: "bg-green-500", textColor: "text-green-400", icon: Trophy },
+  { id: "won", label: "Won", color: "bg-blue-500", textColor: "text-blue-400", icon: Trophy },
   { id: "lost", label: "Lost", color: "bg-red-500", textColor: "text-red-400", icon: XCircle },
 ];
 
@@ -27,7 +27,7 @@ const JOBS_STAGES = [
   { id: "scheduled", label: "Scheduled", shortLabel: "Scheduled", color: "bg-purple-500", textColor: "text-purple-400", icon: CalendarCheck },
   { id: "in_progress", label: "In Progress", shortLabel: "In Progress", color: "bg-amber-500", textColor: "text-amber-400", icon: Play },
   { id: "touch_ups", label: "Touch-ups Needed", shortLabel: "Touch-ups", color: "bg-orange-500", textColor: "text-orange-400", icon: Wrench },
-  { id: "complete", label: "Complete", shortLabel: "Complete", color: "bg-green-500", textColor: "text-green-400", icon: CheckCircle2 },
+  { id: "complete", label: "Complete", shortLabel: "Complete", color: "bg-blue-500", textColor: "text-blue-400", icon: CheckCircle2 },
 ];
 
 type PipelineMode = "sales" | "jobs";
@@ -440,7 +440,7 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
                         variant="outline"
                         size="sm"
                         onClick={() => setConvertingDeal(deal)}
-                        className="text-green-400 border-green-500/30 hover:bg-green-500/10"
+                        className="text-blue-400 border-blue-500/30"
                         data-testid={`button-convert-${deal.id}`}
                       >
                         <ArrowRightCircle className="w-4 h-4 mr-1" />
@@ -498,7 +498,7 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
                       </span>
                     )}
                     {deal.jobAddress && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 rounded-full text-green-400">
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 rounded-full text-blue-400">
                         <MapPin className="w-3 h-3" />
                         <span className="truncate max-w-[150px]">{deal.jobAddress}</span>
                       </span>
@@ -515,9 +515,9 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20"
+          className="mt-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20"
         >
-          <p className="text-xs text-green-400 flex items-center gap-2">
+          <p className="text-xs text-blue-400 flex items-center gap-2">
             <Trophy className="w-4 h-4" />
             <span>
               {wonDealsReadyToConvert.length} won deal(s) ready to convert to jobs
@@ -530,14 +530,14 @@ export function DealsPipeline({ accentColor = "accent", defaultMode }: DealsPipe
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ArrowRightCircle className="w-5 h-5 text-green-400" />
+              <ArrowRightCircle className="w-5 h-5 text-blue-400" />
               Convert to Job
             </DialogTitle>
           </DialogHeader>
           
           {convertingDeal && (
             <div className="space-y-4">
-              <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
                 <p className="font-medium">{convertingDeal.title}</p>
                 <p className="text-sm text-muted-foreground">
                   Value: ${parseFloat(convertingDeal.value || "0").toLocaleString()}

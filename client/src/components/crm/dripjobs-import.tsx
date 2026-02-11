@@ -466,7 +466,7 @@ export function DripJobsImport({ onComplete }: DripJobsImportProps = {}) {
       className="space-y-6 text-center py-8"
     >
       {importResult?.errorCount === 0 ? (
-        <CheckCircle2 className="w-16 h-16 mx-auto text-green-500" />
+        <CheckCircle2 className="w-16 h-16 mx-auto text-blue-500" />
       ) : (
         <AlertTriangle className="w-16 h-16 mx-auto text-amber-500" />
       )}
@@ -482,7 +482,7 @@ export function DripJobsImport({ onComplete }: DripJobsImportProps = {}) {
 
       <div className="flex gap-4 justify-center">
         <div className="text-center">
-          <div className="text-2xl font-bold text-green-500">{importResult?.successCount || 0}</div>
+          <div className="text-2xl font-bold text-blue-500">{importResult?.successCount || 0}</div>
           <div className="text-xs text-muted-foreground">Imported</div>
         </div>
         <div className="text-center">
@@ -569,7 +569,7 @@ export function DripJobsImport({ onComplete }: DripJobsImportProps = {}) {
                       >
                         <div className="flex items-center gap-3">
                           {imp.status === "completed" ? (
-                            <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            <CheckCircle2 className="w-4 h-4 text-blue-500" />
                           ) : imp.status === "completed_with_errors" ? (
                             <AlertTriangle className="w-4 h-4 text-amber-500" />
                           ) : (

@@ -171,8 +171,8 @@ const featureCategories = [
 function FeatureValue({ value }: { value: boolean | string }) {
   if (value === true) {
     return (
-      <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
-        <Check className="w-4 h-4 text-green-400" />
+      <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+        <Check className="w-4 h-4 text-blue-400" />
       </div>
     );
   }
@@ -291,9 +291,9 @@ export default function Compare() {
           </BentoItem>
 
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
-            <GlassCard className="p-4 md:p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+            <GlassCard className="p-4 md:p-6 bg-gradient-to-br from-blue-500/10 to-sky-500/10 border-blue-500/30">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-green-500 flex-shrink-0">
+                <div className="p-2 rounded-lg bg-blue-500 flex-shrink-0">
                   <Lock className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -421,7 +421,7 @@ export default function Compare() {
 
           <BentoItem colSpan={4} rowSpan={1} mobileColSpan={2} mobileRowSpan={2}>
             <GlassCard className="p-4 md:p-6 text-center">
-              <div className="text-3xl md:text-4xl font-bold text-green-400 mb-1">0</div>
+              <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-1">0</div>
               <div className="text-sm text-muted-foreground">Contracts Required</div>
             </GlassCard>
           </BentoItem>

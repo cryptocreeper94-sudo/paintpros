@@ -54,8 +54,8 @@ const features: Feature[] = [
     title: "AI-Powered Estimates",
     shortDesc: "Generate professional estimates in minutes, not hours",
     icon: FileText,
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10",
+    color: "text-sky-500",
+    bgColor: "bg-sky-500/10",
     fullDescription: "Create accurate, professional estimates using AI that learns your pricing. Voice-to-estimate lets you speak room dimensions and get instant quotes. Blockchain verification ensures document integrity.",
     benefits: [
       "Voice-to-estimate technology",
@@ -134,8 +134,8 @@ const features: Feature[] = [
     title: "Payment Processing",
     shortDesc: "Get paid faster with integrated payments",
     icon: Wallet,
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
     fullDescription: "Accept credit cards, ACH transfers, and even crypto. Auto-invoicing generates bills automatically upon job completion. Track who owes you and send payment reminders.",
     benefits: [
       "Credit card processing",

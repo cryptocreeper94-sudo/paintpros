@@ -71,28 +71,28 @@ export function LiveVisitorsCard() {
         data-testid="card-live-visitors"
       >
         <GlassCard className="h-full p-4 relative overflow-hidden group" glow>
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
           
           {/* Pulse animation for live indicator */}
           <div className="absolute top-3 right-3 flex items-center gap-1.5">
             <div className="relative">
-              <div className="w-2 h-2 bg-green-500 rounded-full" />
-              <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full animate-ping" />
+              <div className="w-2 h-2 bg-blue-500 rounded-full" />
+              <div className="absolute inset-0 w-2 h-2 bg-blue-500 rounded-full animate-ping" />
             </div>
-            <span className="text-xs text-green-400">LIVE</span>
+            <span className="text-xs text-blue-400">LIVE</span>
           </div>
           
           <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <ChevronRight className="w-4 h-4 text-green-400/60" />
+            <ChevronRight className="w-4 h-4 text-blue-400/60" />
           </div>
           
           <div className="relative">
             <div className="flex items-center gap-2 mb-2">
-              <Activity className="w-4 h-4 text-green-400" />
+              <Activity className="w-4 h-4 text-blue-400" />
               <span className="text-sm font-medium">Live Visitors</span>
             </div>
             
-            <div className="text-3xl font-bold text-green-400" data-testid="text-live-count">
+            <div className="text-3xl font-bold text-blue-400" data-testid="text-live-count">
               {data.realVisitors}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -108,11 +108,11 @@ export function LiveVisitorsCard() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <div className="relative">
-                <Activity className="w-5 h-5 text-green-400" />
-                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <Activity className="w-5 h-5 text-blue-400" />
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
               </div>
               Live Visitors
-              <span className="text-green-400 ml-2">({data.realVisitors})</span>
+              <span className="text-blue-400 ml-2">({data.realVisitors})</span>
             </DialogTitle>
             <DialogDescription>
               Real-time breakdown of who's on your site right now
@@ -142,7 +142,7 @@ export function LiveVisitorsCard() {
             {/* Pages Being Viewed */}
             {data.byPage.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2">
+                <h4 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
                   <Eye className="w-4 h-4" />
                   Pages Being Viewed
                 </h4>
@@ -160,7 +160,7 @@ export function LiveVisitorsCard() {
                           {[...Array(Math.min(page.count, 5))].map((_, j) => (
                             <div 
                               key={j} 
-                              className="w-5 h-5 rounded-full bg-gradient-to-br from-green-400/30 to-blue-400/30 border border-white/20 flex items-center justify-center"
+                              className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400/30 to-blue-400/30 border border-white/20 flex items-center justify-center"
                             >
                               <Users className="w-2.5 h-2.5 text-white/70" />
                             </div>
@@ -171,7 +171,7 @@ export function LiveVisitorsCard() {
                             </div>
                           )}
                         </div>
-                        <span className="text-sm font-bold text-green-400 min-w-[24px] text-right">
+                        <span className="text-sm font-bold text-blue-400 min-w-[24px] text-right">
                           {page.count}
                         </span>
                       </div>

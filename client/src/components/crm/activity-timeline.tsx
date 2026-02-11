@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const ACTIVITY_TYPES = [
-  { id: "call", label: "Call", icon: Phone, color: "bg-green-500/20 text-green-400" },
+  { id: "call", label: "Call", icon: Phone, color: "bg-blue-500/20 text-blue-400" },
   { id: "email", label: "Email", icon: Mail, color: "bg-blue-500/20 text-blue-400" },
   { id: "visit", label: "Site Visit", icon: MapPin, color: "bg-purple-500/20 text-purple-400" },
   { id: "note", label: "Note", icon: FileText, color: "bg-amber-500/20 text-amber-400" },

@@ -30,9 +30,9 @@ export default function Resources() {
 
   const allResources = [
     { name: "Color Library", desc: "Professional paint colors", href: "/colors", icon: Palette, color: "text-pink-500", bg: "bg-pink-500/20" },
-    { name: "Instant Estimate", desc: "AI-powered quotes", href: "/estimate", icon: FileText, color: "text-emerald-500", bg: "bg-emerald-500/20" },
+    { name: "Instant Estimate", desc: "AI-powered quotes", href: "/estimate", icon: FileText, color: "text-sky-500", bg: "bg-sky-500/20" },
     { name: "Painting Glossary", desc: "A-Z terminology guide", href: "/glossary", icon: BookOpen, color: "text-indigo-500", bg: "bg-indigo-500/20" },
-    { name: "Terms & Warranty", desc: `${tenant.credentials?.warrantyYears || 3}-year guarantee`, href: "/terms", icon: Shield, color: "text-green-500", bg: "bg-green-500/20" },
+    { name: "Terms & Warranty", desc: `${tenant.credentials?.warrantyYears || 3}-year guarantee`, href: "/terms", icon: Shield, color: "text-blue-500", bg: "bg-blue-500/20" },
     { name: "Services", desc: "Interior & Exterior", href: "/services", icon: Home, color: "text-orange-500", bg: "bg-orange-500/20" },
     { name: "Help Center", desc: "FAQs & support", href: "/help", icon: HelpCircle, color: "text-cyan-500", bg: "bg-cyan-500/20" },
   ];

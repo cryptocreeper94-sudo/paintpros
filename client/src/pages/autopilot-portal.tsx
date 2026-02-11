@@ -192,7 +192,7 @@ export default function AutopilotPortal() {
               <p className="text-slate-400 text-sm">Automated social media marketing for your business</p>
             </div>
             {config.isActive && (
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 px-4 py-2">
+              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-4 py-2">
                 <Zap className="w-4 h-4 mr-2" />
                 Active
               </Badge>
@@ -215,13 +215,13 @@ export default function AutopilotPortal() {
               }`}>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                   currentStep > item.step
-                    ? "bg-green-500/20 border-2 border-green-500"
+                    ? "bg-blue-500/20 border-2 border-blue-500"
                     : currentStep === item.step
                     ? "bg-blue-500/20 border-2 border-blue-500"
                     : "bg-slate-800 border-2 border-slate-700"
                 }`}>
                   {currentStep > item.step ? (
-                    <Check className="w-6 h-6 text-green-400" />
+                    <Check className="w-6 h-6 text-blue-400" />
                   ) : (
                     <item.icon className="w-6 h-6" />
                   )}
@@ -230,7 +230,7 @@ export default function AutopilotPortal() {
               </div>
               {i < 2 && (
                 <div className={`flex-1 h-0.5 mx-4 ${
-                  currentStep > item.step ? "bg-green-500" : "bg-slate-700"
+                  currentStep > item.step ? "bg-blue-500" : "bg-slate-700"
                 }`} />
               )}
             </div>
@@ -258,7 +258,7 @@ export default function AutopilotPortal() {
                 <CardContent className="space-y-6">
                   <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
                     <div className="flex items-start gap-3">
-                      <Shield className="w-5 h-5 text-green-400 mt-0.5" />
+                      <Shield className="w-5 h-5 text-blue-400 mt-0.5" />
                       <div>
                         <p className="text-white font-medium">Secure Connection</p>
                         <p className="text-slate-400 text-sm">
@@ -271,9 +271,9 @@ export default function AutopilotPortal() {
 
                   {/* Already Connected State */}
                   {metaStatus?.connected ? (
-                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-6">
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-6">
                       <div className="flex items-center gap-4 mb-4">
-                        <CheckCircle className="w-8 h-8 text-green-400" />
+                        <CheckCircle className="w-8 h-8 text-blue-400" />
                         <div>
                           <p className="text-white font-semibold text-lg">Accounts Connected!</p>
                           <p className="text-slate-400 text-sm">Your social accounts are ready</p>
@@ -295,7 +295,7 @@ export default function AutopilotPortal() {
                       </div>
                       <Button
                         onClick={() => setCurrentStep(2)}
-                        className="w-full mt-4 bg-green-600 hover:bg-green-700"
+                        className="w-full mt-4 bg-blue-600"
                         data-testid="button-continue-connected"
                       >
                         Continue to Budget Setup
@@ -323,7 +323,7 @@ export default function AutopilotPortal() {
                         <Button
                           onClick={connectWithFacebook}
                           size="lg"
-                          className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-lg"
+                          className="w-full h-14 bg-blue-600 text-lg"
                           disabled={statusLoading}
                           data-testid="button-connect-facebook"
                         >
@@ -366,10 +366,10 @@ export default function AutopilotPortal() {
               className="space-y-6"
             >
               {/* Connected Status */}
-              <Card className="bg-green-500/10 border-green-500/30">
+              <Card className="bg-blue-500/10 border-blue-500/30">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">
-                    <CheckCircle className="w-6 h-6 text-green-400" />
+                    <CheckCircle className="w-6 h-6 text-blue-400" />
                     <div className="flex-1">
                       <p className="text-white font-medium">Accounts Connected</p>
                       <p className="text-slate-400 text-sm">
@@ -390,7 +390,7 @@ export default function AutopilotPortal() {
                             } else if (daysUntilExpiry <= 14) {
                               return <span className="flex items-center gap-1 text-yellow-400"><AlertCircle className="w-4 h-4" />Token expires in {daysUntilExpiry} days</span>;
                             } else {
-                              return <span className="flex items-center gap-1 text-green-400"><Clock className="w-4 h-4" />Valid until {expiresAt.toLocaleDateString()}</span>;
+                              return <span className="flex items-center gap-1 text-blue-400"><Clock className="w-4 h-4" />Valid until {expiresAt.toLocaleDateString()}</span>;
                             }
                           })()}
                         </div>
@@ -403,8 +403,8 @@ export default function AutopilotPortal() {
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                      <DollarSign className="w-5 h-5 text-green-400" />
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                      <DollarSign className="w-5 h-5 text-blue-400" />
                     </div>
                     Set Your Daily Budget
                   </CardTitle>
@@ -447,7 +447,7 @@ export default function AutopilotPortal() {
                       </div>
                       <div className="border-t border-slate-700 pt-3 flex justify-between items-center">
                         <span className="text-white font-medium">Total Monthly Investment</span>
-                        <span className="text-2xl font-bold text-green-400">${totalMonthly}/mo</span>
+                        <span className="text-2xl font-bold text-blue-400">${totalMonthly}/mo</span>
                       </div>
                     </div>
                   </div>
@@ -536,7 +536,7 @@ export default function AutopilotPortal() {
                       {/* Targeting Location */}
                       <div>
                         <Label className="text-slate-300 mb-3 block flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-green-400" />
+                          <MapPin className="w-4 h-4 text-blue-400" />
                           Target Location
                         </Label>
                         <div className="grid grid-cols-2 gap-4">
@@ -725,7 +725,7 @@ export default function AutopilotPortal() {
                             <p className="text-slate-400 text-xs">Website Clicks</p>
                           </div>
                           <div>
-                            <p className="text-2xl font-bold text-green-400">{Math.round(config.dailyBudget * 30 * 0.04)}</p>
+                            <p className="text-2xl font-bold text-blue-400">{Math.round(config.dailyBudget * 30 * 0.04)}</p>
                             <p className="text-slate-400 text-xs">Potential Leads</p>
                           </div>
                         </div>
@@ -739,7 +739,7 @@ export default function AutopilotPortal() {
                     </Button>
                     <Button
                       onClick={() => setCurrentStep(3)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                      className="flex-1 bg-blue-600"
                       data-testid="button-next-activate"
                     >
                       Review & Activate
@@ -759,11 +759,11 @@ export default function AutopilotPortal() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              <Card className="bg-gradient-to-br from-blue-500/10 to-green-500/10 border-blue-500/30">
+              <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/10 border-blue-500/30">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-3 text-2xl">
-                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <Sparkles className="w-6 h-6 text-green-400" />
+                    <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <Sparkles className="w-6 h-6 text-blue-400" />
                     </div>
                     Ready to Activate
                   </CardTitle>
@@ -801,7 +801,7 @@ export default function AutopilotPortal() {
                     
                     <div className="bg-slate-900/50 rounded-lg p-4">
                       <h4 className="text-slate-400 text-sm mb-2">Monthly Investment</h4>
-                      <p className="text-green-400 text-xl font-bold">${totalMonthly}/month</p>
+                      <p className="text-blue-400 text-xl font-bold">${totalMonthly}/month</p>
                       <p className="text-slate-400 text-sm">${monthlySubscription} service + ${monthlyAdSpend} ads</p>
                     </div>
                   </div>
@@ -811,19 +811,19 @@ export default function AutopilotPortal() {
                     <h4 className="text-white font-medium mb-3">What happens when you activate:</h4>
                     <div className="space-y-2 text-sm text-slate-400">
                       <div className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                        <Check className="w-4 h-4 text-blue-400 mt-0.5" />
                         <span>We start creating and scheduling content for your business</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                        <Check className="w-4 h-4 text-blue-400 mt-0.5" />
                         <span>Posts go live automatically at optimal times</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                        <Check className="w-4 h-4 text-blue-400 mt-0.5" />
                         <span>Top-performing posts get boosted (if ads enabled)</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                        <Check className="w-4 h-4 text-blue-400 mt-0.5" />
                         <span>You can view analytics and adjust settings anytime</span>
                       </div>
                     </div>
@@ -836,7 +836,7 @@ export default function AutopilotPortal() {
                     <Button
                       onClick={() => activateMutation.mutate()}
                       disabled={activateMutation.isPending || config.isActive}
-                      className="flex-1 h-14 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-lg"
+                      className="flex-1 h-14 bg-gradient-to-r from-blue-600 to-blue-600 text-lg"
                       data-testid="button-activate"
                     >
                       {activateMutation.isPending ? (
@@ -864,9 +864,9 @@ export default function AutopilotPortal() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-6"
                 >
-                  <Card className="bg-green-500/10 border-green-500/30">
+                  <Card className="bg-blue-500/10 border-blue-500/30">
                     <CardContent className="p-6 text-center">
-                      <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
+                      <CheckCircle className="w-12 h-12 text-blue-400 mx-auto mb-4" />
                       <h3 className="text-xl font-bold text-white mb-2">Your Marketing Autopilot is Live!</h3>
                       <p className="text-slate-400 mb-4">
                         We're now handling your social media. Your first posts will go live within 24 hours.

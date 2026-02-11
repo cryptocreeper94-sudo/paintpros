@@ -129,7 +129,7 @@ export default function TrustLayerMarketing() {
             >
               <motion.div 
                 whileHover={{ scale: 1.05, rotate: 5 }}
-                className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25"
+                className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center shadow-lg shadow-sky-500/25"
               >
                 <Layers className="w-6 h-6 text-white" />
               </motion.div>
@@ -157,10 +157,10 @@ export default function TrustLayerMarketing() {
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-5 py-2 mb-6 backdrop-blur-sm"
+            className="inline-flex items-center gap-2 bg-sky-500/10 border border-sky-500/20 rounded-full px-5 py-2 mb-6 backdrop-blur-sm"
           >
-            <Shield className="w-4 h-4 text-emerald-400" />
-            <span className="text-emerald-400 text-sm font-medium">Guardian Shield Integrated</span>
+            <Shield className="w-4 h-4 text-sky-400" />
+            <span className="text-sky-400 text-sm font-medium">Guardian Shield Integrated</span>
           </motion.div>
 
           <motion.div
@@ -445,7 +445,7 @@ export default function TrustLayerMarketing() {
             <div className="bg-slate-900/80 p-4 border-b border-white/5 flex items-center gap-2 rounded-t-xl">
               <div className="w-3 h-3 rounded-full bg-red-500" />
               <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <div className="w-3 h-3 rounded-full bg-blue-500" />
               <span className="text-slate-500 text-sm ml-4">TrustLayer Marketing Dashboard</span>
             </div>
             <div className="p-8">
@@ -453,7 +453,7 @@ export default function TrustLayerMarketing() {
                 {[
                   { icon: Eye, value: "12,450", label: "Total Reach", color: "text-blue-400" },
                   { icon: Heart, value: "847", label: "Engagement", color: "text-pink-400" },
-                  { icon: MousePointer, value: "234", label: "Clicks", color: "text-green-400" },
+                  { icon: MousePointer, value: "234", label: "Clicks", color: "text-blue-400" },
                   { icon: Users, value: "12", label: "New Leads", color: "text-yellow-400" }
                 ].map((stat, i) => (
                   <motion.div
@@ -554,7 +554,7 @@ export default function TrustLayerMarketing() {
                     transition={{ delay: i * 0.05 }}
                     className="flex items-center gap-3"
                   >
-                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                    <CheckCircle className="w-5 h-5 text-sky-400" />
                     <span className="text-slate-300">{item}</span>
                   </motion.div>
                 ))}
@@ -580,7 +580,7 @@ export default function TrustLayerMarketing() {
       <footer className="relative border-t border-white/5 py-12">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-teal-600 flex items-center justify-center shadow-lg shadow-sky-500/25">
               <Layers className="w-5 h-5 text-white" />
             </div>
             <span className="text-white font-bold text-lg">TrustLayer Marketing</span>

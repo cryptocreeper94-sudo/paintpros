@@ -55,8 +55,8 @@ export default function DataDeletion() {
 
             <GlassCard className="p-6" glow="accent">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 h-5 text-green-400" />
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold mb-3">How to Request Data Deletion</h2>
@@ -65,15 +65,15 @@ export default function DataDeletion() {
                   </p>
                   <ul className="space-y-3 text-muted-foreground">
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400 mt-1 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
                       <span>Email: <a href={`mailto:${tenant.email}`} className="text-accent hover:underline">{tenant.email}</a></span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400 mt-1 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
                       <span>Include "Data Deletion Request" in the subject line</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400 mt-1 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
                       <span>Provide the email address associated with your account</span>
                     </li>
                   </ul>

@@ -831,8 +831,8 @@ function TimeCardSection({
 
       {activeTab === "clock" && (
         <Card className="bg-gray-900/50 border-gray-800 p-6 text-center">
-          <div className={`w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ${isClockedIn ? 'bg-green-500/20' : 'bg-gray-800'}`}>
-            <Timer className={`w-10 h-10 ${isClockedIn ? 'text-green-400' : 'text-gray-500'}`} />
+          <div className={`w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ${isClockedIn ? 'bg-blue-500/20' : 'bg-gray-800'}`}>
+            <Timer className={`w-10 h-10 ${isClockedIn ? 'text-blue-400' : 'text-gray-500'}`} />
           </div>
           <p className="text-4xl font-mono font-bold text-white mb-2">
             {formatTime(elapsedTime)}
@@ -887,7 +887,7 @@ function TimeCardSection({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-white font-medium">{day.name}</span>
-                  {day.isToday && <Badge className="bg-green-600 text-white text-xs">Today</Badge>}
+                  {day.isToday && <Badge className="bg-blue-600 text-white text-xs">Today</Badge>}
                 </div>
                 <span className="text-gray-300 font-mono">
                   {(weeklyEntries[day.date] || 0).toFixed(2)} hrs
@@ -903,7 +903,7 @@ function TimeCardSection({
           <Card className="bg-gray-900/50 border-gray-800 p-3">
             <p className="text-gray-400 text-sm mb-2">Crew Status</p>
             <div className="flex items-center gap-2">
-              <Badge className="bg-green-600">{crewMembers.filter(m => m.clockedIn).length} Active</Badge>
+              <Badge className="bg-blue-600">{crewMembers.filter(m => m.clockedIn).length} Active</Badge>
               <Badge className="bg-gray-700">{crewMembers.filter(m => !m.clockedIn).length} Off</Badge>
             </div>
           </Card>
@@ -916,8 +916,8 @@ function TimeCardSection({
                   <div className="flex items-center gap-2 mt-1">
                     <Badge className="bg-gray-800 text-gray-400">{member.role}</Badge>
                     {member.clockedIn && (
-                      <span className="text-green-400 text-xs flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                      <span className="text-blue-400 text-xs flex items-center gap-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
                         Active
                       </span>
                     )}
@@ -1020,7 +1020,7 @@ function JobDetailsSection({
           <p className="text-gray-400 text-sm">{job.customerName}</p>
         </div>
         <Badge 
-          className={progress === 100 ? "bg-green-600" : "bg-gray-700"}
+          className={progress === 100 ? "bg-blue-600" : "bg-gray-700"}
         >
           {progress}%
         </Badge>
@@ -2117,13 +2117,13 @@ export default function FieldTool() {
 
   // Quick actions for field work
   const quickActions = [
-    { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), color: "bg-green-600" },
+    { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), color: "bg-blue-600" },
     { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), color: "bg-blue-500" },
     { icon: Mail, label: "Email", action: () => window.open("https://mail.google.com", "_blank"), color: "bg-red-500" },
     { icon: Cloud, label: "Weather", action: () => setShowWeather(true), color: "bg-cyan-500" },
     { icon: Car, label: "Mileage", action: () => setShowMileage(true), color: "bg-purple-500" },
     { icon: Camera, label: "Photo AI", action: () => setShowPhotoAI(true), color: "bg-pink-500" },
-    { icon: Store, label: "Paint Stores", action: () => setActiveSection("stores"), color: "bg-green-500" },
+    { icon: Store, label: "Paint Stores", action: () => setActiveSection("stores"), color: "bg-blue-500" },
     { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), color: "bg-orange-500" },
   ];
 
@@ -2289,8 +2289,8 @@ export default function FieldTool() {
                 Secure access for field professionals
               </p>
               <div className="flex items-center justify-center gap-2 mt-3">
-                <Shield className="w-4 h-4 text-green-500" />
-                <span className="text-green-500 text-xs font-medium">Enterprise Security</span>
+                <Shield className="w-4 h-4 text-blue-500" />
+                <span className="text-blue-500 text-xs font-medium">Enterprise Security</span>
               </div>
             </motion.div>
           </motion.div>
@@ -2401,7 +2401,7 @@ export default function FieldTool() {
     },
     {
       icon: Briefcase,
-      iconColor: "from-emerald-500 to-emerald-600",
+      iconColor: "from-sky-500 to-sky-600",
       title: t('tour.fieldTools'),
       subtitle: language === 'es' ? "Diseñado para el Trabajo" : "Built for the Job Site",
       description: t('tour.fieldToolsDesc'),
@@ -2522,7 +2522,7 @@ export default function FieldTool() {
                       transition={{ delay: 0.2 + idx * 0.1 }}
                       className="flex items-center gap-2 text-sm text-gray-400"
                     >
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
                       <span>{feature}</span>
                     </motion.div>
                   ))}
@@ -2684,15 +2684,15 @@ export default function FieldTool() {
             className="p-4 border-0"
             style={{ 
               background: isClockedIn 
-                ? `linear-gradient(135deg, #22c55e20 0%, #16a34a20 100%)` 
+                ? `linear-gradient(135deg, #3b82f620 0%, #2563eb20 100%)` 
                 : `linear-gradient(135deg, ${colors.primary}20 0%, ${colors.primary}10 100%)`,
-              borderColor: isClockedIn ? '#22c55e40' : `${colors.primary}40`
+              borderColor: isClockedIn ? '#3b82f640' : `${colors.primary}40`
             }}
           >
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${isClockedIn ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
+                  <div className={`w-2 h-2 rounded-full ${isClockedIn ? 'bg-blue-500 animate-pulse' : 'bg-gray-500'}`} />
                   <span className="text-sm text-gray-400">
                     {isClockedIn ? 'Clocked In' : 'Not Clocked In'}
                   </span>
@@ -2798,7 +2798,7 @@ export default function FieldTool() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), gradient: "from-emerald-500 to-green-600" },
+                  { icon: DollarSign, label: "Quick Estimate", action: () => setShowQuickEstimate(true), gradient: "from-sky-500 to-blue-600" },
                   { icon: Calculator, label: "Calculator", action: () => setShowCalculator(true), gradient: "from-blue-500 to-indigo-600" },
                   { icon: Palette, label: "Colors", action: () => setActiveSection("colors"), gradient: "from-orange-500 to-amber-600" },
                   { icon: Store, label: "Paint Stores", action: () => setActiveSection("stores"), gradient: "from-teal-500 to-cyan-600" },
@@ -2806,7 +2806,7 @@ export default function FieldTool() {
                   { icon: Car, label: "Mileage", action: () => setShowMileage(true), gradient: "from-purple-500 to-violet-600" },
                   { icon: Languages, label: t('translator.title'), action: () => setShowTranslator(true), gradient: "from-indigo-500 to-purple-600" },
                   { icon: FileText, label: "Job Notes", action: () => setShowNotes(true), gradient: "from-amber-500 to-yellow-600" },
-                  { icon: Package, label: "Materials", action: () => setActiveSection("stores"), gradient: "from-lime-500 to-green-600" },
+                  { icon: Package, label: "Materials", action: () => setActiveSection("stores"), gradient: "from-lime-500 to-blue-600" },
                 ].map((tool, i) => (
                   <motion.div
                     key={i}
@@ -2928,7 +2928,7 @@ export default function FieldTool() {
                   { icon: Megaphone, label: "Marketing", action: () => window.location.href = "/marketing", gradient: "from-amber-500 to-orange-600" },
                   { icon: Users, label: "CRM", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", gradient: "from-blue-500 to-blue-600" },
                   { icon: BarChart3, label: "Analytics", action: () => window.location.href = roleDashboardMap[userRole] || "/admin", gradient: "from-violet-500 to-purple-600" },
-                  { icon: Receipt, label: "Invoicing", action: () => window.location.href = "/admin", gradient: "from-emerald-500 to-green-600" },
+                  { icon: Receipt, label: "Invoicing", action: () => window.location.href = "/admin", gradient: "from-sky-500 to-blue-600" },
                   { icon: Target, label: "Leads", action: () => window.location.href = "/admin", gradient: "from-red-500 to-rose-600" },
                   { icon: PieChart, label: "Reports", action: () => window.location.href = "/owner", gradient: "from-cyan-500 to-teal-600" },
                   { icon: Shield, label: "Admin", action: () => window.location.href = "/admin", gradient: "from-indigo-500 to-blue-600" },
@@ -2972,7 +2972,7 @@ export default function FieldTool() {
                 {[
                   { icon: Send, label: "Messages", action: () => setShowMessaging(true), gradient: "from-indigo-500 to-purple-600", testId: "button-messaging" },
                   { icon: Mic, label: "Voice AI", action: () => setShowAIAssistant(true), gradient: "from-rose-500 to-pink-600", testId: "button-voice" },
-                  { icon: Image, label: "Save Photo", action: () => setShowPhotoAI(true), gradient: "from-emerald-500 to-teal-600", testId: "button-camera-quick" },
+                  { icon: Image, label: "Save Photo", action: () => setShowPhotoAI(true), gradient: "from-sky-500 to-teal-600", testId: "button-camera-quick" },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -3111,7 +3111,7 @@ export default function FieldTool() {
                           </p>
                         )}
                       </div>
-                      <Badge className={job.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-gray-800 text-gray-400"}>
+                      <Badge className={job.status === "confirmed" ? "bg-blue-500/20 text-blue-400" : "bg-gray-800 text-gray-400"}>
                         {jobData.status}
                       </Badge>
                     </div>
@@ -3529,7 +3529,7 @@ export default function FieldTool() {
                     setShowQuickEstimate(false);
                     toast({ title: "Measure Tool", description: "Use the Trade Toolkit for measurement tools" });
                   }}
-                  className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-blue-500/20 border border-blue-500/30 hover:bg-blue-500/30 transition-all"
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-lg bg-blue-500/20 border border-blue-500/30 transition-all"
                   data-testid="button-tool-measure"
                 >
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
@@ -3906,11 +3906,11 @@ export default function FieldTool() {
               </Card>
             </div>
 
-            <Card className="bg-green-900/30 border-green-800/50 p-4">
+            <Card className="bg-blue-900/30 border-blue-800/50 p-4">
               <div className="flex items-center gap-3">
-                <CheckCircle className="w-6 h-6 text-green-400" />
+                <CheckCircle className="w-6 h-6 text-blue-400" />
                 <div>
-                  <p className="text-green-400 font-medium">Good for Exterior Paint</p>
+                  <p className="text-blue-400 font-medium">Good for Exterior Paint</p>
                   <p className="text-gray-400 text-sm">Conditions are ideal for exterior painting</p>
                 </div>
               </div>
@@ -4183,7 +4183,7 @@ export default function FieldTool() {
             <div className="grid grid-cols-4 gap-2">
               {[
                 { type: "before", label: t('photo.before'), color: "from-amber-500 to-orange-500" },
-                { type: "after", label: t('photo.after'), color: "from-green-500 to-emerald-500" },
+                { type: "after", label: t('photo.after'), color: "from-blue-500 to-sky-500" },
                 { type: "progress", label: t('photo.progress'), color: "from-blue-500 to-cyan-500" },
                 { type: "issue", label: t('photo.issue'), color: "from-red-500 to-rose-500" },
               ].map((item) => (
@@ -4834,8 +4834,8 @@ export default function FieldTool() {
                   <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wide">Quick Login</h3>
                   <Card className="bg-gray-900/50 border-gray-800 p-4 space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                        <Fingerprint className="w-5 h-5 text-green-400" />
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <Fingerprint className="w-5 h-5 text-blue-400" />
                       </div>
                       <div className="flex-1">
                         <p className="text-white font-medium">Fingerprint / Face ID</p>
@@ -4843,7 +4843,7 @@ export default function FieldTool() {
                       </div>
                     </div>
                     {biometricSetupStatus && (
-                      <p className={`text-sm ${biometricSetupStatus.includes('success') ? 'text-green-400' : 'text-yellow-400'}`}>
+                      <p className={`text-sm ${biometricSetupStatus.includes('success') ? 'text-blue-400' : 'text-yellow-400'}`}>
                         {biometricSetupStatus}
                       </p>
                     )}
@@ -4874,7 +4874,7 @@ export default function FieldTool() {
                     </div>
                   </div>
                   {isInstalled ? (
-                    <div className="flex items-center gap-2 text-green-400 text-sm">
+                    <div className="flex items-center gap-2 text-blue-400 text-sm">
                       <CheckCircle className="w-4 h-4" />
                       <span>App is installed</span>
                     </div>
@@ -5176,7 +5176,7 @@ export default function FieldTool() {
                   <div className="space-y-4">
                     <Card className="bg-gray-800 border-gray-700 p-4">
                       <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-400" /> Measurements
+                        <CheckCircle className="w-4 h-4 text-blue-400" /> Measurements
                       </h4>
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="bg-gray-900/50 rounded p-2">

@@ -734,7 +734,7 @@ export default function HomeDemo() {
       <div className="fixed bottom-4 left-4 z-40">
         <button
           onClick={() => setInvestorSnapshotOpen(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full shadow-lg hover:from-green-700 hover:to-emerald-700 transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-sky-600 text-white rounded-full shadow-lg transition-colors text-sm font-medium"
           data-testid="button-investor-snapshot"
         >
           <TrendingUp className="w-4 h-4" />

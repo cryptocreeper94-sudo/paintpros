@@ -75,8 +75,8 @@ export function InvestorContactModal({ isOpen, onClose }: InvestorContactModalPr
 
         {submitted ? (
           <div className="py-6 sm:py-8 text-center">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-              <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 text-green-400" />
+            <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 text-blue-400" />
             </div>
             <h3 className="font-display font-bold text-lg sm:text-xl mb-2">Message Sent!</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-6">

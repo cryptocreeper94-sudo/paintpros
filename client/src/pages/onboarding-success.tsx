@@ -63,9 +63,9 @@ export default function OnboardingSuccess() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6"
               >
-                <CheckCircle2 className="w-10 h-10 text-green-500" />
+                <CheckCircle2 className="w-10 h-10 text-blue-500" />
               </motion.div>
               
               <motion.div
@@ -93,7 +93,7 @@ export default function OnboardingSuccess() {
                   </h3>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                       <span>
                         {language === 'es' 
                           ? 'Revisa tu email para las credenciales de acceso' 
@@ -101,7 +101,7 @@ export default function OnboardingSuccess() {
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                       <span>
                         {language === 'es' 
                           ? 'Personaliza tu perfil y servicios' 
@@ -109,7 +109,7 @@ export default function OnboardingSuccess() {
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                       <span>
                         {language === 'es' 
                           ? 'Comparte tu nuevo sitio con clientes' 

@@ -83,7 +83,7 @@ const TENANT_CONFIG = {
 const DEVICE_COLORS = {
   desktop: "#f59e0b",
   mobile: "#3b82f6",
-  tablet: "#10b981"
+  tablet: "#0ea5e9"
 };
 
 export function UnifiedAnalyticsDashboard() {
@@ -260,9 +260,9 @@ export function UnifiedAnalyticsDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
-            <Zap className="w-4 h-4 text-green-400 animate-pulse" />
-            <span className="text-sm font-medium text-green-400">{totalLiveVisitors} Live Total</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <Zap className="w-4 h-4 text-blue-400 animate-pulse" />
+            <span className="text-sm font-medium text-blue-400">{totalLiveVisitors} Live Total</span>
           </div>
           <motion.button
             onClick={handleRefreshAll}
@@ -540,7 +540,7 @@ export function UnifiedAnalyticsDashboard() {
                                 strokeWidth="8"
                                 fill="transparent"
                                 strokeDasharray={`${currentSeo.overallScore * 2.51} 251`}
-                                className={currentSeo.overallScore >= 70 ? "text-green-500" : currentSeo.overallScore >= 40 ? "text-amber-500" : "text-red-500"}
+                                className={currentSeo.overallScore >= 70 ? "text-blue-500" : currentSeo.overallScore >= 40 ? "text-amber-500" : "text-red-500"}
                               />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
@@ -551,19 +551,19 @@ export function UnifiedAnalyticsDashboard() {
                         <div className="grid grid-cols-2 gap-1 text-xs">
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Titles</span>
-                            <span className={currentSeo.breakdown.titleScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.titleScore}%</span>
+                            <span className={currentSeo.breakdown.titleScore >= 70 ? "text-blue-400" : "text-amber-400"}>{currentSeo.breakdown.titleScore}%</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Meta</span>
-                            <span className={currentSeo.breakdown.metaScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.metaScore}%</span>
+                            <span className={currentSeo.breakdown.metaScore >= 70 ? "text-blue-400" : "text-amber-400"}>{currentSeo.breakdown.metaScore}%</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Keywords</span>
-                            <span className={currentSeo.breakdown.keywordScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.keywordScore}%</span>
+                            <span className={currentSeo.breakdown.keywordScore >= 70 ? "text-blue-400" : "text-amber-400"}>{currentSeo.breakdown.keywordScore}%</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Social</span>
-                            <span className={currentSeo.breakdown.socialScore >= 70 ? "text-green-400" : "text-amber-400"}>{currentSeo.breakdown.socialScore}%</span>
+                            <span className={currentSeo.breakdown.socialScore >= 70 ? "text-blue-400" : "text-amber-400"}>{currentSeo.breakdown.socialScore}%</span>
                           </div>
                         </div>
                         <div className="pt-2 border-t border-white/10 text-xs text-muted-foreground">

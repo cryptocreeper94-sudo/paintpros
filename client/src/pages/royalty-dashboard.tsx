@@ -183,10 +183,10 @@ export default function RoyaltyDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-600" />
+              <DollarSign className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600" data-testid="text-total-revenue">
+              <div className="text-2xl font-bold text-blue-600" data-testid="text-total-revenue">
                 {summaryLoading ? "..." : formatCurrency(summary?.totalRevenue || 0)}
               </div>
               <p className="text-xs text-gray-500 mt-1">Combined all platforms</p>
@@ -360,7 +360,7 @@ export default function RoyaltyDashboard() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-bold text-green-600">{formatCurrency(parseFloat(rev.amount))}</p>
+                            <p className="font-bold text-blue-600">{formatCurrency(parseFloat(rev.amount))}</p>
                             <p className="text-xs text-gray-500">
                               {format(new Date(rev.periodStart), 'MMM d')} - {format(new Date(rev.periodEnd), 'MMM d, yyyy')}
                             </p>
@@ -535,9 +535,9 @@ export default function RoyaltyDashboard() {
                     {payouts.map((payout: any) => (
                       <div key={payout.id} className="flex items-center justify-between p-3 rounded-lg border">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg ${payout.status === 'paid' ? 'bg-green-100' : 'bg-yellow-100'}`}>
+                          <div className={`p-2 rounded-lg ${payout.status === 'paid' ? 'bg-blue-100' : 'bg-yellow-100'}`}>
                             {payout.status === 'paid' ? (
-                              <CheckCircle className="h-4 w-4 text-green-600" />
+                              <CheckCircle className="h-4 w-4 text-blue-600" />
                             ) : (
                               <Clock className="h-4 w-4 text-yellow-600" />
                             )}

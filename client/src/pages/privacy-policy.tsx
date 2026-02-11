@@ -71,8 +71,8 @@ export default function PrivacyPolicy() {
 
             <GlassCard className="p-6" glow="accent">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                  <Database className="w-5 h-5 text-green-400" />
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                  <Database className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold mb-3">How We Use Your Information</h2>

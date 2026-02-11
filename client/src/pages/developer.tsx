@@ -494,8 +494,8 @@ function SolanaModalContent() {
               </motion.button>
               {newWallet && (
                 <div className="mt-4 space-y-3">
-                  <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3">
-                    <p className="text-xs text-green-400 mb-1">Public Key:</p>
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
+                    <p className="text-xs text-blue-400 mb-1">Public Key:</p>
                     <div className="flex items-center gap-2">
                       <code className="text-xs break-all flex-1">{newWallet.publicKey}</code>
                       <button onClick={() => copyToClipboard(newWallet.publicKey)} className="text-muted-foreground hover:text-foreground">
@@ -592,8 +592,8 @@ function SolanaModalContent() {
               Generate SHA-256 Hash
             </motion.button>
             {generatedHash && (
-              <div className="mt-3 bg-green-500/10 border border-green-500/30 rounded-lg p-2">
-                <p className="text-xs text-green-400 mb-1">Generated Hash:</p>
+              <div className="mt-3 bg-blue-500/10 border border-blue-500/30 rounded-lg p-2">
+                <p className="text-xs text-blue-400 mb-1">Generated Hash:</p>
                 <div className="flex items-center gap-2">
                   <code className="text-xs break-all flex-1">{generatedHash}</code>
                   <button onClick={() => copyToClipboard(generatedHash)} className="text-muted-foreground hover:text-foreground">
@@ -670,7 +670,7 @@ function SolanaModalContent() {
                   </span>
                   <span className={`text-xs px-2 py-1 rounded ${
                     stamp.status === "confirmed" 
-                      ? "bg-green-500/20 text-green-400" 
+                      ? "bg-blue-500/20 text-blue-400" 
                       : stamp.status === "failed"
                       ? "bg-red-500/20 text-red-400"
                       : "bg-yellow-500/20 text-yellow-400"
@@ -731,16 +731,16 @@ function SolanaModalContent() {
           {verifyResult && (
             <div className={`rounded-xl p-4 border ${
               verifyResult.found 
-                ? "bg-green-500/10 border-green-500/30" 
+                ? "bg-blue-500/10 border-blue-500/30" 
                 : "bg-red-500/10 border-red-500/30"
             }`}>
               <div className="flex items-center gap-2 mb-2">
                 {verifyResult.found ? (
-                  <CheckCircle className="w-5 h-5 text-green-400" />
+                  <CheckCircle className="w-5 h-5 text-blue-400" />
                 ) : (
                   <AlertCircle className="w-5 h-5 text-red-400" />
                 )}
-                <span className={`font-bold ${verifyResult.found ? "text-green-400" : "text-red-400"}`}>
+                <span className={`font-bold ${verifyResult.found ? "text-blue-400" : "text-red-400"}`}>
                   {verifyResult.found ? "Transaction Found" : "Transaction Not Found"}
                 </span>
               </div>
@@ -891,7 +891,7 @@ function HallmarkModalContent() {
                       </span>
                     </div>
                     {hallmark.blockchainTxSignature && (
-                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <CheckCircle className="w-4 h-4 text-blue-400" />
                     )}
                   </div>
                   <div className="flex items-center justify-between">
@@ -1165,7 +1165,7 @@ Ecosystem: https://darkwavestudios.io`;
         <p className="text-sm text-muted-foreground">Copy-ready for investor presentations</p>
         <motion.button
           onClick={copyAllContent}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 transition-colors text-sm"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           data-testid="button-copy-investor-sheet"
@@ -1175,9 +1175,9 @@ Ecosystem: https://darkwavestudios.io`;
         </motion.button>
       </div>
 
-      <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/30">
+      <div className="bg-gradient-to-r from-blue-500/10 to-blue-500/10 rounded-xl p-4 border border-blue-500/30">
         <h3 className="font-bold text-lg flex items-center gap-2 mb-3">
-          <DollarSign className="w-5 h-5 text-green-400" />
+          <DollarSign className="w-5 h-5 text-blue-400" />
           Licensing Tiers
         </h3>
         <div className="grid gap-2">
@@ -1193,7 +1193,7 @@ Ecosystem: https://darkwavestudios.io`;
                 <span className="text-xs text-muted-foreground ml-2">({item.target})</span>
               </div>
               <div className="text-right">
-                <span className="text-green-400 font-mono text-sm">{item.price}</span>
+                <span className="text-blue-400 font-mono text-sm">{item.price}</span>
                 <span className="text-xs text-muted-foreground ml-2">+ {item.setup}</span>
               </div>
             </div>
@@ -1210,7 +1210,7 @@ Ecosystem: https://darkwavestudios.io`;
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Gross Margin</span>
-              <span className="font-mono text-green-400">85%</span>
+              <span className="font-mono text-blue-400">85%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">LTV:CAC</span>
@@ -1239,11 +1239,11 @@ Ecosystem: https://darkwavestudios.io`;
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">11-25 sites</span>
-              <span className="font-mono text-green-400">-12%</span>
+              <span className="font-mono text-blue-400">-12%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">26-50 sites</span>
-              <span className="font-mono text-green-400">-18%</span>
+              <span className="font-mono text-blue-400">-18%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">51+ sites</span>
@@ -1261,7 +1261,7 @@ Ecosystem: https://darkwavestudios.io`;
         <div className="grid grid-cols-3 gap-3 text-center">
           <div>
             <p className="text-xs text-muted-foreground">2025</p>
-            <p className="font-bold text-lg text-green-400">$300K</p>
+            <p className="font-bold text-lg text-blue-400">$300K</p>
             <p className="text-xs">100 customers</p>
           </div>
           <div>
@@ -1293,7 +1293,7 @@ Ecosystem: https://darkwavestudios.io`;
         <a
           href="/INVESTOR_PRICING.md"
           target="_blank"
-          className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors text-sm"
+          className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 transition-colors text-sm"
           data-testid="link-download-md"
         >
           <Download className="w-4 h-4" />
@@ -1301,7 +1301,7 @@ Ecosystem: https://darkwavestudios.io`;
         </a>
         <motion.button
           onClick={copyAllContent}
-          className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors text-sm"
+          className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 transition-colors text-sm"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           data-testid="button-copy-investor-sheet-bottom"
@@ -1369,17 +1369,17 @@ function BusinessRoadmapContent() {
 
   return (
     <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-      <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/30">
+      <div className="bg-gradient-to-r from-blue-500/10 to-blue-500/10 rounded-xl p-4 border border-blue-500/30">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-bold flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-green-400" />
+            <TrendingUp className="w-5 h-5 text-blue-400" />
             Progress: {completedItems}/{totalItems}
           </h3>
-          <span className="text-2xl font-bold text-green-400">{progressPercent}%</span>
+          <span className="text-2xl font-bold text-blue-400">{progressPercent}%</span>
         </div>
         <div className="w-full bg-black/30 rounded-full h-3">
           <div 
-            className="bg-gradient-to-r from-green-400 to-blue-400 h-3 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-blue-400 to-blue-400 h-3 rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -1393,7 +1393,7 @@ function BusinessRoadmapContent() {
         <div className="grid grid-cols-3 gap-3 text-center">
           <div className="bg-black/20 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">250 tenants</p>
-            <p className="font-bold text-lg text-green-400">$7.5M-$12M</p>
+            <p className="font-bold text-lg text-blue-400">$7.5M-$12M</p>
             <p className="text-xs text-muted-foreground">~$1.5M ARR</p>
           </div>
           <div className="bg-black/20 rounded-lg p-3">
@@ -1425,13 +1425,13 @@ function BusinessRoadmapContent() {
                   onClick={() => !item.done && toggleItem(item.id)}
                   className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
                     isChecked 
-                      ? 'bg-green-500/10 border border-green-500/30' 
+                      ? 'bg-blue-500/10 border border-blue-500/30' 
                       : 'bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10'
                   }`}
                   data-testid={`checkbox-${item.id}`}
                 >
                   <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
-                    isChecked ? 'bg-green-500' : 'border-2 border-muted-foreground'
+                    isChecked ? 'bg-blue-500' : 'border-2 border-muted-foreground'
                   }`}>
                     {isChecked && <CheckCircle className="w-4 h-4 text-white" />}
                   </div>
@@ -1439,7 +1439,7 @@ function BusinessRoadmapContent() {
                     {item.label}
                   </span>
                   {item.done && (
-                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">Built-in</span>
+                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">Built-in</span>
                   )}
                 </button>
               );
@@ -1454,10 +1454,10 @@ function BusinessRoadmapContent() {
           Competitive Edge
         </h4>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> Blockchain verification</div>
-          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> White-label multi-tenant</div>
-          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> Bilingual AI assistant</div>
-          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-400" /> Premium Bento UI</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-400" /> Blockchain verification</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-400" /> White-label multi-tenant</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-400" /> Bilingual AI assistant</div>
+          <div className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-400" /> Premium Bento UI</div>
         </div>
       </div>
     </div>
@@ -1540,7 +1540,7 @@ function SpeakerNotesPanel() {
           <ul className="space-y-1 text-sm">
             {slide.bullets.map((bullet, idx) => (
               <li key={idx} className="flex items-start gap-2">
-                <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-500" />
+                <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-500" />
                 <span>{bullet}</span>
               </li>
             ))}
@@ -1696,10 +1696,10 @@ export default function Developer() {
       icon: <Database className="w-8 h-8 text-purple-400" />,
       content: (
         <div className="space-y-6">
-          <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-green-400 font-bold">PostgreSQL Connected</span>
+              <div className="w-3 h-3 rounded-full bg-blue-400 animate-pulse" />
+              <span className="text-blue-400 font-bold">PostgreSQL Connected</span>
             </div>
             <p className="text-sm text-muted-foreground">Neon-backed database with automatic scaling and instant branching</p>
           </div>
@@ -1714,8 +1714,8 @@ export default function Developer() {
             </div>
           </div>
           <div className="bg-black/30 rounded-xl p-4 font-mono text-xs">
-            <p className="text-green-400">Tables: leads, estimates, seo_tags, crm_deals,</p>
-            <p className="text-green-400">crm_activities, crm_notes, user_pins</p>
+            <p className="text-blue-400">Tables: leads, estimates, seo_tags, crm_deals,</p>
+            <p className="text-blue-400">crm_activities, crm_notes, user_pins</p>
           </div>
         </div>
       ),
@@ -1725,9 +1725,9 @@ export default function Developer() {
       icon: <Server className="w-8 h-8 text-accent" />,
       content: (
         <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4">
-            <div className="w-4 h-4 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-green-400 font-bold text-lg">All Systems Operational</span>
+          <div className="flex items-center gap-3 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+            <div className="w-4 h-4 rounded-full bg-blue-400 animate-pulse" />
+            <span className="text-blue-400 font-bold text-lg">All Systems Operational</span>
           </div>
           <div className="grid gap-2">
             {[
@@ -1742,7 +1742,7 @@ export default function Developer() {
                   <span className="text-xs font-mono bg-accent/20 text-accent px-2 py-1 rounded">{endpoint.method}</span>
                   <span className="text-sm font-mono">{endpoint.path}</span>
                 </div>
-                <div className="w-2 h-2 rounded-full bg-green-400" />
+                <div className="w-2 h-2 rounded-full bg-blue-400" />
               </div>
             ))}
           </div>
@@ -1761,7 +1761,7 @@ export default function Developer() {
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
-              <p className="text-3xl font-bold text-green-400">&lt;100ms</p>
+              <p className="text-3xl font-bold text-blue-400">&lt;100ms</p>
               <p className="text-xs text-muted-foreground">API Response</p>
             </div>
             <div className="text-center bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
@@ -1792,7 +1792,7 @@ export default function Developer() {
           <div className="grid grid-cols-3 gap-3">
             <motion.button
               onClick={() => bumpVersion("patch")}
-              className="p-3 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors"
+              className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 transition-colors"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               data-testid="button-bump-patch"
@@ -1985,11 +1985,11 @@ export default function Developer() {
     },
     console: {
       title: "Developer Console",
-      icon: <Terminal className="w-8 h-8 text-green-400" />,
+      icon: <Terminal className="w-8 h-8 text-blue-400" />,
       content: (
         <div className="space-y-4">
-          <div className="bg-black rounded-xl p-4 font-mono text-sm h-64 overflow-auto border border-green-500/30">
-            <p className="text-green-400">[{new Date().toLocaleTimeString()}] System initialized</p>
+          <div className="bg-black rounded-xl p-4 font-mono text-sm h-64 overflow-auto border border-blue-500/30">
+            <p className="text-blue-400">[{new Date().toLocaleTimeString()}] System initialized</p>
             <p className="text-muted-foreground">[INFO] Loading PaintPros.io v{currentVersion}</p>
             <p className="text-muted-foreground">[INFO] PostgreSQL connection established</p>
             <p className="text-blue-400">[DB] 7 tables loaded successfully</p>
@@ -1998,12 +1998,12 @@ export default function Developer() {
             <p className="text-purple-400">[DARKWAVE] Connected to Dev Hub</p>
             <p className="text-gold-400">[SOLANA] Blockchain stamping module loaded</p>
             <p className="text-accent">[READY] Server listening on port 5000</p>
-            <p className="text-green-400 animate-pulse">_ Awaiting commands...</p>
+            <p className="text-blue-400 animate-pulse">_ Awaiting commands...</p>
           </div>
           <div className="flex gap-2">
             <Input 
               placeholder="Enter command..." 
-              className="bg-black/50 border-green-500/30 font-mono text-sm"
+              className="bg-black/50 border-blue-500/30 font-mono text-sm"
               data-testid="input-console-command"
             />
             <FlipButton className="px-4" data-testid="button-run-command">
@@ -2035,7 +2035,7 @@ export default function Developer() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm text-muted-foreground mb-1">Environment</p>
-              <p className="font-mono text-green-400">development</p>
+              <p className="font-mono text-blue-400">development</p>
             </div>
             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <p className="text-sm text-muted-foreground mb-1">Node Version</p>
@@ -2061,7 +2061,7 @@ export default function Developer() {
     },
     investorPricing: {
       title: "Investor Pricing Sheet",
-      icon: <DollarSign className="w-8 h-8 text-green-400" />,
+      icon: <DollarSign className="w-8 h-8 text-blue-400" />,
       content: <InvestorPricingContent />,
     },
     integrations: {
@@ -2075,14 +2075,14 @@ export default function Developer() {
             <p className="text-sm text-muted-foreground">Connect to external services for enhanced functionality</p>
           </div>
           <div className="space-y-4">
-            <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-4 border border-green-500/30">
+            <div className="bg-gradient-to-r from-blue-500/10 to-blue-500/10 rounded-xl p-4 border border-blue-500/30">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <DollarSign className="w-4 h-4 text-green-400" />
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <DollarSign className="w-4 h-4 text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h4 className="font-bold text-green-400">QuickBooks Online</h4>
+                    <h4 className="font-bold text-blue-400">QuickBooks Online</h4>
                     <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400">Action Required</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
@@ -2091,23 +2091,23 @@ export default function Developer() {
                   <div className="mt-3 space-y-2 text-xs">
                     <div className="font-medium text-foreground">Setup Instructions:</div>
                     <div className="flex items-start gap-2 text-muted-foreground">
-                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">1</span>
-                      <span>Go to <a href="https://developer.intuit.com" target="_blank" rel="noopener noreferrer" className="text-green-400 underline hover:text-green-300">developer.intuit.com</a> and create a developer account</span>
+                      <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">1</span>
+                      <span>Go to <a href="https://developer.intuit.com" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline hover:text-blue-300">developer.intuit.com</a> and create a developer account</span>
                     </div>
                     <div className="flex items-start gap-2 text-muted-foreground">
-                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">2</span>
+                      <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">2</span>
                       <span>Create a new app and select "QuickBooks Online and Payments"</span>
                     </div>
                     <div className="flex items-start gap-2 text-muted-foreground">
-                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">3</span>
+                      <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">3</span>
                       <span>Copy your <strong>Client ID</strong> and <strong>Client Secret</strong> from Keys & OAuth tab</span>
                     </div>
                     <div className="flex items-start gap-2 text-muted-foreground">
-                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">4</span>
+                      <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">4</span>
                       <span>Set Redirect URI to: <code className="bg-black/20 px-1 rounded">https://your-domain.com/api/quickbooks/callback</code></span>
                     </div>
                     <div className="flex items-start gap-2 text-muted-foreground">
-                      <span className="bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded text-[10px] font-bold">5</span>
+                      <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">5</span>
                       <span>Add secrets: QUICKBOOKS_CLIENT_ID, QUICKBOOKS_CLIENT_SECRET</span>
                     </div>
                   </div>
@@ -2116,7 +2116,7 @@ export default function Developer() {
                       href="https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 transition-colors"
                     >
                       <ExternalLink className="w-3 h-3" />
                       OAuth 2.0 Docs
@@ -2125,7 +2125,7 @@ export default function Developer() {
                       href="https://developer.intuit.com" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 transition-colors"
                     >
                       <ExternalLink className="w-3 h-3" />
                       Get API Keys
@@ -2182,12 +2182,12 @@ export default function Developer() {
             </div>
             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-4 border border-border dark:border-white/10">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Zap className="w-4 h-4 text-green-400" />
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Zap className="w-4 h-4 text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-green-400">Hotjar / Heatmaps</h4>
+                    <h4 className="font-bold text-blue-400">Hotjar / Heatmaps</h4>
                     <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">Future</span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
@@ -2208,7 +2208,7 @@ export default function Developer() {
     },
     businessRoadmap: {
       title: "Business Roadmap & Valuation",
-      icon: <TrendingUp className="w-8 h-8 text-green-400" />,
+      icon: <TrendingUp className="w-8 h-8 text-blue-400" />,
       content: <BusinessRoadmapContent />,
     },
   };
@@ -2341,8 +2341,8 @@ export default function Developer() {
                   </div>
                   
                   {/* What's Needed */}
-                  <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
-                    <h4 className="font-semibold text-green-600 mb-2 flex items-center gap-2">
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <h4 className="font-semibold text-blue-600 mb-2 flex items-center gap-2">
                       <CheckCircle className="w-4 h-4" />
                       What's Needed to Move Forward
                     </h4>
@@ -2424,27 +2424,27 @@ export default function Developer() {
                           </li>
                         </ul>
                       </div>
-                      <div className="p-2 rounded bg-green-500/10">
-                        <p className="font-medium text-green-700 mb-1">Why Our New Site Helps:</p>
+                      <div className="p-2 rounded bg-blue-500/10">
+                        <p className="font-medium text-blue-700 mb-1">Why Our New Site Helps:</p>
                         <ul className="space-y-1.5">
                           <li className="flex items-start gap-2">
-                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                             <span>It's <strong>additional exposure</strong>, not a replacement</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                             <span>Has real tools: instant estimates, room visualization, booking</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                             <span>Can add banner: "Visit our main site at [WordPress URL]"</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                             <span>Can label as "New Tools Beta" or "Estimator Preview"</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                            <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                             <span>If WordPress isn't generating leads, you're not losing anything</span>
                           </li>
                         </ul>
@@ -2461,14 +2461,14 @@ export default function Developer() {
                   </div>
                   
                   {/* What I CAN Do Right Now */}
-                  <div className="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-                    <h4 className="font-semibold text-emerald-600 mb-2 flex items-center gap-2">
+                  <div className="p-4 rounded-lg bg-sky-500/5 border border-sky-500/20">
+                    <h4 className="font-semibold text-sky-600 mb-2 flex items-center gap-2">
                       <Zap className="w-4 h-4" />
                       What I CAN Do Right Now (If Given Access)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                       <div className="p-2 rounded bg-background/50">
-                        <p className="font-medium text-emerald-600">For NPP (has LSA):</p>
+                        <p className="font-medium text-sky-600">For NPP (has LSA):</p>
                         <ul className="text-xs space-y-1 mt-1">
                           <li>• Review LSA performance data</li>
                           <li>• Connect leads to our tracking system</li>
@@ -2478,7 +2478,7 @@ export default function Developer() {
                         </ul>
                       </div>
                       <div className="p-2 rounded bg-background/50">
-                        <p className="font-medium text-emerald-600">For Lume (waiting on LLC):</p>
+                        <p className="font-medium text-sky-600">For Lume (waiting on LLC):</p>
                         <ul className="text-xs space-y-1 mt-1">
                           <li>• Site is ready - just needs approval to go live</li>
                           <li>• Can label as "Beta" or "Preview"</li>
@@ -2521,7 +2521,7 @@ export default function Developer() {
                 </div>
                 
                 {/* Billboard vs LSA Comparison */}
-                <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-red-500/5 to-green-500/5 border border-amber-500/30">
+                <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-red-500/5 to-blue-500/5 border border-amber-500/30">
                   <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
                     <DollarSign className="w-5 h-5 text-amber-500" />
                     The $50K Question: Billboards vs Google LSA
@@ -2556,35 +2556,35 @@ export default function Developer() {
                     </div>
                     
                     {/* LSA Column */}
-                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                      <h5 className="font-semibold text-green-600 mb-2">Google LSA ($2,000/month)</h5>
+                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <h5 className="font-semibold text-blue-600 mb-2">Google LSA ($2,000/month)</h5>
                       <ul className="text-xs space-y-1.5">
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span><strong>Painters pay $20-$40 per lead</strong></span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span>$2,000/month = 50-100 leads</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span>50-60% close rate on LSA leads</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span>25-60 booked jobs per month</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span>"Google Guaranteed" badge = trust</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span>Pay only for actual leads (not views)</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-green-500" />
+                          <Circle className="w-1.5 h-1.5 mt-1.5 flex-shrink-0 fill-current text-blue-500" />
                           <span>Dispute bad leads and get refunds</span>
                         </li>
                       </ul>
@@ -2601,11 +2601,11 @@ export default function Developer() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">LSA:</p>
-                        <p className="font-medium text-green-600">600-1,200 leads, 300-700 jobs</p>
+                        <p className="font-medium text-blue-600">600-1,200 leads, 300-700 jobs</p>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      At avg $2,000/job, that's <strong className="text-green-600">$600K-$1.4M potential revenue</strong> from LSA vs. "hope people see the billboard"
+                      At avg $2,000/job, that's <strong className="text-blue-600">$600K-$1.4M potential revenue</strong> from LSA vs. "hope people see the billboard"
                     </p>
                   </div>
                   
@@ -2706,30 +2706,30 @@ export default function Developer() {
                   </div>
                   
                   {/* The Benefits */}
-                  <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
-                    <h4 className="font-semibold text-green-600 mb-3 flex items-center gap-2">
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <h4 className="font-semibold text-blue-600 mb-3 flex items-center gap-2">
                       <CheckCircle className="w-4 h-4" />
                       The Benefits
                     </h4>
                     <ul className="text-sm space-y-2">
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                         <span><strong>Save 5+ hours/week</strong> - No more creating posts from scratch</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                         <span><strong>Consistent presence</strong> - Always have something to post</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                         <span><strong>Professional quality</strong> - Templates written by marketing pros</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                         <span><strong>Platform-specific</strong> - Right format for each social network</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-green-600" />
+                        <CheckCircle className="w-3 h-3 mt-1 flex-shrink-0 text-blue-600" />
                         <span><strong>Learn what works</strong> - Analytics show which posts get leads</span>
                       </li>
                     </ul>
@@ -2995,8 +2995,8 @@ export default function Developer() {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
-                    <span className="text-green-400 font-medium">Connected</span>
+                    <div className="w-3 h-3 rounded-full bg-blue-400 animate-pulse" />
+                    <span className="text-blue-400 font-medium">Connected</span>
                   </div>
                   <div className="bg-black/30 rounded-xl p-4 font-mono text-xs text-muted-foreground">
                     <p>PostgreSQL + Drizzle ORM</p>
@@ -3028,8 +3028,8 @@ export default function Developer() {
                   <h3 className="text-xl font-bold">API Status</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="text-sm text-green-400">All systems operational</span>
+                  <div className="w-3 h-3 rounded-full bg-blue-400" />
+                  <span className="text-sm text-blue-400">All systems operational</span>
                 </div>
               </GlassCard>
             </motion.div>
@@ -3149,7 +3149,7 @@ export default function Developer() {
                     className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
                     whileHover={{ rotate: 10 }}
                   >
-                    <DollarSign className="w-4 h-4 text-green-400" />
+                    <DollarSign className="w-4 h-4 text-blue-400" />
                   </motion.div>
                   <h3 className="text-xl font-bold">Investor Pricing</h3>
                 </div>
@@ -3197,12 +3197,12 @@ export default function Developer() {
                     className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
                     whileHover={{ rotate: 10 }}
                   >
-                    <Terminal className="w-4 h-4 text-green-400" />
+                    <Terminal className="w-4 h-4 text-blue-400" />
                   </motion.div>
                   <h3 className="text-xl font-bold">Console</h3>
                 </div>
                 <div className="bg-black/50 rounded-xl p-4 font-mono text-sm h-32 overflow-auto border border-border dark:border-white/10">
-                  <p className="text-green-400">[System] Application initialized</p>
+                  <p className="text-blue-400">[System] Application initialized</p>
                   <p className="text-muted-foreground">[Info] Database connection established</p>
                   <p className="text-purple-400">[Darkwave] Connected to Dev Hub</p>
                   <p className="text-accent">[Ready] Server listening on port 5000</p>
@@ -3361,7 +3361,7 @@ export default function Developer() {
                     className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
                     whileHover={{ rotate: 10 }}
                   >
-                    <TrendingUp className="w-4 h-4 text-green-400" />
+                    <TrendingUp className="w-4 h-4 text-blue-400" />
                   </motion.div>
                   <h3 className="text-xl font-bold">Business Roadmap</h3>
                 </div>

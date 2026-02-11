@@ -84,7 +84,7 @@ export function DripJobsImportCard({ externalOpen, onExternalOpenChange }: DripJ
           <div className="mb-3 p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-border dark:border-white/10">
             <div className="flex items-center gap-2 text-xs">
               {lastImport.status === "completed" ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
               ) : (
                 <Clock className="w-3.5 h-3.5 text-yellow-500" />
               )}

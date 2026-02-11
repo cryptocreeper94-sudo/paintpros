@@ -77,7 +77,7 @@ export default function Portfolio() {
       "Bedroom": "from-purple-500/30 to-purple-600/30",
       "Kitchen": "from-orange-500/30 to-orange-600/30",
       "Bathroom": "from-blue-500/30 to-blue-600/30",
-      "Living Area": "from-green-500/30 to-green-600/30",
+      "Living Area": "from-blue-500/30 to-blue-600/30",
       "Exterior": "from-amber-500/30 to-amber-600/30",
     };
     return colors[category] || "from-zinc-500/30 to-zinc-600/30";

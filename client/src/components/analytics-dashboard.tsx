@@ -112,7 +112,7 @@ interface AnalyticsData {
 const DEVICE_COLORS = {
   desktop: "#f59e0b",
   mobile: "#3b82f6",
-  tablet: "#10b981"
+  tablet: "#0ea5e9"
 };
 
 export function AnalyticsDashboard() {
@@ -193,16 +193,16 @@ export function AnalyticsDashboard() {
           data-testid="card-metric-live"
         >
           <GlassCard className="p-5 relative overflow-hidden group" glow>
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <HelpCircle className="w-4 h-4 text-green-400/60" />
+              <HelpCircle className="w-4 h-4 text-blue-400/60" />
             </div>
             <div className="relative">
-              <div className="flex items-center gap-2 text-sm text-green-400 mb-1">
+              <div className="flex items-center gap-2 text-sm text-blue-400 mb-1">
                 <Zap className="w-4 h-4" />
                 Live Now
               </div>
-              <div className="text-3xl font-bold text-green-400" data-testid="text-live-visitors">
+              <div className="text-3xl font-bold text-blue-400" data-testid="text-live-visitors">
                 {data.liveVisitors}
               </div>
               <div className="text-xs text-muted-foreground mt-1">Active visitors</div>
@@ -519,10 +519,10 @@ export function AnalyticsDashboard() {
 
         <BentoItem colSpan={4} rowSpan={2}>
           <motion.div className="h-full" whileHover={{ scale: 1.01 }}>
-            <GlassCard className="h-full p-5 bg-gradient-to-br from-green-500/10 via-transparent to-teal-500/5" glow>
+            <GlassCard className="h-full p-5 bg-gradient-to-br from-blue-500/10 via-transparent to-teal-500/5" glow>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 flex items-center justify-center">
-                  <ArrowUpRight className="w-4 h-4 text-green-400" />
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-teal-500/20 flex items-center justify-center">
+                  <ArrowUpRight className="w-4 h-4 text-blue-400" />
                 </div>
                 <h3 className="text-lg font-display font-bold">Top Referrers</h3>
               </div>
@@ -539,7 +539,7 @@ export function AnalyticsDashboard() {
                       <span className="text-sm truncate max-w-[120px]" title={ref.referrer}>
                         {ref.referrer}
                       </span>
-                      <span className="text-sm font-bold text-green-400">{ref.count}</span>
+                      <span className="text-sm font-bold text-blue-400">{ref.count}</span>
                     </motion.div>
                   ))
                 ) : (

@@ -80,7 +80,7 @@ export function FeatureModal({ open, onOpenChange, type, warrantyYears = 3 }: Fe
           <ul className="space-y-3">
             {items.map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm md:text-base text-foreground">{item}</span>
               </li>
             ))}

@@ -345,7 +345,7 @@ export default function ProposalPage() {
             <Globe className="w-5 h-5 text-[#4A5D3E]" />
             Multi-Trade Vertical Expansion
           </h2>
-          <Card className="bg-gradient-to-br from-green-50 to-teal-50 border-green-200">
+          <Card className="bg-gradient-to-br from-blue-50 to-teal-50 border-blue-200">
             <CardContent className="p-6">
               <p className="text-gray-700 mb-4">
                 The platform architecture supports expansion beyond painting into additional skilled trade verticals. Each vertical shares the same core infrastructure but features trade-specific branding, services, and estimators:
@@ -361,19 +361,19 @@ export default function ProposalPage() {
                 ].map((vertical) => (
                   <div key={vertical.name} className={`p-3 rounded-lg border text-center ${
                     vertical.status === "Live" 
-                      ? "bg-green-100 border-green-300" 
-                      : "bg-white border-green-200"
+                      ? "bg-blue-100 border-blue-300" 
+                      : "bg-white border-blue-200"
                   }`}>
-                    <p className="font-medium text-green-800 text-sm">{vertical.name}</p>
+                    <p className="font-medium text-blue-800 text-sm">{vertical.name}</p>
                     <p className="text-xs text-gray-500 font-mono">{vertical.domain}</p>
                     <span className={`text-xs mt-1 inline-block ${
-                      vertical.status === "Live" ? "text-green-600" : "text-gray-400"
+                      vertical.status === "Live" ? "text-blue-600" : "text-gray-400"
                     }`}>{vertical.status}</span>
                   </div>
                 ))}
               </div>
-              <div className="bg-green-100 rounded-lg p-3 border border-green-200">
-                <p className="text-sm text-green-800 font-medium">
+              <div className="bg-blue-100 rounded-lg p-3 border border-blue-200">
+                <p className="text-sm text-blue-800 font-medium">
                   Combined Total Addressable Market: $2.2T+ across all trade verticals
                 </p>
               </div>

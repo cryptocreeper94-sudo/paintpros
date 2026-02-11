@@ -218,7 +218,7 @@ export default function MarketingOverview() {
               { icon: Calendar, title: "Content Calendar", desc: "Plan and schedule posts across platforms", bgClass: "bg-purple-500/20", textClass: "text-purple-400" },
               { icon: FileText, title: "Post Catalog", desc: "Save and organize all your content in one library", bgClass: "bg-blue-500/20", textClass: "text-blue-400" },
               { icon: Megaphone, title: "Copy Generator", desc: "Create social posts, ads, and SMS with smart assistance", bgClass: "bg-amber-500/20", textClass: "text-amber-400" },
-              { icon: BarChart3, title: "Campaign ROI Tracker", desc: "Track spend and see what's actually working", bgClass: "bg-emerald-500/20", textClass: "text-emerald-400" },
+              { icon: BarChart3, title: "Campaign ROI Tracker", desc: "Track spend and see what's actually working", bgClass: "bg-sky-500/20", textClass: "text-sky-400" },
               { icon: Target, title: "Analytics Dashboard", desc: "Website traffic, visitors, and performance metrics", bgClass: "bg-pink-500/20", textClass: "text-pink-400" },
               { icon: Lightbulb, title: "Marketing Playbook", desc: "Proven psychology tactics that drive action", bgClass: "bg-orange-500/20", textClass: "text-orange-400" },
             ].map((feature, i) => (
@@ -260,24 +260,24 @@ export default function MarketingOverview() {
           </motion.div>
           
           <div className="grid sm:grid-cols-2 gap-6">
-            <Card className="bg-emerald-900/20 border-emerald-500/20">
+            <Card className="bg-sky-900/20 border-sky-500/20">
               <CardHeader>
-                <CardTitle className="text-emerald-400 flex items-center gap-2">
+                <CardTitle className="text-sky-400 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5" />
                   Connected Now
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-3 text-white/80">
-                  <Badge className="bg-emerald-500/20 text-emerald-300">Active</Badge>
+                  <Badge className="bg-sky-500/20 text-sky-300">Active</Badge>
                   <span>Google Analytics - Website traffic tracking</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/80">
-                  <Badge className="bg-emerald-500/20 text-emerald-300">Active</Badge>
+                  <Badge className="bg-sky-500/20 text-sky-300">Active</Badge>
                   <span>Google Local Services - Lead management</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/80">
-                  <Badge className="bg-emerald-500/20 text-emerald-300">Active</Badge>
+                  <Badge className="bg-sky-500/20 text-sky-300">Active</Badge>
                   <span>Google Calendar - Booking sync</span>
                 </div>
               </CardContent>
@@ -365,9 +365,9 @@ export default function MarketingOverview() {
               <CardContent className="text-center">
                 <p className="text-white/60 text-sm mb-4">Website, booking, CRM, crew management</p>
                 <div className="space-y-2 text-sm text-white/70">
-                  <p className="flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Professional website</p>
-                  <p className="flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Online booking</p>
-                  <p className="flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4 text-emerald-400" /> Lead management</p>
+                  <p className="flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4 text-sky-400" /> Professional website</p>
+                  <p className="flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4 text-sky-400" /> Online booking</p>
+                  <p className="flex items-center justify-center gap-2"><CheckCircle className="w-4 h-4 text-sky-400" /> Lead management</p>
                 </div>
               </CardContent>
             </Card>

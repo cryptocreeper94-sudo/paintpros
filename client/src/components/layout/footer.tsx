@@ -70,7 +70,7 @@ export function Footer() {
             <span className="mx-1">|</span>
             <a href="https://dwtl.io" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-600 transition-colors hidden sm:inline">DWTL</a>
             <span className="hidden sm:inline mx-1">|</span>
-            <a href="https://tlid.io" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 transition-colors hidden sm:inline">TLId</a>
+            <a href="https://tlid.io" target="_blank" rel="noopener noreferrer" className="hover:text-sky-600 transition-colors hidden sm:inline">TLId</a>
             <span className="ml-1">© 2026</span>
           </div>
           
@@ -179,14 +179,14 @@ export function Footer() {
             
             <div className="space-y-4">
               {/* First in Industry Badge */}
-              <div className="bg-gradient-to-r from-purple-100 to-emerald-100 border border-emerald-300 rounded-lg p-3 text-center">
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
+              <div className="bg-gradient-to-r from-purple-100 to-sky-100 border border-sky-300 rounded-lg p-3 text-center">
+                <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wider">
                   {isDemo ? "Dual Chain Verified" : "Verified Member"}
                 </span>
                 <p className="text-sm font-semibold text-gray-900 mt-0.5">
                   {isDemo 
-                    ? <><span className="text-purple-600">Solana</span> + <span className="text-emerald-600">Darkwave</span> Verified</>
-                    : <><span className="text-emerald-600">TrustLayer</span> Verified Member</>
+                    ? <><span className="text-purple-600">Solana</span> + <span className="text-sky-600">Darkwave</span> Verified</>
+                    : <><span className="text-sky-600">TrustLayer</span> Verified Member</>
                   }
                 </p>
               </div>
@@ -218,7 +218,7 @@ export function Footer() {
                   <span className="text-gray-500">Status:</span>
                   <span className={`font-medium ${
                     releaseInfo?.solanaTxStatus === 'confirmed' 
-                      ? 'text-green-600' 
+                      ? 'text-blue-600' 
                       : releaseInfo?.solanaTxStatus === 'genesis'
                         ? 'text-amber-600'
                         : 'text-gray-500'
@@ -303,7 +303,7 @@ export function Footer() {
                   <span className="text-gray-400">Status:</span>
                   <span className={`font-medium ${
                     releaseInfo?.solanaTxStatus === 'confirmed' 
-                      ? 'text-green-400' 
+                      ? 'text-blue-400' 
                       : 'text-amber-400'
                   }`}>
                     {releaseInfo?.solanaTxStatus === 'confirmed' 
@@ -318,19 +318,19 @@ export function Footer() {
                 <h4 className="text-sm font-medium text-amber-400 mb-2">What's New in v{version}</h4>
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-0.5">•</span>
+                    <span className="text-blue-400 mt-0.5">•</span>
                     <span>Automatic version stamping on deploy</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-0.5">•</span>
+                    <span className="text-blue-400 mt-0.5">•</span>
                     <span>Improved mobile layout with compact grid</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-0.5">•</span>
+                    <span className="text-blue-400 mt-0.5">•</span>
                     <span>Enhanced estimator with photo uploads</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-0.5">•</span>
+                    <span className="text-blue-400 mt-0.5">•</span>
                     <span>Solana blockchain verification</span>
                   </li>
                 </ul>

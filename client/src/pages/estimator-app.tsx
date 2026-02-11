@@ -202,9 +202,9 @@ export default function EstimatorApp() {
           )}
 
           {isInstalled && (
-            <Card className="mb-6 border-green-500/30 bg-green-900/20 backdrop-blur">
+            <Card className="mb-6 border-blue-500/30 bg-blue-900/20 backdrop-blur">
               <CardContent className="pt-6">
-                <div className="flex items-center gap-3 text-green-400">
+                <div className="flex items-center gap-3 text-blue-400">
                   <CheckCircle className="w-5 h-5" />
                   <span className="font-medium">App installed on your device</span>
                 </div>
@@ -295,7 +295,7 @@ export default function EstimatorApp() {
                           variant="outline"
                           data-testid="button-copy-link"
                         >
-                          {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                          {copied ? <Check className="w-4 h-4 text-blue-400" /> : <Copy className="w-4 h-4" />}
                         </Button>
                       </div>
                     </div>

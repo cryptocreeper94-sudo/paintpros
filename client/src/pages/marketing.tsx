@@ -14,14 +14,13 @@ import leadSourceChart from "@assets/Copilot_20260104_182823_1767572957239.png";
 import leadGrowthChart from "@assets/image_17675100614516569353268297259618_1767572957240.jpeg";
 import industryGrowthChart from "@assets/image_17675101516292714960872208183295_1767572957241.jpeg";
 
-// Brand colors from spec
 const colors = {
-  background: "#FAF7F0",
-  textDark: "#1F3D2B",
-  greenLight: "#CFE8D5",
-  greenMid: "#8DBF9A",
-  greenDark: "#2F6B3F",
-  gold: "#E8C15C"
+  background: "#f8fafc",
+  textDark: "#0f172a",
+  greenLight: "#e2e8f0",
+  greenMid: "#475569",
+  greenDark: "#1e293b",
+  gold: "#3b82f6"
 };
 
 // Target Audience by County data
@@ -30,7 +29,7 @@ const countyData = [
   { name: "Davidson", value: 30, color: colors.greenDark },
   { name: "Rutherford", value: 15, color: colors.greenMid },
   { name: "Wilson", value: 10, color: colors.greenLight },
-  { name: "Sumner/Dickson", value: 10, color: "#A8D4B0" }
+  { name: "Sumner/Dickson", value: 10, color: "#93c5fd" }
 ];
 
 export default function Marketing() {
@@ -981,7 +980,7 @@ export default function Marketing() {
                     </p>
                     <ul className="text-sm space-y-1" style={{ color: colors.textDark }}>
                       <li>• Logo files (all formats: PNG, SVG, PDF)</li>
-                      <li>• Official color codes (Dark Green #1F3D2B, Gold #E8C15C, Cream #FAF7F0)</li>
+                      <li>• Official color codes (Navy #0f172a, White #f8fafc, Accent Blue #1e3a5f)</li>
                       <li>• Typography guidelines (Playfair Display for headers)</li>
                       <li>• Social media templates, flyer templates, ad templates</li>
                       <li>• Access credentials for Facebook, Instagram, Google Business Profile, Meta Ads, Google Ads</li>

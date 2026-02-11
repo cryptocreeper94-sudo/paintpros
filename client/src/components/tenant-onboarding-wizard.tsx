@@ -27,7 +27,7 @@ const TRADE_VERTICALS = [
   { id: "hvac", name: "HVAC", nameEs: "Climatización", icon: Wind, color: "#0ea5e9", description: "Heating, cooling & ventilation", descriptionEs: "Calefacción, refrigeración y ventilación" },
   { id: "electrical", name: "Electrical", nameEs: "Electricidad", icon: Zap, color: "#eab308", description: "Electrical installation & repair", descriptionEs: "Instalación y reparación eléctrica" },
   { id: "plumbing", name: "Plumbing", nameEs: "Plomería", icon: Droplets, color: "#2563eb", description: "Plumbing services & repairs", descriptionEs: "Servicios y reparaciones de plomería" },
-  { id: "landscaping", name: "Landscaping", nameEs: "Jardinería", icon: Leaf, color: "#22c55e", description: "Landscape design & maintenance", descriptionEs: "Diseño y mantenimiento de jardines" },
+  { id: "landscaping", name: "Landscaping", nameEs: "Jardinería", icon: Leaf, color: "#3b82f6", description: "Landscape design & maintenance", descriptionEs: "Diseño y mantenimiento de jardines" },
   { id: "construction", name: "General Construction", nameEs: "Construcción General", icon: HardHat, color: "#78716c", description: "Remodeling & new construction", descriptionEs: "Remodelación y nueva construcción" },
 ];
 
@@ -579,14 +579,14 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                         <div className="bg-white/10 rounded-lg p-3">
                           <div className="text-2xl font-bold text-yellow-400">$59</div>
                           <div className="text-white/70">{language === 'es' ? '3 oficios' : '3 trades'}</div>
-                          <Badge className="bg-green-500/20 text-green-300 text-xs mt-1">
+                          <Badge className="bg-blue-500/20 text-blue-300 text-xs mt-1">
                             {language === 'es' ? 'Ahorra $28' : 'Save $28'}
                           </Badge>
                         </div>
                         <div className="bg-white/10 rounded-lg p-3">
                           <div className="text-2xl font-bold text-yellow-400">$99</div>
                           <div className="text-white/70">{language === 'es' ? '7 oficios' : 'All 7'}  </div>
-                          <Badge className="bg-green-500/20 text-green-300 text-xs mt-1">
+                          <Badge className="bg-blue-500/20 text-blue-300 text-xs mt-1">
                             {language === 'es' ? 'Ahorra $104' : 'Save $104'}
                           </Badge>
                         </div>
@@ -650,7 +650,7 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                           </TabsTrigger>
                           <TabsTrigger value="year" data-testid="billing-annual">
                             {language === 'es' ? 'Anual' : 'Annual'}
-                            <Badge className="ml-2 bg-green-500/20 text-green-600 text-xs">
+                            <Badge className="ml-2 bg-blue-500/20 text-blue-600 text-xs">
                               {language === 'es' ? '2 meses gratis' : '2 months free'}
                             </Badge>
                           </TabsTrigger>
@@ -697,7 +697,7 @@ export function TenantOnboardingWizard({ onComplete }: TenantOnboardingWizardPro
                             <ul className="space-y-2 mt-4">
                               {(language === 'es' ? tier.featuresEs : tier.features).map((feature: string, i: number) => (
                                 <li key={i} className="flex items-start gap-2 text-sm">
-                                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                  <CheckCircle2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                                   <span>{feature}</span>
                                 </li>
                               ))}

@@ -95,8 +95,8 @@ const DASHBOARD_ROLES: DashboardRole[] = [
     name: "Developer",
     description: "Technical settings, integrations, and system configuration",
     icon: Code,
-    color: "text-green-400",
-    bgColor: "bg-green-500/20",
+    color: "text-blue-400",
+    bgColor: "bg-blue-500/20",
     path: "/developer",
     pin: "0424",
     features: [

@@ -29,7 +29,7 @@ interface ConversionResult {
 const planFeatures: Record<string, { features: string[]; icon: any; color: string }> = {
   starter: {
     icon: Rocket,
-    color: 'emerald',
+    color: 'sky',
     features: [
       'Unlimited estimates and proposals',
       'Up to 50 leads per month',
@@ -39,7 +39,7 @@ const planFeatures: Record<string, { features: string[]; icon: any; color: strin
   },
   professional: {
     icon: Crown,
-    color: 'emerald',
+    color: 'sky',
     features: [
       'Unlimited estimates and proposals',
       'Unlimited lead capture',
@@ -143,10 +143,10 @@ export default function TrialUpgradeSuccess() {
 
   if (converting) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center p-4">
-        <GlassCard hoverEffect={false} glow="green" depth="medium" className="max-w-md w-full p-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30 flex items-center justify-center p-4">
+        <GlassCard hoverEffect={false} glow="blue" depth="medium" className="max-w-md w-full p-8">
           <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto mb-4" />
+            <Loader2 className="w-12 h-12 animate-spin text-sky-600 mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2 text-slate-900">Setting Up Your Account</h2>
             <p className="text-slate-600">
               We're activating your full access now. This only takes a moment...
@@ -158,14 +158,14 @@ export default function TrialUpgradeSuccess() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center p-4">
-      <GlassCard hoverEffect="3d" glow="green" depth="deep" className="max-w-lg w-full p-6 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/30 flex items-center justify-center p-4">
+      <GlassCard hoverEffect="3d" glow="blue" depth="deep" className="max-w-lg w-full p-6 md:p-8">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+          <div className="w-16 h-16 rounded-full bg-sky-100 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="w-10 h-10 text-sky-600" />
           </div>
           
-          <Badge className="mb-3 bg-emerald-100 text-emerald-700 border-0">
+          <Badge className="mb-3 bg-sky-100 text-sky-700 border-0">
             <Sparkles className="w-3 h-3 mr-1" />
             Account Activated
           </Badge>
@@ -180,11 +180,11 @@ export default function TrialUpgradeSuccess() {
         </div>
 
         <Accordion type="single" collapsible defaultValue="features" className="mb-6">
-          <AccordionItem value="features" className="border rounded-lg bg-emerald-50/80 overflow-hidden">
+          <AccordionItem value="features" className="border rounded-lg bg-sky-50/80 overflow-hidden">
             <AccordionTrigger className="px-4 py-3 hover:no-underline">
               <div className="flex items-center gap-2">
-                <PlanIcon className="w-5 h-5 text-emerald-600" />
-                <span className="font-semibold text-emerald-900">
+                <PlanIcon className="w-5 h-5 text-sky-600" />
+                <span className="font-semibold text-sky-900">
                   {selectedPlan ? selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1) : 'Professional'} Plan Features
                 </span>
               </div>
@@ -193,8 +193,8 @@ export default function TrialUpgradeSuccess() {
               <ul className="space-y-2">
                 {plan?.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span className="text-sm text-emerald-800">{feature}</span>
+                    <Check className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                    <span className="text-sm text-sky-800">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -204,7 +204,7 @@ export default function TrialUpgradeSuccess() {
 
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="p-3 rounded-lg bg-slate-50 text-center">
-            <FileText className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
+            <FileText className="w-5 h-5 mx-auto mb-1 text-sky-600" />
             <p className="text-xs text-slate-600">Unlimited Estimates</p>
           </div>
           <div className="p-3 rounded-lg bg-slate-50 text-center">

@@ -225,8 +225,8 @@ export function findClosestByBrand(
 }
 
 export function getMatchQuality(distance: number): { label: string; color: string } {
-  if (distance < 3) return { label: "Exact Match", color: "text-green-500" };
-  if (distance < 6) return { label: "Very Close", color: "text-emerald-500" };
+  if (distance < 3) return { label: "Exact Match", color: "text-blue-500" };
+  if (distance < 6) return { label: "Very Close", color: "text-sky-500" };
   if (distance < 10) return { label: "Close Match", color: "text-yellow-500" };
   if (distance < 20) return { label: "Similar", color: "text-orange-500" };
   return { label: "Approximate", color: "text-red-400" };

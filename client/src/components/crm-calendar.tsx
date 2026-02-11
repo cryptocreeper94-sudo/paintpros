@@ -25,16 +25,16 @@ const EVENT_TYPES = [
   { value: 'appointment', label: 'Appointment', defaultColor: '#3b82f6' },
   { value: 'meeting', label: 'Meeting', defaultColor: '#8b5cf6' },
   { value: 'deadline', label: 'Deadline', defaultColor: '#ef4444' },
-  { value: 'task', label: 'Task', defaultColor: '#22c55e' },
+  { value: 'task', label: 'Task', defaultColor: '#0ea5e9' },
   { value: 'reminder', label: 'Reminder', defaultColor: '#f59e0b' },
   { value: 'follow-up', label: 'Follow-up', defaultColor: '#06b6d4' },
   { value: 'estimate', label: 'Estimate', defaultColor: '#ec4899' },
-  { value: 'job', label: 'Job', defaultColor: '#10b981' },
+  { value: 'job', label: 'Job', defaultColor: '#38bdf8' },
 ];
 
 const COLOR_PRESETS = [
-  '#3b82f6', '#8b5cf6', '#ef4444', '#22c55e', '#f59e0b', 
-  '#06b6d4', '#ec4899', '#10b981', '#6366f1', '#84cc16'
+  '#3b82f6', '#8b5cf6', '#ef4444', '#0ea5e9', '#f59e0b', 
+  '#06b6d4', '#ec4899', '#38bdf8', '#6366f1', '#7dd3fc'
 ];
 
 const REMINDER_OPTIONS = [

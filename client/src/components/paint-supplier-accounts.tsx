@@ -94,7 +94,7 @@ export function PaintSupplierAccounts() {
             className="bg-gray-800/50 border-gray-700 text-white"
           />
           {accounts.sherwinWilliamsAccountNumber && (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
               <Check className="w-3 h-3 mr-1" />
               Account Linked
             </Badge>
@@ -104,14 +104,14 @@ export function PaintSupplierAccounts() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label className="text-gray-300 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-emerald-400" />
+              <Building2 className="w-4 h-4 text-sky-400" />
               Benjamin Moore Contractor
             </Label>
             <a 
               href="https://www.mybenjaminmoore.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300 text-xs flex items-center gap-1"
+              className="text-sky-400 hover:text-sky-300 text-xs flex items-center gap-1"
             >
               <ExternalLink className="w-3 h-3" />
               Open BM Portal
@@ -125,7 +125,7 @@ export function PaintSupplierAccounts() {
             className="bg-gray-800/50 border-gray-700 text-white"
           />
           {accounts.benjaminMooreAccountNumber && (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
               <Check className="w-3 h-3 mr-1" />
               Account Linked
             </Badge>

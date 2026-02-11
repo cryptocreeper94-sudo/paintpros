@@ -152,12 +152,12 @@ export default function ClaimSubdomain() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-lg w-full"
         >
-          <GlassCard className="p-8 text-center" glow="green">
+          <GlassCard className="p-8 text-center" glow="blue">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
-              className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 mx-auto flex items-center justify-center mb-6"
+              className="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 to-teal-500 mx-auto flex items-center justify-center mb-6"
             >
               <CheckCircle className="w-10 h-10 text-white" />
             </motion.div>
@@ -167,12 +167,12 @@ export default function ClaimSubdomain() {
             
             <div className="bg-slate-800/50 rounded-lg p-4 mb-6">
               <p className="text-sm text-slate-400 mb-1">Your URL</p>
-              <p className="text-xl font-bold text-emerald-400">{claimedDomain}</p>
+              <p className="text-xl font-bold text-sky-400">{claimedDomain}</p>
             </div>
             
             <div className="space-y-3">
               <Link href="/trustlayer">
-                <Button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600">
+                <Button className="w-full bg-gradient-to-r from-sky-600 to-teal-600">
                   <Building2 className="w-4 h-4 mr-2" />
                   Go to TrustLayer Dashboard
                 </Button>
@@ -275,7 +275,7 @@ export default function ClaimSubdomain() {
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       className={`flex items-center gap-2 mt-3 ${
-                        checkResult.available ? 'text-emerald-400' : 'text-red-400'
+                        checkResult.available ? 'text-sky-400' : 'text-red-400'
                       }`}
                     >
                       {checkResult.available ? (
@@ -311,7 +311,7 @@ export default function ClaimSubdomain() {
               {!authUser ? (
                 <Button
                   onClick={handleLogin}
-                  className="w-full h-14 text-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+                  className="w-full h-14 text-lg bg-gradient-to-r from-sky-600 to-teal-600"
                   data-testid="button-login"
                 >
                   <LogIn className="w-5 h-5 mr-2" />

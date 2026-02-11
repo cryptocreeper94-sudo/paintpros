@@ -268,7 +268,7 @@ const CATEGORIES = [
 const PLATFORMS = [
   { id: "instagram", label: "Instagram", icon: Instagram, color: "from-pink-500 to-purple-600" },
   { id: "facebook", label: "Facebook", icon: Facebook, color: "from-blue-600 to-blue-800" },
-  { id: "nextdoor", label: "Nextdoor", icon: Home, color: "from-green-500 to-green-700" },
+  { id: "nextdoor", label: "Nextdoor", icon: Home, color: "from-blue-500 to-blue-700" },
 ];
 
 const SAMPLE_EVERGREEN_NPP: Partial<SocialPost>[] = [
@@ -613,7 +613,7 @@ function TodaysSuggestedPost({ contentBundles, allImages, messageTemplates }: { 
           <div className="flex gap-2 mt-4">
             {isEditing ? (
               <>
-                <Button size="sm" onClick={handleSave} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700">
+                <Button size="sm" onClick={handleSave} className="flex-1 bg-gradient-to-r from-blue-500 to-sky-600">
                   <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                   Save
                 </Button>
@@ -690,15 +690,15 @@ function MetaAdSpendSection({ tenantId }: { tenantId: string }) {
   const totalClicks = adInsights.insights.reduce((sum, i) => sum + parseInt(i.clicks || '0'), 0);
 
   return (
-    <GlassCard className="p-6 border-l-4 border-green-500 bg-green-500/5">
+    <GlassCard className="p-6 border-l-4 border-blue-500 bg-blue-500/5">
       <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-        <DollarSign className="w-5 h-5 text-green-500" />
+        <DollarSign className="w-5 h-5 text-blue-500" />
         Meta Ads Spend - Live Data
-        <Badge variant="outline" className="ml-2 text-green-600 border-green-500">Live</Badge>
+        <Badge variant="outline" className="ml-2 text-blue-600 border-blue-500">Live</Badge>
       </h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-          <p className="text-2xl font-bold text-green-600">${totalSpend.toFixed(2)}</p>
+        <div className="text-center p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+          <p className="text-2xl font-bold text-blue-600">${totalSpend.toFixed(2)}</p>
           <p className="text-xs text-muted-foreground">Total Spend</p>
         </div>
         <div className="text-center p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
@@ -724,7 +724,7 @@ function MetaAdSpendSection({ tenantId }: { tenantId: string }) {
             </div>
             <div className="flex items-center gap-4 text-sm">
               <span className="text-muted-foreground">{parseInt(insight.impressions).toLocaleString()} imp</span>
-              <span className="font-semibold text-green-600">${parseFloat(insight.spend).toFixed(2)}</span>
+              <span className="font-semibold text-blue-600">${parseFloat(insight.spend).toFixed(2)}</span>
             </div>
           </div>
         ))}
@@ -2016,10 +2016,10 @@ export default function MarketingHub() {
           )}
 
           {/* Live Stats Banner - Real Database Data */}
-          <GlassCard className="p-4 mb-4 border-l-4 border-green-500 bg-green-500/5">
+          <GlassCard className="p-4 mb-4 border-l-4 border-blue-500 bg-blue-500/5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-sm font-medium text-green-600">Live Data from Database</span>
+              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <span className="text-sm font-medium text-blue-600">Live Data from Database</span>
               {statsLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
             </div>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -2037,9 +2037,9 @@ export default function MarketingHub() {
                 <p className="text-xl font-bold text-pink-600">{stats.instagram || 0}</p>
                 <p className="text-xs text-muted-foreground">Instagram</p>
               </div>
-              <div className="text-center p-3 rounded-lg bg-green-500/10 border border-green-500/30">
-                <Target className="w-4 h-4 mx-auto mb-1 text-green-600" />
-                <p className="text-xl font-bold text-green-600">{stats.activeCampaigns || 0}</p>
+              <div className="text-center p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                <Target className="w-4 h-4 mx-auto mb-1 text-blue-600" />
+                <p className="text-xl font-bold text-blue-600">{stats.activeCampaigns || 0}</p>
                 <p className="text-xs text-muted-foreground">Active Ads</p>
               </div>
               <div className="text-center p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
@@ -2192,7 +2192,7 @@ export default function MarketingHub() {
                     <span className="text-white text-xs font-medium truncate">{tab.label}</span>
                   </div>
                   {activeTab === tab.id && (
-                    <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-green-400 shadow-lg shadow-green-400/50" />
+                    <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-400 shadow-lg shadow-blue-400/50" />
                   )}
                 </button>
               ))}
@@ -2227,7 +2227,7 @@ export default function MarketingHub() {
                       <div className="text-right hidden md:block">
                         <p className="text-white/60 text-xs">Automation Status</p>
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                          <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                           <span className="text-white font-medium text-sm">Running</span>
                         </div>
                       </div>
@@ -2242,7 +2242,7 @@ export default function MarketingHub() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
                     <div className="bg-white/10 rounded-lg p-3">
                       <div className="flex items-center gap-2">
-                        <Megaphone className="w-4 h-4 text-green-400" />
+                        <Megaphone className="w-4 h-4 text-blue-400" />
                         <span className="text-white/70 text-xs">Live Posts</span>
                       </div>
                       <p className="text-white text-xl font-bold mt-1">{livePosts?.filter(p => p.status === 'published').length || 0}</p>
@@ -2276,9 +2276,9 @@ export default function MarketingHub() {
               <GlassCard className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                    <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
                     <h3 className="font-semibold text-gray-900 dark:text-white">Live Now</h3>
-                    <Badge variant="default" className="bg-green-500">{livePosts?.filter(p => p.status === 'published').length || 0} Active</Badge>
+                    <Badge variant="default" className="bg-blue-500">{livePosts?.filter(p => p.status === 'published').length || 0} Active</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">Touch to view analytics or remove</p>
                 </div>
@@ -2289,7 +2289,7 @@ export default function MarketingHub() {
                       <button
                         key={post.id}
                         onClick={() => setSelectedPost(post)}
-                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-green-500 transition-all shadow-sm hover:shadow-lg"
+                        className="relative aspect-square rounded-lg overflow-hidden group border-2 border-transparent hover:border-blue-500 transition-all shadow-sm hover:shadow-lg"
                         data-testid={`live-post-${post.id}`}
                       >
                         {post.imageUrl ? (
@@ -2316,7 +2316,7 @@ export default function MarketingHub() {
                         
                         {/* Live indicator */}
                         <div className="absolute top-1 right-1">
-                          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                          <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                         </div>
                         
                         {/* Hover overlay */}
@@ -2643,7 +2643,7 @@ export default function MarketingHub() {
                             <div className="p-3">
                               <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label || img.subject}</Badge>
                               {img.id.startsWith('db-') && (
-                                <Badge className="ml-1 text-xs bg-green-500/20 text-green-600">Field</Badge>
+                                <Badge className="ml-1 text-xs bg-blue-500/20 text-blue-600">Field</Badge>
                               )}
                             </div>
                           </GlassCard>
@@ -2666,8 +2666,8 @@ export default function MarketingHub() {
                   </div>
 
                   {/* Message Tips */}
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <p className="text-xs text-green-800 dark:text-green-200">
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-xs text-blue-800 dark:text-blue-200">
                       <strong>Pro Tip:</strong> Messages with a clear call-to-action ("Get your free estimate") convert 2x better than posts without one.
                     </p>
                   </div>
@@ -2696,7 +2696,7 @@ export default function MarketingHub() {
                                 <div className="flex flex-wrap gap-1">
                                   <Badge variant="secondary">{IMAGE_SUBJECTS.find(s => s.id === msg.subject)?.label}</Badge>
                                   <Badge variant="outline">{MESSAGE_TONES.find(t => t.id === msg.tone)?.label}</Badge>
-                                  {msg.cta !== "none" && <Badge className="bg-green-100 text-green-800">{MESSAGE_CTAS.find(c => c.id === msg.cta)?.label}</Badge>}
+                                  {msg.cta !== "none" && <Badge className="bg-blue-100 text-blue-800">{MESSAGE_CTAS.find(c => c.id === msg.cta)?.label}</Badge>}
                                 </div>
                               </div>
                               <Button size="icon" variant="ghost">
@@ -2820,7 +2820,7 @@ export default function MarketingHub() {
                       >
                         {metaConnected ? (
                           <>
-                            <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                            <CheckCircle className="w-4 h-4 mr-2 text-blue-500" />
                             Connected
                           </>
                         ) : (
@@ -2872,7 +2872,7 @@ export default function MarketingHub() {
                                   <div className="flex items-center gap-1 flex-wrap">
                                     <Badge 
                                       variant="outline" 
-                                      className={`text-xs ${bundle.postType === "paid_ad" ? "border-orange-400 text-orange-600 dark:text-orange-400" : "border-green-400 text-green-600 dark:text-green-400"}`}
+                                      className={`text-xs ${bundle.postType === "paid_ad" ? "border-orange-400 text-orange-600 dark:text-orange-400" : "border-blue-400 text-blue-600 dark:text-blue-400"}`}
                                     >
                                       {bundle.postType === "paid_ad" ? (
                                         <><DollarSign className="w-3 h-3 mr-1" />Ad</>
@@ -3030,7 +3030,7 @@ export default function MarketingHub() {
                             <p className="text-xs text-muted-foreground">Total Impressions</p>
                           </GlassCard>
                           <GlassCard className="p-4 text-center" data-testid="card-total-clicks">
-                            <Target className="w-6 h-6 mx-auto mb-2 text-green-500" />
+                            <Target className="w-6 h-6 mx-auto mb-2 text-blue-500" />
                             <p className="text-2xl font-bold text-gray-900 dark:text-white" data-testid="text-total-clicks">{totalClicks.toLocaleString()}</p>
                             <p className="text-xs text-muted-foreground">Total Clicks</p>
                           </GlassCard>
@@ -3137,7 +3137,7 @@ export default function MarketingHub() {
                             <div key={p.name} className="text-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg" data-testid={`card-platform-${p.name.toLowerCase()}`}>
                               <p className="font-semibold text-gray-900 dark:text-white">{p.name}</p>
                               <p className="text-xs text-muted-foreground">{p.posts} posts</p>
-                              <p className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`text-leads-${p.name.toLowerCase()}`}>{p.leads} leads</p>
+                              <p className="text-sm font-medium text-blue-600 dark:text-blue-400" data-testid={`text-leads-${p.name.toLowerCase()}`}>{p.leads} leads</p>
                             </div>
                           ))}
                         </div>
@@ -3324,14 +3324,14 @@ export default function MarketingHub() {
                     </div>
                     <p className="text-xs text-muted-foreground">Currently: Enter costs manually. Soon: Auto-sync spend and ROI.</p>
                   </div>
-                  <div className="p-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                  <div className="p-4 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
                     <div className="flex items-center gap-3 mb-2">
-                      <MapPin className="w-6 h-6 text-green-600" />
+                      <MapPin className="w-6 h-6 text-blue-600" />
                       <div>
                         <p className="font-semibold">Google Local Services</p>
                         <p className="text-xs text-muted-foreground">LSA lead tracking</p>
                       </div>
-                      <Badge className="ml-auto bg-green-100 text-green-700 text-xs">Connected</Badge>
+                      <Badge className="ml-auto bg-blue-100 text-blue-700 text-xs">Connected</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">Already integrated! Leads from LSA flow into your system.</p>
                   </div>
@@ -3342,7 +3342,7 @@ export default function MarketingHub() {
                         <p className="font-semibold">Google Analytics</p>
                         <p className="text-xs text-muted-foreground">Website visitor tracking</p>
                       </div>
-                      <Badge className="ml-auto bg-green-100 text-green-700 text-xs">Connected</Badge>
+                      <Badge className="ml-auto bg-blue-100 text-blue-700 text-xs">Connected</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">Already integrated! See visitor data in Analytics tab.</p>
                   </div>
@@ -3382,7 +3382,7 @@ export default function MarketingHub() {
                     onClick={() => setActiveTab("analytics")}
                     data-testid="guide-link-analytics"
                   >
-                    <div className="w-10 h-10 rounded-md bg-green-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-md bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <BarChart3 className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1">
@@ -3398,7 +3398,7 @@ export default function MarketingHub() {
                     onClick={() => setActiveTab("calendar")}
                     data-testid="guide-link-calendar"
                   >
-                    <div className="w-10 h-10 rounded-md bg-green-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-md bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <Calendar className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1">
@@ -3560,7 +3560,7 @@ export default function MarketingHub() {
               {/* Section 1: What's Ready */}
               <GlassCard className="p-4 md:p-6">
                 <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-blue-500" />
                   1. What's Ready Right Now
                   <Button 
                     size="icon" 
@@ -3573,8 +3573,8 @@ export default function MarketingHub() {
                   </Button>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -3582,8 +3582,8 @@ export default function MarketingHub() {
                       <p className="text-xs text-gray-500">Digital Asset Library across 14 categories</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -3591,8 +3591,8 @@ export default function MarketingHub() {
                       <p className="text-xs text-gray-500">Evergreen + Seasonal posts ready to schedule</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -3600,8 +3600,8 @@ export default function MarketingHub() {
                       <p className="text-xs text-gray-500">4-week duplicate prevention built in</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -3609,8 +3609,8 @@ export default function MarketingHub() {
                       <p className="text-xs text-gray-500">Weekly trends, KPIs, performance insights</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                    <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -3650,8 +3650,8 @@ export default function MarketingHub() {
                     </div>
                   </div>
                   
-                  <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-l-4 border-green-500">
-                    <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center flex-shrink-0 text-green-600 dark:text-green-300 font-bold text-sm">3</div>
+                  <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-l-4 border-blue-500">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-300 font-bold text-sm">3</div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-white text-sm">Smart Carousel Scheduler</p>
                       <p className="text-xs text-gray-500 mt-1">System rotates through content automatically. You just send a message when updating.</p>
@@ -3717,9 +3717,9 @@ export default function MarketingHub() {
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border-l-4 border-green-500">
+                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border-l-4 border-blue-500">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <CheckCircle className="w-4 h-4 text-blue-500" />
                       Review AI Captions
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -3789,7 +3789,7 @@ export default function MarketingHub() {
                       <p className="font-semibold text-gray-900 dark:text-white text-sm">Content Suggestions</p>
                     </div>
                     <p className="text-xs text-gray-500">AI analyzes your best-performing posts and generates new caption ideas matching your brand voice.</p>
-                    <Badge className="mt-2 bg-green-100 text-green-700 text-xs">Active</Badge>
+                    <Badge className="mt-2 bg-blue-100 text-blue-700 text-xs">Active</Badge>
                   </div>
                   
                   <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-purple-100 dark:border-purple-800">
@@ -3798,7 +3798,7 @@ export default function MarketingHub() {
                       <p className="font-semibold text-gray-900 dark:text-white text-sm">Smart Scheduling</p>
                     </div>
                     <p className="text-xs text-gray-500">Recommends optimal posting times based on engagement data. Prevents duplicate content automatically.</p>
-                    <Badge className="mt-2 bg-green-100 text-green-700 text-xs">Active</Badge>
+                    <Badge className="mt-2 bg-blue-100 text-blue-700 text-xs">Active</Badge>
                   </div>
                   
                   <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-orange-100 dark:border-orange-800">
@@ -3863,7 +3863,7 @@ export default function MarketingHub() {
                     </p>
                   </div>
                   
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm">Step 3: Full Automation (Coming Next)</p>
                     <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                       Once Meta is connected and manual rotation is proven, the AI takes over completely. 
@@ -3937,7 +3937,7 @@ export default function MarketingHub() {
 
                   <div className="p-4 bg-white dark:bg-gray-800 rounded-xl">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm mb-2 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-green-500" />
+                      <Target className="w-4 h-4 text-blue-500" />
                       Smart Ad Timing
                     </p>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -4043,7 +4043,7 @@ export default function MarketingHub() {
                     onClick={() => setImageLibraryTab("live")}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                       imageLibraryTab === "live" 
-                        ? "bg-green-500 text-white shadow-sm" 
+                        ? "bg-blue-500 text-white shadow-sm" 
                         : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                     }`}
                     data-testid="button-live-images-tab"
@@ -4067,8 +4067,8 @@ export default function MarketingHub() {
 
                 {/* Description based on selected tab */}
                 {imageLibraryTab === "live" ? (
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                    <p className="text-sm text-green-800 dark:text-green-200 flex items-center gap-2">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                    <p className="text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
                       <CheckCircle className="w-4 h-4" />
                       Real photos from your jobs - these are used FIRST for marketing posts
                     </p>
@@ -4163,7 +4163,7 @@ export default function MarketingHub() {
                             <Badge variant="secondary" className="text-xs">{IMAGE_SUBJECTS.find(s => s.id === img.subject)?.label || img.subject}</Badge>
                             <Badge variant="outline" className="text-xs">{img.style}</Badge>
                             {img.isUserUploaded && (
-                              <Badge className="text-xs bg-green-500/20 text-green-600 border-green-500/30">Real Photo</Badge>
+                              <Badge className="text-xs bg-blue-500/20 text-blue-600 border-blue-500/30">Real Photo</Badge>
                             )}
                           </div>
                           <div className="flex items-center gap-1">
@@ -4417,7 +4417,7 @@ export default function MarketingHub() {
                             <div className="flex flex-wrap gap-1">
                               <Badge variant="secondary">{IMAGE_SUBJECTS.find(s => s.id === msg.subject)?.label}</Badge>
                               <Badge variant="outline">{MESSAGE_TONES.find(t => t.id === msg.tone)?.label}</Badge>
-                              {msg.cta !== "none" && <Badge className="bg-green-100 text-green-800">{MESSAGE_CTAS.find(c => c.id === msg.cta)?.label}</Badge>}
+                              {msg.cta !== "none" && <Badge className="bg-blue-100 text-blue-800">{MESSAGE_CTAS.find(c => c.id === msg.cta)?.label}</Badge>}
                               {msg.hashtags.length > 0 && <Badge variant="outline" className="text-blue-600">{msg.hashtags.length} hashtags</Badge>}
                             </div>
                           </div>
@@ -4533,7 +4533,7 @@ export default function MarketingHub() {
                             )}
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <Badge className={bundle.status === "approved" ? "bg-green-500" : bundle.status === "suggested" ? "bg-yellow-500" : "bg-blue-500"}>
+                                <Badge className={bundle.status === "approved" ? "bg-blue-500" : bundle.status === "suggested" ? "bg-yellow-500" : "bg-blue-500"}>
                                   {bundle.status}
                                 </Badge>
                                 <Badge variant="outline">{bundle.platform}</Badge>
@@ -4543,7 +4543,7 @@ export default function MarketingHub() {
                                 <div className="flex gap-2">
                                   <Button 
                                     size="sm" 
-                                    className="bg-green-500"
+                                    className="bg-blue-500"
                                     data-testid={`button-approve-bundle-${bundle.id}`}
                                     onClick={() => {
                                       const updated = contentBundles.map(b => 
@@ -4655,7 +4655,7 @@ export default function MarketingHub() {
                                   <Badge className="bg-blue-500">Scheduled</Badge>
                                 )}
                                 {post.status === "posted" && (
-                                  <Badge className="bg-green-500">Posted</Badge>
+                                  <Badge className="bg-blue-500">Posted</Badge>
                                 )}
                                 {recentlyUsed && (
                                   <Badge variant="outline" className="border-orange-400 text-orange-600">
@@ -4919,7 +4919,7 @@ export default function MarketingHub() {
 
                 <GlassCard className="p-4" data-testid="metric-published">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center">
                       <CheckCircle className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -4927,7 +4927,7 @@ export default function MarketingHub() {
                       <p className="text-xs text-muted-foreground">Published</p>
                     </div>
                   </div>
-                  <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs text-green-800 dark:text-green-200">
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-800 dark:text-blue-200">
                     <strong>What this means:</strong> Content that has been posted to social media. Track this weekly to ensure consistent posting.
                   </div>
                 </GlassCard>
@@ -4968,7 +4968,7 @@ export default function MarketingHub() {
                 <BentoItem colSpan={3} mobileColSpan={6}>
                   <GlassCard className="p-4 h-full" data-testid="analytics-total-content">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-sky-600 flex items-center justify-center">
                         <TrendingUp className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -4976,7 +4976,7 @@ export default function MarketingHub() {
                         <p className="text-xs text-muted-foreground">Total Content</p>
                       </div>
                     </div>
-                    <div className="mt-3 flex items-center gap-1 text-xs text-green-600">
+                    <div className="mt-3 flex items-center gap-1 text-xs text-blue-600">
                       <Sparkles className="w-3 h-3" />
                       <span>{stats.evergreen} evergreen, {stats.seasonal} seasonal</span>
                     </div>
@@ -5043,7 +5043,7 @@ export default function MarketingHub() {
               <div className="grid md:grid-cols-3 gap-6">
                 <GlassCard className="p-6" data-testid="analytics-platform-performance">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-green-500" />
+                    <TrendingUp className="w-5 h-5 text-blue-500" />
                     Platform Performance
                   </h3>
                   <div className="space-y-4">
@@ -5081,7 +5081,7 @@ export default function MarketingHub() {
                   <div className="mt-4 pt-4 border-t">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Multi-Platform Coverage</span>
-                      <span className="font-bold text-green-600">
+                      <span className="font-bold text-blue-600">
                         {PLATFORMS.filter(p => posts.some(post => post.brand === selectedTenant && post.platform === p.id)).length}/{PLATFORMS.length} active
                       </span>
                     </div>
@@ -5100,7 +5100,7 @@ export default function MarketingHub() {
                       const colors = [
                         "from-pink-500 to-rose-600",
                         "from-blue-500 to-cyan-600",
-                        "from-green-500 to-emerald-600",
+                        "from-blue-500 to-sky-600",
                         "from-amber-500 to-orange-600",
                         "from-purple-500 to-violet-600",
                         "from-indigo-500 to-blue-600",
@@ -5150,17 +5150,17 @@ export default function MarketingHub() {
                     
                     return (
                       <div className="space-y-4">
-                        <div className="p-3 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
+                        <div className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-900/20 dark:to-sky-900/20">
                           <div className="flex justify-between items-center mb-1">
                             <span className="text-sm font-medium">Completion Rate</span>
-                            <span className={`text-lg font-bold ${conversionRate >= 50 ? 'text-green-600' : 'text-amber-600'}`}>
+                            <span className={`text-lg font-bold ${conversionRate >= 50 ? 'text-blue-600' : 'text-amber-600'}`}>
                               {conversionRate}%
                             </span>
                           </div>
                           <p className="text-[10px] text-muted-foreground">Published / (Scheduled + Published)</p>
                           <div className="h-1.5 mt-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                             <motion.div initial={{ width: 0 }} animate={{ width: `${conversionRate}%` }} 
-                              className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full" />
+                              className="h-full bg-gradient-to-r from-blue-500 to-sky-400 rounded-full" />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
@@ -5198,11 +5198,11 @@ export default function MarketingHub() {
                     </div>
                   </BentoItem>
                   <BentoItem colSpan={2} mobileColSpan={5}>
-                    <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 rounded-xl text-center h-full flex flex-col justify-center">
-                      <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-green-500/20 flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-green-600" />
+                    <div className="p-4 bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-900/30 dark:to-sky-900/20 rounded-xl text-center h-full flex flex-col justify-center">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-blue-500/20 flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-blue-600" />
                       </div>
-                      <p className="text-2xl font-bold text-green-600">{stats.posted}</p>
+                      <p className="text-2xl font-bold text-blue-600">{stats.posted}</p>
                       <p className="text-xs text-muted-foreground">Published</p>
                     </div>
                   </BentoItem>
@@ -5289,7 +5289,7 @@ export default function MarketingHub() {
                             <p className="text-xs text-muted-foreground">6-week average vs target</p>
                           </div>
                           <div className="text-right">
-                            <p className={`text-2xl font-bold ${onTarget ? 'text-green-600' : 'text-amber-600'}`}>
+                            <p className={`text-2xl font-bold ${onTarget ? 'text-blue-600' : 'text-amber-600'}`}>
                               {avgPerWeek.toFixed(1)}
                             </p>
                             <p className="text-xs text-muted-foreground">/ {TARGET_PER_WEEK} target</p>
@@ -5310,7 +5310,7 @@ export default function MarketingHub() {
                                         initial={{ height: 0 }}
                                         animate={{ height: `${postedHeight}px` }}
                                         transition={{ duration: 0.4, delay: idx * 0.06 }}
-                                        className="w-full bg-gradient-to-t from-green-500 to-emerald-400 rounded-t-sm"
+                                        className="w-full bg-gradient-to-t from-blue-500 to-sky-400 rounded-t-sm"
                                       />
                                     )}
                                     {week.scheduled > 0 && (
@@ -5333,7 +5333,7 @@ export default function MarketingHub() {
                         </div>
                         <div className="flex items-center justify-center gap-4 pt-3 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded bg-gradient-to-r from-green-500 to-emerald-400" />
+                            <div className="w-2.5 h-2.5 rounded bg-gradient-to-r from-blue-500 to-sky-400" />
                             <span>Published</span>
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -5351,7 +5351,7 @@ export default function MarketingHub() {
               <div className="grid md:grid-cols-2 gap-6">
                 <GlassCard className="p-6" data-testid="analytics-posting-trend-chart">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-green-500" />
+                    <TrendingUp className="w-5 h-5 text-blue-500" />
                     Posting Activity (Last 14 Days)
                   </h3>
                   {(() => {
@@ -5388,7 +5388,7 @@ export default function MarketingHub() {
                               fontSize: '12px'
                             }} 
                           />
-                          <Line type="monotone" dataKey="Posted" stroke="#22c55e" strokeWidth={2} dot={{ fill: '#22c55e', r: 3 }} />
+                          <Line type="monotone" dataKey="Posted" stroke="#0ea5e9" strokeWidth={2} dot={{ fill: '#0ea5e9', r: 3 }} />
                           <Line type="monotone" dataKey="Scheduled" stroke="#8b5cf6" strokeWidth={2} dot={{ fill: '#8b5cf6', r: 3 }} />
                         </LineChart>
                       </ResponsiveContainer>
@@ -5408,7 +5408,7 @@ export default function MarketingHub() {
                       count: tenantPosts.filter(p => p.category === cat.id).length
                     })).filter(d => d.count > 0);
                     
-                    const COLORS = ['#ec4899', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444', '#84cc16'];
+                    const COLORS = ['#ec4899', '#3b82f6', '#0ea5e9', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444', '#38bdf8'];
                     
                     return (
                       <ResponsiveContainer width="100%" height={200}>
@@ -5482,10 +5482,10 @@ export default function MarketingHub() {
                       </div>
                       <p className="text-xs text-muted-foreground">3 posts per platform recommended</p>
                     </div>
-                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-medium">Current Pipeline</span>
-                        <span className="text-lg font-bold text-green-600">{stats.scheduled} ready</span>
+                        <span className="text-lg font-bold text-blue-600">{stats.scheduled} ready</span>
                       </div>
                       <p className="text-xs text-muted-foreground">Scheduled for upcoming weeks</p>
                     </div>
@@ -5530,11 +5530,11 @@ export default function MarketingHub() {
                     <p className="text-2xl font-bold text-blue-600">--</p>
                     <p className="text-xs text-muted-foreground">Live Visitors</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl text-center">
-                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-green-600" />
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-900/20 dark:to-sky-900/20 rounded-xl text-center">
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-blue-600" />
                     </div>
-                    <p className="text-2xl font-bold text-green-600">--</p>
+                    <p className="text-2xl font-bold text-blue-600">--</p>
                     <p className="text-xs text-muted-foreground">Page Views (7d)</p>
                   </div>
                   <div className="p-4 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl text-center">
@@ -5555,7 +5555,7 @@ export default function MarketingHub() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                     <h4 className="font-medium mb-3 flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      <TrendingUp className="w-4 h-4 text-blue-500" />
                       Traffic Trend (30 Days)
                     </h4>
                     <div className="h-32 flex items-center justify-center border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
@@ -5658,7 +5658,7 @@ export default function MarketingHub() {
 
                 <GlassCard className="p-6" data-testid="analytics-content-health">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-green-500" />
+                    <Sparkles className="w-5 h-5 text-blue-500" />
                     Content Health Score
                   </h3>
                   {(() => {
@@ -5677,8 +5677,8 @@ export default function MarketingHub() {
                     const activityScore = Math.min((posted + scheduled) * 2, 20); // Max 20 points
                     const healthScore = diversityScore + coverageScore + evergreenScore + activityScore;
                     
-                    const scoreColor = healthScore >= 80 ? "text-green-600" : healthScore >= 60 ? "text-blue-600" : healthScore >= 40 ? "text-amber-600" : "text-red-600";
-                    const bgColor = healthScore >= 80 ? "from-green-500 to-emerald-400" : healthScore >= 60 ? "from-blue-500 to-cyan-400" : healthScore >= 40 ? "from-amber-500 to-orange-400" : "from-red-500 to-rose-400";
+                    const scoreColor = healthScore >= 80 ? "text-blue-600" : healthScore >= 60 ? "text-blue-600" : healthScore >= 40 ? "text-amber-600" : "text-red-600";
+                    const bgColor = healthScore >= 80 ? "from-blue-500 to-sky-400" : healthScore >= 60 ? "from-blue-500 to-cyan-400" : healthScore >= 40 ? "from-amber-500 to-orange-400" : "from-red-500 to-rose-400";
                     
                     return (
                       <div className="space-y-4">
@@ -5691,7 +5691,7 @@ export default function MarketingHub() {
                                 strokeLinecap="round"
                                 className={`text-transparent bg-gradient-to-r ${bgColor}`}
                                 style={{ 
-                                  stroke: healthScore >= 80 ? '#22c55e' : healthScore >= 60 ? '#3b82f6' : healthScore >= 40 ? '#f59e0b' : '#ef4444',
+                                  stroke: healthScore >= 80 ? '#3b82f6' : healthScore >= 60 ? '#0ea5e9' : healthScore >= 40 ? '#f59e0b' : '#ef4444',
                                   strokeDasharray: `${healthScore * 3.52} 352` 
                                 }}
                               />
@@ -5752,7 +5752,7 @@ export default function MarketingHub() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Frequency</span>
-                          <span className="font-medium text-green-600">3x/week</span>
+                          <span className="font-medium text-blue-600">3x/week</span>
                         </div>
                       </div>
                     </div>
@@ -5814,12 +5814,12 @@ export default function MarketingHub() {
                   <div className="space-y-6">
                     {/* Traffic Stats Row */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 rounded-xl">
-                        <div className="flex items-center gap-2 text-green-600 mb-1">
+                      <div className="p-4 bg-gradient-to-br from-blue-50 to-sky-100 dark:from-blue-900/30 dark:to-sky-900/20 rounded-xl">
+                        <div className="flex items-center gap-2 text-blue-600 mb-1">
                           <Zap className="w-4 h-4 animate-pulse" />
                           <span className="text-xs font-medium">Live Now</span>
                         </div>
-                        <p className="text-2xl font-bold text-green-600">{websiteAnalytics.liveVisitors}</p>
+                        <p className="text-2xl font-bold text-blue-600">{websiteAnalytics.liveVisitors}</p>
                         <p className="text-[10px] text-muted-foreground">Active visitors</p>
                       </div>
                       <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/20 rounded-xl">
@@ -5893,7 +5893,7 @@ export default function MarketingHub() {
                                 data={[
                                   { name: 'Desktop', value: websiteAnalytics.deviceBreakdown.desktop, color: '#f59e0b' },
                                   { name: 'Mobile', value: websiteAnalytics.deviceBreakdown.mobile, color: '#3b82f6' },
-                                  { name: 'Tablet', value: websiteAnalytics.deviceBreakdown.tablet, color: '#10b981' },
+                                  { name: 'Tablet', value: websiteAnalytics.deviceBreakdown.tablet, color: '#0ea5e9' },
                                 ].filter(d => d.value > 0)}
                                 cx="50%"
                                 cy="50%"
@@ -5904,7 +5904,7 @@ export default function MarketingHub() {
                                 {[
                                   { name: 'Desktop', value: websiteAnalytics.deviceBreakdown.desktop, color: '#f59e0b' },
                                   { name: 'Mobile', value: websiteAnalytics.deviceBreakdown.mobile, color: '#3b82f6' },
-                                  { name: 'Tablet', value: websiteAnalytics.deviceBreakdown.tablet, color: '#10b981' },
+                                  { name: 'Tablet', value: websiteAnalytics.deviceBreakdown.tablet, color: '#0ea5e9' },
                                 ].filter(d => d.value > 0).map((entry, index) => (
                                   <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
@@ -5928,7 +5928,7 @@ export default function MarketingHub() {
                             </div>
                             <div className="flex items-center justify-between text-sm">
                               <div className="flex items-center gap-2">
-                                <Tablet className="w-4 h-4 text-green-500" />
+                                <Tablet className="w-4 h-4 text-blue-500" />
                                 <span>Tablet</span>
                               </div>
                               <span className="font-medium">{websiteAnalytics.deviceBreakdown.tablet}</span>
@@ -6103,10 +6103,10 @@ export default function MarketingHub() {
               <GlassCard className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Target className="w-5 h-5 text-green-500" />
+                    <Target className="w-5 h-5 text-blue-500" />
                     Campaign ROI Tracker
                   </h3>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                     Ready for API Integration
                   </Badge>
                 </div>
@@ -6124,13 +6124,13 @@ export default function MarketingHub() {
                     <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">$0.00</p>
                     <p className="text-xs text-blue-600 dark:text-blue-400">This month</p>
                   </div>
-                  <div className="p-4 rounded-md bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100 dark:border-green-800">
+                  <div className="p-4 rounded-md bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-900/20 dark:to-sky-900/20 border border-blue-100 dark:border-blue-800">
                     <div className="flex items-center gap-2 mb-2">
-                      <Users className="w-4 h-4 text-green-500" />
-                      <span className="text-xs font-medium text-green-700 dark:text-green-300">Leads Generated</span>
+                      <Users className="w-4 h-4 text-blue-500" />
+                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Leads Generated</span>
                     </div>
-                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">0</p>
-                    <p className="text-xs text-green-600 dark:text-green-400">From campaigns</p>
+                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">0</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">From campaigns</p>
                   </div>
                   <div className="p-4 rounded-md bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-100 dark:border-purple-800">
                     <div className="flex items-center gap-2 mb-2">
@@ -6185,16 +6185,16 @@ export default function MarketingHub() {
                       <Badge className="ml-auto bg-yellow-100 text-yellow-700">Pending</Badge>
                     </div>
                   </div>
-                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
+                  <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
                         <MapPin className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <p className="font-medium">Google LSA</p>
                         <p className="text-xs text-muted-foreground">Local Services Ads</p>
                       </div>
-                      <Badge className="ml-auto bg-green-100 text-green-700">Connected</Badge>
+                      <Badge className="ml-auto bg-blue-100 text-blue-700">Connected</Badge>
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800">
@@ -6206,7 +6206,7 @@ export default function MarketingHub() {
                         <p className="font-medium">Manual Entry</p>
                         <p className="text-xs text-muted-foreground">Mailers, flyers, events</p>
                       </div>
-                      <Badge className="ml-auto bg-green-100 text-green-700">Ready</Badge>
+                      <Badge className="ml-auto bg-blue-100 text-blue-700">Ready</Badge>
                     </div>
                   </div>
                 </div>
@@ -6332,7 +6332,7 @@ export default function MarketingHub() {
                 </GlassCard>
                 <GlassCard className="p-4">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
                       <MessageSquare className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -6447,10 +6447,10 @@ export default function MarketingHub() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="reciprocity" className="border rounded-md px-4 bg-green-50/50 dark:bg-green-900/10">
+                  <AccordionItem value="reciprocity" className="border rounded-md px-4 bg-blue-50/50 dark:bg-blue-900/10">
                     <AccordionTrigger className="hover:no-underline py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-md bg-green-500 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-md bg-blue-500 flex items-center justify-center">
                           <Star className="w-4 h-4 text-white" />
                         </div>
                         <div className="text-left">
@@ -6463,7 +6463,7 @@ export default function MarketingHub() {
                       <div className="pl-11 space-y-3">
                         <p className="text-sm"><strong>Why it works:</strong> When you give something free, people feel obligated to reciprocate.</p>
                         <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
-                          <p className="text-xs font-medium text-green-600 mb-1">Tactics to use:</p>
+                          <p className="text-xs font-medium text-blue-600 mb-1">Tactics to use:</p>
                           <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
                             <li>Free color consultations</li>
                             <li>Free detailed estimates (not just quotes)</li>
@@ -6563,7 +6563,7 @@ export default function MarketingHub() {
 
               <GlassCard className="p-6">
                 <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-blue-500" />
                   Quick Action Checklist
                 </h3>
                 <div className="grid md:grid-cols-2 gap-3">
@@ -6577,8 +6577,8 @@ export default function MarketingHub() {
                     "Add \"because\" to CTAs for persuasion",
                     "Use emotional imagery in posts"
                   ].map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-green-50 dark:bg-green-900/20">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                      <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
                       <span className="text-sm">{item}</span>
                     </div>
                   ))}
@@ -6648,13 +6648,13 @@ export default function MarketingHub() {
                         <li className="flex items-center gap-2"><X className="w-3 h-3 text-red-500" /> ROI comparison data</li>
                       </ul>
                     </div>
-                    <div className="p-3 rounded-lg bg-background/50 border border-green-500/20">
-                      <p className="font-medium text-green-600 mb-1">What We're Building:</p>
+                    <div className="p-3 rounded-lg bg-background/50 border border-blue-500/20">
+                      <p className="font-medium text-blue-600 mb-1">What We're Building:</p>
                       <ul className="text-muted-foreground space-y-1">
-                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> Expense tracking by category</li>
-                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> Lead source attribution</li>
-                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> ROI calculator</li>
-                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-green-500" /> Monthly reporting</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-500" /> Expense tracking by category</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-500" /> Lead source attribution</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-500" /> ROI calculator</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="w-3 h-3 text-blue-500" /> Monthly reporting</li>
                       </ul>
                     </div>
                   </div>
@@ -6731,25 +6731,25 @@ export default function MarketingHub() {
                       </li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-green-500/5 border border-green-500/20">
-                    <h4 className="font-semibold text-green-600 mb-3 flex items-center gap-2">
+                  <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <h4 className="font-semibold text-blue-600 mb-3 flex items-center gap-2">
                       <User className="w-4 h-4" /> Marketing Implements:
                     </h4>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                         <span><strong>Strategy:</strong> Research channels, recommend budget allocation</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                         <span><strong>Content:</strong> Create posts, ads, and campaigns</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                         <span><strong>Tracking:</strong> Log all expenses, monitor lead sources</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <ArrowRight className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <ArrowRight className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                         <span><strong>Reporting:</strong> Monthly ROI reports showing what's working</span>
                       </li>
                     </ul>
@@ -6849,12 +6849,12 @@ export default function MarketingHub() {
                     <Receipt className="w-4 h-4 text-orange-500" />
                   </div>
                   <p className="text-2xl font-bold">$850</p>
-                  <p className="text-xs text-green-600 mt-1">42.5% of budget used</p>
+                  <p className="text-xs text-blue-600 mt-1">42.5% of budget used</p>
                 </GlassCard>
                 <GlassCard className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">Leads This Month</span>
-                    <Users className="w-4 h-4 text-green-500" />
+                    <Users className="w-4 h-4 text-blue-500" />
                   </div>
                   <p className="text-2xl font-bold">23</p>
                   <p className="text-xs text-muted-foreground mt-1">From all channels</p>
@@ -6968,7 +6968,7 @@ export default function MarketingHub() {
                           <td className="py-3 text-muted-foreground">{expense.vendor}</td>
                           <td className="py-3 text-right font-medium">${expense.amount}</td>
                           <td className="py-3 text-right">
-                            <span className={expense.leads > 0 ? "text-green-600" : "text-muted-foreground"}>
+                            <span className={expense.leads > 0 ? "text-blue-600" : "text-muted-foreground"}>
                               {expense.leads}
                             </span>
                           </td>
@@ -6992,12 +6992,12 @@ export default function MarketingHub() {
                       google: { label: "Google", color: "bg-red-500" },
                       facebook: { label: "Facebook", color: "bg-blue-500" },
                       instagram: { label: "Instagram", color: "bg-pink-500" },
-                      billboard: { label: "Billboard", color: "bg-green-500" },
+                      billboard: { label: "Billboard", color: "bg-blue-500" },
                       car_wrap: { label: "Car Wrap", color: "bg-orange-500" },
                       yard_sign: { label: "Yard Sign", color: "bg-yellow-500" },
                       flyer: { label: "Flyer", color: "bg-teal-500" },
                       referral: { label: "Referral", color: "bg-purple-500" },
-                      nextdoor: { label: "Nextdoor", color: "bg-emerald-500" },
+                      nextdoor: { label: "Nextdoor", color: "bg-sky-500" },
                       yelp: { label: "Yelp", color: "bg-rose-500" },
                       homeadvisor: { label: "HomeAdvisor", color: "bg-cyan-500" },
                       repeat: { label: "Repeat", color: "bg-indigo-500" },
@@ -7048,7 +7048,7 @@ export default function MarketingHub() {
                     "Document campaign names so you can compare similar campaigns over time"
                   ].map((tip, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                       <span className="text-sm">{tip}</span>
                     </div>
                   ))}
@@ -7234,13 +7234,13 @@ export default function MarketingHub() {
               
               {/* Performance Percentile */}
               {(selectedPost as any).percentile !== null && (
-                <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/30">
+                <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-blue-500/10 border border-blue-500/30">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <p className="font-semibold text-green-600">Top {100 - ((selectedPost as any).percentile || 0)}% Performer</p>
+                      <p className="font-semibold text-blue-600">Top {100 - ((selectedPost as any).percentile || 0)}% Performer</p>
                       <p className="text-sm text-muted-foreground">This post outperforms {(selectedPost as any).percentile}% of your other posts</p>
                     </div>
                   </div>
@@ -7454,7 +7454,7 @@ export default function MarketingHub() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5 text-green-500" />
+              <Plus className="w-5 h-5 text-blue-500" />
               Quick Post
             </DialogTitle>
             <DialogDescription>
@@ -7588,7 +7588,7 @@ export default function MarketingHub() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Camera className="w-5 h-5 text-green-500" />
+              <Camera className="w-5 h-5 text-blue-500" />
               Add Live Image to Library
             </DialogTitle>
             <DialogDescription>

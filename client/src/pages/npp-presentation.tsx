@@ -125,19 +125,19 @@ export default function NPPPresentation() {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
                   <span>Professional look (you're not some guy with a ladder)</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
                   <span>Works on phones (because that's where everyone is)</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
                   <span>Shows your services, your work, your reviews</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
                   <span>Customers can book online (more on that later)</span>
                 </li>
               </ul>
@@ -191,8 +191,8 @@ export default function NPPPresentation() {
               <p className="text-sm text-muted-foreground">Just like Drip Jobs. Track what's pending, what's approved, what's done.</p>
             </Card>
             <Card className="p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-6 h-6 text-green-500" />
+              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="w-6 h-6 text-blue-500" />
               </div>
               <h3 className="font-bold mb-2">You Get Paid</h3>
               <p className="text-sm text-muted-foreground">Invoice, collect, done. QuickBooks can sync when you're ready.</p>
@@ -216,15 +216,15 @@ export default function NPPPresentation() {
               <h3 className="text-xl font-bold text-center mb-4">What You're Used To</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500" />
                   See all your jobs on a calendar
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500" />
                   Drag and drop to reschedule
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-500" />
                   Syncs with Google Calendar
                 </li>
               </ul>
@@ -298,27 +298,27 @@ export default function NPPPresentation() {
                 </li>
               </ol>
             </Card>
-            <Card className="p-6 border-2 border-green-500">
-              <h3 className="font-bold text-lg mb-4 text-green-500">The New Way</h3>
+            <Card className="p-6 border-2 border-blue-500">
+              <h3 className="font-bold text-lg mb-4 text-blue-500">The New Way</h3>
               <ol className="space-y-3 text-muted-foreground">
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0 text-sm">1</span>
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0 text-sm">1</span>
                   <span>Customer goes to your website</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0 text-sm">2</span>
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0 text-sm">2</span>
                   <span>Clicks "Book Estimate"</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0 text-sm">3</span>
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0 text-sm">3</span>
                   <span>Picks a time that works for them</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0 text-sm">4</span>
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0 text-sm">4</span>
                   <span>Done. It's on your calendar.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0 text-sm">5</span>
+                  <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0 text-sm">5</span>
                   <span>You never picked up the phone.</span>
                 </li>
               </ol>
@@ -382,19 +382,19 @@ export default function NPPPresentation() {
             <h3 className="font-bold text-lg mb-4">What It Does:</h3>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <span>Posts to Facebook automatically</span>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <span>Posts to Instagram automatically</span>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <span>Rotates content so it's not the same thing</span>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <span>You can add your own posts too</span>
               </div>
             </div>
@@ -474,7 +474,7 @@ export default function NPPPresentation() {
                 <div className="text-sm text-muted-foreground">Close rate</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-500">$144k-$288k</div>
+                <div className="text-2xl font-bold text-blue-500">$144k-$288k</div>
                 <div className="text-sm text-muted-foreground">Per year</div>
               </div>
             </div>

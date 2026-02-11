@@ -11,7 +11,7 @@ import type { ProposalTemplate } from "@shared/schema";
 
 const CATEGORIES = [
   { value: "interior", label: "Interior", icon: Home, color: "text-blue-400 bg-blue-500/20 border-blue-500/30" },
-  { value: "exterior", label: "Exterior", icon: Building2, color: "text-green-400 bg-green-500/20 border-green-500/30" },
+  { value: "exterior", label: "Exterior", icon: Building2, color: "text-blue-400 bg-blue-500/20 border-blue-500/30" },
   { value: "commercial", label: "Commercial", icon: Building2, color: "text-purple-400 bg-purple-500/20 border-purple-500/30" },
   { value: "residential", label: "Residential", icon: Home, color: "text-gold-400 bg-gold-400/20 border-gold-400/30" },
 ];

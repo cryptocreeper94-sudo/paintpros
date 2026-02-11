@@ -98,8 +98,8 @@ export const TRADE_VERTICALS: TradeVertical[] = [
     tagline: "White-Label Websites for Landscaping Contractors",
     domain: "landscapepros.io",
     icon: TreePine,
-    color: "text-green-500",
-    bgGradient: "from-green-500/20 to-emerald-500/10",
+    color: "text-blue-500",
+    bgGradient: "from-blue-500/20 to-sky-500/10",
     status: "coming_soon",
     marketSize: "$130B",
     features: ["Design Visualization", "Maintenance Plans", "Irrigation Systems"]
@@ -176,7 +176,7 @@ export function TradeVerticalSelector({ onSelect, selectedId = "painting", compa
               <Icon className={cn("w-4 h-4", vertical.color)} />
               <span className="text-sm font-medium">{vertical.name}</span>
               {vertical.status === "live" && (
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               )}
             </motion.button>
           );
@@ -243,7 +243,7 @@ export function TradeVerticalSelector({ onSelect, selectedId = "painting", compa
                 >
                   <Icon className={cn("w-4 h-4 sm:w-5 sm:h-5", vertical.color)} />
                   {vertical.status === "live" && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500 border-2 border-background" />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500 border-2 border-background" />
                   )}
                 </motion.button>
               );
@@ -289,7 +289,7 @@ export function TradeVerticalSelector({ onSelect, selectedId = "painting", compa
                 <h4 className="text-base sm:text-2xl font-bold flex items-center gap-2 flex-wrap">
                   <span className="truncate">{activeVertical.name}</span>
                   {activeVertical.status === "live" ? (
-                    <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs rounded-full bg-green-500/20 text-green-400 border border-green-500/30 whitespace-nowrap">
+                    <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 whitespace-nowrap">
                       LIVE
                     </span>
                   ) : (
@@ -318,7 +318,7 @@ export function TradeVerticalSelector({ onSelect, selectedId = "painting", compa
                 transition={{ delay: index * 0.1 }}
                 className="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg bg-white/10 border border-white/10"
               >
-                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
                 <span className="text-xs font-medium">{feature}</span>
               </motion.div>
             ))}

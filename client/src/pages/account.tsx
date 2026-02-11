@@ -70,20 +70,20 @@ interface DashboardData {
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/30",
-  approved: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30",
+  approved: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   rejected: "bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/30",
   sent: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   viewed: "bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-500/30",
-  accepted: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30",
+  accepted: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   scheduled: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   "in_progress": "bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30",
-  completed: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30",
+  completed: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   cancelled: "bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-500/30",
-  confirmed: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30",
+  confirmed: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   draft: "bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-500/30",
-  signed: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30",
+  signed: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
   contacted: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
-  converted: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30",
+  converted: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30",
 };
 
 export default function AccountPage() {
@@ -289,10 +289,10 @@ export default function AccountPage() {
             </BentoItem>
 
             <BentoItem colSpan={3} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
-              <GlassCard className="p-4 md:p-6 h-full flex flex-col justify-between" hoverEffect="subtle" glow="green">
+              <GlassCard className="p-4 md:p-6 h-full flex flex-col justify-between" hoverEffect="subtle" glow="blue">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-green-500" />
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-blue-500" />
                   </div>
                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Appointments</span>
                 </div>
@@ -526,8 +526,8 @@ export default function AccountPage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-center">
-                      <p className="text-2xl font-bold text-green-600 dark:text-green-400">$50</p>
+                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-center">
+                      <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">$50</p>
                       <p className="text-xs text-muted-foreground">Credit per referral</p>
                     </div>
                     <div className="p-3 rounded-lg bg-accent/10 border border-accent/20 text-center">
@@ -544,8 +544,8 @@ export default function AccountPage() {
               <GlassCard className="p-4 md:p-6 h-full" hoverEffect={false}>
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-green-500" />
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-blue-500" />
                     </div>
                     <h2 className="text-lg md:text-xl font-display font-bold">Appointments</h2>
                   </div>
@@ -574,8 +574,8 @@ export default function AccountPage() {
                         className="p-3 rounded-lg bg-card/50 border border-border flex items-center gap-4"
                         data-testid={`card-booking-${booking.id}`}
                       >
-                        <div className="w-12 h-12 rounded-lg bg-green-500/10 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                        <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex flex-col items-center justify-center flex-shrink-0">
+                          <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                             {booking.scheduledDate ? format(new Date(booking.scheduledDate), "d") : "--"}
                           </span>
                           <span className="text-xs text-muted-foreground">

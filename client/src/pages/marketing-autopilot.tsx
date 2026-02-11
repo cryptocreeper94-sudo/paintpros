@@ -182,7 +182,7 @@ export default function MarketingAutopilot() {
               <Button
                 size="lg"
                 onClick={() => setShowForm(true)}
-                className="h-14 px-8 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="h-14 px-8 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:to-purple-700"
                 data-testid="button-get-started"
               >
                 Get Started - $59/month
@@ -238,7 +238,7 @@ export default function MarketingAutopilot() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-6 text-center">
-                <Calendar className="w-10 h-10 text-green-400 mx-auto mb-3" />
+                <Calendar className="w-10 h-10 text-blue-400 mx-auto mb-3" />
                 <h4 className="text-white font-medium mb-1">Post Frequency</h4>
                 <p className="text-slate-400 text-sm">2-4 posts per day</p>
               </CardContent>
@@ -317,7 +317,7 @@ export default function MarketingAutopilot() {
               <div className="space-y-3 mb-8">
                 {included.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <Check className="w-5 h-5 text-blue-400 flex-shrink-0" />
                     <span className="text-slate-300">{item}</span>
                   </div>
                 ))}
@@ -326,7 +326,7 @@ export default function MarketingAutopilot() {
               <Button
                 size="lg"
                 onClick={() => setShowForm(true)}
-                className="w-full h-14 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="w-full h-14 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:to-purple-700"
                 data-testid="button-subscribe"
               >
                 <Zap className="w-5 h-5 mr-2" />
@@ -445,7 +445,7 @@ export default function MarketingAutopilot() {
                   <Button
                     onClick={handleSubscribe}
                     disabled={loading}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:to-purple-700"
                     data-testid="button-checkout"
                   >
                     {loading ? (

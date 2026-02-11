@@ -103,7 +103,7 @@ export function BrandingConfigurator({
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-emerald-600" />
+            <Sparkles className="w-5 h-5 text-sky-600" />
             Customize Your Portal
           </DialogTitle>
           <DialogDescription>

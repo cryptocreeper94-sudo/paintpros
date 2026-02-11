@@ -15,13 +15,13 @@ import {
 } from "lucide-react";
 
 const colors = {
-  background: "#FAF7F0",
-  greenDark: "#1F3D2B",
-  greenMedium: "#2D5A3D",
-  greenLight: "#E8F0E8",
-  gold: "#E8C15C",
-  textDark: "#1a1a1a",
-  textLight: "#666666",
+  background: "#f8fafc",
+  greenDark: "#0f172a",
+  greenMedium: "#1e293b",
+  greenLight: "#e2e8f0",
+  gold: "#3b82f6",
+  textDark: "#0f172a",
+  textLight: "#64748b",
 };
 
 export default function Why40kFails() {

@@ -20,8 +20,8 @@ export function TradeVerticalsCard({ showFullDetails = false }: TradeVerticalsCa
   return (
     <GlassCard className="p-6" data-testid="card-trade-verticals">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-          <Building2 className="w-5 h-5 text-green-600" />
+        <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+          <Building2 className="w-5 h-5 text-blue-600" />
         </div>
         <div>
           <h3 className="font-bold text-lg">Trade Vertical Expansion</h3>
@@ -35,14 +35,14 @@ export function TradeVerticalsCard({ showFullDetails = false }: TradeVerticalsCa
             key={vertical.name}
             className={`p-2 rounded-lg border text-center transition-colors ${
               vertical.status === "Live"
-                ? "bg-green-500/10 border-green-500/30"
+                ? "bg-blue-500/10 border-blue-500/30"
                 : "bg-white/5 border-white/10 dark:border-white/10"
             }`}
             data-testid={`card-vertical-${vertical.name.toLowerCase()}`}
           >
             <p className="font-medium text-sm">{vertical.name}</p>
             <p className="text-xs text-muted-foreground font-mono">{vertical.domain}</p>
-            <p className={`text-xs mt-1 ${vertical.status === "Live" ? "text-green-500" : "text-muted-foreground"}`}>
+            <p className={`text-xs mt-1 ${vertical.status === "Live" ? "text-blue-500" : "text-muted-foreground"}`}>
               {vertical.status}
             </p>
           </div>
@@ -50,9 +50,9 @@ export function TradeVerticalsCard({ showFullDetails = false }: TradeVerticalsCa
       </div>
 
       {showFullDetails && (
-        <div className="grid grid-cols-3 gap-4 p-3 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20 mb-4">
+        <div className="grid grid-cols-3 gap-4 p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-blue-500/10 border border-blue-500/20 mb-4">
           <div className="text-center">
-            <p className="text-xl font-bold text-green-500">$2.2T+</p>
+            <p className="text-xl font-bold text-blue-500">$2.2T+</p>
             <p className="text-xs text-muted-foreground">Combined TAM</p>
           </div>
           <div className="text-center">
@@ -67,7 +67,7 @@ export function TradeVerticalsCard({ showFullDetails = false }: TradeVerticalsCa
       )}
 
       <Link href="/trade-verticals">
-        <button className="w-full py-2 px-4 rounded-lg bg-green-500/10 border border-green-500/30 text-green-600 text-sm font-medium flex items-center justify-center gap-2 transition-colors hover:bg-green-500/20" data-testid="button-view-trade-verticals">
+        <button className="w-full py-2 px-4 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-600 text-sm font-medium flex items-center justify-center gap-2 transition-colors " data-testid="button-view-trade-verticals">
           <Globe className="w-4 h-4" />
           View All Trade Verticals
         </button>

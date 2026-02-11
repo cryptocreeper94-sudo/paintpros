@@ -293,14 +293,14 @@ function CrewLeadDashboardContent() {
                   <GlassCard className={`h-full p-6 ${cardBackgroundStyles.green}`}>
                     <div className="flex items-start justify-between mb-4">
                       <div className={`${iconContainerStyles.base} ${iconContainerStyles.sizes.lg} ${iconContainerStyles.gradients.green}`}>
-                        <FileText className="w-6 h-6 text-green-400" />
+                        <FileText className="w-6 h-6 text-blue-400" />
                       </div>
                       <Badge variant="secondary" className="text-xs">
                         {t("overview.pending")}
                       </Badge>
                     </div>
                     <h3 className="text-lg font-semibold mb-1">{t("overview.timeEntries")}</h3>
-                    <p className="text-3xl font-bold text-green-400">{pendingTimeEntries.length}</p>
+                    <p className="text-3xl font-bold text-blue-400">{pendingTimeEntries.length}</p>
                     <p className="text-sm text-muted-foreground mt-1">{t("overview.awaitingApproval")}</p>
                   </GlassCard>
                 </motion.div>
@@ -392,7 +392,7 @@ function CrewLeadDashboardContent() {
                         onClick={() => setActiveTab("notes")}
                         data-testid="button-quick-note"
                       >
-                        <FileText className="w-6 h-6 text-green-400" />
+                        <FileText className="w-6 h-6 text-blue-400" />
                         <span>{t("quickActions.addNote")}</span>
                       </Button>
                       <Button 
@@ -781,7 +781,7 @@ function IncidentsPanel({
       case "critical": return "text-red-400";
       case "high": return "text-orange-400";
       case "medium": return "text-yellow-400";
-      default: return "text-green-400";
+      default: return "text-blue-400";
     }
   };
 

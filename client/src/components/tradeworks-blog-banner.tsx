@@ -16,7 +16,7 @@ const trades = [
   { name: "Roofing", icon: Home, color: "text-red-400", count: 10 },
   { name: "Carpentry", icon: Hammer, color: "text-amber-600", count: 10 },
   { name: "Concrete", icon: HardHat, color: "text-gray-400", count: 10 },
-  { name: "Landscaping", icon: TreeDeciduous, color: "text-green-400", count: 10 },
+  { name: "Landscaping", icon: TreeDeciduous, color: "text-blue-400", count: 10 },
 ];
 
 export function TradeWorksBlogBanner() {

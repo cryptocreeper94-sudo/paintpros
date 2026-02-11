@@ -50,8 +50,8 @@ export function ROICalculator({ className }: ROICalculatorProps) {
   return (
     <GlassCard className={`p-6 ${className}`} data-tour="roi">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-green-500/20">
-          <Calculator className="w-5 h-5 text-green-400" />
+        <div className="p-2 rounded-lg bg-blue-500/20">
+          <Calculator className="w-5 h-5 text-blue-400" />
         </div>
         <div>
           <h3 className="font-display font-bold text-lg">ROI Calculator</h3>
@@ -120,9 +120,9 @@ export function ROICalculator({ className }: ROICalculatorProps) {
 
       <div className="mt-6 pt-6 border-t border-white/10">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
-          <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+          <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
             <p className="text-xs text-muted-foreground mb-1">Additional Revenue</p>
-            <p className="text-lg sm:text-xl font-bold text-green-400">
+            <p className="text-lg sm:text-xl font-bold text-blue-400">
               +${(calculations.additionalRevenue / 1000).toFixed(0)}K
               <span className="text-xs font-normal text-muted-foreground">/yr</span>
             </p>
@@ -146,10 +146,10 @@ export function ROICalculator({ className }: ROICalculatorProps) {
           
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-green-400 flex-shrink-0" />
+              <TrendingUp className="w-4 h-4 text-blue-400 flex-shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground">ROI</p>
-                <p className="font-bold text-green-400">{calculations.roi.toFixed(0)}%</p>
+                <p className="font-bold text-blue-400">{calculations.roi.toFixed(0)}%</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

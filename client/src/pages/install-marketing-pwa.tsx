@@ -83,8 +83,8 @@ export default function InstallMarketingPWA() {
 
             {isInstalled ? (
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-green-400" />
+                <div className="w-16 h-16 mx-auto rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-blue-400" />
                 </div>
                 <p className="text-white font-medium">Already Installed!</p>
                 <p className="text-purple-200 text-sm">
@@ -185,19 +185,19 @@ export default function InstallMarketingPWA() {
                   <p className="text-purple-200 text-sm mb-3">What you get:</p>
                   <ul className="space-y-2 text-sm text-purple-100">
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <CheckCircle className="w-4 h-4 text-blue-400" />
                       Quick access from home screen
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <CheckCircle className="w-4 h-4 text-blue-400" />
                       Full-screen experience
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <CheckCircle className="w-4 h-4 text-blue-400" />
                       Stay logged in for 30 days
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <CheckCircle className="w-4 h-4 text-blue-400" />
                       Instant notifications (coming soon)
                     </li>
                   </ul>

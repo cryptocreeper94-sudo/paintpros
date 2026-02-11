@@ -871,7 +871,7 @@ export default function HomeNPP() {
                   <div className="grid grid-cols-2 gap-2 md:space-y-3 md:block">
                     {["Daily updates", "Photo docs", "Direct line", "Real-time"].map((item) => (
                       <div key={item} className="flex items-center gap-1.5 md:gap-2 text-gray-700">
-                        <CheckCircle2 className="w-3 h-3 md:w-5 md:h-5 text-green-500 flex-shrink-0" />
+                        <CheckCircle2 className="w-3 h-3 md:w-5 md:h-5 text-blue-500 flex-shrink-0" />
                         <span className="text-[10px] md:text-sm">{item}</span>
                       </div>
                     ))}
@@ -1099,15 +1099,15 @@ export default function HomeNPP() {
           <div className="p-6 space-y-4">
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-blue-500" />
                 <span>Instant pricing - no waiting</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-blue-500" />
                 <span>Room visualizer included</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-blue-500" />
                 <span>No commitment required</span>
               </div>
             </div>

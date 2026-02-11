@@ -16,7 +16,7 @@ interface InvestorSnapshotModalProps {
 }
 
 const POWER_STATS = [
-  { label: "LTV:CAC Ratio", value: "44:1", color: "text-green-500", icon: TrendingUp, description: "Industry-leading unit economics" },
+  { label: "LTV:CAC Ratio", value: "44:1", color: "text-blue-500", icon: TrendingUp, description: "Industry-leading unit economics" },
   { label: "TAM", value: "$46.5B", color: "text-blue-500", icon: Target, description: "U.S. painting services market" },
   { label: "Gross Margin", value: "85%", color: "text-purple-500", icon: BarChart3, description: "Low infrastructure costs" },
   { label: "3-Year LTV", value: "$22.2K", color: "text-amber-500", icon: DollarSign, description: "Per customer lifetime value" },
@@ -86,7 +86,7 @@ Contact: Darkwave Studios / Orbit Development Team`;
             className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl md:max-h-[85vh] overflow-auto z-50 rounded-2xl"
           >
             <GlassCard className="p-0 overflow-hidden" glow>
-              <div className="sticky top-0 z-10 bg-gradient-to-r from-green-600/90 to-emerald-600/90 backdrop-blur-md p-6 border-b border-white/10">
+              <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-600/90 to-sky-600/90 backdrop-blur-md p-6 border-b border-white/10">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
@@ -146,7 +146,7 @@ Contact: Darkwave Studios / Orbit Development Team`;
                   <div className="grid md:grid-cols-2 gap-3">
                     {QUICK_FACTS.map((fact, i) => (
                       <div key={i} className="flex items-start gap-2 text-sm">
-                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                         <span className="text-muted-foreground">{fact}</span>
                       </div>
                     ))}
@@ -162,19 +162,19 @@ Contact: Darkwave Studios / Orbit Development Team`;
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Starter</span>
-                        <span className="font-mono text-green-500">$349/mo + $5K</span>
+                        <span className="font-mono text-blue-500">$349/mo + $5K</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Professional</span>
-                        <span className="font-mono text-green-500">$549/mo + $7K</span>
+                        <span className="font-mono text-blue-500">$549/mo + $7K</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Franchise Core</span>
-                        <span className="font-mono text-green-500">$799/mo + $10K</span>
+                        <span className="font-mono text-blue-500">$799/mo + $10K</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Enterprise</span>
-                        <span className="font-mono text-green-500">$1,399/mo + $15K</span>
+                        <span className="font-mono text-blue-500">$1,399/mo + $15K</span>
                       </div>
                     </div>
                   </div>
@@ -188,21 +188,21 @@ Contact: Darkwave Studios / Orbit Development Team`;
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Year 1</span>
                         <div className="text-right">
-                          <span className="font-mono text-green-500">$564K</span>
+                          <span className="font-mono text-blue-500">$564K</span>
                           <span className="text-xs text-muted-foreground ml-2">50 customers</span>
                         </div>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Year 2</span>
                         <div className="text-right">
-                          <span className="font-mono text-green-500">$2.28M</span>
+                          <span className="font-mono text-blue-500">$2.28M</span>
                           <span className="text-xs text-muted-foreground ml-2">200 customers</span>
                         </div>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">Year 3</span>
                         <div className="text-right">
-                          <span className="font-mono text-green-500">$5.2M</span>
+                          <span className="font-mono text-blue-500">$5.2M</span>
                           <span className="text-xs text-muted-foreground ml-2">500 customers</span>
                         </div>
                       </div>
@@ -220,7 +220,7 @@ Contact: Darkwave Studios / Orbit Development Team`;
                       <thead>
                         <tr className="border-b border-border">
                           <th className="text-left py-2 font-medium text-muted-foreground">Feature</th>
-                          <th className="text-center py-2 font-medium text-green-500">PaintPros</th>
+                          <th className="text-center py-2 font-medium text-blue-500">PaintPros</th>
                           <th className="text-center py-2 font-medium text-muted-foreground">Jobber</th>
                           <th className="text-center py-2 font-medium text-muted-foreground">ServiceTitan</th>
                         </tr>
@@ -228,31 +228,31 @@ Contact: Darkwave Studios / Orbit Development Team`;
                       <tbody className="text-muted-foreground">
                         <tr className="border-b border-white/5">
                           <td className="py-2">White-Label Website</td>
-                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-blue-500 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                         </tr>
                         <tr className="border-b border-white/5">
                           <td className="py-2">Customer-Facing Estimator</td>
-                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-blue-500 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                           <td className="text-center text-xs text-yellow-500">Internal</td>
                         </tr>
                         <tr className="border-b border-white/5">
                           <td className="py-2">AI Color Visualizer</td>
-                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-blue-500 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                         </tr>
                         <tr className="border-b border-white/5">
                           <td className="py-2">Blockchain Verification</td>
-                          <td className="text-center"><CheckCircle className="w-4 h-4 text-green-500 mx-auto" /></td>
+                          <td className="text-center"><CheckCircle className="w-4 h-4 text-blue-500 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                           <td className="text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td>
                         </tr>
                         <tr>
                           <td className="py-2">Setup Fee</td>
-                          <td className="text-center text-green-500">$5-15K</td>
+                          <td className="text-center text-blue-500">$5-15K</td>
                           <td className="text-center">$0</td>
                           <td className="text-center">$5-30K</td>
                         </tr>
@@ -261,9 +261,9 @@ Contact: Darkwave Studios / Orbit Development Team`;
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl p-5 border border-green-500/20">
+                <div className="bg-gradient-to-r from-blue-500/10 to-sky-500/10 rounded-xl p-5 border border-blue-500/20">
                   <h3 className="font-bold mb-2 flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-green-500" />
+                    <Shield className="w-5 h-5 text-blue-500" />
                     Competitive Moat
                   </h3>
                   <p className="text-sm text-muted-foreground mb-3">
@@ -271,7 +271,7 @@ Contact: Darkwave Studios / Orbit Development Team`;
                     and dual-chain blockchain verification. Competitors offer generic CRMs with no customer-facing tools.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">White-Label</span>
+                    <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs">White-Label</span>
                     <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs">AI Visualizer</span>
                     <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs">Blockchain</span>
                     <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs">Franchise-Ready</span>
@@ -281,7 +281,7 @@ Contact: Darkwave Studios / Orbit Development Team`;
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <Link href="/investors" className="flex-1">
                     <Button 
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      className="w-full bg-gradient-to-r from-blue-600 to-sky-600"
                       onClick={onClose}
                       data-testid="button-view-full-investor-docs"
                     >

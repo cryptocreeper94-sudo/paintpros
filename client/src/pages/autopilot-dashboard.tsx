@@ -240,7 +240,7 @@ export default function AutopilotDashboard() {
 
   const categoryColors: Record<string, string> = {
     promotional: 'bg-blue-500/20 text-blue-400',
-    educational: 'bg-green-500/20 text-green-400',
+    educational: 'bg-blue-500/20 text-blue-400',
     testimonial: 'bg-yellow-500/20 text-yellow-400',
     'behind-scenes': 'bg-purple-500/20 text-purple-400',
     'before-after': 'bg-pink-500/20 text-pink-400',
@@ -273,7 +273,7 @@ export default function AutopilotDashboard() {
             </div>
             <div className="flex items-center gap-4">
               <Badge className={settings.isActive 
-                ? "bg-green-500/20 text-green-400 border-green-500/30 px-4 py-2" 
+                ? "bg-blue-500/20 text-blue-400 border-blue-500/30 px-4 py-2" 
                 : "bg-slate-700 text-slate-400 px-4 py-2"
               }>
                 {settings.isActive ? (
@@ -322,12 +322,12 @@ export default function AutopilotDashboard() {
                 <div className="flex items-center gap-2">
                   <Facebook className="w-5 h-5 text-blue-500" />
                   <span className="text-white">{metaStatus?.facebookPageName || 'Facebook Page'}</span>
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <CheckCircle className="w-4 h-4 text-blue-400" />
                 </div>
                 <div className="flex items-center gap-2">
                   <Instagram className="w-5 h-5 text-pink-500" />
                   <span className="text-white">{metaStatus?.instagramUsername ? `@${metaStatus.instagramUsername}` : 'Instagram'}</span>
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <CheckCircle className="w-4 h-4 text-blue-400" />
                 </div>
                 {/* Token Expiration Warning */}
                 {tokenStatus && (
@@ -336,7 +336,7 @@ export default function AutopilotDashboard() {
                     tokenStatus.status === 'critical' ? 'bg-red-500/20 text-red-400' :
                     tokenStatus.status === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
                     tokenStatus.status === 'info' ? 'bg-blue-500/20 text-blue-400' :
-                    'bg-green-500/20 text-green-400'
+                    'bg-blue-500/20 text-blue-400'
                   }`}>
                     {tokenStatus.status === 'expired' || tokenStatus.status === 'critical' ? (
                       <AlertTriangle className="w-4 h-4" />
@@ -399,7 +399,7 @@ export default function AutopilotDashboard() {
                     <div>
                       <p className="text-slate-400 text-sm">Total Reach</p>
                       <p className="text-3xl font-bold text-white">{analytics.thisWeek.reach.toLocaleString()}</p>
-                      <div className={`flex items-center text-sm mt-1 ${Number(reachChange) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <div className={`flex items-center text-sm mt-1 ${Number(reachChange) >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
                         {Number(reachChange) >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                         <span>{Math.abs(Number(reachChange))}% from last week</span>
                       </div>
@@ -417,7 +417,7 @@ export default function AutopilotDashboard() {
                     <div>
                       <p className="text-slate-400 text-sm">Engagement</p>
                       <p className="text-3xl font-bold text-white">{analytics.thisWeek.engagement.toLocaleString()}</p>
-                      <div className={`flex items-center text-sm mt-1 ${Number(engagementChange) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <div className={`flex items-center text-sm mt-1 ${Number(engagementChange) >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
                         {Number(engagementChange) >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                         <span>{Math.abs(Number(engagementChange))}% from last week</span>
                       </div>
@@ -439,8 +439,8 @@ export default function AutopilotDashboard() {
                         ${(analytics.thisWeek.adsSpent / analytics.thisWeek.clicks).toFixed(2)} per click
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
-                      <MousePointer className="w-6 h-6 text-green-400" />
+                    <div className="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                      <MousePointer className="w-6 h-6 text-blue-400" />
                     </div>
                   </div>
                 </CardContent>
@@ -522,7 +522,7 @@ export default function AutopilotDashboard() {
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-green-400" />
+                    <TrendingUp className="w-5 h-5 text-blue-400" />
                     Top Performing Posts
                   </CardTitle>
                 </CardHeader>
@@ -571,7 +571,7 @@ export default function AutopilotDashboard() {
                       </div>
                       <div>
                         <p className="text-slate-400 text-sm">Ads Running</p>
-                        <p className="text-2xl font-bold text-green-400">3</p>
+                        <p className="text-2xl font-bold text-blue-400">3</p>
                       </div>
                     </div>
                   </div>
@@ -586,7 +586,7 @@ export default function AutopilotDashboard() {
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-green-400" />
+                  <Calculator className="w-5 h-5 text-blue-400" />
                   Ad Budget Calculator
                 </CardTitle>
               </CardHeader>
@@ -679,7 +679,7 @@ export default function AutopilotDashboard() {
                     </div>
                     <div className="bg-slate-900 rounded-lg p-4 text-center">
                       <p className="text-slate-400 text-sm mb-1">Est. Link Clicks</p>
-                      <p className="text-2xl font-bold text-green-400">{estimatedClicks}</p>
+                      <p className="text-2xl font-bold text-blue-400">{estimatedClicks}</p>
                     </div>
                     <div className="bg-slate-900 rounded-lg p-4 text-center">
                       <p className="text-slate-400 text-sm mb-1">Est. Leads</p>
@@ -706,7 +706,7 @@ export default function AutopilotDashboard() {
                     </div>
                     <div className="border-t border-slate-700 pt-3 flex justify-between items-center">
                       <span className="text-white font-medium text-lg">Total</span>
-                      <span className="text-3xl font-bold text-green-400">${(59 + budgetCalc.monthlyBudget).toFixed(2)}</span>
+                      <span className="text-3xl font-bold text-blue-400">${(59 + budgetCalc.monthlyBudget).toFixed(2)}</span>
                     </div>
                   </div>
                   
@@ -724,7 +724,7 @@ export default function AutopilotDashboard() {
                     setActiveTab('settings');
                     toast({ title: "Budget applied to settings!" });
                   }}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600"
                   data-testid="button-apply-budget"
                 >
                   Apply This Budget
@@ -832,7 +832,7 @@ export default function AutopilotDashboard() {
                     </div>
                     <div className="border-t border-slate-700 pt-2 flex justify-between">
                       <span className="text-white font-medium">Total Investment</span>
-                      <span className="text-green-400 font-bold">${59 + (settings.dailyBudget * 30)}/mo</span>
+                      <span className="text-blue-400 font-bold">${59 + (settings.dailyBudget * 30)}/mo</span>
                     </div>
                   </div>
                 </div>
@@ -840,7 +840,7 @@ export default function AutopilotDashboard() {
                 <Button
                   onClick={() => saveSettingsMutation.mutate(settings)}
                   disabled={saveSettingsMutation.isPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600"
                   data-testid="button-save-settings"
                 >
                   {saveSettingsMutation.isPending ? (

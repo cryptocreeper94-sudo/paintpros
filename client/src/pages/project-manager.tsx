@@ -296,14 +296,14 @@ export default function ProjectManager() {
 
             <BentoItem colSpan={3} rowSpan={1}>
               <motion.div className="h-full" variants={cardVariants} custom={3} whileHover={hover3DSubtle}>
-                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect={false}>
+                <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="blue" hoverEffect={false}>
                   <div className="flex items-center gap-2 mb-2">
                     <motion.div className={`${iconContainerStyles.base} ${iconContainerStyles.sizes.sm} ${iconContainerStyles.gradients.green}`}>
-                      <Users className="w-4 h-4 text-green-400" />
+                      <Users className="w-4 h-4 text-blue-400" />
                     </motion.div>
                     <span className="text-sm font-medium">Conversions</span>
                   </div>
-                  <div className="text-3xl font-bold text-green-400">--%</div>
+                  <div className="text-3xl font-bold text-blue-400">--%</div>
                   <p className="text-xs text-muted-foreground mt-1">Lead to sale</p>
                 </GlassCard>
               </motion.div>

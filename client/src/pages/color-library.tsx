@@ -40,7 +40,7 @@ const hueRanges = [
   { id: "red", name: "Reds", minHue: 350, maxHue: 15, color: "#EF4444" },
   { id: "orange", name: "Oranges", minHue: 15, maxHue: 45, color: "#FB923C" },
   { id: "yellow", name: "Yellows", minHue: 45, maxHue: 70, color: "#FBBF24" },
-  { id: "green", name: "Greens", minHue: 70, maxHue: 170, color: "#22C55E" },
+  { id: "green", name: "Greens", minHue: 70, maxHue: 170, color: "#3B82F6" },
   { id: "blue", name: "Blues", minHue: 170, maxHue: 260, color: "#3B82F6" },
   { id: "purple", name: "Purples", minHue: 260, maxHue: 300, color: "#A855F7" },
   { id: "pink", name: "Pinks", minHue: 300, maxHue: 350, color: "#EC4899" },

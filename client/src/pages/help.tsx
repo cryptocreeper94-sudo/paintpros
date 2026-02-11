@@ -233,7 +233,7 @@ function Slideshow({ slides, title }: { slides: Slide[]; title: string }) {
                   <div className="grid grid-cols-2 gap-2 mb-6">
                     {currentSlide.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
                         <span>{feature}</span>
                       </div>
                     ))}

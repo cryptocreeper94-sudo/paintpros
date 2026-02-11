@@ -446,7 +446,7 @@ export default function OpsAI() {
                       <Badge 
                         className={
                           message.action.status === "success" 
-                            ? "bg-green-500/20 text-green-400" 
+                            ? "bg-blue-500/20 text-blue-400" 
                             : message.action.status === "error"
                             ? "bg-red-500/20 text-red-400"
                             : "bg-yellow-500/20 text-yellow-400"

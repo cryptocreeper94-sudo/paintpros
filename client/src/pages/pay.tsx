@@ -177,9 +177,9 @@ export default function Pay() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", delay: 0.2 }}
-                className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center"
+                className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-500/20 flex items-center justify-center"
               >
-                <CheckCircle2 className="w-10 h-10 text-green-400" />
+                <CheckCircle2 className="w-10 h-10 text-blue-400" />
               </motion.div>
               <h1 className="text-3xl font-display font-bold mb-2">Payment Successful!</h1>
               <p className="text-muted-foreground mb-6">
@@ -187,7 +187,7 @@ export default function Pay() {
               </p>
               <div className="bg-white/5 rounded-xl p-4 mb-6 border border-border dark:border-white/10">
                 <p className="text-sm text-muted-foreground mb-1">Amount Paid</p>
-                <p className="text-2xl font-bold text-green-400">
+                <p className="text-2xl font-bold text-blue-400">
                   ${parseFloat(estimate.totalEstimate).toLocaleString()}
                 </p>
               </div>

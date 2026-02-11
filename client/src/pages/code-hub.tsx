@@ -43,10 +43,10 @@ interface OrbitStatus {
 const languageColors: Record<string, string> = {
   typescript: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   javascript: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  json: "bg-green-500/20 text-green-400 border-green-500/30",
+  json: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   markdown: "bg-purple-500/20 text-purple-400 border-purple-500/30",
   bash: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  python: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  python: "bg-sky-500/20 text-sky-400 border-sky-500/30",
 };
 
 const categoryIcons: Record<string, typeof Code2> = {
@@ -168,8 +168,8 @@ export default function CodeHub() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
-              <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse" />
+            <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/30">
+              <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse" />
               Connected as {status.health.appName}
             </Badge>
           </div>

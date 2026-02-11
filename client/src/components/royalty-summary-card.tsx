@@ -30,13 +30,13 @@ export function RoyaltySummaryCard() {
   });
 
   return (
-    <GlassCard className={`h-full p-4 ${cardBackgroundStyles.green}`} glow="green" hoverEffect={false}>
+    <GlassCard className={`h-full p-4 ${cardBackgroundStyles.blue}`} glow="blue" hoverEffect={false}>
       <div className="flex items-center gap-2 mb-3">
         <motion.div 
-          className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.green}`}
+          className={`${iconContainerStyles.sizes.md} ${iconContainerStyles.base} ${iconContainerStyles.gradients.blue}`}
           whileHover={{ scale: 1.1, rotate: 5 }}
         >
-          <DollarSign className="w-4 h-4 text-green-400" />
+          <DollarSign className="w-4 h-4 text-blue-400" />
         </motion.div>
         <div className="flex-1">
           <h2 className="text-lg font-display font-bold">Partner Royalties</h2>
@@ -50,7 +50,7 @@ export function RoyaltySummaryCard() {
             <DollarSign className="w-3 h-3" />
             Total Earnings
           </div>
-          <p className="text-lg font-bold text-green-500" data-testid="text-royalty-total">
+          <p className="text-lg font-bold text-blue-500" data-testid="text-royalty-total">
             {formatCurrency(royaltySummary?.partnerShare)}
           </p>
         </div>

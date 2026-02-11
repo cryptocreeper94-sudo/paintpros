@@ -108,17 +108,17 @@ export function PartnerModal({ open, onOpenChange, hasSignedAgreement = false, o
           </Card>
 
           {/* IP Agreement */}
-          <Card className="border-green-300 dark:border-green-700">
+          <Card className="border-blue-300 dark:border-blue-700">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
-                  <Shield className="w-5 h-5 text-green-700 dark:text-green-400" />
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                  <Shield className="w-5 h-5 text-blue-700 dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-bold text-gray-900 dark:text-gray-100">Your IP Agreement</h3>
                     {hasSignedAgreement ? (
-                      <Badge className="bg-green-100 text-green-800 border border-green-300">Signed</Badge>
+                      <Badge className="bg-blue-100 text-blue-800 border border-blue-300">Signed</Badge>
                     ) : (
                       <Badge variant="outline" className="text-amber-700 border-amber-300">Pending</Badge>
                     )}

@@ -51,7 +51,7 @@ const TENANT_CONFIG = {
   demo: { name: "PaintPros.io", color: "#3B82F6", icon: "🏪" },
 };
 
-const CHART_COLORS = ["#D4AF37", "#3B82F6", "#10B981", "#8B5CF6", "#F59E0B"];
+const CHART_COLORS = ["#D4AF37", "#3B82F6", "#0ea5e9", "#8B5CF6", "#F59E0B"];
 
 export function OwnerResultsView() {
   const [activeTenant, setActiveTenant] = useState<string>(() => {
@@ -110,13 +110,13 @@ export function OwnerResultsView() {
   })) || [];
 
   const getScoreColor = (score: number) => {
-    if (score >= 70) return "text-green-500";
+    if (score >= 70) return "text-blue-500";
     if (score >= 40) return "text-amber-500";
     return "text-red-500";
   };
 
   const getScoreStatus = (score: number) => {
-    if (score >= 80) return { label: "Excellent", color: "text-green-500", bg: "bg-green-500/20" };
+    if (score >= 80) return { label: "Excellent", color: "text-blue-500", bg: "bg-blue-500/20" };
     if (score >= 60) return { label: "Good", color: "text-blue-500", bg: "bg-blue-500/20" };
     if (score >= 40) return { label: "Needs Work", color: "text-amber-500", bg: "bg-amber-500/20" };
     return { label: "Critical", color: "text-red-500", bg: "bg-red-500/20" };
@@ -172,7 +172,7 @@ export function OwnerResultsView() {
             </div>
             <div className="mt-2 flex items-center gap-1 text-sm">
               {weeklyChange > 0 ? (
-                <><ChevronUp className="w-4 h-4 text-green-500" /><span className="text-green-500">+{weeklyChange}%</span></>
+                <><ChevronUp className="w-4 h-4 text-blue-500" /><span className="text-blue-500">+{weeklyChange}%</span></>
               ) : weeklyChange < 0 ? (
                 <><ChevronDown className="w-4 h-4 text-red-500" /><span className="text-red-500">{weeklyChange}%</span></>
               ) : (
@@ -244,8 +244,8 @@ export function OwnerResultsView() {
                   {geoData?.cities?.[0]?.city || geoData?.countries?.[0]?.country || "—"}
                 </p>
               </div>
-              <div className="p-3 rounded-full bg-green-500/20">
-                <MapPin className="w-6 h-6 text-green-400" />
+              <div className="p-3 rounded-full bg-blue-500/20">
+                <MapPin className="w-6 h-6 text-blue-400" />
               </div>
             </div>
             <div className="mt-2 text-sm text-muted-foreground">
@@ -501,7 +501,7 @@ export function OwnerResultsView() {
                         strokeWidth="6"
                         fill="transparent"
                         strokeDasharray={`${item.score * 1.76} 176`}
-                        className={item.score >= 70 ? "text-green-500" : item.score >= 40 ? "text-amber-500" : "text-red-500"}
+                        className={item.score >= 70 ? "text-blue-500" : item.score >= 40 ? "text-amber-500" : "text-red-500"}
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">

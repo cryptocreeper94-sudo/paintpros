@@ -309,7 +309,7 @@ export function ColorVisualizer({ isOpen, onClose, initialColor, tenantId = 'dem
                       <p className="font-medium text-gray-900">{selectedColor.name}</p>
                       <p className="text-sm text-gray-500">{selectedColor.hex}</p>
                     </div>
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircle className="w-5 h-5 text-blue-600" />
                   </div>
                 )}
 

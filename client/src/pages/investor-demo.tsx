@@ -84,8 +84,8 @@ const FEATURE_MODULES = [
     title: "Immersive Site",
     subtitle: "Capture",
     icon: Scan,
-    gradient: "from-green-500 to-emerald-500",
-    glowColor: "green",
+    gradient: "from-blue-500 to-sky-500",
+    glowColor: "blue",
     features: ["LiDAR Digital Twins", "AR Color Overlays", "3D Site Models"],
     metric: { value: "89%", label: "Faster Quoting" },
     status: "live"
@@ -137,7 +137,7 @@ const COMPETITOR_COMPARISON = [
 ];
 
 const TRADE_VERTICALS = [
-  { name: "PaintPros", market: "$46.5B", status: "Live", color: "from-green-500 to-emerald-500" },
+  { name: "PaintPros", market: "$46.5B", status: "Live", color: "from-blue-500 to-sky-500" },
   { name: "RoofPros", market: "$56B", status: "Q2 2026", color: "from-orange-500 to-red-500" },
   { name: "HVACPros", market: "$130B", status: "Q3 2026", color: "from-blue-500 to-cyan-500" },
   { name: "ElectricPros", market: "$200B", status: "Q4 2026", color: "from-yellow-500 to-orange-500" },
@@ -171,8 +171,8 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 function LivePulse() {
   return (
     <span className="relative flex h-2 w-2">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
     </span>
   );
 }
@@ -249,7 +249,7 @@ export default function InvestorDemo() {
               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-purple-500/10" />
               <div className="absolute top-4 right-4 flex items-center gap-2">
                 <LivePulse />
-                <span className="text-xs font-medium text-green-400">Live Demo</span>
+                <span className="text-xs font-medium text-blue-400">Live Demo</span>
               </div>
               
               <div className="relative z-10 flex flex-col h-full justify-between">
@@ -309,18 +309,18 @@ export default function InvestorDemo() {
 
           {/* Key Metrics Row */}
           <BentoItem colSpan={3} rowSpan={1} mobileColSpan={2} mobileRowSpan={1}>
-            <GlassCard className="p-4 md:p-6 h-full" hoverEffect glow="green">
+            <GlassCard className="p-4 md:p-6 h-full" hoverEffect glow="blue">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-lg bg-green-500/20">
-                  <DollarSign className="w-5 h-5 text-green-400" />
+                <div className="p-2 rounded-lg bg-blue-500/20">
+                  <DollarSign className="w-5 h-5 text-blue-400" />
                 </div>
                 <span className="text-xs text-muted-foreground uppercase tracking-wider">ARR</span>
               </div>
-              <p className="text-2xl md:text-3xl font-bold text-green-400">
+              <p className="text-2xl md:text-3xl font-bold text-blue-400">
                 <AnimatedCounter value={1073400} prefix="$" />
               </p>
               <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-green-400" />
+                <TrendingUp className="w-3 h-3 text-blue-400" />
                 +127% YoY
               </p>
             </GlassCard>
@@ -446,7 +446,7 @@ export default function InvestorDemo() {
                         <ul className="space-y-1">
                           {module.features.map((f, i) => (
                             <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <CheckCircle2 className="w-4 h-4 text-green-400" />
+                              <CheckCircle2 className="w-4 h-4 text-blue-400" />
                               {f}
                             </li>
                           ))}
@@ -540,7 +540,7 @@ export default function InvestorDemo() {
                       <tr key={i} className="border-b border-white/5">
                         <td className="py-2 text-muted-foreground">{row.feature}</td>
                         <td className="text-center py-2">
-                          {row.us === true && <CheckCircle2 className="w-4 h-4 text-green-400 mx-auto" />}
+                          {row.us === true && <CheckCircle2 className="w-4 h-4 text-blue-400 mx-auto" />}
                         </td>
                         <td className="text-center py-2">
                           {row.serviceTitan === true ? (
@@ -612,13 +612,13 @@ export default function InvestorDemo() {
           <BentoItem colSpan={4} rowSpan={2} mobileColSpan={4} mobileRowSpan={2}>
             <GlassCard className="p-6 h-full" hoverEffect>
               <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
-                <PiggyBank className="w-5 h-5 text-green-400" />
+                <PiggyBank className="w-5 h-5 text-blue-400" />
                 Unit Economics
               </h3>
               
               <div className="space-y-3">
                 {[
-                  { label: "Gross Margin", value: "87%", color: "text-green-400" },
+                  { label: "Gross Margin", value: "87%", color: "text-blue-400" },
                   { label: "Customer LTV", value: "$42,000", color: "text-blue-400" },
                   { label: "CAC", value: "$1,200", color: "text-accent" },
                   { label: "Payback Period", value: "2.1 months", color: "text-purple-400" }
@@ -674,7 +674,7 @@ export default function InvestorDemo() {
                   <p className="text-xs text-muted-foreground">API Endpoints</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-green-400">60+</p>
+                  <p className="text-3xl font-bold text-blue-400">60+</p>
                   <p className="text-xs text-muted-foreground">DB Tables</p>
                 </div>
                 <div className="text-center">

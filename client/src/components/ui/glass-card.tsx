@@ -15,7 +15,7 @@ interface GlassCardProps extends HTMLMotionProps<"div"> {
 const glowColors: Record<GlowColor, string> = {
   gold: "before:bg-gold-400/25",
   blue: "before:bg-blue-500/25",
-  green: "before:bg-green-500/25",
+  green: "before:bg-blue-500/25",
   purple: "before:bg-purple-500/25",
   accent: "before:bg-accent/25",
   none: "",
