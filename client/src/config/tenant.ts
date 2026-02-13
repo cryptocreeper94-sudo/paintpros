@@ -1035,3 +1035,82 @@ export function getCurrentTenant(): TenantConfig {
 export function getTenantById(tenantId: string): TenantConfig {
   return tenants[tenantId] || lumePaintCo;
 }
+
+interface PWAConfig {
+  manifest: string;
+  themeColor: string;
+  appleIcon: string;
+  splashImage: string;
+  appTitle: string;
+}
+
+const tenantPWAConfig: Record<string, PWAConfig> = {
+  tlid: {
+    manifest: "/manifest-tlid.json",
+    themeColor: "#06b6d4",
+    appleIcon: "/pwa/tlid/icon-192.png",
+    splashImage: "/pwa/tlid/splash-1024.png",
+    appTitle: "TrustLayer Marketing",
+  },
+  npp: {
+    manifest: "/manifest.json",
+    themeColor: "#0f172a",
+    appleIcon: "/pwa/npp/icon-192.png",
+    splashImage: "/pwa/npp/splash-1024.png",
+    appTitle: "Nash PaintPros",
+  },
+  paintprosco: {
+    manifest: "/manifest-paintpros.json",
+    themeColor: "#1e3a5f",
+    appleIcon: "/pwa/paintpros/icon-192.png",
+    splashImage: "/pwa/paintpros/splash-1024.png",
+    appTitle: "Paint Pros Co.",
+  },
+  tradeworks: {
+    manifest: "/manifest-tradeworks.json",
+    themeColor: "#0f172a",
+    appleIcon: "/pwa/tradeworks/icon-192.png",
+    splashImage: "/pwa/tradeworks/splash.png",
+    appTitle: "TradeWorks AI",
+  },
+  demo: {
+    manifest: "/manifest-tlid.json",
+    themeColor: "#06b6d4",
+    appleIcon: "/pwa/tlid/icon-192.png",
+    splashImage: "/pwa/tlid/splash-1024.png",
+    appTitle: "TrustLayer Marketing",
+  },
+};
+
+function ensureMeta(name: string, content: string): void {
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
+
+function ensureLink(rel: string, href: string): void {
+  let el = document.querySelector(`link[rel="${rel}"]`);
+  if (!el) {
+    el = document.createElement("link");
+    el.setAttribute("rel", rel);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("href", href);
+}
+
+export function applyTenantPWA(): void {
+  if (typeof window === "undefined") return;
+
+  const tenantId = getTenantIdFromHostname(window.location.hostname);
+  const config = tenantPWAConfig[tenantId] || tenantPWAConfig["demo"];
+
+  ensureLink("manifest", config.manifest);
+  ensureMeta("theme-color", config.themeColor);
+  ensureLink("apple-touch-icon", config.appleIcon);
+  ensureLink("apple-touch-startup-image", config.splashImage);
+  ensureMeta("apple-mobile-web-app-title", config.appTitle);
+}
