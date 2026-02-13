@@ -686,7 +686,7 @@ export default function TrustLayerHome() {
                 size="sm"
                 className="bg-gradient-to-r from-cyan-600 to-blue-600 shadow-lg shadow-cyan-500/25"
                 data-testid="button-signup"
-                onClick={() => window.open('https://dwtl.io/signup', '_blank')}
+                onClick={() => setLocation('/trustlayer/marketing')}
               >
                 Sign Up
               </Button>
