@@ -293,6 +293,8 @@ function Router() {
       <Route path="/tour" component={NPPWalkthrough} />
       <Route path="/get-started" component={GetStarted} />
       <Route path="/start" component={GetStarted} />
+      <Route path="/tlid" component={TrustLayerHome} />
+      <Route path="/tlid/marketing-hub">{() => <TenantPrefixedRoute tenantId="tlid" Component={MarketingHub} />}</Route>
       <Route path="/trustlayer" component={TrustLayerHome} />
       <Route path="/trustlayer/marketing">{() => <TenantPrefixedRoute tenantId="tlid" Component={MarketingHub} />}</Route>
       <Route path="/trustlayer/marketing-signup" component={TrustLayerMarketing} />
@@ -300,7 +302,6 @@ function Router() {
       <Route path="/trustlayer/claim" component={ClaimSubdomain} />
       <Route path="/trustlayer/privacy" component={TrustLayerPrivacy} />
       <Route path="/trustlayer/terms" component={TrustLayerTerms} />
-      <Route path="/tlid/marketing-hub">{() => <TenantPrefixedRoute tenantId="tlid" Component={MarketingHub} />}</Route>
       
       {/* Lume Paint Co routes - accessible via slug while lumepaint.co DNS is pending */}
       <Route path="/lume">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Home} />}</Route>
