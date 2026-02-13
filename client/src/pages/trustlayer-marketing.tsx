@@ -64,7 +64,7 @@ export default function TrustLayerMarketing() {
         });
       }
       toast({ title: "Welcome aboard! Check your email for next steps." });
-      setLocation('/autopilot/setup');
+      setLocation('/autopilot/onboarding');
     },
     onError: () => {
       toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
