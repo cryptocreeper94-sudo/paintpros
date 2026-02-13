@@ -457,6 +457,7 @@ function MetaIntegrationSection() {
 }
 
 export default function TrustLayerHome() {
+  const [, setLocation] = useLocation();
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
@@ -648,7 +649,7 @@ export default function TrustLayerHome() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.location.href = '/trustlayer/marketing'}
+                onClick={() => setLocation('/trustlayer/marketing')}
                 className="text-slate-400 hidden md:inline-flex"
               >
                 Marketing
@@ -656,7 +657,7 @@ export default function TrustLayerHome() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.location.href = '/trustlayer/guardian'}
+                onClick={() => setLocation('/trustlayer/guardian')}
                 className="text-slate-400 hidden md:inline-flex"
               >
                 Guardian Shield
@@ -829,7 +830,7 @@ export default function TrustLayerHome() {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   className="relative rounded-xl overflow-hidden h-full min-h-[320px] md:min-h-[400px] cursor-pointer group"
-                  onClick={() => window.location.href = '/trustlayer/marketing'}
+                  onClick={() => setLocation('/trustlayer/marketing')}
                 >
                   <div className="absolute inset-0">
                     <img src={tlidMarketingImg} alt="Marketing Dashboard" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
@@ -902,7 +903,7 @@ export default function TrustLayerHome() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="relative rounded-xl overflow-hidden h-full min-h-[200px] cursor-pointer group"
-                  onClick={() => window.location.href = '/trustlayer/guardian'}
+                  onClick={() => setLocation('/trustlayer/guardian')}
                 >
                   <div className="absolute inset-0">
                     <img src={tlidSecurityImg} alt="Security" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
@@ -1098,7 +1099,7 @@ export default function TrustLayerHome() {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   className="relative rounded-xl overflow-hidden h-full min-h-[280px] cursor-pointer group border border-white/5"
-                  onClick={() => (product as any).external ? window.open(product.link, '_blank') : window.location.href = product.link}
+                  onClick={() => (product as any).external ? window.open(product.link, '_blank') : setLocation(product.link)}
                 >
                   <div className="absolute inset-0">
                     <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
@@ -1357,14 +1358,14 @@ export default function TrustLayerHome() {
             </div>
             <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400 text-xs">
               <button
-                onClick={() => window.location.href = '/trustlayer/privacy'}
+                onClick={() => setLocation('/trustlayer/privacy')}
                 className="hover:text-white transition-colors"
                 data-testid="link-privacy"
               >
                 Privacy
               </button>
               <button
-                onClick={() => window.location.href = '/trustlayer/terms'}
+                onClick={() => setLocation('/trustlayer/terms')}
                 className="hover:text-white transition-colors"
                 data-testid="link-terms"
               >

@@ -294,11 +294,13 @@ function Router() {
       <Route path="/get-started" component={GetStarted} />
       <Route path="/start" component={GetStarted} />
       <Route path="/trustlayer" component={TrustLayerHome} />
-      <Route path="/trustlayer/marketing" component={TrustLayerMarketing} />
+      <Route path="/trustlayer/marketing">{() => <TenantPrefixedRoute tenantId="tlid" Component={MarketingHub} />}</Route>
+      <Route path="/trustlayer/marketing-signup" component={TrustLayerMarketing} />
       <Route path="/trustlayer/guardian" component={GuardianShield} />
       <Route path="/trustlayer/claim" component={ClaimSubdomain} />
       <Route path="/trustlayer/privacy" component={TrustLayerPrivacy} />
       <Route path="/trustlayer/terms" component={TrustLayerTerms} />
+      <Route path="/tlid/marketing-hub">{() => <TenantPrefixedRoute tenantId="tlid" Component={MarketingHub} />}</Route>
       
       {/* Lume Paint Co routes - accessible via slug while lumepaint.co DNS is pending */}
       <Route path="/lume">{() => <TenantPrefixedRoute tenantId="lumepaint" Component={Home} />}</Route>
