@@ -58,69 +58,68 @@
 }
 
 :root {
-  /* Army Green Theme Base - Washed Out */
-  /* Primary Green: Reduced saturation from 44% to 25%, Lightness increased slightly */
+  /* Navy Blue Theme Base */
   
-  --background: 80 15% 98%; /* More neutral light background */
-  --foreground: 80 20% 20%; /* Softer dark text */
+  --background: 210 20% 98%; /* Clean light background */
+  --foreground: 222 47% 11%; /* Navy dark text */
 
   --card: 0 0% 100%;
-  --card-foreground: 80 20% 20%;
+  --card-foreground: 222 47% 11%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 80 20% 20%;
+  --popover-foreground: 222 47% 11%;
 
-  --primary: 80 25% 30%; /* Washed out Army Green */
-  --primary-foreground: 80 15% 98%;
+  --primary: 222 47% 17%; /* Navy Blue (#0f172a) */
+  --primary-foreground: 210 40% 98%;
 
-  --secondary: 91 15% 90%; /* Washed out sage */
-  --secondary-foreground: 80 25% 30%;
+  --secondary: 214 20% 92%; /* Cool blue-gray */
+  --secondary-foreground: 222 47% 17%;
 
-  --muted: 80 10% 94%;
-  --muted-foreground: 80 5% 50%;
+  --muted: 210 15% 94%;
+  --muted-foreground: 215 16% 47%;
 
-  --accent: 40 40% 60%; /* Desaturated Gold */
-  --accent-foreground: 80 25% 30%;
+  --accent: 214 32% 55%; /* Steel blue accent */
+  --accent-foreground: 210 40% 98%;
 
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 80 15% 90%;
-  --input: 80 15% 90%;
-  --ring: 80 25% 30%;
+  --border: 214 20% 90%;
+  --input: 214 20% 90%;
+  --ring: 222 47% 17%;
 
   --radius: 0.75rem;
 }
 
 .dark {
-  /* Deep Army Green Theme - Washed Out */
-  --background: 80 15% 12%; /* Desaturated dark green */
-  --foreground: 80 15% 90%;
+  /* Deep Navy Theme */
+  --background: 222 47% 8%; /* Deep navy */
+  --foreground: 210 40% 92%;
 
-  --card: 80 15% 28%; /* Brighter card bg for dark mode */
-  --card-foreground: 80 15% 90%;
+  --card: 222 40% 14%; /* Navy card bg */
+  --card-foreground: 210 40% 92%;
 
-  --popover: 80 15% 16%;
-  --popover-foreground: 80 15% 90%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 92%;
 
-  --primary: 80 20% 50%; /* Softer green for dark mode */
-  --primary-foreground: 80 15% 12%;
+  --primary: 214 32% 60%; /* Lighter blue for dark mode */
+  --primary-foreground: 222 47% 8%;
 
-  --secondary: 80 10% 25%;
-  --secondary-foreground: 80 15% 90%;
+  --secondary: 222 30% 20%;
+  --secondary-foreground: 210 40% 92%;
 
-  --muted: 80 10% 25%;
-  --muted-foreground: 80 5% 65%;
+  --muted: 222 25% 18%;
+  --muted-foreground: 215 20% 65%;
 
-  --accent: 40 45% 65%; /* Softer Gold */
-  --accent-foreground: 80 15% 12%;
+  --accent: 214 32% 65%; /* Steel blue accent */
+  --accent-foreground: 222 47% 8%;
 
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 80 10% 25%;
-  --input: 80 10% 25%;
-  --ring: 40 45% 65%;
+  --border: 222 25% 22%;
+  --input: 222 25% 22%;
+  --ring: 214 32% 60%;
 }
 
 @layer base {

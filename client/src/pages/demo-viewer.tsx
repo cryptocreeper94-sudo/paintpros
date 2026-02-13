@@ -90,8 +90,8 @@ export default function DemoViewer() {
       <main className="min-h-screen">
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-purple-500/5" />
-          <div className="absolute top-20 left-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
           
           <motion.div 
@@ -100,14 +100,14 @@ export default function DemoViewer() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Badge className="mb-6 bg-accent/20 text-accent border-accent/30">
+            <Badge className="mb-6 bg-cyan-500/20 text-cyan-400 border-cyan-500/30">
               <Layers className="w-3 h-3 mr-1" />
               The Trusted Network
             </Badge>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
               <span className="text-foreground">Trust</span>
-              <span className="text-accent">Layer</span>
+              <span className="bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent">Layer</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-4">
@@ -123,7 +123,7 @@ export default function DemoViewer() {
                   transition={{ delay: 0.2 + i * 0.1 }}
                 >
                   <Badge variant="outline" className="text-sm py-1.5 px-3 gap-1.5">
-                    <value.icon className="w-3.5 h-3.5 text-accent" />
+                    <value.icon className="w-3.5 h-3.5 text-cyan-500" />
                     {value.title}
                   </Badge>
                 </motion.div>
@@ -173,7 +173,7 @@ export default function DemoViewer() {
                 <div className="space-y-2">
                   <button
                     onClick={() => handleLayoutChange('bento')}
-                    className={`w-full flex items-center gap-3 p-2.5 rounded-md transition-colors ${currentLayout === 'bento' ? 'bg-accent/20 border border-accent/40' : 'hover:bg-muted'}`}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-md transition-colors ${currentLayout === 'bento' ? 'bg-cyan-500/20 border border-cyan-500/40' : 'hover:bg-muted'}`}
                     data-testid="button-layout-bento"
                   >
                     <LayoutGrid className="w-4 h-4" />
@@ -184,7 +184,7 @@ export default function DemoViewer() {
                   </button>
                   <button
                     onClick={() => handleLayoutChange('minimalist')}
-                    className={`w-full flex items-center gap-3 p-2.5 rounded-md transition-colors ${currentLayout === 'minimalist' ? 'bg-accent/20 border border-accent/40' : 'hover:bg-muted'}`}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-md transition-colors ${currentLayout === 'minimalist' ? 'bg-cyan-500/20 border border-cyan-500/40' : 'hover:bg-muted'}`}
                     data-testid="button-layout-minimalist"
                   >
                     <Rows className="w-4 h-4" />
@@ -313,7 +313,7 @@ export default function DemoViewer() {
             viewport={{ once: true }}
           >
             <motion.div variants={cardVariants} className="text-center mb-12">
-              <Badge className="mb-4 bg-accent/20 text-accent border-accent/30">
+              <Badge className="mb-4 bg-purple-500/20 text-purple-400 border-purple-500/30">
                 <Globe className="w-3 h-3 mr-1" />
                 Trade Verticals
               </Badge>
@@ -370,8 +370,8 @@ export default function DemoViewer() {
               {coreValues.map((value, i) => (
                 <motion.div key={value.title} variants={cardVariants}>
                   <GlassCard className="p-6 text-center h-full">
-                    <div className="p-4 bg-accent/20 rounded-full w-fit mx-auto mb-4">
-                      <value.icon className="w-8 h-8 text-accent" />
+                    <div className="p-4 bg-cyan-500/20 rounded-full w-fit mx-auto mb-4">
+                      <value.icon className="w-8 h-8 text-cyan-500" />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">{value.title}</h3>
                     <p className="text-sm text-muted-foreground">{value.description}</p>
@@ -390,8 +390,8 @@ export default function DemoViewer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <GlassCard className="p-8 md:p-12 text-center border-accent/20" glow>
-              <Sparkles className="w-10 h-10 text-accent mx-auto mb-4" />
+            <GlassCard className="p-8 md:p-12 text-center border-cyan-500/20" glow>
+              <Sparkles className="w-10 h-10 text-cyan-500 mx-auto mb-4" />
               <h2 className="text-3xl font-display font-bold mb-4">Ready to Join?</h2>
               <p className="text-muted-foreground max-w-xl mx-auto mb-8">
                 Membership is free. All we ask is that you commit to being a good person and running an honest business. That's it.

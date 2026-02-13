@@ -154,7 +154,7 @@ export default function TrustLayerHome() {
       description: 'Complete business verification and security infrastructure. Protect your reputation with certified trust badges.',
       icon: Shield,
       color: 'from-sky-500 to-teal-500',
-      glowColor: 'green' as const,
+      glowColor: 'cyan' as const,
       features: ['Business Verification', 'Trust Badges', 'Security Monitoring', 'Credential Management'],
       price: '$49/mo',
       link: '/trustlayer/guardian',
@@ -576,7 +576,7 @@ export default function TrustLayerHome() {
                   <motion.div 
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${product.color} flex items-center justify-center mb-6 shadow-lg backdrop-blur-sm`}
-                    style={{ boxShadow: `0 10px 40px -10px ${product.glowColor === 'blue' ? 'rgba(59, 130, 246, 0.5)' : product.glowColor === 'green' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(245, 158, 11, 0.5)'}` }}
+                    style={{ boxShadow: `0 10px 40px -10px ${product.glowColor === 'blue' ? 'rgba(59, 130, 246, 0.5)' : product.glowColor === 'cyan' ? 'rgba(6, 182, 212, 0.5)' : 'rgba(245, 158, 11, 0.5)'}` }}
                   >
                     <product.icon className="w-8 h-8 text-white" />
                   </motion.div>
