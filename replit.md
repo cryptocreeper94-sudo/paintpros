@@ -13,7 +13,7 @@ PaintPros.io is a multi-tenant SaaS platform by Orbit for the painting and home 
 - **PaintPros.io** = Flagship SaaS demo site + white-label template for franchises. Navy and white branding.
 - **NashPaintPros.io** = Ecosystem advertising hub + lead generation / affiliate marketplace. "Find your contractor, find your customer." Full dark premium landing page showcasing 20+ connected platforms with category filtering, affiliate tracking (UTM params via `trackUrl()`), and SEO. Uses shared ecosystem data from `client/src/data/ecosystem.ts`. Route: `/npp` or NPP tenant home. Navy and white branding with dark premium aesthetic.
 - **TradeWorksAI.io** = Separate field tool platform for multi-trade expansion.
-- **TLID.io** = TrustLayer automated marketing system (Meta Business Suite integration, ad automation). Branding: cyan, lavender, holographic purple, dark blues.
+- **TLID.io** = TrustLayer Marketing - automated advertising platform for ANY business (not just trades). Self-service sign-up, Meta Business Suite integration, set-it-and-forget-it ad automation. 5-step onboarding: Industry > Business Info > Meta Setup > Credentials > Plan. Own PWA (manifest-tlid.json, pwa/tlid/). Branding: cyan, lavender, holographic purple, dark blues. Future platforms: Nextdoor, X, TikTok, YouTube.
 
 ### Color Rules
 - **NO green or cream colors anywhere** in the platform. All removed Feb 2026.

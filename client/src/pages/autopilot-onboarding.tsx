@@ -35,6 +35,9 @@ import {
   Home,
   Sparkles,
   MapPin,
+  Heart,
+  ShoppingBag,
+  Briefcase,
   Phone,
   Mail,
   User,
@@ -55,15 +58,15 @@ import {
 } from "lucide-react";
 
 const NICHES = [
-  { id: 'painting', name: 'Painting', icon: Paintbrush, color: 'from-blue-500 to-indigo-500', description: 'Interior & Exterior Painting' },
-  { id: 'landscaping', name: 'Landscaping', icon: Leaf, color: 'from-blue-500 to-sky-500', description: 'Lawn Care & Garden Design' },
-  { id: 'roofing', name: 'Roofing', icon: Home, color: 'from-orange-500 to-red-500', description: 'Roof Repair & Installation' },
-  { id: 'plumbing', name: 'Plumbing', icon: Droplets, color: 'from-cyan-500 to-blue-500', description: 'Plumbing Services' },
-  { id: 'hvac', name: 'HVAC', icon: Wind, color: 'from-purple-500 to-pink-500', description: 'Heating & Cooling' },
-  { id: 'electrical', name: 'Electrical', icon: Plug, color: 'from-yellow-500 to-orange-500', description: 'Electrical Services' },
-  { id: 'remodeling', name: 'Remodeling', icon: Hammer, color: 'from-amber-500 to-yellow-500', description: 'Home Renovations' },
-  { id: 'general', name: 'General Contractor', icon: Wrench, color: 'from-slate-500 to-gray-500', description: 'General Construction' },
-  { id: 'other', name: 'Other Business', icon: Building2, color: 'from-gray-500 to-slate-600', description: 'Enter your business type' },
+  { id: 'home_services', name: 'Home Services', icon: Home, color: 'from-blue-500 to-indigo-500', description: 'Painting, Plumbing, HVAC, Electrical & More' },
+  { id: 'restaurant', name: 'Restaurant / Food', icon: Building2, color: 'from-orange-500 to-red-500', description: 'Restaurants, Catering, Food Trucks' },
+  { id: 'health_wellness', name: 'Health & Wellness', icon: Heart, color: 'from-pink-500 to-rose-500', description: 'Fitness, Spa, Medical, Therapy' },
+  { id: 'retail', name: 'Retail / E-Commerce', icon: ShoppingBag, color: 'from-purple-500 to-pink-500', description: 'Shops, Boutiques, Online Stores' },
+  { id: 'real_estate', name: 'Real Estate', icon: MapPin, color: 'from-cyan-500 to-blue-500', description: 'Agents, Property Management, Brokers' },
+  { id: 'automotive', name: 'Automotive', icon: Wrench, color: 'from-slate-500 to-gray-500', description: 'Auto Repair, Detailing, Dealerships' },
+  { id: 'professional', name: 'Professional Services', icon: Briefcase, color: 'from-blue-500 to-sky-500', description: 'Legal, Accounting, Consulting' },
+  { id: 'beauty', name: 'Beauty / Salon', icon: Sparkles, color: 'from-amber-500 to-yellow-500', description: 'Hair, Nails, Barbershops, Aesthetics' },
+  { id: 'other', name: 'Other Business', icon: Building2, color: 'from-gray-500 to-slate-600', description: 'Any business that wants to advertise' },
 ];
 
 const PROHIBITED_CONTENT = [
@@ -82,7 +85,7 @@ const PROHIBITED_CONTENT = [
 ];
 
 const STEPS = [
-  { id: 1, title: 'Choose Your Trade', icon: Building2 },
+  { id: 1, title: 'Your Industry', icon: Building2 },
   { id: 2, title: 'Business Info', icon: User },
   { id: 3, title: 'Meta Setup Guide', icon: Key },
   { id: 4, title: 'Enter Credentials', icon: Shield },
@@ -255,7 +258,7 @@ export default function AutopilotOnboarding() {
                     What type of business do you have?
                   </CardTitle>
                   <p className="text-slate-400">
-                    We'll customize your marketing content based on your trade
+                    We'll customize your automated advertising content based on your industry
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -396,7 +399,7 @@ export default function AutopilotOnboarding() {
                       <Input
                         value={formData.businessName}
                         onChange={(e) => updateField('businessName', e.target.value)}
-                        placeholder="e.g., Smith's Painting Co."
+                        placeholder="e.g., Your Business Name"
                         className="bg-slate-900 border-slate-700"
                         data-testid="input-business-name"
                       />
@@ -476,7 +479,7 @@ export default function AutopilotOnboarding() {
                     <Textarea
                       value={formData.tagline}
                       onChange={(e) => updateField('tagline', e.target.value)}
-                      placeholder="e.g., Transforming Nashville homes since 1995"
+                      placeholder="e.g., Your go-to for quality and reliability"
                       className="bg-slate-900 border-slate-700 resize-none"
                       rows={2}
                       data-testid="input-tagline"

@@ -89,7 +89,7 @@ export default function AutopilotDashboard() {
   // Content library state
   const [messages, setMessages] = useState<ContentItem[]>([
     { id: '1', type: 'message', content: 'Quality work you can trust. Get your free estimate today!', category: 'promotional', isActive: true },
-    { id: '2', type: 'message', content: 'Did you know? A fresh coat of paint can increase your home value by up to 5%!', category: 'educational', isActive: true },
+    { id: '2', type: 'message', content: 'Did you know? Businesses that post consistently see 2x more engagement!', category: 'educational', isActive: true },
     { id: '3', type: 'message', content: 'Another satisfied customer! Thank you for trusting us with your project.', category: 'testimonial', isActive: true }
   ]);
 

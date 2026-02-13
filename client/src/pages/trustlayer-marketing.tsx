@@ -96,8 +96,8 @@ export default function TrustLayerMarketing() {
   ];
 
   const testimonials = [
-    { name: "Sarah M.", business: "Home Services", quote: "I used to spend 10 hours a week on social media. Now it's 10 minutes.", stars: 5 },
-    { name: "Mike T.", business: "Contractor", quote: "My leads doubled in the first month. Incredible.", stars: 5 },
+    { name: "Sarah M.", business: "Salon Owner", quote: "I used to spend 10 hours a week on social media. Now it's 10 minutes.", stars: 5 },
+    { name: "Mike T.", business: "Restaurant Owner", quote: "My leads doubled in the first month. Incredible.", stars: 5 },
     { name: "Jennifer L.", business: "Landscaping", quote: "Set it and forget it is exactly right.", stars: 5 }
   ];
 
