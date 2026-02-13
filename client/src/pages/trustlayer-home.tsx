@@ -462,10 +462,10 @@ export default function TrustLayerHome() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   useEffect(() => {
-    document.title = "TrustLayer - Automated Social Media Marketing | Set It & Forget It";
+    document.title = "TrustLayer Marketing - Automated Social Media Marketing | Set It & Forget It";
 
     const metaDescription = document.querySelector('meta[name="description"]');
-    const descContent = "Connect your Meta Business Suite and let TrustLayer handle your Facebook & Instagram posts, ad campaigns, and analytics automatically. From $99/mo.";
+    const descContent = "Connect your Meta Business Suite and let TrustLayer Marketing handle your Facebook & Instagram posts, ad campaigns, and analytics automatically. From $99/mo.";
     if (metaDescription) {
       metaDescription.setAttribute('content', descContent);
     } else {
@@ -487,11 +487,11 @@ export default function TrustLayerHome() {
     }
 
     const ogTags = [
-      { property: 'og:title', content: 'TrustLayer - Automated Social Media Marketing' },
+      { property: 'og:title', content: 'TrustLayer Marketing - Automated Social Media Marketing' },
       { property: 'og:description', content: 'Set it once, run forever. Automated Facebook & Instagram posting, smart ad boosting, and real-time analytics. From $99/mo.' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://tlid.io' },
-      { property: 'og:site_name', content: 'TrustLayer' },
+      { property: 'og:site_name', content: 'TrustLayer Marketing' },
       { property: 'og:image', content: 'https://tlid.io/og-trustlayer.png' }
     ];
 
@@ -509,7 +509,7 @@ export default function TrustLayerHome() {
 
     const twitterTags = [
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: 'TrustLayer - Automated Social Media Marketing' },
+      { name: 'twitter:title', content: 'TrustLayer Marketing - Automated Social Media Marketing' },
       { name: 'twitter:description', content: 'Set it once, run forever. Automated Facebook & Instagram posting from $99/mo.' },
       { name: 'twitter:image', content: 'https://tlid.io/og-trustlayer.png' }
     ];
@@ -538,7 +538,7 @@ export default function TrustLayerHome() {
 
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'page_view', {
-        page_title: 'TrustLayer Home',
+        page_title: 'TrustLayer Marketing Home',
         page_path: '/trustlayer'
       });
     }
@@ -641,7 +641,7 @@ export default function TrustLayerHome() {
                 <Layers className="w-6 h-6 text-white" />
               </motion.div>
               <div>
-                <p className="text-xl font-bold text-white">TrustLayer</p>
+                <p className="text-xl font-bold text-white">TrustLayer Marketing</p>
                 <p className="text-slate-500 text-xs tracking-wider">TLId.io</p>
               </div>
             </div>
@@ -718,8 +718,8 @@ export default function TrustLayerHome() {
                 <Layers className="w-8 h-8 text-white" />
               </motion.div>
               <div className="text-left">
-                <p className="text-2xl font-bold text-white">TrustLayer</p>
-                <p className="text-slate-400 text-sm">Complete Business Trust Platform</p>
+                <p className="text-2xl font-bold text-white">TrustLayer Marketing</p>
+                <p className="text-slate-400 text-sm">Automated Social Media Platform</p>
               </div>
             </div>
           </motion.div>
@@ -751,7 +751,7 @@ export default function TrustLayerHome() {
             transition={{ delay: 0.4 }}
             className="text-xl text-slate-400 max-w-2xl mx-auto mb-6 leading-relaxed text-center"
           >
-            Link your Meta Business Suite and let TrustLayer handle your Facebook & Instagram
+            Link your Meta Business Suite and let TrustLayer Marketing handle your Facebook & Instagram
             posts, ad campaigns, and analytics. Set it once, run forever.
           </motion.p>
 
@@ -1147,7 +1147,7 @@ export default function TrustLayerHome() {
             className="text-center mb-10"
           >
             <h2 className="text-3xl font-bold text-white mb-3">Platform at a Glance</h2>
-            <p className="text-slate-400">Real numbers from businesses using TrustLayer</p>
+            <p className="text-slate-400">Real numbers from businesses using TrustLayer Marketing</p>
           </motion.div>
 
           <BentoGrid className="max-w-5xl">
@@ -1279,7 +1279,7 @@ export default function TrustLayerHome() {
                     <Sparkles className="w-3 h-3 mr-1" />
                     Best Value
                   </Badge>
-                  <h3 className="text-3xl font-bold text-white mb-2">TrustLayer Complete Bundle</h3>
+                  <h3 className="text-3xl font-bold text-white mb-2">TrustLayer Marketing Complete Bundle</h3>
                   <p className="text-slate-400">Marketing + Guardian Shield + Orbit Staffing Connect - All in one</p>
                 </div>
                 <div className="text-center">
@@ -1306,7 +1306,7 @@ export default function TrustLayerHome() {
         <div className="max-w-7xl mx-auto px-6">
           <h3 className="text-white font-semibold text-center mb-4 flex items-center justify-center gap-2">
             <Layers className="w-4 h-4 text-cyan-400" />
-            TrustLayer Ecosystem
+            TrustLayer Marketing Ecosystem
           </h3>
           <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide justify-start md:justify-center md:flex-wrap">
             {[
@@ -1352,7 +1352,7 @@ export default function TrustLayerHome() {
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-white font-bold">TrustLayer</p>
+                <p className="text-white font-bold">TrustLayer Marketing</p>
                 <p className="text-slate-500 text-xs">TLId.io</p>
               </div>
             </div>
