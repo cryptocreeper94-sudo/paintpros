@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { cardVariants, staggerContainer, fadeInUp } from "@/lib/theme-effects";
+import { useLocation } from "wouter";
 import {
   Zap,
   Facebook,
@@ -37,6 +38,7 @@ import {
 
 export default function TrustLayerMarketing() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [email, setEmail] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -62,7 +64,7 @@ export default function TrustLayerMarketing() {
         });
       }
       toast({ title: "Welcome aboard! Check your email for next steps." });
-      window.location.href = '/autopilot/setup';
+      setLocation('/autopilot/setup');
     },
     onError: () => {
       toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
@@ -125,7 +127,7 @@ export default function TrustLayerMarketing() {
           <div className="flex items-center justify-between">
             <div 
               className="flex items-center gap-3 cursor-pointer"
-              onClick={() => window.location.href = '/trustlayer'}
+              onClick={() => setLocation('/trustlayer')}
             >
               <motion.div 
                 whileHover={{ scale: 1.05, rotate: 5 }}
@@ -139,7 +141,7 @@ export default function TrustLayerMarketing() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => window.location.href = '/trustlayer/guardian'} className="text-slate-400 hover:text-white">
+              <Button variant="ghost" size="sm" onClick={() => setLocation('/trustlayer/guardian')} className="text-slate-400 hover:text-white">
                 <Shield className="w-4 h-4 mr-2" />
                 Guardian Shield
               </Button>
@@ -232,7 +234,7 @@ export default function TrustLayerMarketing() {
               size="lg"
               variant="outline"
               className="text-lg px-8 py-6 border-white/10 bg-white/5 backdrop-blur-sm"
-              onClick={() => window.location.href = '/autopilot/dashboard?id=demo'}
+              onClick={() => setLocation('/autopilot/dashboard?id=demo')}
               data-testid="button-demo"
             >
               <Play className="w-5 h-5 mr-2" />
@@ -471,7 +473,7 @@ export default function TrustLayerMarketing() {
                 ))}
               </div>
               <div className="flex items-center justify-center">
-                <Button onClick={() => window.location.href = '/autopilot/dashboard?id=demo'} className="bg-gradient-to-r from-blue-600 to-purple-600">
+                <Button onClick={() => setLocation('/autopilot/dashboard?id=demo')} className="bg-gradient-to-r from-blue-600 to-purple-600">
                   Explore Full Dashboard
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
