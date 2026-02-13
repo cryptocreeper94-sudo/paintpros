@@ -952,13 +952,10 @@ export const tenants: Record<string, TenantConfig> = {
 const domainTenantMap: Record<string, string> = {
   "paintpros.io": "paintprosco",
   "www.paintpros.io": "paintprosco",
-  "tlid.io": "demo",
-  "www.tlid.io": "demo",
+  "tlid.io": "tlid",
+  "www.tlid.io": "tlid",
   "nashpaintpros.io": "npp",
   "www.nashpaintpros.io": "npp",
-  // Paint Pros Co - main brand
-  "lumepaint.co": "paintprosco",
-  "www.lumepaint.co": "paintprosco",
   "tradeworksai.io": "tradeworks",
   "www.tradeworksai.io": "tradeworks",
   "roofpros.io": "roofpros",

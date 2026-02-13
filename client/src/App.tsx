@@ -182,7 +182,12 @@ function TenantHomeRedirect() {
     return <NPPEcosystemHome />;
   }
   
-  // Default to TrustLayer home for tlid.io and unknown tenants
+  // TLID.io uses TrustLayer home
+  if (tenantId === 'tlid') {
+    return <TrustLayerHome />;
+  }
+  
+  // Default to TrustLayer home for unknown tenants
   return <TrustLayerHome />;
 }
 
