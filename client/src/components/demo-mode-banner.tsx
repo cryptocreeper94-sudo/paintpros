@@ -1,12 +1,39 @@
 import { Eye, Lock, X } from "lucide-react";
 import { useState } from "react";
 import { useDemo } from "@/context/DemoContext";
+import { useLocation } from "wouter";
+
+const PUBLIC_ROUTES = [
+  "/",
+  "/about",
+  "/services",
+  "/contact",
+  "/booking",
+  "/estimate",
+  "/blog",
+  "/npp",
+  "/tlid",
+  "/autopilot/onboarding",
+  "/autopilot/dashboard",
+  "/trustlayer",
+  "/trustlayer-marketing",
+  "/tradeworks",
+  "/login",
+  "/signup",
+  "/404",
+];
+
+function isPublicRoute(path: string): boolean {
+  const lowerPath = path.toLowerCase();
+  return PUBLIC_ROUTES.some(route => lowerPath === route || lowerPath.startsWith(route + "/"));
+}
 
 export function DemoModeBanner() {
   const { isDemoMode } = useDemo();
   const [dismissed, setDismissed] = useState(false);
+  const [location] = useLocation();
 
-  if (!isDemoMode || dismissed) return null;
+  if (!isDemoMode || dismissed || isPublicRoute(location)) return null;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 flex items-center justify-center gap-3 text-sm shadow-lg">
