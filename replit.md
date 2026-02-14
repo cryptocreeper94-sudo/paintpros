@@ -38,6 +38,7 @@ The design adheres to an "Ultra Premium Design System" with a "Sparkle and Shine
 
 ### Core Features
 - **Service Management:** Detailed service descriptions and configurable estimator pricing logic.
+- **Command Center:** PIN-protected central dashboard ("mission control") organizing all admin/management tools into 8 categorized sections with glassmorphism cards, photorealistic backgrounds, and horizontal carousels. Route: `/command-center`.
 - **Access Control:** Role-based (Admin, Owner, Developer, Crew Lead) PIN-based access.
 - **Booking System:** A 5-step customer online booking wizard.
 - **Weather & Crew Management:** Real-time ORBIT Weather System with animated radar, and a Crew Management System for time tracking and incident reporting.

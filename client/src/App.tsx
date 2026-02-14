@@ -105,6 +105,7 @@ import NPPPresentation from "@/pages/npp-presentation";
 import NPPWalkthrough from "@/pages/npp-walkthrough";
 import NPPEcosystemHome from "@/pages/npp-ecosystem-home";
 import GetStarted from "@/pages/get-started";
+import CommandCenter from "@/pages/command-center";
 import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { getTenantById } from "@/config/tenant";
 import { TenantProvider as TenantProviderBase } from "@/context/TenantContext";
@@ -207,6 +208,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/reviews" component={Reviews} />
       <Route path="/estimate" component={Estimate} />
+      <Route path="/command-center" component={CommandCenter} />
       <Route path="/admin" component={Admin} />
       <Route path="/owner" component={Owner} />
       <Route path="/estimator-config" component={EstimatorConfig} />

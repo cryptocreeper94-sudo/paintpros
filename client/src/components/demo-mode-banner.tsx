@@ -18,6 +18,7 @@ const PUBLIC_ROUTES = [
   "/trustlayer",
   "/trustlayer-marketing",
   "/tradeworks",
+  "/command-center",
   "/login",
   "/signup",
   "/404",
