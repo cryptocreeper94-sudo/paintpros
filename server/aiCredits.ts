@@ -149,3 +149,5 @@ export async function deductCreditsAfterUsage(
 
   return { success: true, newBalance: updated.balanceCents };
 }
+
+export const deductCredits = deductCreditsAfterUsage;

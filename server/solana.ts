@@ -154,3 +154,5 @@ export async function requestDevnetAirdrop(publicKey: string): Promise<string> {
   await connection.confirmTransaction(signature);
   return signature;
 }
+
+export const stampDocument = stampHashToBlockchain;
