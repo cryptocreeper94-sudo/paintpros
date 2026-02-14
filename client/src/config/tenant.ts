@@ -167,8 +167,9 @@ export const nashPaintPros: TenantConfig = {
   
   social: {
     googleReviews: "",
-    facebook: "",
+    facebook: "https://www.facebook.com/profile.php?id=61585553137979",
     instagram: "",
+    twitter: "https://x.com/TrustSignal26",
   },
   
   theme: {
