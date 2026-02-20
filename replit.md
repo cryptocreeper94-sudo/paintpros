@@ -5,6 +5,7 @@ See `PROJECT_STATS.md` for a living document tracking development progress, line
 
 ## Handoff Documents
 - `ANALYTICS_HANDOFF.md` - Complete business analytics suite handoff (schema, APIs, frontend components, data flows, UI/UX patterns). For another agent to recreate the analytics system.
+- `BUSINESS_BACKEND_HANDOFF.md` - Complete business and marketing backend handoff covering CRM, scheduling/booking, marketing automation (Meta/Facebook/Instagram), analytics, crew management, AI credits, payment processing, lead generation, follow-up automation, referral programs, inventory management, subcontractor management, tenant provisioning, and all supporting services with full API endpoint listings, database schema references, Stripe price IDs, and architecture diagrams.
 
 ## Overview
 PaintPros.io is a multi-tenant SaaS platform by Orbit for the painting and home services industry. White-label websites, estimating tools, SEO, CRM, and role-based dashboards. Expanding across trade verticals via TradeWorks AI.
