@@ -4393,15 +4393,15 @@ Format the response as JSON with these fields:
         res.status(503).json({ error: "Orbit Ecosystem not configured" });
         return;
       }
-      const { email, token, returnUrl } = req.body;
-      if (!email || !token) {
-        res.status(400).json({ error: "Email and token are required" });
+      const { identifier, credential, returnUrl } = req.body;
+      if (!identifier || !credential) {
+        res.status(400).json({ error: "identifier and credential are required" });
         return;
       }
       const loginRequest: EcosystemLoginRequest = {
-        email,
-        token,
-        appId: 'paintpros',
+        identifier,
+        credential,
+        appSlug: 'paintpros',
         returnUrl,
       };
       const result = await orbitEcosystem.ecosystemLogin(loginRequest);
@@ -4418,18 +4418,19 @@ Format the response as JSON with these fields:
         res.status(503).json({ error: "Orbit Ecosystem not configured" });
         return;
       }
-      const { email, name, phone, companyName, role } = req.body;
-      if (!email || !name) {
-        res.status(400).json({ error: "Email and name are required" });
+      const { username, email, password, displayName, phone, companyName } = req.body;
+      if (!username || !email || !password || !displayName) {
+        res.status(400).json({ error: "username, email, password, and displayName are required" });
         return;
       }
       const registerRequest: EcosystemRegisterRequest = {
+        username,
         email,
-        name,
+        password,
+        displayName,
         phone,
         companyName,
-        appId: 'paintpros',
-        role,
+        appSlug: 'paintpros',
       };
       const result = await orbitEcosystem.registerUser(registerRequest);
       res.json(result);

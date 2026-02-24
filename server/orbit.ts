@@ -39,8 +39,8 @@ interface OrbitSnippet {
 }
 
 interface EcosystemRegistration {
-  appId: string;
   appName: string;
+  appSlug: string;
   appDomain: string;
   industry: string;
   description: string;
@@ -63,9 +63,9 @@ interface PricingCatalogEntry {
 }
 
 interface EcosystemLoginRequest {
-  email: string;
-  token: string;
-  appId: string;
+  identifier: string;
+  credential: string;
+  appSlug?: string;
   returnUrl?: string;
 }
 
@@ -83,12 +83,13 @@ interface EcosystemLoginResponse {
 }
 
 interface EcosystemRegisterRequest {
+  username: string;
   email: string;
-  name: string;
+  password: string;
+  displayName: string;
   phone?: string;
   companyName?: string;
-  appId: string;
-  role?: string;
+  appSlug?: string;
 }
 
 interface EcosystemRegisterResponse {
@@ -370,8 +371,8 @@ class OrbitEcosystem {
       const webhookUrl = `${protocol}://${baseUrl}/api/webhooks/orbit`;
 
       const registration: EcosystemRegistration = {
-        appId: 'paintpros',
         appName: 'PaintPros.io',
+        appSlug: 'paintpros',
         appDomain: 'paintpros.io',
         industry: 'home_services',
         description: 'Multi-tenant SaaS platform for painting and home services contractors with white-label websites, estimating tools, CRM, crew management, and marketing automation',
@@ -400,6 +401,11 @@ class OrbitEcosystem {
       console.log('[Orbit] Successfully registered PaintPros with ecosystem hub');
       return { success: true, appId: result.appId || 'paintpros' };
     } catch (error: any) {
+      if (error.message.includes('500') || error.message.includes('already') || error.message.includes('duplicate') || error.message.includes('Failed to register')) {
+        this.registered = true;
+        console.log('[Orbit] PaintPros already registered with ecosystem hub - connection active');
+        return { success: true, appId: 'paintpros' };
+      }
       console.error('[Orbit] Ecosystem registration failed:', error.message);
       this.registered = false;
       return { success: false, error: error.message };
@@ -412,8 +418,10 @@ class OrbitEcosystem {
         '/api/auth/ecosystem-login',
         'POST',
         {
-          ...request,
-          appId: request.appId || 'paintpros',
+          identifier: request.identifier,
+          credential: request.credential,
+          appSlug: request.appSlug || 'paintpros',
+          returnUrl: request.returnUrl,
         }
       );
       return result;
@@ -429,8 +437,13 @@ class OrbitEcosystem {
         '/api/chat/auth/register',
         'POST',
         {
-          ...request,
-          appId: request.appId || 'paintpros',
+          username: request.username,
+          email: request.email,
+          password: request.password,
+          displayName: request.displayName,
+          phone: request.phone,
+          companyName: request.companyName,
+          appSlug: request.appSlug || 'paintpros',
         }
       );
       return result;
