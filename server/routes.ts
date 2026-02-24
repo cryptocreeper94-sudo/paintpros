@@ -58,7 +58,8 @@ import OpenAI from "openai";
 import { z } from "zod";
 import * as solana from "./solana";
 import * as darkwave from "./darkwave";
-import { orbitEcosystem } from "./orbit";
+import { orbitEcosystem, PRICING_CATALOG } from "./orbit";
+import type { EcosystemLoginRequest, EcosystemRegisterRequest } from "./orbit";
 import * as hallmarkService from "./hallmarkService";
 import { sendContactEmail, sendLeadNotification, sendBookingNotification, sendContractorApplicationEmail, type ContactFormData, type LeadNotificationData, type BookingNotificationData, type ContractorApplicationData } from "./resend";
 import { setupAuth, isAuthenticated, initAuthBackground } from "./replitAuth";
@@ -4259,16 +4260,29 @@ Format the response as JSON with these fields:
 
   // ============ ORBIT ECOSYSTEM ============
   
-  // GET /api/orbit/status - Check Orbit connection status
   app.get("/api/orbit/status", async (req, res) => {
     try {
       const status = orbitEcosystem.getConnectionStatus();
+      const pricingCatalog = orbitEcosystem.getPricingCatalog();
       if (status.connected) {
         try {
           const ping = await orbitEcosystem.ping();
-          res.json({ ...status, health: ping });
+          res.json({ 
+            ...status, 
+            health: ping,
+            pricingItemCount: pricingCatalog.length,
+            ecosystemEndpoints: {
+              register: 'https://orbitstaffing.io/api/admin/ecosystem/register-app',
+              ssoLogin: 'https://orbitstaffing.io/api/auth/ecosystem-login',
+              userRegister: 'https://orbitstaffing.io/api/chat/auth/register',
+            },
+          });
         } catch {
-          res.json({ ...status, health: { status: 'unreachable' } });
+          res.json({ 
+            ...status, 
+            health: { status: 'unreachable' },
+            pricingItemCount: pricingCatalog.length,
+          });
         }
       } else {
         res.json(status);
@@ -4370,6 +4384,82 @@ Format the response as JSON with these fields:
     } catch (error) {
       console.error("Error sharing snippet:", error);
       res.status(500).json({ error: "Failed to share snippet to Orbit" });
+    }
+  });
+
+  app.post("/api/orbit/ecosystem/login", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const { email, token, returnUrl } = req.body;
+      if (!email || !token) {
+        res.status(400).json({ error: "Email and token are required" });
+        return;
+      }
+      const loginRequest: EcosystemLoginRequest = {
+        email,
+        token,
+        appId: 'paintpros',
+        returnUrl,
+      };
+      const result = await orbitEcosystem.ecosystemLogin(loginRequest);
+      res.json(result);
+    } catch (error) {
+      console.error("Error with ecosystem SSO login:", error);
+      res.status(500).json({ error: "Failed to process ecosystem login" });
+    }
+  });
+
+  app.post("/api/orbit/ecosystem/register", async (req, res) => {
+    try {
+      if (!orbitEcosystem.isConnected()) {
+        res.status(503).json({ error: "Orbit Ecosystem not configured" });
+        return;
+      }
+      const { email, name, phone, companyName, role } = req.body;
+      if (!email || !name) {
+        res.status(400).json({ error: "Email and name are required" });
+        return;
+      }
+      const registerRequest: EcosystemRegisterRequest = {
+        email,
+        name,
+        phone,
+        companyName,
+        appId: 'paintpros',
+        role,
+      };
+      const result = await orbitEcosystem.registerUser(registerRequest);
+      res.json(result);
+    } catch (error) {
+      console.error("Error with ecosystem registration:", error);
+      res.status(500).json({ error: "Failed to process ecosystem registration" });
+    }
+  });
+
+  app.get("/api/orbit/pricing-catalog", async (_req, res) => {
+    try {
+      res.json({
+        appId: 'paintpros',
+        catalog: PRICING_CATALOG,
+        lastUpdated: new Date().toISOString(),
+        currency: 'usd',
+      });
+    } catch (error) {
+      console.error("Error fetching pricing catalog:", error);
+      res.status(500).json({ error: "Failed to fetch pricing catalog" });
+    }
+  });
+
+  app.post("/api/orbit/ecosystem/re-register", async (_req, res) => {
+    try {
+      const result = await orbitEcosystem.registerApp();
+      res.json(result);
+    } catch (error) {
+      console.error("Error re-registering with ecosystem:", error);
+      res.status(500).json({ error: "Failed to re-register with ecosystem" });
     }
   });
 

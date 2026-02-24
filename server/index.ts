@@ -7,6 +7,7 @@ import { createServer } from "http";
 import { storage } from "./storage";
 import * as solana from "./solana";
 import * as hallmarkService from "./hallmarkService";
+import { orbitEcosystem } from "./orbit";
 import { startScheduler } from "./marketing-scheduler";
 import { startBlogScheduler } from "./blog-scheduler";
 import { startAdScheduler } from "./npp-ad-scheduler";
@@ -325,6 +326,11 @@ app.use((req, res, next) => {
       
       // Start DarkWave Unified Ecosystem Scheduler (all businesses through DarkWave)
       startDarkWaveUnifiedScheduler();
+      
+      // Register PaintPros with Orbit Ecosystem Hub (non-blocking)
+      orbitEcosystem.initializeEcosystem().catch(err => {
+        console.error("[Orbit] Ecosystem init failed (non-fatal):", err);
+      });
     },
   );
 })();
