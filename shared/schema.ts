@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, boolean, decimal, jsonb, index, real } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, boolean, decimal, jsonb, index, real, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -28,6 +28,7 @@ export const users = pgTable("users", {
   role: text("role"), // 'developer', 'ops_manager', 'owner', 'area_manager'
   tenantId: text("tenant_id"), // optional, for multi-tenant support
   emailVerified: boolean("email_verified").default(false),
+  uniqueHash: text("unique_hash").unique(),
   passwordResetToken: text("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -35,6 +36,7 @@ export const users = pgTable("users", {
 }, (table) => [
   index("idx_users_tenant_id").on(table.tenantId),
   index("idx_users_role").on(table.role),
+  index("idx_users_unique_hash").on(table.uniqueHash),
 ]);
 
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -573,6 +575,85 @@ export const FOUNDING_ASSETS = {
     access: 'read-only',
   },
 } as const;
+
+// ============ TRUST LAYER ECOSYSTEM TABLES ============
+
+export const trustStamps = pgTable("trust_stamps", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id"),
+  category: text("category").notNull(),
+  data: jsonb("data"),
+  dataHash: text("data_hash").notNull(),
+  txHash: text("tx_hash"),
+  blockHeight: text("block_height"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_trust_stamps_user_id").on(table.userId),
+  index("idx_trust_stamps_category").on(table.category),
+]);
+
+export const insertTrustStampSchema = createInsertSchema(trustStamps).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertTrustStamp = z.infer<typeof insertTrustStampSchema>;
+export type TrustStamp = typeof trustStamps.$inferSelect;
+
+export const hallmarkCounter = pgTable("hallmark_counter", {
+  id: text("id").primaryKey(),
+  currentSequence: text("current_sequence").notNull().default("0"),
+});
+
+export type HallmarkCounter = typeof hallmarkCounter.$inferSelect;
+
+export const affiliateReferrals = pgTable("affiliate_referrals", {
+  id: serial("id").primaryKey(),
+  referrerId: text("referrer_id").notNull(),
+  referredUserId: text("referred_user_id"),
+  referralHash: text("referral_hash").notNull(),
+  platform: text("platform").notNull().default("paintpros"),
+  status: text("status").notNull().default("pending"),
+  convertedAt: timestamp("converted_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_affiliate_referrals_referrer").on(table.referrerId),
+  index("idx_affiliate_referrals_hash").on(table.referralHash),
+  index("idx_affiliate_referrals_status").on(table.status),
+]);
+
+export const insertAffiliateReferralSchema = createInsertSchema(affiliateReferrals).omit({
+  id: true,
+  createdAt: true,
+  convertedAt: true,
+});
+
+export type InsertAffiliateReferral = z.infer<typeof insertAffiliateReferralSchema>;
+export type AffiliateReferral = typeof affiliateReferrals.$inferSelect;
+
+export const affiliateCommissions = pgTable("affiliate_commissions", {
+  id: serial("id").primaryKey(),
+  referrerId: text("referrer_id").notNull(),
+  referralId: integer("referral_id"),
+  amount: text("amount").notNull(),
+  currency: text("currency").default("SIG"),
+  tier: text("tier").default("base"),
+  status: text("status").default("pending"),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_affiliate_commissions_referrer").on(table.referrerId),
+  index("idx_affiliate_commissions_status").on(table.status),
+]);
+
+export const insertAffiliateCommissionSchema = createInsertSchema(affiliateCommissions).omit({
+  id: true,
+  createdAt: true,
+  paidAt: true,
+});
+
+export type InsertAffiliateCommission = z.infer<typeof insertAffiliateCommissionSchema>;
+export type AffiliateCommission = typeof affiliateCommissions.$inferSelect;
 
 // Release Versions Table - Track app releases and hallmarks (tenant-aware)
 export const releaseVersions = pgTable("release_versions", {

@@ -331,6 +331,13 @@ app.use((req, res, next) => {
       orbitEcosystem.initializeEcosystem().catch(err => {
         console.error("[Orbit] Ecosystem init failed (non-fatal):", err);
       });
+      
+      // Initialize Trust Layer Genesis Hallmark PP-00000001 (non-blocking)
+      import("./hallmarkService").then(({ ensureGenesisHallmark }) => {
+        ensureGenesisHallmark().catch(err => {
+          console.error("[hallmark] Genesis init failed (non-fatal):", err);
+        });
+      });
     },
   );
 })();

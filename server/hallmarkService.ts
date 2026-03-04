@@ -1,5 +1,7 @@
 import crypto from "crypto";
-import { ANCHORABLE_TYPES, EDITION_PREFIXES, FOUNDING_ASSETS, TENANT_PREFIXES } from "@shared/schema";
+import { ANCHORABLE_TYPES, EDITION_PREFIXES, FOUNDING_ASSETS, TENANT_PREFIXES, hallmarkCounter, trustStamps, hallmarks } from "@shared/schema";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 
 export interface HallmarkData {
   hallmarkNumber: string;
@@ -32,6 +34,122 @@ export interface ParsedHallmark {
   raw: string;
 }
 
+export interface TrustStampInput {
+  userId?: number;
+  category: string;
+  data?: Record<string, any>;
+}
+
+const PP_COUNTER_ID = "pp-master";
+const PP_GENESIS = "PP-00000001";
+const PP_PREFIX = "PP";
+
+export async function generateHallmark(): Promise<string> {
+  const result = await db.execute(sql`
+    INSERT INTO hallmark_counter (id, current_sequence)
+    VALUES (${PP_COUNTER_ID}, '1')
+    ON CONFLICT (id) DO UPDATE
+    SET current_sequence = (CAST(hallmark_counter.current_sequence AS integer) + 1)::text
+    RETURNING current_sequence
+  `);
+
+  const seq = parseInt(result.rows[0].current_sequence as string, 10);
+  return `${PP_PREFIX}-${seq.toString().padStart(8, '0')}`;
+}
+
+export function generateContentHash(content: string): string {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+export async function createTrustStamp(input: TrustStampInput): Promise<typeof trustStamps.$inferSelect> {
+  const payload = JSON.stringify(input.data || {});
+  const dataHash = crypto.createHash('sha256').update(payload).digest('hex');
+
+  const [stamp] = await db.insert(trustStamps).values({
+    userId: input.userId ?? null,
+    category: input.category,
+    data: input.data || {},
+    dataHash,
+  }).returning();
+
+  return stamp;
+}
+
+export async function ensureGenesisHallmark(): Promise<void> {
+  const existing = await db.select()
+    .from(hallmarks)
+    .where(eq(hallmarks.hallmarkNumber, PP_GENESIS))
+    .limit(1);
+
+  if (existing.length > 0) {
+    console.log(`[hallmark] Genesis hallmark ${PP_GENESIS} already exists`);
+    return;
+  }
+
+  const metadata = {
+    ecosystem: "Trust Layer",
+    parentGenesis: "TH-00000001",
+    operator: "DarkWave Studios LLC",
+    platform: "paintpros.tlid.io",
+    prefix: PP_PREFIX,
+    format: "PP-XXXXXXXX",
+    type: "genesis",
+    createdAt: new Date().toISOString(),
+  };
+
+  const contentHash = generateContentHash(JSON.stringify(metadata));
+
+  await db.insert(hallmarks).values({
+    hallmarkNumber: PP_GENESIS,
+    assetType: "genesis",
+    createdBy: "system",
+    recipientName: "PaintPros Platform",
+    recipientRole: "system",
+    contentHash,
+    metadata,
+    searchTerms: `${PP_GENESIS} genesis paintpros trust-layer darkwave`,
+  });
+
+  await db.execute(sql`
+    INSERT INTO hallmark_counter (id, current_sequence)
+    VALUES (${PP_COUNTER_ID}, '1')
+    ON CONFLICT (id) DO UPDATE
+    SET current_sequence = GREATEST(CAST(hallmark_counter.current_sequence AS integer), 1)::text
+  `);
+
+  console.log(`[hallmark] Genesis hallmark ${PP_GENESIS} created`);
+}
+
+export async function verifyHallmark(hallmarkId: string): Promise<{
+  verified: boolean;
+  hallmark: typeof hallmarks.$inferSelect | null;
+  badge: BadgeTier | null;
+  message: string;
+}> {
+  const [found] = await db.select()
+    .from(hallmarks)
+    .where(eq(hallmarks.hallmarkNumber, hallmarkId))
+    .limit(1);
+
+  if (!found) {
+    return {
+      verified: false,
+      hallmark: null,
+      badge: null,
+      message: `Hallmark ${hallmarkId} not found`,
+    };
+  }
+
+  const badge = getAssetBadge(found.assetNumber || found.hallmarkNumber);
+
+  return {
+    verified: true,
+    hallmark: found,
+    badge,
+    message: `Hallmark ${hallmarkId} verified`,
+  };
+}
+
 export function generateHallmarkNumber(tenantId?: string): string {
   const date = new Date().toISOString().replace(/[-:]/g, '').substring(0, 8);
   const random = crypto.randomBytes(3).toString('hex').toUpperCase();
@@ -53,10 +171,6 @@ export function generateTenantAssetNumber(
   const masterStr = master.toString().padStart(9, '0');
   const subStr = sub.toString().padStart(2, '0');
   return `${prefix}-${masterStr}-${subStr}`;
-}
-
-export function generateContentHash(content: string): string {
-  return crypto.createHash('sha256').update(content).digest('hex');
 }
 
 export function formatAssetNumber(master: number, sub: number = 0): string {
@@ -95,7 +209,20 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
     };
   }
 
-  // Check for PAINTPROS prefix (main platform)
+  const ppMatch = hallmarkNumber.match(/^PP-(\d{8})$/);
+  if (ppMatch) {
+    const seq = parseInt(ppMatch[1], 10);
+    return {
+      prefix: 'PP',
+      master: seq,
+      sub: 0,
+      edition: 'PaintPros Trust Layer',
+      isFounder: seq === 1,
+      isSpecial: true,
+      raw: hallmarkNumber,
+    };
+  }
+
   if (hallmarkNumber.startsWith('PAINTPROS-')) {
     const assetMatch = hallmarkNumber.match(/^PAINTPROS-(\d{9})-(\d{2})$/);
     if (assetMatch) {
@@ -109,7 +236,6 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
         raw: hallmarkNumber,
       };
     }
-    // Dynamic PAINTPROS hallmark
     return {
       prefix: 'PAINTPROS',
       master: 0,
@@ -121,7 +247,6 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
     };
   }
 
-  // Check for tenant-prefixed hallmarks (NPP-YYYYMMDD-RANDOM)
   const tenantHallmarkMatch = hallmarkNumber.match(/^(NPP)-\d{8}-[A-Z0-9]{6}$/);
   if (tenantHallmarkMatch) {
     const prefix = tenantHallmarkMatch[1];
@@ -136,7 +261,6 @@ export function parseHallmark(hallmarkNumber: string): ParsedHallmark | null {
     };
   }
 
-  // Check for tenant asset numbers (NPP-000000001-01)
   const tenantAssetMatch = hallmarkNumber.match(/^(NPP)-(\d{9})-(\d{2})$/);
   if (tenantAssetMatch) {
     const prefix = tenantAssetMatch[1];
@@ -192,12 +316,17 @@ export function getAssetBadge(hallmarkNumber: string): BadgeTier {
     return { tier: 'Standard', color: '#6b7280', icon: '📄', glow: 'none' };
   }
 
-  // PAINTPROS (Main platform) badge
+  if (parsed.prefix === 'PP') {
+    if (parsed.master === 1) {
+      return { tier: 'Genesis Hallmark', color: '#1e3a5f', icon: 'shield', glow: '0 0 20px #1e3a5f', edition: 'PaintPros Genesis' };
+    }
+    return { tier: 'PaintPros Verified', color: '#1e3a5f', icon: 'shield-check', glow: '0 0 15px #1e3a5f', edition: 'PaintPros Trust Layer' };
+  }
+
   if (parsed.prefix === 'PAINTPROS') {
     return { tier: 'Paint Pros Platform', color: '#d4a853', icon: '🎨', glow: '0 0 20px #d4a853', edition: 'PaintPros.io Platform' };
   }
 
-  // NPP (Nash PaintPros) tenant badge
   if (parsed.prefix === 'NPP') {
     return { tier: 'NPP Verified', color: '#5a7a4d', icon: '🎨', glow: '0 0 15px #5a7a4d', edition: 'Nash PaintPros' };
   }
@@ -284,18 +413,19 @@ export function isReservedAssetNumber(masterNumber: number): boolean {
 }
 
 export function validateHallmarkNumber(hallmarkNumber: string): boolean {
+  if (hallmarkNumber.startsWith('PP-')) {
+    return /^PP-\d{8}$/.test(hallmarkNumber);
+  }
+
   if (hallmarkNumber.startsWith('ORBIT-')) {
     return /^ORBIT-\d{8}-[A-Z0-9]{6}$/.test(hallmarkNumber);
   }
   
-  // PAINTPROS platform hallmark numbers
   if (hallmarkNumber.startsWith('PAINTPROS-')) {
     return /^PAINTPROS-(\d{8}-[A-Z0-9]{6}|\d{9}-\d{2})$/.test(hallmarkNumber);
   }
   
-  // NPP tenant hallmark numbers
   if (hallmarkNumber.startsWith('NPP-')) {
-    // Match: NPP-YYYYMMDD-RANDOM or NPP-000000001-01
     return /^NPP-(\d{8}-[A-Z0-9]{6}|\d{9}-\d{2})$/.test(hallmarkNumber);
   }
   

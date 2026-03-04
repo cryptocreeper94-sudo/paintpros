@@ -57,6 +57,22 @@ The design adheres to an "Ultra Premium Design System" with a "Sparkle and Shine
 - **Blog System:** Multi-tenant blog architecture with GPT-4o powered post generation and SEO optimization.
 - **Unified Analytics Dashboard:** Live visitors, traffic metrics, device breakdown, top pages, referrers, and SEO tag counts per tenant, with GA4 integration.
 
+### Trust Layer Hallmark System
+- **Format**: `PP-XXXXXXXX` (8-digit zero-padded sequence), prefix `PP`
+- **Genesis**: `PP-00000001` — created automatically on server startup
+- **Tables**: `hallmark_counter` (atomic sequence), `trust_stamps` (SHA-256 hashed data records)
+- **Service**: `server/hallmarkService.ts` — `generateHallmark()`, `createTrustStamp()`, `ensureGenesisHallmark()`, `verifyHallmark()`
+- **Endpoints**: `GET /api/hallmark/genesis`, `GET /api/hallmark/:id/verify`, `POST /api/trust-stamps`, `GET /api/trust-stamps`
+- **Parent Genesis**: `TH-00000001` (Trust Layer ecosystem), Operator: DarkWave Studios LLC
+
+### Affiliate System
+- **Service**: `server/affiliate.ts` — full referral tracking and commission system
+- **Tables**: `affiliate_referrals`, `affiliate_commissions`, `unique_hash` on users table
+- **Tiers**: Base(0)=10%, Silver(5+)=12.5%, Gold(15+)=15%, Platinum(30+)=17.5%, Diamond(50+)=20%
+- **Commission Currency**: SIG, minimum payout: 10 SIG
+- **Endpoints**: `GET /api/affiliate/dashboard`, `GET /api/affiliate/link`, `POST /api/affiliate/track`, `POST /api/affiliate/request-payout`, `GET /ref/:hash` (redirect)
+- **Frontend**: `/affiliate` route — full dashboard with stats, tier progress, referrals, commissions, payout
+
 ### Ecosystem Integration
 The platform integrates with the broader TrustLayer ecosystem, connecting with 17 applications through a centralized hub for payroll, staffing, health checks, and a multi-app ad catalog system.
 

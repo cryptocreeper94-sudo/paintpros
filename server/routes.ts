@@ -4683,6 +4683,156 @@ Format the response as JSON with these fields:
     }
   });
 
+  // ============ TRUST LAYER ECOSYSTEM ============
+
+  // GET /api/hallmark/genesis - returns genesis hallmark PP-00000001
+  app.get("/api/hallmark/genesis", async (req, res) => {
+    try {
+      const result = await hallmarkService.verifyHallmark("PP-00000001");
+      if (!result.verified) {
+        res.status(404).json({ error: "Genesis hallmark not yet initialized" });
+        return;
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching genesis hallmark:", error);
+      res.status(500).json({ error: "Failed to fetch genesis hallmark" });
+    }
+  });
+
+  // GET /api/hallmark/:id/verify - public hallmark verification
+  app.get("/api/hallmark/:id/verify", async (req, res) => {
+    try {
+      const result = await hallmarkService.verifyHallmark(req.params.id);
+      res.json(result);
+    } catch (error) {
+      console.error("Error verifying hallmark:", error);
+      res.status(500).json({ error: "Failed to verify hallmark" });
+    }
+  });
+
+  // POST /api/trust-stamps - create a trust stamp
+  app.post("/api/trust-stamps", async (req, res) => {
+    try {
+      const { category, data, userId } = req.body;
+      if (!category) {
+        res.status(400).json({ error: "category is required" });
+        return;
+      }
+      const stamp = await hallmarkService.createTrustStamp({ category, data, userId });
+      res.json(stamp);
+    } catch (error) {
+      console.error("Error creating trust stamp:", error);
+      res.status(500).json({ error: "Failed to create trust stamp" });
+    }
+  });
+
+  // GET /api/trust-stamps - list trust stamps
+  app.get("/api/trust-stamps", async (req, res) => {
+    try {
+      const { trustStamps } = await import("@shared/schema");
+      const { db } = await import("./db");
+      const { desc, eq } = await import("drizzle-orm");
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      let stamps;
+      if (userId) {
+        stamps = await db.select().from(trustStamps).where(eq(trustStamps.userId, userId)).orderBy(desc(trustStamps.createdAt)).limit(50);
+      } else {
+        stamps = await db.select().from(trustStamps).orderBy(desc(trustStamps.createdAt)).limit(50);
+      }
+      res.json(stamps);
+    } catch (error) {
+      console.error("Error fetching trust stamps:", error);
+      res.status(500).json({ error: "Failed to fetch trust stamps" });
+    }
+  });
+
+  // ============ AFFILIATE SYSTEM ============
+
+  // GET /api/affiliate/dashboard - full affiliate stats
+  app.get("/api/affiliate/dashboard", async (req, res) => {
+    try {
+      const userId = req.query.userId as string;
+      if (!userId) {
+        res.status(400).json({ error: "userId query parameter required" });
+        return;
+      }
+      const { getAffiliateDashboard } = await import("./affiliate");
+      const dashboard = await getAffiliateDashboard(userId);
+      res.json(dashboard);
+    } catch (error) {
+      console.error("Error fetching affiliate dashboard:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate dashboard" });
+    }
+  });
+
+  // GET /api/affiliate/link - user's referral link
+  app.get("/api/affiliate/link", async (req, res) => {
+    try {
+      const userId = req.query.userId as string;
+      if (!userId) {
+        res.status(400).json({ error: "userId query parameter required" });
+        return;
+      }
+      const { getAffiliateLink } = await import("./affiliate");
+      const link = await getAffiliateLink(userId);
+      res.json(link);
+    } catch (error) {
+      console.error("Error fetching affiliate link:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate link" });
+    }
+  });
+
+  // POST /api/affiliate/track - track referral click (public, no auth)
+  app.post("/api/affiliate/track", async (req, res) => {
+    try {
+      const { referralHash, platform } = req.body;
+      if (!referralHash) {
+        res.status(400).json({ error: "referralHash is required" });
+        return;
+      }
+      const { trackReferral } = await import("./affiliate");
+      const referral = await trackReferral(referralHash, platform || "paintpros");
+      res.json(referral);
+    } catch (error: any) {
+      console.error("Error tracking referral:", error);
+      if (error.message === "Invalid referral hash") {
+        res.status(404).json({ error: "Invalid referral hash" });
+        return;
+      }
+      res.status(500).json({ error: "Failed to track referral" });
+    }
+  });
+
+  // POST /api/affiliate/request-payout - request payout
+  app.post("/api/affiliate/request-payout", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        res.status(400).json({ error: "userId is required" });
+        return;
+      }
+      const { requestPayout } = await import("./affiliate");
+      const result = await requestPayout(userId);
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error requesting payout:", error);
+      res.status(400).json({ error: error.message || "Failed to request payout" });
+    }
+  });
+
+  // GET /ref/:hash - referral tracking redirect
+  app.get("/ref/:hash", async (req, res) => {
+    try {
+      const { trackReferral } = await import("./affiliate");
+      const platform = (req.query.platform as string) || "paintpros";
+      await trackReferral(req.params.hash, platform).catch(() => {});
+      res.redirect("/?ref=" + req.params.hash);
+    } catch (error) {
+      res.redirect("/");
+    }
+  });
+
   // ============ RELEASE VERSIONS ============
   
   // GET /api/releases/latest - Get latest release version (supports tenantId query param)
