@@ -77,14 +77,19 @@ interface AffiliateDashboardData {
   tiers: TierDef[];
 }
 
+interface EcosystemApp {
+  id: number;
+  name: string;
+  prefix: string;
+  genesis: string;
+  domain: string;
+}
+
 interface AffiliateLinkData {
   referralHash: string;
   link: string;
-  platforms: {
-    paintpros: string;
-    tradeworks: string;
-    trustlayer: string;
-  };
+  platforms: Record<string, string>;
+  ecosystem: EcosystemApp[];
 }
 
 interface GenesisHallmark {
@@ -155,49 +160,100 @@ function GenesisHallmarkBadge() {
 
 function ReferralLinkSection({ linkData }: { linkData: AffiliateLinkData | undefined }) {
   const [copied, setCopied] = useState(false);
+  const [showAllApps, setShowAllApps] = useState(false);
 
-  const handleCopy = () => {
-    if (!linkData?.link) return;
-    navigator.clipboard.writeText(linkData.link);
+  const handleCopy = (text?: string) => {
+    if (!text && !linkData?.link) return;
+    navigator.clipboard.writeText(text || linkData!.link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   if (!linkData) return null;
 
+  const ecosystem = linkData.ecosystem || [];
+  const visibleApps = showAllApps ? ecosystem : ecosystem.slice(0, 9);
+
   return (
-    <Card data-testid="card-referral-link">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2 flex-wrap">
-          <LinkIcon className="w-4 h-4" />
-          Your Referral Link
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="flex-1 min-w-0 p-2 rounded-md bg-muted text-sm font-mono truncate" data-testid="text-referral-link">
-            {linkData.link}
+    <>
+      <Card data-testid="card-referral-link">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
+            <LinkIcon className="w-4 h-4" />
+            Your Referral Link
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0 p-2 rounded-md bg-muted text-sm font-mono truncate" data-testid="text-referral-link">
+              {linkData.link}
+            </div>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => handleCopy()}
+              data-testid="button-copy-link"
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </Button>
           </div>
-          <Button
-            size="icon"
-            variant="outline"
-            onClick={handleCopy}
-            data-testid="button-copy-link"
-          >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-          </Button>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-muted-foreground">Cross-platform links:</span>
-          {Object.entries(linkData.platforms).map(([platform, url]) => (
-            <Badge key={platform} variant="secondary" className="text-xs" data-testid={`badge-platform-${platform}`}>
-              {platform}
-              <ExternalLink className="w-3 h-3 ml-1" />
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          <p className="text-xs text-muted-foreground">
+            Your unique affiliate ID works across all 33 Trust Layer ecosystem platforms
+          </p>
+        </CardContent>
+      </Card>
+
+      {ecosystem.length > 0 && (
+        <Card data-testid="card-ecosystem-registry">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 flex-wrap">
+              <Shield className="w-4 h-4" />
+              Trust Layer Ecosystem ({ecosystem.length} Platforms)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {visibleApps.map((app) => (
+                <div
+                  key={app.id}
+                  className="flex items-center gap-2 p-2 rounded-md border border-border text-sm"
+                  data-testid={`row-ecosystem-app-${app.id}`}
+                >
+                  <Badge variant="outline" className="font-mono text-xs shrink-0 w-8 justify-center">
+                    {app.prefix}
+                  </Badge>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{app.name}</p>
+                    <p className="text-xs text-muted-foreground font-mono truncate">{app.genesis}</p>
+                  </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="shrink-0 h-7 w-7"
+                    onClick={() => handleCopy(`https://${app.domain}/ref/${linkData.referralHash}`)}
+                    data-testid={`button-copy-${app.prefix.toLowerCase()}`}
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {ecosystem.length > 9 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full"
+                onClick={() => setShowAllApps(!showAllApps)}
+                data-testid="button-toggle-ecosystem"
+              >
+                {showAllApps ? "Show Less" : `Show All ${ecosystem.length} Platforms`}
+                <ArrowRight className={`w-3 h-3 ml-1 transition-transform ${showAllApps ? "rotate-90" : ""}`} />
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </>
   );
 }
 
@@ -359,7 +415,7 @@ export default function AffiliateDashboard() {
         <div className="space-y-1">
           <h1 className="text-2xl font-bold" data-testid="text-page-title">Affiliate Dashboard</h1>
           <p className="text-sm text-muted-foreground">
-            Earn commissions by referring users to the PaintPros ecosystem
+            Earn commissions by referring users across 33 Trust Layer ecosystem platforms
           </p>
         </div>
 

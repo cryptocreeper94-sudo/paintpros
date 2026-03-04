@@ -82,20 +82,58 @@ export async function getAffiliateDashboard(userId: string) {
   };
 }
 
+export const ECOSYSTEM_REGISTRY = [
+  { id: 1, name: "Trust Layer Hub", prefix: "TH", genesis: "TH-00000001", domain: "trusthub.tlid.io" },
+  { id: 2, name: "Trust Layer (L1)", prefix: "TL", genesis: "TL-00000001", domain: "dwtl.io" },
+  { id: 3, name: "TrustHome", prefix: "TR", genesis: "TR-00000001", domain: "trusthome.tlid.io" },
+  { id: 4, name: "TrustVault", prefix: "TV", genesis: "TV-00000001", domain: "trustvault.tlid.io" },
+  { id: 5, name: "TLID.io", prefix: "TI", genesis: "TI-00000001", domain: "tlid.io" },
+  { id: 6, name: "THE VOID", prefix: "VO", genesis: "VO-00000001", domain: "thevoid.tlid.io" },
+  { id: 7, name: "Signal Chat", prefix: "SC", genesis: "SC-00000001", domain: "signalchat.tlid.io" },
+  { id: 8, name: "DarkWave Studio", prefix: "DS", genesis: "DS-00000001", domain: "darkwavestudio.tlid.io" },
+  { id: 9, name: "Guardian Shield", prefix: "GS", genesis: "GS-00000001", domain: "guardianshield.tlid.io" },
+  { id: 10, name: "Guardian Scanner", prefix: "GN", genesis: "GN-00000001", domain: "guardianscanner.tlid.io" },
+  { id: 11, name: "Guardian Screener", prefix: "GR", genesis: "GR-00000001", domain: "guardianscreener.tlid.io" },
+  { id: 12, name: "TradeWorks AI", prefix: "TW", genesis: "TW-00000001", domain: "tradeworks.tlid.io" },
+  { id: 13, name: "StrikeAgent", prefix: "SA", genesis: "SA-00000001", domain: "strikeagent.tlid.io" },
+  { id: 14, name: "Pulse", prefix: "PU", genesis: "PU-00000001", domain: "pulse.tlid.io" },
+  { id: 15, name: "Chronicles", prefix: "CH", genesis: "CH-00000001", domain: "chronicles.tlid.io" },
+  { id: 16, name: "The Arcade", prefix: "AR", genesis: "AR-00000001", domain: "thearcade.tlid.io" },
+  { id: 17, name: "Bomber", prefix: "BO", genesis: "BO-00000001", domain: "bomber.tlid.io" },
+  { id: 18, name: "Trust Golf", prefix: "TG", genesis: "TG-00000001", domain: "trustgolf.tlid.io" },
+  { id: 19, name: "ORBIT Staffing OS", prefix: "OR", genesis: "OR-00000001", domain: "orbit.tlid.io" },
+  { id: 20, name: "Orby Commander", prefix: "OC", genesis: "OC-00000001", domain: "orby.tlid.io" },
+  { id: 21, name: "GarageBot", prefix: "GB", genesis: "GB-00000001", domain: "garagebot.tlid.io" },
+  { id: 22, name: "Lot Ops Pro", prefix: "LO", genesis: "LO-00000001", domain: "lotops.tlid.io" },
+  { id: 23, name: "TORQUE", prefix: "TQ", genesis: "TQ-00000001", domain: "torque.tlid.io" },
+  { id: 24, name: "TL Driver Connect", prefix: "DC", genesis: "DC-00000001", domain: "driverconnect.tlid.io" },
+  { id: 25, name: "VedaSolus", prefix: "VS", genesis: "VS-00000001", domain: "vedasolus.tlid.io" },
+  { id: 26, name: "Verdara", prefix: "VD", genesis: "VD-00000001", domain: "verdara.tlid.io" },
+  { id: 27, name: "Arbora", prefix: "AB", genesis: "AB-00000001", domain: "arbora.tlid.io" },
+  { id: 28, name: "PaintPros", prefix: "PP", genesis: "PP-00000001", domain: "paintpros.tlid.io" },
+  { id: 29, name: "Nashville Painting Professionals", prefix: "NP", genesis: "NP-00000001", domain: "nashvillepainting.tlid.io" },
+  { id: 30, name: "Trust Book", prefix: "TB", genesis: "TB-00000001", domain: "trustbook.tlid.io" },
+  { id: 31, name: "DarkWave Academy", prefix: "DA", genesis: "DA-00000001", domain: "darkwaveacademy.tlid.io" },
+  { id: 32, name: "Happy Eats", prefix: "HE", genesis: "HE-00000001", domain: "happyeats.tlid.io" },
+  { id: 33, name: "Brew & Board Coffee", prefix: "BB", genesis: "BB-00000001", domain: "brewandboard.tlid.io" },
+] as const;
+
 export async function getAffiliateLink(userId: string) {
   const uniqueHash = await ensureUniqueHash(userId);
   const baseUrl = process.env.REPLIT_DEV_DOMAIN
     ? `https://${process.env.REPLIT_DEV_DOMAIN}`
     : "https://paintpros.tlid.io";
 
+  const platforms: Record<string, string> = {};
+  for (const app of ECOSYSTEM_REGISTRY) {
+    platforms[app.prefix.toLowerCase()] = `https://${app.domain}/ref/${uniqueHash}`;
+  }
+
   return {
     referralHash: uniqueHash,
     link: `${baseUrl}/ref/${uniqueHash}`,
-    platforms: {
-      paintpros: `${baseUrl}/ref/${uniqueHash}?platform=paintpros`,
-      tradeworks: `${baseUrl}/ref/${uniqueHash}?platform=tradeworks`,
-      trustlayer: `${baseUrl}/ref/${uniqueHash}?platform=trustlayer`,
-    },
+    platforms,
+    ecosystem: ECOSYSTEM_REGISTRY,
   };
 }
 

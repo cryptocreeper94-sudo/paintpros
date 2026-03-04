@@ -4766,6 +4766,17 @@ Format the response as JSON with these fields:
     }
   });
 
+  // GET /api/affiliate/ecosystem - full 33-app ecosystem registry
+  app.get("/api/affiliate/ecosystem", async (_req, res) => {
+    try {
+      const { ECOSYSTEM_REGISTRY } = await import("./affiliate");
+      res.json(ECOSYSTEM_REGISTRY);
+    } catch (error) {
+      console.error("Error fetching ecosystem registry:", error);
+      res.status(500).json({ error: "Failed to fetch ecosystem registry" });
+    }
+  });
+
   // GET /api/affiliate/link - user's referral link
   app.get("/api/affiliate/link", async (req, res) => {
     try {
