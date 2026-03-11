@@ -3,7 +3,7 @@ export interface CatalogColor {
   name: string;
   code: string;
   hex: string;
-  brand: "sherwin-williams" | "benjamin-moore" | "behr" | "ppg" | "valspar";
+  brand: "sherwin-williams" | "benjamin-moore" | "behr" | "ppg" | "valspar" | "ace";
   brandDisplay: string;
   collection?: string;
   lrv?: number;
@@ -132,7 +132,7 @@ export const PAINT_CATALOG: CatalogColor[] = [
   createColor("bm-2121-30", "Charcoal Slate", "2121-30", "#5C6163", "benjamin-moore", "Benjamin Moore", "Grays", 12),
   createColor("bm-2062-70", "Collingwood", "2062-70", "#DCD4C7", "benjamin-moore", "Benjamin Moore", "Neutrals", 63),
   
-  // BEHR - Popular Colors
+  // BEHR (Home Depot) - Popular Colors
   createColor("behr-n520-1", "White Metal", "N520-1", "#E4E3DE", "behr", "Behr", "Neutrals", 76),
   createColor("behr-n520-2", "Silver Drop", "N520-2", "#D0CFCA", "behr", "Behr", "Neutrals", 62),
   createColor("behr-ppu24-14", "Dolphin Fin", "PPU24-14", "#C9C4BC", "behr", "Behr", "Neutrals", 53),
@@ -153,7 +153,36 @@ export const PAINT_CATALOG: CatalogColor[] = [
   createColor("behr-ppu7-10", "Cafe Latte", "PPU7-10", "#C3B49E", "behr", "Behr", "Neutrals", 46),
   createColor("behr-n550-2", "Looking Glass", "N550-2", "#D8DBDB", "behr", "Behr", "Grays", 67),
   createColor("behr-n550-4", "Sea Fog", "N550-4", "#A6ACAE", "behr", "Behr", "Grays", 38),
-  
+  createColor("behr-750e-2", "Smoked Oyster", "750E-2", "#D4CEC5", "behr", "Behr", "Neutrals", 60),
+  createColor("behr-ppu26-10", "French Silver", "PPU26-10", "#C5C5C3", "behr", "Behr", "Grays", 53),
+  createColor("behr-ppu26-16", "Classic Silver", "PPU26-16", "#D5D5D3", "behr", "Behr", "Grays", 64),
+  createColor("behr-ppu26-18", "Graceful Gray", "PPU26-18", "#DFDEDC", "behr", "Behr", "Grays", 72),
+  createColor("behr-ppu18-06", "Elephant Skin", "PPU18-06", "#7E7B78", "behr", "Behr", "Grays", 20),
+  createColor("behr-ppu18-14", "Cathedral Gray", "PPU18-14", "#ACA8A3", "behr", "Behr", "Grays", 38),
+  createColor("behr-n170-1", "Mocha Foam", "N170-1", "#ECDFD2", "behr", "Behr", "Neutrals", 74),
+  createColor("behr-n210-2", "Cappuccino Froth", "N210-2", "#DCCFBE", "behr", "Behr", "Neutrals", 63),
+  createColor("behr-n310-2", "Sand Dust", "N310-2", "#DBD5C2", "behr", "Behr", "Neutrals", 63),
+  createColor("behr-ppu5-09", "Barnwood", "PPU5-09", "#AB9B88", "behr", "Behr", "Neutrals", 35),
+  createColor("behr-ppu5-12", "Almond Wisp", "PPU5-12", "#C8BBA7", "behr", "Behr", "Neutrals", 49),
+  createColor("behr-ppu5-14", "Mesa Taupe", "PPU5-14", "#B4A894", "behr", "Behr", "Neutrals", 40),
+  createColor("behr-ecc-10-2", "Jet Black", "ECC-10-2", "#2E2E2E", "behr", "Behr", "Blacks", 3),
+  createColor("behr-bxc-02", "Frost", "BXC-02", "#ECEAE5", "behr", "Behr", "Whites", 80),
+  createColor("behr-w-b-110", "Cider Spice", "W-B-110", "#C4A072", "behr", "Behr", "Oranges", 38),
+  createColor("behr-m240-7", "Cascade", "M240-7", "#2B4A67", "behr", "Behr", "Blues", 8),
+  createColor("behr-m530-6", "Sophisticated Navy", "M530-6", "#3B536C", "behr", "Behr", "Blues", 10),
+  createColor("behr-m530-4", "Washed Denim", "M530-4", "#8199AD", "behr", "Behr", "Blues", 30),
+  createColor("behr-s520-4", "Breezy Blue", "S520-4", "#90ABB7", "behr", "Behr", "Blues", 36),
+  createColor("behr-s500-2", "Breathless", "S500-2", "#CDD8D7", "behr", "Behr", "Greens", 62),
+  createColor("behr-s400-3", "Minted Lemon", "S400-3", "#B9C5A8", "behr", "Behr", "Greens", 50),
+  createColor("behr-s190-4", "Spiced Brandy", "S190-4", "#C5A489", "behr", "Behr", "Oranges", 40),
+  createColor("behr-s170-4", "Retro Pink", "S170-4", "#C9A197", "behr", "Behr", "Reds", 39),
+  createColor("behr-dc-008", "Crisp Linen", "DC-008", "#F0E8D8", "behr", "Behr", "Whites", 78),
+  createColor("behr-dc-003", "Blank Canvas", "DC-003", "#F3EEE2", "behr", "Behr", "Whites", 84),
+  createColor("behr-rd-w07", "Creamy Mushroom", "RD-W07", "#E6DDD0", "behr", "Behr", "Neutrals", 69),
+  createColor("behr-ppu25-12", "Dusty Lilac", "PPU25-12", "#C0B9BD", "behr", "Behr", "Purples", 47),
+  createColor("behr-ppu13-12", "Lemon Balm", "PPU13-12", "#DFD9A8", "behr", "Behr", "Yellows", 65),
+  createColor("behr-s110-3", "Coral Sunset", "S110-3", "#D8B1A1", "behr", "Behr", "Reds", 48),
+
   // PPG - Popular Colors
   createColor("ppg-1025-1", "Gypsum", "PPG1025-1", "#F0EBE2", "ppg", "PPG", "Neutrals", 81),
   createColor("ppg-1025-2", "Dusty Miller", "PPG1025-2", "#E2DDD2", "ppg", "PPG", "Neutrals", 70),
@@ -165,8 +194,8 @@ export const PAINT_CATALOG: CatalogColor[] = [
   createColor("ppg-1040-3", "Pine Frost", "PPG1040-3", "#C5D0C7", "ppg", "PPG", "Greens", 55),
   createColor("ppg-1040-4", "Lime Daiquiri", "PPG1040-4", "#A8BAA9", "ppg", "PPG", "Greens", 44),
   createColor("ppg-1033-1", "Delicate White", "PPG1033-1", "#F4EFE4", "ppg", "PPG", "Whites", 85),
-  
-  // VALSPAR - Popular Colors
+
+  // VALSPAR (Lowe's) - Popular Colors
   createColor("val-7002-1", "Du Jour", "7002-1", "#F2EDE3", "valspar", "Valspar", "Neutrals", 82),
   createColor("val-7003-1", "Swiss Cream", "7003-1", "#F5F0E4", "valspar", "Valspar", "Whites", 85),
   createColor("val-7003-2", "Woodlawn Snow", "7003-2", "#E8E2D5", "valspar", "Valspar", "Neutrals", 73),
@@ -177,6 +206,66 @@ export const PAINT_CATALOG: CatalogColor[] = [
   createColor("val-5002-1b", "Light Blue", "5002-1B", "#E0E9EA", "valspar", "Valspar", "Blues", 77),
   createColor("val-5002-2a", "Seaspray", "5002-2A", "#C5D5D7", "valspar", "Valspar", "Blues", 62),
   createColor("val-5003-1b", "Moonlight Hush", "5003-1B", "#E3E9E7", "valspar", "Valspar", "Greens", 77),
+  createColor("val-7006-2", "Coastal Dune", "7006-2", "#D8CFC0", "valspar", "Valspar", "Neutrals", 60),
+  createColor("val-7006-4", "Bark Dust", "7006-4", "#AA9D8C", "valspar", "Valspar", "Neutrals", 35),
+  createColor("val-4001-1a", "Gravity", "4001-1A", "#DBD9D6", "valspar", "Valspar", "Grays", 66),
+  createColor("val-4001-2a", "Notre Dame", "4001-2A", "#C8C6C3", "valspar", "Valspar", "Grays", 54),
+  createColor("val-4001-3b", "Coastal Villa", "4001-3B", "#AFB0AD", "valspar", "Valspar", "Grays", 42),
+  createColor("val-4001-5b", "Signature Fog", "4001-5B", "#8E908E", "valspar", "Valspar", "Grays", 27),
+  createColor("val-4003-2a", "Dove White", "4003-2A", "#E0DDD5", "valspar", "Valspar", "Neutrals", 70),
+  createColor("val-4003-3b", "Montpelier", "4003-3B", "#D0CBC0", "valspar", "Valspar", "Neutrals", 57),
+  createColor("val-6001-1b", "Snow Cap", "6001-1B", "#E7ECE8", "valspar", "Valspar", "Greens", 79),
+  createColor("val-6002-2a", "Seafoam Storm", "6002-2A", "#C1D2CE", "valspar", "Valspar", "Greens", 59),
+  createColor("val-6003-3a", "Pine Forest", "6003-3A", "#6E8C74", "valspar", "Valspar", "Greens", 24),
+  createColor("val-5001-3b", "Stormy Cove", "5001-3B", "#8F9EA5", "valspar", "Valspar", "Blues", 33),
+  createColor("val-5001-5b", "Deep Twilight", "5001-5B", "#354E62", "valspar", "Valspar", "Blues", 8),
+  createColor("val-5004-2a", "Gentle Wave", "5004-2A", "#B6C8CE", "valspar", "Valspar", "Blues", 53),
+  createColor("val-5005-1b", "Winter Calm", "5005-1B", "#DDE4E6", "valspar", "Valspar", "Blues", 74),
+  createColor("val-3007-3a", "La Fonda Mango", "3007-3A", "#D4A76D", "valspar", "Valspar", "Oranges", 42),
+  createColor("val-2007-3a", "Berry Blush", "2007-3A", "#C59C9A", "valspar", "Valspar", "Reds", 39),
+  createColor("val-2003-3b", "Dusty Rose", "2003-3B", "#C8A6A4", "valspar", "Valspar", "Reds", 42),
+  createColor("val-1009-2", "Tempered Gray", "1009-2", "#B9B5AD", "valspar", "Valspar", "Neutrals", 46),
+  createColor("val-4004-1c", "Soft Charcoal", "4004-1C", "#6A6865", "valspar", "Valspar", "Grays", 14),
+  createColor("val-4005-2b", "Sable Calm", "4005-2B", "#474544", "valspar", "Valspar", "Blacks", 6),
+  createColor("val-3005-1b", "Honeymilk", "3005-1B", "#F3EAD7", "valspar", "Valspar", "Whites", 81),
+  createColor("val-6006-1b", "Sage Brush", "6006-1B", "#D4D7C9", "valspar", "Valspar", "Greens", 63),
+  createColor("val-8003-2b", "Lilac Lane", "8003-2B", "#C9BFD0", "valspar", "Valspar", "Purples", 50),
+  createColor("val-3001-3a", "Warm Butterscotch", "3001-3A", "#C7A96E", "valspar", "Valspar", "Yellows", 42),
+
+  // ACE HARDWARE (Clark+Kensington) - Popular Colors
+  createColor("ace-ck-n-c1", "Cake Batter", "N-C1", "#F5F0E5", "ace", "Clark+Kensington", "Whites", 85),
+  createColor("ace-ck-n-c2", "Feather Down", "N-C2", "#EBE5D9", "ace", "Clark+Kensington", "Whites", 77),
+  createColor("ace-ck-n-c3", "Antique Linen", "N-C3", "#E3DBC8", "ace", "Clark+Kensington", "Neutrals", 68),
+  createColor("ace-ck-n-c4", "Sandstone Cliff", "N-C4", "#D5CDB9", "ace", "Clark+Kensington", "Neutrals", 58),
+  createColor("ace-ck-n-c5", "Worn Leather", "N-C5", "#B4A78F", "ace", "Clark+Kensington", "Neutrals", 40),
+  createColor("ace-ck-n-c6", "Cabin Fever", "N-C6", "#8D7F6E", "ace", "Clark+Kensington", "Neutrals", 24),
+  createColor("ace-ck-n-c7", "Dark Roast", "N-C7", "#5C5043", "ace", "Clark+Kensington", "Neutrals", 9),
+  createColor("ace-ck-n-c8", "Espresso Shot", "N-C8", "#44382E", "ace", "Clark+Kensington", "Neutrals", 5),
+  createColor("ace-ck-gn1", "Whisper of Sage", "GN-1", "#D5DBC9", "ace", "Clark+Kensington", "Greens", 63),
+  createColor("ace-ck-gn2", "Meadow Mist", "GN-2", "#BAC7AC", "ace", "Clark+Kensington", "Greens", 50),
+  createColor("ace-ck-gn3", "Toscana", "GN-3", "#8CA07A", "ace", "Clark+Kensington", "Greens", 33),
+  createColor("ace-ck-gn4", "Forest Retreat", "GN-4", "#5F7757", "ace", "Clark+Kensington", "Greens", 18),
+  createColor("ace-ck-bl1", "Morning Mist", "BL-1", "#D9E3E6", "ace", "Clark+Kensington", "Blues", 73),
+  createColor("ace-ck-bl2", "Serene Stream", "BL-2", "#B4C8D0", "ace", "Clark+Kensington", "Blues", 54),
+  createColor("ace-ck-bl3", "Coastal Fog", "BL-3", "#8BA7B5", "ace", "Clark+Kensington", "Blues", 37),
+  createColor("ace-ck-bl4", "Ocean Floor", "BL-4", "#4D6D7E", "ace", "Clark+Kensington", "Blues", 16),
+  createColor("ace-ck-bl5", "Midnight Navy", "BL-5", "#2E4251", "ace", "Clark+Kensington", "Blues", 6),
+  createColor("ace-ck-gr1", "Silver Screen", "GR-1", "#E2E2E0", "ace", "Clark+Kensington", "Grays", 73),
+  createColor("ace-ck-gr2", "Stone Path", "GR-2", "#CBC9C5", "ace", "Clark+Kensington", "Grays", 56),
+  createColor("ace-ck-gr3", "Charcoal Heather", "GR-3", "#9C9A97", "ace", "Clark+Kensington", "Grays", 32),
+  createColor("ace-ck-gr4", "Graphite", "GR-4", "#6B6967", "ace", "Clark+Kensington", "Grays", 15),
+  createColor("ace-ck-gr5", "Black Sesame", "GR-5", "#3C3A38", "ace", "Clark+Kensington", "Blacks", 4),
+  createColor("ace-ck-rd1", "Blushing Peach", "RD-1", "#E5C4B6", "ace", "Clark+Kensington", "Reds", 55),
+  createColor("ace-ck-rd2", "Terra Cotta", "RD-2", "#C08B73", "ace", "Clark+Kensington", "Reds", 30),
+  createColor("ace-ck-rd3", "Autumn Leaves", "RD-3", "#A66049", "ace", "Clark+Kensington", "Reds", 16),
+  createColor("ace-ck-yw1", "Soft Buttercream", "YW-1", "#F2E8CC", "ace", "Clark+Kensington", "Yellows", 78),
+  createColor("ace-ck-yw2", "Honey Wheat", "YW-2", "#DECE9E", "ace", "Clark+Kensington", "Yellows", 62),
+  createColor("ace-ck-yw3", "Amber Gold", "YW-3", "#C7AD6E", "ace", "Clark+Kensington", "Yellows", 43),
+  createColor("ace-ck-wm1", "Warm Porcelain", "WM-1", "#EFE6D6", "ace", "Clark+Kensington", "Neutrals", 75),
+  createColor("ace-ck-wm2", "Toasted Cashew", "WM-2", "#D5C4A9", "ace", "Clark+Kensington", "Neutrals", 54),
+  createColor("ace-ck-wm3", "Caramel Drizzle", "WM-3", "#BEA882", "ace", "Clark+Kensington", "Neutrals", 41),
+  createColor("ace-ck-pr1", "Lavender Sachet", "PR-1", "#D8CEE0", "ace", "Clark+Kensington", "Purples", 58),
+  createColor("ace-ck-pr2", "Plum Shadow", "PR-2", "#7E6484", "ace", "Clark+Kensington", "Purples", 15),
 ];
 
 export function deltaE(lab1: { l: number; a: number; b: number }, lab2: { l: number; a: number; b: number }): number {
@@ -214,7 +303,7 @@ export function findClosestByBrand(
   targetHex: string,
   limit: number = 3
 ): Record<string, (CatalogColor & { distance: number })[]> {
-  const brands: CatalogColor["brand"][] = ["sherwin-williams", "benjamin-moore", "behr", "ppg", "valspar"];
+  const brands: CatalogColor["brand"][] = ["sherwin-williams", "benjamin-moore", "behr", "ppg", "valspar", "ace"];
   const result: Record<string, (CatalogColor & { distance: number })[]> = {};
   
   for (const brand of brands) {

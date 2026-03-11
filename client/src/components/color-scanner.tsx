@@ -57,6 +57,10 @@ const BRAND_INFO: Record<string, { name: string; storeUrl: string; logo?: string
   "valspar": { 
     name: "Valspar (Lowe's)",
     storeUrl: "https://www.valspar.com/en/colors/"
+  },
+  "ace": {
+    name: "Clark+Kensington (Ace)",
+    storeUrl: "https://www.acehardware.com/departments/paint-and-supplies/"
   }
 };
 
