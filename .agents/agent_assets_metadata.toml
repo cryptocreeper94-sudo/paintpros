@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "r6_TPWj-wI2GjpbnLTYvU"
+uri = "file://color-tools-widget.md"
+type = "text"
+title = "Color Tools Widget — Copy & Paste Ready"
