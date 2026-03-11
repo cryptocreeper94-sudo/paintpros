@@ -107,6 +107,7 @@ import NPPEcosystemHome from "@/pages/npp-ecosystem-home";
 import GetStarted from "@/pages/get-started";
 import CommandCenter from "@/pages/command-center";
 import AffiliateDashboard from "@/pages/affiliate-dashboard";
+import MaddieTools from "@/pages/maddie-tools";
 import ReferralRedirect from "@/pages/referral-redirect";
 import { AIAgentTab } from "@/components/ui/ai-agent-tab";
 import { getTenantById } from "@/config/tenant";
@@ -298,6 +299,7 @@ function Router() {
       <Route path="/get-started" component={GetStarted} />
       <Route path="/start" component={GetStarted} />
       <Route path="/affiliate" component={AffiliateDashboard} />
+      <Route path="/maddie" component={MaddieTools} />
       <Route path="/ref/:hash" component={ReferralRedirect} />
       <Route path="/tlid" component={TrustLayerHome} />
       <Route path="/tlid/marketing-hub">{() => <TenantPrefixedRoute tenantId="tlid" Component={MarketingHub} />}</Route>
