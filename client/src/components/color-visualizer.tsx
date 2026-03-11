@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { PaintColor } from "@shared/schema";
+import { PAINT_CATALOG } from "@/data/paint-catalog";
 
 interface ColorVisualizerProps {
   isOpen: boolean;
@@ -167,12 +168,35 @@ export function ColorVisualizer({ isOpen, onClose, initialColor, tenantId = 'dem
     setAiAnalysis(null);
   };
 
-  const colorFamilies = [
-    { name: "Neutrals", colors: colors?.filter(c => c.category === "neutral" || c.category === "white")?.slice(0, 8) || [] },
-    { name: "Blues", colors: colors?.filter(c => c.hexValue?.toLowerCase().match(/^#[0-9a-f]{2}[0-9a-f]{2}[6-9a-f]{2}$/i) || c.colorName?.toLowerCase().includes("blue"))?.slice(0, 8) || [] },
-    { name: "Greens", colors: colors?.filter(c => c.colorName?.toLowerCase().includes("green") || c.colorName?.toLowerCase().includes("sage"))?.slice(0, 8) || [] },
-    { name: "Warm Tones", colors: colors?.filter(c => c.category === "warm" || c.undertone === "warm")?.slice(0, 8) || [] },
+  const catalogColors = PAINT_CATALOG.map(c => ({
+    id: c.id,
+    hex: c.hex,
+    name: `${c.name} (${c.brandDisplay})`,
+  }));
+
+  const colorFamilyDefs = [
+    { name: "Whites & Off-Whites", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Whites" || c.collection === "Off-White" },
+    { name: "Grays", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Grays" },
+    { name: "Neutrals & Beiges", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Neutrals" },
+    { name: "Blues", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Blues" },
+    { name: "Greens", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Greens" },
+    { name: "Reds & Pinks", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Reds" },
+    { name: "Yellows & Golds", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Yellows" },
+    { name: "Oranges & Warm", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Oranges" },
+    { name: "Purples", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Purples" },
+    { name: "Blacks & Darks", filter: (c: typeof PAINT_CATALOG[0]) => c.collection === "Blacks" },
   ];
+
+  const catalogFamilies = colorFamilyDefs
+    .map(fam => ({
+      name: fam.name,
+      colors: PAINT_CATALOG.filter(fam.filter).map(c => ({
+        id: c.id,
+        hexValue: c.hex,
+        colorName: `${c.name} — ${c.brandDisplay}`,
+      })),
+    }))
+    .filter(fam => fam.colors.length > 0);
 
   if (!isOpen) return null;
 
@@ -360,36 +384,34 @@ export function ColorVisualizer({ isOpen, onClose, initialColor, tenantId = 'dem
                       <Palette className="w-4 h-4" />
                       Select a Color
                     </h3>
+                    <span className="text-xs text-gray-400">{PAINT_CATALOG.length} colors</span>
                   </div>
 
                   <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                    {colorFamilies.map((family) => (
-                      family.colors.length > 0 && (
-                        <div key={family.name} className="space-y-2">
-                          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{family.name}</p>
-                          <div className="grid grid-cols-8 gap-1">
-                            {family.colors.map((color) => (
-                              <button
-                                key={color.id}
-                                onClick={() => setSelectedColor({ hex: color.hexValue, name: color.colorName })}
-                                className={`w-8 h-8 rounded-md shadow-sm border-2 transition-all hover:scale-110 ${
-                                  selectedColor?.hex === color.hexValue 
-                                    ? "border-accent ring-2 ring-accent/30" 
-                                    : "border-gray-200"
-                                }`}
-                                style={{ backgroundColor: color.hexValue }}
-                                title={color.colorName}
-                                data-testid={`button-color-${color.id}`}
-                              />
-                            ))}
-                          </div>
+                    {catalogFamilies.map((family) => (
+                      <div key={family.name} className="space-y-2">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{family.name}</p>
+                        <div className="grid grid-cols-8 gap-1">
+                          {family.colors.map((color) => (
+                            <button
+                              key={color.id}
+                              onClick={() => setSelectedColor({ hex: color.hexValue, name: color.colorName })}
+                              className={`w-8 h-8 rounded-md shadow-sm border-2 transition-all hover:scale-110 ${
+                                selectedColor?.hex === color.hexValue 
+                                  ? "border-accent ring-2 ring-accent/30" 
+                                  : "border-gray-200"
+                              }`}
+                              style={{ backgroundColor: color.hexValue }}
+                              title={color.colorName}
+                              data-testid={`button-color-${color.id}`}
+                            />
+                          ))}
                         </div>
-                      )
+                      </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Quick Colors */}
                 <div className="pt-3 border-t border-gray-200">
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Popular Colors</p>
                   <div className="flex flex-wrap gap-2">
@@ -397,9 +419,11 @@ export function ColorVisualizer({ isOpen, onClose, initialColor, tenantId = 'dem
                       { hex: "#F3EDE4", name: "Pure White" },
                       { hex: "#D1CBC0", name: "Agreeable Gray" },
                       { hex: "#34495E", name: "Naval" },
-                      { hex: "#5F7167", name: "Retreat" },
-                      { hex: "#C12B2B", name: "Caliente" },
-                      { hex: "#4D6B4A", name: "Webster Green" },
+                      { hex: "#2B4A67", name: "Cascade Blue" },
+                      { hex: "#C12B2B", name: "Caliente Red" },
+                      { hex: "#5F7757", name: "Forest Retreat" },
+                      { hex: "#C7AD6E", name: "Amber Gold" },
+                      { hex: "#7E6484", name: "Plum Shadow" },
                     ].map((color) => (
                       <button
                         key={color.hex}
